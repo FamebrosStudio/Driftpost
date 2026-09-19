@@ -1,13 +1,9 @@
 // Meta (Facebook + Instagram) via Graph API. No X/Twitter anywhere in Driftpost.
 const GRAPH = 'https://graph.facebook.com/v21.0';
-const SCOPES = [
-  'pages_show_list',
-  'pages_read_engagement',
-  'pages_manage_posts',
-  'instagram_basic',
-  'instagram_content_publish',
-  'business_management',
-].join(',');
+// Scopes are configurable via META_SCOPES so Meta dashboard changes never need a code edit.
+// Default is Facebook-only (standard permissions, work in Development mode with no review).
+// Add Instagram later with: pages_show_list,pages_read_engagement,pages_manage_posts,instagram_business_basic,instagram_business_content_publish
+const SCOPES = process.env.META_SCOPES || 'pages_show_list,pages_read_engagement,pages_manage_posts';
 
 export function metaAuthorizationUrl(state) {
   const p = new URLSearchParams({
