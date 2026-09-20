@@ -64,9 +64,6 @@ function Auth({ mode, setMode }) {
   );
 }
 
-const visibleConns = (connections, hidden) => connections.filter((c) => !hidden.has(c.id));
-const connsFor = (connections, hidden, pid) => visibleConns(connections, hidden).filter((c) => c.platform === pid);
-
 function BrandPicker({ brands, brandKey, onPick }) {
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState('');

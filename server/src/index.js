@@ -40,7 +40,7 @@ async function requireUser(req, res, next) {
   next();
 }
 
-app.get('/', (_req, res) => res.json({ ok: true, service: 'driftpost-api', platforms: ['youtube', 'instagram', 'facebook'] }));
+app.get('/', (_req, res) => res.json({ ok: true, service: 'driftpost-api', platforms: ['youtube', 'instagram', 'facebook', 'x'] }));
 app.get('/health', (_req, res) => res.json({ ok: true }));
 
 app.get('/api/connections', requireUser, async (req, res) => {
@@ -111,12 +111,6 @@ app.get('/api/oauth/meta/callback', async (req, res) => {
     const long = await longLivedToken(short.access_token);
     const userToken = long.access_token;
     const pages = await getMetaPages(userToken);
-    try {
-      const permRes = await fetch(`https://graph.facebook.com/v21.0/me/permissions?access_token=${encodeURIComponent(userToken)}`);
-      const permJson = await permRes.json();
-      const granted = (permJson.data || []).filter((p) => p.status === 'granted').map((p) => p.permission);
-      console.log(`Meta debug: ${pages.length} pages, IG-linked: ${pages.filter((p) => p.instagram_business_account?.id).length}, granted: ${granted.join(',')}`);
-    } catch { console.log(`Meta debug: ${pages.length} pages`); }
     if (!pages.length) throw new Error('No Facebook Page found. Create a Page and link Instagram in Page Settings first.');
     for (const page of pages.slice(0, 50)) {
       await supabase.from('platform_connections').upsert({
