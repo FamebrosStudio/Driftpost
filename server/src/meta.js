@@ -68,7 +68,7 @@ export async function getMetaPages(userToken) {
   return data.data || [];
 }
 
-export async function publishFacebook({ pageId, pageToken, text, media }) {
+export async function publishFacebook({ pageId, pageToken, text, link, media }) {
   // media: multer file or undefined. Text-only -> /feed. Photo -> /photos. Video -> /videos.
   if (media?.mimetype?.startsWith('video/')) {
     const form = new FormData();
@@ -91,7 +91,7 @@ export async function publishFacebook({ pageId, pageToken, text, media }) {
   const res = await fetch(`${GRAPH}/${pageId}/feed`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ message: text, access_token: pageToken }),
+    body: JSON.stringify({ message: text, ...(link ? { link } : {}), access_token: pageToken }),
   });
   const data = await res.json();
   if (!res.ok) throw new Error(data.error?.message || 'Facebook post failed');

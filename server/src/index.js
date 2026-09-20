@@ -200,22 +200,30 @@ app.post('/api/publish', requireUser, upload.single('media'), async (req, res) =
   void runPublish(job, conn, req.file, req.body, req.user.id);
 });
 
+function splitTags(raw) {
+  return String(raw || '').split(/[,\s#]+/).map((t) => t.trim()).filter(Boolean).slice(0, 30);
+}
+
 async function runPublish(job, conn, file, body, userId) {
   try {
-    const text = String(body.text || '').trim();
+    const fallbackText = String(body.text || '').trim();
     if (job.platform === 'youtube') {
+      const title = String(body.yt_title || body.title || '').trim().slice(0, 100);
+      const description = String(body.yt_description ?? fallbackText).slice(0, 5000);
+      const privacy = ['public', 'unlisted', 'private'].includes(body.yt_privacy || body.privacy)
+        ? (body.yt_privacy || body.privacy) : 'private';
       if (!file || !file.mimetype.startsWith('video/')) throw new Error('YouTube needs a video file');
-      if (!String(body.title || '').trim()) throw new Error('YouTube needs a title');
+      if (!title) throw new Error('YouTube needs a title');
       job.state = 'uploading'; job.message = 'Uploading to YouTube';
       const token = await validAccessToken(supabase, conn);
       const video = await uploadVideoResumable({
         accessToken: token, file,
-        metadata: { title: String(body.title).slice(0, 100), description: text.slice(0, 5000), tags: [], privacy: ['public', 'unlisted', 'private'].includes(body.privacy) ? body.privacy : 'private' },
+        metadata: { title, description, tags: splitTags(body.yt_tags ?? body.tags), privacy },
         onProgress: (p) => { job.progress = p; },
       });
       job.url = `https://www.youtube.com/watch?v=${video.id}`;
     } else if (job.platform === 'x') {
-      const xText = String(body.text || '').trim();
+      const xText = String(body.x_text ?? fallbackText).trim();
       if (!xText) throw new Error('Write some text for X');
       if (Array.from(xText).length > 280) throw new Error('X allows 280 characters or fewer');
       job.state = 'uploading'; job.progress = 20; job.message = 'Preparing X post';
@@ -252,12 +260,12 @@ async function runPublish(job, conn, file, body, userId) {
       }
       job.state = 'publishing'; job.progress = 60; job.message = `Publishing to ${job.platform}`;
       if (job.platform === 'facebook') {
-        const out = await publishFacebook({ pageId: conn.platform_account_id, pageToken, text, media });
+        const out = await publishFacebook({ pageId: conn.platform_account_id, pageToken, text: String(body.fb_message ?? fallbackText), link: String(body.fb_link || '').trim() || null, media });
         job.url = out.url;
       } else {
         const igId = conn.platform_account_id;
         const out = await (await import('./meta.js')).publishInstagram({
-          igUserId: igId, pageToken, caption: text, mediaUrl: publicUrl, isVideo: !!file?.mimetype.startsWith('video/'),
+          igUserId: igId, pageToken, caption: String(body.ig_caption ?? fallbackText), mediaUrl: publicUrl, isVideo: !!file?.mimetype.startsWith('video/'),
         });
         job.url = out.url;
       }
