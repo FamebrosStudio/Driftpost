@@ -11,7 +11,7 @@ import { createClient } from '@supabase/supabase-js';
 import { decryptJson, encryptJson, signState, verifyState } from './crypto.js';
 import { exchangeGoogleCode, getYouTubeChannel, youtubeAuthorizationUrl } from './google.js';
 import { uploadVideoResumable, validAccessToken } from './youtube-upload.js';
-import { exchangeMetaCode, getMetaPages, longLivedToken, metaAuthorizationUrl, publishFacebook, publishInstagram } from './meta.js';
+import { exchangeMetaCode, getMetaPages, longLivedToken, metaAuthorizationUrl, metaBusinessLoginUrl, publishFacebook, publishInstagram } from './meta.js';
 import { createPkcePair, exchangeXCode, getXUser, xAuthorizationUrl } from './x.js';
 import { createXPost, uploadXMedia, validXAccessToken } from './x-publish.js';
 
@@ -91,13 +91,16 @@ app.get('/api/oauth/youtube/callback', async (req, res) => {
   res.redirect(back.toString());
 });
 
-// --- OAuth: Meta (Facebook + Instagram) ---
-app.post('/api/oauth/facebook/start', requireUser, (req, res) => sameMetaStart(req, res));
-app.post('/api/oauth/instagram/start', requireUser, (req, res) => sameMetaStart(req, res));
-function sameMetaStart(req, res) {
+// --- OAuth: Meta (Facebook: regular Login / Instagram: Login for Business) ---
+app.post('/api/oauth/facebook/start', requireUser, (req, res) => {
   if (!process.env.META_APP_ID) return res.status(503).json({ error: 'Meta OAuth not configured' });
   res.json({ url: metaAuthorizationUrl(signState({ userId: req.user.id, nonce: crypto.randomUUID(), exp: Date.now() + 10 * 60 * 1000 })) });
-}
+});
+app.post('/api/oauth/instagram/start', requireUser, (req, res) => {
+  if (!process.env.META_APP_ID) return res.status(503).json({ error: 'Meta OAuth not configured' });
+  if (!process.env.META_CONFIG_ID) return res.status(503).json({ error: 'Instagram needs a Business Login configuration ID (META_CONFIG_ID)' });
+  res.json({ url: metaBusinessLoginUrl(signState({ userId: req.user.id, nonce: crypto.randomUUID(), exp: Date.now() + 10 * 60 * 1000 })) });
+});
 
 app.get('/api/oauth/meta/callback', async (req, res) => {
   const back = new URL(process.env.FRONTEND_URL);

@@ -1,9 +1,10 @@
 // Meta (Facebook + Instagram) via Graph API. No X/Twitter anywhere in Driftpost.
 const GRAPH = 'https://graph.facebook.com/v21.0';
-// Scopes are configurable via META_SCOPES so Meta dashboard changes never need a code edit.
-// Default is Facebook-only (standard permissions, work in Development mode with no review).
-// Add Instagram later with: pages_show_list,pages_read_engagement,pages_manage_posts,instagram_business_basic,instagram_business_content_publish
-const SCOPES = process.env.META_SCOPES || 'pages_show_list,pages_read_engagement,pages_manage_posts';
+// Facebook connect uses regular Login with Page scopes (no review needed in dev).
+const FB_SCOPES = process.env.META_FB_SCOPES || 'pages_show_list,pages_read_engagement,pages_manage_posts';
+// Instagram connect uses Facebook Login for Business (config_id). Regular Login
+// rejects instagram_business_* scopes with "Invalid Scopes".
+const SCOPES = FB_SCOPES;
 
 export function metaAuthorizationUrl(state) {
   const p = new URLSearchParams({
@@ -11,6 +12,17 @@ export function metaAuthorizationUrl(state) {
     redirect_uri: process.env.META_REDIRECT_URI,
     response_type: 'code',
     scope: SCOPES,
+    state,
+  });
+  return `https://www.facebook.com/v21.0/dialog/oauth?${p}`;
+}
+
+export function metaBusinessLoginUrl(state) {
+  const p = new URLSearchParams({
+    client_id: process.env.META_APP_ID,
+    redirect_uri: process.env.META_REDIRECT_URI,
+    config_id: process.env.META_CONFIG_ID,
+    response_type: 'code',
     state,
   });
   return `https://www.facebook.com/v21.0/dialog/oauth?${p}`;
