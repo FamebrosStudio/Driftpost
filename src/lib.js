@@ -39,6 +39,54 @@ export function isActiveBrand(accountName) {
   });
 }
 
+const TOKENS = (s) => norm(s).split(' ').filter((t) => t.length > 3);
+
+// Similarity between two account names across platforms (page name vs IG handle etc).
+export function brandScore(a, b) {
+  const ta = TOKENS(a);
+  const tb = TOKENS(b);
+  if (!ta.length || !tb.length) return 0;
+  const na = norm(a);
+  const nb = norm(b);
+  if (na.includes(nb) && nb.length > 4) return 100;
+  if (nb.includes(na) && na.length > 4) return 100;
+  let score = 0;
+  for (const t of ta) {
+    if (tb.includes(t)) score += t.length >= 6 ? 30 : 10;
+  }
+  return score;
+}
+
+// Group connections into brands keyed by Facebook page (agency thinks in pages),
+// plus standalone entries for accounts with no page match.
+export function groupBrands(connections) {
+  const byPlat = {};
+  connections.forEach((c) => { (byPlat[c.platform] = byPlat[c.platform] || []).push(c); });
+  const used = new Set();
+  const brands = [];
+  for (const fb of byPlat.facebook || []) {
+    const brand = { key: `fb:${fb.id}`, label: fb.account_name, map: { facebook: fb.id } };
+    for (const p of ['instagram', 'youtube', 'x']) {
+      let best = null;
+      let bestScore = 0;
+      for (const c of byPlat[p] || []) {
+        if (used.has(c.id)) continue;
+        const s = brandScore(fb.account_name, c.account_name);
+        if (s > bestScore) { bestScore = s; best = c; }
+      }
+      if (best && bestScore >= 10) { brand.map[p] = best.id; used.add(best.id); }
+    }
+    brands.push(brand);
+  }
+  for (const p of ['instagram', 'youtube', 'x']) {
+    for (const c of byPlat[p] || []) {
+      if (!used.has(c.id)) brands.push({ key: `${p}:${c.id}`, label: c.account_name, map: { [p]: c.id } });
+    }
+  }
+  brands.sort((a, b) => a.label.localeCompare(b.label));
+  return brands;
+}
+
 export async function api(path, token, options = {}) {
   const res = await fetch(`${apiUrl}${path}`, {
     ...options,

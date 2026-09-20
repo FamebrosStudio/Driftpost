@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { supabase, apiUrl, api, PLATFORMS, isActiveBrand } from './lib.js';
+import { supabase, apiUrl, api, PLATFORMS, isActiveBrand, groupBrands } from './lib.js';
 
 function useSession() {
   const [session, setSession] = useState(null);
@@ -67,9 +67,44 @@ function Auth({ mode, setMode }) {
 const visibleConns = (connections, hidden) => connections.filter((c) => !hidden.has(c.id));
 const connsFor = (connections, hidden, pid) => visibleConns(connections, hidden).filter((c) => c.platform === pid);
 
+function BrandPicker({ brands, brandKey, onPick }) {
+  const [open, setOpen] = useState(false);
+  const [q, setQ] = useState('');
+  const current = brands.find((b) => b.key === brandKey);
+  const list = brands.filter((b) => !q.trim() || b.label.toLowerCase().includes(q.trim().toLowerCase()));
+  return (
+    <div className={open ? 'dd open' : 'dd'}>
+      <button className="dd-btn" onClick={() => setOpen((o) => !o)}>
+        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{current ? current.label : 'Pick a brand…'}</span>
+        <small>{brands.length} brands</small>
+        <span className="chev">▾</span>
+      </button>
+      {open && <>
+        <div className="dd-backdrop" onClick={() => setOpen(false)} />
+        <div className="dd-menu">
+          <input className="dd-search" autoFocus value={q} onChange={(e) => setQ(e.target.value)} placeholder="Type to filter…" />
+          {list.map((b) => (
+            <button key={b.key} className={b.key === brandKey ? 'dd-item sel' : 'dd-item'} onClick={() => { onPick(b.key); setOpen(false); setQ(''); }}>
+              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{b.label}</span>
+              {isActiveBrand(b.label) && <span className="star">★ active</span>}
+            </button>
+          ))}
+          {!list.length && <div className="banner" style={{ margin: 4 }}>No brand matches.</div>}
+        </div>
+      </>}
+    </div>
+  );
+}
+
 function Composer({ session, connections, reload }) {
-  const [selected, setSelected] = useState([]);
-  const [connFor, setConnFor] = useState({});
+  const [hidden] = useState(() => {
+    try { return new Set(JSON.parse(localStorage.getItem(`driftpost-hidden:${session.user.id}`) || '[]')); }
+    catch { return new Set(); }
+  });
+  const vis = useMemo(() => connections.filter((c) => !hidden.has(c.id)), [connections]);
+  const brands = useMemo(() => groupBrands(vis), [vis]);
+  const [brandKey, setBrandKey] = useState('');
+  const [over, setOver] = useState({});
   const [file, setFile] = useState(null);
   const [thumb, setThumb] = useState(null);
   const [caption, setCaption] = useState('');
@@ -79,27 +114,29 @@ function Composer({ session, connections, reload }) {
   const [x, setX] = useState({ text: '' });
   const [busy, setBusy] = useState({});
   const [results, setResults] = useState({});
-  const [hidden] = useState(() => {
-    try { return new Set(JSON.parse(localStorage.getItem(`driftpost-hidden:${session.user.id}`) || '[]')); }
-    catch { return new Set(); }
-  });
   const inputRef = useRef();
   const thumbRef = useRef();
+
+  useEffect(() => {
+    if (!brandKey && brands.length) {
+      const active = brands.find((b) => isActiveBrand(b.label));
+      setBrandKey((active || brands[0]).key);
+    }
+  }, [brands, brandKey]);
+
+  const brand = brands.find((b) => b.key === brandKey) || null;
+  const listFor = (pid) => vis.filter((c) => c.platform === pid);
+  const pick = (pid) => over[`${brand?.key}:${pid}`] || brand?.map[pid] || '';
+  const setPick = (pid, id) => setOver((m) => ({ ...m, [`${brand?.key}:${pid}`]: id }));
+
+  const mediaUrl = useMemo(
+    () => (file?.raw && file.type.startsWith('image/') ? URL.createObjectURL(file.raw) : null),
+    [file]
+  );
 
   const pickFile = (f) => {
     if (!f) return;
     setFile({ raw: f, name: f.name, size: `${(f.size / 1024 / 1024).toFixed(1)} MB`, type: f.type });
-  };
-
-  const toggle = (id) => {
-    const list = connsFor(connections, hidden, id);
-    if (!list.length) return;
-    if (selected.includes(id)) {
-      setSelected((s) => s.filter((v) => v !== id));
-    } else {
-      setSelected((s) => [...s, id]);
-      if (!connFor[id]) setConnFor((m) => ({ ...m, [id]: list[0].id }));
-    }
   };
 
   const xLen = Array.from((x.text || caption).trim()).length;
@@ -107,7 +144,7 @@ function Composer({ session, connections, reload }) {
   const buildForm = (platform) => {
     const form = new FormData();
     form.append('platform', platform);
-    form.append('connection_id', connFor[platform] || '');
+    form.append('connection_id', pick(platform));
     form.append('text', caption);
     form.append('title', yt.title);
     form.append('privacy', yt.privacy);
@@ -147,6 +184,10 @@ function Composer({ session, connections, reload }) {
 
   const publishOne = async (platform) => {
     if (busy[platform]) return;
+    if (!pick(platform)) {
+      setResults((r) => ({ ...r, [platform]: { state: 'failed', message: 'No account for this brand — pick one in the phone.' } }));
+      return;
+    }
     setBusy((b) => ({ ...b, [platform]: true }));
     const out = { ...results };
     try { await runOne(platform, out); }
@@ -156,9 +197,10 @@ function Composer({ session, connections, reload }) {
   };
 
   const publishAll = async () => {
-    if (!selected.length) return;
+    const targets = PLATFORMS.map((p) => p.id).filter((pid) => pick(pid));
+    if (!targets.length) return;
     const out = { ...results };
-    for (const platform of selected) {
+    for (const platform of targets) {
       try { await runOne(platform, out); }
       catch (e) { out[platform] = { state: 'failed', message: e.message }; setResults({ ...out }); }
     }
@@ -172,7 +214,7 @@ function Composer({ session, connections, reload }) {
     setYt((v) => ({ ...v, description: caption }));
   };
 
-  const sectionState = (pid) => {
+  const secState = (pid) => {
     const r = results[pid];
     if (!r) return 'Ready';
     if (r.state === 'completed') return 'Done';
@@ -181,144 +223,95 @@ function Composer({ session, connections, reload }) {
   };
 
   return (
-    <div className="grid">
-      <section className="card">
-        <h3>1 · Brand</h3>
-        <p className="sub">YouTube, Instagram, Facebook, X — visible accounts only. Hidden ones stay in Accounts.</p>
-        <div className="plat-grid">
-          {PLATFORMS.map((p) => {
-            const list = connsFor(connections, hidden, p.id);
-            const on = selected.includes(p.id);
-            return (
-              <button key={p.id} className={on ? 'plat on' : list.length ? 'plat' : 'plat off'} onClick={() => toggle(p.id)} disabled={!list.length}>
-                <b>{p.name}</b>
-                <small>{list.length ? `${list.length} account${list.length === 1 ? '' : 's'}` : 'Not connected'}</small>
-                <small>{p.hint}</small>
-              </button>
-            );
-          })}
+    <div>
+      <div className="brandbar">
+        <BrandPicker brands={brands} brandKey={brandKey} onPick={(k) => { setBrandKey(k); setResults({}); }} />
+        <button className="primary" style={{ width: 'auto', marginTop: 0, padding: '10px 26px' }} onClick={publishAll} disabled={Object.values(busy).some(Boolean)}>Publish all</button>
+      </div>
+
+      <div className="share-row">
+        <div className="card">
+          <h3>Shared media</h3>
+          <p className="sub">One file reused in every phone. YouTube needs video.</p>
+          <input ref={inputRef} type="file" accept="image/*,video/*" hidden onChange={(e) => pickFile(e.target.files[0])} />
+          {!file ? (
+            <div className="drop" onClick={() => inputRef.current.click()}><b>Drop media here or browse</b>Images · Video up to 2 GB</div>
+          ) : (
+            <div className="file-row"><div><b>{file.name}</b><small>{file.size} · {file.type}</small></div><button onClick={() => setFile(null)}>Remove</button></div>
+          )}
         </div>
+        <div className="card">
+          <h3>Shared caption</h3>
+          <p className="sub">Fills every phone left empty. <button className="link" onClick={applyCaptionEverywhere}>Copy into all phones</button></p>
+          <label className="field" style={{ marginBottom: 0 }}><span>Caption <i>{caption.length}/2200</i></span><textarea value={caption} maxLength={2200} onChange={(e) => setCaption(e.target.value)} placeholder="Write once…" /></label>
+        </div>
+      </div>
 
-        <h3 style={{ marginTop: 22 }}>2 · Media (shared)</h3>
-        <p className="sub">{selected.includes('youtube') ? 'YouTube needs a video.' : 'One file reused everywhere. Facebook also accepts text-only.'}</p>
-        {!file ? (
-          <div className="drop" onClick={() => inputRef.current.click()}>
-            <input ref={inputRef} type="file" accept="image/*,video/*" hidden onChange={(e) => pickFile(e.target.files[0])} />
-            <b>Drop media here or browse</b>
-            Images · Video up to 2 GB
-          </div>
-        ) : (
-          <div className="file-row"><div><b>{file.name}</b><small>{file.size} · {file.type}</small></div><button onClick={() => setFile(null)}>Remove</button></div>
-        )}
-
-        <h3 style={{ marginTop: 22 }}>3 · Shared caption</h3>
-        <p className="sub">Used everywhere a section is left empty. <button className="link" onClick={applyCaptionEverywhere}>Copy into all sections</button></p>
-        <label className="field"><span>Caption <i>{caption.length}/2200</i></span><textarea value={caption} maxLength={2200} onChange={(e) => setCaption(e.target.value)} placeholder="Write once…" /></label>
-
-        <h3 style={{ marginTop: 22 }}>4 · Per-platform details</h3>
-        <p className="sub">Each platform, exactly like its own app. Empty fields fall back to the shared caption.</p>
-        {!selected.length && <div className="banner">Select a platform above to edit its details.</div>}
-
-        {selected.includes('youtube') && (
-          <div className="card" style={{ marginTop: 10, boxShadow: 'none' }}>
-            <h3>YouTube</h3>
-            <p className="sub">Video + title + visibility, like YouTube Studio.</p>
-            <label className="field"><span>Publish to</span>
-              <select value={connFor.youtube || ''} onChange={(e) => setConnFor((m) => ({ ...m, youtube: e.target.value }))}>
-                {connsFor(connections, hidden, 'youtube').map((c) => <option key={c.id} value={c.id}>{c.account_name}</option>)}
-              </select>
-            </label>
-            <label className="field"><span>Title <i>{yt.title.length}/100</i></span><input value={yt.title} maxLength={100} onChange={(e) => setYt({ ...yt, title: e.target.value })} placeholder="Video title (required)" /></label>
-            <label className="field"><span>Description</span><textarea value={yt.description} onChange={(e) => setYt({ ...yt, description: e.target.value })} placeholder="Falls back to shared caption" /></label>
-            <label className="field"><span>Tags <i>comma separated</i></span><input value={yt.tags} onChange={(e) => setYt({ ...yt, tags: e.target.value })} placeholder="salon, bridal, mumbai" /></label>
-            <div className="row2">
-              <label className="field"><span>Visibility</span>
-                <select value={yt.privacy} onChange={(e) => setYt({ ...yt, privacy: e.target.value })}>
-                  <option value="private">Private</option>
-                  <option value="unlisted">Unlisted</option>
-                  <option value="public">Public</option>
-                </select>
-              </label>
-              <label className="field"><span>Thumbnail <i>{thumb ? thumb.name : 'auto'}</i></span>
-                <button className="ghost" style={{ marginTop: 0 }} onClick={() => thumbRef.current.click()}>{thumb ? 'Change' : 'Upload JPG/PNG ≤2MB'}</button>
-                <input ref={thumbRef} type="file" accept="image/jpeg,image/png" hidden onChange={(e) => { const f = e.target.files[0]; if (f) setThumb({ raw: f, name: f.name }); }} />
-              </label>
-            </div>
-            <button className="primary" disabled={!!busy.youtube} onClick={() => publishOne('youtube')}>{busy.youtube ? 'Publishing…' : 'Publish to YouTube'} · {sectionState('youtube')}</button>
-            {results.youtube?.state === 'failed' && <div className="alert err">{results.youtube.message}</div>}
-            {results.youtube?.url && <a href={results.youtube.url} target="_blank" rel="noreferrer" style={{ fontSize: 12 }}>View on YouTube →</a>}
-          </div>
-        )}
-
-        {selected.includes('instagram') && (
-          <div className="card" style={{ marginTop: 10, boxShadow: 'none' }}>
-            <h3>Instagram</h3>
-            <p className="sub">Photo or reel + caption.</p>
-            <label className="field"><span>Publish to</span>
-              <select value={connFor.instagram || ''} onChange={(e) => setConnFor((m) => ({ ...m, instagram: e.target.value }))}>
-                {connsFor(connections, hidden, 'instagram').map((c) => <option key={c.id} value={c.id}>{c.account_name}</option>)}
-              </select>
-            </label>
-            <label className="field"><span>Caption <i>{(ig.caption || caption).length}/2200</i></span><textarea value={ig.caption} onChange={(e) => setIg({ caption: e.target.value })} placeholder="Falls back to shared caption" /></label>
-            <button className="primary" disabled={!!busy.instagram} onClick={() => publishOne('instagram')}>{busy.instagram ? 'Publishing…' : 'Publish to Instagram'} · {sectionState('instagram')}</button>
-            {results.instagram?.state === 'failed' && <div className="alert err">{results.instagram.message}</div>}
-            {results.instagram?.url && <a href={results.instagram.url} target="_blank" rel="noreferrer" style={{ fontSize: 12 }}>View on Instagram →</a>}
-          </div>
-        )}
-
-        {selected.includes('facebook') && (
-          <div className="card" style={{ marginTop: 10, boxShadow: 'none' }}>
-            <h3>Facebook</h3>
-            <p className="sub">Message, optional link, optional media.</p>
-            <label className="field"><span>Publish to</span>
-              <select value={connFor.facebook || ''} onChange={(e) => setConnFor((m) => ({ ...m, facebook: e.target.value }))}>
-                {connsFor(connections, hidden, 'facebook').map((c) => <option key={c.id} value={c.id}>{c.account_name}</option>)}
-              </select>
-            </label>
-            <label className="field"><span>Message</span><textarea value={fb.message} onChange={(e) => setFb({ ...fb, message: e.target.value })} placeholder="Falls back to shared caption" /></label>
-            <label className="field"><span>Link <i>optional</i></span><input value={fb.link} onChange={(e) => setFb({ ...fb, link: e.target.value })} placeholder="https://…" /></label>
-            <button className="primary" disabled={!!busy.facebook} onClick={() => publishOne('facebook')}>{busy.facebook ? 'Publishing…' : 'Publish to Facebook'} · {sectionState('facebook')}</button>
-            {results.facebook?.state === 'failed' && <div className="alert err">{results.facebook.message}</div>}
-            {results.facebook?.url && <a href={results.facebook.url} target="_blank" rel="noreferrer" style={{ fontSize: 12 }}>View on Facebook →</a>}
-          </div>
-        )}
-
-        {selected.includes('x') && (
-          <div className="card" style={{ marginTop: 10, boxShadow: 'none' }}>
-            <h3>X</h3>
-            <p className="sub">280 characters + optional media.</p>
-            <label className="field"><span>Publish to</span>
-              <select value={connFor.x || ''} onChange={(e) => setConnFor((m) => ({ ...m, x: e.target.value }))}>
-                {connsFor(connections, hidden, 'x').map((c) => <option key={c.id} value={c.id}>{c.account_name}</option>)}
-              </select>
-            </label>
-            <label className="field"><span>Post <i>{xLen}/280</i></span><textarea value={x.text} maxLength={400} onChange={(e) => setX({ text: e.target.value })} placeholder="Falls back to shared caption" /></label>
-            {xLen > 280 && <div className="alert err">Too long for X — shorten it.</div>}
-            <button className="primary" disabled={!!busy.x || xLen > 280} onClick={() => publishOne('x')}>{busy.x ? 'Publishing…' : 'Publish to X'} · {sectionState('x')}</button>
-            {results.x?.state === 'failed' && <div className="alert err">{results.x.message}</div>}
-            {results.x?.url && <a href={results.x.url} target="_blank" rel="noreferrer" style={{ fontSize: 12 }}>View on X →</a>}
-          </div>
-        )}
-      </section>
-
-      <aside className="card">
-        <h3>Ready?</h3>
-        <p className="sub">{selected.length} selected</p>
-        {selected.length === 0 && <div className="banner">Pick at least one destination above.</div>}
-        {selected.map((pid) => {
+      <div className="phones" key={brandKey}>
+        {PLATFORMS.map((p) => {
+          const pid = p.id;
+          const list = listFor(pid);
+          const chosen = pick(pid);
           const r = results[pid];
+          const HINTS = { youtube: 'Video + Title required', instagram: 'Photo or reel + caption', facebook: 'Text, photo or video', x: '280 characters max' };
           return (
-            <div key={pid} className="dest">
-              <div><b style={{ fontSize: 13 }}>{pid}</b>
-                {r && r.state !== 'failed' && <span className="prog"><i style={{ width: `${r.progress || 10}%` }} /></span>}
+            <div key={pid} className={chosen ? 'phone' : 'phone off'}>
+              <div className="phone-head"><b>{p.name}</b><small>{list.length} account{list.length === 1 ? '' : 's'} · {HINTS[pid]}</small></div>
+              <div className="phone-screen">
+                <label className="field-mini"><span>Account</span>
+                  <select value={chosen} onChange={(e) => setPick(pid, e.target.value)}>
+                    {!chosen && <option value="">— pick —</option>}
+                    {list.map((c) => <option key={c.id} value={c.id}>{c.account_name}</option>)}
+                  </select>
+                </label>
+
+                <div className="media-thumb" onClick={() => inputRef.current.click()}>
+                  {mediaUrl ? <img src={mediaUrl} alt="Shared media" /> : file ? <span>{file.name}<br />{file.size}</span> : <span>Media</span>}
+                </div>
+
+                {pid === 'youtube' && <>
+                  <label className="field-mini"><span>Title · {yt.title.length}/100</span><input value={yt.title} maxLength={100} onChange={(e) => setYt({ ...yt, title: e.target.value })} placeholder="Video title (required)" /></label>
+                  <label className="field-mini"><span>Description</span><textarea value={yt.description} onChange={(e) => setYt({ ...yt, description: e.target.value })} placeholder="Shared caption if empty" /></label>
+                  <label className="field-mini"><span>Tags · comma separated</span><input value={yt.tags} onChange={(e) => setYt({ ...yt, tags: e.target.value })} placeholder="salon, bridal, mumbai" /></label>
+                  <div className="row2">
+                    <label className="field-mini"><span>Visibility</span>
+                      <select value={yt.privacy} onChange={(e) => setYt({ ...yt, privacy: e.target.value })}>
+                        <option value="private">Private</option>
+                        <option value="unlisted">Unlisted</option>
+                        <option value="public">Public</option>
+                      </select>
+                    </label>
+                    <label className="field-mini"><span>Thumbnail</span>
+                      <button className="phone-btn" style={{ padding: '9px' }} onClick={() => thumbRef.current.click()}>{thumb ? '✓ picked' : 'Upload'}</button>
+                      <input ref={thumbRef} type="file" accept="image/jpeg,image/png" hidden onChange={(e) => { const f = e.target.files[0]; if (f) setThumb({ raw: f, name: f.name }); }} />
+                    </label>
+                  </div>
+                </>}
+
+                {pid === 'instagram' && <>
+                  <label className="field-mini"><span>Caption · {(ig.caption || caption).length}/2200</span><textarea value={ig.caption} onChange={(e) => setIg({ caption: e.target.value })} placeholder="Shared caption if empty" /></label>
+                </>}
+
+                {pid === 'facebook' && <>
+                  <label className="field-mini"><span>Message</span><textarea value={fb.message} onChange={(e) => setFb({ ...fb, message: e.target.value })} placeholder="Shared caption if empty" /></label>
+                  <label className="field-mini"><span>Link · optional</span><input value={fb.link} onChange={(e) => setFb({ ...fb, link: e.target.value })} placeholder="https://…" /></label>
+                </>}
+
+                {pid === 'x' && <>
+                  <label className="field-mini"><span>Post · {xLen}/280</span><textarea value={x.text} maxLength={400} onChange={(e) => setX({ text: e.target.value })} placeholder="Shared caption if empty" /></label>
+                  {xLen > 280 && <div className="sec-err">Too long for X.</div>}
+                </>}
+
+                <div className={r?.state === 'failed' ? 'phone-status fail' : 'phone-status'}>{sectionState(pid)}</div>
+                {r?.state === 'failed' && <div className="sec-err">{r.message}</div>}
+                {r?.url && <a className="phone-link" href={r.url} target="_blank" rel="noreferrer">View post →</a>}
+                <button className="phone-btn" disabled={!!busy[pid] || (pid === 'x' && xLen > 280)} onClick={() => publishOne(pid)}>{busy[pid] ? 'Sending…' : `Publish ${p.name}`}</button>
               </div>
-              <span className={r?.state === 'failed' ? 'st fail' : 'st'}>{r ? (r.state === 'completed' ? 'Done' : r.state === 'failed' ? 'Failed' : `${r.progress || 5}%`) : 'Ready'}</span>
             </div>
           );
         })}
-        <button className="primary" disabled={!selected.length || Object.values(busy).some(Boolean)} onClick={publishAll}>Publish all</button>
-        <p className="note">Direct publish only. No scheduling, no background automation. Tokens stay encrypted in Supabase.</p>
-      </aside>
+      </div>
+      <p className="note">Direct publish only. Tokens stay encrypted in Supabase. Switch brands above to post for another client.</p>
     </div>
   );
 }
@@ -462,7 +455,7 @@ export default function App() {
         <button className={view === 'create' ? 'nav-btn active' : 'nav-btn'} onClick={() => setView('create')}>Compose</button>
         <button className={view === 'accounts' ? 'nav-btn active' : 'nav-btn'} onClick={() => setView('accounts')}>Accounts <em>{connections.length}</em></button>
         <div className="side-foot">
-          <div className="pro-card" style={{ background: '#f6f6f5', border: '1px solid #ececec', borderRadius: 12, padding: 12, fontSize: 11, color: '#6b6b6b' }}>
+          <div className="pro-card" style={{ background: '#191913', border: '1px solid #3a3524', borderRadius: 12, padding: 12, fontSize: 11, color: '#c9bfa5' }}>
             YouTube {counts.youtube || 0} · IG {counts.instagram || 0} · FB {counts.facebook || 0} · X {counts.x || 0}
           </div>
           <button className="user-chip" onClick={() => supabase?.auth.signOut()}>
