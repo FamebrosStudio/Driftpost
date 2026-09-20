@@ -1,0 +1,46 @@
+services:
+  - type: web
+    name: driftpost-api
+    runtime: node
+    plan: free
+    rootDir: server
+    buildCommand: npm install
+    startCommand: node src/index.js
+    healthCheckPath: /health
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: FRONTEND_URL
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SECRET_KEY
+        sync: false
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: GOOGLE_REDIRECT_URI
+        sync: false
+      - key: META_APP_ID
+        sync: false
+      - key: META_APP_SECRET
+        sync: false
+      - key: META_REDIRECT_URI
+        sync: false
+      - key: META_FB_SCOPES
+        value: pages_show_list,pages_read_engagement,pages_manage_posts
+      - key: META_CONFIG_ID
+        sync: false
+      - key: X_CLIENT_ID
+        sync: false
+      - key: X_CLIENT_SECRET
+        sync: false
+      - key: X_REDIRECT_URI
+        sync: false
+      - key: TOKEN_ENCRYPTION_KEY
+        sync: false
+      - key: STATE_SIGNING_SECRET
+        sync: false
+      - key: MEDIA_BUCKET
+        value: driftpost-media
