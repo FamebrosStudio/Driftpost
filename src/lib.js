@@ -10,6 +10,7 @@ export const PLATFORMS = [
   { id: 'youtube', name: 'YouTube', hint: 'Video + title required' },
   { id: 'instagram', name: 'Instagram', hint: 'Photo or reel + caption' },
   { id: 'facebook', name: 'Facebook', hint: 'Text, photo or video' },
+  { id: 'x', name: 'X', hint: '280 characters max' },
 ];
 
 export async function api(path, token, options = {}) {

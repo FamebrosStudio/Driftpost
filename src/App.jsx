@@ -75,6 +75,9 @@ function Composer({ session, connections, reload }) {
   const [results, setResults] = useState({});
   const inputRef = useRef();
 
+  const xText = `${caption}`.trim();
+  const xLen = Array.from(xText).length;
+
   const pickFile = (f) => {
     if (!f) return;
     setFile({ raw: f, name: f.name, size: `${(f.size / 1024 / 1024).toFixed(1)} MB`, type: f.type });
@@ -185,6 +188,11 @@ function Composer({ session, connections, reload }) {
           <label className="field"><span>Title <i>{title.length}/100</i></span><input value={title} maxLength={100} onChange={(e) => setTitle(e.target.value)} placeholder="Video title" /></label>
         )}
         <label className="field"><span>Caption <i>{caption.length}/2200</i></span><textarea value={caption} maxLength={2200} onChange={(e) => setCaption(e.target.value)} placeholder="Write once…" /></label>
+        {selected.includes('x') && (
+          <div className="banner" style={xLen > 280 ? { borderColor: '#eec', background: '#fff5f5' } : undefined}>
+            X post length: {xLen}/280{xLen > 280 ? ' — too long, shorten it before publishing' : ''}
+          </div>
+        )}
         {selected.includes('youtube') && (
           <div className="row2">
             <label className="field"><span>Visibility</span>

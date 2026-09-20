@@ -8,10 +8,12 @@ import os from 'node:os';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { createClient } from '@supabase/supabase-js';
-import { encryptJson, signState, verifyState } from './crypto.js';
+import { decryptJson, encryptJson, signState, verifyState } from './crypto.js';
 import { exchangeGoogleCode, getYouTubeChannel, youtubeAuthorizationUrl } from './google.js';
 import { uploadVideoResumable, validAccessToken } from './youtube-upload.js';
 import { exchangeMetaCode, getMetaPages, longLivedToken, metaAuthorizationUrl, publishFacebook, publishInstagram } from './meta.js';
+import { createPkcePair, exchangeXCode, getXUser, xAuthorizationUrl } from './x.js';
+import { createXPost, uploadXMedia, validXAccessToken } from './x-publish.js';
 
 const required = ['FRONTEND_URL', 'SUPABASE_URL', 'SUPABASE_SECRET_KEY', 'TOKEN_ENCRYPTION_KEY', 'STATE_SIGNING_SECRET'];
 const missing = required.filter((n) => !process.env[n]);
@@ -129,13 +131,52 @@ app.get('/api/oauth/meta/callback', async (req, res) => {
   res.redirect(back.toString());
 });
 
-// --- Unified publish: youtube | facebook | instagram ---
+// --- OAuth: X ---
+app.post('/api/oauth/x/start', requireUser, (req, res) => {
+  if (!process.env.X_CLIENT_ID || !process.env.X_CLIENT_SECRET || !process.env.X_REDIRECT_URI) {
+    return res.status(503).json({ error: 'X OAuth is not configured yet' });
+  }
+  const pkce = createPkcePair();
+  const state = signState({
+    userId: req.user.id,
+    nonce: crypto.randomUUID(),
+    pkce: encryptJson({ verifier: pkce.verifier }),
+    exp: Date.now() + 10 * 60 * 1000,
+  });
+  res.json({ url: xAuthorizationUrl(state, pkce.challenge) });
+});
+
+app.get('/api/oauth/x/callback', async (req, res) => {
+  const back = new URL(process.env.FRONTEND_URL);
+  try {
+    if (!process.env.X_CLIENT_ID || !process.env.X_CLIENT_SECRET || !process.env.X_REDIRECT_URI) {
+      throw new Error('X OAuth is not configured yet');
+    }
+    if (req.query.error) throw new Error(String(req.query.error_description || req.query.error));
+    const state = verifyState(req.query.state);
+    const { verifier } = decryptJson(state.pkce);
+    const tokens = await exchangeXCode(String(req.query.code || ''), verifier);
+    const account = await getXUser(tokens.access_token);
+    const { error } = await supabase.from('platform_connections').upsert({
+      user_id: state.userId, platform: 'x', platform_account_id: account.id,
+      account_name: account.name, avatar_url: account.avatar_url,
+      encrypted_tokens: encryptJson({ access_token: tokens.access_token, refresh_token: tokens.refresh_token }),
+      token_expires_at: tokens.expires_in ? new Date(Date.now() + tokens.expires_in * 1000).toISOString() : null,
+      updated_at: new Date().toISOString(),
+    }, { onConflict: 'user_id,platform,platform_account_id' });
+    if (error) throw error;
+    back.searchParams.set('connected', 'x');
+  } catch (e) { back.searchParams.set('oauth_error', e.message); }
+  res.redirect(back.toString());
+});
+
+// --- Unified publish: youtube | facebook | instagram | x ---
 app.post('/api/publish', requireUser, upload.single('media'), async (req, res) => {
   const platform = String(req.body.platform || '');
   const connectionId = String(req.body.connection_id || '');
-  if (!['youtube', 'facebook', 'instagram'].includes(platform)) {
+  if (!['youtube', 'facebook', 'instagram', 'x'].includes(platform)) {
     if (req.file) await fs.unlink(req.file.path).catch(() => {});
-    return res.status(400).json({ error: 'Pick YouTube, Instagram or Facebook' });
+    return res.status(400).json({ error: 'Pick YouTube, Instagram, Facebook or X' });
   }
   const { data: conn, error } = await supabase.from('platform_connections')
     .select('*').eq('id', connectionId).eq('user_id', req.user.id).eq('platform', platform).maybeSingle();
@@ -164,6 +205,22 @@ async function runPublish(job, conn, file, body, userId) {
         onProgress: (p) => { job.progress = p; },
       });
       job.url = `https://www.youtube.com/watch?v=${video.id}`;
+    } else if (job.platform === 'x') {
+      const xText = String(body.text || '').trim();
+      if (!xText) throw new Error('Write some text for X');
+      if (Array.from(xText).length > 280) throw new Error('X allows 280 characters or fewer');
+      job.state = 'uploading'; job.progress = 20; job.message = 'Preparing X post';
+      const token = await validXAccessToken(supabase, conn);
+      let mediaId = null;
+      if (file) {
+        const isImage = file.mimetype.startsWith('image/');
+        const isVideo = file.mimetype.startsWith('video/');
+        if (!isImage && !isVideo) throw new Error('X supports images, GIFs and video only');
+        mediaId = await uploadXMedia(token, file, (p) => { job.progress = Math.min(90, Math.round(p * 0.9)); });
+      }
+      job.state = 'publishing'; job.progress = 95; job.message = 'Posting to X';
+      const post = await createXPost(token, xText, mediaId);
+      job.url = `https://x.com/i/status/${post.id}`;
     } else {
       const { decryptJson: dec } = await import('./crypto.js');
       const tokens = dec(conn.encrypted_tokens);
