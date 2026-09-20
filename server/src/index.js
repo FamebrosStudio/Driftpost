@@ -111,8 +111,14 @@ app.get('/api/oauth/meta/callback', async (req, res) => {
     const long = await longLivedToken(short.access_token);
     const userToken = long.access_token;
     const pages = await getMetaPages(userToken);
+    try {
+      const permRes = await fetch(`https://graph.facebook.com/v21.0/me/permissions?access_token=${encodeURIComponent(userToken)}`);
+      const permJson = await permRes.json();
+      const granted = (permJson.data || []).filter((p) => p.status === 'granted').map((p) => p.permission);
+      console.log(`Meta debug: ${pages.length} pages, IG-linked: ${pages.filter((p) => p.instagram_business_account?.id).length}, granted: ${granted.join(',')}`);
+    } catch { console.log(`Meta debug: ${pages.length} pages`); }
     if (!pages.length) throw new Error('No Facebook Page found. Create a Page and link Instagram in Page Settings first.');
-    for (const page of pages.slice(0, 5)) {
+    for (const page of pages.slice(0, 50)) {
       await supabase.from('platform_connections').upsert({
         user_id: state.userId, platform: 'facebook', platform_account_id: page.id,
         account_name: page.name, avatar_url: null,
