@@ -302,7 +302,7 @@ function Composer({ session, connections, reload }) {
                   {xLen > 280 && <div className="sec-err">Too long for X.</div>}
                 </>}
 
-                <div className={r?.state === 'failed' ? 'phone-status fail' : 'phone-status'}>{sectionState(pid)}</div>
+                <div className={r?.state === 'failed' ? 'phone-status fail' : 'phone-status'}>{secState(pid)}</div>
                 {r?.state === 'failed' && <div className="sec-err">{r.message}</div>}
                 {r?.url && <a className="phone-link" href={r.url} target="_blank" rel="noreferrer">View post →</a>}
                 <button className="phone-btn" disabled={!!busy[pid] || (pid === 'x' && xLen > 280)} onClick={() => publishOne(pid)}>{busy[pid] ? 'Sending…' : `Publish ${p.name}`}</button>
