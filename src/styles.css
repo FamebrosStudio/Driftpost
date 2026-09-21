@@ -176,7 +176,7 @@ button.brand { background: none; border: 0; width: 100%; text-align: left; font:
 .ck input:checked ~ svg .path { stroke-dasharray: 70.5096664428711 9999999; stroke-dashoffset: -262.2723388671875; }
 
 /* shared */
-.share-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+.share-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-bottom: 14px; }
 .drop { border: 1px dashed var(--line-hard); background: var(--panel); padding: 22px; text-align: center; color: var(--muted); font-size: 13px; cursor: pointer; transition: border-color 0.2s ease; }
 .drop:hover { border-color: var(--ink); }
 .drop b { color: var(--ink); display: block; margin-bottom: 4px; font-size: 12px; font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.6px; }

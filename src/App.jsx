@@ -417,6 +417,9 @@ function Composer({ session, connections, reload }) {
   const [x, setX] = useState({ text: '', reply: 'everyone', pollOn: false, opts: ['', '', '', ''], mins: '1440' });
   const [busy, setBusy] = useState({});
   const [enabled, setEnabled] = useState({ youtube: true, instagram: true, facebook: true, x: true });
+  const [aiBrief, setAiBrief] = useState('');
+  const [aiBusy, setAiBusy] = useState(false);
+  const [aiMsg, setAiMsg] = useState('');
   const [results, setResults] = useState({});
   const inputRef = useRef();
   const thumbRef = useRef();
@@ -542,6 +545,29 @@ function Composer({ session, connections, reload }) {
     setYt((v) => ({ ...v, description: caption }));
   };
 
+  const writeWithAi = async () => {
+    if (aiBusy || !aiBrief.trim()) return;
+    setAiBusy(true); setAiMsg('');
+    try {
+      const data = await api('/api/ai/captions', session.access_token, {
+        method: 'POST',
+        body: JSON.stringify({ summary: aiBrief }),
+      });
+      const c = data.captions;
+      setYt((v) => ({ ...v, title: c.youtube.title || v.title, description: c.youtube.description || v.description, tags: c.youtube.tags.join(', ') || v.tags }));
+      setIg((v) => ({ ...v, caption: c.instagram.caption || v.caption }));
+      setCaption((prev) => prev || c.instagram.caption || '');
+      setFb((v) => ({ ...v, message: c.facebook.message || v.message }));
+      setX((v) => ({ ...v, text: c.x.text.slice(0, 280) || v.text }));
+      const tags = [...(c.youtube.tags || []), ...(c.instagram.hashtags || [])].filter(Boolean);
+      if (tags.length) setYt((v) => ({ ...v, tags: v.tags || tags.slice(0, 8).join(', ') }));
+      setAiMsg('Written for all 4 platforms — review each phone, then publish.');
+    } catch (e) {
+      setAiMsg(e.message);
+    }
+    setAiBusy(false);
+  };
+
   const secState = (pid) => {
     const r = results[pid];
     if (!r) return 'Ready';
@@ -572,6 +598,14 @@ function Composer({ session, connections, reload }) {
           <h3>Shared caption</h3>
           <p className="sub">Writes itself into every empty box below. <button className="link" onClick={applyCaptionEverywhere}>Fill all now</button></p>
           <label className="field" style={{ marginBottom: 0 }}><span>Caption <i>{caption.length}/2200</i></span><textarea value={caption} maxLength={2200} onChange={(e) => setCaption(e.target.value)} placeholder="Write once…" /></label>
+        </div>
+        <div className="card">
+          <h3>✨ AI writer</h3>
+          <p className="sub">Short summary in → 4 platform-ready captions out, with titles + hashtags.</p>
+          <label className="field" style={{ marginBottom: 0 }}><span>Post summary <i>what is this post about?</i></span><textarea value={aiBrief} maxLength={500} onChange={(e) => setAiBrief(e.target.value)} placeholder="e.g. bridal haircut reel for Velvet Salon in Mumbai" style={{ minHeight: 70 }} /></label>
+          {aiMsg && <div className={/written for all/i.test(aiMsg) ? 'banner' : 'alert err'} style={{ marginTop: 10 }}>{aiMsg}</div>}
+          <button className="skew-btn grad" style={{ width: '100%', marginTop: 10 }} disabled={aiBusy || !aiBrief.trim()} onClick={writeWithAi}><span>{aiBusy ? 'Writing…' : '✨ Write captions'}</span></button>
+          {aiBusy && <div className="progress-loader" style={{ marginTop: 10 }}><div className="progress" /></div>}
         </div>
       </div>
 

@@ -14,6 +14,7 @@ import { uploadVideoResumable, validAccessToken } from './youtube-upload.js';
 import { exchangeMetaCode, getMetaPages, longLivedToken, metaAuthorizationUrl, metaBusinessLoginUrl, publishFacebook, publishInstagram } from './meta.js';
 import { createPkcePair, exchangeXCode, getXUser, xAuthorizationUrl } from './x.js';
 import { createXPost, uploadXMedia, validXAccessToken } from './x-publish.js';
+import { generateCaptions } from './ai.js';
 
 const required = ['FRONTEND_URL', 'SUPABASE_URL', 'SUPABASE_SECRET_KEY', 'TOKEN_ENCRYPTION_KEY', 'STATE_SIGNING_SECRET'];
 const missing = required.filter((n) => !process.env[n]);
@@ -63,6 +64,18 @@ app.get('/api/jobs/:id', requireUser, (req, res) => {
   const j = jobs.get(req.params.id);
   if (!j || j.userId !== req.user.id) return res.status(404).json({ error: 'Job not found' });
   res.json({ job: j });
+});
+
+// --- AI captions (Grok, server-side key) ---
+app.post('/api/ai/captions', requireUser, async (req, res) => {
+  try {
+    const out = await generateCaptions(req.body?.summary);
+    res.json({ captions: out });
+  } catch (e) {
+    const msg = String(e.message || 'AI failed');
+    const code = /credits/i.test(msg) ? 402 : /configured/i.test(msg) ? 503 : 500;
+    res.status(code).json({ error: msg });
+  }
 });
 
 // --- OAuth: YouTube (Google) ---
