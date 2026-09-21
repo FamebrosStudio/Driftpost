@@ -399,6 +399,16 @@ html, body { overflow-x: clip; max-width: 100%; }
   .marquee-in, .scroll-hint { animation: none !important; }
 }
 
+/* zig-zag scroll path: pure offsets, content untouched */
+@media (min-width: 901px) {
+  .zig-row:nth-child(odd) { transform: translateX(-46px); }
+  .zig-row:nth-child(even) { transform: translateX(46px); }
+  .hstrip-wrap { transform: translateX(30px); }
+  .marquee { transform: translateX(-30px); }
+  .land-foot { transform: translateX(24px); }
+  .landing-in { transform: translateX(-18px); }
+}
+
 @media (max-width: 1200px) { .phones { grid-template-columns: repeat(2, 1fr); } .share-row { grid-template-columns: 1fr; } }
 @media (max-width: 900px) {
   .shell { grid-template-columns: 1fr; }

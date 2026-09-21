@@ -163,7 +163,7 @@ function Landing({ onEnter, session }) {
   );
 }
 
-function Auth({ mode, setMode, onBack }) {
+function Auth({ mode, setMode, onBack, markFresh }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [busy, setBusy] = useState(false);
@@ -179,12 +179,14 @@ function Auth({ mode, setMode, onBack }) {
       : await supabase.auth.signUp({ email, password, options: { emailRedirectTo: window.location.origin } });
     if (res.error) setError(res.error.message);
     else if (mode === 'signup' && !res.data.session) setInfo('Check your inbox to confirm email, then sign in.');
+    else markFresh?.();
     setBusy(false);
   };
 
   const google = async () => {
-    setBusy(true); setError('');
+    setBusy(true); setError(''); setInfo('');
     if (!supabase) { setError('Supabase is not configured.'); setBusy(false); return; }
+    markFresh?.();
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google', options: { redirectTo: window.location.origin, queryParams: { prompt: 'select_account' } }
     });
@@ -813,7 +815,8 @@ export default function App() {
   const [entry, setEntry] = useState('landing');
   const [entered, setEntered] = useState(false);
   const [tour, setTour] = useState(null); // null | 'ask' | number (step index)
-  const prevSession = useRef(null);
+  const FRESH_KEY = 'driftpost-fresh-login';
+  const markFreshLogin = () => { try { sessionStorage.setItem(FRESH_KEY, '1'); } catch {} };
   const [view, setView] = useState('create');
   const [navOpen, setNavOpen] = useState(false);
   const [userOpen, setUserOpen] = useState(false);
@@ -833,11 +836,16 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    // Fresh sign-in (same Gmail) skips straight into the console.
-    // A restored session on page open starts at the landing page.
-    if (session && !prevSession.current) setEntered(true);
+    // Every page open starts on the landing page — even logged in.
+    // Only a fresh sign-in inside this visit skips straight to the console
+    // (the Auth screen marks it; restored sessions never carry the mark).
+    try {
+      if (session && sessionStorage.getItem(FRESH_KEY)) {
+        sessionStorage.removeItem(FRESH_KEY);
+        setEntered(true);
+      }
+    } catch {}
     if (!session) { setEntered(false); setTour(null); }
-    prevSession.current = session;
   }, [session]);
 
   useEffect(() => {
@@ -864,7 +872,7 @@ export default function App() {
   }, [session, entry, view]);
 
   if (loading) return <div className="loader-wrap"><div className="bounce"><span className="circle" /><span className="circle" /><span className="circle" /><span className="shadow" /><span className="shadow" /><span className="shadow" /></div></div>;
-  if (!session) return entry === 'landing' ? <Landing session={false} onEnter={() => setEntry('auth')} /> : <Auth mode={mode} setMode={setMode} onBack={() => setEntry('landing')} />;
+  if (!session) return entry === 'landing' ? <Landing session={false} onEnter={() => setEntry('auth')} /> : <Auth mode={mode} setMode={setMode} onBack={() => setEntry('landing')} markFresh={markFreshLogin} />;
   if (!entered) return <Landing session onEnter={() => setEntered(true)} />;
 
   if (!['create', 'accounts'].includes(view)) {
