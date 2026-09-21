@@ -51,11 +51,13 @@ button { cursor: pointer; }
 ::placeholder { color: var(--faint); }
 ::selection { background: var(--ink); color: var(--bg); }
 
-/* logos swap with theme */
+/* real logo swaps with console theme (landing always shows the white lockup) */
 .logo-img { display: block; }
 .logo-l { display: none; }
 [data-theme="light"] .logo-d { display: none; }
 [data-theme="light"] .logo-l { display: block; }
+.landing .logo-l { display: none !important; }
+.landing .logo-d { display: block !important; }
 .brand img.logo-img { height: 30px; width: auto; }
 .auth-card img.logo-img { height: 42px; width: auto; margin: 0 auto; }
 .landing img.logo-img { height: 54px; width: auto; }
@@ -85,10 +87,11 @@ button.brand { background: none; border: 0; width: 100%; text-align: left; font:
 .swatch.sw-auto { background: linear-gradient(135deg, #000 50%, #fff 50%); }
 .swatch.sw-dark { background: #000; border-color: #555; }
 .swatch.sw-light { background: #fff; }
+[data-theme="light"] .swatch.sw-dark { border-color: #999; }
 .sw-name { font-size: 10px; font-family: var(--mono); color: var(--muted); margin-left: auto; }
 
 /* glider nav */
-.radio-container { --main-color: var(--ink); --main-color-opacity: transparent; --total-radio: 2; display: flex; flex-direction: column; position: relative; padding-left: 0.5rem; }
+.radio-container { --total-radio: 2; display: flex; flex-direction: column; position: relative; padding-left: 0.5rem; }
 .radio-container input { cursor: pointer; appearance: none; position: absolute; opacity: 0; }
 .radio-container .glider-container { position: absolute; left: 0; top: 0; bottom: 0; background: var(--line); width: 1px; }
 .radio-container .glider-container .glider { position: relative; height: calc(100% / var(--total-radio)); width: 2px; margin-left: -0.5px; background: var(--ink); transition: transform 0.4s cubic-bezier(0.37, 1.95, 0.66, 0.56); }
@@ -245,7 +248,7 @@ details.adv[open] > summary::before { content: "– "; }
 
 /* auth form */
 .auth-wrap { min-height: 100vh; display: grid; place-items: center; padding: 24px; background: var(--bg); }
-.auth-card { width: min(100%, 360px); background: var(--panel); border: 1px solid var(--line); border-top: 3px solid var(--ink); padding: 32px; }
+.auth-card { width: min(100%, 380px); background: var(--panel); border: 1px solid var(--line); border-top: 3px solid var(--ink); padding: 32px; }
 .auth-card h1 { margin: 12px 0 6px; font-size: 24px; letter-spacing: -0.5px; }
 .auth-card p { margin: 0 0 18px; font-size: 13px; color: var(--muted); line-height: 1.5; }
 .login-form { display: flex; flex-direction: column; gap: 14px; width: 100%; }
@@ -257,13 +260,13 @@ details.adv[open] > summary::before { content: "– "; }
 
 /* landing */
 .landing { position: relative; min-height: 100vh; overflow: hidden; background: #000; display: flex; flex-direction: column; }
-.rain { position: absolute; inset: 0; --c: #888; background-color: #000; background-image: radial-gradient(4px 100px at 0px 235px, var(--c), #0000), radial-gradient(4px 100px at 300px 235px, var(--c), #0000), radial-gradient(1.5px 1.5px at 150px 117.5px, var(--c) 100%, #0000 150%), radial-gradient(4px 100px at 0px 150px, var(--c), #0000), radial-gradient(4px 100px at 300px 150px, var(--c), #0000), radial-gradient(1.5px 1.5px at 150px 75px, var(--c) 100%, #0000 150%); background-size: 300px 235px, 300px 235px, 300px 235px, 300px 150px, 300px 150px, 300px 150px; animation: rain-fall 60s linear infinite; }
+.rain { position: absolute; inset: 0; --c: #888888; background-color: #000; background-image: radial-gradient(4px 100px at 0px 235px, var(--c), #0000), radial-gradient(4px 100px at 300px 235px, var(--c), #0000), radial-gradient(1.5px 1.5px at 150px 117.5px, var(--c) 100%, #0000 150%), radial-gradient(4px 100px at 0px 150px, var(--c), #0000), radial-gradient(4px 100px at 300px 150px, var(--c), #0000), radial-gradient(1.5px 1.5px at 150px 75px, var(--c) 100%, #0000 150%); background-size: 300px 235px, 300px 235px, 300px 235px, 300px 150px, 300px 150px, 300px 150px; animation: rain-fall 60s linear infinite; }
 .rain::after { content: ""; position: absolute; inset: 0; background-image: radial-gradient(circle at 50% 50%, #0000 0, #0000 2px, hsl(0 0 4%) 2px); background-size: 8px 8px; }
 @keyframes rain-fall { to { background-position: 0 3000px, 3px 3000px, 151.5px 3237.5px, 50px 3016px, 53px 3016px, 201.5px 3091px; } }
 .landing-in { position: relative; z-index: 2; flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 60px 20px; gap: 18px; color: #fff; }
 .landing-kicker { font-family: var(--mono); font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: #fff; border: 1px solid #ffffff44; padding: 6px 14px; background: #00000088; }
 .landing h1 { font-size: clamp(38px, 7vw, 76px); margin: 0; letter-spacing: -2px; line-height: 1.02; color: #fff; }
-.landing h1 em { font-style: normal; color: #fff; text-decoration: underline; text-decoration-thickness: 4px; text-underline-offset: 8px; }
+.landing h1 em { font-style: normal; text-decoration: underline; text-decoration-thickness: 4px; text-underline-offset: 8px; }
 .landing p { max-width: 520px; color: #c9c9c9; font-size: 14px; line-height: 1.7; margin: 0; }
 .landing-cta { display: flex; gap: 14px; margin-top: 8px; flex-wrap: wrap; justify-content: center; }
 .landing-cta .skew-btn { background: #fff; color: #000; }
@@ -273,7 +276,7 @@ details.adv[open] > summary::before { content: "– "; }
 .landing-stats b { color: #fff; font-size: 16px; display: block; }
 .social-dock { display: flex; justify-content: center; align-items: center; margin-top: 4px; }
 .social-dock .icon-content { margin: 0 8px; position: relative; }
-.social-dock .icon-content .tooltip { position: absolute; top: -30px; left: 50%; transform: translateX(-50%); color: #fff; background: #000; border: 1px solid #333; padding: 6px 10px; font-size: 12px; font-family: var(--mono); opacity: 0; visibility: hidden; transition: all 0.3s ease; white-space: nowrap; }
+.social-dock .icon-content .tooltip { position: absolute; top: -30px; left: 50%; transform: translateX(-50%); color: #fff; background: #000; border: 1px solid #555; padding: 6px 10px; font-size: 12px; font-family: var(--mono); opacity: 0; visibility: hidden; transition: all 0.3s ease; white-space: nowrap; }
 .social-dock .icon-content:hover .tooltip { opacity: 1; visibility: visible; top: -46px; }
 .social-dock .icon-content a { position: relative; overflow: hidden; display: flex; justify-content: center; align-items: center; width: 46px; height: 46px; border-radius: 50% !important; color: #000; background: #fff; transition: all 0.3s ease-in-out; text-decoration: none; }
 .social-dock .icon-content a svg { position: relative; z-index: 1; width: 22px; height: 22px; }
@@ -328,6 +331,12 @@ details.adv[open] > summary::before { content: "– "; }
 .dd-item.sel { background: var(--hover); box-shadow: inset 2px 0 0 var(--ink); }
 .dd-item .star { color: var(--ink); margin-left: auto; font-size: 10px; font-family: var(--mono); }
 .dd-backdrop { position: fixed; inset: 0; z-index: 20; }
+
+/* footer */
+.foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; border-top: 1px solid var(--line); padding: 14px 28px 22px; font-family: var(--mono); font-size: 11px; color: var(--faint); flex-wrap: wrap; }
+.foot-links { display: flex; gap: 16px; }
+.foot-links a { color: var(--muted); text-decoration: none; }
+.foot-links a:hover { color: var(--ink); text-decoration: underline; }
 
 /* overflow guards */
 html, body { overflow-x: clip; max-width: 100%; }

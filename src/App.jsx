@@ -65,6 +65,8 @@ function Landing({ onEnter, session }) {
     <div className="landing">
       <div className="rain" />
       <div className="landing-in">
+        <img className="logo-img logo-d" src="/logo-dark.png" alt="Driftpost" />
+        <img className="logo-img logo-l" src="/logo-light.png" alt="Driftpost" />
         <div className="landing-kicker">Driftpost — publish everywhere</div>
         <h1>One composer.<br /><em>Every platform.</em></h1>
         <p>Pick a brand. Drop one file. Tune each platform exactly like its own app — then fire YouTube, Instagram, Facebook and X together.</p>
@@ -120,7 +122,7 @@ function Auth({ mode, setMode, onBack }) {
   return (
     <div className="auth-wrap">
       <div className="auth-card">
-        <div className="brand"><span className="brand-mark">〜</span>Driftpost</div>
+        <div className="brand"><img className="logo-img logo-d" src="/logo-dark.png" alt="Driftpost" /><img className="logo-img logo-l" src="/logo-light.png" alt="Driftpost" /></div>
         <h1>{mode === 'login' ? 'Welcome back.' : 'Start posting.'}</h1>
         <p>One calm composer for YouTube, Instagram, Facebook and X. No noise.</p>
         <form className="login-form" onSubmit={submit}>
@@ -817,7 +819,7 @@ export default function App() {
       )}
       {typeof tour === 'number' && <TourOverlay step={tour} setStep={setTour} onDone={finishTour} />}
       <aside className={navOpen ? 'side open' : 'side'}>
-        <button className="brand brand-btn" onClick={() => { setView('create'); setNavOpen(false); }} title="Driftpost home"><span className="brand-mark">〜</span>Driftpost</button>
+        <button className="brand brand-btn" onClick={() => { setView('create'); setNavOpen(false); }} title="Driftpost home"><img className="logo-img logo-d" src="/logo-dark.png" alt="Driftpost" /><img className="logo-img logo-l" src="/logo-light.png" alt="Driftpost" /></button>
         <div className="radio-container">
           <input type="radio" name="side-nav" id="nav-compose" checked={view === 'create'} onChange={() => { setView('create'); setNavOpen(false); }} />
           <label htmlFor="nav-compose">Compose</label>
@@ -842,8 +844,9 @@ export default function App() {
                 <div className="um-label">Website colors</div>
                 <div className="swatches">
                   {THEMES.map((t) => (
-                    <button key={t.id} title={t.label} className={theme === t.id ? `swatch ${t.id} sel` : `swatch ${t.id}`} onClick={() => setTheme(t.id)} />
+                    <button key={t.id} title={t.label} className={theme === t.id ? `swatch sw-${t.id} sel` : `swatch sw-${t.id}`} onClick={() => setTheme(t.id)} />
                   ))}
+                  <span className="sw-name">{THEMES.find((t) => t.id === theme)?.label}</span>
                 </div>
                 <button onClick={() => { try { navigator.clipboard.writeText(session.user.email); setCopyMsg('Email copied'); } catch { setCopyMsg('Copy failed'); } setTimeout(() => setCopyMsg(''), 1500); }}>⧉ Copy email{copyMsg ? ` — ${copyMsg}` : ''}</button>
                 <button onClick={async () => { await supabase?.auth.signOut(); setUserOpen(false); setEntry('auth'); }}>⇄ Switch account</button>
