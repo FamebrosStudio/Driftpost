@@ -13,6 +13,24 @@ function useSession() {
   return { session, loading };
 }
 
+const THEMES = [
+  { id: 'nebula', label: 'Nebula' },
+  { id: 'venom', label: 'Venom' },
+  { id: 'sunset', label: 'Sunset' },
+  { id: 'royal', label: 'Royal' },
+  { id: 'mono', label: 'Mono' },
+];
+
+function useTheme() {
+  const [theme, setTheme] = useState(() => localStorage.getItem('driftpost-theme') || 'nebula');
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme === 'nebula' ? '' : theme;
+    if (theme === 'nebula') document.documentElement.removeAttribute('data-theme');
+    localStorage.setItem('driftpost-theme', theme);
+  }, [theme]);
+  return [theme, setTheme];
+}
+
 function Landing({ onEnter }) {
   const dock = [
     { id: 'youtube', label: 'YT', tip: 'YouTube — video, titles, tags', href: 'https://www.youtube.com' },
@@ -564,6 +582,9 @@ export default function App() {
   const [entry, setEntry] = useState('landing');
   const [view, setView] = useState('create');
   const [navOpen, setNavOpen] = useState(false);
+  const [userOpen, setUserOpen] = useState(false);
+  const [theme, setTheme] = useTheme();
+  const [copyMsg, setCopyMsg] = useState('');
   const [connections, setConnections] = useState([]);
   const [online, setOnline] = useState(null);
 
@@ -615,10 +636,27 @@ export default function App() {
           <div className="pro-card" style={{ background: '#101838', border: '1px solid #2c3d66', padding: 12, fontSize: 11, color: '#aeb9d8' }}>
             YouTube {counts.youtube || 0} · IG {counts.instagram || 0} · FB {counts.facebook || 0} · X {counts.x || 0}
           </div>
-          <div className="user-chip">
+          <div className="user-chip" onClick={() => setUserOpen((o) => !o)} title="Account & theme">
             <span className="avatar">{(session.user.email || '?')[0].toUpperCase()}</span>
-            <span><b style={{ fontSize: 12 }}>{session.user.email?.split('@')[0]}</b><small><a className="phone-link" href={`mailto:${session.user.email}`}>{session.user.email}</a></small></span>
-            <button className="mini" style={{ marginLeft: 'auto' }} title="Sign out" onClick={() => supabase?.auth.signOut()}>⏻</button>
+            <span><b style={{ fontSize: 12 }}>{session.user.email?.split('@')[0]}</b><small>{session.user.email}</small></span>
+            {userOpen && <>
+              <span className="dd-backdrop" onClick={(e) => { e.stopPropagation(); setUserOpen(false); }} />
+              <span className="user-menu" onClick={(e) => e.stopPropagation()}>
+                <span className="um-head">
+                  <span className="avatar">{(session.user.email || '?')[0].toUpperCase()}</span>
+                  <span><b>{session.user.email?.split('@')[0]}</b><small>{session.user.email}</small></span>
+                </span>
+                <div className="um-label">Website colors</div>
+                <div className="swatches">
+                  {THEMES.map((t) => (
+                    <button key={t.id} title={t.label} className={theme === t.id ? `swatch ${t.id} sel` : `swatch ${t.id}`} onClick={() => setTheme(t.id)} />
+                  ))}
+                </div>
+                <button onClick={() => { try { navigator.clipboard.writeText(session.user.email); setCopyMsg('Email copied'); } catch { setCopyMsg('Copy failed'); } setTimeout(() => setCopyMsg(''), 1500); }}>⧉ Copy email{copyMsg ? ` — ${copyMsg}` : ''}</button>
+                <button onClick={async () => { await supabase?.auth.signOut(); setUserOpen(false); setEntry('auth'); }}>⇄ Switch account</button>
+                <button onClick={async () => { await supabase?.auth.signOut(); setUserOpen(false); setEntry('landing'); }}>⏻ Sign out</button>
+              </span>
+            </>}
           </div>
         </div>
       </aside>
