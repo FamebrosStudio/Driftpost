@@ -1,7 +1,7 @@
 // Meta (Facebook + Instagram) via Graph API. No X/Twitter anywhere in Driftpost.
 const GRAPH = 'https://graph.facebook.com/v21.0';
 // Facebook connect uses regular Login with Page scopes (no review needed in dev).
-const FB_SCOPES = process.env.META_FB_SCOPES || 'pages_show_list,pages_read_engagement,pages_manage_posts';
+const FB_SCOPES = process.env.META_FB_SCOPES || 'pages_show_list,pages_read_engagement,pages_manage_posts,business_management';
 // Instagram connect uses Facebook Login for Business (config_id). Regular Login
 // rejects instagram_business_* scopes with "Invalid Scopes".
 const SCOPES = FB_SCOPES;
@@ -60,18 +60,43 @@ export async function longLivedToken(shortToken) {
 }
 
 export async function getMetaPages(userToken) {
-  // Follow pagination: Business Login grants can span multiple result pages,
-  // and any cut-off here silently drops brands. Cap at 5 fetches (500 max).
+  // 1) Personal assets.
+  // 2) Portfolio-owned assets: /me/accounts never lists pages owned by a
+  //    business portfolio (e.g. skfurnituremarket), even when the user owns
+  //    that portfolio — so walk /me/businesses -> owned_pages as fallback.
+  const auth = { headers: { Authorization: `Bearer ${userToken}` } };
   const all = [];
   let url = `${GRAPH}/me/accounts?fields=id,name,tasks,access_token,instagram_business_account{id,username}&limit=100`;
   for (let i = 0; i < 5 && url; i++) {
-    const res = await fetch(url, { headers: { Authorization: `Bearer ${userToken}` } });
+    const res = await fetch(url, auth);
     const data = await res.json();
     if (!res.ok) throw new Error(data.error?.message || 'Unable to list Facebook Pages');
     all.push(...(data.data || []));
     url = data.paging?.next || null;
   }
-  // De-duplicate by page id (overlapping pages can repeat across fetches).
+  try {
+    const bRes = await fetch(`${GRAPH}/me/businesses?fields=id,name&limit=50`, auth);
+    const bData = await bRes.json();
+    if (!bRes.ok) throw new Error('no-business-access');
+    for (const biz of (bData.data || []).slice(0, 20)) {
+      try {
+        const pRes = await fetch(`${GRAPH}/${biz.id}/owned_pages?fields=id,name&limit=100`, auth);
+        const pData = await pRes.json();
+        if (!pRes.ok) continue;
+        for (const p of (pData.data || [])) {
+          if (all.some((x) => x.id === p.id)) continue;
+          try {
+            const dRes = await fetch(`${GRAPH}/${p.id}?fields=access_token,instagram_business_account{id,username}`, auth);
+            const d = await dRes.json();
+            if (dRes.ok && d.access_token) {
+              all.push({ id: p.id, name: p.name, access_token: d.access_token, instagram_business_account: d.instagram_business_account || null });
+            }
+          } catch { /* skip one page, keep the rest */ }
+        }
+      } catch { /* skip one business, keep the rest */ }
+    }
+  } catch { /* businesses unavailable without business_management: keep personal pages */ }
+  // De-duplicate by page id.
   const seen = new Set();
   return all.filter((p) => (seen.has(p.id) ? false : (seen.add(p.id), true)));
 }
