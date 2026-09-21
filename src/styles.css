@@ -354,6 +354,8 @@ html, body { overflow-x: clip; max-width: 100%; }
 .landing h1 { color: #fff; }
 .land-nav { position: relative; z-index: 2; display: flex; align-items: center; justify-content: space-between; padding: 18px 28px; }
 .land-nav img.logo-img { height: 40px; }
+.land-logo { background: none; border: 0; padding: 0; cursor: pointer; display: flex; }
+.land-logo:hover img { filter: brightness(1.2); }
 .land-nav .skew-btn { padding: 10px 22px; }
 .scroll-hint { font-family: var(--mono); font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: #8b8b8b; animation: bob 1.8s ease-in-out infinite; }
 @keyframes bob { 0%, 100% { transform: translateY(0); opacity: 0.7; } 50% { transform: translateY(6px); opacity: 1; } }

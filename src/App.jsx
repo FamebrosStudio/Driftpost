@@ -217,7 +217,7 @@ function Landing({ onEnter, session, pubPage, setPubPage }) {
     <div className="landing">
       <div className="rain" />
       <nav className="land-nav">
-        <img className="logo-img logo-d" src="/logo-dark.png" alt="Driftpost" />
+        <button className="land-logo" onClick={() => setPubPage('home')} title="Driftpost home"><img className="logo-img logo-d" src="/logo-dark.png" alt="Driftpost" /></button>
         <div className="land-links">
           {PUB_PAGES.filter((p) => !p.hidden).map((p) => (
             <button key={p.id} className={pubPage === p.id ? 'on' : ''} onClick={() => setPubPage(p.id)}>{p.label}</button>
