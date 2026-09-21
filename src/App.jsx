@@ -273,7 +273,7 @@ function Landing({ onEnter, session, pubPage, setPubPage }) {
         ))}
       </section>
       <div className="marquee" aria-hidden="true"><div className="marquee-in">
-        {['Velvet Salon', 'SK Furniture', 'Kanchanmala Jewellers', 'Sarang Hospital', 'Luxxe Nail Studio', 'MAP Clothing', 'Pixi Grow', 'Anand Furniture'].map((b) => <span key={b}>{b} ✦</span>)}
+        {['Velvet Salon', 'SK Furniture', 'Kanchanmala Jewellers', 'Sarang Hospital', 'Luxxe Nail Studio', 'MAP Clothing', 'Pixi Grow', 'Anand Furniture', 'Velvet Salon', 'SK Furniture', 'Kanchanmala Jewellers', 'Sarang Hospital', 'Luxxe Nail Studio', 'MAP Clothing', 'Pixi Grow', 'Anand Furniture'].map((b, i) => <span key={i}>{b} ✦</span>)}
       </div></div>
       </> : <DocPage page={pubPage} />}
       <footer className="land-foot">
