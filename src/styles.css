@@ -63,7 +63,7 @@ button { cursor: pointer; }
 .landing img.logo-img { height: 54px; width: auto; }
 
 /* shell */
-.shell { min-height: 100vh; display: grid; grid-template-columns: 224px 1fr; }
+.shell { min-height: 100vh; display: grid; grid-template-columns: 224px 1fr; font-family: 'Playfair Display', Georgia, 'Times New Roman', serif; }
 .side { border-right: 1px solid var(--line); background: var(--bg); padding: 20px 12px; display: flex; flex-direction: column; gap: 2px; position: sticky; top: 0; height: 100vh; }
 .brand { display: flex; align-items: center; gap: 9px; padding: 0 8px 16px; }
 button.brand { background: none; border: 0; width: 100%; text-align: left; font: inherit; cursor: pointer; }
