@@ -245,7 +245,7 @@ function Composer({ session, connections, reload }) {
       </div>
 
       <div className="phones" key={brandKey}>
-        {PLATFORMS.map((p) => {
+        {PLATFORMS.map((p, idx) => {
           const pid = p.id;
           const list = listFor(pid);
           const chosen = pick(pid);
@@ -253,7 +253,7 @@ function Composer({ session, connections, reload }) {
           const HINTS = { youtube: 'Video + Title required', instagram: 'Photo or reel + caption', facebook: 'Text, photo or video', x: '280 characters max' };
           return (
             <div key={pid} className={chosen ? 'phone' : 'phone off'}>
-              <div className="phone-head"><b>{p.name}</b><small>{list.length} account{list.length === 1 ? '' : 's'} · {HINTS[pid]}</small></div>
+              <div className="phone-head"><span className="idx">0{idx + 1}</span><span><b>{p.name}</b><small>{list.length} account{list.length === 1 ? '' : 's'} · {HINTS[pid]}</small></span><span className="led" /></div>
               <div className="phone-screen">
                 <label className="field-mini"><span>Account</span>
                   <select value={chosen} onChange={(e) => setPick(pid, e.target.value)}>
