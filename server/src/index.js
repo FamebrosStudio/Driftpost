@@ -241,7 +241,20 @@ async function runPublish(job, conn, file, body, userId) {
         mediaId = await uploadXMedia(token, file, (p) => { job.progress = Math.min(90, Math.round(p * 0.9)); });
       }
       job.state = 'publishing'; job.progress = 95; job.message = 'Posting to X';
-      const post = await createXPost(token, xText, mediaId, body.x_reply);
+      let poll = null;
+      try {
+        const opts = JSON.parse(body.x_poll_options || '[]');
+        if (Array.isArray(opts) && opts.length) {
+          const clean = opts.map((o) => String(o || '').trim()).filter(Boolean);
+          if (clean.length < 2 || clean.length > 4) throw new Error('X polls need 2 to 4 options');
+          if (clean.some((o) => Array.from(o).length > 25)) throw new Error('Each poll option allows 25 characters');
+          const mins = Math.min(10080, Math.max(5, Number(body.x_poll_minutes) || 1440));
+          poll = { options: clean, duration_minutes: mins };
+        }
+      } catch (e) {
+        if (/poll/i.test(e.message)) throw e;
+      }
+      const post = await createXPost(token, xText, mediaId, body.x_reply, poll);
       job.url = `https://x.com/i/status/${post.id}`;
     } else {
       const { decryptJson: dec } = await import('./crypto.js');

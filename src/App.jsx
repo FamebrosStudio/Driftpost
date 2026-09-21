@@ -31,7 +31,22 @@ function useTheme() {
   return [theme, setTheme];
 }
 
-function Landing({ onEnter }) {
+const BRAND_PATHS = {
+  youtube: 'M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z',
+  instagram: 'M12 0C8.74 0 8.333.015 7.053.072 5.775.132 4.905.333 4.14.63c-.789.306-1.459.717-2.126 1.384S.935 3.35.63 4.14C.333 4.905.131 5.775.072 7.053.012 8.333 0 8.74 0 12s.015 3.667.072 4.947c.06 1.277.261 2.148.558 2.913.306.788.717 1.459 1.384 2.126.667.666 1.336 1.079 2.126 1.384.766.296 1.636.499 2.913.558C8.333 23.988 8.74 24 12 24s3.667-.015 4.947-.072c1.277-.06 2.148-.262 2.913-.558.788-.306 1.459-.718 2.126-1.384.666-.667 1.079-1.335 1.384-2.126.296-.765.499-1.636.558-2.913.06-1.28.072-1.687.072-4.947s-.015-3.667-.072-4.947c-.06-1.277-.262-2.149-.558-2.913-.306-.789-.718-1.459-1.384-2.126C21.319 1.347 20.651.935 19.86.63c-.765-.297-1.636-.499-2.913-.558C15.667.012 15.26 0 12 0zm0 2.16c3.203 0 3.585.016 4.85.071 1.17.055 1.805.249 2.227.415.562.217.96.477 1.382.896.419.42.679.819.896 1.381.164.422.36 1.057.413 2.227.057 1.266.07 1.646.07 4.85s-.015 3.585-.074 4.85c-.061 1.17-.256 1.805-.421 2.227-.224.562-.479.96-.899 1.382-.419.419-.824.679-1.38.896-.42.164-1.065.36-2.235.413-1.274.057-1.649.07-4.859.07-3.211 0-3.586-.015-4.859-.074-1.171-.061-1.816-.256-2.236-.421-.569-.224-.96-.479-1.379-.899-.421-.419-.69-.824-.9-1.38-.165-.42-.359-1.065-.42-2.235-.045-1.26-.061-1.649-.061-4.844 0-3.196.016-3.586.061-4.861.061-1.17.255-1.814.42-2.234.21-.57.479-.96.9-1.381.419-.419.81-.689 1.379-.898.42-.166 1.051-.361 2.221-.421 1.275-.045 1.65-.06 4.859-.06l.045.03zm0 3.678c-3.405 0-6.162 2.76-6.162 6.162 0 3.405 2.76 6.162 6.162 6.162 3.405 0 6.162-2.76 6.162-6.162 0-3.405-2.76-6.162-6.162-6.162zM12 16c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4zm7.846-10.405c0 .795-.646 1.44-1.44 1.44-.795 0-1.44-.646-1.44-1.44 0-.794.646-1.439 1.44-1.439.793-.001 1.44.645 1.44 1.439z',
+  facebook: 'M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z',
+  x: 'M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z',
+};
+
+function BrandIcon({ id, size = 18 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d={BRAND_PATHS[id] || ''} />
+    </svg>
+  );
+}
+
+function Landing({ onEnter, session }) {
   const dock = [
     { id: 'youtube', label: 'YT', tip: 'YouTube — video, titles, tags', href: 'https://www.youtube.com' },
     { id: 'instagram', label: 'IG', tip: 'Instagram — reels, captions', href: 'https://www.instagram.com' },
@@ -46,12 +61,12 @@ function Landing({ onEnter }) {
         <h1>One composer.<br /><em>Every platform.</em></h1>
         <p>Pick a brand. Drop one file. Tune each platform exactly like its own app — then fire YouTube, Instagram, Facebook and X together.</p>
         <div className="landing-cta">
-          <button className="skew-btn grad" onClick={onEnter}><span>Open console →</span></button>
+          <button className="skew-btn grad" onClick={onEnter}><span>{session ? 'Enter console →' : 'Get started →'}</span></button>
         </div>
         <div className="social-dock">
           {dock.map((d) => (
             <span key={d.id} className="icon-content">
-              <a data-social={d.id} href={d.href} target="_blank" rel="noreferrer" aria-label={d.tip}><span className="filled" />{d.label}</a>
+              <a data-social={d.id} href={d.href} target="_blank" rel="noreferrer" aria-label={d.tip}><span className="filled" /><BrandIcon id={d.id} size={22} /></a>
               <span className="tooltip">{d.tip}</span>
             </span>
           ))}
@@ -190,7 +205,7 @@ function Composer({ session, connections, reload }) {
   const [yt, setYt] = useState({ title: '', description: '', tags: '', privacy: 'private', category: '', kids: '', license: '', embed: '', stats: '', notify: 'on' });
   const [ig, setIg] = useState({ caption: '', alt: '' });
   const [fb, setFb] = useState({ message: '', link: '' });
-  const [x, setX] = useState({ text: '', reply: 'everyone' });
+  const [x, setX] = useState({ text: '', reply: 'everyone', pollOn: false, opts: ['', '', '', ''], mins: '1440' });
   const [busy, setBusy] = useState({});
   const [enabled, setEnabled] = useState({ youtube: true, instagram: true, facebook: true, x: true });
   const [results, setResults] = useState({});
@@ -243,6 +258,8 @@ function Composer({ session, connections, reload }) {
     form.append('fb_link', fb.link);
     form.append('x_text', x.text);
     form.append('x_reply', x.reply);
+    form.append('x_poll_options', JSON.stringify(x.pollOn ? x.opts : []));
+    form.append('x_poll_minutes', x.mins);
     if (file?.raw) form.append('media', file.raw);
     if (platform === 'youtube' && thumb?.raw) form.append('thumbnail', thumb.raw);
     return form;
@@ -319,7 +336,7 @@ function Composer({ session, connections, reload }) {
       <div className="share-row">
         <div className="card">
           <h3>Shared media</h3>
-          <p className="sub">One file reused in every phone. YouTube needs video.</p>
+          <p className="sub">One photo or video used on every platform.</p>
           <input ref={inputRef} type="file" accept="image/*,video/*" hidden onChange={(e) => pickFile(e.target.files[0])} />
           {!file ? (
             <div className="drop" onClick={() => inputRef.current.click()}><b>Drop media here or browse</b>Images · Video up to 2 GB</div>
@@ -329,7 +346,7 @@ function Composer({ session, connections, reload }) {
         </div>
         <div className="card">
           <h3>Shared caption</h3>
-          <p className="sub">Fills every phone left empty. <button className="link" onClick={applyCaptionEverywhere}>Copy into all phones</button></p>
+          <p className="sub">Writes itself into every empty box below. <button className="link" onClick={applyCaptionEverywhere}>Fill all now</button></p>
           <label className="field" style={{ marginBottom: 0 }}><span>Caption <i>{caption.length}/2200</i></span><textarea value={caption} maxLength={2200} onChange={(e) => setCaption(e.target.value)} placeholder="Write once…" /></label>
         </div>
       </div>
@@ -340,10 +357,10 @@ function Composer({ session, connections, reload }) {
           const list = listFor(pid);
           const chosen = pick(pid);
           const r = results[pid];
-          const HINTS = { youtube: 'Video + Title required', instagram: 'Photo or reel + caption', facebook: 'Text, photo or video', x: '280 characters max' };
+          const HINTS = { youtube: 'Needs a video + title', instagram: 'Needs a photo or video', facebook: 'Text, photo or video', x: 'Max 280 characters' };
           return (
             <div key={pid} className={chosen ? 'phone' : 'phone off'}>
-              <div className="phone-head"><span className="idx">0{idx + 1}</span><span><b>{p.name}</b><small>{list.length} account{list.length === 1 ? '' : 's'} · {HINTS[pid]}</small></span><span className="led" /></div>
+              <div className="phone-head"><span className="idx">0{idx + 1}</span><span className="p-icon"><BrandIcon id={pid} size={15} /></span><span><b>{p.name}</b><small>{list.length} account{list.length === 1 ? '' : 's'} · {HINTS[pid]}</small></span><span className="led" /></div>
               <div className="phone-screen">
                 <label className="field-mini"><span>Account</span>
                   <select value={chosen} onChange={(e) => setPick(pid, e.target.value)}>
@@ -360,6 +377,8 @@ function Composer({ session, connections, reload }) {
                   <label className="field-mini"><span>Title · {yt.title.length}/100</span><input value={yt.title} maxLength={100} onChange={(e) => setYt({ ...yt, title: e.target.value })} placeholder="Video title (required)" /></label>
                   <label className="field-mini"><span>Description</span><textarea value={yt.description} onChange={(e) => setYt({ ...yt, description: e.target.value })} placeholder="Shared caption if empty" /></label>
                   <label className="field-mini"><span>Tags · comma separated</span><input value={yt.tags} onChange={(e) => setYt({ ...yt, tags: e.target.value })} placeholder="salon, bridal, mumbai" /></label>
+                  <details className="adv">
+                    <summary>More YouTube settings (category, kids, license…)</summary>
                   <div className="row2">
                     <label className="field-mini"><span>Category</span>
                       <select value={yt.category} onChange={(e) => setYt({ ...yt, category: e.target.value })}>
@@ -419,6 +438,7 @@ function Composer({ session, connections, reload }) {
                       </select>
                     </label>
                   </div>
+                  </details>
                   <div className="row2">
                     <label className="field-mini"><span>Visibility</span>
                       <select value={yt.privacy} onChange={(e) => setYt({ ...yt, privacy: e.target.value })}>
@@ -446,14 +466,28 @@ function Composer({ session, connections, reload }) {
 
                 {pid === 'x' && <>
                   <label className="field-mini"><span>Post · {xLen}/280</span><textarea value={x.text} maxLength={400} onChange={(e) => setX({ ...x, text: e.target.value })} placeholder="Shared caption if empty" /></label>
+                  <label className="ck"><input type="checkbox" checked={x.pollOn} onChange={(e) => setX({ ...x, pollOn: e.target.checked })} /><svg viewBox="0 0 64 64"><path className="path" d="M8 33 L26 51 L56 13" /></svg><span>Poll instead of photo</span></label>
+                  {x.pollOn && <>
+                    {[0, 1, 2, 3].map((i) => (
+                      <label key={i} className="field-mini"><span>Choice {i + 1}{i > 1 ? ' · optional' : ''}</span><input value={x.opts[i]} maxLength={25} onChange={(e) => { const o = [...x.opts]; o[i] = e.target.value; setX({ ...x, opts: o }); }} placeholder={i < 2 ? 'Required' : 'Optional'} /></label>
+                    ))}
+                    <label className="field-mini"><span>Poll runs for</span>
+                      <select value={x.mins} onChange={(e) => setX({ ...x, mins: e.target.value })}>
+                        <option value="5">5 minutes</option>
+                        <option value="60">1 hour</option>
+                        <option value="1440">24 hours</option>
+                        <option value="10080">7 days</option>
+                      </select>
+                    </label>
+                    {file && <div className="sec-err">Remove the shared photo to post a poll.</div>}
+                  </>}
                   <label className="field-mini"><span>Who can reply</span>
                     <select value={x.reply} onChange={(e) => setX({ ...x, reply: e.target.value })}>
-                      <option value="everyone">Everyone (default)</option>
+                      <option value="everyone">Everyone</option>
                       <option value="following">Accounts I follow</option>
                       <option value="mentionedUsers">Only mentioned</option>
                     </select>
                   </label>
-                  {xLen > 280 && <div className="sec-err">Too long for X.</div>}
                 </>}
 
                 <div className={r?.state === 'failed' ? 'phone-status fail' : 'phone-status'}>{busy[pid] ? 'Sending' : secState(pid)}</div>
@@ -461,7 +495,7 @@ function Composer({ session, connections, reload }) {
                 {r?.state === 'failed' && <div className="sec-err">{r.message}</div>}
                 {r?.url && <a className="phone-link" href={r.url} target="_blank" rel="noreferrer">View post →</a>}
                 <label className="ck"><input type="checkbox" checked={!!enabled[pid]} onChange={(e) => setEnabled((m) => ({ ...m, [pid]: e.target.checked }))} /><svg viewBox="0 0 64 64"><path className="path" d="M8 33 L26 51 L56 13" /></svg><span>Include in all</span></label>
-                <button className="skew-btn grad" disabled={!!busy[pid] || (pid === 'x' && xLen > 280)} onClick={() => publishOne(pid)}><span>{busy[pid] ? 'Sending…' : `Publish ${p.name}`}</span></button>
+                <button className="skew-btn grad" disabled={!!busy[pid] || (pid === 'x' && (xLen > 280 || (x.pollOn && !!file)))} onClick={() => publishOne(pid)}><span>{busy[pid] ? 'Sending…' : `Publish ${p.name}`}</span></button>
               </div>
             </div>
           );
@@ -556,7 +590,7 @@ function Accounts({ session, connections, setConnections }) {
               return (
               <div key={c.id} className="list-row">
                 <span className="avatar">{(c.account_name || '?')[0].toUpperCase()}</span>
-                <div><b style={{ fontSize: 13 }}>{c.account_name}</b><small style={{ display: 'block', color: '#6b6b6b' }}>{p.name}</small></div>
+                <div><b style={{ fontSize: 13 }}>{c.account_name}</b><small style={{ display: 'flex', alignItems: 'center', gap: 5, color: '#8b949e', marginTop: 2 }}><BrandIcon id={p.id} size={12} />{p.name}</small></div>
                 {effActive && <span className="badge ok">★ Active</span>}
                 <DotsMenu
                   active={effActive}
@@ -576,10 +610,40 @@ function Accounts({ session, connections, setConnections }) {
   );
 }
 
+const TOUR_STEPS = [
+  { t: 'Welcome to Driftpost', d: 'Post for all your brands from one screen. This 30-second tour shows you how — plain and simple.' },
+  { t: 'Step 1 · Connect accounts', d: 'Open Accounts and connect YouTube, Facebook, Instagram and X. Each brand owner connects once, then it just works.' },
+  { t: 'Step 2 · Pick your brand', d: 'Use the brand menu at the top. Driftpost automatically finds that brand on all 4 platforms. Star your active clients with the ⋯ menu.' },
+  { t: 'Step 3 · Add photo and words', d: 'Drop one photo or video and write one caption. It fills every platform for you.' },
+  { t: 'Step 4 · Adjust and publish', d: 'Each platform has its own card — YouTube titles, Instagram captions, Facebook links, X polls. Publish one by one, or press Publish all.' },
+];
+
+function TourOverlay({ step, setStep, onDone }) {
+  const last = step === TOUR_STEPS.length - 1;
+  return (
+    <div className="tour-backdrop">
+      <div className="tour-card">
+        <div className="tour-count">Step {step + 1} of {TOUR_STEPS.length}</div>
+        <h2>{TOUR_STEPS[step].t}</h2>
+        <p>{TOUR_STEPS[step].d}</p>
+        <div className="tour-dots">{TOUR_STEPS.map((_, i) => <span key={i} className={i === step ? 'on' : ''} />)}</div>
+        <div className="tour-actions">
+          {step > 0 && <button className="skew-btn ghost" onClick={() => setStep(step - 1)}><span>← Back</span></button>}
+          <button className="skew-btn ghost" onClick={onDone}><span>Skip</span></button>
+          <button className="skew-btn grad" onClick={() => (last ? onDone() : setStep(step + 1))}><span>{last ? 'Start posting →' : 'Next →'}</span></button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function App() {
   const { session, loading } = useSession();
   const [mode, setMode] = useState('login');
   const [entry, setEntry] = useState('landing');
+  const [entered, setEntered] = useState(false);
+  const [tour, setTour] = useState(null); // null | 'ask' | number (step index)
+  const prevSession = useRef(null);
   const [view, setView] = useState('create');
   const [navOpen, setNavOpen] = useState(false);
   const [userOpen, setUserOpen] = useState(false);
@@ -598,6 +662,25 @@ export default function App() {
     fetch(`${apiUrl}/health`).then((r) => setOnline(r.ok)).catch(() => setOnline(false));
   }, []);
 
+  useEffect(() => {
+    // Fresh sign-in (same Gmail) skips straight into the console.
+    // A restored session on page open starts at the landing page.
+    if (session && !prevSession.current) setEntered(true);
+    if (!session) { setEntered(false); setTour(null); }
+    prevSession.current = session;
+  }, [session]);
+
+  useEffect(() => {
+    if (session && entered && tour === null && !localStorage.getItem(`driftpost-tour:${session.user.id}`)) {
+      setTour('ask');
+    }
+  }, [session, entered]);
+
+  const finishTour = () => {
+    try { localStorage.setItem(`driftpost-tour:${session.user.id}`, '1'); } catch {}
+    setTour(null);
+  };
+
   const counts = useMemo(() => {
     const c = {};
     connections.forEach((x) => { c[x.platform] = (c[x.platform] || 0) + 1; });
@@ -611,7 +694,8 @@ export default function App() {
   }, [session, entry, view]);
 
   if (loading) return <div className="loader-wrap"><div className="bounce"><span className="circle" /><span className="circle" /><span className="circle" /><span className="shadow" /><span className="shadow" /><span className="shadow" /></div></div>;
-  if (!session) return entry === 'landing' ? <Landing onEnter={() => setEntry('auth')} /> : <Auth mode={mode} setMode={setMode} onBack={() => setEntry('landing')} />;
+  if (!session) return entry === 'landing' ? <Landing session={false} onEnter={() => setEntry('auth')} /> : <Auth mode={mode} setMode={setMode} onBack={() => setEntry('landing')} />;
+  if (!entered) return <Landing session onEnter={() => setEntered(true)} />;
 
   if (!['create', 'accounts'].includes(view)) {
     return (
@@ -623,6 +707,19 @@ export default function App() {
 
   return (
     <div className="shell">
+      {tour === 'ask' && (
+        <div className="tour-backdrop">
+          <div className="tour-card">
+            <h2>New here?</h2>
+            <p>Take the 30-second tour and posting will feel obvious. Or skip and explore yourself.</p>
+            <div className="tour-actions">
+              <button className="skew-btn ghost" onClick={finishTour}><span>Continue</span></button>
+              <button className="skew-btn grad" onClick={() => setTour(0)}><span>Get the tour →</span></button>
+            </div>
+          </div>
+        </div>
+      )}
+      {typeof tour === 'number' && <TourOverlay step={tour} setStep={setTour} onDone={finishTour} />}
       <aside className={navOpen ? 'side open' : 'side'}>
         <button className="brand brand-btn" onClick={() => { setView('create'); setNavOpen(false); }} title="Driftpost home"><span className="brand-mark">〜</span>Driftpost</button>
         <div className="radio-container">
@@ -664,7 +761,8 @@ export default function App() {
       <div className="main">
         <div className="top">
           <button className="menu-btn" onClick={() => setNavOpen(true)} aria-label="Open menu">☰</button>
-          <div><h1>{view === 'create' ? 'Platforms' : 'Accounts'}</h1><p>Metricool-style · one brand, four platforms, per-platform details</p></div>
+          <div><h1>{view === 'create' ? 'Platforms' : 'Accounts'}</h1><p>Pick a brand, post everywhere — no tech skills needed</p></div>
+          <button className="mini" title="Replay the guided tour" onClick={() => setTour(0)}>◉ Tour</button>
           <span className={online === false ? 'pill bad' : 'pill'}>{online === null ? 'checking…' : online ? 'API online' : 'API offline'}</span>
         </div>
         <div className="page">

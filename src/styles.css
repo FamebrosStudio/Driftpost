@@ -115,6 +115,7 @@ html, body { overflow-x: clip; max-width: 100%; }
 .phone-head .idx { font-family: var(--mono); font-size: 10px; color: var(--accent-soft); border: 1px solid #38bdf844; background: #38bdf811; padding: 2px 6px; }
 .phone-head b { font-size: 13px; letter-spacing: 0.2px; }
 .phone-head small { display: block; font-size: 10px; color: var(--muted); font-family: var(--mono); margin-top: 1px; }
+.phone-head .p-icon { color: var(--accent-soft); display: inline-flex; }
 .phone-head .led { margin-left: auto; width: 8px; height: 8px; background: #2a3350; flex: 0 0 auto; }
 .phone:not(.off) .phone-head .led { background: var(--accent-soft); box-shadow: 0 0 10px #38bdf8aa; animation: pulse-dot 1.6s infinite; }
 .phone-screen { margin: 0 10px 10px; background: #080d1a; border: 1px solid var(--line); padding: 13px; display: flex; flex-direction: column; gap: 10px; }
@@ -313,6 +314,25 @@ html, body { overflow-x: clip; max-width: 100%; }
 .dd-item.sel { background: #8b5cf622; box-shadow: inset 2px 0 0 var(--violet); }
 .dd-item .star { color: var(--accent-soft); margin-left: auto; font-size: 10px; font-family: var(--mono); }
 .dd-backdrop { position: fixed; inset: 0; z-index: 20; }
+
+/* advanced toggle */
+details.adv { border: 1px solid var(--line); background: #0b1226; padding: 10px 12px; margin-top: 10px; }
+details.adv > summary { cursor: pointer; font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.7px; color: var(--accent-soft); list-style: none; }
+details.adv > summary::-webkit-details-marker { display: none; }
+details.adv > summary::before { content: "+ "; }
+details.adv[open] > summary::before { content: "– "; }
+
+/* tour */
+.tour-backdrop { position: fixed; inset: 0; z-index: 100; background: #04060cd9; backdrop-filter: blur(3px); display: grid; place-items: center; padding: 20px; animation: pop 0.2s ease; }
+.tour-card { width: min(100%, 420px); background: #0d1428; border: 1px solid var(--line-hard); border-top: 3px solid; border-image: linear-gradient(90deg, var(--violet), var(--sky)) 1; padding: 28px; box-shadow: 0 30px 90px #000d; animation: rise 0.3s ease both; }
+.tour-card h2 { margin: 0 0 8px; font-size: 20px; letter-spacing: -0.3px; }
+.tour-card p { margin: 0 0 16px; font-size: 13px; line-height: 1.65; color: var(--muted); }
+.tour-count { font-family: var(--mono); font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--accent-soft); margin-bottom: 10px; }
+.tour-dots { display: flex; gap: 6px; margin-bottom: 18px; }
+.tour-dots span { width: 22px; height: 3px; background: #232c4a; }
+.tour-dots span.on { background: var(--grad); }
+.tour-actions { display: flex; gap: 10px; }
+.tour-actions .skew-btn { flex: 1; }
 
 @media (max-width: 1200px) { .phones { grid-template-columns: repeat(2, 1fr); } .share-row { grid-template-columns: 1fr; } }
 @media (max-width: 900px) {

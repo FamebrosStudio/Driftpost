@@ -113,7 +113,8 @@ export async function uploadXMedia(accessToken, file, onProgress) {
   return uploadChunkedMedia(accessToken, file, onProgress);
 }
 
-export async function createXPost(accessToken, text, mediaId, replySettings) {
+export async function createXPost(accessToken, text, mediaId, replySettings, poll) {
+  if (mediaId && poll) throw new Error('X does not allow a poll and media in the same post');
   const response = await fetch(POSTS_URL, {
     method: 'POST',
     headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
@@ -121,6 +122,7 @@ export async function createXPost(accessToken, text, mediaId, replySettings) {
       text,
       ...(mediaId ? { media: { media_ids: [String(mediaId)] } } : {}),
       ...(['following', 'mentionedUsers'].includes(replySettings) ? { reply_settings: replySettings } : {}),
+      ...(poll ? { poll } : {}),
     }),
   });
   if (!response.ok) throw await xError(response, 'X post failed');
