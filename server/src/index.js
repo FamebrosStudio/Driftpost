@@ -99,7 +99,7 @@ app.get('/api/oauth/youtube/callback', async (req, res) => {
       updated_at: new Date().toISOString(),
     }, { onConflict: 'user_id,platform,platform_account_id' });
     if (error) throw error;
-    back.searchParams.set('connected', 'youtube');
+    back.searchParams.set('connected', `youtube (${ch.name})`);
   } catch (e) { back.searchParams.set('oauth_error', e.message); }
   res.redirect(back.toString());
 });
