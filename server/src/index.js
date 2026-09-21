@@ -112,7 +112,8 @@ app.get('/api/oauth/meta/callback', async (req, res) => {
     const userToken = long.access_token;
     const pages = await getMetaPages(userToken);
     if (!pages.length) throw new Error('No Facebook Page found. Create a Page and link Instagram in Page Settings first.');
-    for (const page of pages.slice(0, 50)) {
+    let igCount = 0;
+    for (const page of pages.slice(0, 200)) {
       await supabase.from('platform_connections').upsert({
         user_id: state.userId, platform: 'facebook', platform_account_id: page.id,
         account_name: page.name, avatar_url: null,
@@ -121,6 +122,7 @@ app.get('/api/oauth/meta/callback', async (req, res) => {
       }, { onConflict: 'user_id,platform,platform_account_id' });
       const ig = page.instagram_business_account;
       if (ig?.id) {
+        igCount++;
         await supabase.from('platform_connections').upsert({
           user_id: state.userId, platform: 'instagram', platform_account_id: ig.id,
           account_name: ig.username ? `@${ig.username}` : page.name, avatar_url: null,
@@ -129,7 +131,7 @@ app.get('/api/oauth/meta/callback', async (req, res) => {
         }, { onConflict: 'user_id,platform,platform_account_id' });
       }
     }
-    back.searchParams.set('connected', 'facebook/instagram');
+    back.searchParams.set('connected', `facebook/instagram (${pages.length} pages, ${igCount} IG)`);
   } catch (e) { back.searchParams.set('oauth_error', e.message); }
   res.redirect(back.toString());
 });

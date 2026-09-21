@@ -60,12 +60,20 @@ export async function longLivedToken(shortToken) {
 }
 
 export async function getMetaPages(userToken) {
-  const res = await fetch(`${GRAPH}/me/accounts?fields=id,name,access_token,instagram_business_account{id,username}&limit=50`, {
-    headers: { Authorization: `Bearer ${userToken}` },
-  });
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.error?.message || 'Unable to list Facebook Pages');
-  return data.data || [];
+  // Follow pagination: Business Login grants can span multiple result pages,
+  // and any cut-off here silently drops brands. Cap at 5 fetches (500 max).
+  const all = [];
+  let url = `${GRAPH}/me/accounts?fields=id,name,tasks,access_token,instagram_business_account{id,username}&limit=100`;
+  for (let i = 0; i < 5 && url; i++) {
+    const res = await fetch(url, { headers: { Authorization: `Bearer ${userToken}` } });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error?.message || 'Unable to list Facebook Pages');
+    all.push(...(data.data || []));
+    url = data.paging?.next || null;
+  }
+  // De-duplicate by page id (overlapping pages can repeat across fetches).
+  const seen = new Set();
+  return all.filter((p) => (seen.has(p.id) ? false : (seen.add(p.id), true)));
 }
 
 export async function publishFacebook({ pageId, pageToken, text, link, media }) {
