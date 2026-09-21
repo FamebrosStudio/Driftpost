@@ -14,21 +14,29 @@ function useSession() {
 }
 
 const THEMES = [
-  { id: 'nebula', label: 'Nebula' },
-  { id: 'venom', label: 'Venom' },
-  { id: 'sunset', label: 'Sunset' },
-  { id: 'royal', label: 'Royal' },
-  { id: 'mono', label: 'Mono' },
+  { id: 'auto', label: 'Auto (follows PC)' },
+  { id: 'dark', label: 'Black' },
+  { id: 'light', label: 'White' },
 ];
 
 function useTheme() {
-  const [theme, setTheme] = useState(() => localStorage.getItem('driftpost-theme') || 'nebula');
+  const [mode, setMode] = useState(() => {
+    const s = localStorage.getItem('driftpost-theme');
+    return ['auto', 'light', 'dark'].includes(s) ? s : 'auto';
+  });
   useEffect(() => {
-    document.documentElement.dataset.theme = theme === 'nebula' ? '' : theme;
-    if (theme === 'nebula') document.documentElement.removeAttribute('data-theme');
-    localStorage.setItem('driftpost-theme', theme);
-  }, [theme]);
-  return [theme, setTheme];
+    const mq = window.matchMedia('(prefers-color-scheme: light)');
+    const apply = () => {
+      const eff = mode === 'auto' ? (mq.matches ? 'light' : 'dark') : mode;
+      document.documentElement.dataset.theme = eff;
+      document.querySelector('meta[name="theme-color"]')?.setAttribute('content', eff === 'light' ? '#ffffff' : '#000000');
+    };
+    apply();
+    mq.addEventListener?.('change', apply);
+    try { localStorage.setItem('driftpost-theme', mode); } catch {}
+    return () => mq.removeEventListener?.('change', apply);
+  }, [mode]);
+  return [mode, setMode];
 }
 
 const BRAND_PATHS = {
