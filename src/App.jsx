@@ -203,8 +203,8 @@ function Composer({ session, connections, reload }) {
   const [thumb, setThumb] = useState(null);
   const [caption, setCaption] = useState('');
   const [yt, setYt] = useState({ title: '', description: '', tags: '', privacy: 'private', category: '', kids: '', license: '', embed: '', stats: '', notify: 'on' });
-  const [ig, setIg] = useState({ caption: '', alt: '' });
-  const [fb, setFb] = useState({ message: '', link: '' });
+  const [ig, setIg] = useState({ caption: '', alt: '', topics: '', partner: '', collabs: '', location: '', shareFb: false });
+  const [fb, setFb] = useState({ message: '', link: '', syndIg: false, age: '', cta: '', linkName: '', linkCaption: '', linkDesc: '', linkPic: '', unpublished: false });
   const [x, setX] = useState({ text: '', reply: 'everyone', pollOn: false, opts: ['', '', '', ''], mins: '1440' });
   const [busy, setBusy] = useState({});
   const [enabled, setEnabled] = useState({ youtube: true, instagram: true, facebook: true, x: true });
@@ -254,8 +254,23 @@ function Composer({ session, connections, reload }) {
     form.append('yt_notify', yt.notify);
     form.append('ig_caption', ig.caption);
     form.append('ig_alt', ig.alt);
+    form.append('ig_topics', ig.topics);
+    form.append('ig_partner', ig.partner);
+    form.append('ig_collabs', ig.collabs);
+    form.append('ig_location', ig.location);
+    form.append('ig_share_fb', ig.shareFb ? '1' : '');
+    form.append('fb_connection_id', pick('facebook'));
     form.append('fb_message', fb.message);
     form.append('fb_link', fb.link);
+    form.append('fb_synd_ig', fb.syndIg ? '1' : '');
+    form.append('ig_connection_id', pick('instagram'));
+    form.append('fb_age', fb.age);
+    form.append('fb_cta', fb.cta);
+    form.append('fb_link_name', fb.linkName);
+    form.append('fb_link_caption', fb.linkCaption);
+    form.append('fb_link_desc', fb.linkDesc);
+    form.append('fb_link_pic', fb.linkPic);
+    form.append('fb_unpublished', fb.unpublished ? '1' : '');
     form.append('x_text', x.text);
     form.append('x_reply', x.reply);
     form.append('x_poll_options', JSON.stringify(x.pollOn ? x.opts : []));
@@ -279,7 +294,7 @@ function Composer({ session, connections, reload }) {
     for (;;) {
       await new Promise((r) => setTimeout(r, 1500));
       const j = await api(`/api/jobs/${jobId}`, session.access_token);
-      out[platform] = { state: j.job.state, progress: j.job.progress || 50, url: j.job.url, message: j.job.message };
+      out[platform] = { state: j.job.state, progress: j.job.progress || 50, url: j.job.url, message: j.job.message, warning: j.job.warning };
       setResults({ ...out });
       if (j.job.state === 'completed') return;
       if (j.job.state === 'failed') throw new Error(j.job.message);
@@ -456,12 +471,84 @@ function Composer({ session, connections, reload }) {
 
                 {pid === 'instagram' && <>
                   <label className="field-mini"><span>Caption · {(ig.caption || caption).length}/2200</span><textarea value={ig.caption} onChange={(e) => setIg({ ...ig, caption: e.target.value })} placeholder="Shared caption if empty" /></label>
-                  <label className="field-mini"><span>Alt text · accessibility</span><input value={ig.alt} maxLength={500} onChange={(e) => setIg({ ...ig, alt: e.target.value })} placeholder="Describe the photo/video" /></label>
+                  <details className="adv">
+                    <summary>Reach: share, topics, partners</summary>
+                    <label className="ck" style={{ marginTop: 8 }}><input type="checkbox" checked={ig.shareFb} onChange={(e) => setIg({ ...ig, shareFb: e.target.checked })} /><svg viewBox="0 0 64 64"><path className="path" d="M8 33 L26 51 L56 13" /></svg><span>Also post to Facebook Page</span></label>
+                    <label className="field-mini"><span>Topics · up to 3</span><input value={ig.topics} onChange={(e) => setIg({ ...ig, topics: e.target.value })} placeholder="fitness, nutrition" /></label>
+                    <label className="field-mini"><span>Paid partner · @handle</span><input value={ig.partner} onChange={(e) => setIg({ ...ig, partner: e.target.value })} placeholder="brandname" /></label>
+                    <label className="field-mini"><span>Collaborators · up to 3</span><input value={ig.collabs} onChange={(e) => setIg({ ...ig, collabs: e.target.value })} placeholder="creator1, creator2" /></label>
+                    <label className="field-mini"><span>Location ID · optional</span><input value={ig.location} onChange={(e) => setIg({ ...ig, location: e.target.value })} placeholder="Meta location ID" /></label>
+                  </details>
+                  <details className="adv">
+                    <summary>Advanced: quality, alt text</summary>
+                    <p className="note">Always uploads original quality — Meta never gets a compressed copy from us.</p>
+                    <label className="field-mini"><span>Alt text · accessibility</span><input value={ig.alt} maxLength={500} onChange={(e) => setIg({ ...ig, alt: e.target.value })} placeholder="Describe the photo/video" /></label>
+                  </details>
                 </>}
 
                 {pid === 'facebook' && <>
                   <label className="field-mini"><span>Message</span><textarea value={fb.message} onChange={(e) => setFb({ ...fb, message: e.target.value })} placeholder="Shared caption if empty" /></label>
                   <label className="field-mini"><span>Link · optional</span><input value={fb.link} onChange={(e) => setFb({ ...fb, link: e.target.value })} placeholder="https://…" /></label>
+                  <details className="adv">
+                    <summary>Syndicate + visibility</summary>
+                    <label className="ck" style={{ marginTop: 8 }}><input type="checkbox" checked={fb.syndIg} onChange={(e) => setFb({ ...fb, syndIg: e.target.checked })} /><svg viewBox="0 0 64 64"><path className="path" d="M8 33 L26 51 L56 13" /></svg><span>Mirror to Instagram</span></label>
+                    <label className="field-mini"><span>Age limit · optional</span>
+                      <select value={fb.age} onChange={(e) => setFb({ ...fb, age: e.target.value })}>
+                        <option value="">Everyone (default)</option>
+                        <option value="13">13+</option>
+                        <option value="18">18+</option>
+                        <option value="21">21+</option>
+                        <option value="25">25+</option>
+                      </select>
+                    </label>
+                    <label className="ck"><input type="checkbox" checked={fb.unpublished} onChange={(e) => setFb({ ...fb, unpublished: e.target.checked })} /><svg viewBox="0 0 64 64"><path className="path" d="M8 33 L26 51 L56 13" /></svg><span>Unpublished dark post</span></label>
+                  </details>
+                  <details className="adv">
+                    <summary>Link preview + button</summary>
+                    <label className="field-mini"><span>Action button · needs link</span>
+                      <select value={fb.cta} onChange={(e) => setFb({ ...fb, cta: e.target.value })}>
+                        <option value="">None (default)</option>
+                        <option value="LEARN_MORE">Learn more</option>
+                        <option value="SHOP_NOW">Shop now</option>
+                        <option value="SIGN_UP">Sign up</option>
+                        <option value="MESSAGE_PAGE">Send message</option>
+                      </select>
+                    </label>
+                    <label className="field-mini"><span>Preview title</span><input value={fb.linkName} onChange={(e) => setFb({ ...fb, linkName: e.target.value })} placeholder="Page default if empty" /></label>
+                    <label className="field-mini"><span>Preview caption</span><input value={fb.linkCaption} onChange={(e) => setFb({ ...fb, linkCaption: e.target.value })} placeholder="Page default if empty" /></label>
+                    <label className="field-mini"><span>Preview text</span><input value={fb.linkDesc} onChange={(e) => setFb({ ...fb, linkDesc: e.target.value })} placeholder="Page default if empty" /></label>
+                    <label className="field-mini"><span>Preview image URL</span><input value={fb.linkPic} onChange={(e) => setFb({ ...fb, linkPic: e.target.value })} placeholder="https://…" /></label>
+                  </details>
+                  <details className="adv">
+                    <summary>Reach: mirror, audience, buttons</summary>
+                    <label className="ck" style={{ marginTop: 8 }}><input type="checkbox" checked={fb.syndIg} onChange={(e) => setFb({ ...fb, syndIg: e.target.checked })} /><svg viewBox="0 0 64 64"><path className="path" d="M8 33 L26 51 L56 13" /></svg><span>Mirror to Instagram</span></label>
+                    <label className="ck" style={{ marginTop: 8 }}><input type="checkbox" checked={fb.unpublished} onChange={(e) => setFb({ ...fb, unpublished: e.target.checked })} /><svg viewBox="0 0 64 64"><path className="path" d="M8 33 L26 51 L56 13" /></svg><span>Unpublished dark post</span></label>
+                    <label className="field-mini"><span>Min age audience</span>
+                      <select value={fb.age} onChange={(e) => setFb({ ...fb, age: e.target.value })}>
+                        <option value="">Everyone (default)</option>
+                        <option value="13">13+</option>
+                        <option value="18">18+</option>
+                        <option value="21">21+</option>
+                        <option value="25">25+</option>
+                      </select>
+                    </label>
+                    <label className="field-mini"><span>Button · needs link</span>
+                      <select value={fb.cta} onChange={(e) => setFb({ ...fb, cta: e.target.value })}>
+                        <option value="">No button (default)</option>
+                        <option value="LEARN_MORE">Learn more</option>
+                        <option value="SHOP_NOW">Shop now</option>
+                        <option value="SIGN_UP">Sign up</option>
+                        <option value="MESSAGE_PAGE">Send message</option>
+                      </select>
+                    </label>
+                  </details>
+                  <details className="adv">
+                    <summary>Link preview text</summary>
+                    <label className="field-mini"><span>Preview title</span><input value={fb.linkName} onChange={(e) => setFb({ ...fb, linkName: e.target.value })} placeholder="Page title override" /></label>
+                    <label className="field-mini"><span>Preview subtitle</span><input value={fb.linkCaption} onChange={(e) => setFb({ ...fb, linkCaption: e.target.value })} placeholder="Small caption line" /></label>
+                    <label className="field-mini"><span>Preview text</span><input value={fb.linkDesc} onChange={(e) => setFb({ ...fb, linkDesc: e.target.value })} placeholder="Description override" /></label>
+                    <label className="field-mini"><span>Preview image URL</span><input value={fb.linkPic} onChange={(e) => setFb({ ...fb, linkPic: e.target.value })} placeholder="https://…/image.jpg" /></label>
+                  </details>
                 </>}
 
                 {pid === 'x' && <>
@@ -493,6 +580,7 @@ function Composer({ session, connections, reload }) {
                 <div className={r?.state === 'failed' ? 'phone-status fail' : 'phone-status'}>{busy[pid] ? 'Sending' : secState(pid)}</div>
                 {busy[pid] && <div className="progress-loader"><div className="progress" /></div>}
                 {r?.state === 'failed' && <div className="sec-err">{r.message}</div>}
+                {r?.warning && r?.state !== 'failed' && <div className="banner" style={{ margin: 0 }}>{r.warning}</div>}
                 {r?.url && <a className="phone-link" href={r.url} target="_blank" rel="noreferrer">View post →</a>}
                 <label className="ck"><input type="checkbox" checked={!!enabled[pid]} onChange={(e) => setEnabled((m) => ({ ...m, [pid]: e.target.checked }))} /><svg viewBox="0 0 64 64"><path className="path" d="M8 33 L26 51 L56 13" /></svg><span>Include in all</span></label>
                 <button className="skew-btn grad" disabled={!!busy[pid] || (pid === 'x' && (xLen > 280 || (x.pollOn && !!file)))} onClick={() => publishOne(pid)}><span>{busy[pid] ? 'Sending…' : `Publish ${p.name}`}</span></button>

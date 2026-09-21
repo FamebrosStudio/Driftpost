@@ -258,34 +258,107 @@ async function runPublish(job, conn, file, body, userId) {
       job.url = `https://x.com/i/status/${post.id}`;
     } else {
       const { decryptJson: dec } = await import('./crypto.js');
+      const meta = await import('./meta.js');
       const tokens = dec(conn.encrypted_tokens);
       const pageToken = tokens.access_token;
       const pageId = tokens.page_id || conn.platform_account_id;
+      const otherConn = async (platform, id) => {
+        if (!id) return null;
+        const { data } = await supabase.from('platform_connections')
+          .select('*').eq('id', id).eq('user_id', userId).eq('platform', platform).maybeSingle();
+        return data || null;
+      };
       let media = null;
       let publicUrl = null;
       if (file) {
         const bytes = await fs.readFile(file.path);
         media = { ...file, bytes };
         // Instagram needs a public URL -> upload to Supabase Storage
-        if (job.platform === 'instagram') {
+        if (job.platform === 'instagram' || (job.platform === 'facebook' && String(body.fb_synd_ig || '') === '1')) {
           const ext = path.extname(file.originalname || '') || (file.mimetype.startsWith('video/') ? '.mp4' : '.jpg');
           const key = `${userId}/${Date.now()}${ext}`;
           const { error: upErr } = await supabase.storage.from(BUCKET).upload(key, bytes, { contentType: file.mimetype, upsert: true });
-          if (upErr) throw new Error('Media upload for Instagram failed. Create public bucket "' + BUCKET + '" in Supabase Storage.');
+          if (upErr) throw new Error('Media upload failed. Create public bucket "' + BUCKET + '" in Supabase Storage.');
           const { data } = supabase.storage.from(BUCKET).getPublicUrl(key);
           publicUrl = data.publicUrl;
         }
       }
       job.state = 'publishing'; job.progress = 60; job.message = `Publishing to ${job.platform}`;
       if (job.platform === 'facebook') {
-        const out = await publishFacebook({ pageId: conn.platform_account_id, pageToken, text: String(body.fb_message ?? fallbackText), link: String(body.fb_link || '').trim() || null, media });
-        job.url = out.url;
-      } else {
-        const igId = conn.platform_account_id;
-        const out = await (await import('./meta.js')).publishInstagram({
-          igUserId: igId, pageToken, caption: String(body.ig_caption ?? fallbackText), alt: String(body.ig_alt || ''), mediaUrl: publicUrl, isVideo: !!file?.mimetype.startsWith('video/'),
+        const link = String(body.fb_link || '').trim() || null;
+        const ageMin = ['13', '18', '21', '25'].includes(String(body.fb_age || '')) ? Number(body.fb_age) : null;
+        const ctaType = ['LEARN_MORE', 'SHOP_NOW', 'SIGN_UP', 'MESSAGE_PAGE'].includes(body.fb_cta) ? body.fb_cta : null;
+        const out = await publishFacebook({
+          pageId: conn.platform_account_id, pageToken,
+          text: String(body.fb_message ?? fallbackText),
+          link,
+          linkMeta: {
+            name: String(body.fb_link_name || '').trim() || null,
+            caption: String(body.fb_link_caption || '').trim() || null,
+            description: String(body.fb_link_desc || '').trim() || null,
+            picture: String(body.fb_link_pic || '').trim() || null,
+          },
+          targeting: ageMin ? { age_min: ageMin } : null,
+          cta: ctaType && link ? { type: ctaType } : null,
+          unpublished: String(body.fb_unpublished || '') === '1',
+          media,
         });
         job.url = out.url;
+        // Optional mirror to Instagram (needs media; text-only cannot mirror).
+        if (String(body.fb_synd_ig || '') === '1') {
+          const igConn = await otherConn('instagram', body.ig_connection_id);
+          if (!igConn) {
+            job.warning = 'Facebook published, but no Instagram account was chosen for the mirror.';
+          } else if (!publicUrl) {
+            job.warning = 'Facebook published. Instagram mirror skipped: attach a photo or video to mirror.';
+          } else {
+            try {
+              const igTokens = dec(igConn.encrypted_tokens);
+              await meta.publishInstagram({
+                igUserId: igConn.platform_account_id, pageToken: igTokens.access_token,
+                caption: String(body.fb_message ?? fallbackText),
+                mediaUrl: publicUrl, isVideo: !!file?.mimetype.startsWith('video/'),
+              });
+              job.warning = 'Also mirrored to Instagram.';
+            } catch (e) {
+              job.warning = `Facebook published, but the Instagram mirror failed: ${e.message}`;
+            }
+          }
+        }
+      } else {
+        const igId = conn.platform_account_id;
+        // Topics ride along as hashtags; partner mention rides as an @mention.
+        let caption = String(body.ig_caption ?? fallbackText);
+        const topics = splitTags(body.ig_topics).slice(0, 3).map((t) => `#${t}`);
+        if (topics.length) caption = `${caption}\n\n${topics.join(' ')}`.trim();
+        const partner = String(body.ig_partner || '').trim().replace(/^@+/, '');
+        if (partner) caption = `${caption}\n\nPaid partnership with @${partner}`.trim();
+        const collabs = String(body.ig_collabs || '').split(/[, ]+/).map((s) => s.trim().replace(/^@+/, '')).filter(Boolean).slice(0, 3);
+        const locationId = String(body.ig_location || '').trim() || null;
+        const out = await meta.publishInstagram({
+          igUserId: igId, pageToken, caption,
+          alt: String(body.ig_alt || ''), collabs, locationId,
+          mediaUrl: publicUrl, isVideo: !!file?.mimetype.startsWith('video/'),
+        });
+        job.url = out.url;
+        // Optional mirror to the linked Facebook Page.
+        if (String(body.ig_share_fb || '') === '1') {
+          const fbConn = await otherConn('facebook', body.fb_connection_id);
+          if (!fbConn) {
+            job.warning = 'Instagram published, but no Facebook Page was chosen for sharing.';
+          } else {
+            try {
+              const fbTokens = dec(fbConn.encrypted_tokens);
+              await publishFacebook({
+                pageId: fbConn.platform_account_id, pageToken: fbTokens.access_token,
+                text: caption, media,
+              });
+              job.warning = 'Also shared to the Facebook Page.';
+            } catch (e) {
+              job.warning = `Instagram published, but Facebook sharing failed: ${e.message}`;
+            }
+          }
+        }
       }
     }
     job.state = 'completed'; job.progress = 100; job.message = 'Published'; job.completedAt = Date.now();

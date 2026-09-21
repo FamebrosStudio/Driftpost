@@ -101,7 +101,7 @@ export async function getMetaPages(userToken) {
   return all.filter((p) => (seen.has(p.id) ? false : (seen.add(p.id), true)));
 }
 
-export async function publishFacebook({ pageId, pageToken, text, link, media }) {
+export async function publishFacebook({ pageId, pageToken, text, link, linkMeta, targeting, cta, unpublished, media }) {
   // media: multer file or undefined. Text-only -> /feed. Photo -> /photos. Video -> /videos.
   if (media?.mimetype?.startsWith('video/')) {
     const form = new FormData();
@@ -121,22 +121,37 @@ export async function publishFacebook({ pageId, pageToken, text, link, media }) 
     if (!res.ok) throw await graphError(res, 'Facebook photo failed');
     return { id: data.id, url: `https://www.facebook.com/photo.php?fbid=${data.id}` };
   }
+  const feedBody = { message: text, access_token: pageToken };
+  if (link) {
+    feedBody.link = link;
+    if (linkMeta?.name) feedBody.name = linkMeta.name;
+    if (linkMeta?.caption) feedBody.caption = linkMeta.caption;
+    if (linkMeta?.description) feedBody.description = linkMeta.description;
+    if (linkMeta?.picture) feedBody.picture = linkMeta.picture;
+    if (cta?.type) {
+      feedBody.call_to_action = { type: cta.type, value: { link } };
+    }
+  }
+  if (targeting?.age_min) feedBody.feed_targeting = { age_min: targeting.age_min };
+  if (unpublished) feedBody.published = false;
   const res = await fetch(`${GRAPH}/${pageId}/feed`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ message: text, ...(link ? { link } : {}), access_token: pageToken }),
+    body: JSON.stringify(feedBody),
   });
   const data = await res.json();
   if (!res.ok) throw new Error(data.error?.message || 'Facebook post failed');
   return { id: data.id, url: `https://www.facebook.com/${String(data.id).replace('_', '/posts/')}` };
 }
 
-export async function publishInstagram({ igUserId, pageToken, caption, alt, mediaUrl, isVideo }) {
+export async function publishInstagram({ igUserId, pageToken, caption, alt, collabs, locationId, mediaUrl, isVideo }) {
   if (!mediaUrl) throw new Error('Instagram needs a photo or video. Attach media first.');
   const createParams = {
     caption: caption || '',
     access_token: pageToken,
     ...(alt ? { accessibility_caption: String(alt).slice(0, 500) } : {}),
+    ...(Array.isArray(collabs) && collabs.length ? { collaborators: collabs } : {}),
+    ...(locationId ? { location_id: String(locationId) } : {}),
     ...(isVideo ? { media_type: 'REELS', video_url: mediaUrl } : { image_url: mediaUrl }),
   };
   const cRes = await fetch(`${GRAPH}/${igUserId}/media`, {
