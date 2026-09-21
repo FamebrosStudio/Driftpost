@@ -79,7 +79,91 @@ function SpotLine({ text }) {
   );
 }
 
-function Landing({ onEnter, session }) {
+const PUB_PAGES = [
+  { id: 'home', label: 'Home' },
+  { id: 'about', label: 'About' },
+  { id: 'how', label: 'How to use' },
+  { id: 'platforms', label: 'Platforms' },
+  { id: 'faq', label: 'FAQ' },
+  { id: 'contact', label: 'Contact' },
+];
+
+const PUB_CONTENT = {
+  about: {
+    kicker: 'What is Drift Post',
+    title: 'One screen for every audience you own.',
+    intro: 'Driftpost is a publishing console for people who run many brands — agencies, studios, creators. Instead of opening YouTube Studio, Meta Business Suite, and X in twelve tabs, you pick the brand once and post to all four platforms from four side-by-side cards.',
+    sections: [
+      { h: 'Brand-first, not platform-first', p: 'Agencies think in clients: Velvet Salon, SK Furniture, Sarang Hospital. Driftpost groups every connected account under its brand and auto-matches the same brand across YouTube, Instagram, Facebook and X.' },
+      { h: 'Every native option', p: 'Titles, tags, thumbnails and visibility for YouTube. Captions, alt text and collaborators for Instagram. Links, buttons and age limits for Facebook. Polls and reply controls for X. If the platform API allows it, the card has it.' },
+      { h: 'Direct publishing only', p: 'Nothing is scheduled, queued, or automated behind your back. Every post goes out the second you press publish — from your accounts, with your tokens, encrypted at rest.' },
+    ],
+  },
+  how: {
+    kicker: 'How to use',
+    title: 'Live in five minutes.',
+    intro: 'Follow these once. After that, posting for any brand takes under a minute.',
+    sections: [
+      { h: '1 · Sign in', p: 'Open the site, press Get started, continue with Google or email. You land on the home page first every visit — press Enter console.' },
+      { h: '2 · Connect accounts', p: 'Go to Accounts and connect YouTube (Google login), Facebook + Instagram (one Meta login covers both), and X. Each brand owner connects once. Take the 30-second tour when offered.' },
+      { h: '3 · Pick your brand', p: 'Back on Platforms, choose the brand from the menu. Its accounts load into the four cards automatically. Star active clients with the ⋯ menu; hide the rest.' },
+      { h: '4 · Drop media, write once', p: 'Add one photo or video and one caption. Shared content fills every card; open a card to fine-tune that platform only.' },
+      { h: '5 · Publish', p: 'Press a card to publish one platform, or Publish all for everything. Done ✓ links appear under each card.' },
+    ],
+  },
+  platforms: {
+    kicker: 'Platforms',
+    title: 'Four platforms. Zero tabs.',
+    intro: 'Each card mirrors what the platform itself asks for — nothing missing, nothing invented.',
+    sections: [
+      { h: 'YouTube', p: 'Video + title, description, tags, visibility, thumbnail, category, made-for-kids, license, embedding, stats visibility, subscriber notifications. Private first, public when ready.' },
+      { h: 'Instagram', p: 'Photo or reel + caption, alt text, topics, paid-partner mentions, up-to-3 collaborators, location, one-tap mirror to the Facebook Page.' },
+      { h: 'Facebook', p: 'Message, link with custom preview title/caption/image, call-to-action buttons, 13/18/21/25+ age limits, unpublished dark posts, mirror to Instagram.' },
+      { h: 'X', p: '280 characters with live counter, photos/GIF/video, 2–4 choice polls with durations, who-can-reply controls.' },
+    ],
+  },
+  faq: {
+    kicker: 'FAQ',
+    title: 'Asked often.',
+    intro: '',
+    sections: [
+      { h: 'Is it free?', p: 'Yes while in beta. YouTube, Meta and Supabase free tiers cover normal agency volume. X may need a paid tier if you post at high volume — that is X billing you, not us.' },
+      { h: 'Why is a page missing after connecting?', p: 'Meta only returns what the logged-in Facebook user manages and what was ticked in the grant dialog. Portfolio-owned pages need their portfolio selected during login. Reconnect with “all current and future” and tick everything.' },
+      { h: 'Where are my tokens?', p: 'Encrypted in your Supabase project. The app servers never log them, and disconnecting deletes them.' },
+      { h: 'Can clients share one login?', p: 'Yes — connect every portfolio under one login and switch brands from the menu. Or give each client their own login for strict isolation. Both work.' },
+      { h: 'Does it schedule posts?', p: 'No. Driftpost publishes the second you press the button — direct publishing only, by design.' },
+    ],
+  },
+  contact: {
+    kicker: 'Contact',
+    title: 'Talk to a human.',
+    intro: 'Bug reports, brand onboarding help, feature asks — everything lands in one place.',
+    sections: [
+      { h: 'GitHub', p: 'Open an issue at github.com/FamebrosStudio/Driftpost — fastest for bugs, paste the exact error text.' },
+      { h: 'Email', p: 'Write to famebros.studio@gmail.com with your brand name and a screenshot.' },
+      { h: 'What to include', p: 'Platform (YouTube/Instagram/Facebook/X), brand name, what you clicked, and what the card said. That is everything needed to fix it.' },
+    ],
+  },
+};
+
+function DocPage({ page }) {
+  const c = PUB_CONTENT[page];
+  if (!c) return null;
+  return (
+    <div className="doc-wrap">
+      <div className="landing-kicker">{c.kicker}</div>
+      <h1 className="doc-title">{c.title}</h1>
+      {c.intro && <p className="doc-intro">{c.intro}</p>}
+      <div className="doc-list">
+        {c.sections.map((s, i) => (
+          <div key={i} className="zig-copy"><span className="zig-n">{String(i + 1).padStart(2, '0')}</span><h2>{s.h}</h2><p>{s.p}</p></div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function Landing({ onEnter, session, pubPage, setPubPage }) {
   const dock = [
     { id: 'youtube', tip: 'YouTube — video, titles, tags', href: 'https://www.youtube.com' },
     { id: 'instagram', tip: 'Instagram — reels, captions', href: 'https://www.instagram.com' },
@@ -103,8 +187,14 @@ function Landing({ onEnter, session }) {
       <div className="rain" />
       <nav className="land-nav">
         <img className="logo-img logo-d" src="/logo-dark.png" alt="Driftpost" />
+        <div className="land-links">
+          {PUB_PAGES.map((p) => (
+            <button key={p.id} className={pubPage === p.id ? 'on' : ''} onClick={() => setPubPage(p.id)}>{p.label}</button>
+          ))}
+        </div>
         <button className="skew-btn grad" onClick={onEnter}><span>{session ? 'Enter console →' : 'Get started →'}</span></button>
       </nav>
+      {pubPage === 'home' ? <>
       <header className="landing-in">
         <div className="landing-kicker">Driftpost — publish everywhere</div>
         <h1><SpotLine text="Post once." /><br /><SpotLine text="Everywhere." /></h1>
@@ -154,6 +244,7 @@ function Landing({ onEnter, session }) {
       <div className="marquee" aria-hidden="true"><div className="marquee-in">
         {['Velvet Salon', 'SK Furniture', 'Kanchanmala Jewellers', 'Sarang Hospital', 'Luxxe Nail Studio', 'MAP Clothing', 'Pixi Grow', 'Anand Furniture'].map((b) => <span key={b}>{b} ✦</span>)}
       </div></div>
+      </> : <DocPage page={pubPage} />}
       <footer className="land-foot">
         <h2>Stop opening four apps.</h2>
         <button className="skew-btn grad" onClick={onEnter}><span>{session ? 'Enter console →' : 'Start free →'}</span></button>
@@ -814,6 +905,7 @@ export default function App() {
   const [mode, setMode] = useState('login');
   const [entry, setEntry] = useState('landing');
   const [entered, setEntered] = useState(false);
+  const [pubPage, setPubPage] = useState('home');
   const [tour, setTour] = useState(null); // null | 'ask' | number (step index)
   const FRESH_KEY = 'driftpost-fresh-login';
   const markFreshLogin = () => { try { sessionStorage.setItem(FRESH_KEY, '1'); } catch {} };
@@ -867,13 +959,17 @@ export default function App() {
 
   useEffect(() => {
     document.title = !session
-      ? entry === 'landing' ? 'Driftpost — Publish Everywhere' : 'Sign in · Driftpost'
+      ? entry === 'landing'
+        ? (pubPage === 'home' ? 'Driftpost — Publish Everywhere' : `${PUB_PAGES.find((p) => p.id === pubPage)?.label} · Driftpost`)
+        : 'Sign in · Driftpost'
       : view === 'accounts' ? 'Accounts · Driftpost' : 'Platforms · Driftpost';
-  }, [session, entry, view]);
+  }, [session, entry, view, pubPage]);
+
+  useEffect(() => { window.scrollTo(0, 0); }, [pubPage]);
 
   if (loading) return <div className="loader-wrap"><div className="bounce"><span className="circle" /><span className="circle" /><span className="circle" /><span className="shadow" /><span className="shadow" /><span className="shadow" /></div></div>;
-  if (!session) return entry === 'landing' ? <Landing session={false} onEnter={() => setEntry('auth')} /> : <Auth mode={mode} setMode={setMode} onBack={() => setEntry('landing')} markFresh={markFreshLogin} />;
-  if (!entered) return <Landing session onEnter={() => setEntered(true)} />;
+  if (!session) return entry === 'landing' ? <Landing session={false} pubPage={pubPage} setPubPage={setPubPage} onEnter={() => setEntry('auth')} /> : <Auth mode={mode} setMode={setMode} onBack={() => setEntry('landing')} markFresh={markFreshLogin} />;
+  if (!entered) return <Landing session pubPage={pubPage} setPubPage={setPubPage} onEnter={() => setEntered(true)} />;
 
   if (!['create', 'accounts'].includes(view)) {
     return (
