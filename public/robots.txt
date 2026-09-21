@@ -1,0 +1,36 @@
+# Driftpost robots.txt — never block Google or verified AI crawlers.
+# Only aggressive/scraper SEO bots are restricted. Everything else is welcome.
+
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
+
+User-agent: BLEXBot
+Disallow: /
+
+User-agent: MegaIndex.ru
+Disallow: /
+
+User-agent: Barkrowler
+Disallow: /
+
+User-agent: DataForSeoBot
+Disallow: /
+
+User-agent: serpstatbot
+Disallow: /
+
+# Everyone else — Google, Bing, GPTBot, ChatGPT-User, ClaudeBot,
+# anthropic-ai, PerplexityBot, Google-Extended — fully allowed.
+User-agent: *
+Allow: /
+
+Sitemap: https://driftpostpage.vercel.app/sitemap.xml

@@ -1,0 +1,13 @@
+{
+  "name": "Driftpost",
+  "short_name": "Driftpost",
+  "description": "Pick a brand, post to YouTube, Instagram, Facebook and X together.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "icons": [
+    { "src": "/favicon-dark.png", "sizes": "256x256", "type": "image/png" },
+    { "src": "/favicon-light.png", "sizes": "256x256", "type": "image/png" }
+  ]
+}

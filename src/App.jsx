@@ -963,6 +963,9 @@ export default function App() {
         ? (pubPage === 'home' ? 'Driftpost — Publish Everywhere' : `${PUB_PAGES.find((p) => p.id === pubPage)?.label} · Driftpost`)
         : 'Sign in · Driftpost'
       : view === 'accounts' ? 'Accounts · Driftpost' : 'Platforms · Driftpost';
+    // Landing pages are public and indexable; the console and auth stay private.
+    const isPublic = !session && entry === 'landing';
+    document.querySelector('meta[name="robots"]')?.setAttribute('content', isPublic ? 'index, follow, max-image-preview:large' : 'noindex, nofollow');
   }, [session, entry, view, pubPage]);
 
   useEffect(() => { window.scrollTo(0, 0); }, [pubPage]);
