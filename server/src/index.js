@@ -210,11 +210,20 @@ async function runPublish(job, conn, file, body, userId) {
         ? (body.yt_privacy || body.privacy) : 'private';
       if (!file || !file.mimetype.startsWith('video/')) throw new Error('YouTube needs a video file');
       if (!title) throw new Error('YouTube needs a title');
+      const categoryId = /^\d{1,3}$/.test(String(body.yt_category || '')) ? String(body.yt_category) : null;
+      const madeForKids = body.yt_kids === 'yes' ? true : body.yt_kids === 'no' ? false : null;
+      const license = ['youtube', 'creativeCommon'].includes(body.yt_license) ? body.yt_license : null;
+      const embeddable = body.yt_embed === 'yes' ? true : body.yt_embed === 'no' ? false : null;
+      const publicStatsViewable = body.yt_stats === 'yes' ? true : body.yt_stats === 'no' ? false : null;
       job.state = 'uploading'; job.message = 'Uploading to YouTube';
       const token = await validAccessToken(supabase, conn);
       const video = await uploadVideoResumable({
         accessToken: token, file,
-        metadata: { title, description, tags: splitTags(body.yt_tags ?? body.tags), privacy },
+        metadata: {
+          title, description, tags: splitTags(body.yt_tags ?? body.tags), privacy,
+          categoryId, madeForKids, license, embeddable, publicStatsViewable,
+          notifySubscribers: body.yt_notify === 'off' ? false : true,
+        },
         onProgress: (p) => { job.progress = p; },
       });
       job.url = `https://www.youtube.com/watch?v=${video.id}`;
@@ -232,7 +241,7 @@ async function runPublish(job, conn, file, body, userId) {
         mediaId = await uploadXMedia(token, file, (p) => { job.progress = Math.min(90, Math.round(p * 0.9)); });
       }
       job.state = 'publishing'; job.progress = 95; job.message = 'Posting to X';
-      const post = await createXPost(token, xText, mediaId);
+      const post = await createXPost(token, xText, mediaId, body.x_reply);
       job.url = `https://x.com/i/status/${post.id}`;
     } else {
       const { decryptJson: dec } = await import('./crypto.js');
@@ -261,7 +270,7 @@ async function runPublish(job, conn, file, body, userId) {
       } else {
         const igId = conn.platform_account_id;
         const out = await (await import('./meta.js')).publishInstagram({
-          igUserId: igId, pageToken, caption: String(body.ig_caption ?? fallbackText), mediaUrl: publicUrl, isVideo: !!file?.mimetype.startsWith('video/'),
+          igUserId: igId, pageToken, caption: String(body.ig_caption ?? fallbackText), alt: String(body.ig_alt || ''), mediaUrl: publicUrl, isVideo: !!file?.mimetype.startsWith('video/'),
         });
         job.url = out.url;
       }

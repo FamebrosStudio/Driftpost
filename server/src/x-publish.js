@@ -113,11 +113,15 @@ export async function uploadXMedia(accessToken, file, onProgress) {
   return uploadChunkedMedia(accessToken, file, onProgress);
 }
 
-export async function createXPost(accessToken, text, mediaId) {
+export async function createXPost(accessToken, text, mediaId, replySettings) {
   const response = await fetch(POSTS_URL, {
     method: 'POST',
     headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ text, ...(mediaId ? { media: { media_ids: [String(mediaId)] } } : {}) }),
+    body: JSON.stringify({
+      text,
+      ...(mediaId ? { media: { media_ids: [String(mediaId)] } } : {}),
+      ...(['following', 'mentionedUsers'].includes(replySettings) ? { reply_settings: replySettings } : {}),
+    }),
   });
   if (!response.ok) throw await xError(response, 'X post failed');
   const body = await response.json();

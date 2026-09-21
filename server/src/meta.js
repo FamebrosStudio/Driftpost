@@ -131,11 +131,12 @@ export async function publishFacebook({ pageId, pageToken, text, link, media }) 
   return { id: data.id, url: `https://www.facebook.com/${String(data.id).replace('_', '/posts/')}` };
 }
 
-export async function publishInstagram({ igUserId, pageToken, caption, mediaUrl, isVideo }) {
+export async function publishInstagram({ igUserId, pageToken, caption, alt, mediaUrl, isVideo }) {
   if (!mediaUrl) throw new Error('Instagram needs a photo or video. Attach media first.');
   const createParams = {
     caption: caption || '',
     access_token: pageToken,
+    ...(alt ? { accessibility_caption: String(alt).slice(0, 500) } : {}),
     ...(isVideo ? { media_type: 'REELS', video_url: mediaUrl } : { image_url: mediaUrl }),
   };
   const cRes = await fetch(`${GRAPH}/${igUserId}/media`, {

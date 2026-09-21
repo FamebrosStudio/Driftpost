@@ -36,7 +36,21 @@ export async function validAccessToken(supabase, connection) {
 }
 
 export async function uploadVideoResumable({ accessToken, file, metadata, onProgress }) {
-  const init = await fetch('https://www.googleapis.com/upload/youtube/v3/videos?uploadType=resumable&part=snippet,status', {
+  let initEndpoint = 'https://www.googleapis.com/upload/youtube/v3/videos?uploadType=resumable&part=snippet,status';
+  if (metadata.notifySubscribers === false) initEndpoint += '&notifySubscribers=false';
+  const status = { privacyStatus: metadata.privacy };
+  if (metadata.madeForKids === true || metadata.madeForKids === false) {
+    status.madeForKids = metadata.madeForKids;
+    status.selfDeclaredMadeForKids = true;
+  }
+  if (metadata.license) status.license = metadata.license;
+  if (metadata.embeddable === true || metadata.embeddable === false) status.embeddable = metadata.embeddable;
+  if (metadata.publicStatsViewable === true || metadata.publicStatsViewable === false) {
+    status.publicStatsViewable = metadata.publicStatsViewable;
+  }
+  const snippet = { title: metadata.title, description: metadata.description, tags: metadata.tags };
+  if (metadata.categoryId) snippet.categoryId = metadata.categoryId;
+  const init = await fetch(initEndpoint, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -44,10 +58,7 @@ export async function uploadVideoResumable({ accessToken, file, metadata, onProg
       'X-Upload-Content-Length': String(file.size),
       'X-Upload-Content-Type': file.mimetype,
     },
-    body: JSON.stringify({
-      snippet: { title: metadata.title, description: metadata.description, tags: metadata.tags },
-      status: { privacyStatus: metadata.privacy },
-    }),
+    body: JSON.stringify({ snippet, status }),
   });
   if (!init.ok) throw await gerr(init, 'Unable to start YouTube upload');
   const url = init.headers.get('location');

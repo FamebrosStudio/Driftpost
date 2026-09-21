@@ -64,7 +64,36 @@ function Auth({ mode, setMode }) {
   );
 }
 
-function BrandPicker({ brands, brandKey, onPick }) {
+function useLocalSet(key) {
+  const [set, setSet] = useState(() => {
+    try { return new Set(JSON.parse(localStorage.getItem(key) || '[]')); }
+    catch { return new Set(); }
+  });
+  const save = (next) => { setSet(next); localStorage.setItem(key, JSON.stringify([...next])); };
+  const add = (id) => save(new Set([...set, id]));
+  const remove = (id) => { const n = new Set(set); n.delete(id); save(n); };
+  return [set, add, remove];
+}
+
+const isEffectiveActive = (conn, manual) => manual.has(conn.id) || isActiveBrand(conn.account_name);
+
+function DotsMenu({ active, hidden, onToggleActive, onToggleHidden }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <span className="dots">
+      <button className="mini" onClick={() => setOpen((o) => !o)}>⋯</button>
+      {open && <>
+        <span className="dd-backdrop" onClick={() => setOpen(false)} />
+        <span className="dots-menu">
+          <button onClick={() => { onToggleActive(); setOpen(false); }}>{active ? '★ Unmark Active' : '☆ Mark Active'}</button>
+          <button onClick={() => { onToggleHidden(); setOpen(false); }}>{hidden ? 'Unhide' : 'Hide'}</button>
+        </span>
+      </>}
+    </span>
+  );
+}
+
+function BrandPicker({ brands, brandKey, onPick, isActive }) {
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState('');
   const current = brands.find((b) => b.key === brandKey);
@@ -83,7 +112,7 @@ function BrandPicker({ brands, brandKey, onPick }) {
           {list.map((b) => (
             <button key={b.key} className={b.key === brandKey ? 'dd-item sel' : 'dd-item'} onClick={() => { onPick(b.key); setOpen(false); setQ(''); }}>
               <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{b.label}</span>
-              {isActiveBrand(b.label) && <span className="star">★ active</span>}
+              {(isActive ? isActive(b) : isActiveBrand(b.label)) && <span className="star">★ active</span>}
             </button>
           ))}
           {!list.length && <div className="banner" style={{ margin: 4 }}>No brand matches.</div>}
@@ -94,21 +123,20 @@ function BrandPicker({ brands, brandKey, onPick }) {
 }
 
 function Composer({ session, connections, reload }) {
-  const [hidden] = useState(() => {
-    try { return new Set(JSON.parse(localStorage.getItem(`driftpost-hidden:${session.user.id}`) || '[]')); }
-    catch { return new Set(); }
-  });
-  const vis = useMemo(() => connections.filter((c) => !hidden.has(c.id)), [connections]);
+  const [hidden] = useLocalSet(`driftpost-hidden:${session.user.id}`);
+  const [manualActive] = useLocalSet(`driftpost-active:${session.user.id}`);
+  const vis = useMemo(() => connections.filter((c) => !hidden.has(c.id)), [connections, hidden]);
   const brands = useMemo(() => groupBrands(vis), [vis]);
+  const brandActive = (b) => isActiveBrand(b.label) || Object.values(b.map).some((id) => manualActive.has(id));
   const [brandKey, setBrandKey] = useState('');
   const [over, setOver] = useState({});
   const [file, setFile] = useState(null);
   const [thumb, setThumb] = useState(null);
   const [caption, setCaption] = useState('');
-  const [yt, setYt] = useState({ title: '', description: '', tags: '', privacy: 'private' });
-  const [ig, setIg] = useState({ caption: '' });
+  const [yt, setYt] = useState({ title: '', description: '', tags: '', privacy: 'private', category: '', kids: '', license: '', embed: '', stats: '', notify: 'on' });
+  const [ig, setIg] = useState({ caption: '', alt: '' });
   const [fb, setFb] = useState({ message: '', link: '' });
-  const [x, setX] = useState({ text: '' });
+  const [x, setX] = useState({ text: '', reply: 'everyone' });
   const [busy, setBusy] = useState({});
   const [results, setResults] = useState({});
   const inputRef = useRef();
@@ -116,8 +144,7 @@ function Composer({ session, connections, reload }) {
 
   useEffect(() => {
     if (!brandKey && brands.length) {
-      const active = brands.find((b) => isActiveBrand(b.label));
-      setBrandKey((active || brands[0]).key);
+      setBrandKey((brands.find((b) => brandActive(b)) || brands[0]).key);
     }
   }, [brands, brandKey]);
 
@@ -149,10 +176,18 @@ function Composer({ session, connections, reload }) {
     form.append('yt_description', yt.description);
     form.append('yt_tags', yt.tags);
     form.append('yt_privacy', yt.privacy);
+    form.append('yt_category', yt.category);
+    form.append('yt_kids', yt.kids);
+    form.append('yt_license', yt.license);
+    form.append('yt_embed', yt.embed);
+    form.append('yt_stats', yt.stats);
+    form.append('yt_notify', yt.notify);
     form.append('ig_caption', ig.caption);
+    form.append('ig_alt', ig.alt);
     form.append('fb_message', fb.message);
     form.append('fb_link', fb.link);
     form.append('x_text', x.text);
+    form.append('x_reply', x.reply);
     if (file?.raw) form.append('media', file.raw);
     if (platform === 'youtube' && thumb?.raw) form.append('thumbnail', thumb.raw);
     return form;
@@ -222,7 +257,7 @@ function Composer({ session, connections, reload }) {
   return (
     <div>
       <div className="brandbar">
-        <BrandPicker brands={brands} brandKey={brandKey} onPick={(k) => { setBrandKey(k); setResults({}); }} />
+        <BrandPicker brands={brands} brandKey={brandKey} isActive={(b) => brandActive(b)} onPick={(k) => { setBrandKey(k); setResults({}); }} />
         <button className="primary" style={{ width: 'auto', marginTop: 0, padding: '10px 26px' }} onClick={publishAll} disabled={Object.values(busy).some(Boolean)}>Publish all</button>
       </div>
 
@@ -271,6 +306,65 @@ function Composer({ session, connections, reload }) {
                   <label className="field-mini"><span>Description</span><textarea value={yt.description} onChange={(e) => setYt({ ...yt, description: e.target.value })} placeholder="Shared caption if empty" /></label>
                   <label className="field-mini"><span>Tags · comma separated</span><input value={yt.tags} onChange={(e) => setYt({ ...yt, tags: e.target.value })} placeholder="salon, bridal, mumbai" /></label>
                   <div className="row2">
+                    <label className="field-mini"><span>Category</span>
+                      <select value={yt.category} onChange={(e) => setYt({ ...yt, category: e.target.value })}>
+                        <option value="">YouTube default</option>
+                        <option value="1">Film & Animation</option>
+                        <option value="2">Autos & Vehicles</option>
+                        <option value="10">Music</option>
+                        <option value="15">Pets & Animals</option>
+                        <option value="17">Sports</option>
+                        <option value="19">Travel & Events</option>
+                        <option value="20">Gaming</option>
+                        <option value="22">People & Blogs</option>
+                        <option value="23">Comedy</option>
+                        <option value="24">Entertainment</option>
+                        <option value="25">News & Politics</option>
+                        <option value="26">Howto & Style</option>
+                        <option value="27">Education</option>
+                        <option value="28">Science & Technology</option>
+                      </select>
+                    </label>
+                    <label className="field-mini"><span>Made for kids</span>
+                      <select value={yt.kids} onChange={(e) => setYt({ ...yt, kids: e.target.value })}>
+                        <option value="">Not sure (default)</option>
+                        <option value="yes">Yes, for kids</option>
+                        <option value="no">No, not for kids</option>
+                      </select>
+                    </label>
+                  </div>
+                  <div className="row2">
+                    <label className="field-mini"><span>License</span>
+                      <select value={yt.license} onChange={(e) => setYt({ ...yt, license: e.target.value })}>
+                        <option value="">Standard (default)</option>
+                        <option value="youtube">Standard YouTube</option>
+                        <option value="creativeCommon">Creative Commons</option>
+                      </select>
+                    </label>
+                    <label className="field-mini"><span>Embedding</span>
+                      <select value={yt.embed} onChange={(e) => setYt({ ...yt, embed: e.target.value })}>
+                        <option value="">Allow (default)</option>
+                        <option value="yes">Allow embedding</option>
+                        <option value="no">Block embedding</option>
+                      </select>
+                    </label>
+                  </div>
+                  <div className="row2">
+                    <label className="field-mini"><span>Public stats</span>
+                      <select value={yt.stats} onChange={(e) => setYt({ ...yt, stats: e.target.value })}>
+                        <option value="">Show (default)</option>
+                        <option value="yes">Show view counts</option>
+                        <option value="no">Hide view counts</option>
+                      </select>
+                    </label>
+                    <label className="field-mini"><span>Notify subs</span>
+                      <select value={yt.notify} onChange={(e) => setYt({ ...yt, notify: e.target.value })}>
+                        <option value="on">Notify (default)</option>
+                        <option value="off">Silent upload</option>
+                      </select>
+                    </label>
+                  </div>
+                  <div className="row2">
                     <label className="field-mini"><span>Visibility</span>
                       <select value={yt.privacy} onChange={(e) => setYt({ ...yt, privacy: e.target.value })}>
                         <option value="private">Private</option>
@@ -286,7 +380,8 @@ function Composer({ session, connections, reload }) {
                 </>}
 
                 {pid === 'instagram' && <>
-                  <label className="field-mini"><span>Caption · {(ig.caption || caption).length}/2200</span><textarea value={ig.caption} onChange={(e) => setIg({ caption: e.target.value })} placeholder="Shared caption if empty" /></label>
+                  <label className="field-mini"><span>Caption · {(ig.caption || caption).length}/2200</span><textarea value={ig.caption} onChange={(e) => setIg({ ...ig, caption: e.target.value })} placeholder="Shared caption if empty" /></label>
+                  <label className="field-mini"><span>Alt text · accessibility</span><input value={ig.alt} maxLength={500} onChange={(e) => setIg({ ...ig, alt: e.target.value })} placeholder="Describe the photo/video" /></label>
                 </>}
 
                 {pid === 'facebook' && <>
@@ -295,7 +390,14 @@ function Composer({ session, connections, reload }) {
                 </>}
 
                 {pid === 'x' && <>
-                  <label className="field-mini"><span>Post · {xLen}/280</span><textarea value={x.text} maxLength={400} onChange={(e) => setX({ text: e.target.value })} placeholder="Shared caption if empty" /></label>
+                  <label className="field-mini"><span>Post · {xLen}/280</span><textarea value={x.text} maxLength={400} onChange={(e) => setX({ ...x, text: e.target.value })} placeholder="Shared caption if empty" /></label>
+                  <label className="field-mini"><span>Who can reply</span>
+                    <select value={x.reply} onChange={(e) => setX({ ...x, reply: e.target.value })}>
+                      <option value="everyone">Everyone (default)</option>
+                      <option value="following">Accounts I follow</option>
+                      <option value="mentionedUsers">Only mentioned</option>
+                    </select>
+                  </label>
                   {xLen > 280 && <div className="sec-err">Too long for X.</div>}
                 </>}
 
@@ -319,17 +421,8 @@ function Accounts({ session, connections, setConnections }) {
   const [search, setSearch] = useState('');
   const [activeOnly, setActiveOnly] = useState(false);
   const [showHidden, setShowHidden] = useState(false);
-  const hidKey = `driftpost-hidden:${session.user.id}`;
-  const [hidden, setHidden] = useState(() => {
-    try { return new Set(JSON.parse(localStorage.getItem(hidKey) || '[]')); }
-    catch { return new Set(); }
-  });
-  const saveHidden = (next) => {
-    setHidden(next);
-    localStorage.setItem(hidKey, JSON.stringify([...next]));
-  };
-  const hide = (id) => saveHidden(new Set([...hidden, id]));
-  const unhide = (id) => { const n = new Set(hidden); n.delete(id); saveHidden(n); };
+  const [hiddenSet, hideId, unhideId] = useLocalSet(`driftpost-hidden:${session.user.id}`);
+  const [manualActive, markActive, unmarkActive] = useLocalSet(`driftpost-active:${session.user.id}`);
 
   const params = new URLSearchParams(window.location.search);
   useEffect(() => {
@@ -357,18 +450,18 @@ function Accounts({ session, connections, setConnections }) {
 
   const q = search.trim().toLowerCase();
   const matchFilters = (c) => {
-    if (!showHidden && hidden.has(c.id)) return false;
-    if (showHidden && !hidden.has(c.id)) return false;
-    if (activeOnly && !isActiveBrand(c.account_name)) return false;
+    if (!showHidden && hiddenSet.has(c.id)) return false;
+    if (showHidden && !hiddenSet.has(c.id)) return false;
+    if (activeOnly && !isEffectiveActive(c, manualActive)) return false;
     if (q && !c.account_name.toLowerCase().includes(q)) return false;
     return true;
   };
-  const visibleCount = connections.filter((c) => !hidden.has(c.id)).length;
+  const visibleCount = connections.filter((c) => !hiddenSet.has(c.id)).length;
 
   return (
     <div className="card" style={{ maxWidth: 680 }}>
       <h3>Accounts</h3>
-      <p className="sub">{visibleCount} visible · {hidden.size} hidden · Active badge = your 40 brands.</p>
+      <p className="sub">{visibleCount} visible · {hiddenSet.size} hidden · ★ = your active brands.</p>
       {msg && <div className="banner">{msg}</div>}
       <div className="row2" style={{ marginBottom: 6 }}>
         <label className="field" style={{ margin: 0 }}><span>Search</span><input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Salon, jewellers…" /></label>
@@ -400,17 +493,24 @@ function Accounts({ session, connections, setConnections }) {
               <span style={{ marginLeft: 'auto' }} />
               <button className="mini" disabled={!!busy} onClick={() => connect(p.id)}>{busy === p.id ? 'Opening…' : 'Connect another'}</button>
             </div>
-            {list.map((c) => (
+            {list.map((c) => {
+              const effActive = isEffectiveActive(c, manualActive);
+              const isHidden = hiddenSet.has(c.id);
+              return (
               <div key={c.id} className="list-row">
                 <span className="avatar">{(c.account_name || '?')[0].toUpperCase()}</span>
                 <div><b style={{ fontSize: 13 }}>{c.account_name}</b><small style={{ display: 'block', color: '#6b6b6b' }}>{p.name}</small></div>
-                {isActiveBrand(c.account_name) && <span className="badge ok">Active</span>}
-                {!showHidden
-                  ? <button className="mini" onClick={() => hide(c.id)}>Hide</button>
-                  : <button className="mini" onClick={() => unhide(c.id)}>Unhide</button>}
+                {effActive && <span className="badge ok">★ Active</span>}
+                <DotsMenu
+                  active={effActive}
+                  hidden={isHidden}
+                  onToggleActive={() => { manualActive.has(c.id) ? unmarkActive(c.id) : markActive(c.id); }}
+                  onToggleHidden={() => { isHidden ? unhideId(c.id) : hideId(c.id); }}
+                />
                 <button className="mini" disabled={!!busy} onClick={() => disconnect(c.id)}>Disconnect</button>
               </div>
-            ))}
+              );
+            })}
           </div>
         );
       })}
@@ -452,7 +552,7 @@ export default function App() {
         <button className={view === 'create' ? 'nav-btn active' : 'nav-btn'} onClick={() => setView('create')}>Compose</button>
         <button className={view === 'accounts' ? 'nav-btn active' : 'nav-btn'} onClick={() => setView('accounts')}>Accounts <em>{connections.length}</em></button>
         <div className="side-foot">
-          <div className="pro-card" style={{ background: '#191913', border: '1px solid #3a3524', borderRadius: 12, padding: 12, fontSize: 11, color: '#c9bfa5' }}>
+          <div className="pro-card" style={{ background: '#101838', border: '1px solid #2c3d66', borderRadius: 12, padding: 12, fontSize: 11, color: '#aeb9d8' }}>
             YouTube {counts.youtube || 0} · IG {counts.instagram || 0} · FB {counts.facebook || 0} · X {counts.x || 0}
           </div>
           <button className="user-chip" onClick={() => supabase?.auth.signOut()}>
