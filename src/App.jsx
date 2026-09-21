@@ -86,7 +86,14 @@ const PUB_PAGES = [
   { id: 'platforms', label: 'Platforms' },
   { id: 'faq', label: 'FAQ' },
   { id: 'contact', label: 'Contact' },
+  { id: 'privacy', label: 'Privacy', hidden: true },
+  { id: 'terms', label: 'Terms', hidden: true },
 ];
+
+const hashPage = () => {
+  const h = String(window.location.hash || '').replace(/^#\/?/, '').split('?')[0];
+  return PUB_PAGES.some((p) => p.id === h) ? h : 'home';
+};
 
 const PUB_CONTENT = {
   about: {
@@ -144,6 +151,30 @@ const PUB_CONTENT = {
       { h: 'What to include', p: 'Platform (YouTube/Instagram/Facebook/X), brand name, what you clicked, and what the card said. That is everything needed to fix it.' },
     ],
   },
+  privacy: {
+    kicker: 'Privacy Policy',
+    title: 'Your data stays yours.',
+    intro: 'Last updated September 2026. Driftpost publishes to your accounts — it does not sell, rent, or share your data with anyone.',
+    sections: [
+      { h: 'What we store', p: 'Your login email (Supabase Auth), your connected social accounts (names and IDs), and AES-256-GCM encrypted OAuth tokens. Uploaded media passes through encrypted transit to the platform you chose; Instagram copies travel via your private Supabase storage bucket.' },
+      { h: 'What we never do', p: 'No resale of data, no advertising profiles, no analytics on other users, no automated posting. Posts go out only when you press publish.' },
+      { h: 'Platform data', p: 'Publishing uses the official YouTube, Meta, and X APIs under permissions you grant. Each platform applies its own privacy policy to content you publish there.' },
+      { h: 'Deletion', p: 'Disconnect an account on the Accounts page to delete its tokens immediately. To erase everything, email famebros.studio@gmail.com with your login email.' },
+      { h: 'Contact', p: 'Questions: famebros.studio@gmail.com.' },
+    ],
+  },
+  terms: {
+    kicker: 'Terms of Service',
+    title: 'Simple rules.',
+    intro: 'Last updated September 2026. By using Driftpost you agree to the following.',
+    sections: [
+      { h: 'The service', p: 'Driftpost is provided as-is while in beta: a console that publishes content you compose to social accounts you connect. We may change or pause features at any time.' },
+      { h: 'Your responsibility', p: 'You own what you publish. Follow YouTube, Meta, and X rules, respect copyright, and only connect accounts you are allowed to post to. Platform rate limits and API changes are outside our control.' },
+      { h: 'Acceptable use', p: 'No spam, no bulk automation abuse, no unlawful content, no reselling access to the console without permission.' },
+      { h: 'Accounts', p: 'Keep your login safe. We may suspend accounts that abuse the service.' },
+      { h: 'Contact', p: 'famebros.studio@gmail.com.' },
+    ],
+  },
 };
 
 function DocPage({ page }) {
@@ -188,7 +219,7 @@ function Landing({ onEnter, session, pubPage, setPubPage }) {
       <nav className="land-nav">
         <img className="logo-img logo-d" src="/logo-dark.png" alt="Driftpost" />
         <div className="land-links">
-          {PUB_PAGES.map((p) => (
+          {PUB_PAGES.filter((p) => !p.hidden).map((p) => (
             <button key={p.id} className={pubPage === p.id ? 'on' : ''} onClick={() => setPubPage(p.id)}>{p.label}</button>
           ))}
         </div>
@@ -248,7 +279,10 @@ function Landing({ onEnter, session, pubPage, setPubPage }) {
       <footer className="land-foot">
         <h2>Stop opening four apps.</h2>
         <button className="skew-btn grad" onClick={onEnter}><span>{session ? 'Enter console →' : 'Start free →'}</span></button>
-        <div className="land-fine">Free while in beta · Your logins never leave the platforms · © {new Date().getFullYear()} Driftpost</div>
+        <div className="land-fine">
+          <span>Free while in beta · Your logins never leave the platforms · © {new Date().getFullYear()} Driftpost</span>
+          <span className="land-legal"><button className="link" onClick={() => setPubPage('privacy')}>Privacy</button> · <button className="link" onClick={() => setPubPage('terms')}>Terms</button></span>
+        </div>
       </footer>
     </div>
   );
@@ -905,7 +939,16 @@ export default function App() {
   const [mode, setMode] = useState('login');
   const [entry, setEntry] = useState('landing');
   const [entered, setEntered] = useState(false);
-  const [pubPage, setPubPage] = useState('home');
+  const [pubPage, setPubPageState] = useState(() => (typeof window !== 'undefined' ? hashPage() : 'home'));
+  const setPubPage = (id) => {
+    setPubPageState(id);
+    try { window.location.hash = `#/${id}`; } catch {}
+  };
+  useEffect(() => {
+    const onHash = () => setPubPageState(hashPage());
+    window.addEventListener('hashchange', onHash);
+    return () => window.removeEventListener('hashchange', onHash);
+  }, []);
   const [tour, setTour] = useState(null); // null | 'ask' | number (step index)
   const FRESH_KEY = 'driftpost-fresh-login';
   const markFreshLogin = () => { try { sessionStorage.setItem(FRESH_KEY, '1'); } catch {} };
