@@ -54,24 +54,63 @@ function BrandIcon({ id, size = 18 }) {
   );
 }
 
+function SpotLine({ text }) {
+  const ref = useRef(null);
+  const paint = (x) => {
+    const el = ref.current;
+    if (!el) return;
+    const kids = el.children;
+    for (let i = 0; i < kids.length; i++) {
+      const r = kids[i].getBoundingClientRect();
+      const d = Math.abs(x - (r.left + r.width / 2));
+      const glow = Math.max(0, 1 - d / 220);
+      kids[i].style.opacity = (0.3 + 0.7 * glow).toFixed(2);
+    }
+  };
+  return (
+    <span
+      ref={ref}
+      className="spot"
+      onMouseMove={(e) => paint(e.clientX)}
+      onMouseLeave={() => paint(-9999)}
+    >
+      {text.split('').map((ch, i) => <span key={i}>{ch === ' ' ? ' ' : ch}</span>)}
+    </span>
+  );
+}
+
 function Landing({ onEnter, session }) {
   const dock = [
-    { id: 'youtube', label: 'YT', tip: 'YouTube — video, titles, tags', href: 'https://www.youtube.com' },
-    { id: 'instagram', label: 'IG', tip: 'Instagram — reels, captions', href: 'https://www.instagram.com' },
-    { id: 'facebook', label: 'FB', tip: 'Facebook — pages, links', href: 'https://www.facebook.com' },
-    { id: 'x', label: 'X', tip: 'X — 280 chars, media', href: 'https://x.com' },
+    { id: 'youtube', tip: 'YouTube — video, titles, tags', href: 'https://www.youtube.com' },
+    { id: 'instagram', tip: 'Instagram — reels, captions', href: 'https://www.instagram.com' },
+    { id: 'facebook', tip: 'Facebook — pages, links', href: 'https://www.facebook.com' },
+    { id: 'x', tip: 'X — 280 chars, media', href: 'https://x.com' },
+  ];
+  const cards = [
+    { id: 'youtube', t: 'YouTube, handled', d: 'Titles, descriptions, tags, thumbnails, visibility — every upload setting, zero Studio tabs.' },
+    { id: 'instagram', t: 'Instagram, handled', d: 'Captions, alt text, collaborators, topics, location — reels and photos from one card.' },
+    { id: 'facebook', t: 'Facebook, handled', d: 'Messages, links with custom previews, action buttons, age limits, dark posts.' },
+    { id: 'x', t: 'X, handled', d: '280 characters, polls, reply controls, media — posted in one click.' },
+  ];
+  const steps = [
+    { n: '01', t: 'Connect once', d: 'Each brand owner links YouTube, Facebook, Instagram and X one time. Tokens stay encrypted; reconnects are one click.' },
+    { n: '02', t: 'Pick the brand', d: 'Choose Hair Match Salon, SK Furniture, Velvet Salon — Driftpost auto-loads that brand on all four platforms.' },
+    { n: '03', t: 'Drop and write', d: 'One photo or video, one caption. Shared everywhere instantly, then fine-tune per platform.' },
+    { n: '04', t: 'Fire everywhere', d: 'Publish per platform or hit Publish all. Watch Done ✓ roll across all four phones with view links.' },
   ];
   return (
     <div className="landing">
       <div className="rain" />
-      <div className="landing-in">
+      <nav className="land-nav">
         <img className="logo-img logo-d" src="/logo-dark.png" alt="Driftpost" />
-        <img className="logo-img logo-l" src="/logo-light.png" alt="Driftpost" />
+        <button className="skew-btn grad" onClick={onEnter}><span>{session ? 'Enter console →' : 'Get started →'}</span></button>
+      </nav>
+      <header className="landing-in">
         <div className="landing-kicker">Driftpost — publish everywhere</div>
-        <h1>One composer.<br /><em>Every platform.</em></h1>
+        <h1><SpotLine text="Post once." /><br /><SpotLine text="Everywhere." /></h1>
         <p>Pick a brand. Drop one file. Tune each platform exactly like its own app — then fire YouTube, Instagram, Facebook and X together.</p>
         <div className="landing-cta">
-          <button className="skew-btn grad" onClick={onEnter}><span>{session ? 'Enter console →' : 'Get started →'}</span></button>
+          <button className="skew-btn grad" onClick={onEnter}><span>{session ? 'Enter console →' : 'Get started free →'}</span></button>
         </div>
         <div className="social-dock">
           {dock.map((d) => (
@@ -84,9 +123,42 @@ function Landing({ onEnter, session }) {
         <div className="landing-stats">
           <span><b>4</b>platforms</span>
           <span><b>40+</b>brands</span>
-          <span><b>0</b>servers touched</span>
+          <span><b>1</b>screen</span>
+        </div>
+        <div className="scroll-hint">Scroll for the tour ↓</div>
+      </header>
+      <div className="hstrip-wrap">
+        <div className="hstrip-label">Drag sideways — every platform, covered ↓</div>
+        <div className="hstrip">
+          {cards.map((c) => (
+            <div key={c.id} className="hcard">
+              <span className="hcard-ic"><BrandIcon id={c.id} size={26} /></span>
+              <b>{c.t}</b>
+              <p>{c.d}</p>
+            </div>
+          ))}
+          <div className="hcard hot">
+            <b>40+ brands, one menu</b>
+            <p>Salons, jewellers, clinics, resorts — switch clients faster than opening tabs.</p>
+          </div>
         </div>
       </div>
+      <section className="zig">
+        {steps.map((s, i) => (
+          <div key={s.n} className={i % 2 ? 'zig-row flip' : 'zig-row'}>
+            <div className="zig-copy"><span className="zig-n">{s.n}</span><h2>{s.t}</h2><p>{s.d}</p></div>
+            <div className="zig-art"><span className="zig-big">{s.n}</span></div>
+          </div>
+        ))}
+      </section>
+      <div className="marquee" aria-hidden="true"><div className="marquee-in">
+        {['Velvet Salon', 'SK Furniture', 'Kanchanmala Jewellers', 'Sarang Hospital', 'Luxxe Nail Studio', 'MAP Clothing', 'Pixi Grow', 'Anand Furniture'].map((b) => <span key={b}>{b} ✦</span>)}
+      </div></div>
+      <footer className="land-foot">
+        <h2>Stop opening four apps.</h2>
+        <button className="skew-btn grad" onClick={onEnter}><span>{session ? 'Enter console →' : 'Start free →'}</span></button>
+        <div className="land-fine">Free while in beta · Your logins never leave the platforms · © {new Date().getFullYear()} Driftpost</div>
+      </footer>
     </div>
   );
 }
