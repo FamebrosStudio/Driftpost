@@ -13,7 +13,42 @@ function useSession() {
   return { session, loading };
 }
 
-function Auth({ mode, setMode }) {
+function Landing({ onEnter }) {
+  const dock = [
+    { id: 'youtube', label: 'YT', tip: 'YouTube — video, titles, tags', href: 'https://www.youtube.com' },
+    { id: 'instagram', label: 'IG', tip: 'Instagram — reels, captions', href: 'https://www.instagram.com' },
+    { id: 'facebook', label: 'FB', tip: 'Facebook — pages, links', href: 'https://www.facebook.com' },
+    { id: 'x', label: 'X', tip: 'X — 280 chars, media', href: 'https://x.com' },
+  ];
+  return (
+    <div className="landing">
+      <div className="rain" />
+      <div className="landing-in">
+        <div className="landing-kicker">Driftpost — publish everywhere</div>
+        <h1>One composer.<br /><em>Every platform.</em></h1>
+        <p>Pick a brand. Drop one file. Tune each platform exactly like its own app — then fire YouTube, Instagram, Facebook and X together.</p>
+        <div className="landing-cta">
+          <button className="skew-btn grad" onClick={onEnter}><span>Open console →</span></button>
+        </div>
+        <div className="social-dock">
+          {dock.map((d) => (
+            <span key={d.id} className="icon-content">
+              <a data-social={d.id} href={d.href} target="_blank" rel="noreferrer" aria-label={d.tip}><span className="filled" />{d.label}</a>
+              <span className="tooltip">{d.tip}</span>
+            </span>
+          ))}
+        </div>
+        <div className="landing-stats">
+          <span><b>4</b>platforms</span>
+          <span><b>40+</b>brands</span>
+          <span><b>0</b>servers touched</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Auth({ mode, setMode, onBack }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [busy, setBusy] = useState(false);
@@ -47,17 +82,18 @@ function Auth({ mode, setMode }) {
         <div className="brand"><span className="brand-mark">〜</span>Driftpost</div>
         <h1>{mode === 'login' ? 'Welcome back.' : 'Start posting.'}</h1>
         <p>One calm composer for YouTube, Instagram, Facebook and X. No noise.</p>
-        <button className="ghost" onClick={google} disabled={busy}>Continue with Google</button>
-        <form onSubmit={submit}>
-          <label className="field"><span>Email</span><input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" /></label>
-          <label className="field"><span>Password</span><input type="password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="At least 6 characters" /></label>
+        <form className="login-form" onSubmit={submit}>
+          <button className="skew-btn ghost" type="button" disabled={busy} onClick={google}><span>{mode === 'login' ? 'Continue with Google' : 'Sign up with Google'}</span></button>
+          <div className="input-span"><span className="label">Email address</span><input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" /></div>
+          <div className="input-span"><span className="label">Password</span><input type="password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="At least 6 characters" /></div>
           {error && <div className="alert err">{error}</div>}
           {info && <div className="banner">{info}</div>}
-          <button className="primary" disabled={busy}>{busy ? 'Please wait…' : mode === 'login' ? 'Sign in' : 'Create account'}</button>
+          <button className="skew-btn grad submit" disabled={busy}><span>{busy ? 'Please wait…' : mode === 'login' ? 'Sign in' : 'Create account'}</span></button>
         </form>
         <p className="note" style={{ textAlign: 'center' }}>
           {mode === 'login' ? 'New here?' : 'Have an account?'}{' '}
-          <button className="link" onClick={() => setMode(mode === 'login' ? 'signup' : 'login')}>{mode === 'login' ? 'Create account' : 'Sign in'}</button>
+          <button className="link" onClick={() => { setMode(mode === 'login' ? 'signup' : 'login'); setError(''); setInfo(''); }}>{mode === 'login' ? 'Create account' : 'Sign in'}</button>
+          {' · '}<button className="link" onClick={onBack}>← Back</button>
         </p>
       </div>
     </div>
@@ -138,6 +174,7 @@ function Composer({ session, connections, reload }) {
   const [fb, setFb] = useState({ message: '', link: '' });
   const [x, setX] = useState({ text: '', reply: 'everyone' });
   const [busy, setBusy] = useState({});
+  const [enabled, setEnabled] = useState({ youtube: true, instagram: true, facebook: true, x: true });
   const [results, setResults] = useState({});
   const inputRef = useRef();
   const thumbRef = useRef();
@@ -229,7 +266,7 @@ function Composer({ session, connections, reload }) {
   };
 
   const publishAll = async () => {
-    const targets = PLATFORMS.map((p) => p.id).filter((pid) => pick(pid));
+    const targets = PLATFORMS.map((p) => p.id).filter((pid) => pick(pid) && enabled[pid]);
     if (!targets.length) return;
     const out = { ...results };
     for (const platform of targets) {
@@ -258,7 +295,7 @@ function Composer({ session, connections, reload }) {
     <div>
       <div className="brandbar">
         <BrandPicker brands={brands} brandKey={brandKey} isActive={(b) => brandActive(b)} onPick={(k) => { setBrandKey(k); setResults({}); }} />
-        <button className="primary" style={{ width: 'auto', marginTop: 0, padding: '10px 26px' }} onClick={publishAll} disabled={Object.values(busy).some(Boolean)}>Publish all</button>
+        <button className="skew-btn grad" style={{ width: 'auto', marginTop: 0, padding: '10px 26px' }} onClick={publishAll} disabled={Object.values(busy).some(Boolean)}><span>Publish all</span></button>
       </div>
 
       <div className="share-row">
@@ -373,7 +410,7 @@ function Composer({ session, connections, reload }) {
                       </select>
                     </label>
                     <label className="field-mini"><span>Thumbnail</span>
-                      <button className="phone-btn" style={{ padding: '9px' }} onClick={() => thumbRef.current.click()}>{thumb ? '✓ picked' : 'Upload'}</button>
+                      <button className="skew-btn ghost" style={{ padding: '9px' }} onClick={() => thumbRef.current.click()}><span>{thumb ? '✓ picked' : 'Upload'}</span></button>
                       <input ref={thumbRef} type="file" accept="image/jpeg,image/png" hidden onChange={(e) => { const f = e.target.files[0]; if (f) setThumb({ raw: f, name: f.name }); }} />
                     </label>
                   </div>
@@ -401,10 +438,12 @@ function Composer({ session, connections, reload }) {
                   {xLen > 280 && <div className="sec-err">Too long for X.</div>}
                 </>}
 
-                <div className={r?.state === 'failed' ? 'phone-status fail' : 'phone-status'}>{secState(pid)}</div>
+                <div className={r?.state === 'failed' ? 'phone-status fail' : 'phone-status'}>{busy[pid] ? 'Sending' : secState(pid)}</div>
+                {busy[pid] && <div className="progress-loader"><div className="progress" /></div>}
                 {r?.state === 'failed' && <div className="sec-err">{r.message}</div>}
                 {r?.url && <a className="phone-link" href={r.url} target="_blank" rel="noreferrer">View post →</a>}
-                <button className="phone-btn" disabled={!!busy[pid] || (pid === 'x' && xLen > 280)} onClick={() => publishOne(pid)}>{busy[pid] ? 'Sending…' : `Publish ${p.name}`}</button>
+                <label className="ck"><input type="checkbox" checked={!!enabled[pid]} onChange={(e) => setEnabled((m) => ({ ...m, [pid]: e.target.checked }))} /><svg viewBox="0 0 64 64"><path className="path" d="M8 33 L26 51 L56 13" /></svg><span>Include in all</span></label>
+                <button className="skew-btn grad" disabled={!!busy[pid] || (pid === 'x' && xLen > 280)} onClick={() => publishOne(pid)}><span>{busy[pid] ? 'Sending…' : `Publish ${p.name}`}</span></button>
               </div>
             </div>
           );
@@ -463,8 +502,8 @@ function Accounts({ session, connections, setConnections }) {
       <h3>Accounts</h3>
       <p className="sub">{visibleCount} visible · {hiddenSet.size} hidden · ★ = your active brands.</p>
       {msg && <div className="banner">{msg}</div>}
-      <div className="row2" style={{ marginBottom: 6 }}>
-        <label className="field" style={{ margin: 0 }}><span>Search</span><input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Salon, jewellers…" /></label>
+      <div className="row2" style={{ marginBottom: 6, alignItems: 'end' }}>
+        <div className="messageBox"><input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search brands…" /><span className="send">⌕</span></div>
         <label className="field" style={{ margin: 0 }}><span>Filter</span>
           <select value={showHidden ? 'hidden' : activeOnly ? 'active' : 'all'} onChange={(e) => { setShowHidden(e.target.value === 'hidden'); setActiveOnly(e.target.value === 'active'); }}>
             <option value="all">All accounts</option>
@@ -522,7 +561,9 @@ function Accounts({ session, connections, setConnections }) {
 export default function App() {
   const { session, loading } = useSession();
   const [mode, setMode] = useState('login');
+  const [entry, setEntry] = useState('landing');
   const [view, setView] = useState('create');
+  const [navOpen, setNavOpen] = useState(false);
   const [connections, setConnections] = useState([]);
   const [online, setOnline] = useState(null);
 
@@ -542,28 +583,50 @@ export default function App() {
     return c;
   }, [connections]);
 
-  if (loading) return <div className="auth-wrap"><div>Loading…</div></div>;
-  if (!session) return <Auth mode={mode} setMode={setMode} />;
+  useEffect(() => {
+    document.title = !session
+      ? entry === 'landing' ? 'Driftpost — Publish Everywhere' : 'Sign in · Driftpost'
+      : view === 'accounts' ? 'Accounts · Driftpost' : 'Platforms · Driftpost';
+  }, [session, entry, view]);
+
+  if (loading) return <div className="loader-wrap"><div className="bounce"><span className="circle" /><span className="circle" /><span className="circle" /><span className="shadow" /><span className="shadow" /><span className="shadow" /></div></div>;
+  if (!session) return entry === 'landing' ? <Landing onEnter={() => setEntry('auth')} /> : <Auth mode={mode} setMode={setMode} onBack={() => setEntry('landing')} />;
+
+  if (!['create', 'accounts'].includes(view)) {
+    return (
+      <div className="shell">
+        <div className="page"><div className="card"><h3>404 — lost in the flow</h3><p className="sub">That view does not exist.</p><button className="skew-btn grad" onClick={() => setView('create')}><span>← Back to Platforms</span></button></div></div>
+      </div>
+    );
+  }
 
   return (
     <div className="shell">
-      <aside className="side">
-        <div className="brand"><span className="brand-mark">〜</span>Driftpost</div>
-        <button className={view === 'create' ? 'nav-btn active' : 'nav-btn'} onClick={() => setView('create')}>Compose</button>
-        <button className={view === 'accounts' ? 'nav-btn active' : 'nav-btn'} onClick={() => setView('accounts')}>Accounts <em>{connections.length}</em></button>
+      <aside className={navOpen ? 'side open' : 'side'}>
+        <button className="brand brand-btn" onClick={() => { setView('create'); setNavOpen(false); }} title="Driftpost home"><span className="brand-mark">〜</span>Driftpost</button>
+        <div className="radio-container">
+          <input type="radio" name="side-nav" id="nav-compose" checked={view === 'create'} onChange={() => { setView('create'); setNavOpen(false); }} />
+          <label htmlFor="nav-compose">Compose</label>
+          <input type="radio" name="side-nav" id="nav-accounts" checked={view === 'accounts'} onChange={() => { setView('accounts'); setNavOpen(false); }} />
+          <label htmlFor="nav-accounts">Accounts <em>{connections.length}</em></label>
+          <div className="glider-container"><div className="glider" /></div>
+        </div>
         <div className="side-foot">
-          <div className="pro-card" style={{ background: '#101838', border: '1px solid #2c3d66', borderRadius: 12, padding: 12, fontSize: 11, color: '#aeb9d8' }}>
+          <div className="pro-card" style={{ background: '#101838', border: '1px solid #2c3d66', padding: 12, fontSize: 11, color: '#aeb9d8' }}>
             YouTube {counts.youtube || 0} · IG {counts.instagram || 0} · FB {counts.facebook || 0} · X {counts.x || 0}
           </div>
-          <button className="user-chip" onClick={() => supabase?.auth.signOut()}>
+          <div className="user-chip">
             <span className="avatar">{(session.user.email || '?')[0].toUpperCase()}</span>
-            <span><b style={{ fontSize: 12 }}>{session.user.email?.split('@')[0]}</b><small>{session.user.email}</small></span>
-          </button>
+            <span><b style={{ fontSize: 12 }}>{session.user.email?.split('@')[0]}</b><small><a className="phone-link" href={`mailto:${session.user.email}`}>{session.user.email}</a></small></span>
+            <button className="mini" style={{ marginLeft: 'auto' }} title="Sign out" onClick={() => supabase?.auth.signOut()}>⏻</button>
+          </div>
         </div>
       </aside>
+      {navOpen && <div className="scrim" onClick={() => setNavOpen(false)} />}
       <div className="main">
         <div className="top">
-          <div><h1>{view === 'create' ? 'Compose' : 'Accounts'}</h1><p>Metricool-style · one brand, four platforms, per-platform details</p></div>
+          <button className="menu-btn" onClick={() => setNavOpen(true)} aria-label="Open menu">☰</button>
+          <div><h1>{view === 'create' ? 'Platforms' : 'Accounts'}</h1><p>Metricool-style · one brand, four platforms, per-platform details</p></div>
           <span className={online === false ? 'pill bad' : 'pill'}>{online === null ? 'checking…' : online ? 'API online' : 'API offline'}</span>
         </div>
         <div className="page">
@@ -571,6 +634,14 @@ export default function App() {
             ? <Composer session={session} connections={connections} reload={() => api('/api/connections', session.access_token).then((d) => setConnections(d.connections || [])).catch(() => {})} />
             : <Accounts session={session} connections={connections} setConnections={setConnections} />}
         </div>
+        <footer className="foot">
+          <span>© {new Date().getFullYear()} Driftpost</span>
+          <span className="foot-links">
+            <a href="https://github.com/FamebrosStudio/Driftpost" target="_blank" rel="noreferrer">GitHub</a>
+            <a href="https://driftpost.onrender.com/health" target="_blank" rel="noreferrer">API status</a>
+            <a href="https://driftpostpage.vercel.app">Home</a>
+          </span>
+        </footer>
       </div>
     </div>
   );
