@@ -110,6 +110,7 @@ app.post('/api/ai/captions', requireUser, aiLimit, async (req, res) => {
       brand: req.body?.brand,
       assetHint: req.body?.asset_description || req.body?.assetHint,
       goal: req.body?.goal,
+      trends: req.body?.trends === true || req.body?.trends === '1' || req.body?.trends === 1,
     });
     res.json(out);
   } catch (e) {

@@ -272,6 +272,7 @@ function Composer({ session, connections, reload }) {
     setYt((v) => ({ ...v, description: caption }));
   };
 
+  const [aiTrends, setAiTrends] = useState(false);
   const writeWithAi = async () => {
     if (aiBusy || !aiBrief.trim()) return;
     setAiBusy(true); setAiMsg('');
@@ -283,6 +284,7 @@ function Composer({ session, connections, reload }) {
           brand: brand?.label || '',
           asset_description: file ? `${file.name} (${file.type})` : '',
           goal: 'enquiries',
+          trends: aiTrends,
         }),
       });
       const c = data.captions || data;
@@ -293,7 +295,7 @@ function Composer({ session, connections, reload }) {
       setX((v) => ({ ...v, text: c.x.text.slice(0, 280) || v.text }));
       const tags = [...(c.youtube.tags || []), ...(c.instagram.hashtags || [])].filter(Boolean);
       if (tags.length) setYt((v) => ({ ...v, tags: v.tags || tags.slice(0, 8).join(', ') }));
-      setAiMsg(data.fromMemory ? `Using ${data.fromMemory} memory — review each phone, then publish.` : 'Written for all 4 platforms — review each phone, then publish.');
+      setAiMsg(`${data.fromMemory ? `Using ${data.fromMemory} memory — ` : ''}4 different captions written (YT search / IG discovery / FB social / X punchy)${data.trends ? ' with live SEO' : ''} — review each phone, then publish.`);
     } catch (e) {
       setAiMsg(e.message);
     }
@@ -384,9 +386,10 @@ function Composer({ session, connections, reload }) {
         <div className="card step-card ai">
           <span className="scope-badge ai-badge">Optional helper</span>
           <h3>✨ AI writer</h3>
-          <p className="sub">Stuck? Type a short summary, we draft all 4 captions.</p>
+          <p className="sub">Stuck? Type a short summary — 4 different captions (YT / IG / FB / X).</p>
           <label className="field" style={{ marginBottom: 0 }}><span>What is this post about? <i>optional</i></span><textarea value={aiBrief} maxLength={500} onChange={(e) => setAiBrief(e.target.value)} placeholder="e.g. bridal haircut reel for Velvet Salon in Mumbai" style={{ minHeight: 70 }} /></label>
-          {aiMsg && <div className={/written for all/i.test(aiMsg) ? 'banner' : 'alert err'} style={{ marginTop: 10 }}>{aiMsg}</div>}
+          <label className="ck" style={{ marginTop: 8 }}><input type="checkbox" checked={aiTrends} onChange={(e) => setAiTrends(e.target.checked)} /><svg viewBox="0 0 64 64"><path className="path" d="M8 33 L26 51 L56 13" /></svg><span>🔥 Live SEO trends (slower, costs more)</span></label>
+          {aiMsg && <div className={/different captions written/i.test(aiMsg) ? 'banner' : 'alert err'} style={{ marginTop: 10 }}>{aiMsg}</div>}
           <button className="skew-btn grad" style={{ width: '100%', marginTop: 10 }} disabled={aiBusy || !aiBrief.trim()} onClick={writeWithAi}><span>{aiBusy ? 'Writing…' : '✨ Write captions'}</span></button>
           {aiBusy && <div className="progress-loader" style={{ marginTop: 10 }}><div className="progress" /></div>}
         </div>
