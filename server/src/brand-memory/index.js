@@ -156,7 +156,7 @@ export function brandPack(brand) {
 // Special hard rules from the master prompt that must survive compaction.
 export function globalBrandRules() {
   return [
-    'Caption: hook + 1 useful detail + 1 CTA, 25-55 words (8-25 comedy/cinematic, 45-90 info). No em dash. Standard posts 0-2 emojis; real offers/openings earn bold hooks + excitement.',
+    'Caption: hook + 1 useful detail + 1 CTA, 25-55 words (8-25 comedy/cinematic, 45-90 info). No em dash. Emojis: standard 2-4 placed naturally; real offers/openings 4-8 with excitement.',
     'Append footer, then exactly 3 hashtags, then [5-8 SEO phrases]. Never reuse another brand footer. Real supplied offer facts (first 100, 0.5gm gold) are celebrated with urgency; never invent offers.',
     'MAP Clothing + Carrara never funny. Luxxe = transformation only. Rajlaxmi Sangli = Marathi. Hazel: no mithai word. Smietz: include 35 years experience + 96045 23931.',
     'Never invent phone/address/price/offers/results/quotes. Omit unknown optionals; ask only if essential.',
