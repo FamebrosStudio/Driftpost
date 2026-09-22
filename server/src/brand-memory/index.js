@@ -1,17 +1,70 @@
 // Brand memory: local-first, zero-LLM-token brand resolver + per-brand pack.
 // Goal: NEVER send all 41 brands to the LLM. Resolve locally, inject ONE brand (~200 tokens).
+// Brand memory: local-first store. ALL data lives here on disk.
+// - brands.full.json  = every number, address, footer, fact, example (168KB on disk, never sent whole)
+// - brands.compact.json = tiny resolver index (names/aliases only)
+// - memory.json = learned overrides (owner corrections win over everything)
+// Per request we resolve locally (0 tokens) and inject ONE brand's FULL record
+// (~800 tokens). That is the storage place the prompt is built from.
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const COMPACT_PATH = path.join(here, 'brands.compact.json');
+const FULL_PATH = path.join(here, 'brands.full.json');
 const MEMORY_PATH = path.join(here, 'memory.json');
 
 let cache = null;
 export function loadBrands() {
   if (!cache) cache = JSON.parse(fs.readFileSync(COMPACT_PATH, 'utf8'));
   return cache.brands;
+}
+
+let fullCache = null;
+function loadFull() {
+  if (!fullCache) fullCache = JSON.parse(fs.readFileSync(FULL_PATH, 'utf8'));
+  return fullCache;
+}
+
+export function getFullBrand(brandId) {
+  try {
+    return loadFull().brands.find((b) => b.brand_id === brandId) || null;
+  } catch {
+    return null;
+  }
+}
+
+// Full per-brand record: every phone, address, footer, fact, CTA, keyword,
+// genre rule and example. This is what the AI reads before writing.
+export function fullPack(brand) {
+  const full = brand?.id ? getFullBrand(brand.id) : null;
+  if (!full) return brandPack(brand);
+  const mem = loadMemory().brands?.[brand.id];
+  const cd = full.caption_direction || {};
+  const lines = [
+    `BRAND: ${full.name} (${full.category || 'local brand'}${full.location ? `, ${full.location}` : ''})`,
+    full.content_genres?.length ? `Genres: ${full.content_genres.join(', ')}` : null,
+    cd.tone ? `Tone: ${cd.tone}` : null,
+    cd.language ? `Language: ${cd.language}` : null,
+    cd.focus?.length ? `Focus: ${cd.focus.join('; ')}` : null,
+    cd.avoid?.length ? `Never: ${cd.avoid.join('; ')}` : null,
+    (cd.cta_options || brand.cta || []).length ? `CTA pick one (reword, don't copy): ${(cd.cta_options || brand.cta).join(' / ')}` : null,
+    full.approved_facts?.length ? `Facts: ${full.approved_facts.map((f) => (typeof f === 'string' ? f : f.text)).join('; ')}` : null,
+    full.mandatory_copy?.length ? `Must include word-for-word: ${full.mandatory_copy.join('; ')}` : null,
+    full.contacts?.phone?.length ? `Phone: ${full.contacts.phone.join(' / ')}` : null,
+    full.contacts?.address ? `Address: ${full.contacts.address}` : null,
+    full.contacts?.website ? `Website: ${full.contacts.website}` : null,
+    full.contacts?.email ? `Email: ${full.contacts.email}` : null,
+    full.footer_lines?.length ? `Footer (append exactly):\n${full.footer_lines.join('\n')}` : 'Footer: 💫 Managed by: @famebrosstudio',
+    full.keyword_bank?.length ? `SEO keywords: ${full.keyword_bank.join(', ')}` : null,
+    full.example?.body ? `Style example (match this energy, never copy facts):\n${String(full.example.body).slice(0, 500)}` : (brand.ex ? `Style example: ${brand.ex}` : null),
+    full.instagram?.handle ? `IG handle: ${full.instagram.handle}` : null,
+    full.readiness === 'needs_brand_identity' ? 'Identity incomplete: if the brief lacks product/subject, ask ONE short question instead of inventing.' : null,
+    mem?.notes ? `Owner correction (wins over all above): ${String(mem.notes).slice(0, 300)}` : null,
+    mem?.recent?.length ? `Don't repeat hooks: ${mem.recent.slice(-3).join(' | ').slice(0, 200)}` : null,
+  ].filter(Boolean);
+  return lines.join('\n');
 }
 
 export function loadMemory() {
@@ -103,8 +156,8 @@ export function brandPack(brand) {
 // Special hard rules from the master prompt that must survive compaction.
 export function globalBrandRules() {
   return [
-    'Caption: hook + 1 useful detail + 1 CTA, 25-55 words (8-25 comedy/cinematic, 45-90 info). No em dash. 0-2 emojis.',
-    'Append footer, then exactly 3 hashtags, then [5-8 SEO phrases]. No viral tags. Never reuse another brand footer.',
+    'Caption: hook + 1 useful detail + 1 CTA, 25-55 words (8-25 comedy/cinematic, 45-90 info). No em dash. Standard posts 0-2 emojis; real offers/openings earn bold hooks + excitement.',
+    'Append footer, then exactly 3 hashtags, then [5-8 SEO phrases]. Never reuse another brand footer. Real supplied offer facts (first 100, 0.5gm gold) are celebrated with urgency; never invent offers.',
     'MAP Clothing + Carrara never funny. Luxxe = transformation only. Rajlaxmi Sangli = Marathi. Hazel: no mithai word. Smietz: include 35 years experience + 96045 23931.',
     'Never invent phone/address/price/offers/results/quotes. Omit unknown optionals; ask only if essential.',
   ].join('\n');
