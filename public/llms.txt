@@ -1,0 +1,17 @@
+# Driftpost
+
+> One calm composer for YouTube, Instagram, Facebook and X. Pick a brand, drop one file, tune each platform, publish everywhere.
+
+- Home: https://driftpostpage.vercel.app/
+- How to use: https://driftpostpage.vercel.app/#/how
+- Platforms: https://driftpostpage.vercel.app/#/platforms
+- FAQ: https://driftpostpage.vercel.app/#/faq
+- Contact: https://driftpostpage.vercel.app/#/contact
+- Privacy: https://driftpostpage.vercel.app/#/privacy
+- Terms: https://driftpostpage.vercel.app/#/terms
+- Source code: https://github.com/FamebrosStudio/Driftpost
+- Contact email: famebros.studio@gmail.com
+
+## What it does
+
+Driftpost is a brand-first publishing console for agencies, studios and creators. Connect YouTube, Instagram, Facebook and X once per brand, then post to all four from a single guided composer with per-platform titles, tags, captions, polls and links. Direct publishing only — nothing is scheduled or automated.

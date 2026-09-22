@@ -1,10 +1,5 @@
-import { createClient } from '@supabase/supabase-js';
-
-const url = import.meta.env.VITE_SUPABASE_URL;
-const key = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
-export const apiUrl = import.meta.env.VITE_API_URL?.replace(/\/$/, '') || '';
-
-export const supabase = url && key ? createClient(url, key) : null;
+const apiUrlRaw = import.meta.env.VITE_API_URL;
+export const apiUrl = apiUrlRaw?.replace(/\/$/, '') || '';
 
 export const PLATFORMS = [
   { id: 'youtube', name: 'YouTube', hint: 'Video + title required' },
