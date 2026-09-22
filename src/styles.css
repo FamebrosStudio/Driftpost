@@ -1,19 +1,19 @@
 :root {
-  --bg: #000000;
-  --panel: #0a0a0a;
-  --panel2: #111111;
-  --ink: #ffffff;
-  --muted: #a3a3a3;
-  --faint: #6e6e6e;
-  --line: #1f1f1f;
-  --line-hard: #333333;
-  --hover: #ffffff10;
-  --violet: #ffffff;
-  --blue: #d4d4d4;
-  --sky: #a3a3a3;
-  --grad: #ffffff;
-  --accent-soft: #ffffff;
-  --accent-ink: #000000;
+  --bg: #070b16;
+  --panel: #0b1120;
+  --panel2: #101830;
+  --ink: #eef2ff;
+  --muted: #93a0bd;
+  --faint: #5b6a8f;
+  --line: #1c2742;
+  --line-hard: #2c3d66;
+  --hover: #8b5cf614;
+  --violet: #8b5cf6;
+  --blue: #3b82f6;
+  --sky: #38bdf8;
+  --grad: linear-gradient(135deg, #8b5cf6, #3b82f6 55%, #38bdf8);
+  --accent-soft: #7dd3fc;
+  --accent-ink: #ffffff;
   --danger: #ff6b61;
   --ok: #4ade80;
   --mono: ui-monospace, "Cascadia Code", "JetBrains Mono", Menlo, Consolas, monospace;
@@ -22,20 +22,20 @@
   background: var(--bg);
 }
 [data-theme="light"] {
-  --bg: #ffffff;
-  --panel: #fafafa;
-  --panel2: #f0f0f0;
-  --ink: #000000;
-  --muted: #525252;
-  --faint: #a3a3a3;
-  --line: #e5e5e5;
-  --line-hard: #d4d4d4;
-  --hover: #00000008;
-  --violet: #000000;
-  --blue: #404040;
-  --sky: #737373;
-  --grad: #000000;
-  --accent-soft: #000000;
+  --bg: #f7f9ff;
+  --panel: #ffffff;
+  --panel2: #eef2fb;
+  --ink: #0a1030;
+  --muted: #4c5a7d;
+  --faint: #93a0bd;
+  --line: #e2e8f5;
+  --line-hard: #c4d2ec;
+  --hover: #3b82f614;
+  --violet: #6d28d9;
+  --blue: #2563eb;
+  --sky: #0284c7;
+  --grad: linear-gradient(135deg, #7c3aed, #2563eb 55%, #0284c7);
+  --accent-soft: #0369a1;
   --accent-ink: #ffffff;
 }
 * { box-sizing: border-box; border-radius: 0 !important; }
@@ -45,7 +45,7 @@
 *::-webkit-scrollbar-thumb { background: var(--line-hard); }
 *::-webkit-scrollbar-thumb:hover { background: var(--faint); }
 *::-webkit-scrollbar-corner { background: transparent; }
-body { margin: 0; background: var(--bg); }
+body { margin: 0; background: radial-gradient(900px 420px at 85% -5%, #8b5cf614 0, transparent 60%), radial-gradient(700px 380px at 8% 110%, #3b82f610 0, transparent 55%), var(--bg); }
 button, input, textarea, select { font: inherit; color: inherit; }
 button { cursor: pointer; }
 ::placeholder { color: var(--faint); }
@@ -119,10 +119,11 @@ button.brand { background: none; border: 0; width: 100%; text-align: left; font:
 .card .sub { margin: 0 0 14px; font-size: 12px; color: var(--muted); }
 
 /* skew buttons */
-.skew-btn { position: relative; overflow: hidden; background: var(--ink); border: none; padding: 12px 20px; display: inline-flex; justify-content: center; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; cursor: pointer; transform: skew(-21deg); color: var(--bg); z-index: 0; transition: color 0.4s ease; }
+.skew-btn { position: relative; overflow: hidden; background: var(--grad); border: none; padding: 12px 20px; display: inline-flex; justify-content: center; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; cursor: pointer; transform: skew(-21deg); color: #fff; z-index: 0; transition: color 0.4s ease, filter 0.2s ease; }
 .skew-btn > span { display: inline-block; transform: skew(21deg); }
-.skew-btn::before { content: ''; position: absolute; top: 0; bottom: 0; right: 100%; left: 0; background: var(--line-hard); opacity: 0; z-index: -1; transition: all 0.5s; }
-.skew-btn:hover { color: var(--ink); }
+.skew-btn::before { content: ''; position: absolute; top: 0; bottom: 0; right: 100%; left: 0; background: #141021; opacity: 0; z-index: -1; transition: all 0.5s; }
+[data-theme="light"] .skew-btn::before { background: #0a1030; }
+.skew-btn:hover { color: #fff; filter: brightness(1.07); }
 .skew-btn:hover::before { left: 0; right: 0; opacity: 1; }
 .skew-btn:disabled { opacity: 0.35; cursor: not-allowed; }
 .skew-btn.ghost { background: transparent; color: var(--ink); border: 1px solid var(--line-hard); }
