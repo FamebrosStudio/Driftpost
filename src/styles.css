@@ -82,7 +82,7 @@ button { cursor: pointer; }
 .landing img.logo-img { height: 54px; width: auto; }
 
 /* shell */
-.shell { min-height: 100vh; display: grid; grid-template-columns: 224px 1fr; font-family: 'Playfair Display', Georgia, 'Times New Roman', serif; }
+.shell { min-height: 100vh; display: grid; grid-template-columns: 224px 1fr; font-family: 'Poppins', Inter, -apple-system, "Segoe UI", Roboto, sans-serif; }
 .side { border-right: 1px solid var(--line); background: var(--bg); padding: 20px 12px; display: flex; flex-direction: column; gap: 2px; position: sticky; top: 0; height: 100vh; }
 .brand { display: flex; align-items: center; gap: 9px; padding: 0 8px 16px; }
 button.brand { background: none; border: 0; width: 100%; text-align: left; font: inherit; cursor: pointer; }
@@ -538,3 +538,16 @@ html, body { overflow-x: clip; max-width: 100%; }
 .top p, .phone-head small { color: var(--muted); }
 ::placeholder { color: var(--faint); opacity: 1; }
 @media (max-width: 640px) { .steps { grid-template-columns: 1fr; } .ptabs { grid-template-columns: repeat(2, 1fr); } .plat-row select { max-width: 130px; } }
+
+/* ===== Poppins for the app only (console, auth, tour, loader) — landing untouched ===== */
+/* Scoped --mono override flips every app label that used the mono stack to Poppins, */
+/* while .landing keeps resolving --mono to the original stack defined in :root. */
+.shell, .auth-wrap, .tour-backdrop, .loader-wrap {
+  font-family: 'Poppins', Inter, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --mono: 'Poppins', Inter, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+.shell button, .shell input, .shell textarea, .shell select,
+.auth-wrap button, .auth-wrap input, .auth-wrap textarea, .auth-wrap select,
+.tour-backdrop button {
+  font-family: inherit;
+}
