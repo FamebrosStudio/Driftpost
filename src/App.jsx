@@ -400,6 +400,43 @@ function BrandPicker({ brands, brandKey, onPick, isActive }) {
   );
 }
 
+function Tip({ text }) {
+  return (
+    <span className="tip" tabIndex={0} aria-label={text}>?
+      <span className="tip-bubble">{text}</span>
+    </span>
+  );
+}
+
+function StepsHeader({ step, setStep, ready }) {
+  const steps = [
+    { n: 1, t: 'Brand', d: 'Who is this for?' },
+    { n: 2, t: 'Content', d: 'Photo + words' },
+    { n: 3, t: 'Review & Post', d: 'Check + publish' },
+  ];
+  return (
+    <div className="steps">
+      {steps.map((s) => {
+        const done = step > s.n;
+        const cur = step === s.n;
+        const locked = s.n === 3 && !ready;
+        return (
+          <button
+            key={s.n}
+            disabled={locked && !cur}
+            onClick={() => { if (!locked) setStep(s.n); }}
+            className={cur ? 'step cur' : done ? 'step done' : 'step'}
+            title={locked ? 'Add a photo/video and some text first' : s.d}
+          >
+            <span className="step-n">{done ? '✓' : s.n}</span>
+            <span className="step-t"><b>{s.t}</b><small>{s.d}</small></span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 function Composer({ session, connections, reload }) {
   const [hidden] = useLocalSet(`driftpost-hidden:${session.user.id}`);
   const [manualActive] = useLocalSet(`driftpost-active:${session.user.id}`);
@@ -407,6 +444,9 @@ function Composer({ session, connections, reload }) {
   const brands = useMemo(() => groupBrands(vis), [vis]);
   const brandActive = (b) => isActiveBrand(b.label) || Object.values(b.map).some((id) => manualActive.has(id));
   const [brandKey, setBrandKey] = useState('');
+  const [step, setStep] = useState(1);
+  const [tab, setTab] = useState('youtube');
+  const [showAdv, setShowAdv] = useState({});
   const [over, setOver] = useState({});
   const [file, setFile] = useState(null);
   const [thumb, setThumb] = useState(null);
@@ -576,41 +616,117 @@ function Composer({ session, connections, reload }) {
     return `${r.progress || 5}%`;
   };
 
-  return (
-    <div>
-      <div className="brandbar">
-        <BrandPicker brands={brands} brandKey={brandKey} isActive={(b) => brandActive(b)} onPick={(k) => { setBrandKey(k); setResults({}); }} />
-        <button className="skew-btn grad" style={{ width: 'auto', marginTop: 0, padding: '10px 26px' }} onClick={publishAll} disabled={Object.values(busy).some(Boolean)}><span>Publish all</span></button>
-      </div>
+  const contentReady = !!(file || caption.trim() || yt.title.trim() || x.text.trim());
+  const toggleAdv = (k) => setShowAdv((m) => ({ ...m, [k]: !m[k] }));
 
-      <div className="share-row">
-        <div className="card">
-          <h3>Shared media</h3>
-          <p className="sub">One photo or video used on every platform.</p>
+  return (
+    <div className="composer">
+      <StepsHeader step={step} setStep={setStep} ready={contentReady} />
+
+      {step === 1 && (
+      <div className="step-panel">
+        <div className="card step-card">
+          <span className="scope-badge everywhere">Step 1 · Who is this for?</span>
+          <h3>Pick a brand</h3>
+          <p className="sub">One brand = one client. We auto-match their accounts on all 4 platforms.</p>
+          <BrandPicker brands={brands} brandKey={brandKey} isActive={(b) => brandActive(b)} onPick={(k) => { setBrandKey(k); setResults({}); }} />
+          {!brands.length && <div className="banner" style={{ marginTop: 12 }}>No accounts yet. Go to Accounts → Connect YouTube / Facebook / Instagram / X first.</div>}
+        </div>
+
+        <div className="card step-card">
+          <span className="scope-badge everywhere">Where to post?</span>
+          <h3>Choose platforms</h3>
+          <p className="sub">Only ticked platforms will post. Unticked ones are skipped.</p>
+          <div className="plat-pick">
+            {PLATFORMS.map((p) => {
+              const list = listFor(p.id);
+              const chosen = pick(p.id);
+              return (
+                <div key={p.id} className={enabled[p.id] && chosen ? 'plat-row on' : 'plat-row'}>
+                  <button
+                    className={enabled[p.id] ? 'plat-check on' : 'plat-check'}
+                    onClick={() => setEnabled((m) => ({ ...m, [p.id]: !m[p.id] }))}
+                    aria-label={`Toggle ${p.name}`}
+                  >{enabled[p.id] ? '✓' : ''}</button>
+                  <span className="plat-ic"><BrandIcon id={p.id} size={18} /></span>
+                  <span className="plat-meta"><b>{p.name}</b><small>{chosen ? list.find((c) => c.id === chosen)?.account_name : `No account — ${list.length} connected`}</small></span>
+                  <select value={chosen} onChange={(e) => setPick(p.id, e.target.value)} aria-label={`${p.name} account`}>
+                    {!chosen && <option value="">Pick account…</option>}
+                    {list.map((c) => <option key={c.id} value={c.id}>{c.account_name}</option>)}
+                  </select>
+                </div>
+              );
+            })}
+          </div>
+          <div className="step-nav">
+            <span />
+            <button className="skew-btn grad" onClick={() => setStep(2)} disabled={!brand}><span>Next: add content →</span></button>
+          </div>
+        </div>
+      </div>
+      )}
+
+      {step === 2 && (
+      <div className="step-panel">
+      <div className="share-row stepped">
+        <div className="card step-card">
+          <span className="scope-badge everywhere">Used everywhere</span>
+          <h3>1 · Photo or video <Tip text="One file shared to every ticked platform. YouTube needs a video. Instagram / Facebook / X accept photo or video up to 2 GB." /></h3>
+          <p className="sub">Add once — it appears on every platform.</p>
           <input ref={inputRef} type="file" accept="image/*,video/*" hidden onChange={(e) => pickFile(e.target.files[0])} />
           {!file ? (
-            <div className="drop" onClick={() => inputRef.current.click()}><b>Drop media here or browse</b>Images · Video up to 2 GB</div>
+            <div className="drop big" onClick={() => inputRef.current.click()}><b>＋ Add photo or video</b>Click to browse · up to 2 GB</div>
           ) : (
-            <div className="file-row"><div><b>{file.name}</b><small>{file.size} · {file.type}</small></div><button onClick={() => setFile(null)}>Remove</button></div>
+            <div>
+              {mediaUrl && <img className="media-preview" src={mediaUrl} alt="Shared media preview" />}
+              <div className="file-row"><div><b>{file.name}</b><small>{file.size} · {file.type}</small></div><button onClick={() => setFile(null)}>Remove</button></div>
+            </div>
           )}
         </div>
-        <div className="card">
-          <h3>Shared caption</h3>
-          <p className="sub">Writes itself into every empty box below. <button className="link" onClick={applyCaptionEverywhere}>Fill all now</button></p>
-          <label className="field" style={{ marginBottom: 0 }}><span>Caption <i>{caption.length}/2200</i></span><textarea value={caption} maxLength={2200} onChange={(e) => setCaption(e.target.value)} placeholder="Write once…" /></label>
+        <div className="card step-card">
+          <span className="scope-badge everywhere">Used everywhere</span>
+          <h3>2 · Write once <Tip text="This text is copied into YouTube description, Instagram caption, Facebook message and X post. You can still edit each platform separately in the next step." /></h3>
+          <p className="sub">Write here, tweak per platform later. <button className="link" onClick={applyCaptionEverywhere}>Copy to all now</button></p>
+          <label className="field" style={{ marginBottom: 0 }}><span>Your message <i>{caption.length}/2200</i></span><textarea value={caption} maxLength={2200} onChange={(e) => setCaption(e.target.value)} placeholder="e.g. Diwali offer at Velvet Salon — 20% off bridal packages this week…" /></label>
         </div>
-        <div className="card">
+        <div className="card step-card ai">
+          <span className="scope-badge ai-badge">Optional helper</span>
           <h3>✨ AI writer</h3>
-          <p className="sub">Short summary in → 4 platform-ready captions out, with titles + hashtags.</p>
-          <label className="field" style={{ marginBottom: 0 }}><span>Post summary <i>what is this post about?</i></span><textarea value={aiBrief} maxLength={500} onChange={(e) => setAiBrief(e.target.value)} placeholder="e.g. bridal haircut reel for Velvet Salon in Mumbai" style={{ minHeight: 70 }} /></label>
+          <p className="sub">Stuck? Type a short summary, we draft all 4 captions.</p>
+          <label className="field" style={{ marginBottom: 0 }}><span>What is this post about? <i>optional</i></span><textarea value={aiBrief} maxLength={500} onChange={(e) => setAiBrief(e.target.value)} placeholder="e.g. bridal haircut reel for Velvet Salon in Mumbai" style={{ minHeight: 70 }} /></label>
           {aiMsg && <div className={/written for all/i.test(aiMsg) ? 'banner' : 'alert err'} style={{ marginTop: 10 }}>{aiMsg}</div>}
           <button className="skew-btn grad" style={{ width: '100%', marginTop: 10 }} disabled={aiBusy || !aiBrief.trim()} onClick={writeWithAi}><span>{aiBusy ? 'Writing…' : '✨ Write captions'}</span></button>
           {aiBusy && <div className="progress-loader" style={{ marginTop: 10 }}><div className="progress" /></div>}
         </div>
       </div>
+        <div className="step-nav">
+          <button className="skew-btn ghost" onClick={() => setStep(1)}><span>← Back</span></button>
+          <button className="skew-btn grad" onClick={() => setStep(3)}><span>Next: review & post →</span></button>
+        </div>
+      </div>
+      )}
 
-      <div className="phones" key={brandKey}>
-        {PLATFORMS.map((p, idx) => {
+      {step === 3 && (
+      <div className="step-panel">
+      <div className="brandbar tight">
+        <BrandPicker brands={brands} brandKey={brandKey} isActive={(b) => brandActive(b)} onPick={(k) => { setBrandKey(k); setResults({}); }} />
+        <button className="skew-btn grad pub-all" onClick={publishAll} disabled={Object.values(busy).some(Boolean)}><span>🚀 Post to all ticked</span></button>
+      </div>
+      <div className="ptabs" role="tablist">
+        {PLATFORMS.map((p) => {
+          const r = results[p.id];
+          const dot = r?.state === 'completed' ? '✓' : r?.state === 'failed' ? '!' : busy[p.id] ? '…' : '';
+          return (
+            <button key={p.id} role="tab" aria-selected={tab === p.id} className={tab === p.id ? 'ptab on' : 'ptab'} onClick={() => setTab(p.id)}>
+              <BrandIcon id={p.id} size={15} /> {p.name}
+              {dot && <span className={r?.state === 'failed' ? 'pdot fail' : 'pdot'}>{dot}</span>}
+              {!pick(p.id) && <span className="pdot warn">no acct</span>}
+            </button>
+          );
+        })}
+      </div>
+      <div className="phones single" key={brandKey + tab}>
+        {PLATFORMS.filter((p) => p.id === tab).map((p, idx) => {
           const pid = p.id;
           const list = listFor(pid);
           const chosen = pick(pid);
@@ -632,207 +748,173 @@ function Composer({ session, connections, reload }) {
                 </div>
 
                 {pid === 'youtube' && <>
-                  <label className="field-mini"><span>Title · {yt.title.length}/100</span><input value={yt.title} maxLength={100} onChange={(e) => setYt({ ...yt, title: e.target.value })} placeholder="Video title (required)" /></label>
-                  <label className="field-mini"><span>Description</span><textarea value={yt.description} onChange={(e) => setYt({ ...yt, description: e.target.value })} placeholder="Shared caption if empty" /></label>
-                  <label className="field-mini"><span>Tags · comma separated</span><input value={yt.tags} onChange={(e) => setYt({ ...yt, tags: e.target.value })} placeholder="salon, bridal, mumbai" /></label>
-                  <details className="adv">
-                    <summary>More YouTube settings (category, kids, license…)</summary>
+                  <span className="scope-badge only">Only YouTube</span>
+                  <label className="field-mini"><span>Video title · {yt.title.length}/100 <Tip text="Required. This is the headline people see on YouTube." /></span><input value={yt.title} maxLength={100} onChange={(e) => setYt({ ...yt, title: e.target.value })} placeholder="e.g. Bridal glow-up at Velvet Salon" /></label>
+                  <label className="field-mini"><span>About this video <Tip text="Shown under your video. If empty, we use your message from Step 2." /></span><textarea value={yt.description} onChange={(e) => setYt({ ...yt, description: e.target.value })} placeholder="Uses your Step 2 message if left empty" /></label>
+                  <label className="field-mini"><span>Search words · comma separated <Tip text="Helps people find your video. Example: salon, bridal, mumbai." /></span><input value={yt.tags} onChange={(e) => setYt({ ...yt, tags: e.target.value })} placeholder="salon, bridal, mumbai" /></label>
                   <div className="row2">
-                    <label className="field-mini"><span>Category</span>
-                      <select value={yt.category} onChange={(e) => setYt({ ...yt, category: e.target.value })}>
-                        <option value="">YouTube default</option>
-                        <option value="1">Film & Animation</option>
-                        <option value="2">Autos & Vehicles</option>
-                        <option value="10">Music</option>
-                        <option value="15">Pets & Animals</option>
-                        <option value="17">Sports</option>
-                        <option value="19">Travel & Events</option>
-                        <option value="20">Gaming</option>
-                        <option value="22">People & Blogs</option>
-                        <option value="23">Comedy</option>
-                        <option value="24">Entertainment</option>
-                        <option value="25">News & Politics</option>
-                        <option value="26">Howto & Style</option>
-                        <option value="27">Education</option>
-                        <option value="28">Science & Technology</option>
+                    <label className="field-mini"><span>Who can watch? <Tip text="Private = only you. Unlisted = anyone with link. Public = everyone on YouTube." /></span>
+                      <select value={yt.privacy} onChange={(e) => setYt({ ...yt, privacy: e.target.value })}>
+                        <option value="private">🔒 Private (only me)</option>
+                        <option value="unlisted">🔗 Unlisted (link only)</option>
+                        <option value="public">🌍 Public (everyone)</option>
                       </select>
                     </label>
-                    <label className="field-mini"><span>Made for kids</span>
+                    <label className="field-mini"><span>Cover image <Tip text="The thumbnail people click on. JPG or PNG." /></span>
+                      <button className="mini wide" onClick={() => thumbRef.current.click()}>{thumb ? '✓ Cover added' : '＋ Add cover'}</button>
+                      <input ref={thumbRef} type="file" accept="image/jpeg,image/png" hidden onChange={(e) => { const f = e.target.files[0]; if (f) setThumb({ raw: f, name: f.name }); }} />
+                    </label>
+                  </div>
+                  <button className={showAdv['yt'] ? 'adv-toggle open' : 'adv-toggle'} onClick={() => toggleAdv('yt')}>{showAdv['yt'] ? '▾ Hide extra YouTube options' : '▸ Extra YouTube options (kids, category…)'}</button>
+                  {showAdv['yt'] && (
+                  <div className="adv-box">
+                  <div className="row2">
+                    <label className="field-mini"><span>Video type <Tip text="Pick what fits best. Helps YouTube suggest your video." /></span>
+                      <select value={yt.category} onChange={(e) => setYt({ ...yt, category: e.target.value })}>
+                        <option value="">Auto (recommended)</option>
+                        <option value="26">How-to & Style</option>
+                        <option value="22">People & Blogs</option>
+                        <option value="24">Entertainment</option>
+                        <option value="10">Music</option>
+                        <option value="20">Gaming</option>
+                        <option value="27">Education</option>
+                        <option value="28">Science & Tech</option>
+                        <option value="19">Travel & Events</option>
+                        <option value="17">Sports</option>
+                        <option value="23">Comedy</option>
+                      </select>
+                    </label>
+                    <label className="field-mini"><span>Is it made for kids? <Tip text="YouTube law: say Yes if the video is for children under 13." /></span>
                       <select value={yt.kids} onChange={(e) => setYt({ ...yt, kids: e.target.value })}>
-                        <option value="">Not sure (default)</option>
+                        <option value="">Not sure</option>
                         <option value="yes">Yes, for kids</option>
                         <option value="no">No, not for kids</option>
                       </select>
                     </label>
                   </div>
                   <div className="row2">
-                    <label className="field-mini"><span>License</span>
-                      <select value={yt.license} onChange={(e) => setYt({ ...yt, license: e.target.value })}>
-                        <option value="">Standard (default)</option>
-                        <option value="youtube">Standard YouTube</option>
-                        <option value="creativeCommon">Creative Commons</option>
-                      </select>
-                    </label>
-                    <label className="field-mini"><span>Embedding</span>
+                    <label className="field-mini"><span>Allow others to share? <Tip text="Allow = other websites can show your video." /></span>
                       <select value={yt.embed} onChange={(e) => setYt({ ...yt, embed: e.target.value })}>
-                        <option value="">Allow (default)</option>
-                        <option value="yes">Allow embedding</option>
-                        <option value="no">Block embedding</option>
+                        <option value="">Yes, allow sharing</option>
+                        <option value="yes">Yes, allow</option>
+                        <option value="no">No, YouTube only</option>
                       </select>
                     </label>
-                  </div>
-                  <div className="row2">
-                    <label className="field-mini"><span>Public stats</span>
-                      <select value={yt.stats} onChange={(e) => setYt({ ...yt, stats: e.target.value })}>
-                        <option value="">Show (default)</option>
-                        <option value="yes">Show view counts</option>
-                        <option value="no">Hide view counts</option>
-                      </select>
-                    </label>
-                    <label className="field-mini"><span>Notify subs</span>
+                    <label className="field-mini"><span>Tell subscribers? <Tip text="On = followers get a notification. Off = quiet upload." /></span>
                       <select value={yt.notify} onChange={(e) => setYt({ ...yt, notify: e.target.value })}>
-                        <option value="on">Notify (default)</option>
-                        <option value="off">Silent upload</option>
+                        <option value="on">Yes, notify them</option>
+                        <option value="off">No, keep quiet</option>
                       </select>
                     </label>
                   </div>
-                  </details>
-                  <div className="row2">
-                    <label className="field-mini"><span>Visibility</span>
-                      <select value={yt.privacy} onChange={(e) => setYt({ ...yt, privacy: e.target.value })}>
-                        <option value="private">Private</option>
-                        <option value="unlisted">Unlisted</option>
-                        <option value="public">Public</option>
-                      </select>
-                    </label>
-                    <label className="field-mini"><span>Thumbnail</span>
-                      <button className="skew-btn ghost" style={{ padding: '9px' }} onClick={() => thumbRef.current.click()}><span>{thumb ? '✓ picked' : 'Upload'}</span></button>
-                      <input ref={thumbRef} type="file" accept="image/jpeg,image/png" hidden onChange={(e) => { const f = e.target.files[0]; if (f) setThumb({ raw: f, name: f.name }); }} />
-                    </label>
                   </div>
+                  )}
                 </>}
 
                 {pid === 'instagram' && <>
-                  <label className="field-mini"><span>Caption · {(ig.caption || caption).length}/2200</span><textarea value={ig.caption} onChange={(e) => setIg({ ...ig, caption: e.target.value })} placeholder="Shared caption if empty" /></label>
-                  <details className="adv">
-                    <summary>Reach: share, topics, partners</summary>
-                    <label className="ck" style={{ marginTop: 8 }}><input type="checkbox" checked={ig.shareFb} onChange={(e) => setIg({ ...ig, shareFb: e.target.checked })} /><svg viewBox="0 0 64 64"><path className="path" d="M8 33 L26 51 L56 13" /></svg><span>Also post to Facebook Page</span></label>
-                    <label className="field-mini"><span>Topics · up to 3</span><input value={ig.topics} onChange={(e) => setIg({ ...ig, topics: e.target.value })} placeholder="fitness, nutrition" /></label>
-                    <label className="field-mini"><span>Paid partner · @handle</span><input value={ig.partner} onChange={(e) => setIg({ ...ig, partner: e.target.value })} placeholder="brandname" /></label>
-                    <label className="field-mini"><span>Collaborators · up to 3</span><input value={ig.collabs} onChange={(e) => setIg({ ...ig, collabs: e.target.value })} placeholder="creator1, creator2" /></label>
-                    <label className="field-mini"><span>Location ID · optional</span><input value={ig.location} onChange={(e) => setIg({ ...ig, location: e.target.value })} placeholder="Meta location ID" /></label>
-                  </details>
-                  <details className="adv">
-                    <summary>Advanced: quality, alt text</summary>
-                    <p className="note">Always uploads original quality — Meta never gets a compressed copy from us.</p>
-                    <label className="field-mini"><span>Alt text · accessibility</span><input value={ig.alt} maxLength={500} onChange={(e) => setIg({ ...ig, alt: e.target.value })} placeholder="Describe the photo/video" /></label>
-                  </details>
+                  <span className="scope-badge only">Only Instagram</span>
+                  <label className="field-mini"><span>Caption · {(ig.caption || caption).length}/2200 <Tip text="Text under your photo/reel. If empty, we use your Step 2 message." /></span><textarea value={ig.caption} onChange={(e) => setIg({ ...ig, caption: e.target.value })} placeholder="Uses your Step 2 message if left empty" /></label>
+                  <label className="ck"><input type="checkbox" checked={ig.shareFb} onChange={(e) => setIg({ ...ig, shareFb: e.target.checked })} /><svg viewBox="0 0 64 64"><path className="path" d="M8 33 L26 51 L56 13" /></svg><span>Also post this on Facebook</span></label>
+                  <button className={showAdv['ig'] ? 'adv-toggle open' : 'adv-toggle'} onClick={() => toggleAdv('ig')}>{showAdv['ig'] ? '▾ Hide extra Instagram options' : '▸ Extra options (tags, partners…)'}</button>
+                  {showAdv['ig'] && (
+                  <div className="adv-box">
+                    <label className="field-mini"><span>Topics · up to 3 <Tip text="Simple words like fitness, bridal. Helps new people discover you." /></span><input value={ig.topics} onChange={(e) => setIg({ ...ig, topics: e.target.value })} placeholder="e.g. bridal, mumbai" /></label>
+                    <label className="field-mini"><span>Tag a business partner <Tip text="If a brand paid for this post, type their @name here." /></span><input value={ig.partner} onChange={(e) => setIg({ ...ig, partner: e.target.value })} placeholder="e.g. lakmeindia (no @ needed)" /></label>
+                    <label className="field-mini"><span>Invite co-authors · up to 3 <Tip text="Other accounts shown as authors alongside you." /></span><input value={ig.collabs} onChange={(e) => setIg({ ...ig, collabs: e.target.value })} placeholder="e.g. makeup_artist, photographer" /></label>
+                    <label className="field-mini"><span>Describe for blind users <Tip text="One sentence describing the photo. Read aloud by screen readers." /></span><input value={ig.alt} maxLength={500} onChange={(e) => setIg({ ...ig, alt: e.target.value })} placeholder="e.g. Bride smiling with red lehenga" /></label>
+                  </div>
+                  )}
                 </>}
 
                 {pid === 'facebook' && <>
-                  <label className="field-mini"><span>Message</span><textarea value={fb.message} onChange={(e) => setFb({ ...fb, message: e.target.value })} placeholder="Shared caption if empty" /></label>
-                  <label className="field-mini"><span>Link · optional</span><input value={fb.link} onChange={(e) => setFb({ ...fb, link: e.target.value })} placeholder="https://…" /></label>
-                  <details className="adv">
-                    <summary>Syndicate + visibility</summary>
-                    <label className="ck" style={{ marginTop: 8 }}><input type="checkbox" checked={fb.syndIg} onChange={(e) => setFb({ ...fb, syndIg: e.target.checked })} /><svg viewBox="0 0 64 64"><path className="path" d="M8 33 L26 51 L56 13" /></svg><span>Mirror to Instagram</span></label>
-                    <label className="field-mini"><span>Age limit · optional</span>
-                      <select value={fb.age} onChange={(e) => setFb({ ...fb, age: e.target.value })}>
-                        <option value="">Everyone (default)</option>
-                        <option value="13">13+</option>
-                        <option value="18">18+</option>
-                        <option value="21">21+</option>
-                        <option value="25">25+</option>
-                      </select>
-                    </label>
-                    <label className="ck"><input type="checkbox" checked={fb.unpublished} onChange={(e) => setFb({ ...fb, unpublished: e.target.checked })} /><svg viewBox="0 0 64 64"><path className="path" d="M8 33 L26 51 L56 13" /></svg><span>Unpublished dark post</span></label>
-                  </details>
-                  <details className="adv">
-                    <summary>Link preview + button</summary>
-                    <label className="field-mini"><span>Action button · needs link</span>
+                  <span className="scope-badge only">Only Facebook</span>
+                  <label className="field-mini"><span>What to say? <Tip text="Text shown above your photo/video. If empty, we use your Step 2 message." /></span><textarea value={fb.message} onChange={(e) => setFb({ ...fb, message: e.target.value })} placeholder="Uses your Step 2 message if left empty" /></label>
+                  <label className="field-mini"><span>Website link · optional <Tip text="e.g. your booking page. Leave empty for photo/video only." /></span><input value={fb.link} onChange={(e) => setFb({ ...fb, link: e.target.value })} placeholder="https://your-website.com/offer" /></label>
+                  <label className="ck"><input type="checkbox" checked={fb.syndIg} onChange={(e) => setFb({ ...fb, syndIg: e.target.checked })} /><svg viewBox="0 0 64 64"><path className="path" d="M8 33 L26 51 L56 13" /></svg><span>Also post this on Instagram</span></label>
+                  <button className={showAdv['fb'] ? 'adv-toggle open' : 'adv-toggle'} onClick={() => toggleAdv('fb')}>{showAdv['fb'] ? '▾ Hide extra Facebook options' : '▸ Extra options (button, age, ads…)'}</button>
+                  {showAdv['fb'] && (
+                  <div className="adv-box">
+                    <label className="field-mini"><span>Add a button · needs a link above <Tip text="Shows Shop now / Learn more under your post." /></span>
                       <select value={fb.cta} onChange={(e) => setFb({ ...fb, cta: e.target.value })}>
-                        <option value="">None (default)</option>
+                        <option value="">No button</option>
                         <option value="LEARN_MORE">Learn more</option>
                         <option value="SHOP_NOW">Shop now</option>
                         <option value="SIGN_UP">Sign up</option>
                         <option value="MESSAGE_PAGE">Send message</option>
                       </select>
                     </label>
-                    <label className="field-mini"><span>Preview title</span><input value={fb.linkName} onChange={(e) => setFb({ ...fb, linkName: e.target.value })} placeholder="Page default if empty" /></label>
-                    <label className="field-mini"><span>Preview caption</span><input value={fb.linkCaption} onChange={(e) => setFb({ ...fb, linkCaption: e.target.value })} placeholder="Page default if empty" /></label>
-                    <label className="field-mini"><span>Preview text</span><input value={fb.linkDesc} onChange={(e) => setFb({ ...fb, linkDesc: e.target.value })} placeholder="Page default if empty" /></label>
-                    <label className="field-mini"><span>Preview image URL</span><input value={fb.linkPic} onChange={(e) => setFb({ ...fb, linkPic: e.target.value })} placeholder="https://…" /></label>
-                  </details>
-                  <details className="adv">
-                    <summary>Reach: mirror, audience, buttons</summary>
-                    <label className="ck" style={{ marginTop: 8 }}><input type="checkbox" checked={fb.syndIg} onChange={(e) => setFb({ ...fb, syndIg: e.target.checked })} /><svg viewBox="0 0 64 64"><path className="path" d="M8 33 L26 51 L56 13" /></svg><span>Mirror to Instagram</span></label>
-                    <label className="ck" style={{ marginTop: 8 }}><input type="checkbox" checked={fb.unpublished} onChange={(e) => setFb({ ...fb, unpublished: e.target.checked })} /><svg viewBox="0 0 64 64"><path className="path" d="M8 33 L26 51 L56 13" /></svg><span>Unpublished dark post</span></label>
-                    <label className="field-mini"><span>Min age audience</span>
+                    <label className="field-mini"><span>Who can see it? <Tip text="Hide from young viewers if needed. Everyone = no limit." /></span>
                       <select value={fb.age} onChange={(e) => setFb({ ...fb, age: e.target.value })}>
-                        <option value="">Everyone (default)</option>
-                        <option value="13">13+</option>
-                        <option value="18">18+</option>
-                        <option value="21">21+</option>
-                        <option value="25">25+</option>
+                        <option value="">Everyone</option>
+                        <option value="13">13 and older</option>
+                        <option value="18">18 and older</option>
+                        <option value="21">21 and older</option>
+                        <option value="25">25 and older</option>
                       </select>
                     </label>
-                    <label className="field-mini"><span>Button · needs link</span>
-                      <select value={fb.cta} onChange={(e) => setFb({ ...fb, cta: e.target.value })}>
-                        <option value="">No button (default)</option>
-                        <option value="LEARN_MORE">Learn more</option>
-                        <option value="SHOP_NOW">Shop now</option>
-                        <option value="SIGN_UP">Sign up</option>
-                        <option value="MESSAGE_PAGE">Send message</option>
-                      </select>
-                    </label>
-                  </details>
-                  <details className="adv">
-                    <summary>Link preview text</summary>
-                    <label className="field-mini"><span>Preview title</span><input value={fb.linkName} onChange={(e) => setFb({ ...fb, linkName: e.target.value })} placeholder="Page title override" /></label>
-                    <label className="field-mini"><span>Preview subtitle</span><input value={fb.linkCaption} onChange={(e) => setFb({ ...fb, linkCaption: e.target.value })} placeholder="Small caption line" /></label>
-                    <label className="field-mini"><span>Preview text</span><input value={fb.linkDesc} onChange={(e) => setFb({ ...fb, linkDesc: e.target.value })} placeholder="Description override" /></label>
-                    <label className="field-mini"><span>Preview image URL</span><input value={fb.linkPic} onChange={(e) => setFb({ ...fb, linkPic: e.target.value })} placeholder="https://…/image.jpg" /></label>
-                  </details>
+                    <label className="ck"><input type="checkbox" checked={fb.unpublished} onChange={(e) => setFb({ ...fb, unpublished: e.target.checked })} /><svg viewBox="0 0 64 64"><path className="path" d="M8 33 L26 51 L56 13" /></svg><span>Hide from page — ads only <Tip text="Advanced: post exists but visitors won't see it on your page. Only used for ads." /></span></label>
+                    <label className="field-mini"><span>Link headline · optional <Tip text="Custom title shown on the link box. Leave empty to use the website's own title." /></span><input value={fb.linkName} onChange={(e) => setFb({ ...fb, linkName: e.target.value })} placeholder="Leave empty = auto" /></label>
+                    <label className="field-mini"><span>Link description · optional</span><input value={fb.linkDesc} onChange={(e) => setFb({ ...fb, linkDesc: e.target.value })} placeholder="Leave empty = auto" /></label>
+                  </div>
+                  )}
                 </>}
 
                 {pid === 'x' && <>
-                  <label className="field-mini"><span>Post · {xLen}/280</span><textarea value={x.text} maxLength={400} onChange={(e) => setX({ ...x, text: e.target.value })} placeholder="Shared caption if empty" /></label>
-                  <label className="ck"><input type="checkbox" checked={x.pollOn} onChange={(e) => setX({ ...x, pollOn: e.target.checked })} /><svg viewBox="0 0 64 64"><path className="path" d="M8 33 L26 51 L56 13" /></svg><span>Poll instead of photo</span></label>
+                  <span className="scope-badge only">Only X</span>
+                  <label className="field-mini"><span>Your post · {xLen}/280 <Tip text="Short and sharp works best. If empty, we use your Step 2 message (cut to 280)." /></span><textarea value={x.text} maxLength={400} onChange={(e) => setX({ ...x, text: e.target.value })} placeholder="Uses your Step 2 message if left empty" /></label>
+                  {xLen > 280 && <div className="sec-err">Too long — {xLen - 280} characters over. Shorten it.</div>}
+                  <label className="ck"><input type="checkbox" checked={x.pollOn} onChange={(e) => setX({ ...x, pollOn: e.target.checked })} /><svg viewBox="0 0 64 64"><path className="path" d="M8 33 L26 51 L56 13" /></svg><span>Ask a question (poll) instead</span></label>
                   {x.pollOn && <>
-                    {[0, 1, 2, 3].map((i) => (
-                      <label key={i} className="field-mini"><span>Choice {i + 1}{i > 1 ? ' · optional' : ''}</span><input value={x.opts[i]} maxLength={25} onChange={(e) => { const o = [...x.opts]; o[i] = e.target.value; setX({ ...x, opts: o }); }} placeholder={i < 2 ? 'Required' : 'Optional'} /></label>
+                    {[0, 1].map((i) => (
+                      <label key={i} className="field-mini"><span>Answer {i + 1} · required</span><input value={x.opts[i]} maxLength={25} onChange={(e) => { const o = [...x.opts]; o[i] = e.target.value; setX({ ...x, opts: o }); }} placeholder="e.g. Yes" /></label>
                     ))}
-                    <label className="field-mini"><span>Poll runs for</span>
+                    {[2, 3].map((i) => (
+                      <label key={i} className="field-mini"><span>Answer {i + 1} · optional</span><input value={x.opts[i]} maxLength={25} onChange={(e) => { const o = [...x.opts]; o[i] = e.target.value; setX({ ...x, opts: o }); }} placeholder="Optional" /></label>
+                    ))}
+                    <label className="field-mini"><span>Keep voting open for</span>
                       <select value={x.mins} onChange={(e) => setX({ ...x, mins: e.target.value })}>
-                        <option value="5">5 minutes</option>
                         <option value="60">1 hour</option>
-                        <option value="1440">24 hours</option>
+                        <option value="1440">1 day</option>
                         <option value="10080">7 days</option>
                       </select>
                     </label>
-                    {file && <div className="sec-err">Remove the shared photo to post a poll.</div>}
+                    {file && <div className="sec-err">Polls can't have a photo. Remove the Step 2 photo to run this poll.</div>}
                   </>}
-                  <label className="field-mini"><span>Who can reply</span>
+                  <label className="field-mini"><span>Who can reply? <Tip text="Everyone = open chat. Followed = safer. Mentioned = private." /></span>
                     <select value={x.reply} onChange={(e) => setX({ ...x, reply: e.target.value })}>
-                      <option value="everyone">Everyone</option>
-                      <option value="following">Accounts I follow</option>
-                      <option value="mentionedUsers">Only mentioned</option>
+                      <option value="everyone">Everyone can reply</option>
+                      <option value="following">Only accounts I follow</option>
+                      <option value="mentionedUsers">Only people I mention</option>
                     </select>
                   </label>
                 </>}
 
-                <div className={r?.state === 'failed' ? 'phone-status fail' : 'phone-status'}>{busy[pid] ? 'Sending' : secState(pid)}</div>
+                <div className="status-line">
+                  <span className={r?.state === 'failed' ? 'status-pill fail' : r?.state === 'completed' ? 'status-pill ok' : 'status-pill'}>
+                    {busy[pid] ? '● Sending…' : r?.state === 'completed' ? '✓ Posted' : r?.state === 'failed' ? '✕ Failed' : '○ Ready to post'}
+                  </span>
+                  {enabled[pid] ? <span className="status-hint">Included in “Post to all”</span> : <span className="status-hint">Skipped in “Post to all”</span>}
+                </div>
                 {busy[pid] && <div className="progress-loader"><div className="progress" /></div>}
                 {r?.state === 'failed' && <div className="sec-err">{r.message}</div>}
                 {r?.warning && r?.state !== 'failed' && <div className="banner" style={{ margin: 0 }}>{r.warning}</div>}
-                {r?.url && <a className="phone-link" href={r.url} target="_blank" rel="noreferrer">View post →</a>}
-                <label className="ck"><input type="checkbox" checked={!!enabled[pid]} onChange={(e) => setEnabled((m) => ({ ...m, [pid]: e.target.checked }))} /><svg viewBox="0 0 64 64"><path className="path" d="M8 33 L26 51 L56 13" /></svg><span>Include in all</span></label>
-                <button className="skew-btn grad" disabled={!!busy[pid] || (pid === 'x' && (xLen > 280 || (x.pollOn && !!file)))} onClick={() => publishOne(pid)}><span>{busy[pid] ? 'Sending…' : `Publish ${p.name}`}</span></button>
+                {r?.url && <a className="phone-link big" href={r.url} target="_blank" rel="noreferrer">View your post →</a>}
+                <div className="phone-actions">
+                  <label className="ck"><input type="checkbox" checked={!!enabled[pid]} onChange={(e) => setEnabled((m) => ({ ...m, [pid]: e.target.checked }))} /><svg viewBox="0 0 64 64"><path className="path" d="M8 33 L26 51 L56 13" /></svg><span>Include in “post to all”</span></label>
+                  <button className="post-btn" disabled={!!busy[pid] || (pid === 'x' && (xLen > 280 || (x.pollOn && !!file)))} onClick={() => publishOne(pid)}>{busy[pid] ? 'Posting…' : `Post to ${p.name} →`}</button>
+                </div>
               </div>
             </div>
           );
         })}
       </div>
-      <p className="note">Direct publish only. Tokens stay encrypted in Supabase. Switch brands above to post for another client.</p>
+        <div className="step-nav">
+          <button className="skew-btn ghost" onClick={() => setStep(2)}><span>← Back to content</span></button>
+          <span className="step-hint">Posts go live the second you press a button — nothing is scheduled.</span>
+        </div>
+      </div>
+      )}
+      <p className="note center">🔒 Direct post only · Your passwords/tokens stay locked in Supabase.</p>
     </div>
   );
 }
