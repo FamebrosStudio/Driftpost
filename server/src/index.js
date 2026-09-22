@@ -103,15 +103,47 @@ app.get('/api/jobs/:id', requireUser, (req, res) => {
   res.json({ job: j });
 });
 
-// --- AI captions (Grok, server-side key) ---
+// --- AI captions (Grok + local brand memory, server-side key) ---
 app.post('/api/ai/captions', requireUser, aiLimit, async (req, res) => {
   try {
-    const out = await generateCaptions(req.body?.summary);
-    res.json({ captions: out });
+    const out = await generateCaptions(req.body?.summary, {
+      brand: req.body?.brand,
+      assetHint: req.body?.asset_description || req.body?.assetHint,
+      goal: req.body?.goal,
+    });
+    res.json(out);
   } catch (e) {
     const msg = String(e.message || 'AI failed');
     const code = /credits/i.test(msg) ? 402 : /configured/i.test(msg) ? 503 : 500;
     res.status(code).json({ error: msg });
+  }
+});
+
+// Brand memory — all local, zero LLM tokens.
+app.get('/api/ai/brands', requireUser, burstLimit, async (req, res) => {
+  try {
+    const { searchBrands } = await import('./brand-memory/index.js');
+    res.json({ brands: searchBrands(req.query?.q, 8) });
+  } catch (e) {
+    res.status(500).json({ error: 'Brand lookup failed' });
+  }
+});
+
+// Save an approved caption / correction into memory (no LLM call, file append).
+app.post('/api/ai/learn', requireUser, burstLimit, async (req, res) => {
+  try {
+    const { resolveBrand, learnBrand } = await import('./brand-memory/index.js');
+    const q = String(req.body?.brand || '').slice(0, 160);
+    const hit = resolveBrand(q);
+    if (!hit) return res.status(404).json({ error: 'Brand not in database — nothing saved' });
+    const entry = learnBrand(hit.brand.id, {
+      assetHint: String(req.body?.asset_description || '').slice(0, 200),
+      finalCaption: String(req.body?.finalCaption || req.body?.caption || '').slice(0, 2000),
+      correction: String(req.body?.correction || '').slice(0, 300),
+    });
+    res.json({ saved: hit.brand.id, count: entry.count });
+  } catch (e) {
+    res.status(500).json({ error: 'Learn failed' });
   }
 });
 

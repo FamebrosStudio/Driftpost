@@ -278,9 +278,14 @@ function Composer({ session, connections, reload }) {
     try {
       const data = await api('/api/ai/captions', session.access_token, {
         method: 'POST',
-        body: JSON.stringify({ summary: aiBrief }),
+        body: JSON.stringify({
+          summary: aiBrief,
+          brand: brand?.label || '',
+          asset_description: file ? `${file.name} (${file.type})` : '',
+          goal: 'enquiries',
+        }),
       });
-      const c = data.captions;
+      const c = data.captions || data;
       setYt((v) => ({ ...v, title: c.youtube.title || v.title, description: c.youtube.description || v.description, tags: c.youtube.tags.join(', ') || v.tags }));
       setIg((v) => ({ ...v, caption: c.instagram.caption || v.caption }));
       setCaption((prev) => prev || c.instagram.caption || '');
@@ -288,7 +293,7 @@ function Composer({ session, connections, reload }) {
       setX((v) => ({ ...v, text: c.x.text.slice(0, 280) || v.text }));
       const tags = [...(c.youtube.tags || []), ...(c.instagram.hashtags || [])].filter(Boolean);
       if (tags.length) setYt((v) => ({ ...v, tags: v.tags || tags.slice(0, 8).join(', ') }));
-      setAiMsg('Written for all 4 platforms — review each phone, then publish.');
+      setAiMsg(data.fromMemory ? `Using ${data.fromMemory} memory — review each phone, then publish.` : 'Written for all 4 platforms — review each phone, then publish.');
     } catch (e) {
       setAiMsg(e.message);
     }
