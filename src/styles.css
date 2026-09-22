@@ -551,3 +551,12 @@ html, body { overflow-x: clip; max-width: 100%; }
 .tour-backdrop button {
   font-family: inherit;
 }
+
+/* ===== Landing lite: skip rendering below-fold sections until scrolled to ===== */
+/* Same pixels, same elements — the browser just defers paint + layout work. */
+.hstrip-wrap, .zig, .marquee, .land-foot {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 600px;
+}
+/* Calm the full-screen rain repaint: promote to its own layer. */
+.rain { will-change: background-position; }
