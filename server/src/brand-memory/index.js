@@ -38,6 +38,10 @@ export function getFullBrand(brandId) {
 // Full per-brand record: every phone, address, footer, fact, CTA, keyword,
 // genre rule and example. This is what the AI reads before writing.
 export function fullPack(brand) {
+  // Deep per-brand file (Specific-brands format) wins when present —
+  // it carries master instruction, playbook, hooks, CTA/hashtag banks.
+  const deep = brand?.id ? getDeepBrand(brand.id) : null;
+  if (deep) return deepPack(deep, brand);
   const full = brand?.id ? getFullBrand(brand.id) : null;
   if (!full) return brandPack(brand);
   const mem = loadMemory().brands?.[brand.id];
@@ -61,6 +65,78 @@ export function fullPack(brand) {
     full.example?.body ? `Style example (match this energy, never copy facts):\n${String(full.example.body).slice(0, 500)}` : (brand.ex ? `Style example: ${brand.ex}` : null),
     full.instagram?.handle ? `IG handle: ${full.instagram.handle}` : null,
     full.readiness === 'needs_brand_identity' ? 'Identity incomplete: if the brief lacks product/subject, ask ONE short question instead of inventing.' : null,
+    mem?.notes ? `Owner correction (wins over all above): ${String(mem.notes).slice(0, 300)}` : null,
+    mem?.recent?.length ? `Don't repeat hooks: ${mem.recent.slice(-3).join(' | ').slice(0, 200)}` : null,
+  ].filter(Boolean);
+  return lines.join('\n');
+}
+
+const DEEP_DIR = path.join(here, 'brands');
+let deepCache = null;
+function loadDeepAll() {
+  if (deepCache) return deepCache;
+  deepCache = {};
+  let files = [];
+  try {
+    files = fs.readdirSync(DEEP_DIR).filter((f) => f.endsWith('.json'));
+  } catch {
+    return deepCache;
+  }
+  for (const f of files) {
+    try {
+      const d = JSON.parse(fs.readFileSync(path.join(DEEP_DIR, f), 'utf8'));
+      const id = d.brand_id || f.replace(/\.json$/, '');
+      deepCache[id] = d;
+    } catch {}
+  }
+  return deepCache;
+}
+
+export function getDeepBrand(brandId) {
+  return loadDeepAll()[brandId] || null;
+}
+
+export function deepBrandIds() {
+  return Object.keys(loadDeepAll());
+}
+
+// Pack built from the Specific-brands deep format (~600-800 tokens).
+// Precedence inside: owner memory correction > master instruction > playbook.
+export function deepPack(deep, brand) {
+  const mem = loadMemory().brands?.[deep.brand_id];
+  const cta = deep.cta_bank
+    ? [...(deep.cta_bank.booking || []), ...(deep.cta_bank.save || []), ...(deep.cta_bank.share || []), ...(deep.cta_bank.comments || [])].slice(0, 5)
+    : [];
+  const tags = deep.suggested_hashtag_bank
+    ? [...(deep.suggested_hashtag_bank.brand || []), ...(deep.suggested_hashtag_bank.location || []), ...(deep.suggested_hashtag_bank.topic || [])].slice(0, 6)
+    : [];
+  const play = deep.content_playbook
+    ? Object.entries(deep.content_playbook)
+        .slice(0, 4)
+        .map(([k, v]) => `${k}: ${v.focus || v.status || ''} ${(v.rules || []).slice(0, 3).join('; ')}`.trim())
+        .join('\n')
+    : '';
+  const lines = [
+    deep.master_brand_instruction ? `MASTER: ${deep.master_brand_instruction}` : null,
+    deep.business ? `Business: ${deep.business.category || ''}${deep.business.location_area ? `, ${deep.business.location_area}` : ''}` : null,
+    deep.contact?.phone_display ? `Phone: ${deep.contact.phone_display}` : null,
+    deep.contact?.full_address ? `Address: ${deep.contact.full_address}` : null,
+    deep.social_media?.instagram_handle ? `IG: ${deep.social_media.instagram_handle}` : null,
+    deep.established_content_knowledge?.previously_featured_look
+      ? `Known look: ${deep.established_content_knowledge.previously_featured_look.name} — ${deep.established_content_knowledge.previously_featured_look.reuse_rule || ''}`
+      : null,
+    (deep.writing_direction?.brand_voice || []).length ? `Voice: ${deep.writing_direction.brand_voice.join(', ')}` : null,
+    deep.writing_direction?.positioning_for_copy ? `Positioning: ${deep.writing_direction.positioning_for_copy}` : null,
+    (deep.writing_direction?.avoid_style || []).length ? `Avoid: ${deep.writing_direction.avoid_style.slice(0, 5).join('; ')}` : null,
+    cta.length ? `CTAs (pick one, reword): ${cta.join(' / ')}` : null,
+    (deep.suggested_hooks || []).length ? `Hook angles (vary, don't repeat): ${deep.suggested_hooks.slice(0, 4).join(' / ')}` : null,
+    tags.length ? `Hashtag bank (pick exactly 3): ${tags.join(' ')}` : null,
+    deep.suggested_hashtag_bank?.conditional ? `Tag conditions: ${Object.entries(deep.suggested_hashtag_bank.conditional).map(([t, r]) => `${t} ${r}`).join('; ')}` : null,
+    (deep.seo_keyword_bank || []).length ? `SEO keywords: ${deep.seo_keyword_bank.slice(0, 9).join(', ')}` : null,
+    deep.fixed_footer?.lines?.length ? `Footer (append exactly):\n${deep.fixed_footer.lines.join('\n')}` : null,
+    play ? `Playbook:\n${play}` : null,
+    deep.sample_caption?.text ? `Style example (match energy, never copy facts):\n${String(deep.sample_caption.text).slice(0, 600)}` : null,
+    (deep.accuracy_rules || []).length ? `Accuracy: ${deep.accuracy_rules.slice(0, 5).join(' ')}` : null,
     mem?.notes ? `Owner correction (wins over all above): ${String(mem.notes).slice(0, 300)}` : null,
     mem?.recent?.length ? `Don't repeat hooks: ${mem.recent.slice(-3).join(' | ').slice(0, 200)}` : null,
   ].filter(Boolean);

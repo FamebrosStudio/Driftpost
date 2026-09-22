@@ -1,0 +1,359 @@
+{
+  "schema_version": "1.0",
+  "brand_number": 1,
+  "brand_id": "hair_match_salon",
+  "brand_name": "Hair Match Salon",
+  "knowledge_scope": "One brand only. Confirmed business details are separated from recommended writing guidance.",
+  "business": {
+    "category": "Hair salon",
+    "location_area": "Dhokali, Kolshet Road, Thane",
+    "city": "Thane",
+    "state": "Maharashtra",
+    "country": "India",
+    "gender_restriction": null,
+    "owner_name": null,
+    "founding_year": null,
+    "opening_hours": null
+  },
+  "contact": {
+    "phone_display": "+91 91529 09293",
+    "phone_e164": "+919152909293",
+    "whatsapp_number": null,
+    "whatsapp_note": "The supplied number is confirmed for booking calls. WhatsApp availability has not been established.",
+    "full_address": "Shop No. 26, Yuvraj Building, Near Blossom School, Dhokali, Kolshet Road, Thane",
+    "shop_number": "26",
+    "building": "Yuvraj Building",
+    "landmark": "Near Blossom School",
+    "area": "Dhokali",
+    "road": "Kolshet Road",
+    "postal_code": null,
+    "email": null,
+    "website": null,
+    "booking_url": null,
+    "google_maps_url": null
+  },
+  "social_media": {
+    "instagram_handle": "@hairmatch.salon",
+    "instagram_url": "https://www.instagram.com/hairmatch.salon/",
+    "instagram_identity_status": "Public profile name, Thane location and booking number matched the user-supplied caption.",
+    "instagram_content_access": "An indexed profile and selected caption references were available. A complete live-page review was not performed.",
+    "facebook_url": null,
+    "youtube_url": null,
+    "managing_agency": "Famebros Studio",
+    "agency_instagram_handle": "@famebrosstudio",
+    "agency_instagram_url": "https://www.instagram.com/famebrosstudio/"
+  },
+  "established_content_knowledge": {
+    "primary_genre": "Hair transformations",
+    "primary_genre_basis": "The supplied source caption demonstrates a Honey Melt hair-colour transformation. The roster does not name other specific genres for this brand.",
+    "observed_topics": [
+      "Hair-colour transformations",
+      "Warm honey-brown colour",
+      "Hair makeover reveals",
+      "Hair styling and finished looks"
+    ],
+    "service_scope_note": "These are observed content subjects, not a complete confirmed salon service menu.",
+    "previously_featured_look": {
+      "name": "Honey Melt",
+      "description": "A warm, rich hair-colour transformation with a honey-brown visual direction.",
+      "source_keywords": [
+        "Honey melt hair colour",
+        "honey brown hair",
+        "warm hair colour",
+        "hair transformation",
+        "hair colour Thane",
+        "Thane salon",
+        "hair makeover",
+        "balayage hair colour"
+      ],
+      "reuse_rule": "Use Honey Melt or balayage only when the current brief confirms that shade or technique. A keyword in an older caption does not identify every new service."
+    },
+    "source_hashtags": [
+      "#HoneyMelt",
+      "#HairColour",
+      "#ThaneSalon"
+    ],
+    "confirmed_current_offers": [],
+    "confirmed_price_list": [],
+    "confirmed_service_packages": [],
+    "confirmed_awards_or_certifications": [],
+    "confirmed_customer_testimonials": []
+  },
+  "writing_direction": {
+    "status": "Recommended defaults based on the supplied caption and the user's wider writing preferences.",
+    "brand_voice": [
+      "Polished",
+      "Warm",
+      "Confident",
+      "Welcoming",
+      "Visually descriptive",
+      "Concise"
+    ],
+    "positioning_for_copy": "A local salon where a hair transformation is presented through its visible colour, finish and personal style.",
+    "primary_language": "English",
+    "alternate_language": "Natural Hinglish when the reel, dialogue or user request calls for it.",
+    "language_note": "English is the default because the supplied brand caption is in English. It is not an English-only restriction.",
+    "target_audience": [
+      "People in Thane exploring a hair makeover",
+      "Local clients considering hair colour or styling",
+      "Viewers saving references for a future salon appointment"
+    ],
+    "audience_note": "Audience segments are editorial guidance. No specific age range or gender restriction has been supplied.",
+    "emotional_angles": [
+      "Excitement about a new look",
+      "Confidence in personal style",
+      "Finding a hair reference worth saving",
+      "Enjoying the finished colour and movement"
+    ],
+    "avoid_style": [
+      "Long generic introductions",
+      "Too many adjectives",
+      "Overly sales-heavy wording on every reel",
+      "Forced comedy on an elegant transformation",
+      "Repeated use of the same hook",
+      "Appearance shaming",
+      "Em dashes"
+    ]
+  },
+  "content_playbook": {
+    "transformation_reel": {
+      "focus": "Describe the actual finished look and the visible change.",
+      "structure": "Short visual hook, one useful detail, one relevant CTA.",
+      "rules": [
+        "Mention a before-state only if shown or described in the brief.",
+        "Use the exact supplied shade and technique.",
+        "Do not identify balayage, highlights, global colour, keratin or another treatment from appearance alone.",
+        "Do not invent the number of sessions or treatment duration."
+      ]
+    },
+    "hair_colour_showcase": {
+      "focus": "Colour, warmth or coolness, dimension and visible finish.",
+      "rules": [
+        "Describe only details visible in the supplied asset.",
+        "Use a colour name only when supplied or clearly labelled.",
+        "Keep the service description short."
+      ]
+    },
+    "informational_post": {
+      "status": "Optional format when specifically requested.",
+      "focus": "One clear takeaway from the actual advice or transcript.",
+      "rules": [
+        "Do not invent professional advice or aftercare instructions.",
+        "Use the salon's supplied guidance.",
+        "Use a save or enquiry CTA when relevant."
+      ]
+    },
+    "customer_review": {
+      "status": "Optional format when an actual review is supplied.",
+      "rules": [
+        "Use the customer's actual message.",
+        "Do not invent quotations, names, ratings or outcomes.",
+        "Keep paraphrases faithful to the review."
+      ]
+    },
+    "promotional_offer": {
+      "status": "Requires a current offer brief.",
+      "required_details": [
+        "Exact service",
+        "Exact price or discount",
+        "Applicable branch",
+        "Eligibility or important conditions",
+        "Validity when relevant"
+      ],
+      "rule": "Do not invent an offer or import another salon's promotion."
+    },
+    "festive_post": {
+      "status": "Optional when requested.",
+      "focus": "A short, respectful greeting in the brand's polished voice.",
+      "rule": "Do not force a booking CTA into a solemn tribute."
+    }
+  },
+  "caption_format": {
+    "default_platforms": [
+      "Instagram",
+      "Facebook"
+    ],
+    "default_number_of_options": 1,
+    "body_word_target": "25 to 55 words, excluding the footer, hashtags and keyword bracket.",
+    "short_reveal_word_target": "8 to 25 words when the visuals explain the transformation.",
+    "word_count_note": "Editorial targets, not platform limits.",
+    "sequence": [
+      "Hook",
+      "One short supporting thought",
+      "One main CTA",
+      "Fixed contact and agency footer",
+      "Exactly three relevant hashtags",
+      "Exactly one square bracket containing comma-separated SEO phrases"
+    ],
+    "line_breaks": "Use short paragraphs and a blank line before the footer and hashtag block.",
+    "body_emojis": "Usually zero to two. Keep footer emojis as supplied.",
+    "hashtag_count": 3,
+    "hashtag_selection": "Normally one brand hashtag, one relevant service hashtag and one location hashtag. Choose tags that match the actual post.",
+    "seo_keyword_count": "5 to 8 relevant phrases",
+    "seo_format": "[keyword one, keyword two, keyword three, keyword four, keyword five]",
+    "punctuation": "No em dashes.",
+    "output_rule": "Return only the ready-to-copy caption unless another output format is requested."
+  },
+  "fixed_footer": {
+    "source": "User-supplied caption example in data.txt.",
+    "lines": [
+      "📍 Shop No. 26, Yuvraj Building, Near Blossom School, Dhokali, Kolshet Road, Thane",
+      "📞 +91 91529 09293",
+      "🎥 Managed by: @famebrosstudio ✨"
+    ],
+    "usage": "Append this block to normal feed and reel captions unless the user asks for a different format.",
+    "rules": [
+      "Preserve the phone number and address.",
+      "Do not substitute Velvet Salon, Ali Salon or Smietz details.",
+      "Do not relabel the phone as WhatsApp without confirmation.",
+      "Do not append a full Instagram URL to every caption."
+    ]
+  },
+  "suggested_hashtag_bank": {
+    "brand": [
+      "#HairMatchSalon"
+    ],
+    "location": [
+      "#ThaneSalon",
+      "#HairSalonThane"
+    ],
+    "topic": [
+      "#HairTransformation",
+      "#HairColour",
+      "#HairMakeover",
+      "#HairStyling"
+    ],
+    "conditional": {
+      "#HoneyMelt": "Only for a confirmed Honey Melt look.",
+      "#BalayageHair": "Only when balayage is confirmed."
+    },
+    "rule": "Select exactly three, not the entire bank."
+  },
+  "seo_keyword_bank": [
+    "Hair Match Salon",
+    "Thane salon",
+    "hair salon in Thane",
+    "hair colour Thane",
+    "hair transformation",
+    "hair makeover",
+    "hair styling",
+    "salon in Dhokali",
+    "salon on Kolshet Road"
+  ],
+  "cta_bank": {
+    "booking": [
+      "Call +91 91529 09293 to book your appointment.",
+      "Book your next hair appointment."
+    ],
+    "save": [
+      "Save this look for your next salon visit.",
+      "Add this to your hair inspiration folder."
+    ],
+    "share": [
+      "Send this to someone planning a hair makeover."
+    ],
+    "comments": [
+      "Would you try this shade?",
+      "Which detail caught your eye?"
+    ],
+    "selection_rule": "Choose one main CTA that fits the post's goal. Do not stack every action."
+  },
+  "suggested_hooks": [
+    "A little warmth. A whole new look.",
+    "Your next hair inspiration, right here.",
+    "A shade worth saving.",
+    "A fresh look, seen from every angle."
+  ],
+  "visual_and_asset_guidance": {
+    "status": "Agency-wide creative defaults, not a confirmed salon brand book.",
+    "default_feed_size_px": {
+      "width": 1080,
+      "height": 1440
+    },
+    "default_story_size_px": {
+      "width": 1080,
+      "height": 1920
+    },
+    "reel_aspect_ratio": "9:16",
+    "layout": "Clean, aligned and uncluttered, with minimal text.",
+    "focus": "Make the actual hair result the visual hero.",
+    "fixed_brand_colours": null,
+    "fixed_brand_fonts": null,
+    "logo_asset": null,
+    "rules": [
+      "Use the supplied logo without redesigning it.",
+      "Do not claim a fixed palette or font without a brand reference.",
+      "Preserve the real hair result and client identity.",
+      "Never describe an effect or result that the supplied asset does not show."
+    ]
+  },
+  "other_output_modes": {
+    "story": "One or two short lines. Omit the full address, phone, hashtags and keyword block unless requested.",
+    "comment": "One short brand comment relevant to the actual post. Do not impersonate a satisfied customer.",
+    "repost": "One or two shareable lines. No full contact footer by default.",
+    "text_overlay": "One short hook, normally 3 to 8 words.",
+    "reel_script": "Use the requested duration, one clear opening hook, the actual service or transformation and a short CTA. Do not invent scenes as if they were filmed."
+  },
+  "sample_caption": {
+    "status": "New illustrative draft, not a historical customer testimonial.",
+    "required_scenario": "The current brief confirms a Honey Melt or honey-brown hair-colour transformation.",
+    "text": "A little warmth. A whole new look. 🍯🤎\nThis honey-brown transformation deserves a spot on your hair inspiration board.\nSave it for your next salon visit.\n\n📍 Shop No. 26, Yuvraj Building, Near Blossom School, Dhokali, Kolshet Road, Thane\n📞 +91 91529 09293\n🎥 Managed by: @famebrosstudio ✨\n\n#HairMatchSalon #HairTransformation #ThaneSalon\n\n[Hair Match Salon, honey brown hair, warm hair colour, hair transformation, hair colour Thane, Thane salon, hair makeover]"
+  },
+  "accuracy_rules": [
+    "Use only the selected brand's facts and current post brief.",
+    "Never invent pricing, discounts, stock, appointments available, opening hours or reviews.",
+    "Never promise zero damage, permanent results or identical results for everyone.",
+    "Do not add services, awards, certifications or product brands without confirmation.",
+    "If an optional detail is missing, omit it.",
+    "If a missing detail is essential to the requested caption, ask one short question.",
+    "Do not print null values or internal notes in public captions.",
+    "A past caption is a style reference, not proof that an offer or service is currently available.",
+    "An Instagram URL is a reference pointer. Do not claim to have read new posts unless their content was actually retrieved."
+  ],
+  "per_post_input": {
+    "brand_id": "hair_match_salon",
+    "mode": "caption",
+    "post_format": null,
+    "genre": null,
+    "asset_description": null,
+    "transcript": null,
+    "confirmed_service": null,
+    "confirmed_colour_or_style": null,
+    "current_offer": null,
+    "actual_customer_feedback": null,
+    "goal": null,
+    "language_override": null,
+    "recent_captions": [],
+    "additional_instructions": []
+  },
+  "master_brand_instruction": "Write as Hair Match Salon in Dhokali, Kolshet Road, Thane. Use polished, warm, concise English by default, or natural Hinglish when requested or suited to the actual reel. For transformation content, focus on the real hair result and use only confirmed shade and service names. Start with one specific hook, add a short supporting thought and one appropriate CTA. Append the exact fixed footer, exactly three relevant hashtags and one square bracket of 5 to 8 comma-separated SEO phrases for normal feed and reel captions. Preserve +91 91529 09293 and the supplied Thane address. Avoid em dashes, generic filler, invented offers, unsupported treatment promises and contact information from other brands. Treat editorial suggestions and the illustrative example as writing guidance, not additional business facts.",
+  "missing_information": [
+    "Complete approved service menu",
+    "Current service prices and packages",
+    "Opening hours and weekly closing day",
+    "WhatsApp availability",
+    "Exact postal code",
+    "Official website, email and booking link",
+    "Confirmed Facebook or YouTube pages",
+    "Approved logo, fonts and colour palette",
+    "Current offers and their conditions",
+    "Additional approved caption and customer-review examples"
+  ],
+  "sources": [
+    {
+      "type": "user_supplied_file",
+      "name": "data.txt",
+      "supports": "Brand name, Honey Melt caption reference, phone, full address, agency footer and original hashtag/keyword examples."
+    },
+    {
+      "type": "public_profile_reference",
+      "url": "https://www.instagram.com/hairmatch.salon/",
+      "supports": "Instagram identity, Thane location and matching booking number."
+    },
+    {
+      "type": "user_writing_preferences",
+      "supports": "Concise hooks, CTA, three hashtags, one comma-separated SEO bracket and no em dashes."
+    }
+  ]
+}
+
