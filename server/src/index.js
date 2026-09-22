@@ -35,16 +35,53 @@ app.use(express.json({ limit: '1mb' }));
 async function requireUser(req, res, next) {
   const token = req.headers.authorization?.replace(/^Bearer\s+/i, '');
   if (!token) return res.status(401).json({ error: 'Sign in required' });
+  if (token.length > 4096) return res.status(401).json({ error: 'Sign in required' });
   const { data, error } = await supabase.auth.getUser(token);
   if (error || !data.user) return res.status(401).json({ error: 'Session expired' });
   req.user = data.user;
   next();
 }
 
+// --- Abuse guards: in-memory sliding-window limits (single instance) ---
+// Cheap endpoints get a wide burst allowance; money/queue endpoints are tight.
+const buckets = new Map();
+function limit({ windowMs, max, key }) {
+  return (req, res, next) => {
+    const id = typeof key === 'function' ? key(req) : String(req.ip);
+    const now = Date.now();
+    const arr = (buckets.get(id) || []).filter((t) => now - t < windowMs);
+    if (arr.length >= max) return res.status(429).json({ error: 'Too many requests. Slow down and retry.' });
+    arr.push(now);
+    buckets.set(id, arr);
+    next();
+  };
+}
+setInterval(() => {
+  const now = Date.now();
+  for (const [k, v] of buckets) {
+    const f = v.filter((t) => now - t < 3600000);
+    if (!f.length) buckets.delete(k);
+    else buckets.set(k, f);
+  }
+}, 15 * 60 * 1000).unref();
+const userKey = (req) => `u:${req.user?.id || req.ip}`;
+const burstLimit = limit({ windowMs: 60 * 1000, max: 180, key: (req) => `ip:${req.ip}` });
+const publishLimit = limit({ windowMs: 60 * 1000, max: 10, key: userKey });
+const aiLimit = limit({ windowMs: 60 * 60 * 1000, max: 10, key: userKey });
+const oauthLimit = limit({ windowMs: 60 * 1000, max: 20, key: userKey });
+
+function activeJobCount(userId) {
+  let n = 0;
+  for (const j of jobs.values()) {
+    if (j.userId === userId && !['completed', 'failed'].includes(j.state)) n++;
+  }
+  return n;
+}
+
 app.get('/', (_req, res) => res.json({ ok: true, service: 'driftpost-api', platforms: ['youtube', 'instagram', 'facebook', 'x'] }));
 app.get('/health', (_req, res) => res.json({ ok: true }));
 
-app.get('/api/connections', requireUser, async (req, res) => {
+app.get('/api/connections', requireUser, burstLimit, async (req, res) => {
   const { data, error } = await supabase.from('platform_connections')
     .select('id, platform, platform_account_id, account_name, avatar_url, created_at')
     .eq('user_id', req.user.id);
@@ -67,7 +104,7 @@ app.get('/api/jobs/:id', requireUser, (req, res) => {
 });
 
 // --- AI captions (Grok, server-side key) ---
-app.post('/api/ai/captions', requireUser, async (req, res) => {
+app.post('/api/ai/captions', requireUser, aiLimit, async (req, res) => {
   try {
     const out = await generateCaptions(req.body?.summary);
     res.json({ captions: out });
@@ -79,7 +116,7 @@ app.post('/api/ai/captions', requireUser, async (req, res) => {
 });
 
 // --- OAuth: YouTube (Google) ---
-app.post('/api/oauth/youtube/start', requireUser, (req, res) => {
+app.post('/api/oauth/youtube/start', requireUser, oauthLimit, (req, res) => {
   if (!process.env.GOOGLE_CLIENT_ID) return res.status(503).json({ error: 'YouTube OAuth not configured' });
   res.json({ url: youtubeAuthorizationUrl(signState({ userId: req.user.id, nonce: crypto.randomUUID(), exp: Date.now() + 10 * 60 * 1000 })) });
 });
@@ -105,11 +142,11 @@ app.get('/api/oauth/youtube/callback', async (req, res) => {
 });
 
 // --- OAuth: Meta (Facebook: regular Login / Instagram: Login for Business) ---
-app.post('/api/oauth/facebook/start', requireUser, (req, res) => {
+app.post('/api/oauth/facebook/start', requireUser, oauthLimit, (req, res) => {
   if (!process.env.META_APP_ID) return res.status(503).json({ error: 'Meta OAuth not configured' });
   res.json({ url: metaAuthorizationUrl(signState({ userId: req.user.id, nonce: crypto.randomUUID(), exp: Date.now() + 10 * 60 * 1000 })) });
 });
-app.post('/api/oauth/instagram/start', requireUser, (req, res) => {
+app.post('/api/oauth/instagram/start', requireUser, oauthLimit, (req, res) => {
   if (!process.env.META_APP_ID) return res.status(503).json({ error: 'Meta OAuth not configured' });
   if (!process.env.META_CONFIG_ID) return res.status(503).json({ error: 'Instagram needs a Business Login configuration ID (META_CONFIG_ID)' });
   res.json({ url: metaBusinessLoginUrl(signState({ userId: req.user.id, nonce: crypto.randomUUID(), exp: Date.now() + 10 * 60 * 1000 })) });
@@ -150,7 +187,7 @@ app.get('/api/oauth/meta/callback', async (req, res) => {
 });
 
 // --- OAuth: X ---
-app.post('/api/oauth/x/start', requireUser, (req, res) => {
+app.post('/api/oauth/x/start', requireUser, oauthLimit, (req, res) => {
   if (!process.env.X_CLIENT_ID || !process.env.X_CLIENT_SECRET || !process.env.X_REDIRECT_URI) {
     return res.status(503).json({ error: 'X OAuth is not configured yet' });
   }
@@ -189,12 +226,51 @@ app.get('/api/oauth/x/callback', async (req, res) => {
 });
 
 // --- Unified publish: youtube | facebook | instagram | x ---
-app.post('/api/publish', requireUser, upload.single('media'), async (req, res) => {
-  const platform = String(req.body.platform || '');
-  const connectionId = String(req.body.connection_id || '');
+app.post('/api/publish', requireUser, burstLimit, publishLimit, upload.single('media'), async (req, res) => {
+  const platform = String(req.body.platform || '').slice(0, 32);
+  const connectionId = String(req.body.connection_id || '').slice(0, 128);
   if (!['youtube', 'facebook', 'instagram', 'x'].includes(platform)) {
     if (req.file) await fs.unlink(req.file.path).catch(() => {});
     return res.status(400).json({ error: 'Pick YouTube, Instagram, Facebook or X' });
+  }
+  if (req.file) {
+    // Reject executables/scripts/archives before they touch any publisher.
+    // Images additionally pass a magic-byte sniff so a renamed .exe/.txt
+    // can't ride through on a spoofed mimetype.
+    const mt = String(req.file.mimetype || '');
+    const isImg = mt.startsWith('image/');
+    const isVid = mt.startsWith('video/');
+    if (!isImg && !isVid) {
+      await fs.unlink(req.file.path).catch(() => {});
+      return res.status(400).json({ error: 'Only image and video files are accepted' });
+    }
+    if (isImg) {
+      const head = Buffer.alloc(12);
+      const fh = await fs.open(req.file.path, 'r').catch(() => null);
+      if (fh) {
+        await fh.read(head, 0, 12, 0).catch(() => {});
+        await fh.close().catch(() => {});
+      }
+      const magic =
+        (head[0] === 0xff && head[1] === 0xd8 && head[2] === 0xff) || // JPEG
+        (head[0] === 0x89 && head[1] === 0x50 && head[2] === 0x4e && head[3] === 0x47) || // PNG
+        (head[0] === 0x47 && head[1] === 0x49 && head[2] === 0x46) || // GIF
+        (head.toString('ascii', 0, 4) === 'RIFF' && head.toString('ascii', 8, 12) === 'WEBP') || // WEBP
+        (head[0] === 0x42 && head[1] === 0x4d); // BMP
+      if (!magic) {
+        await fs.unlink(req.file.path).catch(() => {});
+        return res.status(400).json({ error: 'That file is not a real image' });
+      }
+    }
+    const cap = isVid ? 512 * 1024 * 1024 : 10 * 1024 * 1024;
+    if (req.file.size > cap) {
+      await fs.unlink(req.file.path).catch(() => {});
+      return res.status(400).json({ error: isVid ? 'Video is larger than 512 MB' : 'Image is larger than 10 MB' });
+    }
+  }
+  if (activeJobCount(req.user.id) >= 3) {
+    if (req.file) await fs.unlink(req.file.path).catch(() => {});
+    return res.status(429).json({ error: '3 publishes already running. Wait for one to finish.' });
   }
   const { data: conn, error } = await supabase.from('platform_connections')
     .select('*').eq('id', connectionId).eq('user_id', req.user.id).eq('platform', platform).maybeSingle();
@@ -288,8 +364,12 @@ async function runPublish(job, conn, file, body, userId) {
         media = { ...file, bytes };
         // Instagram needs a public URL -> upload to Supabase Storage
         if (job.platform === 'instagram' || (job.platform === 'facebook' && String(body.fb_synd_ig || '') === '1')) {
-          const ext = path.extname(file.originalname || '') || (file.mimetype.startsWith('video/') ? '.mp4' : '.jpg');
-          const key = `${userId}/${Date.now()}${ext}`;
+          // Random object name (no user id, no timestamp, sanitized extension):
+          // even if bucket listing were ever exposed, names reveal nothing.
+          const rawExt = path.extname(file.originalname || '');
+          const safeExt = rawExt.replace(/[^a-z0-9.]/gi, '').slice(0, 8)
+            || (file.mimetype.startsWith('video/') ? '.mp4' : '.jpg');
+          const key = `${crypto.randomUUID()}${safeExt}`;
           const { error: upErr } = await supabase.storage.from(BUCKET).upload(key, bytes, { contentType: file.mimetype, upsert: true });
           if (upErr) throw new Error('Media upload failed. Create public bucket "' + BUCKET + '" in Supabase Storage.');
           const { data } = supabase.storage.from(BUCKET).getPublicUrl(key);

@@ -1118,7 +1118,6 @@ export default function App() {
           <button className="menu-btn" onClick={() => setNavOpen(true)} aria-label="Open menu">☰</button>
           <div><h1>{view === 'create' ? 'Platforms' : 'Accounts'}</h1><p>Pick a brand, post everywhere — no tech skills needed</p></div>
           <button className="mini" title="Replay the guided tour" onClick={() => setTour(0)}>◉ Tour</button>
-          <span className={online === false ? 'pill bad' : 'pill'}>{online === null ? 'checking…' : online ? 'API online' : 'API offline'}</span>
         </div>
         <div className="page">
           {view === 'create'
