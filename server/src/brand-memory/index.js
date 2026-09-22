@@ -91,6 +91,8 @@ export function brandPack(brand) {
     brand.footer?.length ? `Footer (append exactly):\n${brand.footer.join('\n')}` : 'Footer: 💫 Managed by: @famebrosstudio',
     brand.kw?.length ? `Hashtags: 3 only (1 brand + 2 topic). Keywords: [${brand.kw.slice(0, 6).join(', ')}]` : null,
     brand.mandatory?.length ? `Must include: ${brand.mandatory.join('; ')}` : null,
+    brand.web ? `Website: ${brand.web}` : null,
+    brand.ready === 'needs_brand_identity' ? 'Identity incomplete: if the brief lacks product/subject, ask ONE short question instead of inventing.' : null,
     brand.ex ? `Style example: ${brand.ex}` : null,
     mem?.notes ? `Learned: ${String(mem.notes).slice(0, 200)}` : null,
     mem?.recent?.length ? `Don't repeat hooks: ${mem.recent.slice(-3).join(' | ').slice(0, 200)}` : null,
