@@ -23,6 +23,15 @@ const PLATFORM_SPECS = `
 PLATFORM SPECS (texts must differ):
 - YOUTUBE (search SEO): title = keyword-first, <=100 chars, include brand + service + location. Description = 2-3 SEO sentences with keywords woven naturally + 1 CTA + brand footer lines. Tags = 8 lowercase search tags (service, location, brand).
 - INSTAGRAM (discovery SEO): full Famebros format — hook + 1 detail + 1 CTA (25-55 words), then footer lines, then exactly 3 hashtags (1 brand + 2 topic/location), then [5-8 SEO phrases]. 0-2 emojis, no em dash.
+  Exact shape:
+  <hook line>
+  <detail + CTA>
+
+  <footer lines>
+
+  #Tag1 #Tag2 #Tag3
+
+  [kw1, kw2, kw3, kw4, kw5]
 - FACEBOOK (social/conversational, NO bracket): 1-2 friendly sentences in different words from Instagram + CTA with phone/address if known. Max 2 hashtags inline or at end. Footer = address/phone lines only. Never include the [keyword bracket].
 - X (punchy, <=280 chars): one sharp line + different CTA, max 2 hashtags, no footer, no bracket, no emoji spam. Must read differently from the IG hook.`;
 
@@ -74,7 +83,7 @@ export async function generateCaptions(summary, opts = {}) {
   const body = {
     model: process.env.XAI_MODEL || 'grok-4-1-fast-non-reasoning',
     temperature: 0.5,
-    max_tokens: trends ? 950 : 650,
+    max_tokens: trends ? 950 : 800,
     messages: [
       { role: 'system', content: GLOBAL_SYSTEM + PLATFORM_SPECS + brandBlock + trendBlock },
       { role: 'user', content: userMsg },
@@ -101,6 +110,46 @@ export async function generateCaptions(summary, opts = {}) {
   const parsed = extractJson(text);
   const tags = (arr) => (Array.isArray(arr) ? arr : []).map((t) => String(t || '').replace(/^#+/, '').trim()).filter(Boolean).slice(0, 10);
 
+  // Server-side format guarantee (zero extra LLM tokens): even if the model
+  // returns a short 2-3 line caption, we append the brand footer + hashtags +
+  // SEO bracket locally so output ALWAYS matches the Famebros full format.
+  let ytTags = tags(parsed.youtube?.tags).slice(0, 8);
+  let igCap = clean(parsed.instagram?.caption, 2200);
+  let igTags = tags(parsed.instagram?.hashtags);
+  let fbMsg = clean(parsed.facebook?.message, 2000);
+  let ytDesc = clean(parsed.youtube?.description, 2000);
+  if (brand) {
+    const footer = (brand.footer && brand.footer.length ? brand.footer : ['💫 Managed by: @famebrosstudio']).join('\n');
+    const hasFooter = (s) => s.includes('Managed by: @famebrosstudio') || (brand.footer?.[0] && s.includes(brand.footer[0].slice(0, 20)));
+    // hashtags: prefer model's, else derive from keyword bank
+    if (!igTags.length && brand.kw?.length) {
+      igTags = [brand.name.replace(/[^A-Za-z0-9]/g, ''), ...brand.kw.slice(1, 3).map((k) => k.replace(/[^A-Za-z0-9]/g, ''))].filter(Boolean).slice(0, 3);
+    }
+    igTags = igTags.slice(0, 3);
+    while (igTags.length < 3 && brand.kw?.length) {
+      const extra = brand.kw[igTags.length]?.replace(/[^A-Za-z0-9]/g, '');
+      if (!extra || igTags.includes(extra)) break;
+      igTags.push(extra);
+    }
+    const hashLine = igTags.length ? igTags.map((t) => `#${t}`).join(' ') : '';
+    const kwLine = brand.kw?.length ? `[${brand.kw.slice(0, 8).join(', ')}]` : '';
+    if (!hasFooter(igCap)) igCap = `${igCap}\n\n${footer}`;
+    if (hashLine && !igCap.includes('#')) igCap = `${igCap}\n\n${hashLine}`;
+    if (kwLine && !igCap.includes('[')) igCap = `${igCap}\n\n${kwLine}`;
+    igCap = clean(igCap, 2200);
+    // Facebook: same footer + max 2 hashtags, never the bracket
+    if (!hasFooter(fbMsg)) fbMsg = `${fbMsg}\n\n${footer}`;
+    const fbTags = igTags.slice(0, 2).map((t) => `#${t}`).join(' ');
+    if (fbTags && !fbMsg.includes('#')) fbMsg = `${fbMsg}\n\n${fbTags}`;
+    fbMsg = clean(fbMsg, 2000);
+    // YouTube: footer + tags fallback
+    if (!hasFooter(ytDesc)) ytDesc = `${ytDesc}\n\n${footer}`;
+    ytDesc = clean(ytDesc, 2000);
+    if (!ytTags.length && brand.kw?.length) {
+      ytTags = brand.kw.map((k) => k.toLowerCase().replace(/[^a-z0-9 ]/g, '').trim().replace(/\s+/g, ' ')).filter(Boolean).slice(0, 8);
+    }
+  }
+
   // Zero-LLM memory upgrade: record that this brand was used + asset hint.
   let fromMemory = '';
   if (brand) {
@@ -114,14 +163,14 @@ export async function generateCaptions(summary, opts = {}) {
     captions: {
       youtube: {
         title: clean(parsed.youtube?.title, 100),
-        description: clean(parsed.youtube?.description, 2000),
-        tags: tags(parsed.youtube?.tags).slice(0, 8),
+        description: ytDesc,
+        tags: ytTags,
       },
       instagram: {
-        caption: clean(parsed.instagram?.caption, 2200),
-        hashtags: tags(parsed.instagram?.hashtags),
+        caption: igCap,
+        hashtags: igTags,
       },
-      facebook: { message: clean(parsed.facebook?.message, 2000) },
+      facebook: { message: fbMsg },
       x: { text: clean(parsed.x?.text, 280) },
     },
     brand_id: brand?.id || null,
