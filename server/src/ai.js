@@ -80,33 +80,22 @@ export async function generateCaptions(summary, opts = {}) {
     (assetHint ? `\nAsset: ${assetHint}` : '') +
     (goal ? `\nGoal: ${goal}` : '');
 
-  const body = {
-    model: process.env.XAI_MODEL || 'grok-4-1-fast-non-reasoning',
-    temperature: 0.5,
-    max_tokens: trends ? 950 : 800,
-    messages: [
-      { role: 'system', content: GLOBAL_SYSTEM + PLATFORM_SPECS + brandBlock + trendBlock },
-      { role: 'user', content: userMsg },
-    ],
-  };
-  // xAI live search (web+X) for latest SEO — only when user opts in.
-  if (trends) body.search_parameters = { mode: 'auto', sources: [{ type: 'web' }, { type: 'x' }] };
+  const systemText = GLOBAL_SYSTEM + PLATFORM_SPECS + brandBlock + trendBlock;
+  const model = process.env.XAI_MODEL || 'grok-4-1-fast-non-reasoning';
 
-  const res = await fetch(CHAT_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${process.env.XAI_API_KEY}` },
-    body: JSON.stringify(body),
-  });
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok) {
-    const msg = data.error?.message || data.error || `xAI error ${res.status}`;
-    if (res.status === 401) throw new Error('AI key rejected. Check XAI_API_KEY.');
-    if (res.status === 402 || /credit|balance|payment|billing/i.test(msg)) {
-      throw new Error('AI out of credits. Top up the xAI account, then retry.');
-    }
-    throw new Error(`AI failed: ${msg}`);
+  let text;
+  let usage;
+  if (trends) {
+    // Live SEO via the current Agent Tools API (Responses endpoint).
+    // Old chat-completions `search_parameters` is deprecated and errors out.
+    const r = await callResponsesWithSearch({ model, systemText, userMsg });
+    text = r.text;
+    usage = r.usage;
+  } else {
+    const r = await callChat({ model, systemText, userMsg, maxTokens: 800 });
+    text = r.text;
+    usage = r.usage;
   }
-  const text = data.choices?.[0]?.message?.content || '';
   const parsed = extractJson(text);
   const tags = (arr) => (Array.isArray(arr) ? arr : []).map((t) => String(t || '').replace(/^#+/, '').trim()).filter(Boolean).slice(0, 10);
 
@@ -176,6 +165,71 @@ export async function generateCaptions(summary, opts = {}) {
     brand_id: brand?.id || null,
     fromMemory,
     trends,
-    usage: data.usage || undefined,
+    usage: usage || undefined,
   };
+}
+
+function xaiError(data, res) {
+  const msg = data?.error?.message || data?.error || `xAI error ${res.status}`;
+  if (res.status === 401) throw new Error('AI key rejected. Check XAI_API_KEY.');
+  if (res.status === 402 || /credit|balance|payment|billing/i.test(String(msg))) {
+    throw new Error('AI out of credits. Top up the xAI account, then retry.');
+  }
+  throw new Error(`AI failed: ${typeof msg === 'string' ? msg : JSON.stringify(msg).slice(0, 200)}`);
+}
+
+async function callChat({ model, systemText, userMsg, maxTokens }) {
+  const res = await fetch(CHAT_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${process.env.XAI_API_KEY}` },
+    body: JSON.stringify({
+      model,
+      temperature: 0.5,
+      max_tokens: maxTokens,
+      messages: [
+        { role: 'system', content: systemText },
+        { role: 'user', content: userMsg },
+      ],
+    }),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) xaiError(data, res);
+  return { text: data.choices?.[0]?.message?.content || '', usage: data.usage };
+}
+
+function extractResponsesText(data) {
+  if (typeof data?.output_text === 'string' && data.output_text.trim()) return data.output_text;
+  const out = Array.isArray(data?.output) ? data.output : [];
+  const chunks = [];
+  for (const item of out) {
+    const content = Array.isArray(item?.content) ? item.content : [];
+    for (const c of content) {
+      if (typeof c?.text === 'string' && c.text.trim()) chunks.push(c.text);
+      else if (typeof c?.output_text === 'string' && c.output_text.trim()) chunks.push(c.output_text);
+    }
+    if (typeof item?.text === 'string' && item.text.trim()) chunks.push(item.text);
+  }
+  return chunks.join('\n');
+}
+
+async function callResponsesWithSearch({ model, systemText, userMsg }) {
+  const res = await fetch('https://api.x.ai/v1/responses', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${process.env.XAI_API_KEY}` },
+    body: JSON.stringify({
+      model,
+      temperature: 0.5,
+      max_output_tokens: 950,
+      tools: [{ type: 'web_search' }, { type: 'x_search' }],
+      input: [
+        { role: 'system', content: systemText },
+        { role: 'user', content: userMsg },
+      ],
+    }),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) xaiError(data, res);
+  const text = extractResponsesText(data);
+  if (!text.trim()) throw new Error('AI returned an empty answer with live search. Retry without Live SEO.');
+  return { text, usage: data.usage };
 }
