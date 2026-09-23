@@ -227,6 +227,7 @@ export async function generateCaptions(summary, opts = {}) {
         if (/📍|📞|🎥|managed by/i.test(t)) return false;
         if (nameRe.test(t)) return false;
         if (/^shop no\./i.test(t)) return false;
+        if (/^shop \d/i.test(t)) return false;
         if (/^[\d\s+/\-()]{8,}$/.test(t)) return false;
         return true;
       })
