@@ -172,6 +172,7 @@ export function deepBrandIds() {
 export function deepFooter(deep) {
   const ff = deep?.fixed_footer;
   if (ff) {
+    if (ff.prefer_group_footer && ff.group_footer_lines?.length) return ff.group_footer_lines;
     if (ff.lines?.length) return ff.lines;
     if (ff.full_lines?.length) return ff.full_lines;
     const only = Object.keys(ff).filter((k) => k.endsWith('_only_lines') && Array.isArray(ff[k]) && ff[k].length);

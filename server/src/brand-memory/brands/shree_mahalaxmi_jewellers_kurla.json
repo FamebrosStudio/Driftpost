@@ -374,13 +374,13 @@
     ],
     "group_footer_lines": [
       "📍 Shree Mahalaxmi Jewellers",
-      "Shop 15, Building 8, C-Wing, Sharad Co-Op Housing Society, Kapus Kamgar Nagar, Near Tilak Nagar Station, Kurla East, Mumbai 400024",
+      "Shop 15, Bldg 8, C-Wing, Sharad Co-Op Hsg Society, Kapus Kamgar Nagar, Near Tilak Nagar Station, Kurla (E), Mumbai - 400024",
       "",
       "📍 Kanchanmala Jewellers",
-      "Shop 1/1, Plot 93, N.G. Acharya Marg, Chembur, Mumbai 400071",
+      "Shop 1/1, Plot 93, N.G. Acharya Marg, Chembur, Mumbai - 400071",
       "",
       "📍 Mahalaxmi Jewellers",
-      "Shop 1, Khardev Nagar Road, Ghatla, Chembur, Mumbai 400071",
+      "Shop 1, Khardev Nagar Rd, Ghatla, Chembur, Mumbai - 400071",
       "",
       "📞 +91 96190 96762 | +91 80974 96670",
       "🎥 Managed by: @famebrosstudio ✨"
@@ -391,7 +391,8 @@
       "Do not use the Chembur or Ghatla address as the Kurla address.",
       "Do not shorten the branch name into a different jewellery business.",
       "Do not label phone numbers as WhatsApp without confirmation."
-    ]
+    ],
+    "prefer_group_footer": true
   },
   "suggested_hashtag_bank": {
     "brand": [
