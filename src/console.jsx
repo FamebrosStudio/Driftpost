@@ -273,6 +273,7 @@ function Composer({ session, connections, reload }) {
   };
 
   const [aiTrends, setAiTrends] = useState(false);
+  const [lessonBusy, setLessonBusy] = useState(false);
   const writeWithAi = async () => {
     if (aiBusy || !aiBrief.trim()) return;
     setAiBusy(true); setAiMsg('');
@@ -389,8 +390,18 @@ function Composer({ session, connections, reload }) {
           <p className="sub">Stuck? Type a short summary — 4 different captions (YT / IG / FB / X).</p>
           <label className="field" style={{ marginBottom: 0 }}><span>What is this post about? <i>optional</i></span><textarea value={aiBrief} maxLength={500} onChange={(e) => setAiBrief(e.target.value)} placeholder="e.g. bridal haircut reel for Velvet Salon in Mumbai" style={{ minHeight: 70 }} /></label>
           <label className="ck" style={{ marginTop: 8 }}><input type="checkbox" checked={aiTrends} onChange={(e) => setAiTrends(e.target.checked)} /><svg viewBox="0 0 64 64"><path className="path" d="M8 33 L26 51 L56 13" /></svg><span>🔥 Live SEO trends (slower, costs more)</span></label>
-          {aiMsg && <div className={/different captions written/i.test(aiMsg) ? 'banner' : 'alert err'} style={{ marginTop: 10 }}>{aiMsg}</div>}
+          {aiMsg && <div className={/different captions written|Saved to/i.test(aiMsg) ? 'banner' : 'alert err'} style={{ marginTop: 10 }}>{aiMsg}</div>}
           <button className="skew-btn grad" style={{ width: '100%', marginTop: 10 }} disabled={aiBusy || !aiBrief.trim()} onClick={writeWithAi}><span>{aiBusy ? 'Writing…' : '✨ Write captions'}</span></button>
+          <button className="skew-btn ghost" style={{ width: '100%', marginTop: 8 }} disabled={lessonBusy || (!ig.caption && !caption)} onClick={async () => {
+            if (lessonBusy || !brand?.label) return;
+            setLessonBusy(true); setAiMsg('');
+            try {
+              const d = await api('/api/ai/learn', session.access_token, { method: 'POST',
+                body: JSON.stringify({ brand: brand.label, finalCaption: ig.caption || caption, asset_description: file ? `${file.name} (${file.type})` : aiBrief }) });
+              setAiMsg(`Saved to ${d.saved} memory (${d.count} lessons) — next captions copy this style.`);
+            } catch (e) { setAiMsg(e.message); }
+            setLessonBusy(false);
+          }}><span>{lessonBusy ? 'Saving…' : '📥 Caption good? Save as brand lesson'}</span></button>
           {aiBusy && <div className="progress-loader" style={{ marginTop: 10 }}><div className="progress" /></div>}
         </div>
       </div>

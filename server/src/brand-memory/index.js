@@ -88,7 +88,7 @@ export function fullPack(brand) {
     full.instagram?.handle ? `IG handle: ${full.instagram.handle}` : null,
     full.readiness === 'needs_brand_identity' ? 'Identity incomplete: if the brief lacks product/subject, ask ONE short question instead of inventing.' : null,
     mem?.notes ? `Owner correction (wins over all above): ${String(mem.notes).slice(0, 300)}` : null,
-    mem?.recent?.length ? `Don't repeat hooks: ${mem.recent.slice(-3).join(' | ').slice(0, 200)}` : null,
+    mem?.recent?.length ? `Approved voice — same energy, new words, never copy exactly: ${mem.recent.slice(-3).join(' | ').slice(0, 200)}` : null,
   ].filter(Boolean);
   return lines.join('\n');
 }
@@ -208,7 +208,7 @@ export function deepPack(deep, brand) {
     deep.sample_caption?.text ? `Style example (match energy, never copy facts):\n${String(deep.sample_caption.text).slice(0, 600)}` : null,
     (deep.accuracy_rules || []).length ? `Accuracy: ${deep.accuracy_rules.slice(0, 5).join(' ')}` : null,
     mem?.notes ? `Owner correction (wins over all above): ${String(mem.notes).slice(0, 300)}` : null,
-    mem?.recent?.length ? `Don't repeat hooks: ${mem.recent.slice(-3).join(' | ').slice(0, 200)}` : null,
+    mem?.recent?.length ? `Approved voice — same energy, new words, never copy exactly: ${mem.recent.slice(-3).join(' | ').slice(0, 200)}` : null,
   ].filter(Boolean);
   return lines.join('\n');
 }
@@ -294,7 +294,7 @@ export function brandPack(brand) {
     brand.ready === 'needs_brand_identity' ? 'Identity incomplete: if the brief lacks product/subject, ask ONE short question instead of inventing.' : null,
     brand.ex ? `Style example: ${brand.ex}` : null,
     mem?.notes ? `Learned: ${String(mem.notes).slice(0, 200)}` : null,
-    mem?.recent?.length ? `Don't repeat hooks: ${mem.recent.slice(-3).join(' | ').slice(0, 200)}` : null,
+    mem?.recent?.length ? `Approved voice — same energy, new words, never copy exactly: ${mem.recent.slice(-3).join(' | ').slice(0, 200)}` : null,
   ].filter(Boolean);
   return lines.join('\n');
 }
