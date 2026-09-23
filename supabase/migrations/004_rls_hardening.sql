@@ -1,26 +1,10 @@
-create extension if not exists pgcrypto;
-
-create table if not exists public.platform_connections (
-  id uuid primary key default gen_random_uuid(),
-  user_id uuid not null references auth.users(id) on delete cascade,
-  platform text not null check (platform in ('youtube', 'instagram', 'facebook', 'x')),
-  platform_account_id text not null,
-  account_name text not null,
-  avatar_url text,
-  encrypted_tokens text not null,
-  token_expires_at timestamptz,
-  created_at timestamptz not null default now(),
-  updated_at timestamptz not null default now(),
-  unique (user_id, platform, platform_account_id)
-);
+-- Security hardening for existing databases where 001/002 already ran.
+-- Adds missing INSERT/UPDATE/DELETE RLS policies so the anon/publishable key
+-- cannot be abused, and grants stay scoped to the record owner.
+-- Safe to run multiple times.
 
 alter table public.platform_connections enable row level security;
-
-drop policy if exists "Users read own connections" on public.platform_connections;
-create policy "Users read own connections"
-on public.platform_connections for select
-to authenticated
-using ((select auth.uid()) = user_id);
+alter table public.post_history enable row level security;
 
 drop policy if exists "Users insert own connections" on public.platform_connections;
 create policy "Users insert own connections"
@@ -41,8 +25,29 @@ on public.platform_connections for delete
 to authenticated
 using ((select auth.uid()) = user_id);
 
+drop policy if exists "Users insert own history" on public.post_history;
+create policy "Users insert own history"
+on public.post_history for insert
+to authenticated
+with check ((select auth.uid()) = user_id);
+
+drop policy if exists "Users update own history" on public.post_history;
+create policy "Users update own history"
+on public.post_history for update
+to authenticated
+using ((select auth.uid()) = user_id)
+with check ((select auth.uid()) = user_id);
+
+drop policy if exists "Users delete own history" on public.post_history;
+create policy "Users delete own history"
+on public.post_history for delete
+to authenticated
+using ((select auth.uid()) = user_id);
+
 revoke all on public.platform_connections from anon;
+revoke all on public.post_history from anon;
 grant select, insert, update, delete on public.platform_connections to authenticated;
+grant select, insert, update, delete on public.post_history to authenticated;
 
 create or replace function public.update_updated_at()
 returns trigger as $$

@@ -1,6 +1,35 @@
 const apiUrlRaw = import.meta.env.VITE_API_URL;
 export const apiUrl = apiUrlRaw?.replace(/\/$/, '') || '';
 
+// Optional server-backed brand list with safe fallback.
+// Keeps current behaviour identical when the API is unreachable.
+let brandsCache = null;
+let brandsCacheTime = 0;
+const BRAND_CACHE_MS = 5 * 60 * 1000;
+
+export async function fetchBrands() {
+  try {
+    const now = Date.now();
+    if (brandsCache && (now - brandsCacheTime) < BRAND_CACHE_MS) return brandsCache;
+    if (!apiUrl) return ACTIVE_BRANDS;
+    const res = await fetch(`${apiUrl}/api/ai/brands`);
+    if (res.ok) {
+      const data = await res.json();
+      if (Array.isArray(data.brands) && data.brands.length) {
+        brandsCache = data.brands;
+        brandsCacheTime = now;
+        return brandsCache;
+      }
+    }
+  } catch {}
+  return ACTIVE_BRANDS;
+}
+
+export function invalidateBrandsCache() {
+  brandsCache = null;
+  brandsCacheTime = 0;
+}
+
 export const PLATFORMS = [
   { id: 'youtube', name: 'YouTube', hint: 'Video + title required' },
   { id: 'instagram', name: 'Instagram', hint: 'Photo or reel + caption' },

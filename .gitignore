@@ -2,6 +2,10 @@ node_modules/
 dist/
 .env
 .env.local
+*.env.txt
+server/.env.txt
+server/.env
+supabase/.env
 server/node_modules/
 *.log
 .DS_Store

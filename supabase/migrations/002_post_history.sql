@@ -1,7 +1,7 @@
 create table if not exists public.post_history (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references auth.users(id) on delete cascade,
-  platform text not null check (platform in ('youtube', 'instagram', 'facebook')),
+  platform text not null check (platform in ('youtube', 'instagram', 'facebook', 'x')),
   status text not null default 'published',
   url text,
   caption text,
@@ -16,5 +16,24 @@ on public.post_history for select
 to authenticated
 using ((select auth.uid()) = user_id);
 
+drop policy if exists "Users insert own history" on public.post_history;
+create policy "Users insert own history"
+on public.post_history for insert
+to authenticated
+with check ((select auth.uid()) = user_id);
+
+drop policy if exists "Users update own history" on public.post_history;
+create policy "Users update own history"
+on public.post_history for update
+to authenticated
+using ((select auth.uid()) = user_id)
+with check ((select auth.uid()) = user_id);
+
+drop policy if exists "Users delete own history" on public.post_history;
+create policy "Users delete own history"
+on public.post_history for delete
+to authenticated
+using ((select auth.uid()) = user_id);
+
 revoke all on public.post_history from anon;
-grant select on public.post_history to authenticated;
+grant select, insert, update, delete on public.post_history to authenticated;
