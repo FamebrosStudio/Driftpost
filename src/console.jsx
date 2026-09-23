@@ -167,6 +167,10 @@ function Composer({ session, connections, reload }) {
     () => (file?.raw && file.type.startsWith('image/') ? URL.createObjectURL(file.raw) : null),
     [file]
   );
+  const mediaVideoUrl = useMemo(
+    () => (file?.raw && file.type.startsWith('video/') ? URL.createObjectURL(file.raw) : null),
+    [file]
+  );
 
   const pickFile = (f) => {
     if (!f) return;
@@ -382,8 +386,11 @@ function Composer({ session, connections, reload }) {
             <div className="drop big" onClick={() => inputRef.current.click()}><b>＋ Add photo or video</b>Click to browse · up to 2 GB</div>
           ) : (
             <div>
-              {mediaUrl && <img className="media-preview" src={mediaUrl} alt="Shared media preview" />}
-              <div className="file-row"><div><b>{file.name}</b><small>{file.size} · {file.type}</small></div><button onClick={() => setFile(null)}>Remove</button></div>
+              {mediaUrl && <img className="media-preview" src={mediaUrl} alt="Shared media preview" onClick={() => window.open(mediaUrl, '_blank')} title="Click to view full size" />}
+              {mediaVideoUrl && (
+                <video className="media-preview" src={mediaVideoUrl} controls preload="metadata" title="Video preview" />
+              )}
+              <div className="file-row"><div><b>{file.name}</b><small>{file.size} · {file.type}</small></div><button onClick={() => setFile(null)}>Remove</button><button onClick={() => inputRef.current.click()}>Replace</button></div>
             </div>
           )}
         </div>
