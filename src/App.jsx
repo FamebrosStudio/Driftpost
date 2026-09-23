@@ -66,7 +66,7 @@ function SpotLine({ text }) {
       onMouseMove={onMove}
       onMouseLeave={onLeave}
     >
-      {text.split('').map((ch, i) => <span key={i}>{ch === ' ' ? ' ' : ch}</span>)}
+      {text.split('').map((ch, i) => <span key={i}>{ch}</span>)}
     </span>
   );
 }
