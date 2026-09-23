@@ -147,6 +147,7 @@ function Composer({ session, connections, reload }) {
   const [aiBrief, setAiBrief] = useState('');
   const [aiBusy, setAiBusy] = useState(false);
   const [aiMsg, setAiMsg] = useState('');
+  const [copyMsg, setCopyMsg] = useState('');
   const [results, setResults] = useState({});
   const inputRef = useRef();
   const thumbRef = useRef();
@@ -276,10 +277,11 @@ function Composer({ session, connections, reload }) {
   const [aiTone, setAiTone] = useState('auto');
   const [aiEmoji, setAiEmoji] = useState('high');
   const [aiLength, setAiLength] = useState('medium');
+  const [aiBreakdown, setAiBreakdown] = useState(null);
   const [lessonBusy, setLessonBusy] = useState(false);
   const writeWithAi = async () => {
     if (aiBusy || !aiBrief.trim()) return;
-    setAiBusy(true); setAiMsg('');
+    setAiBusy(true); setAiMsg(''); setAiBreakdown(null);
     try {
       const data = await api('/api/ai/captions', session.access_token, {
         method: 'POST',
@@ -303,6 +305,7 @@ function Composer({ session, connections, reload }) {
       const tags = [...(c.youtube.tags || []), ...(c.instagram.hashtags || [])].filter(Boolean);
       if (tags.length) setYt((v) => ({ ...v, tags: v.tags || tags.slice(0, 8).join(', ') }));
       setAiMsg(`${data.isNewBrand ? `New brand '${data.fromMemory.replace(' (new brand filed)', '')}' filed — it will keep learning. ` : data.fromMemory ? `Using ${data.fromMemory} memory — ` : ''}4 different captions written (YT search / IG discovery / FB social / X punchy)${data.trends ? ' with live SEO' : ''} — review each phone, then publish.`);
+      if (data.breakdown) setAiBreakdown(data.breakdown);
     } catch (e) {
       setAiMsg(e.message);
     }
@@ -426,6 +429,15 @@ function Composer({ session, connections, reload }) {
             <span />
           </div>
           {aiMsg && <div className={/different captions written|Saved to/i.test(aiMsg) ? 'banner' : 'alert err'} style={{ marginTop: 10 }}>{aiMsg}</div>}
+          {aiBreakdown && (
+            <div className="ai-chips" style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 8, fontSize: 11 }}>
+              <span className="status-pill">{aiBreakdown.weak ? '⚠️ thin prompt' : '✓ understood'}</span>
+              <span className="status-pill">🏷 {aiBreakdown.brand}</span>
+              <span className="status-pill">🎯 {aiBreakdown.motive}</span>
+              <span className="status-pill">⏰ {aiBreakdown.when}</span>
+              <span className="status-pill">✍️ {String(aiBreakdown.type).split(':')[0]}</span>
+            </div>
+          )}
           <button className="skew-btn grad" style={{ width: '100%', marginTop: 10 }} disabled={aiBusy || !aiBrief.trim()} onClick={writeWithAi}><span>{aiBusy ? 'Writing…' : '✨ Write captions'}</span></button>
           <button className="skew-btn ghost" style={{ width: '100%', marginTop: 8 }} disabled={lessonBusy || (!ig.caption && !caption)} onClick={async () => {
             if (lessonBusy || !brand?.label) return;
@@ -642,6 +654,11 @@ function Composer({ session, connections, reload }) {
                 {r?.url && <a className="phone-link big" href={r.url} target="_blank" rel="noreferrer">View your post →</a>}
                 <div className="phone-actions">
                   <label className="ck"><input type="checkbox" checked={!!enabled[pid]} onChange={(e) => setEnabled((m) => ({ ...m, [pid]: e.target.checked }))} /><svg viewBox="0 0 64 64"><path className="path" d="M8 33 L26 51 L56 13" /></svg><span>Include in “post to all”</span></label>
+                  <button className="mini" title="Copy this platform's caption" onClick={() => {
+                    const texts = { youtube: `${yt.title}\n\n${yt.description || caption}`, instagram: ig.caption || caption, facebook: fb.message || caption, x: x.text || caption };
+                    try { navigator.clipboard.writeText(texts[pid] || ''); setCopyMsg('Copied ' + p.name); } catch { setCopyMsg('Copy failed'); }
+                    setTimeout(() => setCopyMsg(''), 1500);
+                  }}>⧉ Copy{copyMsg ? ` — ${copyMsg}` : ''}</button>
                   <button className="post-btn" disabled={!!busy[pid] || (pid === 'x' && (xLen > 280 || (x.pollOn && !!file)))} onClick={() => publishOne(pid)}>{busy[pid] ? 'Posting…' : `Post to ${p.name} →`}</button>
                 </div>
               </div>

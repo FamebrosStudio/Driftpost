@@ -162,10 +162,11 @@ export async function generateCaptions(summary, opts = {}) {
     (assetHint ? `\nAsset: ${assetHint}` : '') +
     (goal ? `\nGoal: ${goal}` : '');
 
+  const breakdown = mem.parseBrief(brief, brand);
   const systemText = GLOBAL_SYSTEM + PLATFORM_SPECS + brandBlock + offerBlock + trendBlock + HOUSE_RULES
     + (TONE_BLOCKS[tone] || '') + `\nUSER'S EMOJI CHOICE (overrides any count above):` + (EMOJI_BLOCKS[emojiLevel] || EMOJI_BLOCKS.high)
     + (LENGTH_BLOCKS[capLength] || '') + HUMANIZER
-    + mem.breakdownBlock(mem.parseBrief(brief, brand));
+    + mem.breakdownBlock(breakdown);
   const model = process.env.XAI_MODEL || 'grok-4-1-fast-non-reasoning';
 
   let text;
@@ -336,6 +337,7 @@ export async function generateCaptions(summary, opts = {}) {
     brand_id: brand?.id || null,
     fromMemory,
     isNewBrand: !!autoNew?.isNew,
+    breakdown,
     trends,
     usage: usage || undefined,
   };
