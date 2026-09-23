@@ -54,10 +54,15 @@ const PUB_PAGES = [
   { id: 'security', label: 'Security', hidden: true },
 ];
 
-const hashPage = () => {
+const pageFromUrl = () => {
+  // Real multi-page URLs (/privacy) first, legacy hash (#/privacy) second.
+  const path = String(window.location.pathname || '/').replace(/^\/+|\/+$/g, '').split('/')[0];
+  if (path && PUB_PAGES.some((p) => p.id === path)) return path;
   const h = String(window.location.hash || '').replace(/^#\/?/, '').split('?')[0];
   return PUB_PAGES.some((p) => p.id === h) ? h : 'home';
 };
+
+const hashPage = pageFromUrl;
 
 const PUB_CONTENT = {
   about: {
@@ -120,7 +125,7 @@ const PUB_CONTENT = {
     title: 'Your data stays yours.',
     intro: 'Last updated September 2026. Driftpost publishes to your accounts — it does not sell, rent, or share your data with anyone.',
     sections: [
-      { h: 'What we store', p: 'Login email (Supabase Auth); connected social accounts (names and IDs); AES-256-GCM encrypted OAuth access/refresh tokens; captions, prompts and AI briefs you submit; uploaded media in transit (Instagram copies via your private Supabase storage bucket); publish history (platform, time, URL); IP, device and browser data in server logs; support messages. Billing data, if we ever charge, is handled by our payment provider — we never store card numbers.' },
+      { h: 'What we store', p: 'Login email (Supabase Auth); connected social accounts (names and IDs); AES-256-GCM encrypted OAuth access/refresh tokens; captions, prompts and AI briefs you submit; uploaded media in transit (Instagram copies via your private Supabase storage bucket); publish history (platform, time, URL); IP, device and browser data in hosting access logs for security and diagnostics; support messages. Billing data, if paid plans ever launch, is handled by our payment provider — we never store card numbers.' },
       { h: 'Why each item exists', p: 'Email identifies your account. Account IDs route your posts. Tokens let the official platform APIs publish as you. Prompts and media are the content you asked us to publish. Logs keep the service secure and diagnose failures.' },
       { h: 'Social tokens are secrets', p: 'Tokens are encrypted at rest, held server-side only, never placed in frontend code, logs, analytics or this repo, and never shown in any dashboard. Disconnecting an account deletes its tokens immediately.' },
       { h: 'AI processing', p: 'Caption text you submit is processed by our AI provider (xAI/Grok) solely to generate your caption. We do not use your content to train shared AI models. Do not paste passwords, OTPs or other secrets into the AI writer.' },
@@ -153,7 +158,7 @@ const PUB_CONTENT = {
     sections: [
       { h: 'Delete one account', p: 'Console → Accounts → Disconnect next to the account. Its encrypted tokens are deleted from our database at once. This also revokes posting access.' },
       { h: 'Delete everything', p: 'Press Delete account in the account menu (removes connections, history and login), or disconnect all accounts and email famebros.studio@gmail.com from your login email with subject "Delete my data". We confirm by reply within 7 days.' },
-      { h: 'Removed our Facebook integration?', p: 'If you removed Drift Post from Facebook settings, Meta notifies us automatically and we purge your stored Meta tokens. Use the steps above for full erasure.' },
+      { h: 'Removed our Facebook integration?', p: 'If you removed Drift Post from Facebook settings, Meta sends us a revocation notice. That notice does not identify your local account, so finish with Disconnect on the Accounts page or email us — then erasure is complete.' },
       { h: 'What we keep', p: 'Nothing after deletion except records the law requires (e.g. billing invoices, if paid service launches). We hold no backups of tokens and never sold or shared your data.' },
     ],
   },
@@ -230,7 +235,7 @@ const PUB_CONTENT = {
       { h: 'Your passwords stay yours', p: 'Connections happen through official OAuth only. Driftpost will never ask for your social-media password, OTP, UPI PIN or card PIN. Anyone asking is a scammer — report to famebros.studio@gmail.com.' },
       { h: 'Tokens locked down', p: 'Social OAuth tokens are AES-256-GCM encrypted, stored server-side, never in frontend code, logs, analytics or this repo, and never displayed in any dashboard. In transit everything runs over HTTPS.' },
       { h: 'Isolation', p: 'Row-level security confines every query to your own user ID. Brand A can never read Brand B. Brand knowledge lives per brand and never leaks across them.' },
-      { h: 'Abuse guards', p: 'Rate limits on login, AI generation, OAuth and publishing endpoints; signed OAuth state; upload type and size validation.' },
+      { h: 'Abuse guards', p: 'Rate limits on AI generation, OAuth, publishing and account-data endpoints; signed OAuth state; upload type and size validation.' },
       { h: 'Your content', p: 'Your uploads and captions remain yours; our licence is limited to delivering the service. AI briefs are processed by xAI/Grok to draft captions and are not used to train shared models.' },
       { h: 'Your controls', p: 'Per-account Disconnect (tokens die instantly), full Delete account button, data deletion within 7 days, publish history recording who posted what, where and when.' },
     ],
@@ -243,7 +248,7 @@ function DocPage({ page }) {
   return (
     <div className="doc-wrap">
       <div className="landing-kicker">{c.kicker}</div>
-      <h1 className="doc-title">{c.title}</h1>
+      <h1 className="doc-title"><SpotLine text={c.title} /></h1>
       {c.intro && <p className="doc-intro">{c.intro}</p>}
       <div className="doc-list">
         {c.sections.map((s, i) => (
@@ -395,7 +400,7 @@ function Auth({ mode, setMode, onBack, markFresh }) {
           <div className="input-span"><span className="label">Email address</span><input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" /></div>
           <div className="input-span"><span className="label">Password</span><input type="password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="At least 6 characters" /></div>
           {mode === 'signup' && (
-            <label className="ck" style={{ alignItems: 'start' }}><input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} /><svg viewBox="0 0 64 64"><path className="path" d="M8 33 L26 51 L56 13" /></svg><span style={{ fontWeight: 400 }}>I agree to the <a href="#/terms" target="_blank" rel="noreferrer">Terms of Service</a> and <a href="#/privacy" target="_blank" rel="noreferrer">Privacy Policy</a></span></label>
+            <label className="ck" style={{ alignItems: 'start' }}><input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} /><svg viewBox="0 0 64 64"><path className="path" d="M8 33 L26 51 L56 13" /></svg><span style={{ fontWeight: 400 }}>I agree to the <a href="/terms" target="_blank" rel="noreferrer">Terms of Service</a> and <a href="/privacy" target="_blank" rel="noreferrer">Privacy Policy</a></span></label>
           )}
           {error && <div className="alert err">{error}</div>}
           {info && <div className="banner">{info}</div>}
@@ -419,12 +424,13 @@ export default function App() {
   const [pubPage, setPubPageState] = useState(() => (typeof window !== 'undefined' ? hashPage() : 'home'));
   const setPubPage = (id) => {
     setPubPageState(id);
-    try { window.location.hash = `#/${id}`; } catch {}
+    try { window.history.pushState({}, '', id === 'home' ? '/' : `/${id}`); } catch {}
   };
   useEffect(() => {
-    const onHash = () => setPubPageState(hashPage());
-    window.addEventListener('hashchange', onHash);
-    return () => window.removeEventListener('hashchange', onHash);
+    const onUrl = () => setPubPageState(pageFromUrl());
+    window.addEventListener('popstate', onUrl);
+    window.addEventListener('hashchange', onUrl);
+    return () => { window.removeEventListener('popstate', onUrl); window.removeEventListener('hashchange', onUrl); };
   }, []);
   const FRESH_KEY = 'driftpost-fresh-login';
   const markFreshLogin = () => { try { sessionStorage.setItem(FRESH_KEY, '1'); } catch {} };
