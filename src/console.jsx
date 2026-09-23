@@ -295,7 +295,7 @@ function Composer({ session, connections, reload }) {
       setX((v) => ({ ...v, text: c.x.text.slice(0, 280) || v.text }));
       const tags = [...(c.youtube.tags || []), ...(c.instagram.hashtags || [])].filter(Boolean);
       if (tags.length) setYt((v) => ({ ...v, tags: v.tags || tags.slice(0, 8).join(', ') }));
-      setAiMsg(`${data.fromMemory ? `Using ${data.fromMemory} memory — ` : ''}4 different captions written (YT search / IG discovery / FB social / X punchy)${data.trends ? ' with live SEO' : ''} — review each phone, then publish.`);
+      setAiMsg(`${data.isNewBrand ? `New brand '${data.fromMemory.replace(' (new brand filed)', '')}' filed — it will keep learning. ` : data.fromMemory ? `Using ${data.fromMemory} memory — ` : ''}4 different captions written (YT search / IG discovery / FB social / X punchy)${data.trends ? ' with live SEO' : ''} — review each phone, then publish.`);
     } catch (e) {
       setAiMsg(e.message);
     }

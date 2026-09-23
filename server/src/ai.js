@@ -64,7 +64,18 @@ export async function generateCaptions(summary, opts = {}) {
   // Local resolve — 0 tokens. Dynamic import keeps cold start fast.
   const mem = await import('./brand-memory/index.js');
   const hit = mem.resolveBrand(brandQuery);
-  const brand = hit?.brand || null;
+  let brand = hit?.brand || null;
+  let autoNew = null;
+  if (!brand) {
+    // Unknown name? File it as a new brand and keep upgrading it — free.
+    try {
+      const found = mem.ensureAutoBrand({ brandParam: opts.brand, brief, assetHint });
+      if (found) {
+        brand = found.brand;
+        autoNew = found;
+      }
+    } catch {}
+  }
   // FULL record: every phone/address/footer/fact/keyword/example for this brand.
   const pack = brand ? mem.fullPack(brand) : '';
   const rules = brand ? mem.globalBrandRules() : '';
@@ -76,9 +87,11 @@ export async function generateCaptions(summary, opts = {}) {
     ? `\nOFFER MODE: this post has a real offer/opening. IG caption: bold excited hook with emojis (e.g. ✨ NEW SHOP. GOLDEN SURPRISE! ✨), name the exact offer + who gets it + urgency (only first 100, don't miss out), 4-8 emojis total placed naturally (🎁💛😍✨🏃‍♀️👀), end with a tag-a-friend CTA. Energy is required — never flat. Only use offer facts from the brief above.`
     : `\nStandard mode: hook + supporting detail + CTA, 25-55 words, minimum 2 full sentences. 2-4 emojis placed naturally, matching ChatGPT warmth — never a dry 2-liner. Transformation posts: describe the visible result with sensory words.`;
 
-  const brandBlock = brand
-    ? `\n\nMEMORY HIT: "${brand.name}" is in the brand database below — write IN that brand's voice with its real phone/address/footer.\n${pack}\n${rules}`
-    : `\n\nNo brand in the database matches — write generically from the user brief only. No footer, 3 plain hashtags, no keyword bracket.`;
+  const brandBlock = autoNew
+    ? `\n\nNEW BRAND FILED: "${brand.name}" was unknown — a new record was created and will keep learning.\n${pack}\n${rules}\nContacts for a new brand are UNCONFIRMED: agency footer only, never print any phone/address from the brief unless it is the brand's own number stated as fact.`
+    : brand
+      ? `\n\nMEMORY HIT: "${brand.name}" is in the brand database below — write IN that brand's voice with its real phone/address/footer.\n${pack}\n${rules}`
+      : `\n\nNo brand in the database matches — write generically from the user brief only. No footer, 3 plain hashtags, no keyword bracket.`;
 
   const trendBlock = trends && brand
     ? `\nLIVE SEO: use live search results for 2026 trending keywords/hashtags around "${brand.cat || 'local business'}" in ${brand.loc || 'Mumbai'}. Blend 1-2 trending tags into YT tags + IG hashtags only if genuinely relevant; keep brand hashtag first.`
@@ -214,7 +227,7 @@ export async function generateCaptions(summary, opts = {}) {
   if (brand) {
     try {
       mem.learnBrand(brand.id, { assetHint: assetHint || brief.slice(0, 120) });
-      fromMemory = brand.name;
+      fromMemory = autoNew ? `${brand.name} (new brand filed)` : brand.name;
     } catch {}
   }
 
@@ -234,6 +247,7 @@ export async function generateCaptions(summary, opts = {}) {
     },
     brand_id: brand?.id || null,
     fromMemory,
+    isNewBrand: !!autoNew?.isNew,
     trends,
     usage: usage || undefined,
   };

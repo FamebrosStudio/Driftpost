@@ -14,10 +14,32 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 const COMPACT_PATH = path.join(here, 'brands.compact.json');
 const FULL_PATH = path.join(here, 'brands.full.json');
 const MEMORY_PATH = path.join(here, 'memory.json');
+const CUSTOM_PATH = path.join(here, 'brands.custom.json');
+const MAX_AUTO = 50;
 
 let cache = null;
+function loadCustom() {
+  try {
+    const d = JSON.parse(fs.readFileSync(CUSTOM_PATH, 'utf8'));
+    return Array.isArray(d.brands) ? d.brands : [];
+  } catch {
+    return [];
+  }
+}
+function saveCustom(brands) {
+  const raw = JSON.stringify({ version: 1, brands: brands.slice(0, MAX_AUTO) });
+  if (raw.length < 30000) fs.writeFileSync(CUSTOM_PATH, raw);
+}
 export function loadBrands() {
   if (!cache) cache = JSON.parse(fs.readFileSync(COMPACT_PATH, 'utf8'));
+  // Custom/auto-onboarded brands merge in — matcher sees them like natives.
+  // Reloaded per call would cost disk IO; refresh when custom file changes.
+  try {
+    const st = fs.statSync(CUSTOM_PATH);
+    if (!cache._customMtime || cache._customMtime < st.mtimeMs) {
+      cache = { brands: [...JSON.parse(fs.readFileSync(COMPACT_PATH, 'utf8')).brands, ...loadCustom()], _customMtime: st.mtimeMs };
+    }
+  } catch {}
   return cache.brands;
 }
 
@@ -263,4 +285,115 @@ export function learnBrand(brandId, { assetHint, finalCaption, correction } = {}
   const raw = JSON.stringify(mem);
   if (raw.length < 25000) fs.writeFileSync(MEMORY_PATH, JSON.stringify(mem, null, 1));
   return e;
+}
+
+// --- Auto-onboarding: unknown brands get stored + upgraded, zero LLM tokens.
+// Trigger: explicit brand label (picked/typed) that matches nothing, or a
+// business-type name inside the brief ("XYZ Salon", "ABC Jewellers").
+// Generic prompts ("diwali offer") never create brands.
+const BIZ_WORDS = /(salon|lounge|studio|clinic|jewellers|jewels|clothing|apparel|boutique|furniture|interior|resort|hotel|motors|garage|hospital|dental|school|classes|footwear|sneakers|saree|tailor|dryfruits|bakery|cafe|restaurant|fitness|gym|spa|nails|tattoo|photography|decor|mart|store|bakers|cakes)/i;
+
+export function slugify(name) {
+  return String(name || '').toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '').slice(0, 48) || 'brand';
+}
+
+function extractPhones(text) {
+  const out = new Set();
+  const re = /(?:\+91[\s-]?)?[6-9]\d{4}[\s-]?\d{5}/g;
+  let m;
+  while ((m = re.exec(String(text || '')))) {
+    const digits = m[0].replace(/\D/g, '').slice(-10);
+    if (digits.length === 10) out.add(`+91 ${digits.slice(0, 5)} ${digits.slice(5)}`);
+    if (out.size >= 2) break;
+  }
+  return [...out];
+}
+
+function candidateFromBrief(brief) {
+  const m = String(brief || '').match(/\b([A-Z][A-Za-z&'’]{1,24}(?:\s+[A-Z][A-Za-z&'’]{1,24}){0,3})\b/);
+  if (!m) return '';
+  const name = m[1].trim();
+  if (name.length < 4 || name.length > 48) return '';
+  if (!BIZ_WORDS.test(name)) return '';
+  return name;
+}
+
+// Main entry: returns {brand, isNew} or null when nothing brand-like found.
+// Creates brands/auto-<slug>.json deep file + custom index entry on first sight,
+// then upgrades topics/phones/hints on every later sighting. All local, free.
+export function ensureAutoBrand({ brandParam, brief, assetHint }) {
+  let name = String(brandParam || '').trim().slice(0, 60);
+  let via = 'label';
+  if (!name) {
+    name = candidateFromBrief(brief);
+    via = 'brief';
+  }
+  if (!name || name.length < 3) return null;
+  if (/^(instagram|facebook|youtube|post|reel|photo|video|offer|diwali)$/i.test(name)) return null;
+
+  const custom = loadCustom();
+  const slug = slugify(name);
+  let entry = custom.find((c) => c.id === slug || norm(c.name) === norm(name));
+  const phones = extractPhones(`${brandParam} ${brief}`);
+  const topic = String(brief || '').split('\n')[0].slice(0, 120);
+
+  if (!entry) {
+    if (custom.length >= MAX_AUTO) return null;
+    entry = {
+      id: slug, name, aliases: [], cat: 'local brand', loc: '',
+      genres: [], tone: 'Warm, vivid, human', lang: '', cta: [],
+      avoid: [], kw: [name], footer: ['💫 Managed by: @famebrosstudio'],
+      mandatory: [], ex: '', ig: null, ready: '', auto: true, via,
+      count: 0, topics: [],
+    };
+    custom.push(entry);
+    try { saveCustom(custom); } catch {}
+    cache = null; // force matcher to see the newcomer immediately
+  }
+  entry.count = (entry.count || 0) + 1;
+  if (topic && !entry.topics?.includes(topic)) entry.topics = [...(entry.topics || []), topic].slice(-5);
+  try { saveCustom(custom); } catch {}
+
+  // Auto deep file: full detail shelf for this brand, upgraded each sighting.
+  const autoPath = path.join(DEEP_DIR, `auto-${slug}.json`);
+  let auto = null;
+  try { auto = JSON.parse(fs.readFileSync(autoPath, 'utf8')); } catch {}
+  if (!auto) {
+    auto = {
+      schema_version: 'auto-1', brand_id: slug, brand_name: name,
+      knowledge_scope: 'Auto-onboarded from live prompts. Facts below are observed, not owner-confirmed.',
+      business: { category: entry.cat, location_area: '' },
+      contact: { phone_display: null, full_address: null },
+      social_media: {},
+      master_brand_instruction: `Write as ${name}. Warm, vivid, human voice. Hook + supporting detail + concrete CTA, 2+ sentences. Append the agency footer, exactly 3 hashtags, one SEO bracket. Never invent phone, address, prices or offers.`,
+      fixed_footer: { lines: ['💫 Managed by: @famebrosstudio'] },
+      seo_keyword_bank: [name],
+      cta_bank: { booking: [], save: ['Save this for later.'] },
+      suggested_hooks: [], suggested_hashtag_bank: { brand: [], location: [], topic: [] },
+      sample_caption: null, accuracy_rules: [], observed_briefs: [], confirmed: false,
+    };
+  }
+  if (phones.length && !auto.contact.phone_display) {
+    auto.contact.phone_display = phones[0]; // observed, unconfirmed until owner says so
+  }
+  if (topic && !(auto.observed_briefs || []).includes(topic)) {
+    auto.observed_briefs = [...(auto.observed_briefs || []), topic].slice(-8);
+    const words = topic.toLowerCase().split(/[^a-z]+/).filter((w) => w.length > 4 && !/^(with|from|that|this|your|hair|shop|store)$/.test(w)).slice(0, 3);
+    for (const w of words) {
+      const phrase = `${w} ${entry.cat === 'local brand' ? '' : ''}`.trim();
+      if (phrase && !auto.seo_keyword_bank.includes(phrase) && auto.seo_keyword_bank.length < 9) auto.seo_keyword_bank.push(phrase);
+    }
+    if (!auto.seo_keyword_bank.includes(name)) auto.seo_keyword_bank.unshift(name);
+  }
+  if (assetHint && !(auto.observed_assets || []).includes(assetHint)) {
+    auto.observed_assets = [...(auto.observed_assets || []), String(assetHint).slice(0, 120)].slice(-5);
+  }
+  try {
+    const raw = JSON.stringify(auto);
+    if (raw.length < 12000) fs.writeFileSync(autoPath, JSON.stringify(auto, null, 1));
+  } catch {}
+  deepCache = null; // new/changed shelf file must be visible immediately
+  // learning memory counts it too
+  try { learnBrand(slug, { assetHint: assetHint || topic }); } catch {}
+  return { brand: { ...entry, kw: auto.seo_keyword_bank?.length ? auto.seo_keyword_bank : entry.kw }, isNew: entry.count <= 1, auto };
 }
