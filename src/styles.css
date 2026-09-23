@@ -424,15 +424,15 @@ html, body { overflow-x: clip; max-width: 100%; }
   .marquee-in, .scroll-hint { animation: none !important; }
 }
 
-/* zig-zag scroll path: pure offsets, content untouched */
+/* Boxes stay whole: no horizontal offsets anywhere (they sliced cards at the
+   viewport edge), plus a page-level clip as backstop. The zig-zag rhythm
+   comes from the alternating flip order, not from sideways shifts. */
 @media (min-width: 901px) {
-  .zig-row:nth-child(odd) { transform: translateX(-46px); }
-  .zig-row:nth-child(even) { transform: translateX(46px); }
-  .hstrip-wrap { transform: translateX(30px); }
-  .marquee { transform: translateX(-30px); }
-  .land-foot { transform: translateX(24px); }
-  .landing-in { transform: translateX(-18px); }
+  .zig-row:nth-child(odd), .zig-row:nth-child(even) { transform: none; }
+  .hstrip-wrap, .marquee, .land-foot, .landing-in { transform: none; }
 }
+html, body { overflow-x: clip; max-width: 100%; }
+.doc-wrap { overflow-wrap: break-word; }
 
 @media (max-width: 1200px) { .phones { grid-template-columns: repeat(2, 1fr); } .share-row { grid-template-columns: 1fr; } }
 @media (max-width: 900px) {
