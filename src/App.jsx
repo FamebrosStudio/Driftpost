@@ -504,8 +504,10 @@ export default function App() {
         ? (pubPage === 'home' ? 'Driftpost — Publish Everywhere' : `${PUB_PAGES.find((p) => p.id === pubPage)?.label} · Driftpost`)
         : 'Sign in · Driftpost'
       : 'Console · Driftpost';
-    // Landing pages are public and indexable; the console and auth stay private.
-    const isPublic = !session && entry === 'landing';
+    // Landing pages are public and indexable for everyone; the console and
+    // auth stay private. Based on page, never on login state — the same URL
+    // must serve the same directive to every visitor (and every crawler).
+    const isPublic = entry === 'landing';
     document.querySelector('meta[name="robots"]')?.setAttribute('content', isPublic ? 'index, follow, max-image-preview:large' : 'noindex, nofollow');
   }, [session, entry, pubPage]);
 

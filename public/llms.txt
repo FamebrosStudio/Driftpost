@@ -2,16 +2,30 @@
 
 > One calm composer for YouTube, Instagram, Facebook and X. Pick a brand, drop one file, tune each platform, publish everywhere.
 
-- Home: https://driftpostpage.vercel.app/
-- How to use: https://driftpostpage.vercel.app/#/how
-- Platforms: https://driftpostpage.vercel.app/#/platforms
-- FAQ: https://driftpostpage.vercel.app/#/faq
-- Contact: https://driftpostpage.vercel.app/#/contact
-- Privacy: https://driftpostpage.vercel.app/#/privacy
-- Terms: https://driftpostpage.vercel.app/#/terms
-- Source code: https://github.com/FamebrosStudio/Driftpost
-- Contact email: famebros.studio@gmail.com
+## Pages
+
+- [Home](https://driftpostpage.vercel.app/)
+- [About](https://driftpostpage.vercel.app/about)
+- [How to use](https://driftpostpage.vercel.app/how)
+- [Platforms](https://driftpostpage.vercel.app/platforms)
+- [FAQ](https://driftpostpage.vercel.app/faq)
+- [Contact](https://driftpostpage.vercel.app/contact)
+- [Privacy Policy](https://driftpostpage.vercel.app/privacy)
+- [Terms of Service](https://driftpostpage.vercel.app/terms)
+- [Cookie Policy](https://driftpostpage.vercel.app/cookies)
+- [Acceptable Use Policy](https://driftpostpage.vercel.app/acceptable-use)
+- [AI Content Disclaimer](https://driftpostpage.vercel.app/ai-disclaimer)
+- [Platform Disclaimer](https://driftpostpage.vercel.app/platforms-disclaimer)
+- [Copyright Policy](https://driftpostpage.vercel.app/copyright)
+- [Refund Policy](https://driftpostpage.vercel.app/refunds)
+- [Data Deletion](https://driftpostpage.vercel.app/data-deletion)
+- [Security & Trust Center](https://driftpostpage.vercel.app/security)
 
 ## What it does
 
 Driftpost is a brand-first publishing console for agencies, studios and creators. Connect YouTube, Instagram, Facebook and X once per brand, then post to all four from a single guided composer with per-platform titles, tags, captions, polls and links. Direct publishing only — nothing is scheduled or automated.
+
+## Project
+
+- [Source code](https://github.com/FamebrosStudio/Driftpost)
+- Contact: famebros.studio@gmail.com
