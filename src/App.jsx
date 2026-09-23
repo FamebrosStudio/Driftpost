@@ -519,11 +519,13 @@ export default function App() {
   }, [session]);
 
   useEffect(() => {
-    document.title = !session
-      ? entry === 'landing'
+    // Public landing titles follow the page; console titles live in Console.
+    // `entered` matters: logged-in visitors still see landing first.
+    if (!session || !entered) {
+      document.title = entry === 'landing'
         ? (pubPage === 'home' ? 'Driftpost — Publish Everywhere' : `${PUB_PAGES.find((p) => p.id === pubPage)?.label} · Driftpost`)
-        : 'Sign in · Driftpost'
-      : 'Console · Driftpost';
+        : 'Sign in · Driftpost';
+    }
     // Landing pages are public and indexable for everyone; the console and
     // auth stay private. Based on page, never on login state — the same URL
     // must serve the same directive to every visitor (and every crawler).
