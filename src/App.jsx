@@ -10,6 +10,136 @@ function Loader() {
 
 
 
+function DotsCanvas() {
+  const ref = useRef(null);
+  useEffect(() => {
+    const canvas = ref.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const DPR = Math.min(1.5, window.devicePixelRatio || 1);
+    const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    let w = 0;
+    let h = 0;
+    let pts = [];
+    let raf = 0;
+    let running = false;
+    const mouse = { x: -9999, y: -9999, cx: -9999, cy: -9999 };
+    const seed = () => {
+      const n = w < 640 ? 30 : 62;
+      pts = Array.from({ length: n }, () => ({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        vx: (Math.random() - 0.5) * 0.35,
+        vy: (Math.random() - 0.5) * 0.35,
+        r: Math.random() * 1.4 + 0.6,
+      }));
+    };
+    const resize = () => {
+      const r = canvas.parentElement.getBoundingClientRect();
+      w = Math.max(1, r.width);
+      h = Math.max(1, r.height);
+      canvas.width = w * DPR;
+      canvas.height = h * DPR;
+      ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+      seed();
+    };
+    const frame = () => {
+      if (!running) return;
+      const r = canvas.getBoundingClientRect();
+      mouse.x = mouse.cx - r.left;
+      mouse.y = mouse.cy - r.top;
+      ctx.clearRect(0, 0, w, h);
+      for (const p of pts) {
+        const dx = mouse.x - p.x;
+        const dy = mouse.y - p.y;
+        const d = Math.hypot(dx, dy);
+        if (d < 150 && d > 1) {
+          p.vx += (dx / d) * 0.02;
+          p.vy += (dy / d) * 0.02;
+        }
+        p.vx *= 0.985;
+        p.vy *= 0.985;
+        if (Math.hypot(p.vx, p.vy) < 0.08) {
+          p.vx += (Math.random() - 0.5) * 0.05;
+          p.vy += (Math.random() - 0.5) * 0.05;
+        }
+        p.x += p.vx;
+        p.y += p.vy;
+        if (p.x < 0) p.x += w;
+        if (p.x > w) p.x -= w;
+        if (p.y < 0) p.y += h;
+        if (p.y > h) p.y -= h;
+      }
+      const LINK = 120;
+      ctx.lineWidth = 1;
+      for (let i = 0; i < pts.length; i++) {
+        const a = pts[i];
+        for (let j = i + 1; j < pts.length; j++) {
+          const b = pts[j];
+          const d = Math.hypot(a.x - b.x, a.y - b.y);
+          if (d < LINK) {
+            ctx.strokeStyle = `rgba(56,189,248,${(0.28 * (1 - d / LINK)).toFixed(3)})`;
+            ctx.beginPath();
+            ctx.moveTo(a.x, a.y);
+            ctx.lineTo(b.x, b.y);
+            ctx.stroke();
+          }
+        }
+        const m = Math.hypot(a.x - mouse.x, a.y - mouse.y);
+        if (m < 170) {
+          ctx.strokeStyle = `rgba(125,211,252,${(0.5 * (1 - m / 170)).toFixed(3)})`;
+          ctx.beginPath();
+          ctx.moveTo(a.x, a.y);
+          ctx.lineTo(mouse.x, mouse.y);
+          ctx.stroke();
+        }
+      }
+      ctx.fillStyle = '#7dd3fc';
+      for (const p of pts) {
+        ctx.globalAlpha = 0.85;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, 6.283);
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+      raf = requestAnimationFrame(frame);
+    };
+    const start = () => {
+      if (running || reduced) return;
+      running = true;
+      raf = requestAnimationFrame(frame);
+    };
+    const stop = () => {
+      running = false;
+      cancelAnimationFrame(raf);
+    };
+    const onMove = (e) => { mouse.cx = e.clientX; mouse.cy = e.clientY; };
+    const onLeave = () => { mouse.cx = -9999; mouse.cy = -9999; };
+    resize();
+    if (reduced) {
+      running = true;
+      frame();
+      running = false;
+    }
+    const io = new IntersectionObserver(([en]) => {
+      if (en.isIntersecting) start();
+      else stop();
+    });
+    io.observe(canvas);
+    window.addEventListener('resize', resize);
+    window.addEventListener('mousemove', onMove, { passive: true });
+    document.documentElement.addEventListener('mouseleave', onLeave);
+    return () => {
+      stop();
+      io.disconnect();
+      window.removeEventListener('resize', resize);
+      window.removeEventListener('mousemove', onMove);
+      document.documentElement.removeEventListener('mouseleave', onLeave);
+    };
+  }, []);
+  return <canvas ref={ref} className="dots-bg" aria-hidden="true" />;
+}
+
 function SpotLine({ text }) {
   const ref = useRef(null);
   const centers = useRef(null);
@@ -350,7 +480,7 @@ function Landing({ onEnter, session, pubPage, setPubPage }) {
   ];
   return (
     <div className="landing" ref={rootRef} onMouseMove={onGridMouse}>
-      <div className="grid-bg" ref={gridRef} aria-hidden="true"><div className="grid-shift"><div className="grid-pan" /><div className="grid-glow" /></div></div>
+      <div className="grid-bg" ref={gridRef} aria-hidden="true"><div className="grid-shift"><div className="grid-pan" /><DotsCanvas /><div className="grid-glow" /></div></div>
       <nav className="land-nav">
         <button className="land-logo" onClick={() => setPubPage('home')} title="Driftpost home"><img className="logo-img logo-d" src="/logo-dark-620.png" srcSet="/logo-dark-620.png 620w, /logo-dark.png 1984w" sizes="248px" width="1984" height="512" fetchpriority="high" decoding="async" alt="Driftpost" /></button>
         <div className="land-links">
