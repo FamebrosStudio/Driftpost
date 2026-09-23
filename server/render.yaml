@@ -42,5 +42,9 @@ services:
         sync: false
       - key: STATE_SIGNING_SECRET
         sync: false
+      - key: XAI_API_KEY
+        sync: false
+      - key: XAI_MODEL
+        value: grok-4
       - key: MEDIA_BUCKET
         value: driftpost-media
