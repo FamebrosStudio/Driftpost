@@ -166,7 +166,7 @@ app.get('/api/jobs/:id', requireUser, jobsLimit, (req, res) => {
 
 // Full account erasure: connections + history, then the login itself.
 // Media files use random untraceable keys and expire with the bucket lifecycle.
-app.delete('/api/account', requireUser, async (req, res) => {
+app.delete('/api/account', requireUser, limit({ windowMs: 60 * 1000, max: 5, key: userKey }), async (req, res) => {
   try {
     const uid = req.user.id;
     const c = await supabase.from('platform_connections').delete().eq('user_id', uid);
@@ -233,14 +233,16 @@ app.post('/api/ai/learn', requireUser, burstLimit, async (req, res) => {
 // Meta deauthorize callback: fired when a user removes Drift Post from their
 // Facebook settings. Verifies the signed_request, purges stored Meta tokens
 // we can attribute, and returns the confirmation Meta's review expects.
-app.post('/api/meta/deauthorize', express.urlencoded({ extended: false }), async (req, res) => {
+app.post('/api/meta/deauthorize', callbackLimit, express.urlencoded({ extended: false }), async (req, res) => {
   try {
     const secret = process.env.META_APP_SECRET || '';
     const [sig, payload] = String(req.body?.signed_request || '').split('.');
     if (!sig || !payload || !secret) throw new Error('bad request');
     const expected = crypto.createHmac('sha256', secret).update(payload).digest('base64')
       .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-    if (sig !== expected) throw new Error('bad signature');
+    const a = Buffer.from(sig);
+    const b = Buffer.from(expected);
+    if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) throw new Error('bad signature');
     const data = JSON.parse(Buffer.from(payload.replace(/-/g, '+').replace(/_/g, '/'), 'base64').toString('utf8'));
     const fbUserId = String(data.user_id || '');
     // We store Page/IG ids, not the app-scoped user id, so attribute by
