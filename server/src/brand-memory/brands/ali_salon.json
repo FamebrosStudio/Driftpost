@@ -1,0 +1,488 @@
+{
+  "schema_version": "1.0",
+  "brand_number": 13,
+  "brand_id": "ali_salon",
+  "brand_name": "Ali Salon",
+  "alternate_public_identity": "Hussain Shaikh | Unisex Salon | Mulund",
+  "knowledge_scope": "One brand only. Confirmed business details, public profile evidence and recommended AI writing guidance are separated.",
+  "business": {
+    "category": "Unisex hair salon",
+    "industry": "Hair styling and grooming",
+    "location_area": "Mulund West",
+    "city": "Mumbai",
+    "state": "Maharashtra",
+    "country": "India",
+    "public_face": "Hussain Shaikh",
+    "published_experience": "25 years of hair expertise",
+    "experience_note": "Published through brand-associated profile content. Recheck before anniversary-style claims.",
+    "owner_name": null,
+    "founding_year": null,
+    "opening_hours": null,
+    "gender_restriction": null
+  },
+  "contact": {
+    "phone_display": "+91 99302 76884",
+    "phone_e164": "+919930276884",
+    "whatsapp_number": null,
+    "whatsapp_note": "The number is confirmed for appointment reservations. WhatsApp availability has not been separately established.",
+    "address_display": "Ali Salon, Mulund West, Mumbai",
+    "full_street_address": null,
+    "landmark_reference": "The Creamy Layer's supplied address describes its shop as near Ali Salon on M.G. Road, Mulund West, but this does not establish Ali Salon's exact shop address.",
+    "postal_code": null,
+    "email": null,
+    "website": null,
+    "booking_url": null,
+    "google_maps_url": null
+  },
+  "social_media": {
+    "instagram_handle": "@ali.and.hussain.salon",
+    "instagram_url": "https://www.instagram.com/ali.and.hussain.salon/",
+    "instagram_identity_status": "Confirmed in the user's account list. Indexed content matches Ali Salon, Hussain Shaikh, Mulund West and the reservation number.",
+    "facebook_name": "ALI SALON hussain shaikh",
+    "facebook_url": "https://www.facebook.com/p/ALI-SALON-hussain-shaikh-100063942311129/",
+    "facebook_status": "Indexed page matches the salon, location and reservation number.",
+    "profile_or_service_page": "https://mytribe.in/ali.and.hussain.salon/",
+    "profile_page_status": "Third-party brand profile. Use current salon confirmation for prices and booking terms.",
+    "youtube_url": null,
+    "managing_agency": "Famebros Studio",
+    "agency_instagram_handle": "@famebrosstudio",
+    "agency_instagram_url": "https://www.instagram.com/famebrosstudio/"
+  },
+  "established_content_knowledge": {
+    "confirmed_content_genres": [
+      "Funny salon reels",
+      "Hair transformation content"
+    ],
+    "genre_weighting": "Mostly funny and hair-transformation content according to the user-supplied roster.",
+    "indexed_service_topics": [
+      "Haircuts",
+      "Men's grooming",
+      "Hair styling",
+      "Hair colouring",
+      "Hair transformations"
+    ],
+    "service_scope_note": "Indexed topics show previous content, not the complete approved service menu.",
+    "published_positioning": [
+      "Experience over social-media hype",
+      "Real results",
+      "25 years of hair expertise"
+    ],
+    "positioning_usage_rule": "Use the experience-led voice without attacking other salons or trends.",
+    "confirmed_current_prices": [],
+    "third_party_price_observation": "A third-party service page displays hair-colouring services starting from ₹1,000 per session. Treat this as unconfirmed and do not publish without salon approval.",
+    "confirmed_current_offers": [],
+    "confirmed_service_packages": [],
+    "confirmed_product_brands": [],
+    "confirmed_customer_testimonials": []
+  },
+  "writing_direction": {
+    "status": "Recommended defaults based on the confirmed content genres and experience-led public positioning.",
+    "brand_voice": [
+      "Experienced",
+      "Direct",
+      "Confident",
+      "Relatable",
+      "Witty",
+      "Concise"
+    ],
+    "voice_by_genre": {
+      "funny": [
+        "Conversational",
+        "Observational",
+        "Fast",
+        "Light"
+      ],
+      "transformation": [
+        "Confident",
+        "Specific",
+        "Result-focused",
+        "Polished"
+      ],
+      "informational": [
+        "Experienced",
+        "Clear",
+        "Practical",
+        "No-hype"
+      ]
+    },
+    "positioning_for_copy": "A Mulund West unisex salon led by practical hair expertise, real transformations and relatable salon content.",
+    "primary_language": "Natural Hinglish",
+    "alternate_language": "English for polished transformations, service information and professional posts.",
+    "target_audience": [
+      "Men and women in Mulund exploring salon services",
+      "People considering a haircut, colour or style change",
+      "Viewers who enjoy relatable salon humour",
+      "Clients who value experience and practical advice"
+    ],
+    "emotional_angles": [
+      "Trust in experience",
+      "Confidence after a fresh look",
+      "Relating to familiar salon moments",
+      "Choosing a look that suits the individual",
+      "Seeing a real transformation"
+    ],
+    "avoid_style": [
+      "Humiliating clients or staff",
+      "Hair-loss or appearance shaming",
+      "Attacking trend-focused clients",
+      "Claiming every trend is bad",
+      "Guaranteed results",
+      "Zero-damage claims",
+      "Unconfirmed prices",
+      "Forced comedy on a serious client story",
+      "Long generic intros",
+      "Em dashes"
+    ]
+  },
+  "content_playbook": {
+    "funny_reel": {
+      "focus": "A recognisable salon conversation, expectation or client-stylist moment.",
+      "structure": "Immediate setup, short payoff, light engagement CTA.",
+      "rules": [
+        "Match the joke to the actual reel.",
+        "Keep client and staff dignity intact.",
+        "Do not present a scripted conflict as a real complaint.",
+        "Avoid jokes about hair loss, age, skin tone, body type, income or identity.",
+        "Keep caption copy short when the reel contains the full joke."
+      ]
+    },
+    "hair_transformation": {
+      "focus": "The real visible change and confirmed service.",
+      "structure": "Specific result hook, one technical or visual detail, booking or save CTA.",
+      "rules": [
+        "Mention the before-state only when shown or described.",
+        "Use the exact confirmed cut, colour, technique or styling service.",
+        "Do not identify highlights, balayage, global colour, keratin, botox or another treatment from appearance alone.",
+        "Do not invent session count, duration or maintenance.",
+        "Do not promise the same result for everyone."
+      ]
+    },
+    "mens_grooming": {
+      "focus": "The exact haircut, beard or styling result shown.",
+      "rules": [
+        "Use haircut or grooming terminology only when confirmed.",
+        "Do not infer face-shape advice without the stylist's input.",
+        "Avoid macho stereotypes and appearance shaming."
+      ]
+    },
+    "hair_colour": {
+      "focus": "Confirmed shade, technique, dimension and visible finish.",
+      "rules": [
+        "Name the shade and technique only from the brief.",
+        "Do not promise colour accuracy across screens.",
+        "Do not promise zero damage or permanent colour.",
+        "Use aftercare advice only from the salon."
+      ]
+    },
+    "experience_led_information": {
+      "focus": "One practical hair or salon insight from Hussain or the team.",
+      "structure": "Common mistake or question, clear experienced answer, consultation CTA.",
+      "rules": [
+        "Use the stylist's actual guidance.",
+        "Do not convert opinion into medical advice.",
+        "Avoid universal rules when hair type and condition vary.",
+        "Keep the no-hype tone useful rather than dismissive."
+      ]
+    },
+    "offer": {
+      "status": "Requires a current salon brief.",
+      "required_details": [
+        "Service",
+        "Original price",
+        "Offer price or discount",
+        "Validity",
+        "Eligibility",
+        "Applicable days",
+        "Booking method"
+      ],
+      "rules": [
+        "Do not use the third-party ₹1,000 observation as an approved price.",
+        "Do not invent offers or limited slots.",
+        "Show conditions clearly."
+      ]
+    },
+    "customer_review": {
+      "status": "Use only when an actual approved review is supplied.",
+      "rules": [
+        "Keep the review faithful.",
+        "Do not invent names, ratings or results.",
+        "Do not reveal a client's service history without permission."
+      ]
+    }
+  },
+  "hair_description_framework": {
+    "use_when_confirmed": [
+      "Service name",
+      "Cut or length change",
+      "Shade",
+      "Tone",
+      "Technique",
+      "Texture or finish",
+      "Styling method",
+      "Session count",
+      "Service duration",
+      "Aftercare",
+      "Price"
+    ],
+    "safe_visual_descriptors": [
+      "Visible length",
+      "Visible shape",
+      "Visible warmth or coolness",
+      "Visible shine",
+      "Visible movement",
+      "Visible texture",
+      "Visible volume"
+    ],
+    "requires_explicit_confirmation": [
+      "Hair health diagnosis",
+      "Damage level",
+      "Chemical history",
+      "Balayage or highlight technique",
+      "Treatment formula",
+      "Product brand",
+      "Zero damage",
+      "Longevity",
+      "Maintenance interval",
+      "Price"
+    ],
+    "rule": "Describe the visible result first, then add technical details only when supplied by the salon."
+  },
+  "caption_format": {
+    "default_platforms": [
+      "Instagram",
+      "Facebook"
+    ],
+    "default_number_of_options": 1,
+    "body_word_target": "20 to 55 words, excluding footer, hashtags and keyword bracket.",
+    "funny_reel_word_target": "6 to 30 words when the reel carries the joke.",
+    "transformation_word_target": "20 to 55 words.",
+    "sequence": [
+      "Specific hook or joke setup",
+      "One short result detail or punchline",
+      "One main CTA",
+      "Confirmed salon footer",
+      "Exactly three relevant hashtags",
+      "Exactly one square bracket containing comma-separated SEO phrases"
+    ],
+    "line_breaks": "Use short paragraphs and a blank line before the footer and hashtag block.",
+    "body_emojis": "Usually one to three for funny posts and zero to two for polished transformations.",
+    "hashtag_count": 3,
+    "hashtag_selection": "Normally one brand tag, one service tag and one Mulund location tag.",
+    "seo_keyword_count": "5 to 8 relevant phrases",
+    "seo_format": "[keyword one, keyword two, keyword three, keyword four, keyword five]",
+    "punctuation": "No em dashes.",
+    "output_rule": "Return only ready-to-copy public text unless another format is requested."
+  },
+  "fixed_footer": {
+    "lines": [
+      "📍 Ali Salon, Mulund West, Mumbai",
+      "📞 Reserve your appointment: +91 99302 76884",
+      "🎥 Managed by: @famebrosstudio ✨"
+    ],
+    "source": "Indexed official social content and agency credit.",
+    "usage": "Default footer until the exact street address is confirmed.",
+    "rules": [
+      "Preserve the booking number.",
+      "Do not invent a shop number or street address.",
+      "Do not label the number as WhatsApp without confirmation.",
+      "Do not use The Creamy Layer's address as Ali Salon's address.",
+      "Do not copy contact details from another salon."
+    ]
+  },
+  "suggested_hashtag_bank": {
+    "brand": [
+      "#AliSalon",
+      "#AliAndHussainSalon"
+    ],
+    "service": [
+      "#HairTransformation",
+      "#MensGrooming",
+      "#FreshHaircut",
+      "#HairColour",
+      "#HairStyling"
+    ],
+    "location": [
+      "#MulundSalon",
+      "#MulundWest",
+      "#MumbaiSalon"
+    ],
+    "content": [
+      "#SalonHumour",
+      "#SalonReels"
+    ],
+    "rule": "Select exactly three relevant hashtags. Use a treatment tag only when the service is confirmed."
+  },
+  "seo_keyword_bank": [
+    "Ali Salon",
+    "Ali Salon Mulund",
+    "unisex salon in Mulund West",
+    "hair salon Mulund",
+    "hair transformation Mulund",
+    "men's grooming Mulund",
+    "haircut in Mulund West",
+    "hair colour Mulund",
+    "Hussain Shaikh salon"
+  ],
+  "cta_bank": {
+    "booking": [
+      "Call +91 99302 76884 to reserve your appointment.",
+      "Reserve your next salon appointment with Ali Salon."
+    ],
+    "save": [
+      "Save this look for your next salon visit.",
+      "Keep this as your next hair reference."
+    ],
+    "share": [
+      "Send this to the friend who needs a fresh look.",
+      "Share this with your salon partner."
+    ],
+    "comments": [
+      "Would you try this look?",
+      "Which salon situation should we show next?"
+    ],
+    "selection_rule": "Choose one main CTA. Do not claim appointment availability without confirmation."
+  },
+  "suggested_hooks": {
+    "funny_hinglish": [
+      "Client ne bola bas thoda sa trim karna.",
+      "Salon mein yeh line sabne suni hai.",
+      "Reference photo kuch aur, expectation kuch aur.",
+      "Haircut ke baad confidence automatically on."
+    ],
+    "transformation": [
+      "Real change. No unnecessary hype.",
+      "The result speaks for itself.",
+      "A fresh look built on experience.",
+      "Same person, sharper energy."
+    ],
+    "information": [
+      "Hair trend follow karne se pehle yeh samjho.",
+      "Every reference photo needs a real consultation.",
+      "Experience says the right look is personal."
+    ],
+    "hook_note": "Suggestions only. Match the actual reel and avoid repeating the same opening."
+  },
+  "visual_and_asset_guidance": {
+    "default_feed_size_px": {
+      "width": 1080,
+      "height": 1440
+    },
+    "default_story_size_px": {
+      "width": 1080,
+      "height": 1920
+    },
+    "reel_aspect_ratio": "9:16",
+    "layout": "Bold and relatable for comedy, clean and result-focused for transformations.",
+    "fixed_brand_colours": null,
+    "fixed_brand_fonts": null,
+    "logo_asset": null,
+    "rules": [
+      "Preserve the client's identity, hair colour, texture and real result.",
+      "Do not add hair volume, length, shine or density through editing.",
+      "Keep before-and-after comparisons honest.",
+      "Do not change skin tone or facial features.",
+      "Use the supplied logo without redesigning it.",
+      "Keep service and price information readable when confirmed."
+    ]
+  },
+  "other_output_modes": {
+    "story": "One short punchline, transformation hook or booking line. Omit full footer, hashtags and SEO bracket unless requested.",
+    "comment": "One short witty or appreciative brand comment. Do not impersonate a client.",
+    "review_reply": "Thank the client and move service-specific concerns to a private appointment conversation.",
+    "repost": "One or two relatable or result-focused lines. No full footer by default.",
+    "text_overlay": "One immediate hook, normally 3 to 8 words.",
+    "reel_script": "Use the requested duration, immediate Hinglish setup or transformation hook, actual service details and one CTA.",
+    "stylist_explainer": "Use Hussain's supplied advice, keep the no-hype tone and avoid medical diagnosis."
+  },
+  "sample_captions": {
+    "transformation": {
+      "status": "Illustrative template requiring a confirmed service and result.",
+      "text": "The result speaks for itself. ✨\nThis [confirmed service] creates a [visible result] shaped around the client's actual hair and preferred style.\nSave this as your next hair reference.\n\n📍 Ali Salon, Mulund West, Mumbai\n📞 Reserve your appointment: +91 99302 76884\n🎥 Managed by: @famebrosstudio ✨\n\n#AliSalon #HairTransformation #MulundSalon\n\n[Ali Salon Mulund, hair transformation Mulund, unisex salon in Mulund West, confirmed service, hair salon Mulund, fresh hair look]"
+    },
+    "funny_reel": {
+      "status": "Illustrative structure. Match the actual scene.",
+      "template": "Client ne bola [actual dialogue]... stylist ne samajh liya story abhi lambi hai. 😂 [One relevant CTA]."
+    }
+  },
+  "accuracy_rules": [
+    "Use only Ali Salon facts and the current brief.",
+    "Do not invent the exact street address, shop number or postal code.",
+    "Do not use The Creamy Layer's address as Ali Salon's location.",
+    "Do not invent service prices, offers, appointment availability, products or treatment duration.",
+    "Do not use the third-party ₹1,000 starting price without salon confirmation.",
+    "Do not promise zero damage, permanent results or identical outcomes.",
+    "Do not identify a colouring or treatment technique from appearance alone.",
+    "Do not make jokes that humiliate clients or staff.",
+    "If an optional detail is missing, omit it.",
+    "If an essential service or offer detail is missing, ask one short question.",
+    "Do not print null values or internal notes in public copy.",
+    "An Instagram link is a reference pointer. Do not claim current services or prices from old posts."
+  ],
+  "per_post_input": {
+    "brand_id": "ali_salon",
+    "mode": "caption",
+    "post_format": null,
+    "content_genre": null,
+    "asset_description": null,
+    "transcript_or_dialogue": null,
+    "confirmed_service": null,
+    "confirmed_cut_or_style": null,
+    "confirmed_colour": null,
+    "confirmed_technique": null,
+    "visible_before_state": null,
+    "visible_after_result": null,
+    "service_duration": null,
+    "current_price": null,
+    "current_offer": null,
+    "appointment_availability": null,
+    "goal": null,
+    "language_override": null,
+    "recent_captions": [],
+    "additional_instructions": []
+  },
+  "master_brand_instruction": "Write as Ali Salon, a unisex salon in Mulund West associated with Hussain Shaikh and 25 years of hair expertise. The primary content genres are funny salon reels and real hair transformations. Use natural, conversational Hinglish for funny and owner-led content, and concise polished English or Hinglish for transformations. Keep humour quick, relatable and respectful. Never shame clients, staff, appearance, hair loss, age, income or identity. For transformations, use only the confirmed haircut, colour, technique or styling service and describe the real visible result. Do not promise zero damage, permanent outcomes or identical results. Never invent prices, offers, products, appointment slots or a street address. For normal feed and reel captions, append the Ali Salon footer, exactly three relevant hashtags and one bracket containing 5 to 8 comma-separated SEO phrases. Preserve +91 99302 76884 and the Mulund West location. Avoid em dashes and return ready-to-copy public text without null fields or internal notes.",
+  "missing_information": [
+    "Exact street address, shop number and postal code",
+    "Opening hours and weekly closing day",
+    "WhatsApp confirmation",
+    "Official website, email and booking link",
+    "Complete approved service menu",
+    "Current prices and packages",
+    "Current offers",
+    "Product brands used",
+    "Team member names and specialties",
+    "Appointment and cancellation policy",
+    "Approved logo, fonts and colour palette",
+    "Approved customer reviews",
+    "Confirmation of the published 25-year experience statement for anniversary use"
+  ],
+  "sources": [
+    {
+      "type": "user_supplied_brand_roster",
+      "supports": "Mostly funny and hair-transformation content genres."
+    },
+    {
+      "type": "user_confirmed_account_mapping",
+      "url": "https://www.instagram.com/ali.and.hussain.salon/",
+      "supports": "Instagram identity."
+    },
+    {
+      "type": "indexed_official_social_content",
+      "supports": "Hussain Shaikh identity, unisex salon positioning, Mulund West location, booking number, hair transformation and men's grooming content."
+    },
+    {
+      "type": "official_facebook_page",
+      "url": "https://www.facebook.com/p/ALI-SALON-hussain-shaikh-100063942311129/",
+      "supports": "Salon identity, Mulund West location and booking number."
+    },
+    {
+      "type": "third_party_brand_profile",
+      "url": "https://mytribe.in/ali.and.hussain.salon/",
+      "supports": "Published 25 years of hair expertise, experience-over-hype positioning and hair-colouring service topic. Price requires salon confirmation."
+    },
+    {
+      "type": "user_writing_preferences",
+      "supports": "Short hooks, Hinglish or English by context, one CTA, three hashtags, one SEO bracket and no em dashes."
+    }
+  ]
+}

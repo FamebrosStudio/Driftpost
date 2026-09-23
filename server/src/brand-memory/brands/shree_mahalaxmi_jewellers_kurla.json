@@ -1,0 +1,604 @@
+{
+  "schema_version": "1.0",
+  "brand_number": 9,
+  "brand_id": "shree_mahalaxmi_jewellers_kurla",
+  "brand_name": "Shree Mahalaxmi Jewellers",
+  "branch_name": "Kurla",
+  "alternate_public_name": "Mahalaxmi Jewellers Kurla",
+  "knowledge_scope": "One branch only. Confirmed branch facts, shared jewellery-group information, historical campaign themes and AI writing guidance are separated.",
+  "business": {
+    "category": "Jewellery store",
+    "industry": "Gold, silver and gemstone jewellery retail",
+    "branch": "Kurla East",
+    "city": "Mumbai",
+    "state": "Maharashtra",
+    "country": "India",
+    "published_product_positioning": [
+      "Gold jewellery",
+      "Certified silver jewellery",
+      "Real birthstone jewellery"
+    ],
+    "published_quality_positioning": [
+      "BIS hallmarked jewellery",
+      "Purity-focused communication"
+    ],
+    "group_relationship": "Part of the three-store jewellery group promoted together with Kanchanmala Jewellers, Chembur, and Mahalaxmi Jewellers, Ghatla.",
+    "owner_name": null,
+    "founding_year": null,
+    "opening_hours": null
+  },
+  "contact": {
+    "primary_phone_display": "+91 96190 96762",
+    "primary_phone_e164": "+919619096762",
+    "secondary_phone_display": "+91 80974 96670",
+    "secondary_phone_e164": "+918097496670",
+    "whatsapp_numbers": [],
+    "whatsapp_note": "Both numbers are confirmed business contact numbers. Label either as WhatsApp only when the current branch confirms it.",
+    "full_address": "Shop 15, Building 8, C-Wing, Sharad Co-Op Housing Society, Kapus Kamgar Nagar, Near Tilak Nagar Station, Kurla East, Mumbai 400024",
+    "shop_number": "15",
+    "building": "Building 8",
+    "wing": "C-Wing",
+    "society": "Sharad Co-Op Housing Society",
+    "locality": "Kapus Kamgar Nagar",
+    "landmark": "Near Tilak Nagar Station",
+    "area": "Kurla East",
+    "city": "Mumbai",
+    "postal_code": "400024",
+    "email": null,
+    "website": null,
+    "catalogue_url": null,
+    "ordering_url": null,
+    "google_maps_url": null
+  },
+  "social_media": {
+    "instagram_handle": "@mahalaxmi.jewellers.kurla",
+    "instagram_url": "https://www.instagram.com/mahalaxmi.jewellers.kurla/",
+    "instagram_identity_status": "Indexed profile matches the Kurla branch, both phone numbers and jewellery positioning.",
+    "facebook_name": "Shree Mahalaxmi Jeweller",
+    "facebook_url": "https://www.facebook.com/mahalaxmi.jewellers.kurla/",
+    "youtube_url": null,
+    "managing_agency": "Famebros Studio",
+    "agency_instagram_handle": "@famebrosstudio",
+    "agency_instagram_url": "https://www.instagram.com/famebrosstudio/"
+  },
+  "shared_group_locations": {
+    "usage": "Use this complete block only for group-wide posts covering all three jewellery stores.",
+    "branches": [
+      {
+        "brand": "Shree Mahalaxmi Jewellers",
+        "branch": "Kurla",
+        "address": "Shop 15, Building 8, C-Wing, Sharad Co-Op Housing Society, Kapus Kamgar Nagar, Near Tilak Nagar Station, Kurla East, Mumbai 400024"
+      },
+      {
+        "brand": "Kanchanmala Jewellers",
+        "branch": "Chembur",
+        "address": "Shop 1/1, Plot 93, N.G. Acharya Marg, Chembur, Mumbai 400071"
+      },
+      {
+        "brand": "Mahalaxmi Jewellers",
+        "branch": "Ghatla",
+        "address": "Shop 1, Khardev Nagar Road, Ghatla, Chembur, Mumbai 400071"
+      }
+    ],
+    "shared_phones": [
+      "+91 96190 96762",
+      "+91 80974 96670"
+    ],
+    "rule": "For Kurla-only content, lead with the Kurla address. Do not confuse the three brand names or addresses."
+  },
+  "established_content_knowledge": {
+    "confirmed_content_genres": [
+      "Informational jewellery content",
+      "Promotional offers"
+    ],
+    "confirmed_product_categories": [
+      "Gold jewellery",
+      "Silver jewellery",
+      "Birthstone jewellery"
+    ],
+    "indexed_or_historical_topics": [
+      "Gold on EMI",
+      "BIS hallmark education",
+      "Purity communication",
+      "Customer experiences",
+      "Lightweight jewellery",
+      "Bridal jewellery",
+      "Lucky-winner campaigns",
+      "Recruitment"
+    ],
+    "additional_user_supplied_topics": [
+      "Old gold exchange",
+      "Gold savings or SIP-style content"
+    ],
+    "topic_usage_rule": "Older post topics establish content history, not current offer validity, stock or programme terms.",
+    "confirmed_current_offers": [],
+    "confirmed_current_gold_rate": null,
+    "confirmed_current_silver_rate": null,
+    "confirmed_making_charges": null,
+    "confirmed_emi_terms": null,
+    "confirmed_exchange_terms": null,
+    "confirmed_savings_scheme_terms": null,
+    "confirmed_current_vacancies": [],
+    "confirmed_customer_testimonials": []
+  },
+  "writing_direction": {
+    "status": "Recommended defaults based on the branch's jewellery positioning and user preferences.",
+    "brand_voice": [
+      "Trustworthy",
+      "Elegant",
+      "Warm",
+      "Family-oriented",
+      "Clear",
+      "Concise"
+    ],
+    "positioning_for_copy": "A Kurla jewellery store presenting gold, certified silver and birthstone jewellery through trust, purity, meaningful occasions and accessible buying information.",
+    "primary_language": "English",
+    "alternate_languages": [
+      "Natural Hinglish",
+      "Hindi",
+      "Marathi when specifically requested"
+    ],
+    "language_note": "Use simple Hinglish for owner-led or local educational reels. Preserve precise jewellery terms, weights, purity and offer conditions.",
+    "target_audience": [
+      "Families buying jewellery for milestones",
+      "Brides and wedding shoppers",
+      "Customers exploring gold and silver jewellery",
+      "Kurla and nearby Mumbai shoppers",
+      "Customers seeking information about hallmarking, EMI or exchange when active",
+      "Gift buyers"
+    ],
+    "emotional_angles": [
+      "Trust across important purchases",
+      "Jewellery connected to family memories",
+      "Purity and informed buying",
+      "A meaningful gift",
+      "Celebrating weddings and festivals",
+      "Making a planned purchase easier when a verified scheme is active"
+    ],
+    "avoid_style": [
+      "Guaranteed investment-return claims",
+      "Pressure based on fear of gold-price rises",
+      "Unverified purity claims",
+      "Unconfirmed BIS details",
+      "Invented weights or prices",
+      "Hidden making charges or scheme conditions",
+      "Calling imitation stones precious",
+      "Using another branch address",
+      "Overused royal or luxury clichés",
+      "Em dashes"
+    ]
+  },
+  "content_playbook": {
+    "product_showcase": {
+      "focus": "The exact jewellery piece, visible design and confirmed material or purity.",
+      "structure": "Occasion or design hook, two specific details, visit or enquiry CTA.",
+      "rules": [
+        "Use the exact jewellery type.",
+        "Mention gold, silver, diamond, gemstone, plating, karat and weight only when confirmed.",
+        "Do not infer purity from colour or appearance.",
+        "Do not invent availability, price, making charge or certification."
+      ]
+    },
+    "informational": {
+      "focus": "One clear jewellery-buying concept using branch-approved facts.",
+      "topics": [
+        "BIS hallmark basics",
+        "Purity and karat information",
+        "Jewellery care",
+        "Birthstone information",
+        "Exchange process",
+        "EMI or savings programme explanation"
+      ],
+      "rules": [
+        "Use current official terminology and branch policy.",
+        "Do not give investment advice or promise price appreciation.",
+        "Separate education from promotional terms.",
+        "Do not claim a gemstone has medical or guaranteed spiritual effects."
+      ]
+    },
+    "offer": {
+      "focus": "Exact jewellery category, customer benefit, dates and conditions.",
+      "required_details": [
+        "Applicable branch",
+        "Eligible jewellery",
+        "Discount or benefit",
+        "Making-charge treatment",
+        "Minimum purchase",
+        "Purity and weight basis",
+        "Start and end date",
+        "Stock or quantity limit",
+        "Payment restrictions",
+        "GST or other charges"
+      ],
+      "rules": [
+        "Do not invent an offer.",
+        "Do not move an offer between branches.",
+        "Do not hide exclusions.",
+        "Use clear dates and units."
+      ]
+    },
+    "gold_emi": {
+      "status": "Historical and indexed content theme. Current programme details are not stored.",
+      "required_details": [
+        "Finance or programme provider",
+        "Down payment",
+        "Tenure",
+        "Interest or no-cost status",
+        "Eligibility",
+        "Processing fee",
+        "Applicable jewellery",
+        "Gold-rate basis",
+        "Making charges",
+        "Cancellation terms"
+      ],
+      "rule": "Do not say gold on EMI is currently available until all key terms are confirmed."
+    },
+    "old_gold_exchange": {
+      "status": "User-supplied content theme requiring current policy.",
+      "required_details": [
+        "Accepted purity",
+        "Testing method",
+        "Deduction",
+        "Valuation basis",
+        "Documents",
+        "Applicable products",
+        "Cash or exchange-only policy"
+      ],
+      "rule": "Do not promise full value, zero deduction or instant exchange without written branch terms."
+    },
+    "gold_savings_or_sip": {
+      "status": "User-supplied content theme. Use the branch's official programme name rather than calling every scheme an SIP.",
+      "required_details": [
+        "Programme name",
+        "Monthly amount",
+        "Duration",
+        "Benefit",
+        "Redemption rules",
+        "Missed-payment rules",
+        "Refund or cancellation terms",
+        "Applicable products",
+        "Branch eligibility"
+      ],
+      "rule": "Do not describe a jewellery purchase plan as a regulated investment or guarantee returns."
+    },
+    "customer_story_or_review": {
+      "focus": "A real customer moment or approved review.",
+      "rules": [
+        "Obtain permission for identifiable customer content.",
+        "Use the actual review or faithful paraphrase.",
+        "Do not invent purchase details, relationship, occasion or prize.",
+        "Do not reveal invoice value or personal information."
+      ]
+    },
+    "bridal": {
+      "focus": "Confirmed bridal piece or collection and its visible design.",
+      "rules": [
+        "Do not promise customisation, rental or delivery timelines without confirmation.",
+        "Use bridal language only when the piece is marketed for bridal wear.",
+        "Do not invent collection names."
+      ]
+    },
+    "recruitment": {
+      "status": "Past indexed topic only.",
+      "rule": "Do not publish hiring content unless current roles, requirements, salary terms, contact method and deadline are supplied."
+    },
+    "festival": {
+      "focus": "A respectful greeting or confirmed festive jewellery collection.",
+      "rule": "Do not force prices or sales into solemn commemorations."
+    }
+  },
+  "jewellery_description_framework": {
+    "use_when_confirmed": [
+      "Jewellery type",
+      "Metal",
+      "Purity or karat",
+      "Gross weight",
+      "Net metal weight",
+      "Stone type",
+      "Stone weight",
+      "Design style",
+      "Length or size",
+      "Closure",
+      "Hallmark status",
+      "Making charges",
+      "Price basis",
+      "Availability"
+    ],
+    "safe_visual_descriptors": [
+      "Visible colour",
+      "Visible motif",
+      "Visible shape",
+      "Visible layering",
+      "Visible finish",
+      "Visible stone colour",
+      "Visible styling"
+    ],
+    "requires_explicit_confirmation": [
+      "Gold purity",
+      "Silver purity",
+      "Diamond authenticity",
+      "Gemstone authenticity",
+      "Natural or lab-grown status",
+      "Certification",
+      "Exact weight",
+      "Price",
+      "Making charges",
+      "Buyback",
+      "Exchange value",
+      "Investment performance"
+    ],
+    "rule": "Describe visible design separately from technical and commercial specifications."
+  },
+  "jewellery_accuracy_and_compliance": {
+    "hallmark_rule": "Use BIS hallmarked only for pieces or categories confirmed as hallmarked. Do not imply that a social-media image itself proves hallmarking.",
+    "price_rule": "Gold and silver rates can change. Use date-stamped rates from the branch and state whether price excludes making charges, stones, GST or other fees.",
+    "weight_rule": "Use grams with clear gross and net weight labels when both matter.",
+    "stone_rule": "Do not call a stone diamond, precious, natural, certified or real without confirmation.",
+    "investment_rule": "Do not promise returns, appreciation, profit or capital protection.",
+    "emi_rule": "Display interest, tenure, fees and eligibility accurately.",
+    "offer_rule": "State branch, validity and all important conditions.",
+    "religious_or_astrology_rule": "Birthstone and belief content must avoid guaranteed health, wealth, relationship or destiny outcomes."
+  },
+  "caption_format": {
+    "default_platforms": [
+      "Instagram",
+      "Facebook"
+    ],
+    "default_number_of_options": 1,
+    "body_word_target": "25 to 60 words, excluding footer, hashtags and keyword bracket.",
+    "short_product_reel_word_target": "10 to 35 words when the jewellery visual carries the post.",
+    "offer_word_target": "35 to 85 words so conditions remain clear.",
+    "sequence": [
+      "Specific jewellery or occasion hook",
+      "One or two confirmed design or offer details",
+      "One main CTA",
+      "Correct branch footer",
+      "Exactly three relevant hashtags",
+      "Exactly one square bracket containing comma-separated SEO phrases"
+    ],
+    "line_breaks": "Use short paragraphs and a blank line before the footer and hashtag block.",
+    "body_emojis": "Usually one to three with an elegant tone.",
+    "hashtag_count": 3,
+    "hashtag_selection": "Normally one brand tag, one jewellery or occasion tag and one location tag.",
+    "seo_keyword_count": "5 to 8 relevant phrases",
+    "seo_format": "[keyword one, keyword two, keyword three, keyword four, keyword five]",
+    "punctuation": "No em dashes.",
+    "output_rule": "Return only ready-to-copy public text unless another format is requested."
+  },
+  "fixed_footer": {
+    "kurla_only_lines": [
+      "📍 Shree Mahalaxmi Jewellers",
+      "Shop 15, Building 8, C-Wing, Sharad Co-Op Housing Society, Kapus Kamgar Nagar, Near Tilak Nagar Station, Kurla East, Mumbai 400024",
+      "📞 +91 96190 96762 | +91 80974 96670",
+      "🎥 Managed by: @famebrosstudio ✨"
+    ],
+    "group_footer_lines": [
+      "📍 Shree Mahalaxmi Jewellers",
+      "Shop 15, Building 8, C-Wing, Sharad Co-Op Housing Society, Kapus Kamgar Nagar, Near Tilak Nagar Station, Kurla East, Mumbai 400024",
+      "",
+      "📍 Kanchanmala Jewellers",
+      "Shop 1/1, Plot 93, N.G. Acharya Marg, Chembur, Mumbai 400071",
+      "",
+      "📍 Mahalaxmi Jewellers",
+      "Shop 1, Khardev Nagar Road, Ghatla, Chembur, Mumbai 400071",
+      "",
+      "📞 +91 96190 96762 | +91 80974 96670",
+      "🎥 Managed by: @famebrosstudio ✨"
+    ],
+    "usage": "Use the Kurla-only footer for branch content. Use the group footer only when the post explicitly represents all three stores.",
+    "rules": [
+      "Preserve both phone numbers.",
+      "Do not use the Chembur or Ghatla address as the Kurla address.",
+      "Do not shorten the branch name into a different jewellery business.",
+      "Do not label phone numbers as WhatsApp without confirmation."
+    ]
+  },
+  "suggested_hashtag_bank": {
+    "brand": [
+      "#ShreeMahalaxmiJewellers",
+      "#MahalaxmiJewellersKurla"
+    ],
+    "category": [
+      "#GoldJewellery",
+      "#SilverJewellery",
+      "#BirthstoneJewellery",
+      "#BridalJewellery"
+    ],
+    "trust": [
+      "#BISHallmarkedJewellery",
+      "#JewelleryWithTrust"
+    ],
+    "location": [
+      "#KurlaJewellers",
+      "#JewelleryInMumbai"
+    ],
+    "conditional": {
+      "#GoldOnEMI": "Use only when the current EMI programme is confirmed.",
+      "#OldGoldExchange": "Use only with current exchange terms.",
+      "#JewelleryOffer": "Use only for an active offer."
+    },
+    "rule": "Select exactly three relevant hashtags. Do not use the whole bank."
+  },
+  "seo_keyword_bank": [
+    "Shree Mahalaxmi Jewellers",
+    "Mahalaxmi Jewellers Kurla",
+    "gold jewellery in Kurla",
+    "silver jewellery in Kurla",
+    "BIS hallmarked jewellery Mumbai",
+    "birthstone jewellery Mumbai",
+    "bridal jewellery Kurla",
+    "jewellery store near Tilak Nagar Station",
+    "jewellery offers Kurla"
+  ],
+  "cta_bank": {
+    "visit": [
+      "Visit Shree Mahalaxmi Jewellers in Kurla East to explore the current collection."
+    ],
+    "enquiry": [
+      "Call +91 96190 96762 or +91 80974 96670 for current availability and details."
+    ],
+    "save": [
+      "Save this design for your next jewellery visit."
+    ],
+    "share": [
+      "Send this to someone searching for their next jewellery piece."
+    ],
+    "comments": [
+      "Which detail caught your eye first?",
+      "Would you style this for a wedding or a festive occasion?"
+    ],
+    "selection_rule": "Choose one CTA. Do not imply price or stock availability without confirmation."
+  },
+  "suggested_hooks": {
+    "product": [
+      "A design made for meaningful moments.",
+      "The detail your jewellery collection was waiting for.",
+      "Elegance that stays close to tradition."
+    ],
+    "trust": [
+      "A jewellery purchase begins with trust.",
+      "Purity is a detail you should never overlook.",
+      "Before you buy jewellery, check this."
+    ],
+    "bridal": [
+      "For the moment every bride remembers.",
+      "A bridal look begins with the right details.",
+      "Jewellery made for the wedding spotlight."
+    ],
+    "hinglish": [
+      "Jewellery sirf design nahi, trust bhi hota hai.",
+      "Shaadi ka look, perfect jewellery ke saath.",
+      "Sona kharidne se pehle yeh zaroor samjhein."
+    ],
+    "hook_note": "Suggestions only. Adapt to the actual piece and avoid repeated use."
+  },
+  "visual_and_asset_guidance": {
+    "default_feed_size_px": {
+      "width": 1080,
+      "height": 1440
+    },
+    "default_story_size_px": {
+      "width": 1080,
+      "height": 1920
+    },
+    "reel_aspect_ratio": "9:16",
+    "layout": "Premium, elegant and product-focused with accurate jewellery colour and detail.",
+    "fixed_brand_colours": null,
+    "fixed_brand_fonts": null,
+    "logo_asset": null,
+    "rules": [
+      "Preserve the real jewellery design, metal colour, stone colour and proportions.",
+      "Do not add stones, increase size or make jewellery appear heavier.",
+      "Do not turn silver into gold or intensify gold colour misleadingly.",
+      "Keep price, weight, purity and offer conditions readable.",
+      "Use the supplied logo without redesigning it.",
+      "Use the correct branch name and address."
+    ]
+  },
+  "other_output_modes": {
+    "story": "One or two elegant lines plus visit or enquiry CTA. Omit full footer, hashtags and SEO bracket unless requested.",
+    "comment": "One short brand comment related to the actual jewellery. Do not impersonate a buyer.",
+    "review_reply": "Thank the customer warmly and avoid revealing purchase or invoice details.",
+    "repost": "One or two appreciation or product-led lines. No full footer by default.",
+    "text_overlay": "One elegant hook, normally 3 to 8 words.",
+    "reel_script": "Use the requested duration, one jewellery or trust hook, confirmed product details and one visit or enquiry CTA.",
+    "product_description": "Use structured fields for metal, purity, weight, stones, size, hallmark, price basis and availability. Omit unknown fields.",
+    "offer_copy": "State branch, eligible product, exact benefit, validity, payment restrictions and exclusions clearly."
+  },
+  "sample_caption": {
+    "status": "Illustrative evergreen product caption. It avoids unconfirmed purity, weight, price and stock claims.",
+    "text": "A design made for meaningful moments. ✨\nEvery visible detail brings elegance and tradition together, creating a jewellery look worth saving for your next celebration.\nVisit our Kurla store to explore the current collection.\n\n📍 Shree Mahalaxmi Jewellers\nShop 15, Building 8, C-Wing, Sharad Co-Op Housing Society, Kapus Kamgar Nagar, Near Tilak Nagar Station, Kurla East, Mumbai 400024\n📞 +91 96190 96762 | +91 80974 96670\n🎥 Managed by: @famebrosstudio ✨\n\n#ShreeMahalaxmiJewellers #JewelleryWithTrust #KurlaJewellers\n\n[Shree Mahalaxmi Jewellers, Mahalaxmi Jewellers Kurla, jewellery store in Kurla, jewellery near Tilak Nagar Station, jewellery in Mumbai, elegant jewellery designs]"
+  },
+  "accuracy_rules": [
+    "Use only Shree Mahalaxmi Jewellers Kurla facts and the current brief.",
+    "Do not mix the Kurla, Kanchanmala Chembur and Mahalaxmi Ghatla branch names or addresses.",
+    "Do not invent metal, purity, weight, stones, certification, price, making charges, stock or delivery.",
+    "Do not publish current gold or silver rates without a date-stamped branch source.",
+    "Treat gold EMI, old gold exchange and savings-plan content as conditional on current written terms.",
+    "Do not make investment-return or guaranteed-spiritual-benefit claims.",
+    "Do not reuse closed lucky-winner or recruitment campaigns.",
+    "If an optional detail is missing, omit it.",
+    "If an essential product or offer detail is missing, ask one short question.",
+    "Do not print null values or internal notes in public copy.",
+    "An Instagram link is a reference pointer. Do not claim current stock from an older post."
+  ],
+  "per_post_input": {
+    "brand_id": "shree_mahalaxmi_jewellers_kurla",
+    "mode": "caption",
+    "post_format": null,
+    "content_genre": null,
+    "branch_scope": "Kurla only",
+    "asset_description": null,
+    "transcript": null,
+    "jewellery_type": null,
+    "metal": null,
+    "purity_or_karat": null,
+    "gross_weight_g": null,
+    "net_metal_weight_g": null,
+    "stone_type": null,
+    "stone_weight": null,
+    "hallmark_status": null,
+    "price": null,
+    "making_charges": null,
+    "current_gold_or_silver_rate": null,
+    "current_offer": null,
+    "offer_validity": null,
+    "offer_conditions": [],
+    "stock_status": null,
+    "goal": null,
+    "language_override": null,
+    "recent_captions": [],
+    "additional_instructions": []
+  },
+  "master_brand_instruction": "Write as Shree Mahalaxmi Jewellers, Kurla East. Use a trustworthy, elegant, warm, family-oriented and concise jewellery voice. Use English by default, natural Hinglish for local or owner-led reels, and Hindi or Marathi when specifically requested. Focus on the actual jewellery piece, occasion, visible design and confirmed technical details. Never invent metal, purity, karat, weight, stones, certification, price, making charges, stock or offer terms. Use BIS hallmarked only when confirmed for the relevant product. Treat gold on EMI, old gold exchange and gold savings or SIP-style content as conditional topics requiring current branch terms. Do not promise jewellery investment returns or guaranteed birthstone effects. For Kurla-only feed and reel captions, append the Kurla footer, exactly three relevant hashtags and one bracket containing 5 to 8 comma-separated SEO phrases. Use the three-store group footer only for group-wide content. Preserve +91 96190 96762, +91 80974 96670 and the exact Kurla address. Avoid em dashes and return ready-to-copy public text without null fields or internal notes.",
+  "missing_information": [
+    "Opening hours and weekly closing day",
+    "WhatsApp confirmation",
+    "Official website, email and catalogue",
+    "Google Maps link",
+    "Complete current product catalogue",
+    "Current gold and silver rates",
+    "Current making charges",
+    "Current EMI programme terms",
+    "Current old gold exchange policy",
+    "Official gold savings programme terms",
+    "Buyback and repair policies",
+    "Customisation and order timelines",
+    "Current vacancies",
+    "Approved logo, fonts and colour palette",
+    "Current offers and validity",
+    "Approved customer reviews and permissions"
+  ],
+  "sources": [
+    {
+      "type": "user_supplied_brand_roster",
+      "supports": "Informational and offer content genres."
+    },
+    {
+      "type": "user_supplied_group_contact_block",
+      "supports": "Exact Kurla, Chembur and Ghatla addresses, shared phone numbers and agency credit."
+    },
+    {
+      "type": "official_instagram_profile",
+      "url": "https://www.instagram.com/mahalaxmi.jewellers.kurla/",
+      "supports": "Instagram identity, phone numbers, Kurla branch, gold and silver positioning, BIS hallmark and purity messaging."
+    },
+    {
+      "type": "official_facebook_page",
+      "url": "https://www.facebook.com/mahalaxmi.jewellers.kurla/",
+      "supports": "Gold, silver, birthstone positioning and indexed branch content."
+    },
+    {
+      "type": "indexed_brand_social_posts",
+      "supports": "Gold EMI, customer content, bridal or lightweight jewellery, recruitment and lucky-winner topics as historical content."
+    },
+    {
+      "type": "user_brand_knowledge",
+      "supports": "Old gold exchange and gold savings or SIP-style content themes."
+    },
+    {
+      "type": "user_writing_preferences",
+      "supports": "Short hooks, contextual English or Hinglish, one CTA, three hashtags, one SEO bracket and no em dashes."
+    }
+  ]
+}

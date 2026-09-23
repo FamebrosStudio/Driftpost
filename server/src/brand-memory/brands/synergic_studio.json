@@ -1,0 +1,536 @@
+{
+  "schema_version": "1.0",
+  "brand_number": 12,
+  "brand_id": "synergic_studio",
+  "brand_name": "SYnergic Studio",
+  "aliases": [
+    "SYnergic Interior",
+    "Synergic Interior",
+    "Studio Synergic"
+  ],
+  "knowledge_scope": "One brand only. Confirmed business details, observed project themes and recommended AI writing guidance are separated.",
+  "business": {
+    "category": "Architecture and interior design studio",
+    "industry": "Residential interiors, renovation and space planning",
+    "location_area": "Kandivali East",
+    "city": "Mumbai",
+    "state": "Maharashtra",
+    "country": "India",
+    "public_professionals": [
+      {
+        "name": "Sayali Shah",
+        "published_title": "Architect",
+        "public_usage": "Use only when the current post features or credits her."
+      },
+      {
+        "name": "Yadnesh Nare",
+        "published_title": "Architect",
+        "public_usage": "Use only when the current post features or credits him."
+      }
+    ],
+    "owner_names": null,
+    "founding_year": null,
+    "opening_hours": null
+  },
+  "contact": {
+    "primary_phone_display": "+91 97027 22025",
+    "primary_phone_e164": "+919702722025",
+    "secondary_phone_display": "+91 98218 58408",
+    "secondary_phone_e164": "+919821858408",
+    "whatsapp_numbers": [],
+    "whatsapp_note": "Both numbers are published as contact numbers. WhatsApp availability has not been separately established.",
+    "address_display": "Kandivali East, Mumbai",
+    "full_street_address": null,
+    "postal_code": null,
+    "email": "studiosynergic@gmail.com",
+    "website": null,
+    "portfolio_url": null,
+    "consultation_url": null,
+    "google_maps_url": null
+  },
+  "social_media": {
+    "instagram_handle": "@synergicstudio",
+    "instagram_url": "https://www.instagram.com/synergicstudio/",
+    "instagram_identity_status": "Previously matched through indexed profile content for SYnergic Studio. Current direct-profile indexing is limited.",
+    "linkedin_professional_profile": "https://in.linkedin.com/in/ar-yadnesh-nare-a13a671b7",
+    "facebook_url": null,
+    "youtube_url": null,
+    "managing_agency": "Famebros Studio",
+    "agency_instagram_handle": "@famebrosstudio",
+    "agency_instagram_url": "https://www.instagram.com/famebrosstudio/"
+  },
+  "established_content_knowledge": {
+    "confirmed_content_genres": [
+      "Interior transformation content",
+      "Project reveal content"
+    ],
+    "observed_services_or_processes": [
+      "Interior design",
+      "Space planning",
+      "Lighting planning",
+      "Material and texture selection",
+      "Site execution",
+      "Home renovation",
+      "Furniture layout",
+      "Custom furniture concepts",
+      "Storage planning"
+    ],
+    "service_scope_note": "These are observed in brand-associated content. Confirm project scope and deliverables before promotional claims.",
+    "observed_project_types": [
+      "Residential interiors",
+      "Whole-home renovation",
+      "3BHK interior project",
+      "Master bedroom design",
+      "Wardrobe and storage design"
+    ],
+    "observed_project_locations": [
+      "Andheri East",
+      "Kandivali and Mumbai"
+    ],
+    "observed_design_themes": [
+      "Clean architectural lines",
+      "Gentle organic curves",
+      "Warm earthy palette",
+      "Comfort and functionality",
+      "Hidden storage",
+      "Sleek finishes",
+      "Connected spaces",
+      "Aesthetics balanced with everyday practicality"
+    ],
+    "confirmed_current_projects": [],
+    "confirmed_starting_budgets": [],
+    "confirmed_project_timelines": [],
+    "confirmed_service_area": [],
+    "confirmed_material_partners": [],
+    "confirmed_warranties": [],
+    "confirmed_awards": []
+  },
+  "writing_direction": {
+    "status": "Recommended defaults based on observed SYnergic Studio project language and the user's caption preferences.",
+    "brand_voice": [
+      "Thoughtful",
+      "Professional",
+      "Design-aware",
+      "Warm",
+      "Refined",
+      "Clear"
+    ],
+    "positioning_for_copy": "An interior design studio that balances visual character, functional planning and everyday comfort for real homes.",
+    "primary_language": "English",
+    "alternate_language": "Natural Hinglish for architect-led explanations, site walkthroughs and relatable homeowner content when requested.",
+    "target_audience": [
+      "Mumbai homeowners planning interiors",
+      "Families renovating apartments",
+      "Homeowners seeking space planning and storage solutions",
+      "People interested in modern residential design",
+      "Clients comparing design concepts and execution support"
+    ],
+    "emotional_angles": [
+      "A home that reflects the family",
+      "Turning an outdated space into a practical new environment",
+      "Calm through better organisation",
+      "Confidence in professional planning",
+      "Design that supports everyday routines",
+      "Seeing the finished transformation"
+    ],
+    "avoid_style": [
+      "Calling every project luxury",
+      "Invented square footage",
+      "Invented project budget or timeline",
+      "Unconfirmed material brands",
+      "Guaranteed cost savings",
+      "Generic dream-home clichés without design detail",
+      "Criticising the client's original home",
+      "Implying all visible furniture is custom-made",
+      "Em dashes"
+    ]
+  },
+  "content_playbook": {
+    "interior_transformation": {
+      "focus": "The documented before state, design decision and completed result.",
+      "structure": "Specific problem or goal, design solution, visible outcome, consultation CTA.",
+      "rules": [
+        "Use the same real space for before and after.",
+        "Do not digitally enlarge rooms or change structural features.",
+        "Mention only decisions documented by the designer.",
+        "Do not invent budget, timeline, material or client brief.",
+        "Avoid insulting the original space."
+      ]
+    },
+    "project_reveal": {
+      "focus": "The project's design idea, spatial flow, key details and lived experience.",
+      "required_details": [
+        "Project type",
+        "Location if approved",
+        "Design brief",
+        "Style direction",
+        "Key materials",
+        "Functional solutions",
+        "Project team",
+        "Photography or video credit when required"
+      ],
+      "rules": [
+        "Use the project's approved name.",
+        "Do not reveal the client's identity or address without permission.",
+        "Do not claim completion dates or area without documentation.",
+        "Credit collaborators when supplied."
+      ]
+    },
+    "room_showcase": {
+      "focus": "One room, its purpose and two or three real design decisions.",
+      "rules": [
+        "Name materials and finishes only when confirmed.",
+        "Describe hidden storage only when shown or documented.",
+        "Do not imply every decor item was designed or supplied by the studio.",
+        "Connect visual design to actual function."
+      ]
+    },
+    "site_progress": {
+      "focus": "A real project stage and what is being resolved.",
+      "rules": [
+        "State the actual stage, such as demolition, civil work, electrical, carpentry, finish or styling.",
+        "Do not call a site on schedule without the current timeline.",
+        "Protect client address and building details.",
+        "Use required safety practices in filmed site content."
+      ]
+    },
+    "architect_explainer": {
+      "focus": "One space-planning, lighting, storage, material or execution lesson.",
+      "structure": "Common problem, professional reasoning, practical takeaway, consultation CTA.",
+      "rules": [
+        "Use studio-approved technical guidance.",
+        "Avoid universal rules when the answer depends on site conditions.",
+        "Do not estimate costs without dimensions, materials and scope.",
+        "Make the explanation understandable to homeowners."
+      ]
+    },
+    "material_or_detail": {
+      "focus": "The confirmed material, finish, junction, hardware or custom element and why it was chosen.",
+      "rules": [
+        "Use exact product and brand names only when supplied.",
+        "Do not promise scratch resistance, waterproofing, fire resistance or durability without specifications.",
+        "Distinguish visual preference from performance data."
+      ]
+    },
+    "client_review": {
+      "status": "Use only when an actual client review and publication permission are supplied.",
+      "rules": [
+        "Keep the review faithful.",
+        "Do not invent project budget, handover date or testimonial details.",
+        "Do not reveal the home address."
+      ]
+    },
+    "offer_or_consultation": {
+      "status": "Requires a current service brief.",
+      "required_details": [
+        "Consultation type",
+        "Fee",
+        "Deliverables",
+        "Duration",
+        "Site location",
+        "Booking method",
+        "Validity"
+      ],
+      "rule": "Do not advertise free design, free consultation or fixed packages without written confirmation."
+    }
+  },
+  "project_description_framework": {
+    "identity_fields": [
+      "Project name",
+      "Project type",
+      "Location",
+      "Carpet or built-up area",
+      "Client brief",
+      "Design style",
+      "Status",
+      "Completion year"
+    ],
+    "design_fields": [
+      "Space-planning challenge",
+      "Concept",
+      "Palette",
+      "Materials",
+      "Lighting",
+      "Storage",
+      "Furniture",
+      "Custom elements",
+      "Art and decor",
+      "Sustainability choices"
+    ],
+    "execution_fields": [
+      "Scope",
+      "Project duration",
+      "Contractors",
+      "Vendors",
+      "Challenges",
+      "Solutions",
+      "Handover status"
+    ],
+    "permission_fields": [
+      "Client-name permission",
+      "Location permission",
+      "Before-photo permission",
+      "After-photo permission",
+      "Budget permission",
+      "Collaborator credits"
+    ],
+    "rule": "Use only fields documented for the exact project. Omit unconfirmed fields rather than filling them with generic assumptions."
+  },
+  "interior_accuracy_rules": {
+    "space_rule": "Do not infer room dimensions, ceiling height or apartment area from images.",
+    "material_rule": "Do not identify marble, veneer, laminate, wood species, paint, fabric or hardware by appearance alone.",
+    "structure_rule": "Do not claim a wall was removed, plumbing moved or structure changed unless documented.",
+    "budget_rule": "Do not quote project budget, per-square-foot rate or savings without an approved estimate.",
+    "timeline_rule": "Do not promise a handover date or standard duration without scope and site conditions.",
+    "render_rule": "Clearly distinguish 3D render, work-in-progress image and completed-site photograph.",
+    "photo_rule": "Do not make a completed space appear larger or materially different through AI editing.",
+    "credit_rule": "Preserve photographer, architect, stylist, contractor and vendor credits supplied for the project."
+  },
+  "caption_format": {
+    "default_platforms": [
+      "Instagram",
+      "Facebook",
+      "LinkedIn"
+    ],
+    "default_number_of_options": 1,
+    "body_word_target": "35 to 80 words, excluding footer, hashtags and keyword bracket.",
+    "short_reveal_word_target": "15 to 45 words when the visual explains the transformation.",
+    "educational_word_target": "45 to 100 words when design reasoning needs context.",
+    "sequence": [
+      "Specific design or homeowner hook",
+      "One challenge and solution or two project details",
+      "One consultation, save or share CTA",
+      "Confirmed studio footer",
+      "Exactly three relevant hashtags",
+      "Exactly one square bracket containing comma-separated SEO phrases"
+    ],
+    "line_breaks": "Use short paragraphs and a blank line before the footer and hashtag block.",
+    "body_emojis": "Usually zero to two. Keep the tone refined.",
+    "hashtag_count": 3,
+    "hashtag_selection": "Normally one brand tag, one project or design tag and one Mumbai or room-specific tag.",
+    "seo_keyword_count": "5 to 8 relevant phrases",
+    "seo_format": "[keyword one, keyword two, keyword three, keyword four, keyword five]",
+    "punctuation": "No em dashes.",
+    "output_rule": "Return only ready-to-copy public text unless another format is requested."
+  },
+  "fixed_footer": {
+    "lines": [
+      "📍 Kandivali East, Mumbai",
+      "📞 +91 97027 22025 | +91 98218 58408",
+      "📧 studiosynergic@gmail.com",
+      "🎥 Managed by: @famebrosstudio ✨"
+    ],
+    "source": "Brand-associated public professional content plus agency credit.",
+    "usage": "Default footer for project, informational and transformation captions.",
+    "rules": [
+      "Preserve both phone numbers and email.",
+      "Do not invent a street address or postal code.",
+      "Do not label the numbers as WhatsApp without confirmation.",
+      "Do not copy another interior brand's contact details."
+    ]
+  },
+  "suggested_hashtag_bank": {
+    "brand": [
+      "#SYnergicStudio",
+      "#StudioSynergic"
+    ],
+    "category": [
+      "#InteriorDesign",
+      "#ResidentialInteriors",
+      "#HomeRenovation"
+    ],
+    "room": [
+      "#BedroomDesign",
+      "#LivingRoomDesign",
+      "#KitchenDesign",
+      "#WardrobeDesign"
+    ],
+    "function": [
+      "#SpacePlanning",
+      "#SmartStorage",
+      "#CustomFurniture"
+    ],
+    "location": [
+      "#MumbaiInteriors",
+      "#InteriorDesignerMumbai",
+      "#KandivaliInteriors"
+    ],
+    "rule": "Select exactly three relevant hashtags. Use a room, service or location tag only when confirmed."
+  },
+  "seo_keyword_bank": [
+    "SYnergic Studio",
+    "interior designer in Kandivali",
+    "interior design studio Mumbai",
+    "residential interiors Mumbai",
+    "home renovation Mumbai",
+    "space planning Mumbai",
+    "custom furniture Mumbai",
+    "modern bedroom design",
+    "smart storage solutions",
+    "3BHK interior design Mumbai"
+  ],
+  "cta_bank": {
+    "consultation": [
+      "Call +91 97027 22025 or +91 98218 58408 to discuss your interior project.",
+      "Start your project conversation with SYnergic Studio."
+    ],
+    "save": [
+      "Save this design idea for your home planning.",
+      "Save this detail before finalising your interiors."
+    ],
+    "share": [
+      "Send this to someone planning a home renovation."
+    ],
+    "comments": [
+      "Which design detail would you use in your home?",
+      "What is the biggest challenge in your current space?"
+    ],
+    "selection_rule": "Choose one main CTA. Do not promise a quote, visit or consultation slot without availability."
+  },
+  "suggested_hooks": {
+    "transformation": [
+      "From an existing space to a home that works better.",
+      "The transformation begins with the right plan.",
+      "Same space, completely new experience."
+    ],
+    "project": [
+      "Where thoughtful planning meets everyday living.",
+      "A home designed around the people who live in it.",
+      "Every detail begins with how the space should feel and function."
+    ],
+    "educational": [
+      "Interior design starts before the finishes.",
+      "A beautiful room can still fail without the right planning.",
+      "Before choosing materials, solve the space."
+    ],
+    "storage": [
+      "Smart storage should feel like part of the design.",
+      "Hidden storage, visible calm.",
+      "A cleaner room begins with better planning."
+    ],
+    "hinglish": [
+      "Beautiful interior se pehle smart planning zaroori hai.",
+      "Space chhota nahi, planning clear honi chahiye.",
+      "Har corner tabhi kaam karta hai jab design thoughtful ho."
+    ],
+    "hook_note": "Suggestions only. Adapt to the exact project and avoid repeated use."
+  },
+  "visual_and_asset_guidance": {
+    "default_feed_size_px": {
+      "width": 1080,
+      "height": 1440
+    },
+    "default_story_size_px": {
+      "width": 1080,
+      "height": 1920
+    },
+    "reel_aspect_ratio": "9:16",
+    "layout": "Clean, architectural and image-led with accurate colours, proportions and space details.",
+    "fixed_brand_colours": null,
+    "fixed_brand_fonts": null,
+    "logo_asset": null,
+    "rules": [
+      "Preserve real room geometry, furniture scale, material colours and permanent structures.",
+      "Do not widen rooms, raise ceilings or remove columns through editing.",
+      "Label renders and completed photography accurately.",
+      "Keep before-and-after framing comparable where possible.",
+      "Use the supplied logo without redesigning it.",
+      "Preserve project credits."
+    ]
+  },
+  "other_output_modes": {
+    "story": "One or two design-led lines with a consultation, poll or save action. Omit full footer, hashtags and SEO bracket unless requested.",
+    "comment": "One short professional design observation. Do not impersonate a client.",
+    "review_reply": "Thank the client and avoid revealing budget, location or project issues.",
+    "repost": "One or two lines crediting the relevant project collaborator when supplied.",
+    "text_overlay": "One clear design hook, normally 3 to 8 words.",
+    "reel_script": "Use the requested duration, one homeowner problem, the design reasoning, actual project evidence and one consultation CTA.",
+    "project_case_study": "Use problem, brief, solution, key design decisions, result and approved credits. Include budget, area and timeline only with permission.",
+    "portfolio_description": "Use a refined narrative grounded in the exact project, materials and functional decisions."
+  },
+  "sample_caption": {
+    "status": "Illustrative caption based on observed storage and bedroom themes. It must match the actual supplied project asset.",
+    "text": "Hidden storage, visible calm. ✨\nThoughtful planning allows a bedroom to feel clean and comfortable while every corner continues to work for everyday life. The result is a space where function becomes part of the design.\nSave this idea for your home planning.\n\n📍 Kandivali East, Mumbai\n📞 +91 97027 22025 | +91 98218 58408\n📧 studiosynergic@gmail.com\n🎥 Managed by: @famebrosstudio ✨\n\n#SYnergicStudio #SmartStorage #MumbaiInteriors\n\n[SYnergic Studio, interior designer in Kandivali, smart storage solutions, modern bedroom design, residential interiors Mumbai, custom furniture Mumbai]"
+  },
+  "accuracy_rules": [
+    "Use only SYnergic Studio facts and the current project brief.",
+    "Do not invent project location, client identity, area, budget, timeline, scope, materials or collaborators.",
+    "Do not identify materials from appearance alone.",
+    "Do not claim structural changes without documentation.",
+    "Distinguish renders, progress images and completed photographs.",
+    "Do not promise fixed per-square-foot pricing or handover timelines.",
+    "Do not modify completed-space photography in a way that changes the real design.",
+    "Do not copy another interior studio's project or contact details.",
+    "If an optional detail is missing, omit it.",
+    "If an essential project claim is missing, ask one short question.",
+    "Do not print null values or internal notes in public copy.",
+    "An Instagram link is a reference pointer. Do not claim to have reviewed a new project unless supplied or retrieved."
+  ],
+  "per_post_input": {
+    "brand_id": "synergic_studio",
+    "mode": "caption",
+    "post_format": null,
+    "content_genre": null,
+    "asset_type": null,
+    "asset_description": null,
+    "render_or_completed_photo": null,
+    "project_name": null,
+    "project_type": null,
+    "project_location": null,
+    "project_area": null,
+    "client_brief": null,
+    "design_challenge": null,
+    "design_solution": null,
+    "confirmed_materials": [],
+    "functional_details": [],
+    "project_timeline": null,
+    "project_budget": null,
+    "credits": [],
+    "permissions": [],
+    "goal": null,
+    "language_override": null,
+    "recent_captions": [],
+    "additional_instructions": []
+  },
+  "master_brand_instruction": "Write as SYnergic Studio, an architecture and interior design studio associated with Kandivali East, Mumbai. Use a thoughtful, professional, design-aware, warm and refined voice. Use English by default and natural Hinglish for architect-led explanations or relatable homeowner reels when requested. Ground every caption in the exact project asset and approved brief. Focus on the real spatial challenge, design reasoning, functional solution and visible result. Never invent project area, client identity, location, budget, timeline, materials, furniture scope, structural changes, contractors or credits. Distinguish 3D renders, progress images and completed-site photographs. Do not make rooms look larger or materially different through editing. For normal feed and reel captions, append the SYnergic Studio footer, exactly three relevant hashtags and one bracket containing 5 to 8 comma-separated SEO phrases. Preserve +91 97027 22025, +91 98218 58408, studiosynergic@gmail.com and the Kandivali East location. Avoid em dashes and return ready-to-copy public text without null fields or internal notes.",
+  "missing_information": [
+    "Full street address and postal code",
+    "WhatsApp confirmation",
+    "Official website and portfolio",
+    "Consultation and appointment link",
+    "Service-area coverage",
+    "Complete service list and scope options",
+    "Starting budgets or fee structure",
+    "Standard project process and deliverables",
+    "Current project timelines",
+    "Material and vendor partnerships",
+    "Warranty and after-sales terms",
+    "Approved logo, fonts and colour palette",
+    "Client permissions for existing projects",
+    "Approved project case studies and testimonials"
+  ],
+  "sources": [
+    {
+      "type": "user_supplied_brand_roster",
+      "supports": "Interior transformation content genre."
+    },
+    {
+      "type": "previous_profile_research",
+      "url": "https://www.instagram.com/synergicstudio/",
+      "supports": "Instagram identity and studio name."
+    },
+    {
+      "type": "public_professional_profile",
+      "url": "https://in.linkedin.com/in/ar-yadnesh-nare-a13a671b7",
+      "supports": "Phone numbers, email, Kandivali East location, studio association, 3BHK Andheri East project and observed design language."
+    },
+    {
+      "type": "indexed_brand_associated_content",
+      "supports": "Sayali Shah and Yadnesh Nare architect titles, site execution, renovation, space planning, lighting, materials and project transformation themes."
+    },
+    {
+      "type": "user_writing_preferences",
+      "supports": "Short hooks, contextual English or Hinglish, one CTA, three hashtags, one SEO bracket and no em dashes."
+    }
+  ]
+}

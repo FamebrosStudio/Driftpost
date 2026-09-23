@@ -166,6 +166,28 @@ export function deepBrandIds() {
   return Object.keys(loadDeepAll());
 }
 
+// Footer/phone/address readers that tolerate every file variant seen so far:
+// fixed_footer.lines | .full_lines | .<branch>_only_lines (never group_*),
+// footer_policy.confirmed_footer_lines; contact.phone_display | .primary_phone_display.
+export function deepFooter(deep) {
+  const ff = deep?.fixed_footer;
+  if (ff) {
+    if (ff.lines?.length) return ff.lines;
+    if (ff.full_lines?.length) return ff.full_lines;
+    const only = Object.keys(ff).filter((k) => k.endsWith('_only_lines') && Array.isArray(ff[k]) && ff[k].length);
+    if (only.length) return ff[only[0]];
+  }
+  if (deep?.footer_policy?.confirmed_footer_lines?.length) return deep.footer_policy.confirmed_footer_lines;
+  return [];
+}
+
+export function deepPhone(deep) {
+  return deep?.contact?.phone_display || deep?.contact?.primary_phone_display || '';
+}
+
+export function deepAddress(deep) {
+  return deep?.contact?.full_address || '';
+}
 // Pack built from the Specific-brands deep format (~600-800 tokens).
 // Precedence inside: owner memory correction > master instruction > playbook.
 export function deepPack(deep, brand) {
@@ -185,8 +207,8 @@ export function deepPack(deep, brand) {
   const lines = [
     deep.master_brand_instruction ? `MASTER: ${deep.master_brand_instruction}` : null,
     deep.business ? `Business: ${deep.business.category || ''}${deep.business.location_area ? `, ${deep.business.location_area}` : ''}` : null,
-    deep.contact?.phone_display ? `Phone: ${deep.contact.phone_display}` : null,
-    deep.contact?.full_address ? `Address: ${deep.contact.full_address}` : null,
+    deepPhone(deep) ? `Phone: ${deepPhone(deep)}` : null,
+    deepAddress(deep) ? `Address: ${deepAddress(deep)}` : null,
     deep.social_media?.instagram_handle ? `IG: ${deep.social_media.instagram_handle}` : null,
     deep.established_content_knowledge?.previously_featured_look
       ? `Known look: ${deep.established_content_knowledge.previously_featured_look.name} — ${deep.established_content_knowledge.previously_featured_look.reuse_rule || ''}`
@@ -199,11 +221,9 @@ export function deepPack(deep, brand) {
     tags.length ? `Hashtag bank (pick exactly 3): ${tags.join(' ')}` : null,
     deep.suggested_hashtag_bank?.conditional ? `Tag conditions: ${Object.entries(deep.suggested_hashtag_bank.conditional).map(([t, r]) => `${t} ${r}`).join('; ')}` : null,
     (deep.seo_keyword_bank || []).length ? `SEO keywords: ${deep.seo_keyword_bank.slice(0, 9).join(', ')}` : null,
-    (deep.fixed_footer?.lines?.length
-      ? `Footer (append exactly):\n${deep.fixed_footer.lines.join('\n')}`
-      : deep.footer_policy?.confirmed_footer_lines?.length
-        ? `Footer (append exactly):\n${deep.footer_policy.confirmed_footer_lines.join('\n')}`
-        : null),
+    (deepFooter(deep).length
+      ? `Footer (append exactly):\n${deepFooter(deep).join('\n')}`
+      : null),
     play ? `Playbook:\n${play}` : null,
     deep.sample_caption?.text ? `Style example (match energy, never copy facts):\n${String(deep.sample_caption.text).slice(0, 600)}` : null,
     (deep.accuracy_rules || []).length ? `Accuracy: ${deep.accuracy_rules.slice(0, 5).join(' ')}` : null,

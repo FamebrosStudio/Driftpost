@@ -1,0 +1,512 @@
+{
+  "schema_version": "1.0",
+  "brand_number": 8,
+  "brand_id": "sk_furniture_market",
+  "brand_name": "SK Furniture Market",
+  "knowledge_scope": "One brand only. Confirmed business details, product evidence, internal case-study data and AI writing guidance are separated.",
+  "business": {
+    "category": "Furniture store and market",
+    "industry": "Home furniture and furnishing retail",
+    "location_area": "Khartan Road, Thane",
+    "city": "Thane",
+    "state": "Maharashtra",
+    "country": "India",
+    "owner_or_public_face": "Sher Khan",
+    "owner_status": "Supplied by the user. Use publicly only when the content brief features or names him.",
+    "manufacturing_status": "Some indexed content describes furniture manufacture, but the exact in-house manufacturing scope is not fully established.",
+    "opening_hours": null,
+    "founding_year": null
+  },
+  "contact": {
+    "phone_display": "+91 84338 70901",
+    "phone_e164": "+918433870901",
+    "whatsapp_number": null,
+    "whatsapp_note": "The number appears in indexed SK Furniture Market promotional content. Confirm WhatsApp availability before labeling it as WhatsApp.",
+    "full_address": "Shop No. 50 and 51, Purna Shanti Heights, Khartan Road, Thane 400601",
+    "shop_numbers": [
+      "50",
+      "51"
+    ],
+    "building": "Purna Shanti Heights",
+    "road": "Khartan Road",
+    "city": "Thane",
+    "postal_code": "400601",
+    "email": null,
+    "website": null,
+    "catalogue_url": null,
+    "ordering_url": null,
+    "google_maps_url": null
+  },
+  "social_media": {
+    "instagram_handle": "@skfurnituremarket",
+    "instagram_url": "https://www.instagram.com/skfurnituremarket/",
+    "instagram_identity_status": "Confirmed in the user's connected-account list. Indexed posts and videos match the Thane business and furniture category.",
+    "facebook_name": "SK Furniture Market",
+    "facebook_url": "https://www.facebook.com/61568995627934/",
+    "facebook_status": "Indexed Facebook page matches the store name and Thane location.",
+    "youtube_url": null,
+    "managing_agency": "Famebros Studio",
+    "agency_instagram_handle": "@famebrosstudio",
+    "agency_instagram_url": "https://www.instagram.com/famebrosstudio/"
+  },
+  "established_content_knowledge": {
+    "confirmed_content_genres": [
+      "Cringe-style comedy",
+      "Funny furniture reels",
+      "Hype-driven product content"
+    ],
+    "genre_note": "Cringe means intentionally exaggerated, relatable entertainment. It should remain brand-safe and must not humiliate customers or staff.",
+    "indexed_product_topics": [
+      "Metal beds",
+      "Wardrobes",
+      "Cupboards",
+      "Bedroom sets",
+      "Adjustable multipurpose tables",
+      "All-in-one tables",
+      "Home furniture"
+    ],
+    "indexed_sales_topics": [
+      "Zero down payment",
+      "Easy EMI options",
+      "Affordable furniture",
+      "Furniture for Thane homes"
+    ],
+    "product_scope_rule": "Indexed topics show previous content, not permanent stock or current finance eligibility.",
+    "confirmed_current_catalogue": [],
+    "confirmed_current_prices": [],
+    "confirmed_current_offers": [],
+    "confirmed_finance_partner": null,
+    "confirmed_emi_terms": null,
+    "confirmed_delivery_area": null,
+    "confirmed_warranty": null,
+    "confirmed_customisation": null,
+    "confirmed_material_specifications": []
+  },
+  "internal_agency_case_study": {
+    "privacy": "Internal agency knowledge. Do not include in consumer captions or ads unless the user specifically requests a public case study.",
+    "period": "Approximately six months",
+    "reported_owner_name": "Sher Khan",
+    "reported_instagram_growth_or_size": "10,000+ followers",
+    "reported_cost_per_acquisition_inr": 5,
+    "reported_metric_label": "Rent",
+    "reported_metric_value_inr": 200000,
+    "metric_note": "The stored user note labels this figure as rent. Its meaning and period should be confirmed before any use.",
+    "public_usage_rule": "Reverify dates, platform analytics, attribution method, spend, leads and the meaning of the ₹2 lakh metric before publishing an agency case study."
+  },
+  "writing_direction": {
+    "status": "Recommended defaults based on the confirmed content genres and indexed retail positioning.",
+    "brand_voice": [
+      "Energetic",
+      "Bold",
+      "Affordable",
+      "Relatable",
+      "Entertaining",
+      "Direct"
+    ],
+    "positioning_for_copy": "A Thane furniture destination that makes home upgrades feel exciting, accessible and worth talking about.",
+    "primary_language": "Hinglish",
+    "alternate_language": "English for product specifications, offers and professional informational posts.",
+    "language_note": "Use natural spoken Hinglish for funny and owner-led reels. Keep prices, dimensions, materials and finance conditions precise.",
+    "target_audience": [
+      "Thane households furnishing or upgrading a home",
+      "Families looking for beds, wardrobes and storage",
+      "Budget-conscious furniture buyers",
+      "People exploring EMI or low-upfront-payment options when active",
+      "Viewers who engage with relatable home and furniture humour"
+    ],
+    "emotional_angles": [
+      "A visible home upgrade",
+      "More comfort and storage",
+      "Getting furniture within budget",
+      "Finding multifunctional solutions",
+      "The excitement of a dramatic store offer",
+      "Relatable family decisions around furniture"
+    ],
+    "avoid_style": [
+      "Humiliating customers or staff",
+      "Class or income shaming",
+      "Fake arguments presented as real",
+      "Guaranteed cheapest-price claims",
+      "Unconfirmed zero-down-payment claims",
+      "Hidden EMI conditions",
+      "Invented durability or warranty claims",
+      "Misleading before-and-after visuals",
+      "Long intros",
+      "Em dashes"
+    ]
+  },
+  "content_playbook": {
+    "funny_or_cringe_reel": {
+      "focus": "A recognisable home, shopping or family situation connected to furniture.",
+      "structure": "Immediate setup, exaggerated reaction, quick product or store payoff, simple CTA.",
+      "rules": [
+        "Keep the joke connected to the actual footage.",
+        "Use cringe intentionally through performance, not insulting copy.",
+        "Do not portray false pricing, staff conflict or customer deception as real.",
+        "Avoid jokes about debt, poverty, body size, marriage pressure or disability.",
+        "Keep the caption shorter when the reel contains the full joke."
+      ]
+    },
+    "hype_product_reel": {
+      "focus": "One product feature, transformation or offer presented with energy.",
+      "structure": "Bold hook, visible feature, confirmed price or enquiry CTA.",
+      "rules": [
+        "Use only visible or supplied product features.",
+        "Do not call a product viral, best-selling or number one without evidence.",
+        "Do not invent price, discount, material, size, load capacity or warranty.",
+        "Use fast, punchy lines without hiding conditions."
+      ]
+    },
+    "product_showcase": {
+      "focus": "The exact furniture item, its visible function and suitable room use.",
+      "required_details": [
+        "Product name",
+        "Dimensions",
+        "Material",
+        "Colour or finish",
+        "Storage or mechanism",
+        "Price",
+        "Delivery and assembly",
+        "Warranty when available"
+      ],
+      "rules": [
+        "Do not infer solid wood, engineered wood, metal grade, foam density or fabric type from appearance.",
+        "Demonstrate moving parts accurately.",
+        "Do not promise customisation unless confirmed."
+      ]
+    },
+    "before_after_or_room_upgrade": {
+      "focus": "The real visual change in a room or storage setup.",
+      "rules": [
+        "Use the same real space when presenting before and after.",
+        "Do not digitally enlarge rooms or remove permanent structures.",
+        "Do not claim interior-design service unless included.",
+        "State product details separately from styling suggestions."
+      ]
+    },
+    "offer_or_emi": {
+      "focus": "Exact product, price, upfront amount, EMI or promotion and purchase action.",
+      "required_details": [
+        "Product",
+        "Selling price",
+        "Down payment",
+        "EMI amount",
+        "Tenure",
+        "Finance partner",
+        "Eligibility",
+        "Processing fee",
+        "Interest or no-cost status",
+        "Validity",
+        "Delivery charges"
+      ],
+      "rules": [
+        "Do not publish zero down payment or ₹500 down payment from an older reel without current confirmation.",
+        "Do not say no-cost EMI unless explicitly confirmed.",
+        "Show eligibility and fees clearly.",
+        "Use exact dates for limited offers."
+      ]
+    },
+    "informational": {
+      "focus": "One useful furniture buying, space or maintenance point based on approved product information.",
+      "rules": [
+        "Do not provide safety claims without specifications.",
+        "Use exact care instructions from the supplier.",
+        "Separate general room suggestions from product guarantees."
+      ]
+    },
+    "customer_review": {
+      "status": "Use only with an actual approved review.",
+      "rules": [
+        "Do not invent buyer names, delivery speed, product life or ratings.",
+        "Keep quotes faithful.",
+        "Do not reveal order value or address without permission."
+      ]
+    }
+  },
+  "furniture_description_framework": {
+    "use_when_confirmed": [
+      "Product category",
+      "Dimensions",
+      "Material",
+      "Finish or colour",
+      "Storage capacity",
+      "Mechanism",
+      "Mattress compatibility",
+      "Load capacity",
+      "Assembly",
+      "Warranty",
+      "Price",
+      "Delivery area",
+      "Delivery charge",
+      "Customisation"
+    ],
+    "safe_visual_descriptors": [
+      "Visible colour",
+      "Visible shape",
+      "Visible compartments",
+      "Visible doors or drawers",
+      "Visible folding or sliding action",
+      "Visible room placement"
+    ],
+    "requires_explicit_confirmation": [
+      "Solid wood",
+      "Engineered wood",
+      "Metal thickness or grade",
+      "Water resistance",
+      "Termite resistance",
+      "Scratch resistance",
+      "Load-bearing capacity",
+      "Long-term durability",
+      "Warranty",
+      "Free delivery",
+      "Free assembly",
+      "Finance eligibility"
+    ],
+    "rule": "Describe the visible function first, then add only confirmed commercial and technical details."
+  },
+  "caption_format": {
+    "default_platforms": [
+      "Instagram",
+      "Facebook"
+    ],
+    "default_number_of_options": 1,
+    "body_word_target": "20 to 55 words, excluding footer, hashtags and keyword bracket.",
+    "funny_reel_word_target": "6 to 30 words when the reel carries the joke.",
+    "offer_word_target": "30 to 80 words so finance and offer terms remain clear.",
+    "sequence": [
+      "Bold or relatable hook",
+      "One product detail or punchline",
+      "One main CTA",
+      "Confirmed contact footer",
+      "Exactly three relevant hashtags",
+      "Exactly one square bracket containing comma-separated SEO phrases"
+    ],
+    "line_breaks": "Use short paragraphs and a blank line before the footer and hashtag block.",
+    "body_emojis": "Usually one to three for hype or comedy content. Use fewer in specification-led posts.",
+    "hashtag_count": 3,
+    "hashtag_selection": "Normally one brand tag, one furniture or product tag and one location tag.",
+    "seo_keyword_count": "5 to 8 relevant phrases",
+    "seo_format": "[keyword one, keyword two, keyword three, keyword four, keyword five]",
+    "punctuation": "No em dashes.",
+    "output_rule": "Return only ready-to-copy public text unless another format is requested."
+  },
+  "fixed_footer": {
+    "lines": [
+      "📍 Shop No. 50 and 51, Purna Shanti Heights, Khartan Road, Thane 400601",
+      "📞 +91 84338 70901",
+      "🎥 Managed by: @famebrosstudio ✨"
+    ],
+    "source": "Indexed SK Furniture Market social content and the standard agency credit.",
+    "usage": "Default feed and reel footer until the user supplies a different approved contact block.",
+    "rules": [
+      "Preserve the phone and address.",
+      "Do not label the phone as WhatsApp without confirmation.",
+      "Do not use contact details from another furniture brand.",
+      "Do not attach EMI wording to the footer unless the current campaign confirms it."
+    ]
+  },
+  "suggested_hashtag_bank": {
+    "brand": [
+      "#SKFurnitureMarket"
+    ],
+    "category": [
+      "#FurnitureStore",
+      "#HomeFurniture",
+      "#FurnitureShopping"
+    ],
+    "product": [
+      "#BedroomFurniture",
+      "#WardrobeDesign",
+      "#MetalBed",
+      "#MultipurposeFurniture"
+    ],
+    "location": [
+      "#ThaneFurniture",
+      "#FurnitureInThane"
+    ],
+    "offer_conditional": {
+      "#FurnitureOnEMI": "Use only for a currently confirmed EMI campaign.",
+      "#ZeroDownPayment": "Use only when zero-down-payment terms are active and approved."
+    },
+    "rule": "Select exactly three relevant hashtags. Do not use the full bank."
+  },
+  "seo_keyword_bank": [
+    "SK Furniture Market",
+    "furniture store in Thane",
+    "furniture market Thane",
+    "bedroom furniture Thane",
+    "wardrobe shop Thane",
+    "metal bed Thane",
+    "multipurpose furniture Thane",
+    "furniture on EMI Thane",
+    "home furniture Khartan Road"
+  ],
+  "cta_bank": {
+    "enquiry": [
+      "Call +91 84338 70901 for current price and availability.",
+      "Contact SK Furniture Market for product details and delivery information."
+    ],
+    "visit": [
+      "Visit Shop No. 50 and 51, Purna Shanti Heights, Khartan Road, Thane, after confirming store hours."
+    ],
+    "save": [
+      "Save this for your next home upgrade."
+    ],
+    "share": [
+      "Send this to someone planning a furniture upgrade."
+    ],
+    "comments": [
+      "Which furniture problem should we solve next?",
+      "Would this work in your space?"
+    ],
+    "selection_rule": "Choose one main CTA. For EMI content, direct users to confirm eligibility and full terms."
+  },
+  "suggested_hooks": {
+    "hype": [
+      "Your room upgrade starts here.",
+      "One product. More space. Bigger impact.",
+      "Thane, this furniture deserves your attention."
+    ],
+    "funny_hinglish": [
+      "Gharwale bole furniture mat lena, phir yeh dekh liya.",
+      "Storage khatam? Ab excuse bhi khatam.",
+      "Budget poocha tha, dil toh design pe aa gaya."
+    ],
+    "offer": [
+      "Home upgrade, smaller upfront stress.",
+      "Furniture shopping just became easier.",
+      "Before you pay full upfront, check this."
+    ],
+    "product": [
+      "Small space, smart furniture.",
+      "A furniture upgrade that works harder.",
+      "Style, storage and function in one."
+    ],
+    "hook_note": "Suggestions only. Match the actual reel and confirmed offer."
+  },
+  "visual_and_asset_guidance": {
+    "default_feed_size_px": {
+      "width": 1080,
+      "height": 1440
+    },
+    "default_story_size_px": {
+      "width": 1080,
+      "height": 1920
+    },
+    "reel_aspect_ratio": "9:16",
+    "layout": "Bold, retail-focused and high-energy with the real product clearly visible.",
+    "fixed_brand_colours": null,
+    "fixed_brand_fonts": null,
+    "logo_asset": null,
+    "rules": [
+      "Preserve the real furniture design, colour, scale and mechanism.",
+      "Do not enlarge rooms or furniture artificially.",
+      "Do not add storage compartments or functions.",
+      "Keep price, down payment, EMI and conditions readable.",
+      "Use the supplied logo without redesigning it.",
+      "Do not claim a fixed palette or font without a brand reference."
+    ]
+  },
+  "other_output_modes": {
+    "story": "One bold line plus price or enquiry action when confirmed. Omit full footer, hashtags and SEO bracket unless requested.",
+    "comment": "One short, energetic brand comment. Do not impersonate a buyer.",
+    "review_reply": "Thank the buyer, address service concerns professionally and move order-specific details to private contact.",
+    "repost": "One or two hype or appreciation lines. No full footer by default.",
+    "text_overlay": "One strong hook, normally 3 to 7 words.",
+    "reel_script": "Use the requested duration, immediate Hinglish hook, one product problem, visible solution, confirmed price or terms and one CTA.",
+    "product_description": "Use structured confirmed fields for dimensions, material, mechanism, price, warranty, delivery and care. Omit unknown fields."
+  },
+  "sample_caption": {
+    "status": "Illustrative evergreen caption for a confirmed multipurpose furniture reel. It contains no EMI or price claim.",
+    "text": "Small space, smart furniture. 🔥\nThis multipurpose design brings function and a cleaner setup together, making everyday use feel easier without crowding the room.\nCall for current price and availability.\n\n📍 Shop No. 50 and 51, Purna Shanti Heights, Khartan Road, Thane 400601\n📞 +91 84338 70901\n🎥 Managed by: @famebrosstudio ✨\n\n#SKFurnitureMarket #MultipurposeFurniture #ThaneFurniture\n\n[SK Furniture Market, furniture store in Thane, multipurpose furniture Thane, home furniture Khartan Road, furniture market Thane, smart furniture for small spaces]"
+  },
+  "accuracy_rules": [
+    "Use only SK Furniture Market facts and the current post brief.",
+    "Do not invent prices, discounts, EMI terms, material, dimensions, warranty, stock, delivery or assembly.",
+    "Treat zero down payment and ₹500 down payment as previous content themes that require current confirmation.",
+    "Do not guarantee durability, water resistance, termite resistance or load capacity.",
+    "Do not describe a product as manufactured in-house unless confirmed for that item.",
+    "Do not publish internal case-study metrics in consumer captions.",
+    "Reverify analytics and define the ₹2 lakh metric before any agency case study.",
+    "Do not copy Sarama Furniture or Anand Furniture details.",
+    "If an optional detail is missing, omit it.",
+    "If an essential offer or product detail is missing, ask one short question.",
+    "Do not print null values or internal notes in public copy.",
+    "An Instagram link is a reference pointer. Do not claim current stock from old posts."
+  ],
+  "per_post_input": {
+    "brand_id": "sk_furniture_market",
+    "mode": "caption",
+    "post_format": null,
+    "content_genre": null,
+    "asset_description": null,
+    "transcript": null,
+    "confirmed_product": null,
+    "visible_features": [],
+    "dimensions": null,
+    "material": null,
+    "colour_or_finish": null,
+    "mechanism": null,
+    "load_capacity": null,
+    "current_price": null,
+    "current_offer": null,
+    "down_payment": null,
+    "emi_amount": null,
+    "emi_tenure": null,
+    "finance_conditions": [],
+    "warranty": null,
+    "delivery_area": null,
+    "stock_status": null,
+    "goal": null,
+    "language_override": null,
+    "recent_captions": [],
+    "additional_instructions": []
+  },
+  "master_brand_instruction": "Write as SK Furniture Market in Thane. Use an energetic, bold, affordable, relatable and direct voice. Use natural Hinglish for funny, cringe-style and owner-led reels, and clear English or Hinglish for product, offer and informational posts. Treat cringe as intentionally exaggerated entertainment without humiliating customers, staff or any social group. Focus on the exact furniture item, visible function and confirmed buyer benefit. Never invent price, discount, material, dimensions, storage, warranty, stock, delivery, assembly or finance terms. Treat zero down payment, ₹500 down payment and easy EMI as previous content themes requiring current confirmation with full eligibility, fees, tenure and finance-partner information. Keep internal case-study metrics out of consumer copy. For normal feed and reel captions, append the SK Furniture Market footer, exactly three relevant hashtags and one bracket containing 5 to 8 comma-separated SEO phrases. Preserve +91 84338 70901 and the Khartan Road address. Avoid em dashes and return ready-to-copy public text without null fields or internal notes.",
+  "missing_information": [
+    "WhatsApp confirmation",
+    "Opening hours and weekly closing day",
+    "Official website, email and catalogue",
+    "Google Maps link",
+    "Complete current product catalogue",
+    "Current prices and offers",
+    "Active EMI and finance terms",
+    "Finance partner and eligibility",
+    "Product dimensions and material specifications",
+    "Warranty and after-sales policy",
+    "Delivery and assembly coverage",
+    "Customisation options",
+    "Return or cancellation policy",
+    "Approved logo, fonts and colour palette",
+    "Clarification of internal ₹2 lakh metric",
+    "Verified performance case-study dates and attribution"
+  ],
+  "sources": [
+    {
+      "type": "user_supplied_brand_roster",
+      "supports": "Funny, cringe and hype content genres."
+    },
+    {
+      "type": "user_supplied_brand_knowledge",
+      "supports": "Owner name and internal six-month case-study metrics."
+    },
+    {
+      "type": "official_instagram_identity",
+      "url": "https://www.instagram.com/skfurnituremarket/",
+      "supports": "Instagram handle mapping."
+    },
+    {
+      "type": "indexed_brand_social_content",
+      "supports": "Phone, address, Thane location, product examples and previous zero-down-payment or EMI topics."
+    },
+    {
+      "type": "indexed_facebook_page",
+      "url": "https://www.facebook.com/61568995627934/",
+      "supports": "Store identity, Thane positioning and furniture content."
+    },
+    {
+      "type": "user_writing_preferences",
+      "supports": "Short hooks, natural Hinglish, one CTA, three hashtags, one SEO bracket and no em dashes."
+    }
+  ]
+}
