@@ -297,6 +297,26 @@ function DocPage({ page }) {
 
 function Landing({ onEnter, session, pubPage, setPubPage }) {
   const rootRef = useRef(null);
+  const gridRef = useRef(null);
+  const mouseRaf = useRef(0);
+  // Grid interactivity: a glow follows the cursor and the whole grid drifts
+  // a few pixels against it. rAF-throttled, transform/opacity only.
+  const onGridMouse = (e) => {
+    if (mouseRaf.current) return;
+    const { clientX, clientY } = e;
+    mouseRaf.current = requestAnimationFrame(() => {
+      mouseRaf.current = 0;
+      const g = gridRef.current;
+      if (!g) return;
+      const r = g.getBoundingClientRect();
+      const nx = Math.min(0.5, Math.max(-0.5, (clientX - r.left) / Math.max(1, r.width) - 0.5));
+      const ny = Math.min(0.5, Math.max(-0.5, (clientY - r.top) / Math.max(1, r.height) - 0.5));
+      g.style.setProperty('--mx', `${((nx + 0.5) * 100).toFixed(1)}%`);
+      g.style.setProperty('--my', `${((ny + 0.5) * 100).toFixed(1)}%`);
+      const shift = g.firstChild;
+      if (shift) shift.style.transform = `translate3d(${(nx * -22).toFixed(1)}px, ${(ny * -22).toFixed(1)}px, 0)`;
+    });
+  };
   // Animations are part of the look — but repainting invisible pixels is pure
   // waste. Pause rain + marquee the moment they leave the viewport; they
   // resume pixel-identical the instant they return.
@@ -308,7 +328,7 @@ function Landing({ onEnter, session, pubPage, setPubPage }) {
       for (const en of entries) en.target.classList.toggle('paused', !en.isIntersecting);
     }, { threshold: 0 });
     els.forEach((el) => io.observe(el));
-    return () => io.disconnect();
+    return () => { io.disconnect(); if (mouseRaf.current) cancelAnimationFrame(mouseRaf.current); };
   }, [pubPage]);
   const dock = [
     { id: 'youtube', tip: 'YouTube — video, titles, tags', href: 'https://www.youtube.com' },
@@ -329,8 +349,8 @@ function Landing({ onEnter, session, pubPage, setPubPage }) {
     { n: '04', t: 'Fire everywhere', d: 'Publish per platform or hit Publish all. Watch Done ✓ roll across all four phones with view links.' },
   ];
   return (
-    <div className="landing" ref={rootRef}>
-      <div className="grid-bg" aria-hidden="true"><div className="grid-pan" /></div>
+    <div className="landing" ref={rootRef} onMouseMove={onGridMouse}>
+      <div className="grid-bg" ref={gridRef} aria-hidden="true"><div className="grid-shift"><div className="grid-pan" /><div className="grid-glow" /></div></div>
       <nav className="land-nav">
         <button className="land-logo" onClick={() => setPubPage('home')} title="Driftpost home"><img className="logo-img logo-d" src="/logo-dark-620.png" srcSet="/logo-dark-620.png 620w, /logo-dark.png 1984w" sizes="248px" width="1984" height="512" fetchpriority="high" decoding="async" alt="Driftpost" /></button>
         <div className="land-links">

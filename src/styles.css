@@ -287,8 +287,13 @@ details.adv[open] > summary::before { content: "– "; }
    diagonally under a radial fade + horizon glow. The motion runs on transform
    (compositor only) so scrolling stays at full speed. */
 .grid-bg { position: absolute; inset: 0; contain: strict; overflow: hidden;
+  --mx: 50%; --my: 35%;
   -webkit-mask-image: radial-gradient(ellipse 95% 75% at 50% 28%, #000 25%, transparent 78%);
   mask-image: radial-gradient(ellipse 95% 75% at 50% 28%, #000 25%, transparent 78%); }
+.grid-shift { position: absolute; inset: -30px; will-change: transform; }
+.grid-glow { position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(260px circle at var(--mx) var(--my), #38bdf84d, transparent 70%);
+  transition: background 0.12s linear; }
 .grid-pan { position: absolute; inset: -60px;
   background-image:
     linear-gradient(#38bdf82e 1px, transparent 1px),
@@ -575,3 +580,6 @@ html, body { overflow-x: clip; max-width: 100%; }
    out of view. Same pixels while visible. */
 .marquee { contain: paint; }
 .grid-bg.paused .grid-pan, .marquee-in.paused { animation-play-state: paused !important; }
+@media (prefers-reduced-motion: reduce) {
+  .grid-shift { transform: none !important; }
+}
