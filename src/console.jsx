@@ -273,6 +273,9 @@ function Composer({ session, connections, reload }) {
   };
 
   const [aiTrends, setAiTrends] = useState(false);
+  const [aiTone, setAiTone] = useState('auto');
+  const [aiEmoji, setAiEmoji] = useState('high');
+  const [aiLength, setAiLength] = useState('medium');
   const [lessonBusy, setLessonBusy] = useState(false);
   const writeWithAi = async () => {
     if (aiBusy || !aiBrief.trim()) return;
@@ -280,13 +283,16 @@ function Composer({ session, connections, reload }) {
     try {
       const data = await api('/api/ai/captions', session.access_token, {
         method: 'POST',
-        body: JSON.stringify({
-          summary: aiBrief,
-          brand: brand?.label || '',
-          asset_description: file ? `${file.name} (${file.type})` : '',
-          goal: 'enquiries',
-          trends: aiTrends,
-        }),
+          body: JSON.stringify({
+            summary: aiBrief,
+            brand: brand?.label || '',
+            asset_description: file ? `${file.name} (${file.type})` : '',
+            goal: 'enquiries',
+            trends: aiTrends,
+            tone: aiTone,
+            emoji: aiEmoji,
+            length: aiLength,
+          }),
       });
       const c = data.captions || data;
       setYt((v) => ({ ...v, title: c.youtube.title || v.title, description: c.youtube.description || v.description, tags: c.youtube.tags.join(', ') || v.tags }));
@@ -390,6 +396,35 @@ function Composer({ session, connections, reload }) {
           <p className="sub">Stuck? Type a short summary — 4 different captions (YT / IG / FB / X).</p>
           <label className="field" style={{ marginBottom: 0 }}><span>What is this post about? <i>brand + motive + conditions wins</i></span><textarea value={aiBrief} maxLength={500} onChange={(e) => setAiBrief(e.target.value)} placeholder="e.g. Velvet Salon has a new offer: 20% off for everyone who comes before 4pm" style={{ minHeight: 70 }} /></label>
           <label className="ck" style={{ marginTop: 8 }}><input type="checkbox" checked={aiTrends} onChange={(e) => setAiTrends(e.target.checked)} /><svg viewBox="0 0 64 64"><path className="path" d="M8 33 L26 51 L56 13" /></svg><span>🔥 Live SEO trends (slower, costs more)</span></label>
+          <div className="row2" style={{ marginTop: 8 }}>
+            <label className="field-mini"><span>Tone</span>
+              <select value={aiTone} onChange={(e) => setAiTone(e.target.value)}>
+                <option value="auto">Auto (brand default)</option>
+                <option value="excited">🔥 Excited</option>
+                <option value="warm">🤗 Warm</option>
+                <option value="professional">💼 Professional</option>
+                <option value="funny">😂 Funny</option>
+              </select>
+            </label>
+            <label className="field-mini"><span>Emojis</span>
+              <select value={aiEmoji} onChange={(e) => setAiEmoji(e.target.value)}>
+                <option value="low">Few (1-2)</option>
+                <option value="medium">Medium (3-5)</option>
+                <option value="high">Lots (5-8)</option>
+                <option value="max">MAX 🎉 (8-12)</option>
+              </select>
+            </label>
+          </div>
+          <div className="row2" style={{ marginTop: 8 }}>
+            <label className="field-mini"><span>Length</span>
+              <select value={aiLength} onChange={(e) => setAiLength(e.target.value)}>
+                <option value="short">Short & punchy</option>
+                <option value="medium">Medium (classic)</option>
+                <option value="detailed">Detailed story</option>
+              </select>
+            </label>
+            <span />
+          </div>
           {aiMsg && <div className={/different captions written|Saved to/i.test(aiMsg) ? 'banner' : 'alert err'} style={{ marginTop: 10 }}>{aiMsg}</div>}
           <button className="skew-btn grad" style={{ width: '100%', marginTop: 10 }} disabled={aiBusy || !aiBrief.trim()} onClick={writeWithAi}><span>{aiBusy ? 'Writing…' : '✨ Write captions'}</span></button>
           <button className="skew-btn ghost" style={{ width: '100%', marginTop: 8 }} disabled={lessonBusy || (!ig.caption && !caption)} onClick={async () => {

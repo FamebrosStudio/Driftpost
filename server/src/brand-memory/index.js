@@ -374,7 +374,7 @@ export function breakdownBlock(parsed) {
 }
 export function globalBrandRules() {
   return [
-    'Caption: hook + 1 useful detail + 1 CTA, 25-55 words (8-25 comedy/cinematic, 45-90 info). No em dash. Emojis: standard 4-6 woven through the words; real offers/openings 6-10 with excitement.',
+    'Caption: hook + 1 useful detail + 1 CTA (length and emoji count follow the user request). No em dash. Real supplied offer facts (first 100, 0.5gm gold) are celebrated with urgency; never invent offers.',
     'Append footer, then exactly 3 hashtags, then [5-8 SEO phrases]. Never reuse another brand footer. Real supplied offer facts (first 100, 0.5gm gold) are celebrated with urgency; never invent offers.',
     'MAP Clothing + Carrara never funny. Luxxe = transformation only. Rajlaxmi Sangli = Marathi. Hazel: no mithai word. Smietz: include 35 years experience + 96045 23931.',
     'Never invent phone/address/price/offers/results/quotes. Omit unknown optionals; ask only if essential.',

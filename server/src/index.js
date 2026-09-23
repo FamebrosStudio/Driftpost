@@ -172,6 +172,9 @@ app.post('/api/ai/captions', requireUser, aiLimit, async (req, res) => {
       assetHint: req.body?.asset_description || req.body?.assetHint,
       goal: req.body?.goal,
       trends: req.body?.trends === true || req.body?.trends === '1' || req.body?.trends === 1,
+      tone: req.body?.tone,
+      emoji: req.body?.emoji,
+      length: req.body?.length,
     });
     res.json(out);
   } catch (e) {
