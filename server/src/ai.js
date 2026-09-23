@@ -136,7 +136,7 @@ export async function generateCaptions(summary, opts = {}) {
     let deep = null;
     let full = null;
     try {
-      deep = mem.getDeepBrand?.(brand.id) || null;
+      deep = mem.getDeepForCompact?.(brand) || mem.getDeepBrand?.(brand.id) || null;
       full = mem.getFullBrand?.(brand.id) || null;
     } catch {}
     const footerLines = deep?.fixed_footer?.lines?.length

@@ -62,7 +62,7 @@ export function getFullBrand(brandId) {
 export function fullPack(brand) {
   // Deep per-brand file (Specific-brands format) wins when present —
   // it carries master instruction, playbook, hooks, CTA/hashtag banks.
-  const deep = brand?.id ? getDeepBrand(brand.id) : null;
+  const deep = brand?.id ? getDeepForCompact(brand) || getDeepBrand(brand.id) : null;
   if (deep) return deepPack(deep, brand);
   const full = brand?.id ? getFullBrand(brand.id) : null;
   if (!full) return brandPack(brand);
@@ -109,13 +109,57 @@ function loadDeepAll() {
       const d = JSON.parse(fs.readFileSync(path.join(DEEP_DIR, f), 'utf8'));
       const id = d.brand_id || f.replace(/\.json$/, '');
       deepCache[id] = d;
+      // Alias keys: file brand_ids don't always match the compact index
+      // (reshine_skin_clinic vs reshine_clinic), so also file by name slug.
+      if (d.brand_name) deepCache[`name:${slugify(d.brand_name)}`] = d;
     } catch {}
   }
   return deepCache;
 }
 
 export function getDeepBrand(brandId) {
-  return loadDeepAll()[brandId] || null;
+  const all = loadDeepAll();
+  return all[brandId] || all[`name:${slugify(brandId)}`] || null;
+}
+
+// Resolve a deep file for a compact index brand (handles id mismatches).
+export function getDeepForCompact(compactBrand) {
+  if (!compactBrand) return null;
+  const all = loadDeepAll();
+  if (all[compactBrand.id]) return all[compactBrand.id];
+  const nameSlug = slugify(compactBrand.name);
+  if (all[nameSlug] || all[`name:${nameSlug}`]) return all[nameSlug] || all[`name:${nameSlug}`];
+  for (const b of loadBrands()) {
+    if (b.id === compactBrand.id) {
+      for (const a of [b.name, ...(b.aliases || [])]) {
+        const hit = all[slugify(a)] || all[`name:${slugify(a)}`];
+        if (hit) return hit;
+      }
+    }
+  }
+  // Token fallback: "Reshine Clinic" vs file "Reshine Skin Clinic" share
+  // a distinctive token (reshine). Accept on a 6+ char shared token.
+  const mine = new Set(
+    [compactBrand.name, ...(compactBrand.aliases || [])]
+      .flatMap((s) => norm(s).split(' '))
+      .filter((t) => t.length > 4)
+  );
+  let best = null;
+  let bestLen = 0;
+  for (const k of Object.keys(all)) {
+    if (k.startsWith('name:')) continue;
+    const d = all[k];
+    const theirs = new Set(
+      [d.brand_name, ...(d.aliases || [])].flatMap((s) => norm(s).split(' ')).filter((t) => t.length > 4)
+    );
+    for (const t of mine) {
+      if (theirs.has(t) && t.length > bestLen) {
+        bestLen = t.length;
+        best = d;
+      }
+    }
+  }
+  return bestLen >= 6 ? best : null;
 }
 
 export function deepBrandIds() {

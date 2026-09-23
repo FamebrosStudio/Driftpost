@@ -1,0 +1,516 @@
+{
+  "schema_version": "1.0",
+  "brand_number": 4,
+  "brand_id": "reshine_skin_clinic",
+  "brand_name": "Reshine Skin Clinic",
+  "alternate_social_display_name": "Reshinee Skin Clinic",
+  "knowledge_scope": "One brand only. Confirmed clinic facts, historical campaign information and AI writing guidance are separated.",
+  "business": {
+    "category": "Skin, hair, weight-management and semi-permanent makeup clinic",
+    "industry": "Aesthetic care and clinical cosmetology",
+    "location_area": "Chandivali, Powai, Mumbai",
+    "city": "Mumbai",
+    "state": "Maharashtra",
+    "country": "India",
+    "founder_name": "Avani Khimasiya",
+    "founder_role": "Founder and Cosmetologist",
+    "founder_specialisation_as_published": "Cosmetology and laser treatments",
+    "published_experience": "12 years",
+    "experience_note": "The official website displays 12 years of experience. Recheck before time-sensitive anniversary copy.",
+    "opening_hours": null
+  },
+  "contact": {
+    "phone_display": "+91 99604 01016",
+    "phone_e164": "+919960401016",
+    "whatsapp_number": null,
+    "whatsapp_note": "The number is confirmed for consultation and appointment enquiries. WhatsApp availability is not established in this dataset.",
+    "full_address": "Shop No. 504, 5th Floor, Nahar Business Centre, Nahar's Amrit Shakti Road, LOK Milan Colony, Chandivali, Powai, Mumbai, Maharashtra",
+    "shop_number": "504",
+    "floor": "5th Floor",
+    "building": "Nahar Business Centre",
+    "road": "Nahar's Amrit Shakti Road",
+    "locality": "LOK Milan Colony, Chandivali, Powai",
+    "city": "Mumbai",
+    "postal_code": null,
+    "email": null,
+    "website": "https://reshineskinclinic.com/",
+    "appointment_page": "https://reshineskinclinic.com/",
+    "google_maps_url": null
+  },
+  "social_media": {
+    "instagram_handle": "@re.shineskinclinic",
+    "instagram_url": "https://www.instagram.com/re.shineskinclinic/",
+    "instagram_identity_status": "The indexed profile matches the clinic's Powai location and confirmed phone number.",
+    "instagram_bio_categories": [
+      "Laser skin treatment",
+      "Semi-permanent makeup",
+      "Hair care"
+    ],
+    "instagram_content_access": "Indexed profile and selected posts were available. Use current post details only when retrieved or supplied.",
+    "facebook_url": null,
+    "youtube_url": null,
+    "managing_agency": "Famebros Studio",
+    "agency_instagram_handle": "@famebrosstudio",
+    "agency_instagram_url": "https://www.instagram.com/famebrosstudio/"
+  },
+  "confirmed_positioning": {
+    "official_summary": "The clinic presents skin, hair, weight-management and semi-permanent makeup services under one roof, supported by consultation and personalised treatment planning.",
+    "official_service_groups": [
+      "Skin",
+      "Hair",
+      "Weight loss",
+      "Semi-permanent makeup"
+    ],
+    "additional_business_area": "Training academy for beauty and cosmetology courses",
+    "published_process": [
+      "Consultation and skin analysis",
+      "Personalised treatment plan",
+      "Treatment execution",
+      "Post-treatment care and recommendations"
+    ],
+    "content_genres_from_user_roster": [
+      "Informational content",
+      "Transformation content"
+    ],
+    "indexed_recent_topics": [
+      "PRP for hair concerns",
+      "HydraFacial",
+      "Laser skin treatment",
+      "Semi-permanent makeup",
+      "Hair care"
+    ],
+    "service_scope_rule": "Use the official service group or exact treatment only when relevant to the current brief. Website availability does not prove suitability for an individual."
+  },
+  "known_campaign_offers": {
+    "status": "Previously supplied campaign pricing. Current validity and exact terms must be confirmed before publishing.",
+    "offers": [
+      {
+        "service_label": "Hydra treatment",
+        "offer_price_inr": 499,
+        "original_price_inr": null,
+        "conditions": null
+      },
+      {
+        "service_label": "Peeling",
+        "offer_price_inr": 499,
+        "original_price_inr": 2500,
+        "conditions": null
+      },
+      {
+        "service_label": "Carbon peel",
+        "offer_price_inr": 999,
+        "original_price_inr": 2500,
+        "conditions": null
+      },
+      {
+        "service_label": "Acne treatment",
+        "offer_price_inr": 499,
+        "original_price_inr": null,
+        "conditions": null
+      }
+    ],
+    "mandatory_recheck_fields": [
+      "Exact treatment name",
+      "Current price",
+      "Original price",
+      "Start date",
+      "End date",
+      "Eligibility",
+      "Number of sessions",
+      "Applicable branch",
+      "Taxes or consultation charges"
+    ],
+    "publishing_rule": "Never describe these as current offers until the user confirms validity."
+  },
+  "confirmed_academy_topics": {
+    "status": "Published on the official website.",
+    "courses": [
+      "Microblading",
+      "Permanent eyebrow",
+      "Permanent lip",
+      "Permanent eyeliner",
+      "Medicated facial",
+      "Nail art",
+      "Nail extension",
+      "Advanced cosmetology",
+      "Chemical peeling",
+      "Hydra treatment",
+      "Clinical cosmetology"
+    ],
+    "rule": "Course duration, certification, eligibility, fees and schedules must come from the current course page or user brief."
+  },
+  "writing_direction": {
+    "status": "Recommended defaults based on the clinic's confirmed positioning and the user's writing preferences.",
+    "brand_voice": [
+      "Professional",
+      "Clear",
+      "Reassuring",
+      "Evidence-conscious",
+      "Warm",
+      "Concise"
+    ],
+    "positioning_for_copy": "A Powai clinic that explains aesthetic-care options clearly and encourages consultation-led, personalised decisions.",
+    "primary_language": "English",
+    "alternate_language": "Natural Hinglish when requested or when a local educational reel uses it.",
+    "language_note": "Use simple words for public education. Preserve exact medical or treatment terms when required.",
+    "target_audience": [
+      "People exploring professional skin care",
+      "People seeking information about hair concerns",
+      "People considering aesthetic or laser treatments",
+      "People exploring semi-permanent makeup",
+      "Prospective academy students when the post is course-specific"
+    ],
+    "emotional_angles": [
+      "Clarity before choosing a treatment",
+      "Confidence through professional consultation",
+      "Realistic progress",
+      "Personalised care",
+      "Feeling informed rather than pressured"
+    ],
+    "avoid_style": [
+      "Fear-based marketing",
+      "Skin-tone shaming",
+      "Appearance insecurity",
+      "Medical diagnosis from a photo",
+      "Guaranteed results",
+      "Instant or permanent-result claims",
+      "Universal suitability claims",
+      "Exaggerated before-and-after language",
+      "Unverified credentials",
+      "False urgency",
+      "Em dashes"
+    ]
+  },
+  "content_playbook": {
+    "informational": {
+      "focus": "One clear, sourced explanation about a confirmed treatment or concern.",
+      "structure": "Specific question or misconception, concise explanation, consultation CTA.",
+      "rules": [
+        "Use clinic-approved information or the official treatment page.",
+        "Distinguish general education from personal medical advice.",
+        "Do not diagnose a condition from symptoms, comments or images.",
+        "Mention that suitability and treatment plans vary when relevant.",
+        "Avoid absolute words such as guaranteed, permanent, painless and safe for everyone."
+      ]
+    },
+    "transformation": {
+      "focus": "A real, consented result with treatment context and realistic wording.",
+      "structure": "Concern or goal, confirmed treatment, visible progress, consultation CTA.",
+      "rules": [
+        "Use only authorised before-and-after media.",
+        "Confirm the same person appears in both images.",
+        "Do not digitally enhance the result.",
+        "State session count and timeline only when documented.",
+        "Do not promise that viewers will receive identical results.",
+        "Do not expose private health information."
+      ]
+    },
+    "treatment_showcase": {
+      "focus": "What the treatment is, who may explore it and why consultation matters.",
+      "rules": [
+        "Use the exact treatment name.",
+        "Do not create benefits, risks, downtime or aftercare from memory.",
+        "Use current clinic-approved information.",
+        "Avoid calling a treatment painless unless specifically approved and appropriately qualified."
+      ]
+    },
+    "offer": {
+      "focus": "Exact treatment, price, terms and booking action.",
+      "required_details": [
+        "Treatment name",
+        "Offer price",
+        "Original price if advertised",
+        "Validity",
+        "Eligibility",
+        "Session quantity",
+        "Important exclusions",
+        "Booking number"
+      ],
+      "rules": [
+        "Confirm the offer is active.",
+        "Do not hide important conditions.",
+        "Do not imply that a discounted treatment is suitable for everyone.",
+        "Use consultation language when suitability assessment is needed."
+      ]
+    },
+    "academy": {
+      "focus": "Exact course, learning scope, duration, eligibility and enquiry action.",
+      "rules": [
+        "Separate clinic treatments from professional training courses.",
+        "Do not promise employment, income or certification recognition without confirmation.",
+        "Use the current course page or approved curriculum."
+      ]
+    },
+    "customer_review": {
+      "status": "Use only with an actual approved review.",
+      "rules": [
+        "Keep quotations faithful.",
+        "Do not invent names, ratings, session counts or outcomes.",
+        "Do not turn one person's result into a universal claim.",
+        "Remove sensitive health information unless publication is authorised."
+      ]
+    },
+    "festival_post": {
+      "focus": "A short professional greeting from the clinic.",
+      "rule": "Do not force treatment sales into solemn or respectful occasions."
+    }
+  },
+  "healthcare_copy_safeguards": {
+    "required_principles": [
+      "Consultation before personalised recommendations",
+      "Results may vary",
+      "Treatment choice depends on individual assessment",
+      "Use approved aftercare guidance",
+      "Emergency or serious symptoms require appropriate medical attention"
+    ],
+    "prohibited_or_unconfirmed_claims": [
+      "Guaranteed cure",
+      "Permanent cure",
+      "100% safe",
+      "No side effects",
+      "Zero downtime unless current approved source supports it",
+      "Painless for everyone",
+      "One-session guarantee",
+      "Doctor-led care unless the specific professional qualification is confirmed",
+      "FDA approved unless the exact device or treatment evidence is supplied"
+    ],
+    "before_after_rule": "Use genuine, consented, unedited comparison media with accurate dates, session count and treatment details when available.",
+    "professional_title_rule": "Use Avani Khimasiya's confirmed title, Founder and Cosmetologist. Do not add dermatologist, doctor or surgeon without verified qualification.",
+    "consultation_disclaimer": "Educational content is general. Treatment suitability and outcomes depend on professional assessment.",
+    "tone_rule": "Explain risks and limitations calmly when relevant. Do not frighten or shame the audience."
+  },
+  "caption_format": {
+    "default_platforms": [
+      "Instagram",
+      "Facebook"
+    ],
+    "default_number_of_options": 1,
+    "body_word_target": "30 to 70 words, excluding footer, hashtags and keyword bracket.",
+    "short_transformation_word_target": "20 to 50 words when the visual carries the result.",
+    "offer_word_target": "35 to 80 words so conditions remain clear.",
+    "sequence": [
+      "Specific hook",
+      "One clear explanation or result detail",
+      "Consultation or relevant CTA",
+      "Confirmed clinic footer",
+      "Exactly three relevant hashtags",
+      "Exactly one square bracket with comma-separated SEO phrases"
+    ],
+    "line_breaks": "Use short paragraphs and a blank line before the footer and hashtag block.",
+    "body_emojis": "Usually zero to two. Keep medical and treatment information readable.",
+    "hashtag_count": 3,
+    "seo_keyword_count": "5 to 8 relevant phrases",
+    "seo_format": "[keyword one, keyword two, keyword three, keyword four, keyword five]",
+    "punctuation": "No em dashes.",
+    "output_rule": "Return ready-to-copy public text unless another format is requested."
+  },
+  "fixed_footer": {
+    "lines": [
+      "📍 Shop No. 504, 5th Floor, Nahar Business Centre, Nahar's Amrit Shakti Road, LOK Milan Colony, Chandivali, Powai, Mumbai",
+      "📞 +91 99604 01016",
+      "🎥 Managed by: @famebrosstudio ✨"
+    ],
+    "usage": "Default Famebros caption footer assembled from the official clinic address, confirmed phone and agency credit.",
+    "rules": [
+      "Preserve the clinic number and address.",
+      "Do not copy Smietz Beauty Hub or Luxxe Nail Studio details despite a similar building reference.",
+      "Do not label the number as WhatsApp without confirmation.",
+      "Do not add a price unless the current offer is confirmed."
+    ]
+  },
+  "suggested_hashtag_bank": {
+    "brand": [
+      "#ReshineSkinClinic"
+    ],
+    "location": [
+      "#PowaiSkinClinic",
+      "#SkinClinicMumbai"
+    ],
+    "skin": [
+      "#SkinCare",
+      "#AcneCare",
+      "#HydraFacial",
+      "#ChemicalPeel",
+      "#LaserSkinTreatment"
+    ],
+    "hair": [
+      "#HairCare",
+      "#PRPHairTreatment"
+    ],
+    "pmu": [
+      "#PermanentMakeup",
+      "#SemiPermanentMakeup"
+    ],
+    "academy": [
+      "#CosmetologyCourse",
+      "#BeautyAcademyMumbai"
+    ],
+    "rule": "Select exactly three relevant tags. Use a treatment tag only when that treatment is confirmed in the post."
+  },
+  "seo_keyword_bank": [
+    "Reshine Skin Clinic",
+    "skin clinic in Powai",
+    "skin clinic in Chandivali",
+    "skin treatments Powai",
+    "hair treatments Powai",
+    "laser skin treatment Powai",
+    "semi-permanent makeup Powai",
+    "clinical cosmetology Mumbai",
+    "HydraFacial Powai",
+    "acne treatment Powai"
+  ],
+  "cta_bank": {
+    "consultation": [
+      "Call +91 99604 01016 to book a consultation.",
+      "Book a professional consultation to understand what may suit your concern."
+    ],
+    "save": [
+      "Save this information for your consultation.",
+      "Save this before choosing your next treatment."
+    ],
+    "share": [
+      "Share this with someone researching professional skin care."
+    ],
+    "comments": [
+      "Which treatment topic should we explain next?"
+    ],
+    "academy": [
+      "Call +91 99604 01016 for current course details."
+    ],
+    "selection_rule": "Choose one CTA. Do not pressure the audience or imply that a comment can replace consultation."
+  },
+  "suggested_hooks": {
+    "information": [
+      "Before you choose a treatment, know this.",
+      "Your skin concern needs the right assessment.",
+      "One treatment question, clearly explained."
+    ],
+    "transformation": [
+      "Real progress starts with the right plan.",
+      "A personalised approach, a visible journey.",
+      "The result is only part of the story."
+    ],
+    "offer": [
+      "A treatment offer worth checking, after consultation.",
+      "Your consultation-led care can now begin at a special price."
+    ],
+    "academy": [
+      "Turn your interest in beauty into trained skill.",
+      "Learn the technique with guided training."
+    ],
+    "hook_note": "Suggestions only. Adapt to the actual treatment, proof and campaign."
+  },
+  "visual_and_asset_guidance": {
+    "status": "Agency-wide defaults unless a current clinic brand kit is supplied.",
+    "default_feed_size_px": {
+      "width": 1080,
+      "height": 1440
+    },
+    "default_story_size_px": {
+      "width": 1080,
+      "height": 1920
+    },
+    "reel_aspect_ratio": "9:16",
+    "layout": "Clean, clinical, modern and readable with restrained decorative elements.",
+    "fixed_brand_colours": null,
+    "fixed_brand_fonts": null,
+    "logo_asset": null,
+    "rules": [
+      "Preserve real faces, skin texture and treatment results.",
+      "Do not smooth, lighten, reshape or intensify before-and-after images.",
+      "Clearly label before and after only when accurate.",
+      "Keep price, validity and conditions readable.",
+      "Use the supplied logo without redesigning it.",
+      "Do not show needles, devices or procedures inaccurately."
+    ]
+  },
+  "other_output_modes": {
+    "story": "One or two clear lines with consultation CTA. Omit the full footer, hashtags and SEO bracket unless requested.",
+    "comment": "One short professional response. Do not diagnose or recommend a treatment in comments.",
+    "review_reply": "Thank the reviewer, avoid revealing treatment or health details, and move individual concerns to a private consultation channel.",
+    "repost": "One or two educational or appreciative lines. No full footer by default.",
+    "text_overlay": "One clear hook, usually 3 to 8 words. Avoid guaranteed-result language.",
+    "reel_script": "Use the requested duration, one question-led hook, clinic-approved explanation, realistic limitation and consultation CTA."
+  },
+  "sample_caption": {
+    "status": "Illustrative educational caption based on confirmed clinic positioning, not personalised medical advice.",
+    "text": "Before you choose a skin treatment, start with the right assessment. ✨\nA professional consultation helps identify your concern, understand suitable options and create a plan based on your skin's individual needs.\nCall to book your consultation.\n\n📍 Shop No. 504, 5th Floor, Nahar Business Centre, Nahar's Amrit Shakti Road, LOK Milan Colony, Chandivali, Powai, Mumbai\n📞 +91 99604 01016\n🎥 Managed by: @famebrosstudio ✨\n\n#ReshineSkinClinic #SkinCare #PowaiSkinClinic\n\n[Reshine Skin Clinic, skin clinic in Powai, professional skin consultation, skin treatments Powai, skin clinic in Chandivali, personalised skin care]"
+  },
+  "accuracy_rules": [
+    "Use only Reshine Skin Clinic facts and the current brief.",
+    "Treat historical offer prices as inactive until confirmed.",
+    "Do not diagnose, prescribe or guarantee outcomes.",
+    "Do not add professional qualifications that have not been verified.",
+    "Use the exact current treatment name and clinic-approved benefits, risks, downtime and aftercare.",
+    "Do not use website testimonials as new campaign copy without approval.",
+    "If an optional detail is missing, omit it.",
+    "If an essential treatment or offer detail is missing, ask one short question.",
+    "Do not print null values or internal notes in public copy.",
+    "Do not copy contact details from another Powai or Nahar Business Centre brand."
+  ],
+  "per_post_input": {
+    "brand_id": "reshine_skin_clinic",
+    "mode": "caption",
+    "post_format": null,
+    "content_genre": null,
+    "asset_description": null,
+    "transcript": null,
+    "confirmed_treatment": null,
+    "approved_benefits": [],
+    "approved_risks_or_limitations": [],
+    "documented_sessions": null,
+    "documented_timeline": null,
+    "before_after_consent_confirmed": null,
+    "current_offer": null,
+    "offer_validity": null,
+    "course_details": null,
+    "goal": null,
+    "language_override": null,
+    "recent_captions": [],
+    "additional_instructions": []
+  },
+  "master_brand_instruction": "Write as Reshine Skin Clinic in Chandivali, Powai, Mumbai. Use a professional, clear, reassuring and evidence-conscious voice. Create informational and transformation content with simple English by default, or natural Hinglish when requested. Use only confirmed treatments and clinic-approved claims. Never diagnose from a post, guarantee results, call a treatment safe or painless for everyone, or invent qualifications, risks, downtime, sessions, prices or offers. Use Avani Khimasiya's confirmed title as Founder and Cosmetologist. Treat Hydra ₹499, Peeling ₹499, Carbon Peel ₹999 and Acne ₹499 as previous campaign information requiring current confirmation. Encourage consultation when suitability is individual. For normal feed and reel captions, append the confirmed clinic footer, exactly three relevant hashtags and one bracket containing 5 to 8 comma-separated SEO phrases. Preserve +91 99604 01016 and the official Powai address. Avoid em dashes and return ready-to-copy public text without null fields or internal notes.",
+  "missing_information": [
+    "Opening hours and weekly closing day",
+    "WhatsApp confirmation",
+    "Postal code",
+    "Official email",
+    "Direct appointment URL if separate",
+    "Google Maps link",
+    "Approved logo, fonts and colour palette",
+    "Current offer validity and conditions",
+    "Current treatment price list",
+    "Verified qualifications for any additional clinical professionals",
+    "Consent status for specific before-and-after assets",
+    "Current academy schedules, fees and certification details"
+  ],
+  "sources": [
+    {
+      "type": "official_website",
+      "url": "https://reshineskinclinic.com/",
+      "supports": "Founder, positioning, service groups, academy, process, address and published experience."
+    },
+    {
+      "type": "official_website_service_pages",
+      "url": "https://reshineskinclinic.com/",
+      "supports": "Phone number and treatment-specific information when a current page is consulted."
+    },
+    {
+      "type": "official_instagram_profile",
+      "url": "https://www.instagram.com/re.shineskinclinic/",
+      "supports": "Instagram identity, Powai location, phone and public service categories."
+    },
+    {
+      "type": "user_supplied_brand_roster",
+      "supports": "Informational and transformation content genres."
+    },
+    {
+      "type": "historical_user_campaign_data",
+      "supports": "Hydra, peeling, carbon peel and acne campaign prices, all requiring current confirmation."
+    },
+    {
+      "type": "user_writing_preferences",
+      "supports": "Short hooks, contextual English or Hinglish, one CTA, three hashtags, one SEO bracket and no em dashes."
+    }
+  ]
+}
