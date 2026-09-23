@@ -1,4 +1,5 @@
 :root {
+  color-scheme: dark;
   --bg: #10141b;
   --panel: #171d27;
   --panel2: #1f2735;
@@ -32,6 +33,7 @@
   background: var(--bg);
 }
 [data-theme="light"] {
+  color-scheme: light;
   --bg: #f6f3ec;
   --panel: #ffffff;
   --panel2: #f1ece0;
@@ -175,6 +177,9 @@ button.brand { background: none; border: 0; width: 100%; text-align: left; font:
 .media-thumb:hover { border-color: var(--ink); }
 .media-thumb img { width: 100%; max-height: 220px; object-fit: contain; background: #0b0b10; display: block; border-radius: 8px !important; }
 .field-mini { display: block; }
+.field-mini select { width: 100%; background: var(--input); border: 1.5px solid var(--line-hard); border-radius: 10px !important; padding: 10px 12px; font-size: 13.5px; font-weight: 600; color: var(--ink); cursor: pointer; }
+.field-mini select:focus { border-color: var(--go); outline: none; }
+select option { background: var(--panel); color: var(--ink); }
 .field-mini > span { display: flex; justify-content: space-between; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 700; color: var(--ink); margin-bottom: 6px; }
 .field-mini > span i { font-style: normal; font-weight: 400; color: var(--faint); }
 .field input, .field textarea, .field select { width: 100%; border: 1.5px solid var(--line-hard); padding: 12px 13px; outline: none; background: var(--input); color: var(--ink); font-size: 14px; line-height: 1.55; border-radius: 10px !important; }
