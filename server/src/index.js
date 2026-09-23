@@ -121,6 +121,7 @@ const aiLimit = limit({ windowMs: 60 * 60 * 1000, max: 10, key: userKey });
 const oauthLimit = limit({ windowMs: 60 * 1000, max: 20, key: userKey });
 const connectionsLimit = limit({ windowMs: 60 * 1000, max: 60, key: userKey });
 const jobsLimit = limit({ windowMs: 60 * 1000, max: 60, key: userKey });
+const callbackLimit = limit({ windowMs: 60 * 1000, max: 30, key: (req) => `ip:${req.ip}` });
 
 function activeJobCount(userId) {
   let n = 0;
@@ -242,7 +243,7 @@ app.post('/api/oauth/youtube/start', requireUser, oauthLimit, (req, res) => {
   res.json({ url: youtubeAuthorizationUrl(signState({ userId: req.user.id, nonce: crypto.randomUUID(), exp: Date.now() + 10 * 60 * 1000 })) });
 });
 
-app.get('/api/oauth/youtube/callback', async (req, res) => {
+app.get('/api/oauth/youtube/callback', callbackLimit, async (req, res) => {
   const back = new URL(process.env.FRONTEND_URL);
   try {
     if (req.query.error) throw new Error(String(req.query.error_description || req.query.error));
@@ -273,7 +274,7 @@ app.post('/api/oauth/instagram/start', requireUser, oauthLimit, (req, res) => {
   res.json({ url: metaBusinessLoginUrl(signState({ userId: req.user.id, nonce: crypto.randomUUID(), exp: Date.now() + 10 * 60 * 1000 })) });
 });
 
-app.get('/api/oauth/meta/callback', async (req, res) => {
+app.get('/api/oauth/meta/callback', callbackLimit, async (req, res) => {
   const back = new URL(process.env.FRONTEND_URL);
   try {
     if (req.query.error) throw new Error(String(req.query.error_description || req.query.error));
@@ -322,7 +323,7 @@ app.post('/api/oauth/x/start', requireUser, oauthLimit, (req, res) => {
   res.json({ url: xAuthorizationUrl(state, pkce.challenge) });
 });
 
-app.get('/api/oauth/x/callback', async (req, res) => {
+app.get('/api/oauth/x/callback', callbackLimit, async (req, res) => {
   const back = new URL(process.env.FRONTEND_URL);
   try {
     if (!process.env.X_CLIENT_ID || !process.env.X_CLIENT_SECRET || !process.env.X_REDIRECT_URI) {

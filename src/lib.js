@@ -7,12 +7,14 @@ let brandsCache = null;
 let brandsCacheTime = 0;
 const BRAND_CACHE_MS = 5 * 60 * 1000;
 
-export async function fetchBrands() {
+export async function fetchBrands(token) {
   try {
     const now = Date.now();
     if (brandsCache && (now - brandsCacheTime) < BRAND_CACHE_MS) return brandsCache;
-    if (!apiUrl) return ACTIVE_BRANDS;
-    const res = await fetch(`${apiUrl}/api/ai/brands`);
+    if (!apiUrl || !token) return ACTIVE_BRANDS;
+    const res = await fetch(`${apiUrl}/api/ai/brands`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
     if (res.ok) {
       const data = await res.json();
       if (Array.isArray(data.brands) && data.brands.length) {
