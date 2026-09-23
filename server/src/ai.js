@@ -43,9 +43,36 @@ function extractJson(text) {
   const fenced = String(text || '').match(/```(?:json)?\s*([\s\S]*?)```/i);
   const raw = (fenced ? fenced[1] : String(text || '')).trim();
   const start = raw.indexOf('{');
-  const end = raw.lastIndexOf('}');
-  if (start < 0 || end <= start) throw new Error('AI returned an unreadable answer');
-  return JSON.parse(raw.slice(start, end + 1));
+  if (start < 0) throw new Error('AI returned an unreadable answer');
+  // Balanced scan from the first '{': respects strings/escapes, stops at the
+  // matching '}' so trailing chatter ("hope this helps!}") can't corrupt it.
+  let depth = 0;
+  let inStr = false;
+  let esc = false;
+  for (let i = start; i < raw.length; i++) {
+    const ch = raw[i];
+    if (inStr) {
+      if (esc) esc = false;
+      else if (ch === '\\') esc = true;
+      else if (ch === '"') inStr = false;
+    } else if (ch === '"') {
+      inStr = true;
+    } else if (ch === '{') {
+      depth++;
+    } else if (ch === '}') {
+      depth--;
+      if (depth === 0) {
+        const candidate = raw.slice(start, i + 1);
+        try {
+          return JSON.parse(candidate);
+        } catch {
+          // Minor repair: trailing commas, then give up with context.
+          return JSON.parse(candidate.replace(/,\s*([}\]])/g, '$1'));
+        }
+      }
+    }
+  }
+  throw new Error('AI returned an unreadable answer');
 }
 
 function clean(value, max) {
