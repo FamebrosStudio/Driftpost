@@ -283,9 +283,23 @@ details.adv[open] > summary::before { content: "– "; }
 
 /* landing */
 .landing { position: relative; min-height: 100vh; overflow: hidden; background: #000; display: flex; flex-direction: column; }
-.rain { position: absolute; inset: 0; --c: #888888; background-color: #000; background-image: radial-gradient(4px 100px at 0px 235px, var(--c), #0000), radial-gradient(4px 100px at 300px 235px, var(--c), #0000), radial-gradient(1.5px 1.5px at 150px 117.5px, var(--c) 100%, #0000 150%), radial-gradient(4px 100px at 0px 150px, var(--c), #0000), radial-gradient(4px 100px at 300px 150px, var(--c), #0000), radial-gradient(1.5px 1.5px at 150px 75px, var(--c) 100%, #0000 150%); background-size: 300px 235px, 300px 235px, 300px 235px, 300px 150px, 300px 150px, 300px 150px; animation: rain-fall 60s linear infinite; }
-.rain::after { content: ""; position: absolute; inset: 0; background-image: radial-gradient(circle at 50% 50%, #0000 0, #0000 2px, hsl(0 0 4%) 2px); background-size: 8px 8px; }
-@keyframes rain-fall { to { background-position: 0 3000px, 3px 3000px, 151.5px 3237.5px, 50px 3016px, 53px 3016px, 201.5px 3091px; } }
+/* Animated grid backdrop (Dribbble-style): glowing grid lines drifting
+   diagonally under a radial fade + horizon glow. The motion runs on transform
+   (compositor only) so scrolling stays at full speed. */
+.grid-bg { position: absolute; inset: 0; contain: strict; overflow: hidden;
+  -webkit-mask-image: radial-gradient(ellipse 95% 75% at 50% 28%, #000 25%, transparent 78%);
+  mask-image: radial-gradient(ellipse 95% 75% at 50% 28%, #000 25%, transparent 78%); }
+.grid-pan { position: absolute; inset: -60px;
+  background-image:
+    linear-gradient(#38bdf82e 1px, transparent 1px),
+    linear-gradient(90deg, #38bdf82e 1px, transparent 1px);
+  background-size: 56px 56px;
+  animation: grid-pan 12s linear infinite; will-change: transform; }
+@keyframes grid-pan { to { transform: translate(56px, 56px); } }
+.grid-bg::after { content: ""; position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 55% 20% at 50% 36%, #2e9bff2e, transparent 70%),
+    radial-gradient(ellipse 120% 90% at 50% 110%, #8b5cf614, transparent 60%); }
 .landing-in { position: relative; z-index: 2; flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 60px 20px; gap: 18px; color: #fff; }
 .landing-kicker { font-family: var(--mono); font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: #fff; border: 1px solid #ffffff44; padding: 6px 14px; background: #00000088; }
 .landing h1 { font-size: clamp(38px, 7vw, 76px); margin: 0; letter-spacing: -2px; line-height: 1.02; color: #fff; }
@@ -371,7 +385,6 @@ html, body { overflow-x: clip; max-width: 100%; }
 .brand img.logo-img { height: 40px; }
 .auth-card img.logo-img { height: 56px; }
 .landing { background: #000; }
-.landing .rain { --c: #2e9bff; }
 .landing-in { min-height: 92vh; }
 .spot > span { opacity: 0.3; transition: opacity 0.15s linear; }
 .landing h1 { color: #fff; }
@@ -421,7 +434,7 @@ html, body { overflow-x: clip; max-width: 100%; }
 }
 @media (prefers-reduced-motion: reduce) {
   .spot > span { opacity: 1 !important; }
-  .marquee-in, .scroll-hint { animation: none !important; }
+  .marquee-in, .scroll-hint, .grid-pan { animation: none !important; }
 }
 
 /* Boxes stay whole: no horizontal offsets anywhere (they sliced cards at the
@@ -558,8 +571,7 @@ html, body { overflow-x: clip; max-width: 100%; }
   content-visibility: auto;
   contain-intrinsic-size: auto 600px;
 }
-/* Calm the full-screen rain repaint: own layer, clipped painting, and freeze
-   the moment it scrolls out of view. Same pixels while visible. */
-.rain { will-change: background-position; contain: strict; }
+/* Calm paint work: clipped layers, and freeze motion the moment it scrolls
+   out of view. Same pixels while visible. */
 .marquee { contain: paint; }
-.rain.paused, .marquee-in.paused { animation-play-state: paused !important; }
+.grid-bg.paused .grid-pan, .marquee-in.paused { animation-play-state: paused !important; }

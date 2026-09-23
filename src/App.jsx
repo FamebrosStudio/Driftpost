@@ -303,7 +303,7 @@ function Landing({ onEnter, session, pubPage, setPubPage }) {
   useEffect(() => {
     const root = rootRef.current;
     if (!root || !('IntersectionObserver' in window)) return;
-    const els = root.querySelectorAll('.rain, .marquee-in');
+    const els = root.querySelectorAll('.grid-bg, .marquee-in');
     const io = new IntersectionObserver((entries) => {
       for (const en of entries) en.target.classList.toggle('paused', !en.isIntersecting);
     }, { threshold: 0 });
@@ -330,7 +330,7 @@ function Landing({ onEnter, session, pubPage, setPubPage }) {
   ];
   return (
     <div className="landing" ref={rootRef}>
-      <div className="rain" />
+      <div className="grid-bg" aria-hidden="true"><div className="grid-pan" /></div>
       <nav className="land-nav">
         <button className="land-logo" onClick={() => setPubPage('home')} title="Driftpost home"><img className="logo-img logo-d" src="/logo-dark-620.png" srcSet="/logo-dark-620.png 620w, /logo-dark.png 1984w" sizes="248px" width="1984" height="512" fetchpriority="high" decoding="async" alt="Driftpost" /></button>
         <div className="land-links">
