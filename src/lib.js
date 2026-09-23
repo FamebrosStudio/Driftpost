@@ -76,6 +76,12 @@ export function brandScore(a, b) {
   const nb = norm(b);
   if (na.includes(nb) && nb.length > 4) return 100;
   if (nb.includes(na) && na.length > 4) return 100;
+  // Spaceless comparison: "@famebrosstudio" must equal "Famebros Studio".
+  const fa = na.replace(/ /g, '');
+  const fb = nb.replace(/ /g, '');
+  if (fa === fb && fa.length > 3) return 100;
+  if (fa.includes(fb) && fb.length > 5) return 90;
+  if (fb.includes(fa) && fa.length > 5) return 90;
   let score = 0;
   for (const t of ta) {
     if (tb.includes(t)) score += t.length >= 6 ? 30 : 10;
