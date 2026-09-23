@@ -12,23 +12,59 @@ function Loader() {
 
 function SpotLine({ text }) {
   const ref = useRef(null);
+  const centers = useRef(null);
+  const raf = useRef(0);
+  // Same glow math as before — but char positions are measured once and
+  // cached, and repaints run at most once per animation frame. Identical
+  // pixels, zero layout-thrash while scrolling or moving the mouse.
+  const measure = () => {
+    const el = ref.current;
+    if (!el) return [];
+    const kids = el.children;
+    const out = new Array(kids.length);
+    for (let i = 0; i < kids.length; i++) {
+      const r = kids[i].getBoundingClientRect();
+      out[i] = r.left + r.width / 2;
+    }
+    return out;
+  };
   const paint = (x) => {
     const el = ref.current;
     if (!el) return;
+    if (!centers.current) centers.current = measure();
     const kids = el.children;
+    const cs = centers.current;
     for (let i = 0; i < kids.length; i++) {
-      const r = kids[i].getBoundingClientRect();
-      const d = Math.abs(x - (r.left + r.width / 2));
+      const d = Math.abs(x - (cs[i] || 0));
       const glow = Math.max(0, 1 - d / 220);
       kids[i].style.opacity = (0.3 + 0.7 * glow).toFixed(2);
     }
   };
+  const onMove = (e) => {
+    const x = e.clientX;
+    if (raf.current) return;
+    raf.current = requestAnimationFrame(() => { raf.current = 0; paint(x); });
+  };
+  const onLeave = () => {
+    if (raf.current) { cancelAnimationFrame(raf.current); raf.current = 0; }
+    paint(-9999);
+  };
+  useEffect(() => {
+    const drop = () => { centers.current = null; };
+    window.addEventListener('scroll', drop, { passive: true });
+    window.addEventListener('resize', drop);
+    return () => {
+      window.removeEventListener('scroll', drop);
+      window.removeEventListener('resize', drop);
+      if (raf.current) cancelAnimationFrame(raf.current);
+    };
+  }, []);
   return (
     <span
       ref={ref}
       className="spot"
-      onMouseMove={(e) => paint(e.clientX)}
-      onMouseLeave={() => paint(-9999)}
+      onMouseMove={onMove}
+      onMouseLeave={onLeave}
     >
       {text.split('').map((ch, i) => <span key={i}>{ch === ' ' ? ' ' : ch}</span>)}
     </span>
@@ -260,6 +296,20 @@ function DocPage({ page }) {
 }
 
 function Landing({ onEnter, session, pubPage, setPubPage }) {
+  const rootRef = useRef(null);
+  // Animations are part of the look — but repainting invisible pixels is pure
+  // waste. Pause rain + marquee the moment they leave the viewport; they
+  // resume pixel-identical the instant they return.
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root || !('IntersectionObserver' in window)) return;
+    const els = root.querySelectorAll('.rain, .marquee-in');
+    const io = new IntersectionObserver((entries) => {
+      for (const en of entries) en.target.classList.toggle('paused', !en.isIntersecting);
+    }, { threshold: 0 });
+    els.forEach((el) => io.observe(el));
+    return () => io.disconnect();
+  }, [pubPage]);
   const dock = [
     { id: 'youtube', tip: 'YouTube — video, titles, tags', href: 'https://www.youtube.com' },
     { id: 'instagram', tip: 'Instagram — reels, captions', href: 'https://www.instagram.com' },
@@ -279,7 +329,7 @@ function Landing({ onEnter, session, pubPage, setPubPage }) {
     { n: '04', t: 'Fire everywhere', d: 'Publish per platform or hit Publish all. Watch Done ✓ roll across all four phones with view links.' },
   ];
   return (
-    <div className="landing">
+    <div className="landing" ref={rootRef}>
       <div className="rain" />
       <nav className="land-nav">
         <button className="land-logo" onClick={() => setPubPage('home')} title="Driftpost home"><img className="logo-img logo-d" src="/logo-dark-620.png" srcSet="/logo-dark-620.png 620w, /logo-dark.png 1984w" sizes="248px" width="1984" height="512" fetchpriority="high" decoding="async" alt="Driftpost" /></button>

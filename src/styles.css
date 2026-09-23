@@ -558,5 +558,8 @@ html, body { overflow-x: clip; max-width: 100%; }
   content-visibility: auto;
   contain-intrinsic-size: auto 600px;
 }
-/* Calm the full-screen rain repaint: promote to its own layer. */
-.rain { will-change: background-position; }
+/* Calm the full-screen rain repaint: own layer, clipped painting, and freeze
+   the moment it scrolls out of view. Same pixels while visible. */
+.rain { will-change: background-position; contain: strict; }
+.marquee { contain: paint; }
+.rain.paused, .marquee-in.paused { animation-play-state: paused !important; }
