@@ -913,6 +913,15 @@ export default function Console({ session, onSwitchAccount, onSignOut }) {
                 <button onClick={() => { try { navigator.clipboard.writeText(session.user.email); setCopyMsg('Email copied'); } catch { setCopyMsg('Copy failed'); } setTimeout(() => setCopyMsg(''), 1500); }}>⧉ Copy email{copyMsg ? ` — ${copyMsg}` : ''}</button>
                 <button onClick={() => signOutTo('auth')}>⇄ Switch account</button>
                 <button onClick={() => signOutTo('landing')}>⏻ Sign out</button>
+                <button style={{ color: '#e5484d' }} onClick={async () => {
+                  if (!window.confirm('Delete your Driftpost account? This removes all connections, history and your login. This cannot be undone.')) return;
+                  if (!window.confirm('Last check — really delete everything?')) return;
+                  try {
+                    await api('/api/account', session.access_token, { method: 'DELETE' });
+                  } catch (e) { alert(e.message); return; }
+                  try { (await getSupabase())?.auth.signOut(); } catch {}
+                  onSignOut();
+                }}>🗑 Delete account…</button>
               </span>
             </>}
           </div>

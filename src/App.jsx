@@ -45,6 +45,13 @@ const PUB_PAGES = [
   { id: 'privacy', label: 'Privacy', hidden: true },
   { id: 'terms', label: 'Terms', hidden: true },
   { id: 'data-deletion', label: 'Data Deletion', hidden: true },
+  { id: 'acceptable-use', label: 'Acceptable Use', hidden: true },
+  { id: 'ai-disclaimer', label: 'AI Disclaimer', hidden: true },
+  { id: 'platforms-disclaimer', label: 'Platform Disclaimer', hidden: true },
+  { id: 'copyright', label: 'Copyright', hidden: true },
+  { id: 'cookies', label: 'Cookies', hidden: true },
+  { id: 'refunds', label: 'Refunds', hidden: true },
+  { id: 'security', label: 'Security', hidden: true },
 ];
 
 const hashPage = () => {
@@ -113,34 +120,119 @@ const PUB_CONTENT = {
     title: 'Your data stays yours.',
     intro: 'Last updated September 2026. Driftpost publishes to your accounts — it does not sell, rent, or share your data with anyone.',
     sections: [
-      { h: 'What we store', p: 'Your login email (Supabase Auth), your connected social accounts (names and IDs), and AES-256-GCM encrypted OAuth tokens. Uploaded media passes through encrypted transit to the platform you chose; Instagram copies travel via your private Supabase storage bucket.' },
+      { h: 'What we store', p: 'Login email (Supabase Auth); connected social accounts (names and IDs); AES-256-GCM encrypted OAuth access/refresh tokens; captions, prompts and AI briefs you submit; uploaded media in transit (Instagram copies via your private Supabase storage bucket); publish history (platform, time, URL); IP, device and browser data in server logs; support messages. Billing data, if we ever charge, is handled by our payment provider — we never store card numbers.' },
+      { h: 'Why each item exists', p: 'Email identifies your account. Account IDs route your posts. Tokens let the official platform APIs publish as you. Prompts and media are the content you asked us to publish. Logs keep the service secure and diagnose failures.' },
+      { h: 'Social tokens are secrets', p: 'Tokens are encrypted at rest, held server-side only, never placed in frontend code, logs, analytics or this repo, and never shown in any dashboard. Disconnecting an account deletes its tokens immediately.' },
+      { h: 'AI processing', p: 'Caption text you submit is processed by our AI provider (xAI/Grok) solely to generate your caption. We do not use your content to train shared AI models. Do not paste passwords, OTPs or other secrets into the AI writer.' },
+      { h: 'Your content stays yours', p: 'You keep full ownership of uploads and captions. You grant Driftpost only the limited licence to store, process and transmit them to platforms you chose. We claim no ownership over client brand content.' },
+      { h: 'Your rights', p: 'Access, correct or erase your data anytime: Disconnect removes tokens instantly; the Data Deletion page explains full erasure within 7 days. Contact: famebros.studio@gmail.com.' },
       { h: 'What we never do', p: 'No resale of data, no advertising profiles, no analytics on other users, no automated posting. Posts go out only when you press publish.' },
       { h: 'Platform data', p: 'Publishing uses the official YouTube, Meta, and X APIs under permissions you grant. Each platform applies its own privacy policy to content you publish there.' },
-      { h: 'Deletion', p: 'Disconnect an account on the Accounts page to delete its tokens immediately. To erase everything, email famebros.studio@gmail.com with your login email.' },
-      { h: 'Contact', p: 'Questions: famebros.studio@gmail.com.' },
     ],
   },
   terms: {
     kicker: 'Terms of Service',
     title: 'Simple rules.',
-    intro: 'Last updated September 2026. By using Driftpost you agree to the following.',
+    intro: 'Last updated September 2026. By using Driftpost you agree to the following. These terms do not override mandatory consumer-protection law.',
     sections: [
       { h: 'The service', p: 'Driftpost is provided as-is while in beta: a console that publishes content you compose to social accounts you connect. We may change or pause features at any time.' },
-      { h: 'Your responsibility', p: 'You own what you publish. Follow YouTube, Meta, and X rules, respect copyright, and only connect accounts you are allowed to post to. Platform rate limits and API changes are outside our control.' },
-      { h: 'Acceptable use', p: 'No spam, no bulk automation abuse, no unlawful content, no reselling access to the console without permission.' },
-      { h: 'Accounts', p: 'Keep your login safe. We may suspend accounts that abuse the service.' },
+      { h: 'Your account', p: 'You are responsible for your login credentials and everything done through your account. Minimum age follows each connected platform\'s own rules.' },
+      { h: 'Connect only what is yours', p: 'You represent that you own or are authorised to manage every account, Page, portfolio or profile you connect. Connecting someone else\'s account without permission is your violation, not ours, and will get your access suspended.' },
+      { h: 'Your content, your licence to us', p: 'You keep ownership of uploads and captions. You grant Driftpost a limited licence to store, process, resize and transmit them only to deliver the service. You confirm you hold the rights to everything you upload and publish.' },
+      { h: 'Review before you publish', p: 'You are responsible for reviewing every post — especially AI-generated captions — before publishing. See the AI Content Disclaimer. Driftpost never auto-publishes; every post goes out because you pressed the button.' },
+      { h: 'Platforms are third parties', p: 'YouTube, Meta and X control their APIs, approvals, reach and suspensions. We cannot guarantee a post is accepted, timing is exact, or an account stays in good standing. See the Platform Disclaimer.' },
+      { h: 'Acceptable use', p: 'No spam, phishing, scams, impersonation, harassment, IP infringement, bulk abuse, policy circumvention or unlawful content. Breaches mean suspension or termination. See the Acceptable Use Policy.' },
+      { h: 'Liability limit', p: 'To the maximum extent permitted by law, Driftpost is not liable for indirect losses — including platform downtime, suspensions, rejected posts, lost reach, revenue or followers. Direct liability, where it applies, is capped at what you paid us in the prior 3 months (currently nothing while free).' },
       { h: 'Contact', p: 'famebros.studio@gmail.com.' },
     ],
   },
   'data-deletion': {
     kicker: 'Data Deletion',
     title: 'Delete your data, anytime.',
-    intro: 'You control your data. Removing a connection deletes its tokens immediately — no waiting, no email needed.',
+    intro: 'You control your data. Removing a connection deletes its tokens immediately — no waiting, no email needed. Full erasure completes within 7 days of request.',
     sections: [
       { h: 'Delete one account', p: 'Console → Accounts → Disconnect next to the account. Its encrypted tokens are deleted from our database at once. This also revokes posting access.' },
-      { h: 'Delete everything', p: 'Disconnect all accounts, then email famebros.studio@gmail.com from your login email with subject "Delete my data". We erase your connections, history and login within 7 days and confirm by reply.' },
+      { h: 'Delete everything', p: 'Press Delete account in the account menu (removes connections, history and login), or disconnect all accounts and email famebros.studio@gmail.com from your login email with subject "Delete my data". We confirm by reply within 7 days.' },
       { h: 'Removed our Facebook integration?', p: 'If you removed Drift Post from Facebook settings, Meta notifies us automatically and we purge your stored Meta tokens. Use the steps above for full erasure.' },
-      { h: 'What we keep', p: 'Nothing after deletion. We hold no backups of tokens and never sold or shared your data.' },
+      { h: 'What we keep', p: 'Nothing after deletion except records the law requires (e.g. billing invoices, if paid service launches). We hold no backups of tokens and never sold or shared your data.' },
+    ],
+  },
+  'acceptable-use': {
+    kicker: 'Acceptable Use Policy',
+    title: 'Keep it clean.',
+    intro: 'Driftpost is a publishing tool, not a spam cannon. Breaking these rules means suspension or termination, with no refund of any paid plan.',
+    sections: [
+      { h: 'Never publish', p: 'Spam, phishing, scams, fraud, impersonation, harassment, hate, malware, illegal material, or anything infringing copyright or trademarks.' },
+      { h: 'Never abuse accounts', p: 'Connecting accounts you do not own or manage, fake engagement manipulation, bulk abusive posting, scraping where prohibited, or bypassing platform restrictions.' },
+      { h: 'Never abuse Driftpost', p: 'Attacking, probing or overloading the service, sharing logins to evade plan limits, reselling access without permission, or using the AI writer to generate disallowed content.' },
+      { h: 'Platform rules apply', p: 'Every post must also satisfy YouTube, Meta and X policies. Their rejection or suspension of your account is governed by them, not us.' },
+      { h: 'Report abuse', p: 'Forward evidence to famebros.studio@gmail.com with subject "Abuse report".' },
+    ],
+  },
+  'ai-disclaimer': {
+    kicker: 'AI Content Disclaimer',
+    title: 'The AI drafts. You decide.',
+    intro: 'Driftpost\'s caption writer assists you. It does not replace your judgment, and you own every word you publish.',
+    sections: [
+      { h: 'Review everything', p: 'AI output may contain errors, awkward phrasing, wrong facts or unsuitable material. You must review, edit and approve every caption before publishing.' },
+      { h: 'No guarantees', p: 'We do not guarantee copyright or trademark clearance, legal or advertising compliance, factual accuracy, platform-policy compliance, or any reach, engagement or sales.' },
+      { h: 'Your responsibility', p: 'If a caption triggers a complaint, takedown or legal notice, it is your published content and your responsibility. When in doubt, rewrite it yourself or do not post.' },
+      { h: 'How it works', p: 'Your brief is matched against your saved brand profile locally, then processed by our AI provider (xAI/Grok) to draft the caption. Your content is not used to train shared AI models.' },
+    ],
+  },
+  'platforms-disclaimer': {
+    kicker: 'Third-Party Platform Disclaimer',
+    title: 'Their playground, their rules.',
+    intro: 'Driftpost publishes through official APIs owned by third parties. We build the best console we can; they control the rest.',
+    sections: [
+      { h: 'No guarantees', p: 'We cannot guarantee Instagram, Facebook, YouTube or X will accept any post, publish at an exact second, preserve any API, or keep any account in good standing.' },
+      { h: 'Permissions are minimal', p: 'We request only the scopes each feature needs (read connected account, publish content, basic profile). If a feature needs more, we ask at that time — never in advance.' },
+      { h: 'Your platform standing', p: 'Suspensions, rejections, rate limits and policy strikes are decided by the platforms under your agreement with them. Keep backups of important content.' },
+      { h: 'Changes happen', p: 'Platforms change APIs, permissions and review requirements without notice. Features may pause while we adapt; we will say so openly.' },
+    ],
+  },
+  copyright: {
+    kicker: 'Copyright & IP Policy',
+    title: 'Respect creators.',
+    intro: 'You confirm you hold the rights to everything you upload and publish through Driftpost. Brand content you upload stays yours.',
+    sections: [
+      { h: 'Your promise', p: 'Only upload photos, logos, music and text you own or are licensed to use. AI captions are drafts — verify they do not copy protected expression before publishing.' },
+      { h: 'Complaints', p: 'Rights holders: email famebros.studio@gmail.com with subject "Copyright complaint", including the infringing URL, your work, and your contact. We act on valid notices expeditiously, including removal and, for repeat offenders, account termination.' },
+      { h: 'Counter-notices', p: 'If your content was removed and you believe it was a mistake, reply with your basis and consent to be contacted. Misuse of this process has consequences.' },
+    ],
+  },
+  cookies: {
+    kicker: 'Cookie Policy',
+    title: 'Almost none.',
+    intro: 'Driftpost uses the minimum storage needed to run. No advertising trackers.',
+    sections: [
+      { h: 'What we set', p: 'Supabase authentication tokens (keeps you signed in), theme preference, tour/hide-brand preferences. That is the full list while no analytics product is installed.' },
+      { h: 'What we do not set', p: 'No ad cookies, no cross-site trackers, no data-broker pixels.' },
+      { h: 'If that changes', p: 'Should analytics or advertising cookies ever be added, this page will list them first with an opt-out.' },
+    ],
+  },
+  refunds: {
+    kicker: 'Refund & Cancellation Policy',
+    title: 'Free while in beta.',
+    intro: 'Driftpost currently charges nothing, so there is nothing to refund. These terms apply the moment paid plans launch.',
+    sections: [
+      { h: 'Today', p: 'All features are free. No card is collected, no trial converts into anything.' },
+      { h: 'When paid plans launch', p: 'Prices show exclusive/inclusive of GST, billing frequency, renewal, trial length and cancellation path before you pay. Cancel anytime; access runs to the end of the paid period.' },
+      { h: 'Refunds', p: 'Monthly plans: refund within 7 days of first charge if unused. Annual plans: pro-rated refund within 30 days. After that, no refunds except where mandatory law requires.' },
+      { h: 'How to cancel', p: 'Billing settings → Cancel, or email famebros.studio@gmail.com from your login email. Confirmation within 2 business days.' },
+    ],
+  },
+  security: {
+    kicker: 'Security & Trust Center',
+    title: 'How we protect you.',
+    intro: 'Plain claims only — everything below describes controls that actually exist in Driftpost today.',
+    sections: [
+      { h: 'Your passwords stay yours', p: 'Connections happen through official OAuth only. Driftpost will never ask for your social-media password, OTP, UPI PIN or card PIN. Anyone asking is a scammer — report to famebros.studio@gmail.com.' },
+      { h: 'Tokens locked down', p: 'Social OAuth tokens are AES-256-GCM encrypted, stored server-side, never in frontend code, logs, analytics or this repo, and never displayed in any dashboard. In transit everything runs over HTTPS.' },
+      { h: 'Isolation', p: 'Row-level security confines every query to your own user ID. Brand A can never read Brand B. Brand knowledge lives per brand and never leaks across them.' },
+      { h: 'Abuse guards', p: 'Rate limits on login, AI generation, OAuth and publishing endpoints; signed OAuth state; upload type and size validation.' },
+      { h: 'Your content', p: 'Your uploads and captions remain yours; our licence is limited to delivering the service. AI briefs are processed by xAI/Grok to draft captions and are not used to train shared models.' },
+      { h: 'Your controls', p: 'Per-account Disconnect (tokens die instantly), full Delete account button, data deletion within 7 days, publish history recording who posted what, where and when.' },
     ],
   },
 };
@@ -249,7 +341,7 @@ function Landing({ onEnter, session, pubPage, setPubPage }) {
         <button className="skew-btn grad" onClick={onEnter}><span>{session ? 'Enter console →' : 'Start free →'}</span></button>
         <div className="land-fine">
           <span>Free while in beta · Your logins never leave the platforms · © {new Date().getFullYear()} Driftpost</span>
-          <span className="land-legal"><button className="link" onClick={() => setPubPage('privacy')}>Privacy</button> · <button className="link" onClick={() => setPubPage('terms')}>Terms</button></span>
+          <span className="land-legal"><button className="link" onClick={() => setPubPage('terms')}>Terms</button> · <button className="link" onClick={() => setPubPage('privacy')}>Privacy</button> · <button className="link" onClick={() => setPubPage('cookies')}>Cookies</button> · <button className="link" onClick={() => setPubPage('acceptable-use')}>Acceptable Use</button> · <button className="link" onClick={() => setPubPage('ai-disclaimer')}>AI Disclaimer</button> · <button className="link" onClick={() => setPubPage('platforms-disclaimer')}>Platforms</button> · <button className="link" onClick={() => setPubPage('copyright')}>Copyright</button> · <button className="link" onClick={() => setPubPage('refunds')}>Refunds</button> · <button className="link" onClick={() => setPubPage('data-deletion')}>Data Deletion</button> · <button className="link" onClick={() => setPubPage('security')}>Security</button> · <button className="link" onClick={() => setPubPage('contact')}>Contact</button></span>
         </div>
       </footer>
     </div>
@@ -262,15 +354,18 @@ function Auth({ mode, setMode, onBack, markFresh }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [info, setInfo] = useState('');
+  const [agreed, setAgreed] = useState(false);
+  const TOS_VERSION = '2026-09-1';
 
   const submit = async (e) => {
     e.preventDefault();
+    if (mode === 'signup' && !agreed) { setError('Please accept the Terms of Service and Privacy Policy first.'); return; }
     setBusy(true); setError(''); setInfo('');
     const client = await getSupabase();
     if (!client) { setError('Supabase is not configured. Add VITE_SUPABASE_URL + key.'); setBusy(false); return; }
     const res = mode === 'login'
       ? await client.auth.signInWithPassword({ email, password })
-      : await client.auth.signUp({ email, password, options: { emailRedirectTo: window.location.origin } });
+      : await client.auth.signUp({ email, password, options: { emailRedirectTo: window.location.origin, data: { tos_accepted_at: new Date().toISOString(), tos_version: TOS_VERSION, privacy_version: TOS_VERSION } } });
     if (res.error) setError(res.error.message);
     else if (mode === 'signup' && !res.data.session) setInfo('Check your inbox to confirm email, then sign in.');
     else { pokeSession(); markFresh?.(); }
@@ -279,6 +374,7 @@ function Auth({ mode, setMode, onBack, markFresh }) {
 
   const google = async () => {
     setBusy(true); setError(''); setInfo('');
+    if (mode === 'signup' && !agreed) { setError('Please accept the Terms of Service and Privacy Policy first.'); setBusy(false); return; }
     const client = await getSupabase();
     if (!client) { setError('Supabase is not configured.'); setBusy(false); return; }
     markFresh?.();
@@ -298,6 +394,9 @@ function Auth({ mode, setMode, onBack, markFresh }) {
           <button className="skew-btn ghost" type="button" disabled={busy} onClick={google}><span>{mode === 'login' ? 'Continue with Google' : 'Sign up with Google'}</span></button>
           <div className="input-span"><span className="label">Email address</span><input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" /></div>
           <div className="input-span"><span className="label">Password</span><input type="password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="At least 6 characters" /></div>
+          {mode === 'signup' && (
+            <label className="ck" style={{ alignItems: 'start' }}><input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} /><svg viewBox="0 0 64 64"><path className="path" d="M8 33 L26 51 L56 13" /></svg><span style={{ fontWeight: 400 }}>I agree to the <a href="#/terms" target="_blank" rel="noreferrer">Terms of Service</a> and <a href="#/privacy" target="_blank" rel="noreferrer">Privacy Policy</a></span></label>
+          )}
           {error && <div className="alert err">{error}</div>}
           {info && <div className="banner">{info}</div>}
           <button className="skew-btn grad submit" disabled={busy}><span>{busy ? 'Please wait…' : mode === 'login' ? 'Sign in' : 'Create account'}</span></button>

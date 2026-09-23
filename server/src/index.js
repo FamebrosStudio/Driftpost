@@ -164,6 +164,24 @@ app.get('/api/jobs/:id', requireUser, jobsLimit, (req, res) => {
   res.json({ job: j });
 });
 
+// Full account erasure: connections + history, then the login itself.
+// Media files use random untraceable keys and expire with the bucket lifecycle.
+app.delete('/api/account', requireUser, async (req, res) => {
+  try {
+    const uid = req.user.id;
+    const c = await supabase.from('platform_connections').delete().eq('user_id', uid);
+    if (c.error) throw c.error;
+    const h = await supabase.from('post_history').delete().eq('user_id', uid);
+    if (h.error) throw h.error;
+    for (const [id, j] of jobs) if (j.userId === uid) jobs.delete(id);
+    const { error: uErr } = await supabase.auth.admin.deleteUser(uid);
+    if (uErr) throw uErr;
+    res.json({ deleted: true });
+  } catch {
+    res.status(500).json({ error: 'Deletion failed. Email famebros.studio@gmail.com and we will finish it within 7 days.' });
+  }
+});
+
 // --- AI captions (Grok + local brand memory, server-side key) ---
 app.post('/api/ai/captions', requireUser, aiLimit, async (req, res) => {
   try {
