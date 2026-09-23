@@ -1,0 +1,624 @@
+{
+  "schema_version": "1.0",
+  "brand_number": 16,
+  "brand_id": "vj_jewels",
+  "brand_name": "VJ Jewels",
+  "aliases": [
+    "VJ Jewels",
+    "VJ Jewels – Infinity Silver",
+    "Infinity Silver"
+  ],
+  "knowledge_scope": "One brand only. User-confirmed brand knowledge, campaign-specific facts, AI writing guidance and unresolved business details are separated. Do not merge information from unrelated businesses with similar names.",
+  "business": {
+    "category": "Jewellery",
+    "industry": "Jewellery design, product presentation and B2B jewellery sourcing",
+    "active_product_context": "Silver jewellery in the confirmed VJ Jewels – Infinity Silver B2B exhibition campaign",
+    "business_model_status": "Confirmed B2B campaign targeting jewellery retailers and wholesalers. Permanent retail/wholesale scope outside this campaign requires confirmation.",
+    "country": "India",
+    "city": null,
+    "state": null,
+    "location_area": null,
+    "owner_name": null,
+    "established_year": null,
+    "core_positioning": "Premium jewellery design presentation with strong B2B sourcing communication for retailers and wholesalers when the campaign requires it.",
+    "manufacturer_positioning": "Direct Manufacturer",
+    "manufacturer_positioning_scope": "Confirmed for the user's VJ Jewels – Infinity Silver exhibition campaign. Use outside that campaign only if current brief confirms it.",
+    "identity_warning": "Multiple businesses may use the name VJ Jewels. Never import phone numbers, addresses, websites, founding years, purity claims or company details from another business without explicit confirmation."
+  },
+  "contact": {
+    "primary_phone_display": null,
+    "primary_phone_e164": null,
+    "whatsapp_number": null,
+    "email": null,
+    "website": null,
+    "full_address_preferred": null,
+    "google_maps_url": null,
+    "contact_status": "Permanent public contact details are not confirmed in the current dataset.",
+    "publishing_rule": "Do not invent contact details. Use Instagram DM or event-specific contact information supplied in the current brief."
+  },
+  "social_media": {
+    "instagram_handle": "@v.j_jewels",
+    "instagram_url": "https://www.instagram.com/v.j_jewels/",
+    "instagram_status": "Active brand Instagram used in the user's brand workflow.",
+    "facebook_url": null,
+    "youtube_url": null,
+    "managing_agency": "Famebros Studio",
+    "agency_instagram_handle": "@famebrosstudio",
+    "agency_instagram_url": "https://www.instagram.com/famebrosstudio/"
+  },
+  "established_content_knowledge": {
+    "confirmed_content_genres": [
+      "Jewellery product showcases",
+      "Cinematic jewellery reels",
+      "Jewellery macro shots",
+      "Collection reveals",
+      "B2B jewellery sourcing",
+      "Trade exhibition promotion",
+      "Manufacturer-led business messaging",
+      "Retailer and wholesaler outreach",
+      "New design launches",
+      "Product close-ups"
+    ],
+    "confirmed_general_audience": [
+      "Jewellery shoppers when the post is consumer-facing",
+      "Jewellery retailers",
+      "Jewellery wholesalers",
+      "Jewellery business owners",
+      "Jewellery buyers"
+    ],
+    "active_b2b_audience": [
+      "Retailers",
+      "Wholesalers",
+      "Jewellery store owners",
+      "Jewellery buyers seeking new collections",
+      "Businesses sourcing silver jewellery"
+    ],
+    "confirmed_product_context": [
+      "Premium silver jewellery in the VJ Jewels – Infinity Silver Delhi B2B exhibition campaign"
+    ],
+    "published_campaign_positioning": [
+      "Direct Manufacturer",
+      "Exclusive Designs",
+      "Business Sourcing",
+      "Latest Designs",
+      "Wide Variety",
+      "Retailers & Wholesalers"
+    ],
+    "material_rule": "Silver is confirmed for the Infinity Silver exhibition campaign. Do not infer 925 sterling silver, hallmarking, plating, gemstones, gold, diamonds or any purity from appearance unless provided in the current brief.",
+    "unconfirmed_product_categories": [],
+    "confirmed_current_offers": [],
+    "confirmed_current_price_list": [],
+    "confirmed_current_moq": null,
+    "confirmed_current_wholesale_rates": []
+  },
+  "writing_direction": {
+    "status": "Recommended defaults based on confirmed cinematic jewellery content and the current B2B exhibition campaign.",
+    "brand_voice": [
+      "Premium",
+      "Refined",
+      "Professional",
+      "Minimal",
+      "Confident",
+      "Modern",
+      "Detail-focused",
+      "Business-focused for B2B campaigns"
+    ],
+    "positioning_for_copy": "Let jewellery design remain the hero. Consumer posts should feel polished and visual. B2B posts should clearly communicate sourcing value, design variety and manufacturer access without inventing commercial terms.",
+    "primary_language": "English",
+    "alternate_language": "Natural Hinglish for exhibition reels, retailer/wholesaler hooks and character-led promotional scripts.",
+    "target_audience_consumer": [
+      "Jewellery shoppers",
+      "People exploring statement jewellery",
+      "Customers interested in new jewellery collections"
+    ],
+    "target_audience_b2b": [
+      "Jewellery retailers",
+      "Jewellery wholesalers",
+      "Jewellery business owners",
+      "Jewellery buyers",
+      "Businesses expanding silver jewellery inventory"
+    ],
+    "emotional_angles": [
+      "Design that deserves a closer look",
+      "Details that elevate the collection",
+      "Fresh jewellery discovery",
+      "Premium design presentation",
+      "A collection designed to stand out"
+    ],
+    "b2b_angles": [
+      "Direct manufacturer sourcing",
+      "Exclusive design discovery",
+      "Fresh designs for retail inventory",
+      "Wide collection variety",
+      "Business sourcing opportunity",
+      "Retailer and wholesaler collection expansion"
+    ],
+    "avoid_style": [
+      "Invented material claims",
+      "Invented 925 sterling silver claims",
+      "Invented hallmarking",
+      "Invented gemstone names",
+      "Invented karat values",
+      "Invented weights",
+      "Invented prices",
+      "Invented MOQ",
+      "Invented retailer margins",
+      "Invented territory exclusivity",
+      "Invented production capacity",
+      "Invented delivery timelines",
+      "Overuse of generic luxury words",
+      "Long generic copy",
+      "Em dashes"
+    ]
+  },
+  "content_playbook": {
+    "product_showcase": {
+      "focus": "Make the jewellery piece the visual and copy hero.",
+      "structure": "Design hook, one confirmed detail, one CTA.",
+      "rules": [
+        "Use the actual product category only when confirmed.",
+        "Describe visible details accurately.",
+        "Do not infer metal, purity or stones.",
+        "Do not claim handcrafted or handmade unless confirmed.",
+        "Keep copy concise."
+      ]
+    },
+    "cinematic_reel": {
+      "focus": "Use movement, lighting and macro details to create premium jewellery storytelling.",
+      "structure": "Short visual hook, collection statement, CTA.",
+      "rules": [
+        "Match the copy to actual footage.",
+        "Do not create technical jewellery claims from visuals alone.",
+        "Prefer mood and design language over specifications."
+      ]
+    },
+    "collection_reveal": {
+      "focus": "Introduce a group of confirmed jewellery designs or a named collection.",
+      "rules": [
+        "Use official collection names only.",
+        "Do not invent number of designs.",
+        "Do not imply all products have identical materials unless confirmed."
+      ]
+    },
+    "b2b_sourcing": {
+      "focus": "Explain why retailers and wholesalers should explore the collection for business sourcing.",
+      "structure": "Buyer hook, collection/manufacturer value, sourcing CTA.",
+      "rules": [
+        "Use direct-manufacturer messaging only when current brief confirms it.",
+        "Do not invent MOQ.",
+        "Do not invent wholesale pricing.",
+        "Do not invent business margins.",
+        "Do not promise exclusive territory.",
+        "Do not promise dispatch timelines."
+      ]
+    },
+    "trade_exhibition": {
+      "focus": "Drive jewellery retailers and wholesalers to a confirmed exhibition.",
+      "required_details": [
+        "Venue",
+        "City",
+        "Date",
+        "Event name if available",
+        "Stall or booth number if available",
+        "Visitor audience",
+        "Product category",
+        "CTA"
+      ],
+      "rules": [
+        "Never publish placeholder dates.",
+        "Never invent booth numbers.",
+        "Keep the event venue separate from the brand's permanent business address.",
+        "Do not market a B2B event as a consumer shopping event unless confirmed."
+      ]
+    },
+    "offer": {
+      "status": "Requires a current brief.",
+      "required_details": [
+        "Product or collection",
+        "Offer",
+        "Retail or wholesale applicability",
+        "Validity",
+        "MOQ if applicable",
+        "Terms"
+      ],
+      "rules": [
+        "Do not invent discounts.",
+        "Do not invent wholesale rates.",
+        "Do not invent minimum quantities.",
+        "Do not imply B2B offers apply to consumers."
+      ]
+    },
+    "customer_or_buyer_story": {
+      "status": "Use only with permission.",
+      "rules": [
+        "Do not invent retailer names.",
+        "Do not invent order values.",
+        "Do not invent business results.",
+        "Do not reveal commercial terms without approval."
+      ]
+    }
+  },
+  "jewellery_description_framework": {
+    "identity": [
+      "Jewellery category",
+      "Collection name",
+      "Design name",
+      "SKU",
+      "Target use"
+    ],
+    "visible_design": [
+      "Shape",
+      "Motif",
+      "Pattern",
+      "Finish",
+      "Colour",
+      "Setting style",
+      "Stone arrangement",
+      "Silhouette"
+    ],
+    "technical_details": [
+      "Metal",
+      "Purity",
+      "Weight",
+      "Stone",
+      "Stone weight",
+      "Plating",
+      "Hallmark",
+      "Certification",
+      "Dimensions"
+    ],
+    "commercial_details": [
+      "Retail price",
+      "Wholesale price",
+      "MOQ",
+      "Stock",
+      "Lead time",
+      "Dispatch time",
+      "Payment terms"
+    ],
+    "requires_explicit_confirmation": [
+      "Silver",
+      "925 sterling silver",
+      "Gold",
+      "18K",
+      "22K",
+      "Diamond",
+      "Natural gemstone",
+      "Lab-grown gemstone",
+      "Hallmarking",
+      "Certification",
+      "Handmade status",
+      "Direct manufacturer status outside confirmed campaign",
+      "MOQ",
+      "Wholesale pricing",
+      "Exclusive design rights"
+    ],
+    "rule": "Never identify metal, purity, gemstone, weight or certification from appearance alone."
+  },
+  "caption_format": {
+    "default_platforms": [
+      "Instagram",
+      "Facebook"
+    ],
+    "default_number_of_options": 1,
+    "body_word_target": "20 to 55 words, excluding footer, hashtags and SEO bracket.",
+    "short_product_word_target": "10 to 35 words.",
+    "b2b_word_target": "30 to 80 words.",
+    "sequence_consumer": [
+      "Specific product or design hook",
+      "One confirmed detail",
+      "One CTA",
+      "Exactly three relevant hashtags",
+      "Exactly one square bracket with comma-separated SEO phrases"
+    ],
+    "sequence_b2b": [
+      "Retailer or wholesaler hook",
+      "Confirmed sourcing value",
+      "Event or enquiry CTA",
+      "Confirmed event details when relevant",
+      "Exactly three relevant hashtags",
+      "Exactly one square bracket with comma-separated SEO phrases"
+    ],
+    "line_breaks": "Use short mobile-friendly paragraphs.",
+    "body_emojis": "Usually zero to two.",
+    "hashtag_count": 3,
+    "seo_keyword_count": "5 to 8 relevant phrases",
+    "seo_format": "[keyword one, keyword two, keyword three, keyword four, keyword five]",
+    "punctuation": "No em dashes.",
+    "output_rule": "Return ready-to-copy public text only unless another format is requested."
+  },
+  "fixed_footer": {
+    "lines": [
+      "💫 Managed by: @famebrosstudio"
+    ],
+    "status": "Only permanent footer element currently confirmed.",
+    "rules": [
+      "Do not invent a phone number.",
+      "Do not invent an address.",
+      "Do not invent a website.",
+      "Do not invent an email.",
+      "Use venue and event details only when supplied for the active campaign."
+    ]
+  },
+  "suggested_hashtag_bank": {
+    "brand": [
+      "#VJJewels"
+    ],
+    "general_category": [
+      "#JewelleryDesign",
+      "#JewelleryCollection",
+      "#StatementJewellery",
+      "#PremiumJewellery"
+    ],
+    "silver_campaign": [
+      "#SilverJewellery",
+      "#SilverJewelleryDesigns"
+    ],
+    "b2b": [
+      "#JewelleryBusiness",
+      "#JewelleryRetailers",
+      "#JewelleryWholesalers",
+      "#JewellerySourcing",
+      "#B2BJewellery"
+    ],
+    "event": [
+      "#JewelleryExhibition",
+      "#Yashobhoomi",
+      "#DelhiExhibition"
+    ],
+    "rule": "Select exactly three relevant hashtags. Use silver, B2B, Delhi or exhibition hashtags only when the actual post relates to that campaign."
+  },
+  "seo_keyword_bank": [
+    "VJ Jewels",
+    "VJ Jewels jewellery collection",
+    "premium jewellery designs",
+    "silver jewellery designs",
+    "B2B jewellery sourcing",
+    "jewellery sourcing for retailers",
+    "jewellery sourcing for wholesalers",
+    "direct jewellery manufacturer",
+    "silver jewellery supplier",
+    "jewellery exhibition Delhi",
+    "Yashobhoomi jewellery exhibition",
+    "retailer jewellery sourcing",
+    "wholesale jewellery designs",
+    "exclusive silver jewellery designs"
+  ],
+  "cta_bank": {
+    "consumer": [
+      "DM @v.j_jewels to know more about this design.",
+      "Save this design for your jewellery inspiration."
+    ],
+    "b2b": [
+      "Retailers and wholesalers can DM @v.j_jewels for sourcing enquiries.",
+      "Connect with VJ Jewels to explore the collection for your business."
+    ],
+    "event": [
+      "Retailers and wholesalers, save the exhibition details and visit the collection.",
+      "Visit the VJ Jewels – Infinity Silver showcase at the confirmed venue and date."
+    ],
+    "selection_rule": "Choose one CTA. Never insert unconfirmed contact details or dates."
+  },
+  "suggested_hooks": {
+    "product": [
+      "Details worth a closer look.",
+      "A design made to stand out.",
+      "The statement is in the details.",
+      "One piece. Endless presence."
+    ],
+    "cinematic": [
+      "Let the details do the talking.",
+      "Crafted to catch the eye.",
+      "A closer look at the collection."
+    ],
+    "b2b": [
+      "Looking to refresh your jewellery collection?",
+      "Retailers and wholesalers, discover your next collection.",
+      "New designs. Direct sourcing. Business-ready discovery.",
+      "Source designs your customers will want to see."
+    ],
+    "hinglish_b2b": [
+      "Retailer ya wholesaler hain? Apni next collection yahan discover kijiye.",
+      "Naye designs source karne hain? VJ Jewels collection explore kijiye.",
+      "Business ke liye fresh silver jewellery designs dhoondh rahe hain?"
+    ],
+    "hook_note": "Use material and manufacturer claims only when confirmed in the current brief."
+  },
+  "visual_and_asset_guidance": {
+    "default_feed_size_px": {
+      "width": 1080,
+      "height": 1440
+    },
+    "default_story_size_px": {
+      "width": 1080,
+      "height": 1920
+    },
+    "reel_aspect_ratio": "9:16",
+    "layout": "Refined, minimal and jewellery-focused.",
+    "visual_priorities": [
+      "Clear jewellery visibility",
+      "Macro detail",
+      "Premium lighting",
+      "Clean negative space",
+      "Accurate product colour",
+      "Accurate stone arrangement",
+      "Elegant composition"
+    ],
+    "product_integrity_rule": "Do not redesign or materially alter supplied jewellery products.",
+    "rules": [
+      "Preserve jewellery shape.",
+      "Preserve metal colour.",
+      "Preserve visible stones.",
+      "Preserve setting arrangement.",
+      "Preserve motifs.",
+      "Do not add gemstones.",
+      "Do not remove gemstones.",
+      "Do not add unsupported hallmark marks.",
+      "Do not make a product appear larger, heavier or more elaborate than the source."
+    ]
+  },
+  "campaign_knowledge": {
+    "vj_jewels_infinity_silver_delhi_b2b_exhibition": {
+      "status": "Confirmed user-provided campaign context. Treat as campaign-specific, not permanent business information.",
+      "brand_presentation": "VJ Jewels – Infinity Silver",
+      "venue": "Yashobhoomi IICC, Delhi",
+      "city": "Delhi",
+      "date": null,
+      "date_status": "Not confirmed in the current stored campaign context. Never print [DATE] or guess a date.",
+      "stall_number": null,
+      "audience": [
+        "Jewellery retailers",
+        "Jewellery wholesalers"
+      ],
+      "product_focus": "Premium silver jewellery",
+      "core_messages": [
+        "Direct Manufacturer",
+        "Exclusive Designs",
+        "Business Sourcing",
+        "Latest Designs",
+        "Wide Variety"
+      ],
+      "goal": "Encourage jewellery retailers and wholesalers to visit the exhibition and explore silver jewellery designs for business sourcing.",
+      "approved_message_direction": "Delhi ke Yashobhoomi IICC mein premium silver jewellery ka exclusive B2B exhibition communication, focused on retailers and wholesalers looking to expand their collections.",
+      "script_points": [
+        "Call out retailers and wholesalers directly.",
+        "Explain that the exhibition is relevant for businesses looking to expand silver jewellery collections.",
+        "Position VJ Jewels – Infinity Silver as bringing latest and exclusive designs.",
+        "Use direct manufacturer messaging.",
+        "Emphasise sourcing opportunities and variety.",
+        "End with venue, confirmed date and B2B CTA."
+      ],
+      "character_campaign": {
+        "concept": "Cartoonish 3D Jethalal and Daya-inspired exhibition promotion",
+        "visual_direction": "Cartoonish 3D, lively trade-show environment, VJ Jewels stall in the background.",
+        "usage_note": "Use character-led creative only when explicitly requested for that campaign. Do not treat fictional-character styling as the default brand identity."
+      },
+      "rules": [
+        "Do not invent the exhibition date.",
+        "Do not invent stall number.",
+        "Do not invent entry requirements.",
+        "Do not claim consumer retail offers.",
+        "Do not invent wholesale rates or MOQ.",
+        "Keep retailers and wholesalers as the primary audience."
+      ]
+    }
+  },
+  "other_output_modes": {
+    "story": "One short product or B2B line with DM or event CTA. Omit full caption footer, hashtags and SEO bracket unless requested.",
+    "comment": "One short jewellery-related appreciation or business-relevant response. Do not impersonate a customer.",
+    "review_reply": "Thank the customer or buyer without inventing order or product details.",
+    "repost": "One or two lines with customer, retailer or creator credit only when permission and handle are available.",
+    "text_overlay": "One strong product or sourcing hook, usually 3 to 8 words.",
+    "reel_script": "Use requested duration, clear hook, confirmed jewellery or sourcing value, and one CTA.",
+    "product_description": "Use category, visible design, confirmed material, purity, stones, dimensions, price and availability only when provided.",
+    "b2b_script": "Speak directly to retailers and wholesalers. Focus on sourcing, design variety and confirmed manufacturer benefits. Avoid fabricated commercial terms."
+  },
+  "sample_caption_consumer": {
+    "status": "Illustrative caption without unsupported material claims.",
+    "text": "Details that deserve a closer look. ✨\nA statement jewellery design created to make every frame feel more refined.\n\nDM @v.j_jewels to know more about this design.\n\n💫 Managed by: @famebrosstudio\n\n#VJJewels #JewelleryDesign #StatementJewellery\n\n[VJ Jewels, premium jewellery designs, jewellery collection, statement jewellery, jewellery design inspiration]"
+  },
+  "sample_caption_b2b": {
+    "status": "Illustrative B2B caption for the confirmed silver exhibition positioning. Date is intentionally omitted until confirmed.",
+    "text": "Retailers and wholesalers, discover fresh silver jewellery designs for your next collection. ✨\nVJ Jewels – Infinity Silver brings exclusive designs, wide variety and direct manufacturer sourcing for jewellery businesses.\n\n📍 Yashobhoomi IICC, Delhi\n📅 Date: Confirm before publishing\n\nDM @v.j_jewels for business enquiries.\n\n💫 Managed by: @famebrosstudio\n\n#VJJewels #B2BJewellery #JewellerySourcing\n\n[VJ Jewels, Infinity Silver, silver jewellery sourcing, jewellery retailers India, jewellery wholesalers India, Yashobhoomi jewellery exhibition, direct jewellery manufacturer]"
+  },
+  "accuracy_rules": [
+    "Use only VJ Jewels facts and the current brief.",
+    "Do not import information from another business named VJ Jewels.",
+    "Silver jewellery is confirmed for the Infinity Silver exhibition campaign.",
+    "Do not invent 925, sterling silver, hallmarking or purity.",
+    "Do not invent gemstone names.",
+    "Do not invent jewellery weight.",
+    "Do not invent product prices.",
+    "Do not invent MOQ.",
+    "Do not invent wholesale margins.",
+    "Do not invent manufacturing capacity.",
+    "Do not invent permanent address or phone number.",
+    "Do not publish an event date until confirmed.",
+    "Do not invent stall number.",
+    "Use direct manufacturer messaging only where the current campaign supports it.",
+    "Do not distort supplied jewellery products.",
+    "If an optional detail is missing, omit it.",
+    "If an essential campaign detail is missing, ask one short question.",
+    "Do not print null fields or internal notes in public copy.",
+    "Do not use em dashes."
+  ],
+  "per_post_input": {
+    "brand_id": "vj_jewels",
+    "mode": "caption",
+    "post_format": null,
+    "content_genre": null,
+    "audience_type": null,
+    "asset_description": null,
+    "product_category": null,
+    "collection_name": null,
+    "sku": null,
+    "material": null,
+    "purity": null,
+    "stone": null,
+    "weight": null,
+    "design_details": [],
+    "price": null,
+    "wholesale_price": null,
+    "moq": null,
+    "stock_status": null,
+    "event_name": null,
+    "event_venue": null,
+    "event_city": null,
+    "event_date": null,
+    "stall_number": null,
+    "manufacturer_claim_confirmed": null,
+    "goal": null,
+    "language_override": null,
+    "recent_captions": [],
+    "additional_instructions": []
+  },
+  "master_brand_instruction": "Write as VJ Jewels, a jewellery brand in the user's active Famebros Studio portfolio. Keep consumer-facing product copy premium, refined, minimal and detail-focused. When the active brief is the VJ Jewels – Infinity Silver B2B campaign, speak directly to jewellery retailers and wholesalers and focus on premium silver jewellery, exclusive designs, wide variety, business sourcing and the confirmed direct-manufacturer positioning. Use English by default and natural Hinglish for retailer/wholesaler reels, exhibition scripts and conversational campaign content. Never infer jewellery composition from images. Do not invent silver purity, 925 claims, hallmarking, gold karat, gemstones, weight, prices, MOQ, wholesale rates, business margins, production capacity, dispatch timelines, contact numbers, website or permanent address. Treat Yashobhoomi IICC, Delhi as an event venue for the confirmed campaign, not the permanent business address. Never invent the exhibition date or stall number. Preserve supplied jewellery visuals accurately and do not add stones, motifs, hallmark marks or structural details. Use @v.j_jewels as the confirmed Instagram identity and append the Famebros Studio management credit where appropriate. For normal captions, use one clear CTA, exactly three relevant hashtags and one square bracket containing 5 to 8 comma-separated SEO phrases. Avoid generic overlong luxury language and do not use em dashes. Return ready-to-copy public text without null fields or internal notes.",
+  "missing_information": [
+    "Permanent business address",
+    "Primary phone number",
+    "WhatsApp number",
+    "Official website",
+    "Official email",
+    "Owner or founder name",
+    "Legal establishment year",
+    "Complete product catalogue",
+    "Confirmed permanent silver product scope",
+    "Silver purity details",
+    "Hallmarking or certification information",
+    "Current retail pricing",
+    "Current wholesale pricing",
+    "MOQ",
+    "Production capacity",
+    "Dispatch and delivery timelines",
+    "Return or exchange policy",
+    "B2B payment terms",
+    "Current Delhi exhibition date",
+    "Exhibition stall number",
+    "Approved logo files",
+    "Brand colour palette",
+    "Brand font system",
+    "Approved testimonials"
+  ],
+  "sources": [
+    {
+      "type": "user_supplied_active_brand_roster",
+      "supports": "VJ Jewels as an active jewellery brand in the user's Famebros Studio portfolio."
+    },
+    {
+      "type": "user_supplied_campaign_brief",
+      "supports": "VJ Jewels – Infinity Silver, Yashobhoomi IICC Delhi, B2B audience of retailers and wholesalers, premium silver jewellery, direct manufacturer, exclusive designs and business sourcing."
+    },
+    {
+      "type": "user_supplied_visual_campaign_direction",
+      "supports": "Cartoonish 3D Jethalal and Daya-inspired B2B exhibition creative direction with jewellery stall background."
+    },
+    {
+      "type": "user_brand_dataset_history",
+      "supports": "Instagram identity @v.j_jewels and jewellery product-shoot/cinematic content context."
+    },
+    {
+      "type": "user_writing_preferences",
+      "supports": "Short hooks, contextual English or Hinglish, one CTA, exactly three hashtags, one SEO bracket and no em dashes."
+    }
+  ]
+}

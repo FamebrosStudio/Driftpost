@@ -309,6 +309,23 @@ export async function generateCaptions(summary, opts = {}) {
     if (!ytTags.length && kwBank.length) {
       ytTags = kwBank.map((k) => k.toLowerCase().replace(/[^a-z0-9 ]/g, '').trim().replace(/\s+/g, ' ')).filter(Boolean).slice(0, 8);
     }
+  } else {
+    // Generic path (no brand at all): same finishing discipline — derive
+    // hashtags + keyword bracket from the brief's own significant words.
+    const STOP = new Set('with,from,that,this,your,shop,store,reel,photo,video,post,caption,write,make,give,need,want,more,very,just,like,will,have,has,been,were,what,when,goal,adds,adds,about,into,their,them,they,our,yours,save,share,tag,come,visit,book,call'.split(','));
+    const sigWords = [...new Set(
+      String(brief).toLowerCase().split(/[^a-z]+/).filter((w) => w.length > 4 && !STOP.has(w))
+    )].slice(0, 6);
+    if (!igTags.length && sigWords.length) {
+      igTags = sigWords.slice(0, 3).map((w) => w.replace(/[^A-Za-z0-9]/g, '')).filter(Boolean);
+    }
+    igTags = igTags.slice(0, 3);
+    const hashLine = igTags.length ? igTags.map((t) => `#${t}`).join(' ') : '';
+    const kwLine = sigWords.length >= 3 ? `[${sigWords.join(', ')}]` : '';
+    if (hashLine && !igCap.includes('#')) igCap = `${igCap}\n\n${hashLine}`;
+    if (kwLine && !igCap.includes('[')) igCap = `${igCap}\n\n${kwLine}`;
+    igCap = clean(igCap, 2200);
+    if (!ytTags.length && sigWords.length) ytTags = sigWords.map((w) => w.toLowerCase()).slice(0, 8);
   }
 
   // Zero-LLM memory upgrade: record that this brand was used + asset hint.
