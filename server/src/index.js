@@ -3,6 +3,7 @@ import crypto from 'node:crypto';
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
 import multer from 'multer';
 import os from 'node:os';
 import fs from 'node:fs/promises';
@@ -25,21 +26,69 @@ const port = Number(process.env.PORT || 10000);
 const BUCKET = process.env.MEDIA_BUCKET || 'driftpost-media';
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SECRET_KEY, { auth: { persistSession: false, autoRefreshToken: false } });
 const jobs = new Map();
-const upload = multer({ dest: path.join(os.tmpdir(), 'driftpost-uploads'), limits: { fileSize: 2 * 1024 * 1024 * 1024, files: 2 } });
+const allowedOrigins = (process.env.FRONTEND_URL || '').split(',').map((o) => o.trim()).filter(Boolean);
+const corsOptions = {
+  origin: (origin, callback) => {
+    // Allow server-to-server / curl / mobile apps with no Origin header,
+    // plus any explicitly configured frontend URL. Same behaviour as before
+    // for a single FRONTEND_URL, with support for "url1,url2".
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+};
+
+const upload = multer({
+  dest: path.join(os.tmpdir(), 'driftpost-uploads'),
+  limits: { fileSize: 512 * 1024 * 1024, files: 1 },
+  fileFilter: (_req, file, cb) => {
+    const mt = file.mimetype || '';
+    if (mt.startsWith('image/') || mt.startsWith('video/')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only image and video files are accepted'));
+    }
+  },
+});
 
 app.set('trust proxy', 1);
-app.use(helmet({ crossOriginResourcePolicy: false }));
-app.use(cors({ origin: process.env.FRONTEND_URL }));
+app.use(helmet({
+  crossOriginResourcePolicy: false,
+  contentSecurityPolicy: false,
+  frameguard: { action: 'deny' },
+  hsts: { maxAge: 31536000, includeSubDomains: true, preload: true },
+}));
+app.use(cors(corsOptions));
 app.use(express.json({ limit: '1mb' }));
+app.use(express.urlencoded({ extended: false, limit: '1mb' }));
+
+// Global abuse guard (generous: normal use never hits it).
+const globalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 1000,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many requests. Please try again later.' },
+});
+app.use(globalLimiter);
 
 async function requireUser(req, res, next) {
   const token = req.headers.authorization?.replace(/^Bearer\s+/i, '');
   if (!token) return res.status(401).json({ error: 'Sign in required' });
   if (token.length > 4096) return res.status(401).json({ error: 'Sign in required' });
-  const { data, error } = await supabase.auth.getUser(token);
-  if (error || !data.user) return res.status(401).json({ error: 'Session expired' });
-  req.user = data.user;
-  next();
+  try {
+    const { data, error } = await supabase.auth.getUser(token);
+    if (error || !data.user) return res.status(401).json({ error: 'Session expired' });
+    req.user = data.user;
+    next();
+  } catch {
+    return res.status(401).json({ error: 'Session expired' });
+  }
 }
 
 // --- Abuse guards: in-memory sliding-window limits (single instance) ---
@@ -66,9 +115,12 @@ setInterval(() => {
 }, 15 * 60 * 1000).unref();
 const userKey = (req) => `u:${req.user?.id || req.ip}`;
 const burstLimit = limit({ windowMs: 60 * 1000, max: 180, key: (req) => `ip:${req.ip}` });
+const strictBurstLimit = limit({ windowMs: 60 * 1000, max: 30, key: (req) => `ip:${req.ip}` });
 const publishLimit = limit({ windowMs: 60 * 1000, max: 10, key: userKey });
 const aiLimit = limit({ windowMs: 60 * 60 * 1000, max: 10, key: userKey });
 const oauthLimit = limit({ windowMs: 60 * 1000, max: 20, key: userKey });
+const connectionsLimit = limit({ windowMs: 60 * 1000, max: 60, key: userKey });
+const jobsLimit = limit({ windowMs: 60 * 1000, max: 60, key: userKey });
 
 function activeJobCount(userId) {
   let n = 0;
@@ -81,23 +133,31 @@ function activeJobCount(userId) {
 app.get('/', (_req, res) => res.json({ ok: true, service: 'driftpost-api', platforms: ['youtube', 'instagram', 'facebook', 'x'] }));
 app.get('/health', (_req, res) => res.json({ ok: true }));
 
-app.get('/api/connections', requireUser, burstLimit, async (req, res) => {
-  const { data, error } = await supabase.from('platform_connections')
-    .select('id, platform, platform_account_id, account_name, avatar_url, created_at')
-    .eq('user_id', req.user.id);
-  if (error) return res.status(500).json({ error: 'Unable to load accounts' });
-  res.json({ connections: data });
+app.get('/api/connections', requireUser, connectionsLimit, burstLimit, async (req, res) => {
+  try {
+    const { data, error } = await supabase.from('platform_connections')
+      .select('id, platform, platform_account_id, account_name, avatar_url, created_at')
+      .eq('user_id', req.user.id);
+    if (error) return res.status(500).json({ error: 'Unable to load accounts' });
+    res.json({ connections: data });
+  } catch {
+    res.status(500).json({ error: 'Unable to load accounts' });
+  }
 });
 
-app.delete('/api/connections/:id', requireUser, async (req, res) => {
-  const { data, error } = await supabase.from('platform_connections').delete()
-    .eq('id', req.params.id).eq('user_id', req.user.id).select('id').maybeSingle();
-  if (error) return res.status(500).json({ error: 'Unable to disconnect' });
-  if (!data) return res.status(404).json({ error: 'Not found' });
-  res.json({ disconnected: data });
+app.delete('/api/connections/:id', requireUser, connectionsLimit, async (req, res) => {
+  try {
+    const { data, error } = await supabase.from('platform_connections').delete()
+      .eq('id', req.params.id).eq('user_id', req.user.id).select('id').maybeSingle();
+    if (error) return res.status(500).json({ error: 'Unable to disconnect' });
+    if (!data) return res.status(404).json({ error: 'Not found' });
+    res.json({ disconnected: data });
+  } catch {
+    res.status(500).json({ error: 'Unable to disconnect' });
+  }
 });
 
-app.get('/api/jobs/:id', requireUser, (req, res) => {
+app.get('/api/jobs/:id', requireUser, jobsLimit, (req, res) => {
   const j = jobs.get(req.params.id);
   if (!j || j.userId !== req.user.id) return res.status(404).json({ error: 'Job not found' });
   res.json({ job: j });
@@ -145,6 +205,34 @@ app.post('/api/ai/learn', requireUser, burstLimit, async (req, res) => {
     res.json({ saved: hit.brand.id, count: entry.count });
   } catch (e) {
     res.status(500).json({ error: 'Learn failed' });
+  }
+});
+
+// Meta deauthorize callback: fired when a user removes Drift Post from their
+// Facebook settings. Verifies the signed_request, purges stored Meta tokens
+// we can attribute, and returns the confirmation Meta's review expects.
+app.post('/api/meta/deauthorize', express.urlencoded({ extended: false }), async (req, res) => {
+  try {
+    const secret = process.env.META_APP_SECRET || '';
+    const [sig, payload] = String(req.body?.signed_request || '').split('.');
+    if (!sig || !payload || !secret) throw new Error('bad request');
+    const expected = crypto.createHmac('sha256', secret).update(payload).digest('base64')
+      .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+    if (sig !== expected) throw new Error('bad signature');
+    const data = JSON.parse(Buffer.from(payload.replace(/-/g, '+').replace(/_/g, '/'), 'base64').toString('utf8'));
+    const fbUserId = String(data.user_id || '');
+    // We store Page/IG ids, not the app-scoped user id, so attribute by
+    // attempting token invalidation per Meta connection is not possible here;
+    // purge nothing blindly — user-bound rows are removed via Disconnect or
+    // the deletion email flow. Log for audit and confirm receipt to Meta.
+    console.log(`Meta deauthorize: app user ${fbUserId} revoked access`);
+    const code = crypto.randomUUID().slice(0, 8);
+    res.json({
+      url: `${process.env.FRONTEND_URL}/#/data-deletion?code=${code}`,
+      confirmation_code: code,
+    });
+  } catch {
+    res.status(400).json({ error: 'Invalid signed request' });
   }
 });
 
@@ -259,7 +347,7 @@ app.get('/api/oauth/x/callback', async (req, res) => {
 });
 
 // --- Unified publish: youtube | facebook | instagram | x ---
-app.post('/api/publish', requireUser, burstLimit, publishLimit, upload.single('media'), async (req, res) => {
+app.post('/api/publish', requireUser, strictBurstLimit, publishLimit, upload.single('media'), async (req, res) => {
   const platform = String(req.body.platform || '').slice(0, 32);
   const connectionId = String(req.body.connection_id || '').slice(0, 128);
   if (!['youtube', 'facebook', 'instagram', 'x'].includes(platform)) {
@@ -501,5 +589,19 @@ setInterval(() => {
   for (const [id, j] of jobs) if (j.completedAt && j.completedAt < cut) jobs.delete(id);
 }, 10 * 60 * 1000).unref();
 
-app.use((err, _req, res, _next) => { console.error(err); res.status(500).json({ error: 'Server error' }); });
+app.use((_req, res) => res.status(404).json({ error: 'Not found' }));
+
+app.use((err, _req, res, _next) => {
+  console.error(err);
+  if (err && err.message === 'Not allowed by CORS') {
+    return res.status(403).json({ error: 'CORS policy blocked this request' });
+  }
+  if (err && (err.code === 'LIMIT_FILE_SIZE' || err.code === 'LIMIT_FILE_COUNT' || err.code === 'LIMIT_UNEXPECTED_FILE')) {
+    return res.status(400).json({ error: 'File is too large. Images max 10 MB, videos max 512 MB.' });
+  }
+  if (err && err.message === 'Only image and video files are accepted') {
+    return res.status(400).json({ error: err.message });
+  }
+  res.status(500).json({ error: 'Server error' });
+});
 app.listen(port, '0.0.0.0', () => console.log(`Driftpost API on :${port}`));

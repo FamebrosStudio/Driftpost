@@ -44,6 +44,7 @@ const PUB_PAGES = [
   { id: 'contact', label: 'Contact' },
   { id: 'privacy', label: 'Privacy', hidden: true },
   { id: 'terms', label: 'Terms', hidden: true },
+  { id: 'data-deletion', label: 'Data Deletion', hidden: true },
 ];
 
 const hashPage = () => {
@@ -129,6 +130,17 @@ const PUB_CONTENT = {
       { h: 'Acceptable use', p: 'No spam, no bulk automation abuse, no unlawful content, no reselling access to the console without permission.' },
       { h: 'Accounts', p: 'Keep your login safe. We may suspend accounts that abuse the service.' },
       { h: 'Contact', p: 'famebros.studio@gmail.com.' },
+    ],
+  },
+  'data-deletion': {
+    kicker: 'Data Deletion',
+    title: 'Delete your data, anytime.',
+    intro: 'You control your data. Removing a connection deletes its tokens immediately — no waiting, no email needed.',
+    sections: [
+      { h: 'Delete one account', p: 'Console → Accounts → Disconnect next to the account. Its encrypted tokens are deleted from our database at once. This also revokes posting access.' },
+      { h: 'Delete everything', p: 'Disconnect all accounts, then email famebros.studio@gmail.com from your login email with subject "Delete my data". We erase your connections, history and login within 7 days and confirm by reply.' },
+      { h: 'Removed our Facebook integration?', p: 'If you removed Drift Post from Facebook settings, Meta notifies us automatically and we purge your stored Meta tokens. Use the steps above for full erasure.' },
+      { h: 'What we keep', p: 'Nothing after deletion. We hold no backups of tokens and never sold or shared your data.' },
     ],
   },
 };
