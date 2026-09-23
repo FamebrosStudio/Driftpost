@@ -105,7 +105,8 @@ export async function generateCaptions(summary, opts = {}) {
     (assetHint ? `\nAsset: ${assetHint}` : '') +
     (goal ? `\nGoal: ${goal}` : '');
 
-  const systemText = GLOBAL_SYSTEM + PLATFORM_SPECS + brandBlock + offerBlock + trendBlock + HOUSE_RULES;
+  const systemText = GLOBAL_SYSTEM + PLATFORM_SPECS + brandBlock + offerBlock + trendBlock + HOUSE_RULES
+    + mem.breakdownBlock(mem.parseBrief(brief, brand));
   const model = process.env.XAI_MODEL || 'grok-4-1-fast-non-reasoning';
 
   let text;

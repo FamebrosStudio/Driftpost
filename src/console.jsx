@@ -388,7 +388,7 @@ function Composer({ session, connections, reload }) {
           <span className="scope-badge ai-badge">Optional helper</span>
           <h3>✨ AI writer</h3>
           <p className="sub">Stuck? Type a short summary — 4 different captions (YT / IG / FB / X).</p>
-          <label className="field" style={{ marginBottom: 0 }}><span>What is this post about? <i>optional</i></span><textarea value={aiBrief} maxLength={500} onChange={(e) => setAiBrief(e.target.value)} placeholder="e.g. bridal haircut reel for Velvet Salon in Mumbai" style={{ minHeight: 70 }} /></label>
+          <label className="field" style={{ marginBottom: 0 }}><span>What is this post about? <i>brand + motive + conditions wins</i></span><textarea value={aiBrief} maxLength={500} onChange={(e) => setAiBrief(e.target.value)} placeholder="e.g. Velvet Salon has a new offer: 20% off for everyone who comes before 4pm" style={{ minHeight: 70 }} /></label>
           <label className="ck" style={{ marginTop: 8 }}><input type="checkbox" checked={aiTrends} onChange={(e) => setAiTrends(e.target.checked)} /><svg viewBox="0 0 64 64"><path className="path" d="M8 33 L26 51 L56 13" /></svg><span>🔥 Live SEO trends (slower, costs more)</span></label>
           {aiMsg && <div className={/different captions written|Saved to/i.test(aiMsg) ? 'banner' : 'alert err'} style={{ marginTop: 10 }}>{aiMsg}</div>}
           <button className="skew-btn grad" style={{ width: '100%', marginTop: 10 }} disabled={aiBusy || !aiBrief.trim()} onClick={writeWithAi}><span>{aiBusy ? 'Writing…' : '✨ Write captions'}</span></button>

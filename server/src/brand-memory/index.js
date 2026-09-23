@@ -299,7 +299,58 @@ export function brandPack(brand) {
   return lines.join('\n');
 }
 
-// Special hard rules from the master prompt that must survive compaction.
+// --- Brief breakdown: GOOD PROMPT = GOOD CAPTION, BAD PROMPT = plain answer.
+// Parses any brief into | BRAND | MOTIVE | WHEN | TYPE |, all locally, free.
+// Rich briefs get a structured breakdown the writer must honor; thin/nonsense
+// briefs are flagged WEAK so the model answers directly instead of forcing
+// structure onto garbage.
+const OFFER_RE = /(\d+\s*%|\boff\b|offer|discount|deal|free|gold|gift|first\s+\d+|only\s+\d+|launch|opening|new\s+(shop|store|branch|collection)|sale|combo|valid|expire|hurry|limited)/i;
+const WHEN_RE = /(before\s+\d+[a-z]*|after\s+\d+[a-z]*|till\s+[a-z0-9 ]+|valid[^.,;]*|first\s+\d+[^.,;]*|only\s+\d+[^.,;]*|ends[^.,;]*|today|tomorrow|this\s+week|this\s+month|\d+\s*(am|pm))/i;
+const FUNNY_RE = /(funny|comedy|comic|meme|skit|prank|bloopers|laugh|relatable|sarcasm)/i;
+const REVIEW_RE = /(review|feedback|testimonial|rating|customer\s+said|client\s+said|google\s+review)/i;
+const INFO_RE = /(tips?|guide|how\s+to|benefits?|why\s+|explained|awareness|myths?|facts?|did\s+you\s+know)/i;
+const SHOW_RE = /(transformation|makeover|reveal|before\s*(and|\/|-) *after|new\s+look|result|showcase|walkthrough|tour|photoshoot)/i;
+
+export function parseBrief(brief, brand) {
+  const b = String(brief || '');
+  const words = b.toLowerCase().split(/[^a-z]+/).filter((w) => w.length > 2);
+  const weak = b.trim().length < 15 || words.length < 3;
+  let motive = 'general post';
+  let type = 'standard: warm hook + detail + concrete CTA';
+  if (OFFER_RE.test(b)) {
+    const all = b.match(new RegExp(OFFER_RE.source, 'gi')) || [];
+    const best = all.find((x) => /\d/.test(x)) || all[0];
+    motive = `OFFER — ${best.trim()}`;
+    type = 'HYPE/OFFER: bold excited hook, exact terms, urgency, tag-a-friend CTA';
+  } else if (FUNNY_RE.test(b)) {
+    motive = 'entertainment';
+    type = 'FUNNY: one punchline from the reel, tag/share CTA, never insult';
+  } else if (REVIEW_RE.test(b)) {
+    motive = 'social proof';
+    type = 'REVIEW: use only the actual feedback given, faithful paraphrase';
+  } else if (INFO_RE.test(b)) {
+    motive = 'education';
+    type = 'INFORMATIONAL: one clear takeaway + save/enquiry CTA';
+  } else if (SHOW_RE.test(b)) {
+    motive = 'showcase';
+    type = 'SHOWCASE: describe the visible result with sensory words';
+  }
+  const when = (b.match(WHEN_RE)?.[0] || '').trim();
+  return {
+    brand: brand?.name || 'unknown',
+    motive,
+    when: when || 'no time limit stated',
+    type,
+    weak,
+  };
+}
+
+export function breakdownBlock(parsed) {
+  if (parsed.weak) {
+    return `\nBRIEF STATUS: WEAK — the prompt is thin or nonsense. Answer directly and briefly from exactly what was asked. Do not force hype, footer theater, or invented details. GOOD PROMPT = GOOD CAPTION, BAD PROMPT = plain direct output.`;
+  }
+  return `\nBRIEF BREAKDOWN (honor every slot):\n| BRAND = ${parsed.brand} | MOTIVE = ${parsed.motive} | WHEN/CONDITIONS = ${parsed.when} | TYPE = ${parsed.type} |`;
+}
 export function globalBrandRules() {
   return [
     'Caption: hook + 1 useful detail + 1 CTA, 25-55 words (8-25 comedy/cinematic, 45-90 info). No em dash. Emojis: standard 2-4 placed naturally; real offers/openings 4-8 with excitement.',
