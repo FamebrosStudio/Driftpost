@@ -128,11 +128,13 @@ export async function generateCaptions(summary, opts = {}) {
     } catch {}
     const footerLines = deep?.fixed_footer?.lines?.length
       ? deep.fixed_footer.lines
-      : full?.footer_lines?.length
-        ? full.footer_lines
-        : brand.footer?.length
-          ? brand.footer
-          : ['💫 Managed by: @famebrosstudio'];
+      : deep?.footer_policy?.confirmed_footer_lines?.length
+        ? deep.footer_policy.confirmed_footer_lines
+        : full?.footer_lines?.length
+          ? full.footer_lines
+          : brand.footer?.length
+            ? brand.footer
+            : ['💫 Managed by: @famebrosstudio'];
     const footer = footerLines.join('\n');
     const kwBank = deep?.seo_keyword_bank?.length
       ? deep.seo_keyword_bank

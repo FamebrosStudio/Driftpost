@@ -133,7 +133,11 @@ export function deepPack(deep, brand) {
     tags.length ? `Hashtag bank (pick exactly 3): ${tags.join(' ')}` : null,
     deep.suggested_hashtag_bank?.conditional ? `Tag conditions: ${Object.entries(deep.suggested_hashtag_bank.conditional).map(([t, r]) => `${t} ${r}`).join('; ')}` : null,
     (deep.seo_keyword_bank || []).length ? `SEO keywords: ${deep.seo_keyword_bank.slice(0, 9).join(', ')}` : null,
-    deep.fixed_footer?.lines?.length ? `Footer (append exactly):\n${deep.fixed_footer.lines.join('\n')}` : null,
+    (deep.fixed_footer?.lines?.length
+      ? `Footer (append exactly):\n${deep.fixed_footer.lines.join('\n')}`
+      : deep.footer_policy?.confirmed_footer_lines?.length
+        ? `Footer (append exactly):\n${deep.footer_policy.confirmed_footer_lines.join('\n')}`
+        : null),
     play ? `Playbook:\n${play}` : null,
     deep.sample_caption?.text ? `Style example (match energy, never copy facts):\n${String(deep.sample_caption.text).slice(0, 600)}` : null,
     (deep.accuracy_rules || []).length ? `Accuracy: ${deep.accuracy_rules.slice(0, 5).join(' ')}` : null,
