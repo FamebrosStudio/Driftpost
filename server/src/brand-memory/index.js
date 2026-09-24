@@ -168,7 +168,10 @@ export function deepBrandIds() {
 
 // Footer/phone/address readers that tolerate every file variant seen so far:
 // fixed_footer.lines | .full_lines | .<branch>_only_lines (never group_*),
-// footer_policy.confirmed_footer_lines; contact.phone_display | .primary_phone_display.
+// .compact_designation_line + social/agency (public figures),
+// .*general*lines (multi-footer brands: brand-wide default),
+// footer_policy.confirmed_footer_lines; contact.phone_display |
+// .primary_phone_display | .customer_care_display.
 export function deepFooter(deep) {
   const ff = deep?.fixed_footer;
   if (ff) {
@@ -177,13 +180,26 @@ export function deepFooter(deep) {
     if (ff.full_lines?.length) return ff.full_lines;
     const only = Object.keys(ff).filter((k) => k.endsWith('_only_lines') && Array.isArray(ff[k]) && ff[k].length);
     if (only.length) return ff[only[0]];
+    // Public-figure format: compact designation + social + agency (routine captions).
+    if (typeof ff.compact_designation_line === 'string' && ff.compact_designation_line.trim()) {
+      return [ff.compact_designation_line.trim(), ff.social_line, ff.agency_line].filter((l) => typeof l === 'string' && l.trim());
+    }
+    // Multi-footer brands: the *general* footer is the brand-wide default
+    // (campaign/showroom footers apply only to those posts).
+    const general = Object.keys(ff).find((k) => /general/i.test(k) && k.endsWith('_lines') && Array.isArray(ff[k]) && ff[k].length);
+    if (general) return ff[general];
   }
   if (deep?.footer_policy?.confirmed_footer_lines?.length) return deep.footer_policy.confirmed_footer_lines;
+  // Last resort: first *_lines array present (never usage/rules strings).
+  if (ff) {
+    const any = Object.keys(ff).find((k) => k.endsWith('_lines') && Array.isArray(ff[k]) && ff[k].length);
+    if (any) return ff[any];
+  }
   return [];
 }
 
 export function deepPhone(deep) {
-  return deep?.contact?.phone_display || deep?.contact?.primary_phone_display || '';
+  return deep?.contact?.phone_display || deep?.contact?.primary_phone_display || deep?.contact?.customer_care_display || '';
 }
 
 export function deepAddress(deep) {
@@ -193,11 +209,30 @@ export function deepAddress(deep) {
 // Precedence inside: owner memory correction > master instruction > playbook.
 export function deepPack(deep, brand) {
   const mem = loadMemory().brands?.[deep.brand_id];
+  // CTA bank keys vary per file (booking/enquiry/visit/call/shop/...):
+  // collect every array, skip the selection_rule note.
   const cta = deep.cta_bank
-    ? [...(deep.cta_bank.booking || []), ...(deep.cta_bank.save || []), ...(deep.cta_bank.share || []), ...(deep.cta_bank.comments || [])].slice(0, 5)
+    ? Object.entries(deep.cta_bank)
+        .filter(([k, v]) => k !== 'selection_rule' && Array.isArray(v))
+        .flatMap(([, v]) => v)
+        .filter((s) => typeof s === 'string' && s.trim())
+        .filter((v, i, a) => a.indexOf(v) === i)
+        .slice(0, 6)
     : [];
+  // Hashtag buckets vary too (brand/category/occasion/location/personal/...):
+  // collect every array except meta keys; campaign-only tags stay out of the
+  // default bank and are surfaced as a conditional note instead.
+  const SKIP_TAG_KEYS = new Set(['rule', 'conditional', 'campaign_only_when_active']);
   const tags = deep.suggested_hashtag_bank
-    ? [...(deep.suggested_hashtag_bank.brand || []), ...(deep.suggested_hashtag_bank.location || []), ...(deep.suggested_hashtag_bank.topic || [])].slice(0, 6)
+    ? Object.entries(deep.suggested_hashtag_bank)
+        .filter(([k, v]) => !SKIP_TAG_KEYS.has(k) && Array.isArray(v))
+        .flatMap(([, v]) => v)
+        .filter((s) => typeof s === 'string' && s.trim())
+        .filter((v, i, a) => a.indexOf(v) === i)
+        .slice(0, 8)
+    : [];
+  const campaignTags = Array.isArray(deep.suggested_hashtag_bank?.campaign_only_when_active)
+    ? deep.suggested_hashtag_bank.campaign_only_when_active.filter((s) => typeof s === 'string' && s.trim())
     : [];
   const play = deep.content_playbook
     ? Object.entries(deep.content_playbook)
@@ -208,6 +243,11 @@ export function deepPack(deep, brand) {
   const lines = [
     deep.master_brand_instruction ? `MASTER: ${deep.master_brand_instruction}` : null,
     deep.business ? `Business: ${deep.business.category || ''}${deep.business.location_area ? `, ${deep.business.location_area}` : ''}` : null,
+    // Public-figure designation block (approved titles — never reword into current office).
+    Array.isArray(deep.business?.approved_designation_block) && deep.business.approved_designation_block.length
+      ? `Approved titles (use exactly, never upgrade to current office): ${deep.business.approved_designation_block.join(' | ')}`
+      : null,
+    deep.business?.public_positioning ? `Positioning: ${deep.business.public_positioning}` : null,
     deepPhone(deep) ? `Phone: ${deepPhone(deep)}` : null,
     deepAddress(deep) ? `Address: ${deepAddress(deep)}` : null,
     deep.social_media?.instagram_handle ? `IG: ${deep.social_media.instagram_handle}` : null,
@@ -221,6 +261,8 @@ export function deepPack(deep, brand) {
     (deep.suggested_hooks || []).length ? `Hook angles (vary, don't repeat): ${deep.suggested_hooks.slice(0, 4).join(' / ')}` : null,
     tags.length ? `Hashtag bank (pick exactly 3): ${tags.join(' ')}` : null,
     deep.suggested_hashtag_bank?.conditional ? `Tag conditions: ${Object.entries(deep.suggested_hashtag_bank.conditional).map(([t, r]) => `${t} ${r}`).join('; ')}` : null,
+    campaignTags.length ? `Campaign-only tags (use ONLY when that offer/campaign is active): ${campaignTags.join(' ')}` : null,
+    typeof deep.suggested_hashtag_bank?.rule === 'string' ? `Tag rule: ${deep.suggested_hashtag_bank.rule}` : null,
     (deep.seo_keyword_bank || []).length ? `SEO keywords: ${deep.seo_keyword_bank.slice(0, 9).join(', ')}` : null,
     (deepFooter(deep).length
       ? `Footer (append exactly):\n${deepFooter(deep).join('\n')}`

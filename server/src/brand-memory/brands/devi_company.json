@@ -1,0 +1,897 @@
+{
+  "schema_version": "1.0",
+  "brand_number": 19,
+  "brand_id": "devi_company",
+  "brand_name": "Devi & Company",
+  "aliases": [
+    "Devi and Company",
+    "Devi & Company Kanpur",
+    "Devis Kanpur"
+  ],
+  "knowledge_scope": "One Kanpur brand only. Permanent business facts, live public sources, user-approved campaign details, historical promotions and AI content instructions are separated. Never confuse this retailer with another company using a similar name or with the unrelated deviandcompany.com domain.",
+  "business": {
+    "category": "Ethnic and bridal fashion retail",
+    "industry": "Sarees, women's occasion wear, textiles and selected wholesale supply",
+    "customer_focus": "Primarily women and family occasion shoppers in the active Famebros content program",
+    "retail_customer_types": [
+      "Walk-in retail customers",
+      "Wedding and festive shoppers",
+      "Families purchasing occasion wear",
+      "Boutique owners and retailers when wholesale content is specifically approved"
+    ],
+    "city": "Kanpur",
+    "state": "Uttar Pradesh",
+    "country": "India",
+    "core_positioning": "A Kanpur ethnic and bridal fashion destination offering sarees, suits, lehengas and celebration-ready collections across retail and selected wholesale requirements.",
+    "approved_campaign_positioning": "A trusted Kanpur shopping destination beginning its third-store chapter with a customer-focused grand opening celebration.",
+    "public_website_positioning": "A Kanpur-based saree and textile house serving walk-in customers and retailers with occasion, festive and everyday collections.",
+    "public_establishment_claim": "Since 1995",
+    "establishment_claim_status": "Displayed on the current public website with an asterisk. Confirm legal or archival support before using it in high-stakes brand-history material.",
+    "branch_count_before_opening": 2,
+    "upcoming_branch_number": 3,
+    "third_branch_opening_date": "2026-10-11",
+    "third_branch_opening_date_display": "11 October 2026",
+    "third_branch_location_short": "Kidwai Nagar Chauraha, Kanpur",
+    "third_branch_address_status": "User-approved campaign location. The complete postal address, pincode and Google Maps URL still require confirmation.",
+    "public_face": "Parul Ma'am",
+    "public_face_status": "Approved on-camera speaker for the third-store campaign scripts. Do not infer ownership or legal title unless separately confirmed.",
+    "opening_campaign_status_as_of_dataset_date": "Upcoming",
+    "dataset_date": "2026-09-24"
+  },
+  "contact": {
+    "customer_care_display": "+91 88740 00032",
+    "customer_care_e164": "+918874000032",
+    "customer_care_status": "Listed on the current website and repeated on the matched public Instagram profile.",
+    "third_branch_campaign_phone_display": "+91 88740 00177",
+    "third_branch_campaign_phone_e164": "+918874000177",
+    "third_branch_campaign_phone_status": "User-approved for the 11 October 2026 grand-opening campaign. Use this number for opening creatives unless the campaign brief changes.",
+    "naya_ganj_showroom_phone_display": "+91 88740 00036",
+    "naya_ganj_showroom_phone_e164": "+918874000036",
+    "naya_ganj_showroom_phone_status": "Current website showroom phone and WhatsApp.",
+    "lal_bangla_showroom_phone_display": "+91 90440 36667",
+    "lal_bangla_showroom_phone_e164": "+919044036667",
+    "lal_bangla_showroom_phone_status": "Current website showroom phone and WhatsApp.",
+    "naya_ganj_address": "60/10 Purani Dal Mandi, Naya Ganj, Kanpur, Uttar Pradesh 208001",
+    "lal_bangla_address": "Main Market, 514-A, Kajikhera, Lal Bangla, near N-2 Road Chauraha, Kanpur, Uttar Pradesh 208007",
+    "lal_bangla_address_social_variant": "N-2 Road Chauraha, Lal Bangla, Kanpur, Uttar Pradesh 208001",
+    "lal_bangla_address_note": "The current website gives 514-A Kajikhera and pincode 208007, while older social captions use the shorter N-2 Road Chauraha address and pincode 208001. Use the website format for new detailed footers unless the store approves a different version.",
+    "third_branch_address": "Kidwai Nagar Chauraha, Kanpur",
+    "third_branch_address_note": "Use only for the third-store campaign. Add the full street address and pincode only after approval.",
+    "email": "deviskanpur@gmail.com",
+    "email_status": "Listed on the current website.",
+    "website": "https://devis.co.in/",
+    "website_status": "Current public website matching the business name, branch addresses and customer-care details.",
+    "unrelated_domain": "https://deviandcompany.com/",
+    "unrelated_domain_rule": "Do not use. It has resolved to an unrelated software business.",
+    "naya_ganj_google_maps_url": null,
+    "lal_bangla_google_maps_url": null,
+    "third_branch_google_maps_url": null
+  },
+  "social_media": {
+    "instagram_handle": "@deviandcompany_kanpur",
+    "instagram_url": "https://www.instagram.com/deviandcompany_kanpur/",
+    "instagram_status": "Matched public profile. The indexed biography lists Kanpur ethnic and bridal wear, Naya Ganj, Lal Bangla and customer care +91 88740 00032.",
+    "facebook_handle": "@deviandcompanykanpur",
+    "facebook_url": "https://www.facebook.com/deviandcompanykanpur/",
+    "facebook_status": "Matched public page with the Naya Ganj address and product posts.",
+    "youtube_url": null,
+    "threads_url": null,
+    "pinterest_url": null,
+    "managing_agency": "Famebros Studio",
+    "agency_instagram_handle": "@famebrosstudio",
+    "agency_instagram_url": "https://www.instagram.com/famebrosstudio/"
+  },
+  "established_content_knowledge": {
+    "confirmed_content_genres": [
+      "Informational fashion content",
+      "Outfit and styling transformations",
+      "Product showcases",
+      "Bridal and wedding shopping content",
+      "Festive collection content",
+      "Grand-opening announcements",
+      "Offer and prize communication",
+      "Customer invitations",
+      "Owner or spokesperson-led reels with Parul Ma'am",
+      "Customer reviews and testimonials with consent",
+      "Store walkthroughs",
+      "Retail and wholesale sourcing content when approved"
+    ],
+    "primary_audience": [
+      "Women shopping for sarees and Indian occasion wear",
+      "Brides, wedding guests and family wedding shoppers",
+      "Festive clothing customers in Kanpur",
+      "Families comparing collections and value offers",
+      "Existing loyal customers invited to the third-store celebration",
+      "Boutique owners and retailers only for wholesale-specific posts"
+    ],
+    "confirmed_product_categories": [
+      "Sarees",
+      "Designer sarees",
+      "Silk and Banarasi sarees when the exact SKU is confirmed",
+      "Daily-wear and printed sarees",
+      "Lehengas",
+      "Bridal lehengas",
+      "Ladies suits",
+      "Ready-made suits",
+      "Unstitched dress materials",
+      "Semi-stitched sets",
+      "Gowns and party wear when featured",
+      "Fusion and Indo-Western wear when featured",
+      "Wedding trousseau sets",
+      "Ties and selected formal accessories on the public website",
+      "Wholesale saree and suit assortments"
+    ],
+    "product_category_rule": "A website category or older social post does not prove that a specific item is currently available. Confirm SKU, colour, size, fabric, price and branch before a transactional caption.",
+    "published_service_features": [
+      "Retail shopping",
+      "Wholesale support for boutiques and retailers",
+      "Showroom phone and WhatsApp enquiries",
+      "Staff guidance for occasion, budget and styling needs"
+    ],
+    "brand_story_angles": [
+      "One store to two stores to the third chapter",
+      "Customer trust and support across Kanpur",
+      "A collection for celebrations and important family moments",
+      "Premium-looking choices across different budgets",
+      "Shopping as a shared family experience"
+    ],
+    "third_store_campaign": {
+      "campaign_name": "Devi & Company Third Store Grand Opening",
+      "opening_date": "11 October 2026",
+      "location": "Kidwai Nagar Chauraha, Kanpur",
+      "campaign_contact": "+91 88740 00177",
+      "primary_goal": "Drive footfall to the third branch and turn the opening into a city-level customer celebration.",
+      "approved_page_one_messages": [
+        "Grand Opening Ceremony",
+        "Limited Time Offer",
+        "Daily Lucky Winner",
+        "Assured Gift",
+        "₹3,000 minimum shopping to participate"
+      ],
+      "page_one_exclusion_rule": "Do not show the ₹5,000, ₹10,000 and ₹20,000 bumper-ticket tiers on the first footfall creative. Use them on a separate terms or bumper-draw communication.",
+      "invitation_headlines": [
+        "YOU'RE INVITED",
+        "Shop Opening Day",
+        "Chance to Win TV/AC"
+      ],
+      "prelaunch_message": "Something Big Is Coming in Kanpur",
+      "emotional_message": "The third store is presented as the next chapter made possible by customer trust and support.",
+      "campaign_stage_rule": "Before opening, use coming-soon, reveal, invitation and countdown language. On 11 October 2026, switch to opening-day language. After the opening, remove coming-soon wording and check which offers remain active."
+    },
+    "approved_opening_offers": {
+      "minimum_participation_rule": "A final payable purchase of at least ₹3,000 qualifies for the assured gift and daily lucky-winner participation, subject to final store terms.",
+      "assured_gift_public_wording": "ASSURED GIFT",
+      "assured_gift_rule": "Use only the words ASSURED GIFT in public headline copy unless the exact gift item and stock terms are formally approved.",
+      "daily_lucky_winner": {
+        "frequency": "One winner each day during the approved campaign period",
+        "prize_pool": [
+          "Stainless Steel Dinner Set",
+          "Mixer Grinder",
+          "Grill Oven",
+          "Garment Steamer"
+        ],
+        "prize_rotation_rule": "Do not promise a specific prize on a specific day unless the approved calendar assigns it.",
+        "winner_rule_missing": "Draw time, winner selection method, collection procedure, announcement platform and identity-verification process still require formal terms."
+      },
+      "five_hundred_off": {
+        "headline": "₹500 OFF",
+        "gross_purchase_required": "At least ₹3,500 before applying the discount",
+        "discount_amount": "₹500",
+        "minimum_final_payable": "₹3,000",
+        "combined_benefit": "A qualifying final payable of ₹3,000 can receive the approved discount, assured gift and daily lucky entry, subject to campaign terms.",
+        "logic_example": "Shop for ₹3,500, receive ₹500 off, pay ₹3,000 and remain eligible for the ₹3,000 participation benefits.",
+        "rule": "Do not write ₹500 off on a ₹3,000 basket if that would reduce the final payable below ₹3,000. Do not revive the older KN-500 code unless the store confirms it for this campaign."
+      },
+      "weekly_bumper_draw": {
+        "prizes": [
+          "AC",
+          "LED TV"
+        ],
+        "rotation": "AC and LED TV on alternate weeks",
+        "ticket_rules": [
+          "₹5,000 shopping = 1 bumper ticket",
+          "₹10,000 shopping = 2 bumper tickets",
+          "₹20,000 shopping = 4 bumper tickets"
+        ],
+        "ticket_rule_note": "Do not invent ticket tiers between or above the approved values. Confirm whether a single bill is required and whether tickets can be accumulated across bills.",
+        "schedule_missing": "Exact draw dates, alternating prize order, winner method and prize collection terms require confirmation."
+      },
+      "value_offers": [
+        {
+          "price": "₹2,000",
+          "offer": "10 sarees",
+          "scope": "Selected collections",
+          "rule": "Do not imply every saree in the store is eligible."
+        },
+        {
+          "price": "₹4,000",
+          "offer": "5 sarees",
+          "scope": "Selected collections",
+          "rule": "Use the exact eligible collection shown in the campaign brief."
+        },
+        {
+          "price": "₹2,500",
+          "offer": "5 salwar suit pieces",
+          "scope": "Selected collections",
+          "rule": "Clarify whether pieces are unstitched, semi-stitched or ready-made before product-level copy."
+        },
+        {
+          "price": "₹2,000",
+          "offer": "6 ready-made suits",
+          "scope": "Selected collections",
+          "rule": "Confirm sizes and included styles before publication."
+        }
+      ],
+      "stacking_status": "Not confirmed",
+      "validity_end_date": null,
+      "offer_general_rule": "Do not combine value offers, ₹500 off, gifts or draw entries in one promise unless the final written terms explicitly allow stacking."
+    },
+    "historical_or_superseded_campaign_notes": [
+      {
+        "claim": "Flat 50% OFF on selected fusion, Indo-Western, gown or wedding styles",
+        "status": "Appeared in earlier public content; not automatically part of the third-store opening offer system.",
+        "rule": "Use only if the specific collection, dates and current approval are supplied."
+      },
+      {
+        "claim": "Silver coins",
+        "status": "Mentioned in an early teaser script draft, but absent from the final approved prize list supplied by the user.",
+        "rule": "Do not publish unless re-approved in final written terms."
+      },
+      {
+        "claim": "Travelling bag as the assured gift",
+        "status": "Appeared in an earlier strategy draft, but final campaign instructions require public text to say only ASSURED GIFT.",
+        "rule": "Do not name the gift item without fresh written approval."
+      },
+      {
+        "claim": "Promo code KN-500",
+        "status": "Earlier voucher concept, not included in the final opening brief.",
+        "rule": "Do not publish the code unless reactivated by the store."
+      }
+    ],
+    "production_plan_internal": {
+      "shoot_count": 3,
+      "planned_shoot_dates": [
+        "16 September 2026",
+        "18 September 2026",
+        "Approximately 22 September 2026"
+      ],
+      "talent_plan": "One model-led shoot and two shoots featuring Parul Ma'am.",
+      "blogger_plan": "Five bloggers planned between 18 and 20 September 2026 at the old store.",
+      "prize_zone_setup": "Prize display zone planned with red cloth covering before reveal.",
+      "daily_video_plan": "A fixed videographer planned through the offer period, with an approximate internal budget of ₹20,000.",
+      "publication_rule": "These are internal production notes. Do not expose budgets, tentative dates, staff logistics or unrevealed prizes in public captions."
+    }
+  },
+  "writing_direction": {
+    "status": "Recommended brand defaults based on the active content system, current public profile and approved opening campaign.",
+    "brand_voice": [
+      "Warm",
+      "Festive",
+      "Welcoming",
+      "Family oriented",
+      "Premium yet approachable",
+      "Excited without sounding chaotic",
+      "Trust building"
+    ],
+    "positioning_for_copy": "Help Kanpur shoppers discover ethnic and bridal looks for important celebrations, while making the third-store opening feel like a shared milestone with customers.",
+    "primary_language": "Natural Hindi or Hinglish for store-led and Parul Ma'am reels",
+    "alternate_language": "Polished English for premium collection showcases and formal invitations",
+    "language_rule": "Use Hindi in Devanagari or conversational Roman Hinglish according to the actual creative. Avoid awkward word-for-word translation.",
+    "target_audience": [
+      "Women shopping for festive, wedding and occasion wear",
+      "Brides and families preparing for weddings",
+      "Existing Devi & Company customers across Kanpur",
+      "New shoppers near the upcoming Kidwai Nagar branch",
+      "Value-conscious customers interested in approved opening offers",
+      "Boutiques and retailers only in wholesale-specific communication"
+    ],
+    "emotional_angles": [
+      "Kanpur's love helped the brand reach its third store",
+      "An invitation to celebrate the next chapter together",
+      "The excitement of finding a complete occasion look",
+      "Shopping with rewards during the opening campaign",
+      "A loyal customer being personally invited and appreciated",
+      "Festive fashion that feels special and within reach"
+    ],
+    "signature_copy_territories": [
+      "Chapter Three",
+      "Something Big Is Coming to Kanpur",
+      "Customer trust and the next store milestone",
+      "Opening celebration, gifts and lucky chances",
+      "Wedding and festive outfit discovery",
+      "Premium collection with accessible value"
+    ],
+    "prohibited_lines": [
+      "Traditional Look Beautiful on You",
+      "Fashion for Brighter Tomorrow"
+    ],
+    "avoid_style": [
+      "Publishing tentative offers as final",
+      "Changing rupee amounts, quantities, prize names or eligibility",
+      "Calling every item premium, pure, handcrafted or designer without proof",
+      "False countdowns, fake scarcity or unapproved limited-stock claims",
+      "Mixing retail and wholesale pricing",
+      "Naming the assured gift before approval",
+      "Revealing internal production budgets",
+      "Excessive all-caps text outside campaign headlines",
+      "Generic fashion poetry that ignores the visible garment",
+      "Em dashes"
+    ]
+  },
+  "content_playbook": {
+    "prelaunch_teaser": {
+      "focus": "Build curiosity before the full third-store reveal.",
+      "approved_direction": [
+        "Something Big Is Coming in Kanpur",
+        "Guess what is coming",
+        "Chapter Three",
+        "Team preparations and controlled glimpses"
+      ],
+      "rules": [
+        "Do not reveal hidden gifts or detailed terms before the scheduled reveal.",
+        "Do not use coming-soon language after 11 October 2026.",
+        "Parul Ma'am may lead the storytelling when the actual reel includes her."
+      ]
+    },
+    "third_store_announcement": {
+      "focus": "Announce that the new location is Devi & Company's third Kanpur store.",
+      "structure": "Kanpur hook, customer-love message, third-store reveal, date and location, invitation CTA.",
+      "rules": [
+        "Use 11 October 2026 exactly.",
+        "Use Kidwai Nagar Chauraha, Kanpur for the opening campaign.",
+        "Do not claim a fourth store or nationwide expansion."
+      ]
+    },
+    "loyal_customer_invitation": {
+      "focus": "Make existing customers feel personally valued and proud of the brand's growth.",
+      "approved_messages": [
+        "YOU'RE INVITED",
+        "Grand Opening Ceremony",
+        "Your trust and support helped us reach our third store",
+        "Celebrate the new chapter with us",
+        "Chance to win TV/AC"
+      ],
+      "rules": [
+        "Keep the tone personal, grateful and celebratory.",
+        "Do not exclude new customers from the opening unless the invite is explicitly private.",
+        "Use the correct opening date, location and contact."
+      ]
+    },
+    "opening_day_post": {
+      "focus": "Drive same-day footfall on 11 October 2026.",
+      "structure": "Opening today, exact location, key approved participation message, visit CTA.",
+      "rules": [
+        "Publish only on the correct date or when scheduled accurately.",
+        "Include opening time only after confirmation.",
+        "Do not overcrowd one post with every offer tier."
+      ]
+    },
+    "offer_overview": {
+      "focus": "Explain the approved opening benefits clearly.",
+      "structure": "Offer headline, eligibility, what the customer receives or may win, validity, T&C and visit CTA.",
+      "rules": [
+        "Separate assured benefit from chance-based prize.",
+        "State selected collections for value bundles.",
+        "Do not omit the ₹3,000 participation minimum.",
+        "Do not combine offers unless stacking is approved."
+      ]
+    },
+    "daily_lucky_winner": {
+      "focus": "Promote or announce one daily draw accurately.",
+      "rules": [
+        "Use one winner per day only during the approved campaign period.",
+        "Do not guarantee a specific prize to every customer.",
+        "For winner announcements, obtain permission and state the real draw date and prize.",
+        "Do not invent purchase amount, customer name or reaction."
+      ]
+    },
+    "weekly_bumper_draw": {
+      "focus": "Explain alternate-week AC and LED TV opportunities and ticket tiers.",
+      "rules": [
+        "List ₹5,000 = 1, ₹10,000 = 2 and ₹20,000 = 4 exactly.",
+        "Do not place these tiers on the campaign's first footfall page.",
+        "Confirm the draw date and which prize applies that week.",
+        "Use chance to win, never guaranteed win."
+      ]
+    },
+    "saree_showcase": {
+      "focus": "Show the true colour, border, pallu, motifs and drape of an actual saree.",
+      "rules": [
+        "Name silk, Banarasi, cotton, muslin or another fabric only from the SKU or label.",
+        "Do not assume blouse, fall, petticoat or stitching is included.",
+        "Mention the correct branch and availability when supplied."
+      ]
+    },
+    "bridal_and_lehenga_showcase": {
+      "focus": "Highlight actual detailing, silhouette, colour and wedding use of the featured outfit.",
+      "rules": [
+        "Do not call every heavy outfit bridal.",
+        "Do not promise fitting, customisation or alteration without confirmation.",
+        "Preserve the garment's true embroidery and design."
+      ]
+    },
+    "suit_and_dress_material_showcase": {
+      "focus": "Clarify whether the item is ready-made, semi-stitched or unstitched and show its real components.",
+      "rules": [
+        "Do not use five salwar suit pieces and six ready-made suits interchangeably.",
+        "State size availability only when confirmed.",
+        "Identify dupatta, bottom and lining inclusion from the product brief."
+      ]
+    },
+    "transformation_reel": {
+      "focus": "A real styling change from selection or draping to the finished ethnic look.",
+      "structure": "Occasion or outfit problem, product reveal, styling transformation, save or visit CTA.",
+      "rules": [
+        "Do not change the model's body or garment digitally.",
+        "Do not claim tailoring results that were not shown.",
+        "Keep the actual product as the hero."
+      ]
+    },
+    "customer_review": {
+      "focus": "A real shopper's experience with the collection or service.",
+      "rules": [
+        "Use the customer's approved words or faithful summary.",
+        "Do not invent a star rating, purchase history or savings.",
+        "Get permission before using identity, voice or purchase details."
+      ]
+    },
+    "post_launch_content": {
+      "focus": "Welcome customers to the new store after 11 October 2026 and document the launch accurately.",
+      "rules": [
+        "Change upcoming or coming soon to now open only after the store opens.",
+        "Use real event photos and attendance.",
+        "Check which offers continue after opening day."
+      ]
+    }
+  },
+  "ethnic_product_description_framework": {
+    "product_identity": [
+      "Exact product name",
+      "SKU or collection",
+      "Saree, suit, lehenga, gown, dress material or accessory",
+      "Retail or wholesale context",
+      "Branch availability"
+    ],
+    "visible_design": [
+      "True colour",
+      "Motif or print",
+      "Border and pallu",
+      "Embroidery or surface work",
+      "Silhouette",
+      "Drape or fall",
+      "Visible components"
+    ],
+    "fabric_and_construction": [
+      "Label-confirmed fabric",
+      "Weave or technique",
+      "Stitched, semi-stitched or unstitched status",
+      "Size or dimensions",
+      "Lining",
+      "Blouse, dupatta or bottom inclusion",
+      "Care instructions"
+    ],
+    "commercial_details": [
+      "MRP",
+      "Sale price",
+      "Offer eligibility",
+      "Selected collection limitation",
+      "Stock",
+      "Branch",
+      "Delivery or pickup",
+      "Return or exchange eligibility"
+    ],
+    "requires_explicit_confirmation": [
+      "Pure silk",
+      "Authentic Banarasi",
+      "Handloom",
+      "Hand embroidery",
+      "Designer exclusive",
+      "Custom made",
+      "Blouse stitching included",
+      "Alteration included",
+      "All sizes available",
+      "Wholesale price",
+      "Offer stacking"
+    ],
+    "rule": "Describe the actual product in the supplied asset. Do not transfer a website category, campaign price or material claim to an unrelated SKU."
+  },
+  "caption_format": {
+    "default_platforms": [
+      "Instagram",
+      "Facebook"
+    ],
+    "default_number_of_options": 1,
+    "body_word_target": "30 to 70 words, excluding footer, hashtags and SEO bracket.",
+    "short_reel_word_target": "15 to 45 words.",
+    "offer_caption_word_target": "Use enough words to state eligibility, selected-collection scope, validity and T&C clearly.",
+    "sequence": [
+      "Specific festive, opening or product hook",
+      "Exact product or approved offer detail",
+      "One visit, call, save, share or mark-the-date CTA",
+      "Correct branch or campaign footer",
+      "Exactly three relevant hashtags",
+      "Exactly one square bracket containing 5 to 8 comma-separated SEO phrases"
+    ],
+    "line_breaks": "Use short paragraphs. Keep address and phone in a separate footer. Put hashtags and SEO bracket after the footer.",
+    "body_emojis": "Usually one to three festive or fashion emojis. Use fewer for formal invitations and terms posts.",
+    "hashtag_count": 3,
+    "hashtag_selection": "Use one brand tag, one category or campaign tag and one Kanpur location tag.",
+    "seo_keyword_count": "5 to 8",
+    "seo_format": "[keyword one, keyword two, keyword three, keyword four, keyword five]",
+    "price_format": "Use the rupee symbol and Indian number grouping. Preserve quantity and payable logic exactly.",
+    "punctuation": "No em dashes.",
+    "output_rule": "Return ready-to-copy public content without null fields, internal production notes or draft-only offer ideas."
+  },
+  "fixed_footer": {
+    "third_store_campaign_lines": [
+      "📅 Grand Opening: 11 October 2026",
+      "📍 Kidwai Nagar Chauraha, Kanpur",
+      "📞 +91 88740 00177",
+      "🎥 Managed by: @famebrosstudio ✨"
+    ],
+    "general_customer_care_lines": [
+      "📞 Customer Care: +91 88740 00032",
+      "📲 Instagram: @deviandcompany_kanpur",
+      "🌐 https://devis.co.in/",
+      "🎥 Managed by: @famebrosstudio ✨"
+    ],
+    "naya_ganj_lines": [
+      "📍 60/10 Purani Dal Mandi, Naya Ganj, Kanpur, Uttar Pradesh 208001",
+      "📞 +91 88740 00036",
+      "🎥 Managed by: @famebrosstudio ✨"
+    ],
+    "lal_bangla_lines": [
+      "📍 Main Market, 514-A, Kajikhera, Lal Bangla, near N-2 Road Chauraha, Kanpur, Uttar Pradesh 208007",
+      "📞 +91 90440 36667",
+      "🎥 Managed by: @famebrosstudio ✨"
+    ],
+    "usage": "Use the third-store footer for the opening campaign. Use the relevant existing showroom footer for branch-specific inventory. Use the general footer for brand-wide posts.",
+    "rules": [
+      "Do not put the customer-care number, branch number and opening campaign number together unless the design needs a complete directory.",
+      "Do not attach the Lal Bangla number to Naya Ganj or vice versa.",
+      "Do not describe Kidwai Nagar as open before 11 October 2026.",
+      "Do not use deviandcompany.com."
+    ]
+  },
+  "suggested_hashtag_bank": {
+    "brand": [
+      "#DeviAndCompany",
+      "#DeviAndCompanyKanpur"
+    ],
+    "opening": [
+      "#GrandOpening",
+      "#ThirdStore",
+      "#KanpurGrandOpening"
+    ],
+    "category": [
+      "#SareeCollection",
+      "#EthnicWear",
+      "#BridalWear",
+      "#WeddingFashion",
+      "#SalwarSuits",
+      "#LehengaShopping"
+    ],
+    "location": [
+      "#KanpurShopping",
+      "#KanpurFashion",
+      "#KidwaiNagar",
+      "#NayaGanj",
+      "#LalBangla"
+    ],
+    "offer": [
+      "#OpeningOffer",
+      "#LuckyDraw",
+      "#AssuredGift"
+    ],
+    "rule": "Select exactly three relevant tags. Use Kidwai Nagar and opening tags only for the third-store campaign. Do not use Flat 50% Off unless a current approved campaign confirms it."
+  },
+  "seo_keyword_bank": [
+    "Devi and Company Kanpur",
+    "Devi & Company third store",
+    "Devi and Company Kidwai Nagar",
+    "grand opening Kanpur 11 October 2026",
+    "saree shop in Kanpur",
+    "bridal wear Kanpur",
+    "lehenga shop Kanpur",
+    "salwar suit collection Kanpur",
+    "women ethnic wear Kanpur",
+    "wedding shopping Kanpur",
+    "festive collection Kanpur",
+    "Naya Ganj saree showroom",
+    "Lal Bangla ethnic wear",
+    "Kanpur opening offers",
+    "daily lucky winner Kanpur",
+    "AC and LED TV bumper draw",
+    "retail and wholesale sarees Kanpur"
+  ],
+  "cta_bank": {
+    "prelaunch": [
+      "Kanpur, stay ready for the big reveal.",
+      "Follow @deviandcompany_kanpur for the next reveal."
+    ],
+    "invitation": [
+      "Join us on 11 October 2026 and celebrate our third-store opening.",
+      "Mark the date and be part of our next chapter."
+    ],
+    "visit_third_store": [
+      "Visit us at Kidwai Nagar Chauraha, Kanpur, on opening day.",
+      "Call +91 88740 00177 for third-store opening details."
+    ],
+    "shop": [
+      "Explore the featured collection at your nearest Devi & Company showroom.",
+      "Visit the store to check the current colours, sizes and availability."
+    ],
+    "save": [
+      "Save this look for your next wedding function.",
+      "Save the offer details and read the complete terms before shopping."
+    ],
+    "share": [
+      "Share this invite with your shopping partner.",
+      "Send this offer to your family shopping group."
+    ],
+    "selection_rule": "Use one CTA. Match the phone and address to the branch or campaign shown."
+  },
+  "suggested_hooks": {
+    "prelaunch": [
+      "Kanpur, kuch bahut special hone wala hai.",
+      "Har journey ka ek next chapter hota hai.",
+      "Kuch numbers sirf numbers nahi hote."
+    ],
+    "third_store": [
+      "Kanpur, ek aur good news aapke liye!",
+      "Aapke pyaar se hum pahunch gaye hain Chapter Three tak.",
+      "Devi & Company ka third store ab sirf ek reveal door hai."
+    ],
+    "invitation": [
+      "Aapke bina yeh celebration complete nahi hoga.",
+      "This opening is our milestone and your invitation.",
+      "Kanpur, 11 October ko milte hain."
+    ],
+    "offer": [
+      "Shopping ke saath assured gift aur lucky chance bhi.",
+      "₹3,000 final shopping value, opening benefits unlocked.",
+      "Shop, celebrate and get a chance to win."
+    ],
+    "fashion": [
+      "Agla occasion, agla favourite look.",
+      "The detailing deserves a closer look.",
+      "Wedding wardrobe ka statement piece mil gaya?"
+    ],
+    "hook_note": "Use offer hooks only when the exact eligibility and campaign stage are shown. Never turn chance-based prizes into guaranteed benefits."
+  },
+  "visual_and_asset_guidance": {
+    "default_feed_size_px": {
+      "width": 1080,
+      "height": 1440
+    },
+    "default_square_size_px": {
+      "width": 1080,
+      "height": 1080
+    },
+    "default_story_size_px": {
+      "width": 1080,
+      "height": 1920
+    },
+    "reel_aspect_ratio": "9:16",
+    "opening_campaign_palette": [
+      "Magenta pink",
+      "Deep purple",
+      "Cream",
+      "Ivory",
+      "Subtle gold accents"
+    ],
+    "opening_campaign_style": [
+      "Premium festive",
+      "Indian fashion retail",
+      "Elegant",
+      "Celebratory",
+      "Warm and inviting"
+    ],
+    "typography_direction": "Elegant high-contrast display type for key headlines, paired with a clean readable font for dates, addresses and terms.",
+    "product_integrity_rule": "Keep supplied garments realistic and unchanged. Preserve colour, embroidery, print, drape, silhouette and proportions unless the user explicitly requests a product edit.",
+    "rules": [
+      "Use the approved Devi & Company logo without redesigning it.",
+      "Do not change a garment's colour or add embroidery.",
+      "Do not fabricate gift appliances or draw winners.",
+      "Keep offer amounts and quantities large and readable.",
+      "Place important terms close enough to the offer to be understood.",
+      "For invitation posts, prioritize YOU'RE INVITED, 11 October 2026 and Kidwai Nagar Chauraha.",
+      "Use AC and LED TV images only for the approved chance-to-win message.",
+      "Do not show ₹5,000, ₹10,000 and ₹20,000 ticket tiers on the first footfall page.",
+      "Keep products, prizes and customer photos rights-cleared."
+    ]
+  },
+  "carousel_and_reel_system": {
+    "grand_opening_carousel": {
+      "slides": [
+        "YOU'RE INVITED and Grand Opening Ceremony",
+        "11 October 2026 and Kidwai Nagar Chauraha",
+        "₹3,000 minimum final shopping for Assured Gift and Daily Lucky Winner participation",
+        "Selected collection value offers",
+        "Separate weekly bumper-draw ticket terms and campaign contact"
+      ],
+      "guardrail": "Keep the first slide simple and footfall focused. Do not expose all ticket tiers on page one."
+    },
+    "prelaunch_reel_series": {
+      "concepts": [
+        "Something Big Is Coming",
+        "Staff knows the secret",
+        "Why is the team preparing",
+        "Parul Ma'am has something to announce",
+        "Offers, gifts and surprises hint",
+        "Third-store reveal",
+        "Chapter Three emotional story"
+      ],
+      "guardrail": "Reveal only what the campaign calendar allows. Replace teaser wording once full terms are public."
+    },
+    "parul_maam_reel": {
+      "duration": "Usually 25 to 40 seconds unless the brief specifies otherwise.",
+      "flow": "Direct Kanpur hook, personal message, one reveal, clear date or CTA, concise end frame.",
+      "voice": "Warm, conversational Hinglish with natural pauses and a confident smile.",
+      "guardrail": "Do not assign Parul Ma'am an ownership title or promise an unreleased benefit."
+    },
+    "offer_explainer_carousel": {
+      "slides": [
+        "One offer headline",
+        "Exact basket or selected-collection eligibility",
+        "What is assured and what is chance-based",
+        "Validity and exclusions",
+        "Location, contact and T&C"
+      ],
+      "guardrail": "Do not place several unrelated offers together if stacking is not confirmed."
+    },
+    "product_showcase_reel": {
+      "flow": "Visible detail hook, full outfit reveal, occasion styling, branch and availability CTA.",
+      "guardrail": "Name fabric and inclusions only from the product brief."
+    },
+    "winner_announcement": {
+      "flow": "Real winner name with consent, real draw date, actual prize, store handover, congratulations.",
+      "guardrail": "Do not stage a fake draw, fake winner or fake handover."
+    }
+  },
+  "other_output_modes": {
+    "story": "One reveal, offer or product point with a single CTA. Use the correct date and branch. Full footer, hashtags and SEO bracket are optional unless requested.",
+    "comment": "Reply warmly and direct the person to the appropriate confirmed branch number. Do not guarantee stock in comments.",
+    "review_reply": "Thank the customer, mention the relevant collection or service only if they did, and invite another visit without revealing purchase details.",
+    "repost": "Credit customers, models, bloggers and creators only with permission and correct handles.",
+    "text_overlay": "Three to eight words. Use a clear reveal, garment or offer hook with no hidden condition.",
+    "reel_script": "Use natural Hinglish, a strong first three-second hook, one core message and one visit or mark-the-date CTA.",
+    "product_description": "Use the product framework and include only confirmed fabric, components, price, size and branch availability.",
+    "ad_copy": "Use an approved offer, exact location, campaign number, validity and material terms. Do not hide selected-collection restrictions.",
+    "invitation": "Keep it personal and grateful. Include YOU'RE INVITED, Grand Opening Ceremony, 11 October 2026, Kidwai Nagar Chauraha and the chance-to-win message when approved.",
+    "terms_post": "List eligibility, ticket allocation, draw schedule, prize, exclusions, winner verification and redemption process in readable language."
+  },
+  "sample_caption": {
+    "status": "Illustrative third-store invitation using approved date, location and campaign contact. Check the final event time and offer validity before publishing.",
+    "text": "Kanpur, our third chapter begins with you. ✨\n\nYou're invited to the Grand Opening Ceremony of Devi & Company's third store on 11 October 2026. Join us for a special shopping celebration with approved opening offers, an assured gift and daily lucky-winner opportunities on qualifying purchases. T&C apply.\n\n📍 Kidwai Nagar Chauraha, Kanpur\n📞 +91 88740 00177\n🎥 Managed by: @famebrosstudio ✨\n\n#DeviAndCompany #GrandOpening #KanpurShopping\n\n[Devi and Company Kanpur, third store grand opening, Kidwai Nagar shopping, ethnic wear Kanpur, bridal wear Kanpur, saree shop Kanpur]"
+  },
+  "accuracy_rules": [
+    "Use 11 October 2026 exactly for the third-store opening.",
+    "Use Kidwai Nagar Chauraha, Kanpur for the campaign until the complete postal address is approved.",
+    "Use +91 88740 00177 for the third-store opening campaign.",
+    "Use +91 88740 00032 as general customer care when a brand-wide contact is required.",
+    "Use the correct existing branch phone with its matching address.",
+    "Do not use deviandcompany.com; use https://devis.co.in/.",
+    "Keep ₹3,000 as the minimum final payable for assured gift and daily lucky-winner participation.",
+    "For ₹500 off, require at least ₹3,500 before discount so the final payable stays ₹3,000.",
+    "Use ASSURED GIFT without naming the gift item until formally approved.",
+    "Keep daily prize names exact: Stainless Steel Dinner Set, Mixer Grinder, Grill Oven and Garment Steamer.",
+    "Keep bumper prizes exact: AC and LED TV on alternate weeks.",
+    "Keep bumper ticket tiers exact: ₹5,000 = 1, ₹10,000 = 2 and ₹20,000 = 4.",
+    "Do not show bumper ticket tiers on the first footfall creative.",
+    "Keep value offer quantities and prices exact and state selected collections.",
+    "Do not state that offers stack unless the final terms approve stacking.",
+    "Do not publish old Flat 50% Off content as a current opening offer without approval.",
+    "Do not publish draft silver coin, travelling bag or KN-500 details without reapproval.",
+    "Do not infer fabric, weave, purity, handwork, size or components from product photos.",
+    "Do not change garment colours, embroidery, proportions or visible design.",
+    "Do not call the third store open before the confirmed opening date.",
+    "After opening, update all coming-soon copy and reconfirm active offers.",
+    "Do not reveal internal shoot budgets or tentative production plans.",
+    "If an essential offer term is missing, ask one focused question before generating transactional copy.",
+    "Do not print null fields or internal notes in public content.",
+    "Do not use em dashes."
+  ],
+  "per_post_input": {
+    "brand_id": "devi_and_company_kanpur",
+    "mode": "caption",
+    "platform": "Instagram",
+    "post_format": null,
+    "content_genre": "fashion retail",
+    "campaign_stage": null,
+    "branch": null,
+    "asset_description": null,
+    "asset_source": null,
+    "product_integrity_required": true,
+    "product_name": null,
+    "product_category": null,
+    "product_sku": null,
+    "retail_or_wholesale": null,
+    "occasion": null,
+    "colour": null,
+    "visible_design_details": [],
+    "confirmed_fabric": null,
+    "stitched_status": null,
+    "included_components": [],
+    "sizes": [],
+    "mrp": null,
+    "sale_price": null,
+    "offer_name": null,
+    "offer_scope": null,
+    "gross_purchase_required": null,
+    "discount_amount": null,
+    "final_payable_required": null,
+    "assured_benefit": null,
+    "chance_based_benefit": null,
+    "offer_stacking_confirmed": null,
+    "offer_start_date": null,
+    "offer_end_date": null,
+    "terms_and_conditions": [],
+    "opening_date": "2026-10-11",
+    "event_time": null,
+    "event_location": "Kidwai Nagar Chauraha, Kanpur",
+    "campaign_phone": "+918874000177",
+    "parul_maam_on_camera": null,
+    "customer_or_model_permission_confirmed": null,
+    "goal": null,
+    "language_override": null,
+    "recent_captions": [],
+    "additional_instructions": []
+  },
+  "master_brand_instruction": "Write as Devi & Company, the Kanpur ethnic and bridal fashion retailer with existing Naya Ganj and Lal Bangla showrooms and a third-store grand opening planned for 11 October 2026 at Kidwai Nagar Chauraha, Kanpur. Use @deviandcompany_kanpur as the Instagram handle and https://devis.co.in/ as the website. Use +91 88740 00177 for the third-store opening campaign, +91 88740 00032 for general customer care, +91 88740 00036 for Naya Ganj and +91 90440 36667 for Lal Bangla. The active content style is warm, festive, welcoming, family oriented and premium yet approachable. Use natural Hindi or Hinglish for Parul Ma'am and retail reels, and polished English for premium showcases and invitations. The third-store story should celebrate customer trust and the brand's third chapter. Preserve all offer logic exactly. A final payable purchase of at least ₹3,000 qualifies for the assured gift and daily lucky-winner participation, subject to final terms. For ₹500 off, the basket must be at least ₹3,500 before discount so the customer pays at least ₹3,000. Say only ASSURED GIFT until the gift item is approved. Daily prizes are Stainless Steel Dinner Set, Mixer Grinder, Grill Oven and Garment Steamer. Weekly bumper prizes are AC and LED TV on alternate weeks, with ₹5,000 = 1 ticket, ₹10,000 = 2 and ₹20,000 = 4. Do not show these ticket tiers on the first footfall creative. Value offers are ₹2,000 for 10 sarees, ₹4,000 for 5 sarees, ₹2,500 for 5 salwar suit pieces and ₹2,000 for 6 ready-made suits, all on selected collections. Do not combine offers unless stacking is approved. Ignore superseded silver coin, travelling bag, KN-500 and Flat 50% Off ideas unless reapproved. For products, describe only confirmed garment type, fabric, colour, detailing, components, size, price and branch availability. Preserve uploaded garments exactly. For a standard caption, use a specific hook, accurate product or offer detail, one CTA, the correct branch or campaign footer, exactly three hashtags and one square bracket of 5 to 8 comma-separated SEO phrases. Do not use the prohibited lines Traditional Look Beautiful on You or Fashion for Brighter Tomorrow. Do not use em dashes. Return ready-to-publish public text without internal notes or null values.",
+  "missing_information": [
+    "Complete postal address and pincode for the Kidwai Nagar third branch",
+    "Official Google Maps URLs for all three branches",
+    "Confirmed third-branch opening time on 11 October 2026",
+    "Exact opening-offer start and end dates",
+    "Full written terms for offer stacking and selected collections",
+    "Assured gift item, stock quantity and replacement rule",
+    "Daily lucky draw time, selection process, announcement channel and prize schedule",
+    "Weekly bumper draw dates, first prize in the alternation and winner-verification process",
+    "Whether bumper tickets require one bill or can accumulate across bills",
+    "Tax, billing, cancellation and redemption treatment for value bundles",
+    "Current third-store opening-hours schedule after launch",
+    "Current logo package, brand font names and approved colour codes",
+    "Confirmed legal entity name and GST details if needed for formal terms",
+    "Approved founder or owner biography and Parul Ma'am's formal title",
+    "Official YouTube, Threads and Pinterest links",
+    "Current delivery, alteration and branch-level inventory processes",
+    "Customer, blogger and model usage permissions"
+  ],
+  "sources": [
+    {
+      "type": "user_supplied_campaign_brief",
+      "supports": "Third-store opening date and location, campaign phone, approved offer mechanics, daily prizes, bumper draw, ticket tiers, value offers, invitation strategy, content plan, visual direction, prohibited lines and caption requirements."
+    },
+    {
+      "type": "user_supplied_script_document",
+      "title": "Devi and Company 3rd Store Script",
+      "supports": "Parul Ma'am-led teaser concepts, Something Big Is Coming, third-store reveal, Chapter Three narrative, offers, gifts, lucky chances and customer-trust messaging.",
+      "rule": "Final user-approved offer rules override early teaser-script drafts."
+    },
+    {
+      "type": "official_website",
+      "url": "https://devis.co.in/",
+      "supports": "Business identity, product range, retail and wholesale positioning, website email, customer care, Naya Ganj and Lal Bangla addresses and showroom phones."
+    },
+    {
+      "type": "official_instagram",
+      "url": "https://www.instagram.com/deviandcompany_kanpur/",
+      "supports": "Matched social handle, Kanpur ethnic and bridal wear positioning, Naya Ganj and Lal Bangla presence and customer-care number."
+    },
+    {
+      "type": "official_facebook",
+      "url": "https://www.facebook.com/deviandcompanykanpur/",
+      "supports": "Matched brand page, Naya Ganj address and public fashion content."
+    },
+    {
+      "type": "official_policy_pages",
+      "url": "https://devis.co.in/refund-return-policy.php",
+      "supports": "Public return-policy context. Read the live policy before transactional or customer-service copy."
+    },
+    {
+      "type": "user_writing_preferences",
+      "supports": "Short hooks, English or Hinglish, agency credit, exactly three hashtags, one SEO bracket and no em dashes."
+    }
+  ]
+}

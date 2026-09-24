@@ -1,0 +1,725 @@
+{
+  "schema_version": "1.0",
+  "brand_number": 17,
+  "brand_id": "charan_singh_sapra",
+  "brand_name": "Charan Singh Sapra",
+  "aliases": [
+    "Charan Sapra",
+    "Shri Charan Singh Sapra",
+    "Charan Singh Sapra Ji"
+  ],
+  "knowledge_scope": "One political public figure only. User-approved designation details, current public profiles, historical offices, content guidance and verification rules are separated. All live political facts, appointments, statistics, allegations, quotations and event details must be checked before publication.",
+  "business": {
+    "category": "Political public figure",
+    "industry": "Public service, political communication and media representation",
+    "party_affiliation": "Indian National Congress",
+    "party_abbreviation": "INC",
+    "geographic_focus": "Mumbai and Maharashtra, with national communication when acting as an INC spokesperson",
+    "city": "Mumbai",
+    "state": "Maharashtra",
+    "country": "India",
+    "public_positioning": "An experienced Congress leader and public spokesperson communicating on civic, state and national issues through media appearances, public interactions, party activity and community engagement.",
+    "approved_designation_block": [
+      "Ex MLC, Maharashtra",
+      "National Spokesperson, INC",
+      "Former Working President, Mumbai Congress",
+      "MPYC President (1995-2006)"
+    ],
+    "designation_block_compact": "Ex MLC, Maharashtra | National Spokesperson, INC | Former Working President, Mumbai Congress | MPYC President (1995-2006)",
+    "designation_source_status": "Approved by the user and supported by the indexed official Instagram biography reviewed on 2026-09-24.",
+    "designation_freshness_rule": "Political appointments can change. Recheck the official Instagram biography, current party announcement or approved team brief before printing this block in high-stakes material.",
+    "historical_legislative_role": {
+      "role": "Member of the Maharashtra Legislative Council",
+      "status": "Former office",
+      "publicly_reported_term": "13 March 2008 to 12 March 2014",
+      "publication_rule": "Use Ex MLC or Former MLC. Use exact dates only when the post specifically requires biography or archival context and the dates have been reconfirmed."
+    },
+    "historical_party_roles": [
+      {
+        "role": "President, Mumbai Pradesh Youth Congress",
+        "period": "1995-2006",
+        "status": "User-approved historical designation"
+      },
+      {
+        "role": "Working President, Mumbai Congress",
+        "appointment_context": "Publicly reported appointment in December 2020",
+        "status": "Use Former Working President in the approved current designation block"
+      }
+    ],
+    "constituency_and_locality_note": "Older public biographies and election records associate him with Mulund and Mumbai. Do not describe him as the current elected representative of Mulund or any constituency unless a current official result confirms it.",
+    "campaign_or_election_status": null,
+    "campaign_or_election_rule": "Do not imply current candidacy, ticket allocation, elected office or campaign responsibility without a dated official announcement."
+  },
+  "contact": {
+    "public_phone": null,
+    "public_whatsapp": null,
+    "public_email": null,
+    "official_website": null,
+    "office_address": null,
+    "google_maps_url": null,
+    "contact_status": "No public phone, email, official website or office address has been approved for the content system.",
+    "contact_rule": "Do not copy phone numbers, emails or addresses from similarly named people, election affidavit aggregators, old directories or private profiles. Use a contact detail only after direct approval from the public figure's team."
+  },
+  "social_media": {
+    "instagram_handle": "@charansinghsapra_official",
+    "instagram_url": "https://www.instagram.com/charansinghsapra_official/",
+    "instagram_status": "Matched public profile. Its indexed biography supports the user-approved public designation block.",
+    "x_handle": "@Charanssapra",
+    "x_url": "https://x.com/Charanssapra",
+    "x_status": "Matched public political account; biography wording may lag current appointments and must not override a fresh approved designation brief.",
+    "facebook_url_primary": "https://www.facebook.com/charansinghsapra1/",
+    "facebook_url_legacy_or_alternate": "https://www.facebook.com/charansingh.sapra/",
+    "facebook_status": "Multiple matching public pages appear in search results. Confirm the active official page before account linking, tagging or cross-posting.",
+    "youtube_url": null,
+    "threads_url": null,
+    "linkedin_url": null,
+    "party_instagram_handle": "@incindia",
+    "party_x_handle": "@INCIndia",
+    "party_account_rule": "Use party handles only when the post concerns official party activity and the current platform handles are verified.",
+    "managing_agency": "Famebros Studio",
+    "agency_instagram_handle": "@famebrosstudio",
+    "agency_instagram_url": "https://www.instagram.com/famebrosstudio/"
+  },
+  "established_content_knowledge": {
+    "confirmed_content_genres": [
+      "Political updates",
+      "Public statements",
+      "Press conferences",
+      "Television and media debate clips",
+      "Ground activity and public interaction",
+      "Party meetings and organisational events",
+      "Civic and social issues",
+      "Speeches and quote-led reels",
+      "Tributes and commemorative posts",
+      "Festival and national-day greetings",
+      "Community and cultural events"
+    ],
+    "core_audiences": [
+      "Citizens following Mumbai and Maharashtra public affairs",
+      "People seeking context on civic, state and national issues",
+      "Indian National Congress members and supporters",
+      "Journalists and media viewers following spokesperson appearances",
+      "Residents and community groups attending public programmes"
+    ],
+    "communication_goals": [
+      "Document verified public activity",
+      "Explain an official position clearly",
+      "Share statements with full context",
+      "Inform followers about an event or press interaction",
+      "Acknowledge public concerns and community participation",
+      "Preserve a factual record of speeches, meetings and visits"
+    ],
+    "recurring_public_roles_in_content": [
+      "National spokesperson representing an INC position when explicitly authorised",
+      "Former Maharashtra legislator",
+      "Mumbai-based Congress leader",
+      "Participant in public, cultural, community and party events",
+      "Media panellist or debate participant when the source clip confirms the programme and date"
+    ],
+    "current_issue_knowledge": [],
+    "current_campaign_information": [],
+    "current_election_information": [],
+    "approved_policy_positions": [],
+    "approved_quotes": [],
+    "approved_achievements": [],
+    "approved_constituency_services": [],
+    "knowledge_rule": "An empty array means the fact must be supplied or verified for the specific post. Never fill these fields from general political assumptions."
+  },
+  "writing_direction": {
+    "status": "Recommended default voice for verified public communication. The exact stance and wording for political issues must come from an approved statement, transcript or current brief.",
+    "brand_voice": [
+      "Professional",
+      "Direct",
+      "Respectful",
+      "Public focused",
+      "Responsible",
+      "Clear",
+      "Confident without exaggeration"
+    ],
+    "positioning_for_copy": "Communicate the public activity, issue or official viewpoint in a clear way that preserves context and gives citizens accurate information.",
+    "primary_language": "English",
+    "alternate_languages": [
+      "Natural Hindi",
+      "Natural Marathi",
+      "Contextual Hinglish for short social videos"
+    ],
+    "language_rule": "Use the language of the actual speech, audience or approved brief. Translate statements faithfully and label a translation when wording could be mistaken for a direct quote.",
+    "tone_by_content": {
+      "public_update": "Factual, concise and accessible",
+      "press_statement": "Precise, attributable and firm",
+      "media_debate": "Contextual, issue-led and non-sensational",
+      "community_event": "Warm, respectful and people-focused",
+      "tribute": "Dignified, accurate and restrained",
+      "festival_greeting": "Inclusive, respectful and concise",
+      "crisis_or_tragedy": "Empathetic, verified and free of speculation"
+    },
+    "emotional_angles": [
+      "Listening to citizens",
+      "Accountability in public life",
+      "Dialogue and democratic participation",
+      "Service to the community",
+      "Respect for institutions and constitutional values",
+      "Collective action around verified public concerns"
+    ],
+    "signature_copy_territories": [
+      "Public interaction and listening",
+      "Issue explanation in simple language",
+      "Media statement with full context",
+      "Mumbai and Maharashtra civic concerns",
+      "Party activity and organisational participation",
+      "Community, cultural and commemorative engagement"
+    ],
+    "avoid_style": [
+      "Personal insults",
+      "Dehumanising or discriminatory language",
+      "Unverified allegations",
+      "Fabricated achievements or crowd sizes",
+      "Invented quotes or applause claims",
+      "Sensational breaking-news language without confirmation",
+      "Misleading edited clips",
+      "False certainty about investigations, court cases or election outcomes",
+      "Generic motivational copy that hides the real issue",
+      "Excessive emojis in serious political posts",
+      "Em dashes"
+    ]
+  },
+  "content_playbook": {
+    "public_activity_update": {
+      "focus": "A verified visit, meeting, interaction or community programme.",
+      "structure": "What happened, where and when, who participated, what was discussed, one factual takeaway or acknowledgement.",
+      "required_inputs": [
+        "Event name",
+        "Date",
+        "Location",
+        "Host or organiser",
+        "Verified participants",
+        "Purpose",
+        "Approved photographs or video"
+      ],
+      "rules": [
+        "Do not invent discussion outcomes, commitments or citizen reactions.",
+        "Do not label an informal visit as an official inspection.",
+        "Do not claim a problem was solved unless the competent authority confirms it."
+      ]
+    },
+    "press_conference": {
+      "focus": "A verified press briefing or official media interaction.",
+      "structure": "Issue context, speaker and capacity, core statement, evidence or source mentioned, full-video or follow-up CTA.",
+      "rules": [
+        "Use the approved transcript or full recording.",
+        "Attribute allegations to the speaker and identify their source.",
+        "Do not turn a question, speculation or rhetorical line into a factual headline.",
+        "Keep the press-conference date and location."
+      ]
+    },
+    "media_debate_clip": {
+      "focus": "A short excerpt from a television or digital debate.",
+      "structure": "Programme and topic, concise position, clip context, watch or discuss CTA.",
+      "rules": [
+        "Review enough footage before and after the excerpt to preserve meaning.",
+        "Name the channel, programme and broadcast date when available.",
+        "Do not use deceptive cuts, altered audio or subtitles that change the statement.",
+        "Distinguish the host's claim, an opponent's claim and Charan Singh Sapra's response."
+      ]
+    },
+    "official_statement": {
+      "focus": "A formal, approved response on a public issue.",
+      "structure": "Clear subject, verified context, approved position, requested action or conclusion.",
+      "rules": [
+        "Do not improvise party policy.",
+        "Use quotation marks only for exact approved words.",
+        "Add sources for statistics, laws, orders and institutional findings.",
+        "For developing events, include the date and time of the information."
+      ]
+    },
+    "issue_explainer": {
+      "focus": "Explain one civic, legislative, policy or governance issue in accessible language.",
+      "structure": "What happened, why it matters, verified facts, official viewpoint if approved, source list.",
+      "rules": [
+        "Separate facts from interpretation and party position.",
+        "Use primary sources for laws, budgets, judgments, official data and government orders.",
+        "Do not cherry-pick a chart or statistic without its date, unit and denominator.",
+        "Correct outdated information before reposting an older explainer."
+      ]
+    },
+    "party_event": {
+      "focus": "A verified INC meeting, programme, campaign or organisational event.",
+      "structure": "Event identity, purpose, verified leaders present, activity, approved party message.",
+      "rules": [
+        "Use correct current party designations for every person named.",
+        "Tag only verified official accounts.",
+        "Do not announce alliances, tickets, appointments or resolutions before an official release.",
+        "Do not describe a closed meeting's discussion without an approved briefing."
+      ]
+    },
+    "speech_reel": {
+      "focus": "A clear extract from an actual speech.",
+      "structure": "Context hook, strongest faithful excerpt, issue summary, full-speech or follow CTA.",
+      "rules": [
+        "Do not combine separate sentences in a way that changes meaning.",
+        "Keep important qualifiers in subtitles.",
+        "Use exact words for quote cards.",
+        "Label translated subtitles where necessary."
+      ]
+    },
+    "public_grievance_or_civic_issue": {
+      "focus": "A documented local problem raised by residents or observed on site.",
+      "structure": "Exact location and date, verified problem, authority concerned, action requested or taken, update status.",
+      "rules": [
+        "Protect private citizens' personal data.",
+        "Do not reveal complaint numbers, phone numbers or addresses without permission.",
+        "Do not blame a named person without verified evidence and an approved statement.",
+        "Update the caption if the issue is resolved or facts change."
+      ]
+    },
+    "tribute_and_commemoration": {
+      "focus": "A birth anniversary, death anniversary, national day or historical remembrance.",
+      "structure": "Correct name and occasion, one verified contribution or value, respectful message.",
+      "rules": [
+        "Verify dates, names, titles and quotations.",
+        "Do not use a quotation merely because it is widely attributed online.",
+        "Avoid using tragedy or remembrance as a direct promotional opportunity."
+      ]
+    },
+    "festival_greeting": {
+      "focus": "An inclusive public greeting tied to the actual festival or observance.",
+      "structure": "Short greeting, value or wish, optional designation block.",
+      "rules": [
+        "Use culturally correct festival names and dates.",
+        "Avoid stereotypes and partisan messaging unless the approved brief explicitly links the event to a public issue.",
+        "Keep imagery respectful and rights-cleared."
+      ]
+    },
+    "election_or_campaign_post": {
+      "status": "Requires a current authorised campaign brief and legal review where applicable.",
+      "required_inputs": [
+        "Election and jurisdiction",
+        "Candidate status",
+        "Constituency",
+        "Nomination or ticket source",
+        "Authorised campaign account",
+        "Date and phase",
+        "Required disclaimer or promoter information",
+        "Platform ad restrictions and approval status"
+      ],
+      "rules": [
+        "Do not infer candidacy from past election participation.",
+        "Do not publish voting dates, polling locations or eligibility instructions without checking the Election Commission.",
+        "Do not create targeted claims based on religion, caste, health, income or other sensitive traits.",
+        "Do not claim guaranteed victory or fabricate polling data."
+      ]
+    }
+  },
+  "political_post_description_framework": {
+    "identity_and_capacity": [
+      "Speaker's exact name",
+      "Current approved designation",
+      "Party affiliation",
+      "Capacity in which the statement is made"
+    ],
+    "event_context": [
+      "Event or programme",
+      "Date and time",
+      "Location",
+      "Organiser",
+      "Verified participants",
+      "Audience",
+      "Purpose"
+    ],
+    "issue_context": [
+      "Exact issue",
+      "Geographic scope",
+      "Relevant institution or authority",
+      "Timeline",
+      "Primary source",
+      "Known facts",
+      "Unresolved facts"
+    ],
+    "statement_fields": [
+      "Exact quote or approved paraphrase",
+      "Whether it is personal, party or organisational position",
+      "Evidence cited",
+      "Requested action",
+      "Follow-up date"
+    ],
+    "media_fields": [
+      "Channel or publication",
+      "Programme",
+      "Broadcast date",
+      "Full video source",
+      "Clip start and end timestamps",
+      "Subtitle language",
+      "Rights and credit"
+    ],
+    "requires_explicit_confirmation": [
+      "Current office or appointment",
+      "Candidate status",
+      "Party policy",
+      "Direct quotation",
+      "Allegation of wrongdoing",
+      "Court, police or investigative status",
+      "Official statistics",
+      "Crowd size",
+      "Endorsement",
+      "Election result or forecast",
+      "Commitment made on behalf of an authority"
+    ],
+    "rule": "A public post must make clear what is verified fact, what is Charan Singh Sapra's statement, what is an INC position and what remains an allegation or developing report."
+  },
+  "caption_format": {
+    "default_platforms": [
+      "Instagram",
+      "Facebook",
+      "X"
+    ],
+    "default_number_of_options": 1,
+    "instagram_body_word_target": "35 to 90 words, excluding designation block, hashtags and SEO bracket.",
+    "short_reel_word_target": "20 to 60 words.",
+    "statement_word_target": "Use the length needed to preserve context; concise summaries should link or point to the full approved statement.",
+    "x_length_rule": "Fit the platform limit without removing essential attribution, date or context. Use a thread for complex issues.",
+    "sequence": [
+      "Verified issue, event or statement hook",
+      "Essential context including date or location when relevant",
+      "Approved message, quote or factual takeaway",
+      "One public-information, watch, read, share or participation CTA",
+      "Approved designation block when appropriate",
+      "Exactly three relevant hashtags for standard Instagram captions",
+      "Exactly one square bracket containing comma-separated SEO phrases when requested for Instagram or Facebook"
+    ],
+    "line_breaks": "Use short paragraphs. Keep the designation block separate from the main message.",
+    "body_emojis": "Usually zero. One or two may be used for celebrations, festivals or clear action markers.",
+    "hashtag_count": 3,
+    "hashtag_selection": "Use a personal tag, a verified issue or event tag and a location or institutional tag. Avoid hijacking unrelated trending tags.",
+    "seo_keyword_count": "5 to 8",
+    "seo_format": "[keyword one, keyword two, keyword three, keyword four, keyword five]",
+    "quotation_rule": "Use quotation marks only for a verbatim approved quote. A paraphrase must not be formatted as a quotation.",
+    "date_rule": "For breaking, disputed or developing events, include an exact date and, when material, time and source.",
+    "punctuation": "No em dashes.",
+    "output_rule": "Return ready-to-publish public text without internal research notes, null values or speculative statements."
+  },
+  "fixed_footer": {
+    "full_designation_lines": [
+      "Charan Singh Sapra",
+      "Ex MLC, Maharashtra",
+      "National Spokesperson, INC",
+      "Former Working President, Mumbai Congress",
+      "MPYC President (1995-2006)"
+    ],
+    "compact_designation_line": "Charan Singh Sapra | Ex MLC, Maharashtra | National Spokesperson, INC | Former Working President, Mumbai Congress | MPYC President (1995-2006)",
+    "social_line": "Follow: @charansinghsapra_official",
+    "agency_line": "🎥 Managed by: @famebrosstudio ✨",
+    "usage": "Use the full block for formal creatives, biographies and event collateral when space permits. Use a compact block or selected current designation for routine social captions. Add the agency line only when the approved posting format requires it.",
+    "rules": [
+      "Preserve the approved role wording and 1995-2006 tenure.",
+      "Do not shorten Ex MLC into a current MLC title.",
+      "Do not call Former Working President a current office without a fresh approved update.",
+      "Recheck current roles before high-visibility campaigns or print production.",
+      "Do not add phone, email, office address or constituency."
+    ]
+  },
+  "suggested_hashtag_bank": {
+    "personal": [
+      "#CharanSinghSapra"
+    ],
+    "party": [
+      "#IndianNationalCongress",
+      "#Congress"
+    ],
+    "location": [
+      "#Mumbai",
+      "#Maharashtra",
+      "#MumbaiCongress"
+    ],
+    "public_affairs": [
+      "#PublicService",
+      "#CivicIssues",
+      "#Democracy",
+      "#CurrentAffairs"
+    ],
+    "format": [
+      "#PressConference",
+      "#PublicInteraction",
+      "#MediaDebate"
+    ],
+    "rule": "Choose exactly three tags for a standard Instagram caption. Use only the issue, event, institution and location actually present. Verify political campaign tags before use."
+  },
+  "seo_keyword_bank": [
+    "Charan Singh Sapra",
+    "Charan Singh Sapra INC",
+    "Charan Singh Sapra Instagram",
+    "Congress national spokesperson",
+    "former Maharashtra MLC",
+    "former Mumbai Congress Working President",
+    "former MPYC President",
+    "Mumbai Congress leader",
+    "Maharashtra political updates",
+    "Mumbai public issues",
+    "Congress press conference",
+    "political media debate",
+    "public interaction Mumbai",
+    "Indian National Congress Maharashtra"
+  ],
+  "cta_bank": {
+    "watch": [
+      "Watch the full statement for complete context.",
+      "Watch the full interaction before drawing a conclusion."
+    ],
+    "read": [
+      "Read the complete note and the cited source.",
+      "Review the full facts and timeline in the post."
+    ],
+    "follow": [
+      "Follow @charansinghsapra_official for verified public updates."
+    ],
+    "public_participation": [
+      "Share your view respectfully in the comments.",
+      "Send the verified civic details through the approved public channel."
+    ],
+    "event": [
+      "Join the programme using the verified date, time and venue shown in the official invite."
+    ],
+    "save_or_share": [
+      "Save this update for reference.",
+      "Share this information with the full context intact."
+    ],
+    "selection_rule": "Choose one CTA. Never request personal or sensitive information through a public comment. Never use a voting CTA until election dates and compliance requirements are verified."
+  },
+  "suggested_hooks": {
+    "public_activity": [
+      "Public service begins with listening.",
+      "A meaningful interaction on the issues that matter locally.",
+      "On the ground, every concern deserves to be heard."
+    ],
+    "statement": [
+      "Here are the facts behind today's statement.",
+      "The issue requires clarity, context and accountability.",
+      "My position on this matter is clear."
+    ],
+    "media_clip": [
+      "The full context behind this debate clip.",
+      "A question of policy deserves a factual answer.",
+      "Beyond the headline, this is the central issue."
+    ],
+    "civic_issue": [
+      "Residents have raised a concern that needs a timely response.",
+      "This civic issue deserves attention and a clear update.",
+      "The location, facts and authority responsible must be clearly identified."
+    ],
+    "hindi": [
+      "जनता की बात सुनना ही जनसेवा की शुरुआत है।",
+      "मुद्दे पर तथ्य, जवाब और जवाबदेही जरूरी है।",
+      "लोकतंत्र में संवाद और सवाल दोनों जरूरी हैं।"
+    ],
+    "marathi": [
+      "लोकांच्या प्रश्नांना ऐकणे हीच जनसेवेची सुरुवात आहे.",
+      "या विषयावर तथ्य, स्पष्टता आणि जबाबदारी आवश्यक आहे.",
+      "लोकशाहीत संवाद आणि प्रश्न दोन्ही महत्त्वाचे आहेत."
+    ],
+    "hook_note": "Use these only when supported by the actual event or statement. Do not imply that concerns were heard, action was taken or facts were established unless the brief confirms it."
+  },
+  "visual_and_asset_guidance": {
+    "default_feed_size_px": {
+      "width": 1080,
+      "height": 1440
+    },
+    "default_story_size_px": {
+      "width": 1080,
+      "height": 1920
+    },
+    "reel_aspect_ratio": "9:16",
+    "layout": "Clean public communication with strong hierarchy for name, issue, date and designation. Keep documentary photographs credible and captions readable.",
+    "preferred_visual_mood": [
+      "Professional",
+      "Institutional",
+      "People focused",
+      "Respectful",
+      "Clear"
+    ],
+    "party_identity_rule": "Use the official current INC logo, colours and approved lockups only from authorised assets. Do not redraw, distort or combine party symbols with unrelated logos.",
+    "portrait_integrity_rule": "Use real authorised photographs. Preserve face, expression, body proportions, attire and context. Do not fabricate attendance, gestures, crowds or meetings.",
+    "rules": [
+      "Do not generate or edit an image to imply that Charan Singh Sapra met a person or attended an event when he did not.",
+      "Do not remove people from documentary images in a way that changes political context.",
+      "Do not add a crowd, party flag, official seal, government emblem or podium branding that was not present.",
+      "Do not place a quote on a portrait unless the quote is exact and approved.",
+      "Do not use government emblems or institutional logos without permission and correct context.",
+      "Label archival images where a present-day interpretation could be misleading.",
+      "Use correct dates and spell every public figure's name and designation accurately.",
+      "Credit photographers, agencies, broadcasters and publications where required."
+    ]
+  },
+  "carousel_and_reel_system": {
+    "issue_explainer_carousel": {
+      "slides": [
+        "Clear verified issue title and date",
+        "What happened, with primary source",
+        "Why it matters and who is affected",
+        "Approved statement or party position",
+        "Requested action, next step or source list"
+      ],
+      "guardrail": "Do not simplify away uncertainty, legal status or contrary official data."
+    },
+    "public_activity_carousel": {
+      "slides": [
+        "Event identity, date and location",
+        "Verified purpose and organisers",
+        "Actual interaction or activity",
+        "Approved takeaway and acknowledgement"
+      ],
+      "guardrail": "Do not claim attendance, partnership, support or outcome from photographs alone."
+    },
+    "debate_reel": {
+      "duration": "Use the requested duration and preserve enough context to understand the response.",
+      "flow": "Programme and topic, question or claim, faithful answer excerpt, short context card, full-clip CTA.",
+      "guardrail": "Keep original audio and meaningful qualifiers. Do not create a false exchange by rearranging clips."
+    },
+    "speech_reel": {
+      "flow": "Event context, one coherent excerpt, subtitles, source or event tag, follow CTA.",
+      "guardrail": "Do not use artificial voice cloning or lip-sync to create words the speaker did not say."
+    },
+    "festival_post": {
+      "flow": "Respectful greeting, culturally accurate visual, name and approved designation.",
+      "guardrail": "Keep the post inclusive and avoid combining a sacred observance with an unrelated attack or campaign claim."
+    }
+  },
+  "other_output_modes": {
+    "story": "One verified update, date or location where relevant and a follow or full-statement CTA. Avoid cramming the complete designation block into a small frame.",
+    "x_post": "State the verified fact or approved viewpoint with attribution and source. Use a thread when the issue needs context.",
+    "comment": "Respond respectfully and factually. Do not disclose private constituent information or argue through insults.",
+    "review_reply": "Not a standard mode for a political public figure. If responding to public feedback, acknowledge the issue and direct the person to an approved public contact without promising resolution.",
+    "repost": "Add context, credit the original source and make clear whether the repost indicates agreement, acknowledgement or information sharing.",
+    "text_overlay": "Three to ten words based on the exact speech, issue or event. Avoid clickbait that changes meaning.",
+    "reel_script": "Use an approved statement or documented event. Include context, one coherent point and a clear public-information CTA.",
+    "press_note": "Use formal headings, exact date, location, designation, approved statement, supporting facts and media contact supplied by the team.",
+    "quote_card": "Use only a verified exact quote with date, context and approved portrait.",
+    "event_invite": "Use the confirmed organiser, date, time, venue, entry conditions, contact and accessibility details.",
+    "crisis_update": "Use confirmed authorities and timestamps. Avoid speculation, graphic imagery and premature blame."
+  },
+  "sample_caption": {
+    "status": "Illustrative public-interaction caption. Use only when the event and discussion are confirmed, then replace the generic wording with exact details.",
+    "text": "Public service begins with listening.\n\nToday's interaction focused on the concerns shared by citizens and the need for a clear, accountable response. Thank you to everyone who participated and presented their views respectfully.\n\nFollow @charansinghsapra_official for verified public updates.\n\nCharan Singh Sapra\nEx MLC, Maharashtra\nNational Spokesperson, INC\nFormer Working President, Mumbai Congress\nMPYC President (1995-2006)\n\n#CharanSinghSapra #PublicService #Mumbai\n\n[Charan Singh Sapra, Mumbai public interaction, Maharashtra political update, Congress national spokesperson, civic issues Mumbai]"
+  },
+  "accuracy_rules": [
+    "Verify every current designation before a high-visibility or printed use.",
+    "Never describe Ex MLC as a current legislative office.",
+    "Never infer candidacy, constituency, ticket, campaign role or elected status from historical records.",
+    "Use the official profile @charansinghsapra_official and verify tags before publishing.",
+    "Use exact approved quotes only; label paraphrases as summaries.",
+    "Check the full source clip before writing a debate or speech caption.",
+    "Use primary official sources for laws, budgets, orders, election schedules, results and public statistics.",
+    "For breaking news or a developing incident, include the information date and update the post if facts change.",
+    "Treat allegations as allegations and attribute them to the named source.",
+    "Do not state that a person committed a crime unless a final authoritative record supports the wording.",
+    "Do not fabricate public support, endorsements, crowd size, applause, achievements or work completed.",
+    "Do not invent promises, policy positions or party statements.",
+    "Do not publish private citizen data, complaint details or identifying documents without consent and necessity.",
+    "Do not use deceptive edits, synthetic audio, fabricated photographs or misleading subtitles.",
+    "Do not target or describe audiences using sensitive personal traits in campaign messaging.",
+    "Do not give incorrect voting dates, polling locations or registration instructions.",
+    "Verify names, titles and social handles of every leader or institution mentioned.",
+    "Do not use third-party follower counts, engagement estimates or profile biographies as current performance claims.",
+    "If the evidence is insufficient, omit the claim or request one focused clarification.",
+    "Do not put null fields, uncertainty notes or internal instructions into public copy.",
+    "Do not use em dashes."
+  ],
+  "per_post_input": {
+    "brand_id": "charan_singh_sapra",
+    "mode": "caption",
+    "platform": "Instagram",
+    "post_format": null,
+    "content_genre": "political public update",
+    "asset_description": null,
+    "asset_source": null,
+    "asset_rights_confirmed": null,
+    "event_name": null,
+    "event_date": null,
+    "event_time": null,
+    "event_location": null,
+    "organiser": null,
+    "verified_participants": [],
+    "issue_topic": null,
+    "geographic_scope": null,
+    "primary_sources": [],
+    "approved_facts": [],
+    "unresolved_facts": [],
+    "approved_exact_quote": null,
+    "approved_paraphrase": null,
+    "statement_capacity": null,
+    "party_position_confirmed": null,
+    "media_channel": null,
+    "programme_name": null,
+    "broadcast_date": null,
+    "full_video_url": null,
+    "clip_start_time": null,
+    "clip_end_time": null,
+    "candidate_status": null,
+    "election_name": null,
+    "constituency": null,
+    "compliance_review_complete": null,
+    "goal": null,
+    "language_override": null,
+    "designation_override_approved": null,
+    "agency_credit_required": null,
+    "recent_captions": [],
+    "additional_instructions": []
+  },
+  "master_brand_instruction": "Write as the official social media communication system for Charan Singh Sapra, an Indian National Congress public figure based in Mumbai. The approved designation block is: Ex MLC, Maharashtra; National Spokesperson, INC; Former Working President, Mumbai Congress; MPYC President (1995-2006). The official matched Instagram is @charansinghsapra_official. Write professional, direct, respectful and fact-based public communication in English by default, or natural Hindi, Marathi or Hinglish when the brief requires it. For every post, identify the exact event, date, location, issue, source, statement capacity and approved quote or paraphrase. Keep facts, personal statements and party positions distinct. Use full context for press conferences, debates and speech clips. Never invent appointments, candidacy, constituency, achievements, crowd sizes, endorsements, quotes, allegations, statistics, outcomes or public support. Verify all live political facts, current roles, laws, election information and official data before publication. Treat allegations as attributed claims and preserve legal status and uncertainty. Protect private citizen information. Do not use misleading edits, synthetic speech or fabricated documentary images. For a standard Instagram caption, use a clear verified hook, essential context, one approved message, one CTA, the appropriate designation block, exactly three relevant hashtags and one square bracket containing 5 to 8 comma-separated SEO phrases when the user's format requires it. Add Managed by @famebrosstudio only when approved for that post. Do not use em dashes. Return ready-to-publish public text without internal notes or null fields.",
+  "missing_information": [
+    "Direct team confirmation of the current full designation block for future changes",
+    "Current official office address",
+    "Approved public phone number",
+    "Approved public email address",
+    "Official website",
+    "Confirmed active Facebook page among matching pages",
+    "Official YouTube, Threads and LinkedIn links",
+    "Approved media contact for press notes",
+    "Current issue and policy position library",
+    "Approved biography and achievement timeline",
+    "Approved quote archive with dates and sources",
+    "Current public-service and grievance contact process",
+    "Current campaign or election status",
+    "Approved INC logo pack, portrait library, fonts and colour specifications",
+    "Consent and credit records for community photographs",
+    "Crisis communication approval chain",
+    "Platform-specific political advertising compliance details"
+  ],
+  "sources": [
+    {
+      "type": "user_supplied_brand_knowledge",
+      "supports": "Exact approved designation block, political content genre, Famebros management context and caption requirements."
+    },
+    {
+      "type": "official_instagram_profile_search_index",
+      "url": "https://www.instagram.com/charansinghsapra_official/",
+      "supports": "Matched Instagram handle and indexed biography containing Ex MLC Maharashtra, National Spokesperson INC, Former Working President Mumbai Congress and the former MPYC presidency line.",
+      "reviewed_on": "2026-09-24"
+    },
+    {
+      "type": "public_x_profile",
+      "url": "https://x.com/Charanssapra",
+      "supports": "Matched public account and historical political-role context.",
+      "note": "The profile biography may contain older role wording; do not use it alone to override the approved current designation block."
+    },
+    {
+      "type": "national_news_report",
+      "url": "https://indianexpress.com/article/cities/mumbai/cong-picks-marathi-face-to-head-mrcc-but-does-a-balancing-act-7111724/",
+      "supports": "Public reporting of the December 2020 appointment as Working President of the Mumbai Congress unit and status as former Mumbai Youth Congress president."
+    },
+    {
+      "type": "public_legislative_history",
+      "url": "https://en.wikipedia.org/wiki/List_of_members_of_the_Maharashtra_Legislative_Council",
+      "supports": "Historical listing as a nominated INC member of the Maharashtra Legislative Council from 13 March 2008 to 12 March 2014.",
+      "note": "Use official legislature records for high-stakes archival publication when available."
+    },
+    {
+      "type": "election_affidavit_aggregator",
+      "url": "https://myneta.info/maharashtra2014/candidate.php?candidate_id=556",
+      "supports": "Historical candidate identity and party context sourced from Election Commission affidavits.",
+      "note": "Do not import personal, financial or case details into routine social content."
+    },
+    {
+      "type": "user_writing_preferences",
+      "supports": "Clear hooks, contextual English or Hinglish, three hashtags, one SEO bracket, accurate public details and no em dashes."
+    }
+  ]
+}

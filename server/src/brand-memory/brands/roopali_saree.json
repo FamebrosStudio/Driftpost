@@ -1,0 +1,595 @@
+{
+  "schema_version": "1.0",
+  "brand_number": 18,
+  "brand_id": "roopali_saree",
+  "brand_name": "Roopali Sarees",
+  "aliases": [
+    "Roopali Saree",
+    "Roopali Sarees Mira Road"
+  ],
+  "knowledge_scope": "One brand only. User-approved contact details, brand-published product evidence, older campaign claims, external directory facts and recommended writing guidance are explicitly separated. Never use similarly named Roopali shops in Malad, Goregaon, Bhopal or elsewhere as evidence for this Mira Road brand.",
+  "business": {
+    "category": "Women's ethnic fashion retail",
+    "industry": "Sarees, occasion wear and women's Indian clothing",
+    "customer_focus": "Women only for the active Famebros content program",
+    "customer_focus_note": "The historical company profile also mentions men's kurta-pajamas, but the user's current content direction is only women's clothing. Do not promote men's products without a fresh approved brief.",
+    "location_area": "Shanti Nagar, Mira Road East",
+    "city": "Mira-Bhayandar, Thane district",
+    "metro_area": "Mumbai Metropolitan Region",
+    "state": "Maharashtra",
+    "country": "India",
+    "core_positioning": "A local destination for women's sarees and coordinated ethnic occasion shopping, with styling content that highlights the actual product and helps shoppers choose a look for the moment.",
+    "published_positioning": "The company's public profile presents designer ethnic wear and variety for weddings and other occasions. Use this as brand background, not as a claim that every pictured item is currently in stock.",
+    "retail_model": "Physical ethnic-wear store; online ordering and shipping are not confirmed as current services.",
+    "founding_year": null,
+    "founding_year_note": "A third-party directory reports 2004, but the user has not approved a founding-year claim. Do not publish it without confirmation.",
+    "store_hours": null,
+    "store_hours_note": "Third-party listings disagree on closing time. Request the store's approved opening hours before adding hours to a post."
+  },
+  "contact": {
+    "primary_phone_display": "+91 90225 61477",
+    "primary_phone_e164": "+919022561477",
+    "primary_phone_status": "Approved in prior user-supplied captions and repeated by the brand's indexed social posts.",
+    "whatsapp_number": null,
+    "whatsapp_status": "Do not assert WhatsApp availability solely from the customer-care phone number. Confirm a direct WhatsApp channel before writing WhatsApp us or a wa.me link.",
+    "full_address_preferred": "Shop No. 1, B-49, Chaitali Bldg., Sector-1, Shanti Nagar, Mira Road (E), Thane - 401107",
+    "address_status": "User-approved caption address, repeated in the brand's public social posts.",
+    "address_variants": [
+      "Shop No. 1, B-49, Chaitali Building, Sector 1, Shanti Nagar, Mira Road East, Thane 401107",
+      "Opposite Amber Sweets, Shop No. 1/2, B-49, Chaitali Building, Sector 1, Shanti Nagar, Mira Road East, Thane 401107",
+      "Shop No. 1/2/3/4, B-49, Sector 1, Shanti Nagar, Mira Road East, Thane 401107"
+    ],
+    "address_note": "Use the preferred user-approved Shop No. 1 address in public copy. Wider shop-unit variants occur in third-party listings and require store confirmation for mapping, billing or print.",
+    "landmark_third_party": "Opposite Amber Sweets",
+    "landmark_status": "Third-party listings; verify before adding to the approved footer.",
+    "landline_third_party": "022 2812 1687",
+    "landline_status": "Older third-party retail listings. Not the preferred customer-facing number.",
+    "email": null,
+    "website_historical": "http://www.roopalisarees.com",
+    "website_status": "Appears on a public company profile but could not be confirmed as a working, current customer-facing site. Do not put it in captions or ads until approved.",
+    "google_maps_url": null
+  },
+  "social_media": {
+    "instagram_handle": "@roopalisarees",
+    "instagram_url": "https://www.instagram.com/roopalisarees/",
+    "instagram_status": "Search-indexed profile and posts align with the exact approved phone number and Mira Road address. Profile access was throttled during this review, so obtain owner confirmation if account ownership matters for account linking.",
+    "facebook_url": "https://www.facebook.com/roopalisareesmiraroad/",
+    "facebook_status": "Indexed page for Roopali Sarees in Mira Road, with matching business identity.",
+    "linkedin_url": "https://www.linkedin.com/company/roopali",
+    "linkedin_status": "Company profile lists Mira Road East and describes the broader historical assortment; treat it as background, not a current stock list.",
+    "threads_url": "https://www.threads.com/@roopalisarees",
+    "threads_status": "Indexed brand content uses this handle and the approved phone/address; current posting activity not confirmed.",
+    "youtube_url": null,
+    "managing_agency": "Famebros Studio",
+    "agency_instagram_handle": "@famebrosstudio",
+    "agency_instagram_url": "https://www.instagram.com/famebrosstudio/"
+  },
+  "established_content_knowledge": {
+    "confirmed_content_genres": [
+      "Informational ethnic-wear content",
+      "Women's clothing showcases",
+      "Saree product and detail reels",
+      "Festive and wedding outfit inspiration",
+      "Offer content only with current approved terms",
+      "Real customer reviews only with permission"
+    ],
+    "confirmed_audience": "Women only",
+    "primary_audience": [
+      "Women shopping for sarees in Mira Road and nearby localities",
+      "Wedding shoppers looking for a saree or approved occasion outfit",
+      "Family members shopping for women's festive looks",
+      "Women who want to see colour, drape and outfit details before visiting"
+    ],
+    "brand_published_product_categories": [
+      "Sarees",
+      "Designer sarees",
+      "Bandhani sarees in indexed brand posts",
+      "Kanjivaram sarees in indexed brand posts",
+      "Lehengas and bridal lehengas on the historical company profile",
+      "Women's suits and salwar suits on the historical company profile",
+      "Women's festive ethnic outfits in indexed brand posts"
+    ],
+    "category_availability_rule": "Published or historical categories are not a promise of today's inventory. Confirm the exact item, size, colour and price for every transactional post.",
+    "occasions": [
+      "Wedding shopping",
+      "Festive celebrations",
+      "Family functions",
+      "Party and special-occasion dressing",
+      "Everyday saree selection only when the featured item fits that use"
+    ],
+    "observed_public_content_patterns": [
+      "Single-product saree showcases focusing on visible colour and detailing",
+      "Short fashion reels with a visit-the-store CTA",
+      "Bandhani and Kanjivaram collection mentions",
+      "Customer-trust videos and reviews",
+      "Earlier Buy 1 Get 1 Free promotional posts"
+    ],
+    "historical_campaign_information": [
+      {
+        "campaign": "Buy 1 saree, get 1 free",
+        "evidence": "Prior user campaign briefs and indexed brand posts; often shown with limited-period and T&C apply wording.",
+        "current_status": "Not verified active on 2026-09-24.",
+        "publication_rule": "Do not automatically reuse. Confirm eligibility, included collections, lesser-value-item rules, dates, outlet applicability and exact legal wording first."
+      },
+      {
+        "campaign": "Customer says she has shopped here for three years",
+        "evidence": "Earlier user-provided customer review brief and brand-published review content.",
+        "current_status": "Historical customer-specific testimony, not a generic brand-wide claim.",
+        "publication_rule": "Only quote or paraphrase from the approved testimonial footage. Do not make up the customer's name, purchases or exact statement."
+      }
+    ],
+    "current_approved_offers": [],
+    "current_confirmed_price_list": [],
+    "current_confirmed_stock": [],
+    "current_shipping_and_delivery_policy": null,
+    "current_returns_and_exchanges_policy": null,
+    "product_specification_rule": "Fabric, weave, threadwork, zari, embroidery technique, blouse or fall inclusion and handloom status must come from the exact SKU, label or approved brief."
+  },
+  "writing_direction": {
+    "status": "Recommended brand writing defaults adapted from the user's women-only informational and clothing genres plus the store's published assortment.",
+    "brand_voice": [
+      "Graceful",
+      "Warm",
+      "Fashion-aware",
+      "Locally approachable",
+      "Celebratory",
+      "Specific rather than generic"
+    ],
+    "positioning_for_copy": "Make the saree or actual featured outfit the hero. Help a Mira Road shopper picture where she would wear it, what details are visible and how to find out more or visit the store.",
+    "primary_language": "Natural English",
+    "alternate_language": "Short, fluent Hinglish for reels or local promotional content when requested.",
+    "language_rule": "Use the supplied script language and preserve the garment's correct name. Avoid awkward translations of technical weave or fabric names.",
+    "target_audience": [
+      "Women seeking ethnic looks for weddings or festivals",
+      "Saree shoppers in Mira Road, Thane and the wider Mumbai region",
+      "People comparing real colour, detail and drape before visiting",
+      "Existing customers returning for occasion shopping"
+    ],
+    "emotional_angles": [
+      "The excitement of choosing an outfit for a special day",
+      "A saree that becomes part of a family celebration",
+      "Finding a look that feels personal, not generic",
+      "Seeing the drape move rather than guessing from a static image",
+      "The pleasure of browsing styles with someone you trust"
+    ],
+    "signature_copy_territories": [
+      "One look, a whole occasion planned around it",
+      "Drape and detail in motion",
+      "Occasion-ready wardrobe inspiration",
+      "Local Mira Road ethnic-wear discovery",
+      "Real shoppers and real choices"
+    ],
+    "avoid_style": [
+      "Unverified premium, silk, pure, handwoven or handcrafted claims",
+      "Making the same timeless-elegance claim in every post",
+      "Generic poetic lines that ignore the actual product",
+      "Body-shaming or restrictive beauty language",
+      "Invented price, discount, urgency or stock",
+      "Suggesting every woman must wear a particular garment for a festival",
+      "Men's clothing promotion under the active women-only brief",
+      "Em dashes"
+    ]
+  },
+  "content_playbook": {
+    "saree_showcase": {
+      "focus": "One real saree's colour, motif, border, pallu, drape and overall visual mood.",
+      "structure": "Product-specific hook, two true visible details, relevant occasion, visit or call CTA.",
+      "rules": [
+        "Name material, weave and craft only if the label or brief confirms them.",
+        "Do not identify a saree as Bandhani or Kanjivaram from a photo alone.",
+        "Do not promise that the model's accessories or blouse are included."
+      ]
+    },
+    "collection_launch": {
+      "focus": "A confirmed new range or arrival with distinct visual attributes.",
+      "rules": [
+        "Confirm whether the collection is actually new and at which outlet.",
+        "Use approved launch date, availability and price ranges only.",
+        "Avoid describing one showcased piece as representative of every product."
+      ]
+    },
+    "styling_and_drape": {
+      "focus": "Demonstrate how an actual saree or outfit was styled in the supplied visuals.",
+      "structure": "Easy styling question, the demonstrated choice, result, save or visit CTA.",
+      "rules": [
+        "Distinguish garments sold by the shop from borrowed accessories.",
+        "Do not promise that one styling method works for every fabric or body type.",
+        "Do not digitally change the garment colour, print or proportions."
+      ]
+    },
+    "fabric_and_detail_education": {
+      "focus": "One accurate practical detail such as visible border placement, drape or label-confirmed fabric care.",
+      "rules": [
+        "Use supplier or care-label facts for fabric composition and washing advice.",
+        "Do not use heritage, geographical indication, pure silk or handloom terms from appearance alone.",
+        "Separate styling advice from technical product claims."
+      ]
+    },
+    "wedding_and_festive": {
+      "focus": "Tie a featured real outfit to a plausible approved occasion without overstating exclusivity.",
+      "rules": [
+        "Use culturally respectful festival language.",
+        "Do not assume the wearer is a bride when footage does not say so.",
+        "Match the actual garment, colour and event in the creative."
+      ]
+    },
+    "customer_review": {
+      "focus": "A real customer's authentic shopping experience, with appropriate consent.",
+      "rules": [
+        "Use the approved exact quote or a faithful paraphrase.",
+        "The three-year repeat-shopping story is specific to that customer, not a universal claim.",
+        "Do not invent names, dates, purchase amounts or five-star ratings."
+      ]
+    },
+    "store_visit": {
+      "focus": "Store browse and customer-facing discovery in Mira Road.",
+      "rules": [
+        "Use the user-approved phone and address.",
+        "Verify opening hours and filmed merchandise availability before writing a time-specific visit CTA.",
+        "Do not describe the store as the biggest or oldest without evidence."
+      ]
+    },
+    "offer": {
+      "status": "Requires fresh written approval for each campaign.",
+      "required_details": [
+        "Exact eligible product categories and SKU scope",
+        "Buy and free-item mechanics, including value caps",
+        "Validity start and end dates",
+        "In-store or online applicability",
+        "Exclusions and stackability",
+        "Mandatory terms-and-conditions line",
+        "Whether stock is limited"
+      ],
+      "rules": [
+        "Past Buy 1 Get 1 Free content is not proof of a currently active offer.",
+        "Do not claim all sarees or all clothing are included unless approved.",
+        "Do not invent a countdown or limited-stock claim."
+      ]
+    }
+  },
+  "ethnic_product_description_framework": {
+    "product_identity": [
+      "Exact garment name and SKU",
+      "Collection name if approved",
+      "Available variants",
+      "Occasion in the actual brief"
+    ],
+    "visible_design": [
+      "True photographed colour",
+      "Print or motif",
+      "Border and pallu",
+      "Embroidery or visible surface work",
+      "Drape and silhouette",
+      "Accessories shown but not necessarily included"
+    ],
+    "fabric_and_care": [
+      "Label-confirmed composition",
+      "Supplier-confirmed weave or technique",
+      "Length and width if published",
+      "Care instructions from label"
+    ],
+    "commercial_details": [
+      "Price",
+      "Sizes if applicable",
+      "Blouse inclusion and stitching status",
+      "Stock and colour availability",
+      "Offer eligibility and terms",
+      "Delivery or pickup promise"
+    ],
+    "requires_explicit_confirmation": [
+      "Pure silk",
+      "Handloom or handwoven",
+      "Authentic Banarasi, Kanjivaram or Bandhani technique",
+      "Hand embroidery",
+      "Limited edition",
+      "All India shipping",
+      "Free blouse or tailoring",
+      "Machine-washable or easy-care claims"
+    ],
+    "rule": "Only the asset and product-specific brief can establish item properties. Store-level published categories do not establish any photographed item's composition or availability."
+  },
+  "caption_format": {
+    "default_platforms": [
+      "Instagram",
+      "Facebook"
+    ],
+    "default_number_of_options": 1,
+    "body_word_target": "25 to 60 words, excluding footer, hashtags and keyword bracket.",
+    "short_reel_word_target": "12 to 40 words.",
+    "informational_word_target": "35 to 75 words when a genuine styling or garment fact is provided.",
+    "sequence": [
+      "Specific hook based on the actual saree, look or occasion",
+      "One or two visible details or approved product facts",
+      "One clear visit, call, DM or save CTA",
+      "Approved store footer",
+      "Exactly three relevant hashtags",
+      "Exactly one square bracket of comma-separated SEO phrases"
+    ],
+    "line_breaks": "Short readable paragraphs, then footer, then hashtag line, then a single SEO bracket.",
+    "body_emojis": "Zero to two relevant emojis in the body, unless the brief requests a more festive style.",
+    "hashtag_count": 3,
+    "hashtag_selection": "Usually one brand, one garment or occasion and one Mira Road location tag. Do not use an offer tag if no current offer is approved.",
+    "seo_keyword_count": "5 to 8",
+    "seo_format": "[keyword one, keyword two, keyword three, keyword four, keyword five]",
+    "punctuation": "No em dashes.",
+    "output_rule": "Return ready-to-copy public caption only unless the user asks for analysis or multiple options."
+  },
+  "fixed_footer": {
+    "lines": [
+      "📍 Roopali Sarees, Shop No. 1, B-49, Chaitali Bldg., Sector-1, Shanti Nagar, Mira Road (E), Thane - 401107",
+      "📞 +91 90225 61477",
+      "🎥 Managed by: @famebrosstudio ✨"
+    ],
+    "source": "User-approved recent caption details, corroborated by indexed brand posts.",
+    "usage": "Default for feed and reel captions when the user wants the full business footer. Shorten for Stories and text overlays.",
+    "rules": [
+      "Keep the Mira Road East address and approved mobile number exact.",
+      "Do not substitute the older landline or another Roopali branch's number.",
+      "Do not add store hours, email, website, shipping or WhatsApp without confirmation.",
+      "Use the agency credit where the user's content format expects it."
+    ]
+  },
+  "suggested_hashtag_bank": {
+    "brand": [
+      "#RoopaliSarees"
+    ],
+    "category": [
+      "#SareeStyle",
+      "#DesignerSarees",
+      "#EthnicWear",
+      "#IndianWear"
+    ],
+    "occasion": [
+      "#WeddingSaree",
+      "#FestiveFashion",
+      "#OccasionWear"
+    ],
+    "location": [
+      "#MiraRoadShopping",
+      "#MiraRoadFashion",
+      "#ThaneShopping"
+    ],
+    "campaign_only_when_active": [
+      "#Buy1Get1Free",
+      "#SareeOffer"
+    ],
+    "rule": "Choose exactly three truthful and relevant tags. Avoid location tags for unrelated Roopali shops."
+  },
+  "seo_keyword_bank": [
+    "Roopali Sarees Mira Road",
+    "saree shop in Mira Road East",
+    "designer sarees in Mira Road",
+    "women's ethnic wear Mira Road",
+    "wedding sarees in Thane",
+    "festive saree collection Mira Road",
+    "traditional outfits for women",
+    "occasion wear in Mira Road",
+    "Bandhani sarees Mira Road when featured",
+    "Kanjivaram sarees Mira Road when featured",
+    "lehenga shopping Mira Road when featured",
+    "salwar suits Mira Road when featured"
+  ],
+  "cta_bank": {
+    "visit": [
+      "Visit Roopali Sarees in Mira Road East to explore the featured look.",
+      "See the drape and details in person at our Shanti Nagar store."
+    ],
+    "call": [
+      "Call +91 90225 61477 for the current collection and availability."
+    ],
+    "dm": [
+      "DM us the look you loved and ask about current availability."
+    ],
+    "save": [
+      "Save this saree idea for your next celebration."
+    ],
+    "share": [
+      "Send this look to your wedding-shopping partner."
+    ],
+    "offer": [
+      "Ask the store for the current offer terms before you shop."
+    ],
+    "selection_rule": "Use just one CTA and match it to the post objective. Never imply stock, opening hours or promotion eligibility is guaranteed."
+  },
+  "suggested_hooks": {
+    "saree_detail": [
+      "The border deserves a closer look.",
+      "One drape, so many little details.",
+      "Wait till you see the pallu in motion."
+    ],
+    "occasion": [
+      "Found the look for that special invite?",
+      "Your next celebration look could start here.",
+      "For the moments you'll want to dress up for."
+    ],
+    "local_discovery": [
+      "Mira Road, your next saree find is waiting.",
+      "Your ethnic-wear stop in Shanti Nagar."
+    ],
+    "hinglish": [
+      "Shaadi ka invite aa gaya? Look bhi ready karo.",
+      "Saree ki details dekho, phir decision lo.",
+      "Festive look chahiye? Pehle drape dekhiye."
+    ],
+    "offer_conditional": [
+      "Two sarees, one approved offer."
+    ],
+    "hook_note": "Suggestions only. Product, occasion, availability and any promotion must match the real asset and current approved brief."
+  },
+  "visual_and_asset_guidance": {
+    "default_feed_size_px": {
+      "width": 1080,
+      "height": 1440
+    },
+    "default_story_size_px": {
+      "width": 1080,
+      "height": 1920
+    },
+    "reel_aspect_ratio": "9:16",
+    "layout": "Product-led ethnic fashion presentation with readable details and the saree or outfit as the unmistakable hero.",
+    "preferred_visual_mood": [
+      "Warm",
+      "Festive when relevant",
+      "Polished",
+      "True-to-product"
+    ],
+    "fixed_brand_colours": null,
+    "fixed_brand_fonts": null,
+    "logo_asset": null,
+    "product_integrity_rule": "Keep the actual uploaded garment unchanged unless the user expressly approves an edit. Preserve the visible colour, print, embroidery, border, pallu, drape and silhouette.",
+    "rules": [
+      "Do not invent jewellery, blouse, embroidery or additional garment elements as part of the SKU.",
+      "Do not alter the model's body or skin tone to suggest a fit result.",
+      "If using a generated background, keep product edges and true colours credible.",
+      "Offer text and price must be legible, accurate and tied to current terms.",
+      "Use the real approved logo without redrawing it."
+    ]
+  },
+  "carousel_and_reel_system": {
+    "product_detail_carousel": {
+      "slides": [
+        "Hero look with garment-specific hook",
+        "Border, pallu or print close-up",
+        "Full drape or actual outfit styling",
+        "Occasion fit and store CTA"
+      ],
+      "guardrail": "Do not fabricate unseen views, material labels or inclusions."
+    },
+    "styling_reel": {
+      "duration": "Approximately 20 to 40 seconds if not otherwise specified.",
+      "flow": "Visual hook, garment reveal, one practical styling detail, full look, CTA.",
+      "guardrail": "Use only the real outfit and styling demonstrated in footage."
+    },
+    "review_reel": {
+      "flow": "Customer's approved context, her own words, product/store shots, respectful thank-you and visit CTA.",
+      "guardrail": "Get testimonial approval; no invented quote or quantified outcome."
+    },
+    "offer_reel": {
+      "flow": "Approved offer headline, eligibility, product visuals, validity and T&C, then store CTA.",
+      "guardrail": "Hold publication until the current offer brief and all exclusions are approved."
+    }
+  },
+  "other_output_modes": {
+    "story": "One short visual-specific line and a DM, call or visit CTA; omit full footer, hashtags and SEO bracket unless requested.",
+    "comment": "A short, natural response about the actual look; do not pretend to be a customer.",
+    "review_reply": "Thank the real reviewer, acknowledge only what was actually said and invite another visit without disclosing private purchase details.",
+    "repost": "Credit the model, creator or customer only when permission and correct handle are provided.",
+    "text_overlay": "Three to eight words focused on the visible saree, collection or verified offer.",
+    "reel_script": "Use the requested duration. Start with a garment or occasion hook, show real details and end with a single store CTA.",
+    "product_description": "Use the product framework with SKU-specific fabric, dimension, blouse, stock and price only when confirmed.",
+    "ad_copy": "Use a product-specific benefit, Mira Road relevance, accurate contact and only approved active offer terms."
+  },
+  "sample_caption": {
+    "status": "Illustrative generic saree showcase; do not use unchanged for a specific product without checking the actual visuals.",
+    "text": "A saree worth seeing in motion. ✨\nFrom the full drape to the little details, explore the look up close and find your favourite for the next celebration. Visit us in Mira Road East or call to check availability.\n\n📍 Roopali Sarees, Shop No. 1, B-49, Chaitali Bldg., Sector-1, Shanti Nagar, Mira Road (E), Thane - 401107\n📞 +91 90225 61477\n🎥 Managed by: @famebrosstudio ✨\n\n#RoopaliSarees #SareeStyle #MiraRoadShopping\n\n[Roopali Sarees Mira Road, saree shop in Mira Road East, women's ethnic wear, festive saree look, saree shopping Thane]"
+  },
+  "accuracy_rules": [
+    "Treat the user's approved phone and address as the public footer source over conflicting directories.",
+    "Keep the women-only active content direction despite a broader historical company profile.",
+    "Use the matched @roopalisarees profile, not a similarly named account in another city.",
+    "Do not promote the historical Buy 1 Get 1 Free campaign as active without fresh approval.",
+    "Do not quote a price or claim savings, free items or limited stock without current terms.",
+    "Do not infer silk, cotton, pure, handloom, artisan, imported or authenticity claims from a photo.",
+    "Do not call a garment a Banarasi, Bandhani or Kanjivaram unless the actual item's label or brief says so.",
+    "Do not assume blouse, petticoat, accessories or stitching are included.",
+    "Do not promise shipping, delivery, exchanges, returns or alterations without approved policy.",
+    "Do not state third-party opening hours as approved store hours.",
+    "Do not invent founder, founding year, designer or manufacturing origin.",
+    "For reviews, preserve the customer's own words and consent.",
+    "If the post lacks a product asset, write a generic store-discovery caption without fabricated SKU details.",
+    "If a necessary offer or price detail is missing, ask one focused question before writing transactional copy.",
+    "Use exactly three hashtags and one comma-separated SEO bracket in normal feed captions.",
+    "Do not put null fields or internal research notes into public copy.",
+    "Do not use em dashes."
+  ],
+  "per_post_input": {
+    "brand_id": "roopali_sarees",
+    "mode": "caption",
+    "post_format": null,
+    "content_genre": "women's clothing showcase",
+    "asset_description": null,
+    "product_name": null,
+    "product_category": null,
+    "product_sku": null,
+    "product_photo_source": null,
+    "product_integrity_required": true,
+    "occasion": null,
+    "customer_or_model_permission_confirmed": null,
+    "colour": null,
+    "visible_design_details": [],
+    "confirmed_fabric_and_weave": null,
+    "confirmed_blouse_inclusion": null,
+    "sizes_or_dimensions": [],
+    "price": null,
+    "offer_name": null,
+    "offer_mechanics": null,
+    "offer_eligibility": null,
+    "offer_validity": null,
+    "offer_terms": null,
+    "stock_status": null,
+    "delivery_or_pickup": null,
+    "goal": null,
+    "language_override": null,
+    "recent_captions": [],
+    "additional_instructions": []
+  },
+  "master_brand_instruction": "Write as Roopali Sarees, the women's ethnic-wear retailer at Shop No. 1, B-49, Chaitali Bldg., Sector-1, Shanti Nagar, Mira Road (E), Thane - 401107. The approved contact number is +91 90225 61477, and the matched Instagram page is https://www.instagram.com/roopalisarees/. Focus on informational posts and real women's clothing, especially the exact saree, festive outfit or occasion look in the supplied asset. Keep the tone graceful, specific, inviting and locally relevant; English by default, natural Hinglish when requested. Describe visible colour, pattern, border, pallu, drape or styling accurately. Do not infer fabric, weave, workmanship, SKU availability, blouse inclusion, price, shipment, opening hours or return policy from appearance or an old directory. Historical Buy 1 Get 1 Free content is not a current offer; wait for approved validity, eligibility and T&C before using it. For a standard caption, give a product-specific hook, one or two true details, one CTA, the approved store phone/address and Famebros credit, exactly three relevant hashtags and one bracket of 5 to 8 comma-separated SEO phrases. Protect the real garment's design and colour in visual requests. Do not promote men's clothing under the active women-only brief. Never confuse the Mira Road store with another Roopali business. Use no em dashes and return ready-to-copy public text.",
+  "missing_information": [
+    "Owner confirmation that @roopalisarees is the account for login or cross-posting",
+    "Approved working website or online catalog URL",
+    "Official Google Maps listing link",
+    "Confirmed current store hours and holidays",
+    "Confirmation of the exact shop-unit count in the address",
+    "Confirmed WhatsApp availability for +91 90225 61477",
+    "Approved official email",
+    "Current categories, stock and SKU-specific fabric labels",
+    "Current price list and inclusive accessories",
+    "Current active offer dates, eligibility and full T&C",
+    "Shipping, delivery, return, exchange and alteration policies",
+    "Approved logo, colour palette and font files",
+    "Permissions and exact quotes for customer review assets",
+    "Confirmed founder and business-establishment year"
+  ],
+  "sources": [
+    {
+      "type": "user_supplied_prior_caption_and_brand_direction",
+      "supports": "Approved +91 9022561477, exact Mira Road East address, women-only clothing focus, informational genre, caption footer and Famebros credit.",
+      "provenance": "Prior user messages and supplied data.txt roster."
+    },
+    {
+      "type": "brand_instagram_profile_search_index",
+      "url": "https://www.instagram.com/roopalisarees/",
+      "supports": "Matched handle, phone and Mira Road address.",
+      "note": "Indexed results were accessible, but a direct profile open was throttled on review date."
+    },
+    {
+      "type": "brand_instagram_post_search_index",
+      "url": "https://www.instagram.com/reel/DbAXKCVxoE0/",
+      "supports": "Prior Buy 1 Get 1 Free saree campaign and approved phone/address; historical, not proof of an active offer."
+    },
+    {
+      "type": "brand_instagram_post_search_index",
+      "url": "https://www.instagram.com/reel/DaXG743NdAw/",
+      "supports": "Saree showcase style and matching store contact."
+    },
+    {
+      "type": "brand_facebook_page_search_index",
+      "url": "https://www.facebook.com/roopalisareesmiraroad/",
+      "supports": "Page identity and Mira Road context."
+    },
+    {
+      "type": "brand_company_profile",
+      "url": "https://www.linkedin.com/company/roopali",
+      "supports": "Historical wider assortment and Mira Road East store location."
+    },
+    {
+      "type": "third_party_store_listing",
+      "url": "https://magicpin.in/Thane/Mira-Road/Fashion/Roopali-Sarees/store/2922c0",
+      "supports": "Local store listing, older landline and address variant; not the authority for approved phone or current hours."
+    },
+    {
+      "type": "user_writing_preferences",
+      "supports": "Short useful hooks, one CTA, agency credit, exactly three hashtags, one SEO bracket and no em dashes."
+    }
+  ]
+}
