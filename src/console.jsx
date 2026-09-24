@@ -162,6 +162,79 @@ function StepsHeader({ step, setStep, ready }) {
   );
 }
 
+function ImageEditor({ name, src, onCancel, onApply }) {
+  const [rot, setRot] = useState(0); // quarter-turns clockwise
+  const [flip, setFlip] = useState(false);
+  const [bri, setBri] = useState(100);
+  const [con, setCon] = useState(100);
+  const [sat, setSat] = useState(100);
+  const [busy, setBusy] = useState(false);
+  const imgRef = useRef(null);
+  const changed = rot !== 0 || flip || bri !== 100 || con !== 100 || sat !== 100;
+  const reset = () => { setRot(0); setFlip(false); setBri(100); setCon(100); setSat(100); };
+  const apply = () => {
+    const img = imgRef.current;
+    if (!img || busy || !changed) return;
+    setBusy(true);
+    try {
+      const w = img.naturalWidth;
+      const h = img.naturalHeight;
+      if (!w || !h) throw new Error('photo not loaded yet');
+      const swap = rot % 2 === 1;
+      const canvas = document.createElement('canvas');
+      canvas.width = swap ? h : w;
+      canvas.height = swap ? w : h;
+      const ctx = canvas.getContext('2d');
+      ctx.filter = `brightness(${bri}%) contrast(${con}%) saturate(${sat}%)`;
+      ctx.translate(canvas.width / 2, canvas.height / 2);
+      ctx.rotate((rot * Math.PI) / 2);
+      ctx.scale(flip ? -1 : 1, 1);
+      ctx.drawImage(img, -w / 2, -h / 2);
+      canvas.toBlob((blob) => {
+        setBusy(false);
+        if (!blob) { alert('Edit failed in this browser — try Chrome or Edge.'); return; }
+        onApply(new File([blob], String(name || 'photo').replace(/\.[a-z]+$/i, '') + '-edited.jpg', { type: 'image/jpeg' }));
+      }, 'image/jpeg', 0.92);
+    } catch (e) { setBusy(false); alert(`Edit failed: ${e.message}`); }
+  };
+  return (
+    <div className="lightbox-backdrop" onClick={onCancel}>
+      <div className="editor-card" onClick={(e) => e.stopPropagation()}>
+        <h3>✏️ Edit photo</h3>
+        <p className="sub">{name}</p>
+        <div className="editor-preview">
+          <img
+            ref={imgRef} src={src} alt="Edit preview"
+            style={{
+              transform: `rotate(${rot * 90}deg) scaleX(${flip ? -1 : 1})`,
+              filter: `brightness(${bri}%) contrast(${con}%) saturate(${sat}%)`,
+            }}
+          />
+        </div>
+        <div className="editor-row">
+          <button className="mini" onClick={() => setRot((rot + 3) % 4)}>⟲ Left</button>
+          <button className="mini" onClick={() => setRot((rot + 1) % 4)}>⟳ Right</button>
+          <button className="mini" onClick={() => setFlip(!flip)}>{flip ? 'Unflip' : 'Flip'}</button>
+          <button className="mini" onClick={reset} disabled={!changed}>Reset</button>
+        </div>
+        {[
+          ['Brightness', bri, setBri, 50, 150],
+          ['Contrast', con, setCon, 50, 150],
+          ['Colour', sat, setSat, 0, 200],
+        ].map(([label, val, set, min, max]) => (
+          <label key={label} className="field-mini"><span>{label} · {val}%</span>
+            <input type="range" min={min} max={max} value={val} onChange={(e) => set(Number(e.target.value))} />
+          </label>
+        ))}
+        <div className="editor-row">
+          <button className="skew-btn ghost" onClick={onCancel}><span>Cancel</span></button>
+          <button className="skew-btn grad" disabled={busy || !changed} onClick={apply}><span>{busy ? 'Applying…' : '✓ Apply edit'}</span></button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function Composer({ session, connections, reload }) {
   const persistKey = `driftpost-composer:${session.user.id}`;
   const saved = (() => {
@@ -182,6 +255,8 @@ function Composer({ session, connections, reload }) {
   const [thumb, setThumb] = useState(null);
   const [trioMode, setTrioMode] = useState(!!saved.trioMode);
   const [ytConverting, setYtConverting] = useState(false);
+  const [lightbox, setLightbox] = useState(-1);
+  const [editing, setEditing] = useState(-1);
   const [caption, setCaption] = useState(saved.caption || '');
   const [yt, setYt] = useState(saved.yt || { title: '', description: '', tags: '', privacy: 'private', category: '', kids: '', license: '', embed: '', stats: '', notify: 'on' });
   const [ig, setIg] = useState(saved.ig || { caption: '', alt: '', topics: '', partner: '', collabs: '', location: '', shareFb: false });
@@ -282,6 +357,17 @@ function Composer({ session, connections, reload }) {
     () => (file?.raw && file.type.startsWith('video/') ? URL.createObjectURL(file.raw) : null),
     [file]
   );
+  // Per-file preview URLs for the gallery + lightbox (revoked on change).
+  const fileUrls = useMemo(
+    () => (files || []).map((f) => {
+      try { return f?.raw ? URL.createObjectURL(f.raw) : null; }
+      catch { return null; }
+    }),
+    [files]
+  );
+  useEffect(() => () => {
+    fileUrls.forEach((u) => { try { if (u) URL.revokeObjectURL(u); } catch {} });
+  }, [fileUrls]);
 
   const pickFiles = (list) => {
     const arr = [...list].filter((f) => f && /^(image|video)\//.test(f.type)).slice(0, 10);
@@ -292,8 +378,9 @@ function Composer({ session, connections, reload }) {
   // YouTube has no photo/Community-post API: convert an attached photo into a
   // 6-second 1080x1920 video in-browser (Ken Burns zoom) so it posts as a Short.
   const convertPhotoForYouTube = async () => {
-    const img = files.find((f) => f.type.startsWith('image/'));
-    if (!img || ytConverting) return;
+    const imgIdx = files.findIndex((f) => f.type.startsWith('image/'));
+    if (imgIdx < 0 || ytConverting) return;
+    const img = files[imgIdx];
     setYtConverting(true);
     try {
       const bitmap = await createImageBitmap(img.raw);
@@ -326,10 +413,9 @@ function Composer({ session, connections, reload }) {
       await done;
       const blob = new Blob(chunks, { type: 'video/webm' });
       const conv = new File([blob], img.name.replace(/\.[a-z]+$/i, '') + '-short.webm', { type: 'video/webm' });
-      setFiles((fs) => {
-        const rest = fs.filter((f) => !f.type.startsWith('image/'));
-        return [...rest, { raw: conv, name: conv.name, size: `${(conv.size / 1024 / 1024).toFixed(1)} MB`, type: conv.type }];
-      });
+      const entry = { raw: conv, name: conv.name, size: `${(conv.size / 1024 / 1024).toFixed(1)} MB`, type: conv.type };
+      // Replace ONLY the converted photo — the rest of the carousel stays.
+      setFiles((fs) => fs.map((f, i) => (i === imgIdx ? entry : f)));
     } catch (e) { alert(`Convert failed: ${e.message}`); }
     setYtConverting(false);
   };
@@ -534,14 +620,6 @@ function Composer({ session, connections, reload }) {
     setAiBusy(false);
   };
 
-  const secState = (pid) => {
-    const r = results[pid];
-    if (!r) return 'Ready';
-    if (r.state === 'completed') return 'Done';
-    if (r.state === 'failed') return 'Failed';
-    return `${r.progress || 5}%`;
-  };
-
   const contentReady = !!(files.length || caption.trim() || yt.title.trim() || x.text.trim());
   const toggleAdv = (k) => setShowAdv((m) => ({ ...m, [k]: !m[k] }));
   const aiButtonLabel = aiBusy ? `Writing… ${aiSecs}s — same request is cached for 30 min` : '✨ Write captions';
@@ -614,15 +692,27 @@ function Composer({ session, connections, reload }) {
             <div className="drop big" onClick={() => inputRef.current.click()}><b>＋ Add photos or video</b>Click to browse · up to 10 photos (carousel) or 1 video</div>
           ) : (
             <div>
-              {mediaUrl && <img className="media-preview" src={mediaUrl} alt="Shared media preview" onClick={() => window.open(mediaUrl, '_blank')} title="Click to view full size" />}
-              {mediaVideoUrl && (
-                <video className="media-preview" src={mediaVideoUrl} controls preload="metadata" title="Video preview" />
-              )}
-              {files.map((f, i) => (
-                <div key={i} className="file-row"><div><b>{i + 1}. {f.name}</b><small>{f.size} · {f.type}</small></div><button onClick={() => removeFileAt(i)}>Remove</button></div>
-              ))}
-              <div className="file-row"><span /><button onClick={() => inputRef.current.click()}>＋ Add more ({files.length}/10)</button><button onClick={() => setFiles([])}>Clear all</button></div>
-              {isCarousel && <div className="banner" style={{ marginTop: 8 }}>Carousel: {files.length} photos will post as ONE carousel on Instagram + Facebook{files.length > 4 ? ' (X takes first 4)' : ' + X'}.</div>}
+              <div className="media-grid">
+                {files.map((f, i) => (
+                  <div key={`${f.name}-${i}`} className="media-cell">
+                    {f.type.startsWith('image/') && fileUrls[i]
+                      ? <img src={fileUrls[i]} alt={f.name} onClick={() => setLightbox(i)} title="Click to preview" />
+                      : f.type.startsWith('video/') && fileUrls[i]
+                        ? <video src={fileUrls[i]} preload="metadata" onClick={() => setLightbox(i)} title="Click to preview" />
+                        : <span className="media-fallback">{f.name}</span>}
+                    <div className="media-cell-bar">
+                      <small>{i + 1} · {f.size}</small>
+                      <span className="media-cell-btns">
+                        <button className="mini" title="Preview" onClick={() => setLightbox(i)}>👁</button>
+                        {f.type.startsWith('image/') && <button className="mini" title="Edit photo" onClick={() => setEditing(i)}>✏️</button>}
+                        <button className="mini" title="Remove" onClick={() => removeFileAt(i)}>✕</button>
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="file-row"><span /><button onClick={() => inputRef.current.click()}>＋ Add more ({files.length}/10)</button><button onClick={() => { setFiles([]); setLightbox(-1); setEditing(-1); }}>Clear all</button></div>
+              {isCarousel && <div className="banner" style={{ marginTop: 8 }}>Carousel: {files.length} photos will post as ONE carousel on Instagram + Facebook{files.length > 4 ? ' (X takes first 4)' : ' + X'}. Click any photo to preview, ✏️ to edit.</div>}
               {hasVideo && files.length > 1 && <div className="sec-err">Mixed video + multiple files: carousel needs photos only. Keep 1 video, or remove the video for a photo carousel.</div>}
             </div>
           )}
@@ -937,6 +1027,40 @@ function Composer({ session, connections, reload }) {
       </div>
       )}
       <p className="note center">🔒 Direct post only · Your passwords/tokens stay locked in Supabase.</p>
+      {lightbox >= 0 && files[lightbox] && (
+        <div className="lightbox-backdrop" onClick={() => setLightbox(-1)}>
+          <button className="lb-close" onClick={() => setLightbox(-1)} aria-label="Close preview">✕</button>
+          {files.length > 1 && (
+            <>
+              <button className="lb-nav left" aria-label="Previous" onClick={(e) => { e.stopPropagation(); setLightbox((lightbox - 1 + files.length) % files.length); }}>‹</button>
+              <button className="lb-nav right" aria-label="Next" onClick={(e) => { e.stopPropagation(); setLightbox((lightbox + 1) % files.length); }}>›</button>
+            </>
+          )}
+          <div className="lightbox-body" onClick={(e) => e.stopPropagation()}>
+            {files[lightbox].type.startsWith('video/') && fileUrls[lightbox]
+              ? <video src={fileUrls[lightbox]} controls autoPlay preload="metadata" />
+              : fileUrls[lightbox] && <img src={fileUrls[lightbox]} alt={files[lightbox].name} />}
+            <div className="lb-cap">{lightbox + 1} / {files.length} · {files[lightbox].name} · {files[lightbox].size}</div>
+            <div className="lb-actions">
+              {files[lightbox].type.startsWith('image/') && <button className="mini" onClick={() => { setEditing(lightbox); setLightbox(-1); }}>✏️ Edit this photo</button>}
+              <button className="mini" onClick={() => { removeFileAt(lightbox); setLightbox(-1); }}>✕ Remove</button>
+            </div>
+          </div>
+        </div>
+      )}
+      {editing >= 0 && files[editing]?.type.startsWith('image/') && fileUrls[editing] && (
+        <ImageEditor
+          name={files[editing].name}
+          src={fileUrls[editing]}
+          onCancel={() => setEditing(-1)}
+          onApply={(out) => {
+            setFiles((fs) => fs.map((f, i) => (i === editing
+              ? { raw: out, name: out.name, size: `${(out.size / 1024 / 1024).toFixed(1)} MB`, type: out.type }
+              : f)));
+            setEditing(-1);
+          }}
+        />
+      )}
     </div>
   );
 }

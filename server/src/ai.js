@@ -65,11 +65,66 @@ PLATFORM SPECS (texts must differ):
 - FACEBOOK (social/conversational, NO bracket): 1-2 friendly sentences in different words from Instagram + CTA with phone/address if known. Max 2 hashtags inline or at end. Footer = address/phone lines only. Never include the [keyword bracket].
 - X (punchy, <=280 chars): one sharp line + different CTA, max 2 hashtags, no footer, no bracket, no emoji spam. Must read differently from the IG hook.`;
 
-function extractJson(text) {
+function tryParseObject(candidate) {  try {
+    return JSON.parse(candidate);
+  } catch {
+    // Minor repair: trailing commas.
+    return JSON.parse(candidate.replace(/,\s*([}\]])/g, '$1'));
+  }
+}
+
+function hasCaptionShape(obj) {
+  if (!obj || typeof obj !== 'object') return false;
+  return ['youtube', 'instagram', 'facebook', 'x'].some((k) => obj[k] && typeof obj[k] === 'object');
+}
+
+// Truncated replies (hit max tokens mid-JSON) are salvageable: cut back to
+// the last complete value boundary, close the open braces, and parse.
+function salvageTruncated(raw, start) {
+  const boundaries = [];
+  for (const token of ['},', '],', '",']) {
+    let idx = raw.lastIndexOf(token);
+    while (idx > start && boundaries.length < 9) {
+      boundaries.push(idx + 2);
+      idx = raw.lastIndexOf(token, idx - 1);
+    }
+  }
+  boundaries.sort((a, b) => b - a);
+  for (const cut of boundaries) {
+    const slice = raw.slice(start, cut);
+    let depth = 0;
+    let inStr = false;
+    let esc = false;
+    const stack = [];
+    for (const ch of slice) {
+      if (inStr) {
+        if (esc) esc = false;
+        else if (ch === '\\') esc = true;
+        else if (ch === '"') inStr = false;
+      } else if (ch === '"') {
+        inStr = true;
+      } else if (ch === '{' || ch === '[') {
+        stack.push(ch); depth++;
+      } else if (ch === '}' || ch === ']') {
+        stack.pop(); depth--;
+      }
+    }
+    if (inStr || depth <= 0) continue;
+    const closers = stack.reverse().map((c) => (c === '{' ? '}' : ']')).join('');
+    try {
+      const parsed = tryParseObject(slice + closers);
+      if (hasCaptionShape(parsed)) return parsed;
+    } catch {}
+  }
+  return null;
+}
+
+export function extractJson(text) {
   const fenced = String(text || '').match(/```(?:json)?\s*([\s\S]*?)```/i);
   const raw = (fenced ? fenced[1] : String(text || '')).trim();
+  if (!raw) throw new Error('AI returned an empty answer. Tap Write again — retry usually works.');
   const start = raw.indexOf('{');
-  if (start < 0) throw new Error('AI returned an unreadable answer');
+  if (start < 0) throw new Error('AI returned an unreadable answer. Tap Write again — retry usually works.');
   // Balanced scan from the first '{': respects strings/escapes, stops at the
   // matching '}' so trailing chatter ("hope this helps!}") can't corrupt it.
   let depth = 0;
@@ -88,17 +143,19 @@ function extractJson(text) {
     } else if (ch === '}') {
       depth--;
       if (depth === 0) {
-        const candidate = raw.slice(start, i + 1);
         try {
-          return JSON.parse(candidate);
-        } catch {
-          // Minor repair: trailing commas, then give up with context.
-          return JSON.parse(candidate.replace(/,\s*([}\]])/g, '$1'));
-        }
+          const parsed = tryParseObject(raw.slice(start, i + 1));
+          if (hasCaptionShape(parsed)) return parsed;
+        } catch {}
+        // Balanced but corrupt (or wrong shape): fall through to salvage.
+        break;
       }
     }
   }
-  throw new Error('AI returned an unreadable answer');
+  const salvaged = salvageTruncated(raw, start);
+  if (salvaged) return salvaged;
+  console.error('[ai] unparseable reply (first 400 chars):', raw.slice(0, 400));
+  throw new Error('AI returned an unreadable answer. Tap Write again — retry usually works.');
 }
 
 function clean(value, max) {
@@ -199,20 +256,37 @@ export async function generateCaptions(summary, opts = {}) {
 
   let text;
   let usage;
-  if (trends) {
-    // Live SEO via the current Agent Tools API (Responses endpoint).
-    // Old chat-completions `search_parameters` is deprecated and errors out.
-    const r = await callResponsesWithSearch({ model, systemText, userMsg });
-    text = r.text;
-    usage = r.usage;
-  } else {
-    // Fast path: fewer output tokens + hard timeout so a slow model fails
-    // fast instead of hanging the UI. 650 tokens is plenty for 4 captions.
-    const r = await callChat({ model, systemText, userMsg, maxTokens: 650 });
-    text = r.text;
-    usage = r.usage;
+  let lastErr = null;
+  // One automatic retry: a truncated or malformed first reply is usually
+  // followed by a clean one — the user never sees the hiccup.
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      if (trends) {
+        // Live SEO via the current Agent Tools API (Responses endpoint).
+        // Old chat-completions `search_parameters` is deprecated and errors out.
+        const r = await callResponsesWithSearch({ model, systemText, userMsg });
+        text = r.text;
+        usage = r.usage;
+      } else {
+        // 1000 output tokens: 4 platform captions never get cut mid-JSON.
+        const r = await callChat({ model, systemText, userMsg, maxTokens: attempt ? 1200 : 1000 });
+        text = r.text;
+        usage = r.usage;
+      }
+      // Parse inside the retry loop so a bad payload retries, not fails.
+      const parsed = extractJson(text);
+      text = parsed;
+      lastErr = null;
+      break;
+    } catch (e) {
+      lastErr = e;
+      // Only unreadable/empty payloads retry — config/credit errors fail fast.
+      if (!/unreadable|empty answer/i.test(e.message)) throw e;
+      if (attempt === 0) await new Promise((r) => setTimeout(r, 800));
+    }
   }
-  const parsed = extractJson(text);
+  if (lastErr) throw lastErr;
+  const parsed = text;
   const tags = (arr) => (Array.isArray(arr) ? arr : []).map((t) => String(t || '').replace(/^#+/, '').trim()).filter(Boolean).slice(0, 10);
 
   // Canonical assembly (zero extra LLM tokens): the model only supplies the
@@ -405,6 +479,7 @@ function xaiError(data, res) {
 
 async function callChat({ model, systemText, userMsg, maxTokens }) {
   // Hard timeout: fail fast (25s) instead of hanging the composer.
+  // response_format json_object forces valid JSON out of the model.
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), 25000);
   let res;
@@ -418,6 +493,7 @@ async function callChat({ model, systemText, userMsg, maxTokens }) {
         temperature: 0.7,
         max_tokens: maxTokens,
         stream: false,
+        response_format: { type: 'json_object' },
         messages: [
           { role: 'system', content: systemText },
           { role: 'user', content: userMsg },
@@ -430,7 +506,16 @@ async function callChat({ model, systemText, userMsg, maxTokens }) {
   } finally { clearTimeout(timer); }
   const data = await res.json().catch(() => ({}));
   if (!res.ok) xaiError(data, res);
-  return { text: data.choices?.[0]?.message?.content || '', usage: data.usage };
+  const rawContent = data.choices?.[0]?.message?.content;
+  // Some models return content parts instead of a plain string.
+  const text = Array.isArray(rawContent)
+    ? rawContent.map((p) => (typeof p === 'string' ? p : p?.text || '')).join('')
+    : (rawContent || '');
+  if (!String(text).trim()) {
+    console.error('[ai] empty chat reply:', JSON.stringify(data).slice(0, 400));
+    throw new Error('AI returned an empty answer. Tap Write again — retry usually works.');
+  }
+  return { text, usage: data.usage };
 }
 
 function extractResponsesText(data) {
