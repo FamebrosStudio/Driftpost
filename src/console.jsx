@@ -136,7 +136,7 @@ function DotsMenu({ active, hidden, onToggleActive, onToggleHidden }) {
   const [open, setOpen] = useState(false);
   return (
     <span className="dots">
-      <button className="mini" onClick={() => setOpen((o) => !o)} aria-label="More actions">More</button>
+      <button className="mini" onClick={() => setOpen((o) => !o)} aria-label="More actions">⋯</button>
       {open && <>
         <span className="dd-backdrop" onClick={() => setOpen(false)} />
         <span className="dots-menu">
@@ -504,26 +504,64 @@ function Composer({ session, connections, reload }) {
   useEffect(() => {
     if (!enabled[tab] && enabledPlatforms.length) setTab(enabledPlatforms[0].id);
   }, [enabled, tab, enabledPlatforms]);
+  // Trio counts as a valid Step-1 selection: when the owner checks it, the
+  // platform error is hidden and Next is allowed even before ticking boxes.
+  const trioActive = isOwner && trioMode && trio.length >= 2;
+  const step1Ready = !!brand && (enabledPlatforms.length > 0 || trioActive);
+  const goNextFromStep1 = () => {
+    if (!step1Ready) return;
+    if (!enabled[tab] && enabledPlatforms.length) setTab(enabledPlatforms[0].id);
+    else if (!enabledPlatforms.length && trioActive) setTab('instagram');
+    setStep(2);
+  };
+  // A group preset is only as good as its accounts: drop any connection id
+  // that no longer exists (disconnected / hidden), so applying a group can
+  // never leave a platform pointing at a ghost account.
+  const validIds = useMemo(() => new Set(vis.map((c) => c.id)), [vis]);
+  const cleanPicks = (picks) => {
+    const out = {};
+    for (const pid of ['youtube', 'instagram', 'facebook', 'x']) {
+      const id = (picks || {})[pid];
+      if (id && validIds.has(id)) {
+        const c = vis.find((v) => v.id === id);
+        if (c && c.platform === pid) out[pid] = id;
+      }
+    }
+    return out;
+  };
   const activeGroup = groups.find((g) => g.id === activeGroupId) || null;
+  const activeGroupValid = activeGroup ? cleanPicks(activeGroup.picks) : {};
   const applyGroup = (g) => {
     if (!g) { setActiveGroupId(''); return; }
-    setActiveGroupId(g.id);
-    const next = {};
-    for (const pid of ['youtube', 'instagram', 'facebook', 'x']) {
-      const connId = (g.picks || {})[pid];
-      if (connId) next[pid] = true;
+    const picks = cleanPicks(g.picks);
+    if (!Object.keys(picks).length) {
+      alert('That group has no usable accounts left (they were disconnected or hidden). Pick fresh accounts and save a new group.');
+      return;
     }
-    setEnabled((m) => ({ ...m, ...next }));
-    if (g.brandKey && brands.some((b) => b.key === g.brandKey)) setBrandKey(g.brandKey);
+    setActiveGroupId(g.id);
+    // Exact preset: group platforms on, others off — predictable every time.
+    setEnabled({ youtube: !!picks.youtube, instagram: !!picks.instagram, facebook: !!picks.facebook, x: !!picks.x });
+    const bk = (g.brandKey && brands.some((b) => b.key === g.brandKey)) ? g.brandKey : brandKey;
+    if (bk && bk !== brandKey) setBrandKey(bk);
     setOver((m) => {
       const out = { ...m };
-      const bk = g.brandKey || brandKey;
       for (const pid of ['youtube', 'instagram', 'facebook', 'x']) {
-        if ((g.picks || {})[pid]) out[`${bk}:${pid}`] = g.picks[pid];
+        if (picks[pid]) out[`${bk}:${pid}`] = picks[pid];
       }
       return out;
     });
+    const firstPid = ['youtube', 'instagram', 'facebook', 'x'].find((p) => picks[p]);
+    if (firstPid) setTab(firstPid);
     setResults({});
+  };
+  const updateGroupPick = (groupId, pid, connId) => {
+    setGroups((gs) => gs.map((g) => {
+      if (g.id !== groupId) return g;
+      const picks = { ...(g.picks || {}) };
+      if (connId) picks[pid] = connId;
+      else delete picks[pid];
+      return { ...g, picks };
+    }));
   };
 
   // Carousel files (2-10 photos = 1 carousel post on IG/FB, up to 4 on X).
@@ -726,7 +764,7 @@ function Composer({ session, connections, reload }) {
   const publishOne = async (platform) => {
     if (busy[platform]) return;
     if (!pick(platform)) {
-      setResults((r) => ({ ...r, [platform]: { state: 'failed', message: 'No account for this brand — pick one in the phone.' } }));
+      setResults((r) => ({ ...r, [platform]: { state: 'failed', message: 'No account chosen — go back to Step 1 and pick an account for this platform.' } }));
       return;
     }
     setBusy((b) => ({ ...b, [platform]: true }));
@@ -740,9 +778,18 @@ function Composer({ session, connections, reload }) {
   const publishAll = async () => {
     // "Post to all" always strips IG<->FB mirrors (skip_crosspost=1):
     // direct IG + direct FB already cover both, mirrors would double-post.
+    // Enabled-but-unpicked platforms get an explicit error — never skipped silently.
+    const out = { ...results };
+    let reported = false;
+    for (const pid of enabledPlatforms.map((p) => p.id)) {
+      if (!pick(pid)) {
+        out[pid] = { state: 'failed', message: 'No account chosen — go back to Step 1 and pick an account.' };
+        reported = true;
+      }
+    }
+    if (reported) setResults({ ...out });
     const targets = PLATFORMS.map((p) => p.id).filter((pid) => pick(pid) && enabled[pid]);
     if (!targets.length) return;
-    const out = { ...results };
     for (const platform of targets) {
       try { await runOne(platform, out, { skipCrossPost: true }); }
       catch (e) { out[platform] = { state: 'failed', message: e.message }; setResults({ ...out }); }
@@ -750,11 +797,18 @@ function Composer({ session, connections, reload }) {
     reload();
   };
 
+  // Platforms the trio will hit: ticked ones win, but a trio with nothing
+  // ticked still posts to all three matched platforms instead of dying silently.
+  const trioPlats = (() => {
+    const ticked = ['instagram', 'facebook', 'youtube'].filter((pid) => enabled[pid]);
+    return ticked.length ? ticked : (trioActive ? ['instagram', 'facebook', 'youtube'] : []);
+  })();
+
   const publishTrio = async () => {
     // One click: same media+caption to IG + FB + YT for all 3 jeweller brands.
     // Mirrors stripped (direct posts only) so Facebook never gets doubles.
     if (!trio.length) return;
-    const plats = ['instagram', 'facebook', 'youtube'].filter((pid) => enabled[pid]);
+    const plats = trioPlats;
     if (!plats.length) return;
     setBusy((b) => ({ ...b, trio: true }));
     const out = { ...results };
@@ -773,13 +827,6 @@ function Composer({ session, connections, reload }) {
     }
     setBusy((b) => ({ ...b, trio: false }));
     reload();
-  };
-
-  const applyCaptionEverywhere = () => {
-    setIg((v) => ({ ...v, caption }));
-    setFb((v) => ({ ...v, message: caption }));
-    setX((v) => ({ ...v, text: caption.slice(0, 280) }));
-    setYt((v) => ({ ...v, description: caption }));
   };
 
   const [aiBreakdown, setAiBreakdown] = useState(null);
@@ -810,15 +857,17 @@ function Composer({ session, connections, reload }) {
           }),
       });
       const c = data.captions || data;
-      setYt((v) => ({ ...v, title: c.youtube.title || v.title, description: c.youtube.description || v.description, tags: c.youtube.tags.join(', ') || v.tags }));
-      setIg((v) => ({ ...v, caption: c.instagram.caption || v.caption }));
-      setCaption((prev) => prev || c.instagram.caption || '');
-      setFb((v) => ({ ...v, message: c.facebook.message || v.message }));
-      setX((v) => ({ ...v, text: c.x.text.slice(0, 280) || v.text }));
-      const tags = [...(c.youtube.tags || []), ...(c.instagram.hashtags || [])].filter(Boolean);
+      const ytTags = Array.isArray(c.youtube?.tags) ? c.youtube.tags : [];
+      const xText = typeof c.x?.text === 'string' ? c.x.text : '';
+      setYt((v) => ({ ...v, title: c.youtube?.title || v.title, description: c.youtube?.description || v.description, tags: ytTags.join(', ') || v.tags }));
+      setIg((v) => ({ ...v, caption: c.instagram?.caption || v.caption }));
+      setCaption((prev) => prev || c.instagram?.caption || '');
+      setFb((v) => ({ ...v, message: c.facebook?.message || v.message }));
+      setX((v) => ({ ...v, text: xText.slice(0, 280) || v.text }));
+      const tags = [...ytTags, ...((Array.isArray(c.instagram?.hashtags) ? c.instagram.hashtags : []))].filter(Boolean);
       if (tags.length) setYt((v) => ({ ...v, tags: v.tags || tags.slice(0, 8).join(', ') }));
       const secs = ((Date.now() - t0) / 1000).toFixed(1);
-      setAiMsg(`${data.cached ? `Instant (${secs}s, cached) — ` : `Done in ${secs}s — `}${data.isNewBrand ? `New brand '${data.fromMemory.replace(' (new brand filed)', '')}' filed — it will keep learning. ` : data.fromMemory ? `Using ${data.fromMemory} memory — ` : ''}4 different captions written (YT search / IG discovery / FB social / X punchy)${data.trends ? ' with live SEO' : ''} — review each phone, then publish.`);
+      setAiMsg(`${data.cached ? `Instant (${secs}s, cached) — ` : `Done in ${secs}s — `}${data.isNewBrand ? `New brand '${(data.fromMemory || '').replace(' (new brand filed)', '')}' filed — it will keep learning. ` : data.fromMemory ? `Using ${data.fromMemory} memory — ` : ''}4 different captions written (YT search / IG discovery / FB social / X punchy)${data.trends ? ' with live SEO' : ''} — review each phone, then publish.`);
       if (data.breakdown) setAiBreakdown(data.breakdown);
     } catch (e) {
       setAiMsg(e.message);
@@ -826,7 +875,7 @@ function Composer({ session, connections, reload }) {
     setAiBusy(false);
   };
 
-  const contentReady = !!(files.length || caption.trim() || yt.title.trim() || x.text.trim());
+  const contentReady = !!(files.length || aiBrief.trim() || yt.title.trim() || yt.description.trim() || ig.caption.trim() || fb.message.trim() || x.text.trim());
   const toggleAdv = (k) => setShowAdv((m) => ({ ...m, [k]: !m[k] }));
   const aiButtonLabel = aiBusy ? `Writing ${aiSecs}s — same request is cached for 30 min` : 'Write captions';
 
@@ -872,10 +921,11 @@ function Composer({ session, connections, reload }) {
               );
             })}
           </div>
-          {!enabledPlatforms.length && <div className="sec-err" style={{ marginTop: 8 }}>Select at least one platform to continue.</div>}
+          {!enabledPlatforms.length && !trioActive && <div className="sec-err" style={{ marginTop: 8 }}>Select at least one platform to continue.</div>}
+          {trioActive && !enabledPlatforms.length && <div className="banner" style={{ marginTop: 8 }}>Trio mode is on — you can continue without ticking platforms.</div>}
           <div className="step-nav">
-            <span className="step-hint">{enabledPlatforms.length ? `Posting to: ${enabledPlatforms.map((p) => p.name).join(', ')}` : 'Nothing selected'}</span>
-            <button className="skew-btn grad" onClick={() => { if (enabledPlatforms.length && enabled[tab]) setStep(2); else if (enabledPlatforms.length) { setTab(enabledPlatforms[0].id); setStep(2); } }} disabled={!brand || !enabledPlatforms.length}><span>Next: add content</span></button>
+            <span className="step-hint">{trioActive && !enabledPlatforms.length ? 'Posting via trio' : enabledPlatforms.length ? `Posting to: ${enabledPlatforms.map((p) => p.name).join(', ')}` : 'Nothing selected'}</span>
+            <button className="skew-btn grad" onClick={goNextFromStep1} disabled={!step1Ready}><span>Next: add content →</span></button>
           </div>
         </div>
         <div className="card step-card">
@@ -902,17 +952,42 @@ function Composer({ session, connections, reload }) {
             }}><Icon d={ICONS.plus} size={12} /> Save current as group</button>
           </div>
           {activeGroup && (
-            <div className="group-row">
-              <span className="sub">Active: {activeGroup.name}</span>
-              <button className="mini" onClick={() => {
-                if (!window.confirm(`Delete group "${activeGroup.name}"?`)) return;
-                setGroups((gs) => gs.filter((g) => g.id !== activeGroup.id));
-                setActiveGroupId('');
-              }}>Delete group</button>
-              <button className="mini" onClick={() => applyGroup(null)}>Clear</button>
+            <div>
+              <div className="group-row">
+                <span className="sub">Active: {activeGroup.name}</span>
+                <button className="mini" onClick={() => {
+                  if (!window.confirm(`Delete group "${activeGroup.name}"?`)) return;
+                  setGroups((gs) => gs.filter((g) => g.id !== activeGroup.id));
+                  setActiveGroupId('');
+                }}>Delete group</button>
+                <button className="mini" onClick={() => applyGroup(null)}>Clear</button>
+              </div>
+              <div className="group-edit">
+                <p className="sub" style={{ margin: '4px 0' }}>Accounts in this group — change any page/account, it saves automatically:</p>
+                {['instagram', 'facebook', 'youtube', 'x'].map((pid) => {
+                  const list = listFor(pid);
+                  const cur = (activeGroup.picks || {})[pid] || '';
+                  const stillValid = cur && validIds.has(cur);
+                  return (
+                    <label key={pid} className="field-mini"><span>{PLATFORMS.find((p) => p.id === pid)?.name}</span>
+                      <select value={stillValid ? cur : ''} onChange={(e) => updateGroupPick(activeGroup.id, pid, e.target.value)}>
+                        <option value="">Not in group</option>
+                        {list.map((c) => <option key={c.id} value={c.id}>{c.account_name}</option>)}
+                      </select>
+                    </label>
+                  );
+                })}
+                {Object.keys(activeGroupValid).length !== Object.keys(activeGroup.picks || {}).length && (
+                  <div className="sec-err" style={{ marginTop: 6 }}>Some saved accounts are gone (disconnected/hidden) and were skipped — pick replacements above.</div>
+                )}
+              </div>
             </div>
           )}
           {!groups.length && <p className="sub">No groups yet. Select accounts above, then save them as a group.</p>}
+          <div className="step-nav">
+            <span className="step-hint">Groups load brand + platforms + accounts together.</span>
+            <button className="skew-btn grad" onClick={goNextFromStep1} disabled={!step1Ready}><span>Next: add content →</span></button>
+          </div>
         </div>
         {isOwner && trio.length >= 2 && (
         <div className="card step-card" style={{ marginTop: 12, border: '1px solid #c9a227' }}>
@@ -921,6 +996,11 @@ function Composer({ session, connections, reload }) {
           <p className="sub">One click to Instagram + Facebook + YouTube for {trio.map((t) => t.name).join(' · ')}. Same media and caption to all 3.</p>
           <label className="ck"><input type="checkbox" checked={trioMode} onChange={(e) => setTrioMode(e.target.checked)} /><svg viewBox="0 0 64 64"><path className="path" d="M8 33 L26 51 L56 13" /></svg><span>Enable trio mode (Review shows one post-trio action)</span></label>
           {!trioMode && <p className="sub" style={{ marginTop: 6 }}>Found: {trio.map((t) => `${t.name} → ${t.brand.label}`).join(' | ')}</p>}
+          {trioMode && <p className="sub" style={{ marginTop: 6 }}>Trio is on — platform ticks are optional. Continue when ready:</p>}
+          <div className="step-nav">
+            <span />
+            <button className="skew-btn grad" onClick={goNextFromStep1} disabled={!step1Ready}><span>Next: add content →</span></button>
+          </div>
         </div>
         )}
       </div>
@@ -963,16 +1043,10 @@ function Composer({ session, connections, reload }) {
             </div>
           )}
         </div>
-        <div className="card step-card">
-          <span className="scope-badge everywhere">Used everywhere</span>
-          <h3>2 · Write once <Tip text="This text is copied into YouTube description, Instagram caption, Facebook message and X post. You can still edit each platform separately in the next step." /></h3>
-          <p className="sub">Write here, tweak per platform later. <button className="link" onClick={applyCaptionEverywhere}>Copy to all now</button></p>
-          <label className="field" style={{ marginBottom: 0 }}><span>Your message <i>{caption.length}/2200</i></span><textarea value={caption} maxLength={2200} onChange={(e) => setCaption(e.target.value)} placeholder="e.g. Diwali offer at Velvet Salon — 20% off bridal packages this week…" /></label>
-        </div>
         <div className="card step-card ai">
-          <span className="scope-badge ai-badge">Optional helper</span>
-          <h3><Icon d={ICONS.edit} size={15} /> AI writer</h3>
-          <p className="sub">Type a short summary — 4 platform captions. Phone numbers always go at the end, never at the start.</p>
+          <span className="scope-badge ai-badge">AI writer</span>
+          <h3><Icon d={ICONS.edit} size={15} /> 2 · AI writer</h3>
+          <p className="sub">Type a short summary — 4 platform captions. Edit each platform in Review next. Phone numbers always go at the end, never at the start.</p>
           <label className="field" style={{ marginBottom: 0 }}><span>What is this post about? <i>brand + motive + conditions wins</i></span><textarea value={aiBrief} maxLength={500} onChange={(e) => setAiBrief(e.target.value)} placeholder="e.g. Velvet Salon has a new offer: 20% off for everyone who comes before 4pm" style={{ minHeight: 70 }} /></label>
           <label className="ck" style={{ marginTop: 8 }}><input type="checkbox" checked={aiTrends} onChange={(e) => setAiTrends(e.target.checked)} /><svg viewBox="0 0 64 64"><path className="path" d="M8 33 L26 51 L56 13" /></svg><span>Live SEO trends (slower, costs more)</span></label>
           <div className="row2" style={{ marginTop: 8 }}>
@@ -1030,7 +1104,8 @@ function Composer({ session, connections, reload }) {
       </div>
         <div className="step-nav">
           <button className="skew-btn ghost" onClick={() => setStep(1)}><span>← Back</span></button>
-          <button className="skew-btn grad" onClick={() => setStep(3)}><span>Next: review & post →</span></button>
+          <span className="step-hint">{contentReady ? 'Content ready — review each platform next.' : 'Add media or write with AI first.'}</span>
+          <button className="skew-btn grad" onClick={() => { if (contentReady) setStep(3); }} disabled={!contentReady} title={contentReady ? 'Review and post' : 'Add a photo/video or AI captions first'}><span>Next: review & post →</span></button>
         </div>
       </div>
       )}
@@ -1046,7 +1121,7 @@ function Composer({ session, connections, reload }) {
         <div className="card" style={{ border: '1px solid #c9a227', marginBottom: 10 }}>
           <span className="scope-badge everywhere">Jewellers trio · IG + FB + YT × {trio.length} brands</span>
           <p className="sub" style={{ margin: '6px 0' }}>{trio.map((t) => t.name).join(' · ')} — same media + caption to all. Facebook doubles prevented automatically (direct posts only).</p>
-          <button className="skew-btn grad" style={{ width: '100%' }} onClick={publishTrio} disabled={!!busy.trio || Object.values(busy).some(Boolean)}><span>{busy.trio ? 'Posting trio…' : `Post trio now (${trio.length * ['instagram', 'facebook', 'youtube'].filter((p) => enabled[p]).length} posts)`}</span></button>
+          <button className="skew-btn grad" style={{ width: '100%' }} onClick={publishTrio} disabled={!!busy.trio || Object.values(busy).some(Boolean) || !trioPlats.length}><span>{busy.trio ? 'Posting trio…' : `Post trio now (${trio.length * trioPlats.length} posts)`}</span></button>
           <div style={{ marginTop: 8 }}>
             {trio.flatMap(({ name, brand: tb }) => ['instagram', 'facebook', 'youtube'].map((plat) => {
               const k = `trio:${name}:${plat}`;
@@ -1387,7 +1462,7 @@ function Accounts({ session, connections, setConnections }) {
   return (
     <div className="card" style={{ maxWidth: 680 }}>
       <h3>Accounts</h3>
-      <p className="sub">{visibleCount} visible · {hiddenSet.size} hidden · ★ = your active brands.</p>
+      <p className="sub">{visibleCount} visible · {hiddenSet.size} hidden · “Active” marks your active brands.</p>
       {msg && <div className="banner">{msg}</div>}
       <div className="row2" style={{ marginBottom: 6, alignItems: 'end' }}>
         <div className="messageBox"><input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search brands…" /><span className="send">⌕</span></div>
@@ -1426,7 +1501,7 @@ function Accounts({ session, connections, setConnections }) {
               <div key={c.id} className="list-row">
                 <span className="avatar">{(c.account_name || '?')[0].toUpperCase()}</span>
                 <div><b style={{ fontSize: 13 }}>{c.account_name}</b><small style={{ display: 'flex', alignItems: 'center', gap: 5, color: '#8b949e', marginTop: 2 }}><BrandIcon id={p.id} size={12} />{p.name}</small></div>
-                {effActive && <span className="badge ok">★ Active</span>}
+                {effActive && <span className="badge ok">Active</span>}
                 <DotsMenu
                   active={effActive}
                   hidden={isHidden}
@@ -1447,10 +1522,9 @@ function Accounts({ session, connections, setConnections }) {
 
 const TOUR_STEPS = [
   { t: 'Welcome to Driftpost', d: 'Post for all your brands from one screen. This 30-second tour shows you how — plain and simple.' },
-  { t: 'Step 1 · Connect accounts', d: 'Open Accounts and connect YouTube, Facebook, Instagram and X. Each brand owner connects once, then it just works.' },
-  { t: 'Step 2 · Pick your brand', d: 'Use the brand menu at the top. Driftpost automatically finds that brand on all 4 platforms. Star your active clients with the �Prev� menu.' },
-  { t: 'Step 3 · Add photo and words', d: 'Drop one photo or video and write one caption. It fills every platform for you.' },
-  { t: 'Step 4 · Adjust and publish', d: 'Each platform has its own card — YouTube titles, Instagram captions, Facebook links, X polls. Publish one by one, or press Publish all.' },
+  { t: 'Step 1 · Brand and platforms', d: 'Pick the brand, tick only the platforms you want, and choose the right account for each. Save repeat combos as a group for one-click loading.' },
+  { t: 'Step 2 · Media and AI captions', d: 'Drop photos or video (HD is automatic, Crop fixes framing), then let the AI writer draft all 4 platform captions. Numbers always land at the end.' },
+  { t: 'Step 3 · Review and publish', d: 'Each selected platform has its own card — titles, captions, sizes, stories, polls. Publish one by one, or post to all selected at once.' },
 ];
 
 function TourOverlay({ step, setStep, onDone }) {
@@ -1576,9 +1650,9 @@ export default function Console({ session, onSwitchAccount, onSignOut }) {
                   ))}
                   <span className="sw-name">{THEMES.find((t) => t.id === theme)?.label}</span>
                 </div>
-                <button onClick={() => { try { navigator.clipboard.writeText(session.user.email); setCopyMsg('Email copied'); } catch { setCopyMsg('Copy failed'); } setTimeout(() => setCopyMsg(''), 1500); }}>⧉ Copy email{copyMsg ? ` — ${copyMsg}` : ''}</button>
-                <button onClick={() => signOutTo('auth')}>⇄ Switch account</button>
-                <button onClick={() => signOutTo('landing')}>⏻ Sign out</button>
+                <button onClick={() => { try { navigator.clipboard.writeText(session.user.email); setCopyMsg('Email copied'); } catch { setCopyMsg('Copy failed'); } setTimeout(() => setCopyMsg(''), 1500); }}>Copy email{copyMsg ? ` — ${copyMsg}` : ''}</button>
+                <button onClick={() => signOutTo('auth')}>Switch account</button>
+                <button onClick={() => signOutTo('landing')}>Sign out</button>
                 <button style={{ color: '#e5484d' }} onClick={async () => {
                   if (!window.confirm('Delete your Driftpost account? This removes all connections, history and your login. This cannot be undone.')) return;
                   if (!window.confirm('Last check — really delete everything?')) return;
@@ -1587,7 +1661,7 @@ export default function Console({ session, onSwitchAccount, onSignOut }) {
                   } catch (e) { alert(e.message); return; }
                   try { (await getSupabase())?.auth.signOut(); } catch {}
                   onSignOut();
-                }}>🗑 Delete account…</button>
+                }}>Delete account…</button>
               </span>
             </>}
           </div>

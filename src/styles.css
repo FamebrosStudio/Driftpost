@@ -660,3 +660,13 @@ select:disabled { opacity: 0.6; }
   .share-row.stepped { grid-template-columns: 1fr; }
   .row2 { grid-template-columns: 1fr; }
 }
+
+/* ===== Groups editor + indicator polish ===== */
+.group-edit { border-top: 1px solid var(--line); margin-top: 8px; padding-top: 8px; display: grid; gap: 6px; }
+.group-edit .field-mini { margin: 0; }
+.plat-check { display: inline-grid; place-items: center; }
+.plat-check svg { display: block; }
+.step .step-n { font-size: 14px; }
+.dots .mini { min-width: 34px; }
+.dd-btn .chev { display: inline-block; }
+.adv-toggle { text-align: center; }
