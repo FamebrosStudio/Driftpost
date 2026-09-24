@@ -624,3 +624,39 @@ html, body { overflow-x: clip; max-width: 100%; }
 .editor-row .mini { flex: 1; white-space: nowrap; }
 .editor-card input[type="range"] { width: 100%; accent-color: #c9a227; }
 @media (max-width: 640px) { .media-grid { grid-template-columns: repeat(3, 1fr); } }
+
+/* ===== Crop editor + groups + sizes (added) ===== */
+.crop-sizes { display: flex; gap: 6px; flex-wrap: wrap; margin: 8px 0; }
+.crop-sizes .mini.sel { border-color: #c9a227; background: #c9a22722; font-weight: 700; }
+.group-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin: 8px 0; }
+.group-row select { flex: 1; min-width: 180px; }
+.editor-preview video { max-width: 100%; max-height: 300px; background: #000; }
+.mini.sel { border-color: #c9a227; }
+.plat-check:disabled { opacity: 0.35; cursor: not-allowed; }
+select:disabled { opacity: 0.6; }
+
+/* ===== Broken-element fixes ===== */
+.shell { min-height: 100vh; }
+.page { min-width: 0; }
+.card { min-width: 0; overflow-wrap: break-word; }
+.phones.single .phone { min-width: 0; }
+.phone-screen textarea { min-height: 76px; max-height: 300px; resize: vertical; }
+.ptabs { display: flex; gap: 6px; flex-wrap: wrap; }
+.ptab { display: inline-flex; align-items: center; gap: 6px; }
+.pdot { font-size: 10px; font-weight: 700; }
+.brandbar.tight { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.brandbar.tight .pub-all { flex: 1; min-width: 220px; }
+.step-nav { display: flex; gap: 10px; align-items: center; justify-content: space-between; flex-wrap: wrap; margin-top: 12px; }
+.file-row { display: flex; gap: 8px; align-items: center; justify-content: space-between; flex-wrap: wrap; margin-top: 8px; }
+.media-cell-btns { flex-wrap: wrap; }
+.lightbox-body { min-width: 0; }
+.editor-card .field-mini { display: block; margin: 6px 0; }
+@media (max-width: 900px) {
+  .shell { grid-template-columns: 1fr; }
+  .side { position: fixed; z-index: 60; width: min(300px, 84vw); height: 100vh; transform: translateX(-105%); transition: transform 0.2s ease; }
+  .side.open { transform: none; }
+  .scrim { position: fixed; inset: 0; z-index: 55; background: rgba(0,0,0,0.5); }
+  .main { min-width: 0; }
+  .share-row.stepped { grid-template-columns: 1fr; }
+  .row2 { grid-template-columns: 1fr; }
+}

@@ -662,6 +662,19 @@ async function runPublish(job, conn, payload, body, userId) {
           });
         }
         job.url = out.url;
+        // Optional auto story: same media re-published as a 24h IG story.
+        // Runs after the feed post so one tap covers feed + story.
+        if (String(body.ig_post_story || '') === '1' && publicUrl) {
+          try {
+            await meta.publishInstagramStory({
+              igUserId: igId, pageToken,
+              mediaUrl: publicUrl, isVideo: !!file?.mimetype?.startsWith('video/'),
+            });
+            job.warning = [job.warning, 'Also posted as a story.'].filter(Boolean).join(' ');
+          } catch (e) {
+            job.warning = [job.warning, `Feed published, but story failed: ${e.message}`].filter(Boolean).join(' ');
+          }
+        }
         // Optional mirror to the linked Facebook Page.
         // Skipped automatically on "Post to all" to avoid double-posting.
         if (allowCrossPost && String(body.ig_share_fb || '') === '1') {

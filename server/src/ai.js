@@ -46,13 +46,14 @@ HOUSE RULES (override any brand-file line that conflicts):
 - Emojis: standard posts 4-6 woven through the words (hook, detail, CTA each carry feeling); real offers/openings 6-10. Never zero, never a dry paragraph. Never a wall of emojis.
 - Body MUST be 2+ full sentences before the footer — never a 2-liner.
 - CTA must be concrete (Call <phone> to book / DM to book / Save this look) — never a bare question.
+- CONTACT PLACEMENT (strict): never start any caption, hook, title or first sentence with a phone number, address, or digits. All phone numbers, addresses and contact lines go ONLY in the footer at the very END of the caption. The opening hook must be words only — no numbers, no +91, no Call prefix.
 - Hashtags exactly 3: brand + service + location.
 - ONE BRAND ONLY: never mention, tag, or hashtag any other brand, shop, or handle. Only this brand, its own handle, and @famebrosstudio may appear.`;
 
 const PLATFORM_SPECS = `
 PLATFORM SPECS (texts must differ):
 - YOUTUBE (search SEO): title = keyword-first, <=100 chars, include brand + service + location. Description = 2-3 SEO sentences with keywords woven naturally + 1 CTA + brand footer lines. Tags = 8 lowercase search tags (service, location, brand).
-- INSTAGRAM (discovery SEO): full Famebros format — bold hook line with emojis + supporting detail + concrete CTA. Body MUST be at least 2 full sentences before the footer — never a 2-liner. CTA must tell them HOW (Call <phone> to book / DM to book / Save this look) — never end on a bare question. For transformations, use sensory words (shine, movement, warmth, glow, dimension). Then footer lines, then exactly 3 hashtags (1 brand + 1 service + 1 location), then [5-8 SEO phrases]. Emojis natural, no em dash.
+- INSTAGRAM (discovery SEO): full Famebros format — bold hook line with emojis + supporting detail + concrete CTA. Body MUST be at least 2 full sentences before the footer — never a 2-liner. NEVER open with a phone number, address or digits — hook is words only; all contact details live in the footer at the very END. CTA must tell them HOW (Call <phone> to book / DM to book / Save this look) — never end on a bare question. For transformations, use sensory words (shine, movement, warmth, glow, dimension). Then footer lines, then exactly 3 hashtags (1 brand + 1 service + 1 location), then [5-8 SEO phrases]. Emojis natural, no em dash.
   Exact shape:
   <hook line>
   <detail + CTA>
@@ -160,6 +161,22 @@ export function extractJson(text) {
 
 function clean(value, max) {
   return String(value || '').trim().slice(0, max);
+}
+
+// Contact placement guard: phone numbers / addresses must never open a
+// caption. If the model starts the body with digits, a phone, or a
+// Call/DM prefix, move that line to the end (footer owns contacts).
+function moveLeadingContactToEnd(body) {
+  const lines = String(body || '').split('\n');
+  if (!lines.length) return String(body || '');
+  const first = (lines[0] || '').trim();
+  const looksLikeContact =
+    /^[+\d(]/.test(first) ||
+    /^call\b/i.test(first) ||
+    /\+?\d[\d\s\-/()]{7,}/.test(first.slice(0, 60));
+  if (!looksLikeContact) return String(body || '');
+  const moved = lines.slice(1).join('\n').trim();
+  return `${moved}\n${first}`.trim();
 }
 
 // --- Speed: short-lived in-memory cache + hard timeouts ---
@@ -401,14 +418,14 @@ export async function generateCaptions(summary, opts = {}) {
       igTags[2] = locTag;
     }
     const hashLine = igTags.length ? igTags.map((t) => `#${t}`).join(' ') : '';
-    igCap = `${stripToBody(igCap)}\n\n${footer}${hashLine ? `\n\n${hashLine}` : ''}${kwLine ? `\n\n${kwLine}` : ''}`;
+    igCap = moveLeadingContactToEnd(`${stripToBody(igCap)}\n\n${footer}${hashLine ? `\n\n${hashLine}` : ''}${kwLine ? `\n\n${kwLine}` : ''}`);
     igCap = clean(igCap, 2200);
     // Facebook: body + footer + max 2 hashtags, never the bracket
     const fbTags = igTags.slice(0, 2).map((t) => `#${t}`).join(' ');
-    fbMsg = `${stripToBody(fbMsg)}\n\n${footer}${fbTags ? `\n\n${fbTags}` : ''}`;
+    fbMsg = moveLeadingContactToEnd(`${stripToBody(fbMsg)}\n\n${footer}${fbTags ? `\n\n${fbTags}` : ''}`);
     fbMsg = clean(fbMsg, 2000);
     // YouTube: body + footer
-    ytDesc = `${stripToBody(ytDesc)}\n\n${footer}`;
+    ytDesc = moveLeadingContactToEnd(`${stripToBody(ytDesc)}\n\n${footer}`);
     ytDesc = clean(ytDesc, 2000);
     if (!ytTags.length && kwBank.length) {
       ytTags = kwBank.map((k) => k.toLowerCase().replace(/[^a-z0-9 ]/g, '').trim().replace(/\s+/g, ' ')).filter(Boolean).slice(0, 8);

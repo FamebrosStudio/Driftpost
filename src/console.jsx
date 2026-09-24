@@ -3,6 +3,58 @@ import { apiUrl, api, PLATFORMS, isActiveBrand, groupBrands, TRIO_BRANDS, findTr
 import BrandIcon from './brand.jsx';
 import { getSupabase } from './session.js';
 
+// Owner-only features (trio) are gated to this login.
+const OWNER_EMAIL = 'famebros.studio@gmail.com';
+const isOwnerEmail = (email) => String(email || '').trim().toLowerCase() === OWNER_EMAIL;
+
+// Professional inline icons (no emojis in UI).
+const Icon = ({ d, size = 14 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d={d} />
+  </svg>
+);
+const ICONS = {
+  crop: 'M6 2v14a2 2 0 0 0 2 2h14 M2 6h14a2 2 0 0 1 2 2v14',
+  hd: 'M4 12h16 M4 6h16 M4 18h10',
+  check: 'M4 12l5 5L20 6',
+  close: 'M6 6l12 12M18 6L6 18',
+  plus: 'M12 5v14M5 12h14',
+  eye: 'M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z M12 12m-3 0a3 3 0 1 0 6 0a3 3 0 1 0-6 0',
+  copy: 'M9 9h11v11H9z M5 15V4h11',
+  edit: 'M12 20h9 M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z',
+  play: 'M6 4l14 8-14 8z',
+  users: 'M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2 M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z M23 21v-2a4 4 0 0 0-3-3.87 M16 3.13a4 4 0 0 1 0 7.75',
+  story: 'M12 8v8 M8 12h8 M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20z',
+};
+
+// Instagram / Facebook size presets.
+const SIZE_PRESETS = [
+  { id: 'portrait', label: 'Portrait 4:5', ratio: 4 / 5 },
+  { id: 'square', label: 'Square 1:1', ratio: 1 },
+  { id: 'landscape', label: 'Landscape 1.91:1', ratio: 1.91 },
+];
+const sizeRatio = (id) => (SIZE_PRESETS.find((s) => s.id === id) || {}).ratio || null;
+
+// HD helpers: images are normalised to min 1080px on the long edge (JPEG 0.92).
+async function fileToHDImage(rawFile) {
+  const bitmap = await createImageBitmap(rawFile);
+  const longEdge = Math.max(bitmap.width, bitmap.height);
+  if (longEdge >= 1080 && /jpe?g|png|webp/.test(rawFile.type)) {
+    // Already HD — still re-encode large PNGs to JPEG for predictable uploads.
+    if (rawFile.type !== 'image/png' || rawFile.size < 4 * 1024 * 1024) return null;
+  }
+  const scale = longEdge < 1080 ? 1080 / longEdge : 1;
+  const W = Math.round(bitmap.width * scale);
+  const H = Math.round(bitmap.height * scale);
+  const canvas = document.createElement('canvas');
+  canvas.width = W; canvas.height = H;
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(bitmap, 0, 0, W, H);
+  const blob = await new Promise((res) => canvas.toBlob(res, 'image/jpeg', 0.92));
+  if (!blob) return null;
+  return new File([blob], String(rawFile.name || 'photo').replace(/\.[a-z]+$/i, '') + '-hd.jpg', { type: 'image/jpeg' });
+}
+
 // --- Tiny IndexedDB media vault (localStorage can't hold binary) ---
 // Survives refresh: attached photos/video + YouTube cover are restored
 // byte-for-byte after reload. Per-user keys, same-origin only.
@@ -84,11 +136,11 @@ function DotsMenu({ active, hidden, onToggleActive, onToggleHidden }) {
   const [open, setOpen] = useState(false);
   return (
     <span className="dots">
-      <button className="mini" onClick={() => setOpen((o) => !o)}>⋯</button>
+      <button className="mini" onClick={() => setOpen((o) => !o)} aria-label="More actions">More</button>
       {open && <>
         <span className="dd-backdrop" onClick={() => setOpen(false)} />
         <span className="dots-menu">
-          <button onClick={() => { onToggleActive(); setOpen(false); }}>{active ? '★ Unmark Active' : '☆ Mark Active'}</button>
+          <button onClick={() => { onToggleActive(); setOpen(false); }}>{active ? 'Remove Active mark' : 'Mark as Active'}</button>
           <button onClick={() => { onToggleHidden(); setOpen(false); }}>{hidden ? 'Unhide' : 'Hide'}</button>
         </span>
       </>}
@@ -115,7 +167,7 @@ function BrandPicker({ brands, brandKey, onPick, isActive }) {
           {list.map((b) => (
             <button key={b.key} className={b.key === brandKey ? 'dd-item sel' : 'dd-item'} onClick={() => { onPick(b.key); setOpen(false); setQ(''); }}>
               <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{b.label}</span>
-              {(isActive ? isActive(b) : isActiveBrand(b.label)) && <span className="star">★ active</span>}
+              {(isActive ? isActive(b) : isActiveBrand(b.label)) && <span className="star">Active</span>}
             </button>
           ))}
           {!list.length && <div className="banner" style={{ margin: 4 }}>No brand matches.</div>}
@@ -153,7 +205,7 @@ function StepsHeader({ step, setStep, ready }) {
             className={cur ? 'step cur' : done ? 'step done' : 'step'}
             title={locked ? 'Add a photo/video and some text first' : s.d}
           >
-            <span className="step-n">{done ? '✓' : s.n}</span>
+            <span className="step-n">{done ? 'Done' : s.n}</span>
             <span className="step-t"><b>{s.t}</b><small>{s.d}</small></span>
           </button>
         );
@@ -162,62 +214,148 @@ function StepsHeader({ step, setStep, ready }) {
   );
 }
 
-function ImageEditor({ name, src, onCancel, onApply }) {
-  const [rot, setRot] = useState(0); // quarter-turns clockwise
+function CropEditor({ name, src, kind, onCancel, onApply }) {
+  const [aspect, setAspect] = useState('free'); // free | portrait | square | landscape | story
+  const [zoom, setZoom] = useState(100);
+  const [offX, setOffX] = useState(0);
+  const [offY, setOffY] = useState(0);
+  const [rot, setRot] = useState(0);
   const [flip, setFlip] = useState(false);
   const [bri, setBri] = useState(100);
   const [con, setCon] = useState(100);
   const [sat, setSat] = useState(100);
   const [busy, setBusy] = useState(false);
   const imgRef = useRef(null);
-  const changed = rot !== 0 || flip || bri !== 100 || con !== 100 || sat !== 100;
-  const reset = () => { setRot(0); setFlip(false); setBri(100); setCon(100); setSat(100); };
-  const apply = () => {
+  const videoRef = useRef(null);
+  const ratioFor = () => {
+    if (aspect === 'portrait') return 4 / 5;
+    if (aspect === 'square') return 1;
+    if (aspect === 'landscape') return 1.91;
+    if (aspect === 'story') return 9 / 16;
+    return null;
+  };
+  const changed = aspect !== 'free' || zoom !== 100 || offX !== 0 || offY !== 0 || rot !== 0 || flip || bri !== 100 || con !== 100 || sat !== 100;
+  const reset = () => { setAspect('free'); setZoom(100); setOffX(0); setOffY(0); setRot(0); setFlip(false); setBri(100); setCon(100); setSat(100); };
+  const applyImage = () => {
     const img = imgRef.current;
-    if (!img || busy || !changed) return;
+    if (!img || busy) return;
     setBusy(true);
     try {
-      const w = img.naturalWidth;
-      const h = img.naturalHeight;
+      const w = img.naturalWidth; const h = img.naturalHeight;
       if (!w || !h) throw new Error('photo not loaded yet');
+      const ratio = ratioFor();
+      // Source crop window in natural pixels (centered, zoom + pan applied).
+      let sw = w; let sh = h;
+      if (ratio) {
+        const cur = w / h;
+        if (cur > ratio) sw = h * ratio; else sh = w / ratio;
+      }
+      const z = Math.max(50, Math.min(300, zoom)) / 100;
+      sw = sw / z; sh = sh / z;
+      const cx = w / 2 + (offX / 100) * w;
+      const cy = h / 2 + (offY / 100) * h;
+      let sx = Math.max(0, Math.min(w - sw, cx - sw / 2));
+      let sy = Math.max(0, Math.min(h - sh, cy - sh / 2));
+      // Destination: HD — long edge min 1080px.
+      const scale = Math.max(1, 1080 / Math.max(sw, sh));
       const swap = rot % 2 === 1;
       const canvas = document.createElement('canvas');
-      canvas.width = swap ? h : w;
-      canvas.height = swap ? w : h;
+      canvas.width = Math.round((swap ? sh : sw) * scale);
+      canvas.height = Math.round((swap ? sw : sh) * scale);
       const ctx = canvas.getContext('2d');
       ctx.filter = `brightness(${bri}%) contrast(${con}%) saturate(${sat}%)`;
       ctx.translate(canvas.width / 2, canvas.height / 2);
       ctx.rotate((rot * Math.PI) / 2);
-      ctx.scale(flip ? -1 : 1, 1);
-      ctx.drawImage(img, -w / 2, -h / 2);
+      ctx.scale((flip ? -1 : 1) * scale, scale);
+      ctx.drawImage(img, sx, sy, sw, sh, -sw / 2, -sh / 2, sw, sh);
       canvas.toBlob((blob) => {
         setBusy(false);
-        if (!blob) { alert('Edit failed in this browser — try Chrome or Edge.'); return; }
-        onApply(new File([blob], String(name || 'photo').replace(/\.[a-z]+$/i, '') + '-edited.jpg', { type: 'image/jpeg' }));
+        if (!blob) { alert('Crop failed in this browser — try Chrome or Edge.'); return; }
+        onApply(new File([blob], String(name || 'photo').replace(/\.[a-z]+$/i, '') + '-cropped-hd.jpg', { type: 'image/jpeg' }));
       }, 'image/jpeg', 0.92);
-    } catch (e) { setBusy(false); alert(`Edit failed: ${e.message}`); }
+    } catch (e) { setBusy(false); alert(`Crop failed: ${e.message}`); }
   };
+  const applyVideo = async () => {
+    const video = videoRef.current;
+    if (!video || busy) return;
+    setBusy(true);
+    try {
+      const ratio = ratioFor();
+      const vw = video.videoWidth; const vh = video.videoHeight;
+      if (!vw || !vh) throw new Error('video not loaded yet');
+      let cw = vw; let ch = vh;
+      if (ratio) {
+        const cur = vw / vh;
+        if (cur > ratio) cw = vh * ratio; else ch = vw / ratio;
+      }
+      const z = Math.max(50, Math.min(300, zoom)) / 100;
+      cw = cw / z; ch = ch / z;
+      // HD output: scale so the crop window renders at min 720p, cap 1080p.
+      const outScale = Math.min(1080 / Math.max(cw, ch), 1920 / Math.max(cw, ch));
+      const scale = Math.max(1, Math.min(2.5, outScale));
+      const W = Math.round(cw * scale); const H = Math.round(ch * scale);
+      const canvas = document.createElement('canvas');
+      canvas.width = W; canvas.height = H;
+      const ctx = canvas.getContext('2d');
+      const stream = canvas.captureStream(30);
+      const rec = new MediaRecorder(stream, { mimeType: MediaRecorder.isTypeSupported('video/webm;codecs=vp9') ? 'video/webm;codecs=vp9' : 'video/webm', videoBitsPerSecond: 8_000_000 });
+      const chunks = [];
+      rec.ondataavailable = (e) => { if (e.data.size) chunks.push(e.data); };
+      const done = new Promise((res) => { rec.onstop = res; });
+      video.currentTime = 0;
+      await video.play().catch(() => {});
+      rec.start(200);
+      const sx = Math.max(0, (vw - cw) / 2 + (offX / 100) * vw);
+      const sy = Math.max(0, (vh - ch) / 2 + (offY / 100) * vh);
+      const draw = () => {
+        if (rec.state !== 'recording') return;
+        ctx.filter = `brightness(${bri}%) contrast(${con}%) saturate(${sat}%)`;
+        ctx.save();
+        ctx.translate(W / 2, H / 2);
+        ctx.rotate((rot * Math.PI) / 2);
+        ctx.scale(flip ? -1 : 1, 1);
+        ctx.drawImage(video, sx, sy, cw, ch, -W / 2, -H / 2, W, H);
+        ctx.restore();
+        requestAnimationFrame(draw);
+      };
+      draw();
+      const durMs = Math.min(60000, ((video.duration || 6) * 1000) || 6000);
+      await new Promise((r) => setTimeout(r, Math.min(durMs, 15000)));
+      try { rec.stop(); } catch {}
+      try { video.pause(); } catch {}
+      await done;
+      setBusy(false);
+      const blob = new Blob(chunks, { type: 'video/webm' });
+      if (!blob.size) { alert('Crop failed — try Chrome or Edge.'); return; }
+      onApply(new File([blob], String(name || 'video').replace(/\.[a-z]+$/i, '') + '-cropped-hd.webm', { type: 'video/webm' }));
+    } catch (e) { setBusy(false); alert(`Crop failed: ${e.message}`); }
+  };
+  const isVideo = kind === 'video';
   return (
     <div className="lightbox-backdrop" onClick={onCancel}>
       <div className="editor-card" onClick={(e) => e.stopPropagation()}>
-        <h3>✏️ Edit photo</h3>
-        <p className="sub">{name}</p>
+        <h3><Icon d={ICONS.crop} size={16} /> Crop {isVideo ? 'video' : 'photo'} — HD output</h3>
+        <p className="sub">{name} · exports min 1080px, contact-safe</p>
+        <div className="crop-sizes">
+          {[['free', 'Free'], ['portrait', 'Portrait 4:5'], ['square', 'Square 1:1'], ['landscape', 'Landscape 1.91:1'], ['story', 'Story 9:16']].map(([id, label]) => (
+            <button key={id} className={aspect === id ? 'mini sel' : 'mini'} onClick={() => setAspect(id)}>{label}</button>
+          ))}
+        </div>
         <div className="editor-preview">
-          <img
-            ref={imgRef} src={src} alt="Edit preview"
-            style={{
-              transform: `rotate(${rot * 90}deg) scaleX(${flip ? -1 : 1})`,
-              filter: `brightness(${bri}%) contrast(${con}%) saturate(${sat}%)`,
-            }}
-          />
+          {isVideo
+            ? <video ref={videoRef} src={src} controls muted playsInline preload="metadata" style={{ filter: `brightness(${bri}%) contrast(${con}%) saturate(${sat}%)` }} />
+            : <img ref={imgRef} src={src} alt="Crop preview" style={{ transform: `rotate(${rot * 90}deg) scaleX(${flip ? -1 : 1})`, filter: `brightness(${bri}%) contrast(${con}%) saturate(${sat}%)` }} />}
         </div>
         <div className="editor-row">
-          <button className="mini" onClick={() => setRot((rot + 3) % 4)}>⟲ Left</button>
-          <button className="mini" onClick={() => setRot((rot + 1) % 4)}>⟳ Right</button>
+          <button className="mini" onClick={() => setRot((rot + 3) % 4)}>Rotate left</button>
+          <button className="mini" onClick={() => setRot((rot + 1) % 4)}>Rotate right</button>
           <button className="mini" onClick={() => setFlip(!flip)}>{flip ? 'Unflip' : 'Flip'}</button>
           <button className="mini" onClick={reset} disabled={!changed}>Reset</button>
         </div>
         {[
+          ['Zoom', zoom, setZoom, 50, 300],
+          ['Shift X', offX, setOffX, -40, 40],
+          ['Shift Y', offY, setOffY, -40, 40],
           ['Brightness', bri, setBri, 50, 150],
           ['Contrast', con, setCon, 50, 150],
           ['Colour', sat, setSat, 0, 200],
@@ -228,11 +366,16 @@ function ImageEditor({ name, src, onCancel, onApply }) {
         ))}
         <div className="editor-row">
           <button className="skew-btn ghost" onClick={onCancel}><span>Cancel</span></button>
-          <button className="skew-btn grad" disabled={busy || !changed} onClick={apply}><span>{busy ? 'Applying…' : '✓ Apply edit'}</span></button>
+          <button className="skew-btn grad" disabled={busy} onClick={isVideo ? applyVideo : applyImage}><span>{busy ? 'Rendering HD…' : 'Apply crop (HD)'}</span></button>
         </div>
       </div>
     </div>
   );
+}
+
+function ImageEditor(props) {
+  // Back-compat alias: old photo editor now routes to the HD crop editor.
+  return <CropEditor {...props} kind="image" />;
 }
 
 function Composer({ session, connections, reload }) {
@@ -259,11 +402,19 @@ function Composer({ session, connections, reload }) {
   const [editing, setEditing] = useState(-1);
   const [caption, setCaption] = useState(saved.caption || '');
   const [yt, setYt] = useState(saved.yt || { title: '', description: '', tags: '', privacy: 'private', category: '', kids: '', license: '', embed: '', stats: '', notify: 'on' });
-  const [ig, setIg] = useState(saved.ig || { caption: '', alt: '', topics: '', partner: '', collabs: '', location: '', shareFb: false });
-  const [fb, setFb] = useState(saved.fb || { message: '', link: '', syndIg: false, age: '', cta: '', linkName: '', linkCaption: '', linkDesc: '', linkPic: '', unpublished: false });
+  const [ig, setIg] = useState(saved.ig || { caption: '', alt: '', topics: '', partner: '', collabs: '', location: '', shareFb: false, size: 'portrait', story: false });
+  const [fb, setFb] = useState(saved.fb || { message: '', link: '', syndIg: false, age: '', cta: '', linkName: '', linkCaption: '', linkDesc: '', linkPic: '', unpublished: false, size: 'portrait' });
   const [x, setX] = useState(saved.x || { text: '', reply: 'everyone', pollOn: false, opts: ['', '', '', ''], mins: '1440' });
   const [busy, setBusy] = useState({});
   const [enabled, setEnabled] = useState(saved.enabled || { youtube: true, instagram: true, facebook: true, x: true });
+  const [cropping, setCropping] = useState(-1);
+  const groupsKey = `driftpost-groups:${session.user.id}`;
+  const [groups, setGroups] = useState(() => {
+    try { return JSON.parse(localStorage.getItem(groupsKey) || '[]'); }
+    catch { return []; }
+  });
+  const [activeGroupId, setActiveGroupId] = useState(saved.activeGroupId || '');
+  const isOwner = isOwnerEmail(session.user.email);
   const [aiBrief, setAiBrief] = useState(saved.aiBrief || '');
   const [aiBusy, setAiBusy] = useState(false);
   const [aiMsg, setAiMsg] = useState(saved.aiMsg || '');
@@ -295,10 +446,13 @@ function Composer({ session, connections, reload }) {
       localStorage.setItem(persistKey, JSON.stringify({
         brandKey, step, tab, caption, yt, ig, fb, x, enabled,
         aiBrief, aiTone, aiEmoji, aiLength, over,
-        trioMode, showAdv, aiMsg, results: persistResults,
+        trioMode, showAdv, aiMsg, results: persistResults, activeGroupId,
       }));
     } catch {}
-  }, [persistKey, brandKey, step, tab, caption, yt, ig, fb, x, enabled, aiBrief, aiTone, aiEmoji, aiLength, over, trioMode, showAdv, aiMsg, results]);
+  }, [persistKey, brandKey, step, tab, caption, yt, ig, fb, x, enabled, aiBrief, aiTone, aiEmoji, aiLength, over, trioMode, showAdv, aiMsg, results, activeGroupId]);
+  useEffect(() => {
+    try { localStorage.setItem(groupsKey, JSON.stringify(groups.slice(0, 20))); } catch {}
+  }, [groupsKey, groups]);
 
   // Media vault: restore attached files + cover after a refresh, and save
   // them on every change (File/Blob objects survive in IndexedDB).
@@ -339,11 +493,38 @@ function Composer({ session, connections, reload }) {
   }, [brands, brandKey]);
 
   const brand = brands.find((b) => b.key === brandKey) || null;
-  const trio = useMemo(() => findTrioBrands(brands), [brands]);
+  const trio = useMemo(() => (isOwner ? findTrioBrands(brands) : []), [brands, isOwner]);
   const listFor = (pid) => vis.filter((c) => c.platform === pid);
   const pickFor = (brandObj, pid) => over[`${brandObj?.key}:${pid}`] || brandObj?.map[pid] || '';
   const pick = (pid) => pickFor(brand, pid);
   const setPick = (pid, id) => setOver((m) => ({ ...m, [`${brand?.key}:${pid}`]: id }));
+  // Only platforms ticked in Step 1 drive Step 3. Unticked ones are hidden
+  // everywhere (tabs, phones, publish-all) so nobody gets confused.
+  const enabledPlatforms = useMemo(() => PLATFORMS.filter((p) => enabled[p.id]), [enabled]);
+  useEffect(() => {
+    if (!enabled[tab] && enabledPlatforms.length) setTab(enabledPlatforms[0].id);
+  }, [enabled, tab, enabledPlatforms]);
+  const activeGroup = groups.find((g) => g.id === activeGroupId) || null;
+  const applyGroup = (g) => {
+    if (!g) { setActiveGroupId(''); return; }
+    setActiveGroupId(g.id);
+    const next = {};
+    for (const pid of ['youtube', 'instagram', 'facebook', 'x']) {
+      const connId = (g.picks || {})[pid];
+      if (connId) next[pid] = true;
+    }
+    setEnabled((m) => ({ ...m, ...next }));
+    if (g.brandKey && brands.some((b) => b.key === g.brandKey)) setBrandKey(g.brandKey);
+    setOver((m) => {
+      const out = { ...m };
+      const bk = g.brandKey || brandKey;
+      for (const pid of ['youtube', 'instagram', 'facebook', 'x']) {
+        if ((g.picks || {})[pid]) out[`${bk}:${pid}`] = g.picks[pid];
+      }
+      return out;
+    });
+    setResults({});
+  };
 
   // Carousel files (2-10 photos = 1 carousel post on IG/FB, up to 4 on X).
   const file = files[0] || null;
@@ -357,6 +538,12 @@ function Composer({ session, connections, reload }) {
     () => (file?.raw && file.type.startsWith('video/') ? URL.createObjectURL(file.raw) : null),
     [file]
   );
+  useEffect(() => () => {
+    try { if (mediaUrl) URL.revokeObjectURL(mediaUrl); } catch {}
+  }, [mediaUrl]);
+  useEffect(() => () => {
+    try { if (mediaVideoUrl) URL.revokeObjectURL(mediaVideoUrl); } catch {}
+  }, [mediaVideoUrl]);
   // Per-file preview URLs for the gallery + lightbox (revoked on change).
   const fileUrls = useMemo(
     () => (files || []).map((f) => {
@@ -369,9 +556,25 @@ function Composer({ session, connections, reload }) {
     fileUrls.forEach((u) => { try { if (u) URL.revokeObjectURL(u); } catch {} });
   }, [fileUrls]);
 
-  const pickFiles = (list) => {
+  const pickFiles = async (list) => {
     const arr = [...list].filter((f) => f && /^(image|video)\//.test(f.type)).slice(0, 10);
-    setFiles(arr.map((f) => ({ raw: f, name: f.name, size: `${(f.size / 1024 / 1024).toFixed(1)} MB`, type: f.type })));
+    const mapped = arr.map((f) => ({ raw: f, name: f.name, size: `${(f.size / 1024 / 1024).toFixed(1)} MB`, type: f.type }));
+    setFiles(mapped);
+    // Strict HD: upscale/normalise every image to min 1080px JPEG in background.
+    mapped.forEach(async (entry, i) => {
+      if (!entry.type.startsWith('image/')) return;
+      try {
+        const hd = await fileToHDImage(entry.raw);
+        if (hd) setFiles((fs) => fs.map((f, j) => (j === i ? { raw: hd, name: hd.name, size: `${(hd.size / 1024 / 1024).toFixed(1)} MB`, type: hd.type } : f)));
+      } catch {}
+    });
+  };
+  const applyCropAt = (idx, outFile) => {
+    setFiles((fs) => fs.map((f, i) => (i === idx
+      ? { raw: outFile, name: outFile.name, size: `${(outFile.size / 1024 / 1024).toFixed(1)} MB`, type: outFile.type }
+      : f)));
+    setCropping(-1);
+    setEditing(-1);
   };
   const removeFileAt = (idx) => setFiles((fs) => fs.filter((_, i) => i !== idx));
 
@@ -446,6 +649,9 @@ function Composer({ session, connections, reload }) {
     form.append('ig_collabs', ig.collabs);
     form.append('ig_location', ig.location);
     form.append('ig_share_fb', ig.shareFb ? '1' : '');
+    form.append('ig_post_story', ig.story ? '1' : '');
+    form.append('ig_size', ig.size || 'portrait');
+    form.append('fb_size', fb.size || 'portrait');
     form.append('fb_connection_id', pick('facebook'));
     form.append('fb_message', fb.message);
     form.append('fb_link', fb.link);
@@ -622,7 +828,7 @@ function Composer({ session, connections, reload }) {
 
   const contentReady = !!(files.length || caption.trim() || yt.title.trim() || x.text.trim());
   const toggleAdv = (k) => setShowAdv((m) => ({ ...m, [k]: !m[k] }));
-  const aiButtonLabel = aiBusy ? `Writing… ${aiSecs}s — same request is cached for 30 min` : '✨ Write captions';
+  const aiButtonLabel = aiBusy ? `Writing ${aiSecs}s — same request is cached for 30 min` : 'Write captions';
 
   return (
     <div className="composer">
@@ -641,21 +847,24 @@ function Composer({ session, connections, reload }) {
         <div className="card step-card">
           <span className="scope-badge everywhere">Where to post?</span>
           <h3>Choose platforms</h3>
-          <p className="sub">Only ticked platforms will post. Unticked ones are skipped.</p>
+          <p className="sub">Only ticked platforms appear in Review and post. Unticked ones stay hidden.</p>
           <div className="plat-pick">
             {PLATFORMS.map((p) => {
               const list = listFor(p.id);
               const chosen = pick(p.id);
+              const missing = !list.length;
               return (
                 <div key={p.id} className={enabled[p.id] && chosen ? 'plat-row on' : 'plat-row'}>
                   <button
                     className={enabled[p.id] ? 'plat-check on' : 'plat-check'}
                     onClick={() => setEnabled((m) => ({ ...m, [p.id]: !m[p.id] }))}
                     aria-label={`Toggle ${p.name}`}
-                  >{enabled[p.id] ? '✓' : ''}</button>
+                    disabled={missing}
+                    title={missing ? `Connect a ${p.name} account first` : `Include ${p.name}`}
+                  >{enabled[p.id] ? <Icon d={ICONS.check} size={12} /> : ''}</button>
                   <span className="plat-ic"><BrandIcon id={p.id} size={18} /></span>
-                  <span className="plat-meta"><b>{p.name}</b><small>{chosen ? list.find((c) => c.id === chosen)?.account_name : `No account — ${list.length} connected`}</small></span>
-                  <select value={chosen} onChange={(e) => setPick(p.id, e.target.value)} aria-label={`${p.name} account`}>
+                  <span className="plat-meta"><b>{p.name}</b><small>{missing ? `Not connected — connect in Accounts` : chosen ? list.find((c) => c.id === chosen)?.account_name : `${list.length} connected — pick one`}</small></span>
+                  <select value={chosen} onChange={(e) => setPick(p.id, e.target.value)} aria-label={`${p.name} account`} disabled={missing}>
                     {!chosen && <option value="">Pick account…</option>}
                     {list.map((c) => <option key={c.id} value={c.id}>{c.account_name}</option>)}
                   </select>
@@ -663,17 +872,54 @@ function Composer({ session, connections, reload }) {
               );
             })}
           </div>
+          {!enabledPlatforms.length && <div className="sec-err" style={{ marginTop: 8 }}>Select at least one platform to continue.</div>}
           <div className="step-nav">
-            <span />
-            <button className="skew-btn grad" onClick={() => setStep(2)} disabled={!brand}><span>Next: add content →</span></button>
+            <span className="step-hint">{enabledPlatforms.length ? `Posting to: ${enabledPlatforms.map((p) => p.name).join(', ')}` : 'Nothing selected'}</span>
+            <button className="skew-btn grad" onClick={() => { if (enabledPlatforms.length && enabled[tab]) setStep(2); else if (enabledPlatforms.length) { setTab(enabledPlatforms[0].id); setStep(2); } }} disabled={!brand || !enabledPlatforms.length}><span>Next: add content</span></button>
           </div>
         </div>
-        {trio.length >= 2 && (
+        <div className="card step-card">
+          <span className="scope-badge everywhere">Account groups</span>
+          <h3>Saved groups</h3>
+          <p className="sub">Bundle accounts (like trios) — one click loads brand + platforms + accounts.</p>
+          <div className="group-row">
+            <select value={activeGroupId} onChange={(e) => applyGroup(groups.find((g) => g.id === e.target.value) || null)} aria-label="Saved group">
+              <option value="">No group — manual</option>
+              {groups.map((g) => <option key={g.id} value={g.id}>{g.name} ({Object.values(g.picks || {}).filter(Boolean).length} accts)</option>)}
+            </select>
+            <button className="mini" onClick={() => {
+              const name = window.prompt('Group name (e.g. Diwali trio, Salon set):');
+              if (!name || !name.trim()) return;
+              const picks = {};
+              for (const pid of ['youtube', 'instagram', 'facebook', 'x']) {
+                const c = pick(pid);
+                if (c) picks[pid] = c;
+              }
+              if (!Object.keys(picks).length) { alert('Pick at least one platform account first.'); return; }
+              const g = { id: `g${Date.now()}`, name: name.trim().slice(0, 60), brandKey, picks };
+              setGroups((gs) => [...gs, g]);
+              setActiveGroupId(g.id);
+            }}><Icon d={ICONS.plus} size={12} /> Save current as group</button>
+          </div>
+          {activeGroup && (
+            <div className="group-row">
+              <span className="sub">Active: {activeGroup.name}</span>
+              <button className="mini" onClick={() => {
+                if (!window.confirm(`Delete group "${activeGroup.name}"?`)) return;
+                setGroups((gs) => gs.filter((g) => g.id !== activeGroup.id));
+                setActiveGroupId('');
+              }}>Delete group</button>
+              <button className="mini" onClick={() => applyGroup(null)}>Clear</button>
+            </div>
+          )}
+          {!groups.length && <p className="sub">No groups yet. Select accounts above, then save them as a group.</p>}
+        </div>
+        {isOwner && trio.length >= 2 && (
         <div className="card step-card" style={{ marginTop: 12, border: '1px solid #c9a227' }}>
-          <span className="scope-badge everywhere">💎 Jewellers trio</span>
+          <span className="scope-badge everywhere">Jewellers trio (owner)</span>
           <h3>Post to 3 brands at once?</h3>
-          <p className="sub">One click → Instagram + Facebook + YouTube for {trio.map((t) => t.name).join(' · ')}. Same photo(s) + caption to all 3.</p>
-          <label className="ck"><input type="checkbox" checked={trioMode} onChange={(e) => setTrioMode(e.target.checked)} /><svg viewBox="0 0 64 64"><path className="path" d="M8 33 L26 51 L56 13" /></svg><span>Enable trio mode (Step 3 shows one “Post trio” button)</span></label>
+          <p className="sub">One click to Instagram + Facebook + YouTube for {trio.map((t) => t.name).join(' · ')}. Same media and caption to all 3.</p>
+          <label className="ck"><input type="checkbox" checked={trioMode} onChange={(e) => setTrioMode(e.target.checked)} /><svg viewBox="0 0 64 64"><path className="path" d="M8 33 L26 51 L56 13" /></svg><span>Enable trio mode (Review shows one post-trio action)</span></label>
           {!trioMode && <p className="sub" style={{ marginTop: 6 }}>Found: {trio.map((t) => `${t.name} → ${t.brand.label}`).join(' | ')}</p>}
         </div>
         )}
@@ -685,11 +931,11 @@ function Composer({ session, connections, reload }) {
       <div className="share-row stepped">
         <div className="card step-card">
           <span className="scope-badge everywhere">Used everywhere</span>
-          <h3>1 · Photo or video <Tip text="Up to 10 photos = 1 carousel post on Instagram/Facebook (up to 4 on X). YouTube needs a video — photos cannot post to YouTube via the API." /></h3>
-          <p className="sub">Add once — it appears on every platform. {isCarousel ? `Carousel: ${files.length} photos → 1 post.` : ''}</p>
+          <h3>1 · Photo or video <Tip text="Up to 10 photos = 1 carousel post on Instagram/Facebook (up to 4 on X). YouTube needs a video — photos cannot post to YouTube via the API. All images auto-convert to HD (min 1080px)." /></h3>
+          <p className="sub">Add once — it appears on every selected platform. {isCarousel ? `Carousel: ${files.length} photos as 1 post.` : ''} HD is automatic; use Crop for exact framing.</p>
           <input ref={inputRef} type="file" accept="image/*,video/*" multiple hidden onChange={(e) => { pickFiles(e.target.files); e.target.value = ''; }} />
           {!files.length ? (
-            <div className="drop big" onClick={() => inputRef.current.click()}><b>＋ Add photos or video</b>Click to browse · up to 10 photos (carousel) or 1 video</div>
+            <div className="drop big" onClick={() => inputRef.current.click()}><b><Icon d={ICONS.plus} size={14} /> Add photos or video</b>Click to browse · up to 10 photos (carousel) or 1 video · HD automatic</div>
           ) : (
             <div>
               <div className="media-grid">
@@ -703,16 +949,16 @@ function Composer({ session, connections, reload }) {
                     <div className="media-cell-bar">
                       <small>{i + 1} · {f.size}</small>
                       <span className="media-cell-btns">
-                        <button className="mini" title="Preview" onClick={() => setLightbox(i)}>👁</button>
-                        {f.type.startsWith('image/') && <button className="mini" title="Edit photo" onClick={() => setEditing(i)}>✏️</button>}
-                        <button className="mini" title="Remove" onClick={() => removeFileAt(i)}>✕</button>
+                        <button className="mini" title="Preview" onClick={() => setLightbox(i)}><Icon d={ICONS.eye} size={12} /> View</button>
+                        <button className="mini" title="Crop to size (HD output)" onClick={() => setCropping(i)}><Icon d={ICONS.crop} size={12} /> Crop</button>
+                        <button className="mini" title="Remove" onClick={() => removeFileAt(i)}><Icon d={ICONS.close} size={12} /> Remove</button>
                       </span>
                     </div>
                   </div>
                 ))}
               </div>
-              <div className="file-row"><span /><button onClick={() => inputRef.current.click()}>＋ Add more ({files.length}/10)</button><button onClick={() => { setFiles([]); setLightbox(-1); setEditing(-1); }}>Clear all</button></div>
-              {isCarousel && <div className="banner" style={{ marginTop: 8 }}>Carousel: {files.length} photos will post as ONE carousel on Instagram + Facebook{files.length > 4 ? ' (X takes first 4)' : ' + X'}. Click any photo to preview, ✏️ to edit.</div>}
+              <div className="file-row"><span className="sub">All media uploads as HD.</span><button onClick={() => inputRef.current.click()}>Add more ({files.length}/10)</button><button onClick={() => { setFiles([]); setLightbox(-1); setEditing(-1); setCropping(-1); }}>Clear all</button></div>
+              {isCarousel && <div className="banner" style={{ marginTop: 8 }}>Carousel: {files.length} photos post as ONE carousel on Instagram + Facebook{files.length > 4 ? ' (X uses first 4)' : ' and X'}. Select Crop for Portrait / Square / Landscape framing.</div>}
               {hasVideo && files.length > 1 && <div className="sec-err">Mixed video + multiple files: carousel needs photos only. Keep 1 video, or remove the video for a photo carousel.</div>}
             </div>
           )}
@@ -725,18 +971,18 @@ function Composer({ session, connections, reload }) {
         </div>
         <div className="card step-card ai">
           <span className="scope-badge ai-badge">Optional helper</span>
-          <h3>✨ AI writer</h3>
-          <p className="sub">Stuck? Type a short summary — 4 different captions (YT / IG / FB / X).</p>
+          <h3><Icon d={ICONS.edit} size={15} /> AI writer</h3>
+          <p className="sub">Type a short summary — 4 platform captions. Phone numbers always go at the end, never at the start.</p>
           <label className="field" style={{ marginBottom: 0 }}><span>What is this post about? <i>brand + motive + conditions wins</i></span><textarea value={aiBrief} maxLength={500} onChange={(e) => setAiBrief(e.target.value)} placeholder="e.g. Velvet Salon has a new offer: 20% off for everyone who comes before 4pm" style={{ minHeight: 70 }} /></label>
-          <label className="ck" style={{ marginTop: 8 }}><input type="checkbox" checked={aiTrends} onChange={(e) => setAiTrends(e.target.checked)} /><svg viewBox="0 0 64 64"><path className="path" d="M8 33 L26 51 L56 13" /></svg><span>🔥 Live SEO trends (slower, costs more)</span></label>
+          <label className="ck" style={{ marginTop: 8 }}><input type="checkbox" checked={aiTrends} onChange={(e) => setAiTrends(e.target.checked)} /><svg viewBox="0 0 64 64"><path className="path" d="M8 33 L26 51 L56 13" /></svg><span>Live SEO trends (slower, costs more)</span></label>
           <div className="row2" style={{ marginTop: 8 }}>
             <label className="field-mini"><span>Tone</span>
               <select value={aiTone} onChange={(e) => setAiTone(e.target.value)}>
                 <option value="auto">Auto (brand default)</option>
-                <option value="excited">🔥 Excited</option>
-                <option value="warm">🤗 Warm</option>
-                <option value="professional">💼 Professional</option>
-                <option value="funny">😂 Funny</option>
+                <option value="excited">Excited</option>
+                <option value="warm">Warm</option>
+                <option value="professional">Professional</option>
+                <option value="funny">Funny</option>
               </select>
             </label>
             <label className="field-mini"><span>Emojis</span>
@@ -744,7 +990,7 @@ function Composer({ session, connections, reload }) {
                 <option value="low">Few (1-2)</option>
                 <option value="medium">Medium (3-5)</option>
                 <option value="high">Lots (5-8)</option>
-                <option value="max">MAX 🎉 (8-12)</option>
+                <option value="max">Max (8-12)</option>
               </select>
             </label>
           </div>
@@ -761,11 +1007,11 @@ function Composer({ session, connections, reload }) {
           {aiMsg && <div className={/different captions written|Saved to/i.test(aiMsg) ? 'banner' : 'alert err'} style={{ marginTop: 10 }}>{aiMsg}</div>}
           {aiBreakdown && (
             <div className="ai-chips" style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 8, fontSize: 11 }}>
-              <span className="status-pill">{aiBreakdown.weak ? '⚠️ thin prompt' : '✓ understood'}</span>
-              <span className="status-pill">🏷 {aiBreakdown.brand}</span>
-              <span className="status-pill">🎯 {aiBreakdown.motive}</span>
-              <span className="status-pill">⏰ {aiBreakdown.when}</span>
-              <span className="status-pill">✍️ {String(aiBreakdown.type).split(':')[0]}</span>
+              <span className="status-pill">{aiBreakdown.weak ? 'Thin prompt' : 'Understood'}</span>
+              <span className="status-pill">{aiBreakdown.brand}</span>
+              <span className="status-pill">{aiBreakdown.motive}</span>
+              <span className="status-pill">{aiBreakdown.when}</span>
+              <span className="status-pill">{String(aiBreakdown.type).split(':')[0]}</span>
             </div>
           )}
           <button className="skew-btn grad" style={{ width: '100%', marginTop: 10 }} disabled={aiBusy || !aiBrief.trim()} onClick={writeWithAi}><span>{aiButtonLabel}</span></button>
@@ -778,7 +1024,7 @@ function Composer({ session, connections, reload }) {
               setAiMsg(`Saved to ${d.saved} memory (${d.count} lessons) — next captions copy this style.`);
             } catch (e) { setAiMsg(e.message); }
             setLessonBusy(false);
-          }}><span>{lessonBusy ? 'Saving…' : '📥 Caption good? Save as brand lesson'}</span></button>
+          }}><span>{lessonBusy ? 'Saving…' : 'Save caption as brand lesson'}</span></button>
           {aiBusy && <div className="progress-loader" style={{ marginTop: 10 }}><div className="progress" /></div>}
         </div>
       </div>
@@ -793,41 +1039,42 @@ function Composer({ session, connections, reload }) {
       <div className="step-panel">
       <div className="brandbar tight">
         <BrandPicker brands={brands} brandKey={brandKey} isActive={(b) => brandActive(b)} onPick={(k) => { setBrandKey(k); setResults({}); }} />
-        <button className="skew-btn grad pub-all" onClick={publishAll} disabled={Object.values(busy).some(Boolean)}><span>🚀 Post to all ticked{isCarousel ? ` (carousel x${files.length})` : ''}</span></button>
+        <button className="skew-btn grad pub-all" onClick={publishAll} disabled={Object.values(busy).some(Boolean) || !enabledPlatforms.length}><span>Post to all selected{isCarousel ? ` (carousel x${files.length})` : ''} — {enabledPlatforms.map((p) => p.name).join(', ') || 'none'}</span></button>
       </div>
-      {trioMode && trio.length >= 2 && (
+      {!enabledPlatforms.length && <div className="sec-err" style={{ marginBottom: 10 }}>No platforms selected. Go back to Step 1 and tick at least one.</div>}
+      {isOwner && trioMode && trio.length >= 2 && (
         <div className="card" style={{ border: '1px solid #c9a227', marginBottom: 10 }}>
-          <span className="scope-badge everywhere">💎 Jewellers trio · IG + FB + YT × {trio.length} brands</span>
+          <span className="scope-badge everywhere">Jewellers trio · IG + FB + YT × {trio.length} brands</span>
           <p className="sub" style={{ margin: '6px 0' }}>{trio.map((t) => t.name).join(' · ')} — same media + caption to all. Facebook doubles prevented automatically (direct posts only).</p>
-          <button className="skew-btn grad" style={{ width: '100%' }} onClick={publishTrio} disabled={!!busy.trio || Object.values(busy).some(Boolean)}><span>{busy.trio ? 'Posting trio…' : `💎 Post trio now (${trio.length * ['instagram', 'facebook', 'youtube'].filter((p) => enabled[p]).length} posts)`}</span></button>
+          <button className="skew-btn grad" style={{ width: '100%' }} onClick={publishTrio} disabled={!!busy.trio || Object.values(busy).some(Boolean)}><span>{busy.trio ? 'Posting trio…' : `Post trio now (${trio.length * ['instagram', 'facebook', 'youtube'].filter((p) => enabled[p]).length} posts)`}</span></button>
           <div style={{ marginTop: 8 }}>
             {trio.flatMap(({ name, brand: tb }) => ['instagram', 'facebook', 'youtube'].map((plat) => {
               const k = `trio:${name}:${plat}`;
               const r = results[k];
               if (!r) return null;
-              return <div key={k} className={r.state === 'failed' ? 'sec-err' : 'banner'} style={{ marginTop: 4 }}>{name} → {plat}: {r.state}{r.message ? ` — ${r.message}` : ''} {r.url ? <a href={r.url} target="_blank" rel="noreferrer">View →</a> : null}</div>;
+              return <div key={k} className={r.state === 'failed' ? 'sec-err' : 'banner'} style={{ marginTop: 4 }}>{name} to {plat}: {r.state}{r.message ? ` — ${r.message}` : ''} {r.url ? <a href={r.url} target="_blank" rel="noreferrer">View</a> : null}</div>;
             }))}
           </div>
         </div>
       )}
       {(ig.shareFb || fb.syndIg) && enabled.instagram && enabled.facebook && (
-        <div className="banner" style={{ marginBottom: 10 }}>⚠️ Double-post guard: “Post to all” ignores the ☑️ cross-post ticks and posts IG + FB directly (1 post each). Single-platform “Post to …” still honours the tick. Keep both ticks OFF unless you publish one platform at a time.</div>
+        <div className="banner" style={{ marginBottom: 10 }}>Double-post guard: Post to all ignores cross-post ticks and posts IG + FB directly (1 post each). Single-platform posting still honours the tick. Keep both ticks OFF unless you publish one platform at a time.</div>
       )}
       <div className="ptabs" role="tablist">
-        {PLATFORMS.map((p) => {
+        {enabledPlatforms.map((p) => {
           const r = results[p.id];
-          const dot = r?.state === 'completed' ? '✓' : r?.state === 'failed' ? '!' : busy[p.id] ? '…' : '';
+          const dot = r?.state === 'completed' ? 'Done' : r?.state === 'failed' ? 'Failed' : busy[p.id] ? 'Sending' : '';
           return (
             <button key={p.id} role="tab" aria-selected={tab === p.id} className={tab === p.id ? 'ptab on' : 'ptab'} onClick={() => setTab(p.id)}>
               <BrandIcon id={p.id} size={15} /> {p.name}
               {dot && <span className={r?.state === 'failed' ? 'pdot fail' : 'pdot'}>{dot}</span>}
-              {!pick(p.id) && <span className="pdot warn">no acct</span>}
+              {!pick(p.id) && <span className="pdot warn">no account</span>}
             </button>
           );
         })}
       </div>
       <div className="phones single" key={brandKey + tab}>
-        {PLATFORMS.filter((p) => p.id === tab).map((p, idx) => {
+        {enabledPlatforms.filter((p) => p.id === tab).map((p, idx) => {
           const pid = p.id;
           const list = listFor(pid);
           const chosen = pick(pid);
@@ -849,9 +1096,9 @@ function Composer({ session, connections, reload }) {
                 </div>
 
                 {pid === 'youtube' && <>
-                  <span className="scope-badge only">Only YouTube — videos only (posts as Video; vertical &lt;60s auto-becomes a Short)</span>
+                  <span className="scope-badge only">Only YouTube — videos only (posts as Video; vertical under 60s becomes a Short)</span>
                   {files.length > 0 && !hasVideo && (
-                    <div className="sec-err">📷 Photos can't post to YouTube via the API (no Community-post endpoint). Convert to a 6s vertical video, then post as a Short — or attach a video in Step 2.<br /><button className="mini" style={{ marginTop: 6 }} disabled={ytConverting} onClick={convertPhotoForYouTube}>{ytConverting ? 'Converting…' : '🎬 Convert photo to 6s video for YouTube'}</button></div>
+                    <div className="sec-err">Photos cannot post to YouTube via the API. Convert to a 6s vertical video, then post as a Short — or attach a video in Step 2.<br /><button className="mini" style={{ marginTop: 6 }} disabled={ytConverting} onClick={convertPhotoForYouTube}>{ytConverting ? 'Converting…' : 'Convert photo to 6s video for YouTube'}</button></div>
                   )}
                   {files.length > 1 && hasVideo && <div className="sec-err">YouTube takes 1 video per post — keep a single video for this card (carousel posts to IG/FB/X only).</div>}
                   <label className="field-mini"><span>Video title · {yt.title.length}/100 <Tip text="Required. This is the headline people see on YouTube." /></span><input value={yt.title} maxLength={100} onChange={(e) => setYt({ ...yt, title: e.target.value })} placeholder="e.g. Bridal glow-up at Velvet Salon" /></label>
@@ -860,13 +1107,13 @@ function Composer({ session, connections, reload }) {
                   <div className="row2">
                     <label className="field-mini"><span>Who can watch? <Tip text="Private = only you. Unlisted = anyone with link. Public = everyone on YouTube." /></span>
                       <select value={yt.privacy} onChange={(e) => setYt({ ...yt, privacy: e.target.value })}>
-                        <option value="private">🔒 Private (only me)</option>
-                        <option value="unlisted">🔗 Unlisted (link only)</option>
-                        <option value="public">🌍 Public (everyone)</option>
+                        <option value="private">Private (only me)</option>
+                        <option value="unlisted">Unlisted (link only)</option>
+                        <option value="public">Public (everyone)</option>
                       </select>
                     </label>
                     <label className="field-mini"><span>Cover image <Tip text="The thumbnail people click on. JPG or PNG." /></span>
-                      <button className="mini wide" onClick={() => thumbRef.current.click()}>{thumb ? '✓ Cover added' : '＋ Add cover'}</button>
+                      <button className="mini wide" onClick={() => thumbRef.current.click()}>{thumb ? 'Cover added' : 'Add cover'}</button>
                       <input ref={thumbRef} type="file" accept="image/jpeg,image/png" hidden onChange={(e) => { const f = e.target.files[0]; if (f) setThumb({ raw: f, name: f.name }); }} />
                     </label>
                   </div>
@@ -919,9 +1166,15 @@ function Composer({ session, connections, reload }) {
                 {pid === 'instagram' && <>
                   <span className="scope-badge only">Only Instagram{isCarousel ? ` — carousel x${files.length}` : ''}</span>
                   {isCarousel && <div className="banner" style={{ margin: 0 }}>These {files.length} photos post as ONE carousel swipe post.</div>}
-                  <label className="field-mini"><span>Caption · {(ig.caption || caption).length}/2200 <Tip text="Text under your photo/reel. If empty, we use your Step 2 message." /></span><textarea value={ig.caption} onChange={(e) => setIg({ ...ig, caption: e.target.value })} placeholder="Uses your Step 2 message if left empty" /></label>
-                  <label className="ck"><input type="checkbox" checked={ig.shareFb} onChange={(e) => setIg({ ...ig, shareFb: e.target.checked })} /><svg viewBox="0 0 64 64"><path className="path" d="M8 33 L26 51 L56 13" /></svg><span>Also post this on Facebook (single-post only — OFF when using “Post to all”)</span></label>
-                  <button className={showAdv['ig'] ? 'adv-toggle open' : 'adv-toggle'} onClick={() => toggleAdv('ig')}>{showAdv['ig'] ? '▾ Hide extra Instagram options' : '▸ Extra options (tags, partners…)'}</button>
+                  <label className="field-mini"><span>Caption · {(ig.caption || caption).length}/2200 <Tip text="Text under your photo/reel. If empty, we use your Step 2 message. Phone numbers stay at the end automatically." /></span><textarea value={ig.caption} onChange={(e) => setIg({ ...ig, caption: e.target.value })} placeholder="Uses your Step 2 message if left empty" /></label>
+                  <label className="field-mini"><span>Feed size <Tip text="Portrait 4:5 for reach, Square 1:1 for grid, Landscape 1.91:1 for wide shots. Use Crop in Step 2 for exact framing." /></span>
+                    <select value={ig.size || 'portrait'} onChange={(e) => setIg({ ...ig, size: e.target.value })}>
+                      {SIZE_PRESETS.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
+                    </select>
+                  </label>
+                  <label className="ck"><input type="checkbox" checked={ig.shareFb} onChange={(e) => setIg({ ...ig, shareFb: e.target.checked })} /><svg viewBox="0 0 64 64"><path className="path" d="M8 33 L26 51 L56 13" /></svg><span>Also post this on Facebook (single-post only — off when using Post to all)</span></label>
+                  <label className="ck"><input type="checkbox" checked={!!ig.story} onChange={(e) => setIg({ ...ig, story: e.target.checked })} /><svg viewBox="0 0 64 64"><path className="path" d="M8 33 L26 51 L56 13" /></svg><span>Auto-post same media as Story (24h, feed + story in one tap)</span></label>
+                  <button className={showAdv['ig'] ? 'adv-toggle open' : 'adv-toggle'} onClick={() => toggleAdv('ig')}>{showAdv['ig'] ? 'Hide extra Instagram options' : 'Extra options (tags, partners…)'}</button>
                   {showAdv['ig'] && (
                   <div className="adv-box">
                     <label className="field-mini"><span>Topics · up to 3 <Tip text="Simple words like fitness, bridal. Helps new people discover you." /></span><input value={ig.topics} onChange={(e) => setIg({ ...ig, topics: e.target.value })} placeholder="e.g. bridal, mumbai" /></label>
@@ -936,9 +1189,14 @@ function Composer({ session, connections, reload }) {
                   <span className="scope-badge only">Only Facebook{isCarousel ? ` — carousel x${files.length}` : ''}</span>
                   {isCarousel && <div className="banner" style={{ margin: 0 }}>These {files.length} photos post as ONE multi-photo post (not {files.length} separate posts).</div>}
                   <label className="field-mini"><span>What to say? <Tip text="Text shown above your photo/video. If empty, we use your Step 2 message." /></span><textarea value={fb.message} onChange={(e) => setFb({ ...fb, message: e.target.value })} placeholder="Uses your Step 2 message if left empty" /></label>
+                  <label className="field-mini"><span>Feed size <Tip text="Portrait, Square or Landscape. Use Crop in Step 2 for exact framing." /></span>
+                    <select value={fb.size || 'portrait'} onChange={(e) => setFb({ ...fb, size: e.target.value })}>
+                      {SIZE_PRESETS.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
+                    </select>
+                  </label>
                   <label className="field-mini"><span>Website link · optional <Tip text="e.g. your booking page. Leave empty for photo/video only." /></span><input value={fb.link} onChange={(e) => setFb({ ...fb, link: e.target.value })} placeholder="https://your-website.com/offer" /></label>
-                  <label className="ck"><input type="checkbox" checked={fb.syndIg} onChange={(e) => setFb({ ...fb, syndIg: e.target.checked })} /><svg viewBox="0 0 64 64"><path className="path" d="M8 33 L26 51 L56 13" /></svg><span>Also post this on Instagram (single-post only — OFF when using “Post to all”)</span></label>
-                  <button className={showAdv['fb'] ? 'adv-toggle open' : 'adv-toggle'} onClick={() => toggleAdv('fb')}>{showAdv['fb'] ? '▾ Hide extra Facebook options' : '▸ Extra options (button, age, ads…)'}</button>
+                  <label className="ck"><input type="checkbox" checked={fb.syndIg} onChange={(e) => setFb({ ...fb, syndIg: e.target.checked })} /><svg viewBox="0 0 64 64"><path className="path" d="M8 33 L26 51 L56 13" /></svg><span>Also post this on Instagram (single-post only — off when using Post to all)</span></label>
+                  <button className={showAdv['fb'] ? 'adv-toggle open' : 'adv-toggle'} onClick={() => toggleAdv('fb')}>{showAdv['fb'] ? 'Hide extra Facebook options' : 'Extra options (button, age, ads…)'}</button>
                   {showAdv['fb'] && (
                   <div className="adv-box">
                     <label className="field-mini"><span>Add a button · needs a link above <Tip text="Shows Shop now / Learn more under your post." /></span>
@@ -998,22 +1256,21 @@ function Composer({ session, connections, reload }) {
 
                 <div className="status-line">
                   <span className={r?.state === 'failed' ? 'status-pill fail' : r?.state === 'completed' ? 'status-pill ok' : 'status-pill'}>
-                    {busy[pid] ? '● Sending…' : r?.state === 'completed' ? '✓ Posted' : r?.state === 'failed' ? '✕ Failed' : '○ Ready to post'}
+                    {busy[pid] ? 'Sending…' : r?.state === 'completed' ? 'Posted' : r?.state === 'failed' ? 'Failed' : 'Ready to post'}
                   </span>
-                  {enabled[pid] ? <span className="status-hint">Included in “Post to all”</span> : <span className="status-hint">Skipped in “Post to all”</span>}
+                  <span className="status-hint">Selected in Step 1 — posting now</span>
                 </div>
                 {busy[pid] && <div className="progress-loader"><div className="progress" /></div>}
                 {r?.state === 'failed' && <div className="sec-err">{r.message}</div>}
                 {r?.warning && r?.state !== 'failed' && <div className="banner" style={{ margin: 0 }}>{r.warning}</div>}
-                {r?.url && <a className="phone-link big" href={r.url} target="_blank" rel="noreferrer">View your post →</a>}
+                {r?.url && <a className="phone-link big" href={r.url} target="_blank" rel="noreferrer">View your post</a>}
                 <div className="phone-actions">
-                  <label className="ck"><input type="checkbox" checked={!!enabled[pid]} onChange={(e) => setEnabled((m) => ({ ...m, [pid]: e.target.checked }))} /><svg viewBox="0 0 64 64"><path className="path" d="M8 33 L26 51 L56 13" /></svg><span>Include in “post to all”</span></label>
                   <button className="mini" title="Copy this platform's caption" onClick={() => {
                     const texts = { youtube: `${yt.title}\n\n${yt.description || caption}`, instagram: ig.caption || caption, facebook: fb.message || caption, x: x.text || caption };
                     try { navigator.clipboard.writeText(texts[pid] || ''); setCopyMsg('Copied ' + p.name); } catch { setCopyMsg('Copy failed'); }
                     setTimeout(() => setCopyMsg(''), 1500);
-                  }}>⧉ Copy{copyMsg ? ` — ${copyMsg}` : ''}</button>
-                  <button className="post-btn" disabled={!!busy[pid] || (pid === 'x' && (xLen > 280 || (x.pollOn && !!files.length)))} onClick={() => publishOne(pid)}>{busy[pid] ? 'Posting…' : `Post to ${p.name} →`}</button>
+                  }}><Icon d={ICONS.copy} size={12} /> Copy{copyMsg ? ` — ${copyMsg}` : ''}</button>
+                  <button className="post-btn" disabled={!!busy[pid] || !pick(pid) || (pid === 'x' && (xLen > 280 || (x.pollOn && !!files.length)))} title={!pick(pid) ? 'Pick an account for this platform in Step 1' : `Post to ${p.name}`} onClick={() => publishOne(pid)}>{busy[pid] ? 'Posting…' : `Post to ${p.name}`}</button>
                 </div>
               </div>
             </div>
@@ -1026,10 +1283,10 @@ function Composer({ session, connections, reload }) {
         </div>
       </div>
       )}
-      <p className="note center">🔒 Direct post only · Your passwords/tokens stay locked in Supabase.</p>
+      <p className="note center">Direct post only · Tokens stay locked in Supabase.</p>
       {lightbox >= 0 && files[lightbox] && (
         <div className="lightbox-backdrop" onClick={() => setLightbox(-1)}>
-          <button className="lb-close" onClick={() => setLightbox(-1)} aria-label="Close preview">✕</button>
+          <button className="lb-close" onClick={() => setLightbox(-1)} aria-label="Close preview"><Icon d={ICONS.close} size={14} /></button>
           {files.length > 1 && (
             <>
               <button className="lb-nav left" aria-label="Previous" onClick={(e) => { e.stopPropagation(); setLightbox((lightbox - 1 + files.length) % files.length); }}>‹</button>
@@ -1038,12 +1295,12 @@ function Composer({ session, connections, reload }) {
           )}
           <div className="lightbox-body" onClick={(e) => e.stopPropagation()}>
             {files[lightbox].type.startsWith('video/') && fileUrls[lightbox]
-              ? <video src={fileUrls[lightbox]} controls autoPlay preload="metadata" />
+              ? <video src={fileUrls[lightbox]} controls muted playsInline preload="metadata" />
               : fileUrls[lightbox] && <img src={fileUrls[lightbox]} alt={files[lightbox].name} />}
             <div className="lb-cap">{lightbox + 1} / {files.length} · {files[lightbox].name} · {files[lightbox].size}</div>
             <div className="lb-actions">
-              {files[lightbox].type.startsWith('image/') && <button className="mini" onClick={() => { setEditing(lightbox); setLightbox(-1); }}>✏️ Edit this photo</button>}
-              <button className="mini" onClick={() => { removeFileAt(lightbox); setLightbox(-1); }}>✕ Remove</button>
+              <button className="mini" onClick={() => { setCropping(lightbox); setLightbox(-1); }}><Icon d={ICONS.crop} size={12} /> Crop (HD)</button>
+              <button className="mini" onClick={() => { removeFileAt(lightbox); setLightbox(-1); }}><Icon d={ICONS.close} size={12} /> Remove</button>
             </div>
           </div>
         </div>
@@ -1053,12 +1310,16 @@ function Composer({ session, connections, reload }) {
           name={files[editing].name}
           src={fileUrls[editing]}
           onCancel={() => setEditing(-1)}
-          onApply={(out) => {
-            setFiles((fs) => fs.map((f, i) => (i === editing
-              ? { raw: out, name: out.name, size: `${(out.size / 1024 / 1024).toFixed(1)} MB`, type: out.type }
-              : f)));
-            setEditing(-1);
-          }}
+          onApply={(out) => applyCropAt(editing, out)}
+        />
+      )}
+      {cropping >= 0 && files[cropping] && fileUrls[cropping] && (
+        <CropEditor
+          name={files[cropping].name}
+          src={fileUrls[cropping]}
+          kind={files[cropping].type.startsWith('video/') ? 'video' : 'image'}
+          onCancel={() => setCropping(-1)}
+          onApply={(out) => applyCropAt(cropping, out)}
         />
       )}
     </div>
@@ -1187,7 +1448,7 @@ function Accounts({ session, connections, setConnections }) {
 const TOUR_STEPS = [
   { t: 'Welcome to Driftpost', d: 'Post for all your brands from one screen. This 30-second tour shows you how — plain and simple.' },
   { t: 'Step 1 · Connect accounts', d: 'Open Accounts and connect YouTube, Facebook, Instagram and X. Each brand owner connects once, then it just works.' },
-  { t: 'Step 2 · Pick your brand', d: 'Use the brand menu at the top. Driftpost automatically finds that brand on all 4 platforms. Star your active clients with the ⋯ menu.' },
+  { t: 'Step 2 · Pick your brand', d: 'Use the brand menu at the top. Driftpost automatically finds that brand on all 4 platforms. Star your active clients with the �Prev� menu.' },
   { t: 'Step 3 · Add photo and words', d: 'Drop one photo or video and write one caption. It fills every platform for you.' },
   { t: 'Step 4 · Adjust and publish', d: 'Each platform has its own card — YouTube titles, Instagram captions, Facebook links, X polls. Publish one by one, or press Publish all.' },
 ];

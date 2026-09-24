@@ -178,6 +178,39 @@ export async function publishInstagram({ igUserId, pageToken, caption, alt, coll
   return { id: published.id, url: 'https://www.instagram.com/' };
 }
 
+// --- Instagram Story: single photo/video as a 24h story ---
+// Meta flow mirrors reels: create a STORIES container, wait for processing
+// when video, then media_publish. Stories need no caption hashtags.
+export async function publishInstagramStory({ igUserId, pageToken, mediaUrl, isVideo }) {
+  if (!mediaUrl) throw new Error('Attach a photo or video to post a story.');
+  const cRes = await fetch(`${GRAPH}/${igUserId}/media`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      media_type: 'STORIES',
+      ...(isVideo ? { video_url: mediaUrl } : { image_url: mediaUrl }),
+      access_token: pageToken,
+    }),
+  });
+  const container = await cRes.json();
+  if (!cRes.ok) throw new Error(container.error?.message || 'Instagram story container failed');
+  if (isVideo) {
+    for (let i = 0; i < 30; i++) {
+      await new Promise((r) => setTimeout(r, 8000));
+      const s = await fetch(`${GRAPH}/${container.id}?fields=status_code&access_token=${encodeURIComponent(pageToken)}`);
+      const sj = await s.json();
+      if (sj.status_code === 'FINISHED') break;
+      if (sj.status_code === 'ERROR') throw new Error('Instagram could not process this story video');
+    }
+  }
+  const pRes = await fetch(`${GRAPH}/${igUserId}/media_publish`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ creation_id: container.id, access_token: pageToken }),
+  });
+  const published = await pRes.json();
+  if (!pRes.ok) throw new Error(published.error?.message || 'Instagram story publish failed');
+  return { id: published.id, url: 'https://www.instagram.com/' };
+}
+
 // --- Carousel: 2-10 photos (images only) as one Instagram carousel post ---
 // Meta flow: create one child container per image (is_carousel_item=true),
 // then a parent CAROUSEL container with children=[ids], then media_publish.
