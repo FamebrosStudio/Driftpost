@@ -3,6 +3,44 @@ import { apiUrl, api, PLATFORMS, isActiveBrand, groupBrands, TRIO_BRANDS, findTr
 import BrandIcon from './brand.jsx';
 import { getSupabase } from './session.js';
 
+// --- Tiny IndexedDB media vault (localStorage can't hold binary) ---
+// Survives refresh: attached photos/video + YouTube cover are restored
+// byte-for-byte after reload. Per-user keys, same-origin only.
+function idbOpen() {
+  return new Promise((resolve, reject) => {
+    try {
+      const req = indexedDB.open('driftpost', 1);
+      req.onupgradeneeded = () => { req.result.createObjectStore('media'); };
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    } catch (e) { reject(e); }
+  });
+}
+async function idbSet(key, value) {
+  try {
+    const db = await idbOpen();
+    await new Promise((res, rej) => {
+      const tx = db.transaction('media', 'readwrite');
+      tx.objectStore('media').put(value, key);
+      tx.oncomplete = res; tx.onerror = () => rej(tx.error);
+    });
+    db.close();
+  } catch {}
+}
+async function idbGet(key) {
+  try {
+    const db = await idbOpen();
+    const value = await new Promise((res, rej) => {
+      const tx = db.transaction('media', 'readonly');
+      const rq = tx.objectStore('media').get(key);
+      rq.onsuccess = () => res(rq.result);
+      rq.onerror = () => rej(rq.error);
+    });
+    db.close();
+    return value ?? null;
+  } catch { return null; }
+}
+
 const THEMES = [
   { id: 'auto', label: 'Auto (follows PC)' },
   { id: 'dark', label: 'Black' },
@@ -138,11 +176,11 @@ function Composer({ session, connections, reload }) {
   const [brandKey, setBrandKey] = useState(saved.brandKey || '');
   const [step, setStep] = useState([1, 2, 3].includes(saved.step) ? saved.step : 1);
   const [tab, setTab] = useState(saved.tab || 'youtube');
-  const [showAdv, setShowAdv] = useState({});
+  const [showAdv, setShowAdv] = useState(saved.showAdv || {});
   const [over, setOver] = useState(saved.over || {});
   const [files, setFiles] = useState([]);
   const [thumb, setThumb] = useState(null);
-  const [trioMode, setTrioMode] = useState(false);
+  const [trioMode, setTrioMode] = useState(!!saved.trioMode);
   const [ytConverting, setYtConverting] = useState(false);
   const [caption, setCaption] = useState(saved.caption || '');
   const [yt, setYt] = useState(saved.yt || { title: '', description: '', tags: '', privacy: 'private', category: '', kids: '', license: '', embed: '', stats: '', notify: 'on' });
@@ -153,9 +191,9 @@ function Composer({ session, connections, reload }) {
   const [enabled, setEnabled] = useState(saved.enabled || { youtube: true, instagram: true, facebook: true, x: true });
   const [aiBrief, setAiBrief] = useState(saved.aiBrief || '');
   const [aiBusy, setAiBusy] = useState(false);
-  const [aiMsg, setAiMsg] = useState('');
+  const [aiMsg, setAiMsg] = useState(saved.aiMsg || '');
   const [copyMsg, setCopyMsg] = useState('');
-  const [results, setResults] = useState({});
+  const [results, setResults] = useState(saved.results || {});
   // AI style controls live up here (before the persist effect below) —
   // the persist dep array reads them on every render, so declaring them
   // later would throw "Cannot access before initialization" (TDZ).
@@ -166,15 +204,58 @@ function Composer({ session, connections, reload }) {
   const inputRef = useRef();
   const thumbRef = useRef();
 
-  // Strict refresh survival: every keystroke lands in localStorage.
+  // Strict refresh survival: every keystroke lands in localStorage, media
+  // blobs land in IndexedDB, and the console reopens on the same view/step.
+  // Results keep their server jobId so in-flight publishes resume polling.
+  const persistResults = {};
+  try {
+    for (const [k, r] of Object.entries(results || {})) {
+      if (r && typeof r === 'object') {
+        persistResults[k] = { state: r.state, progress: r.progress, url: r.url, message: r.message, warning: r.warning, jobId: r.jobId };
+      }
+    }
+  } catch {}
   useEffect(() => {
     try {
       localStorage.setItem(persistKey, JSON.stringify({
         brandKey, step, tab, caption, yt, ig, fb, x, enabled,
         aiBrief, aiTone, aiEmoji, aiLength, over,
+        trioMode, showAdv, aiMsg, results: persistResults,
       }));
     } catch {}
-  }, [persistKey, brandKey, step, tab, caption, yt, ig, fb, x, enabled, aiBrief, aiTone, aiEmoji, aiLength, over]);
+  }, [persistKey, brandKey, step, tab, caption, yt, ig, fb, x, enabled, aiBrief, aiTone, aiEmoji, aiLength, over, trioMode, showAdv, aiMsg, results]);
+
+  // Media vault: restore attached files + cover after a refresh, and save
+  // them on every change (File/Blob objects survive in IndexedDB).
+  const mediaKey = `driftpost-media:${session.user.id}`;
+  const mediaRestoredRef = useRef(false);
+  useEffect(() => {
+    if (mediaRestoredRef.current) return;
+    mediaRestoredRef.current = true;
+    (async () => {
+      const vault = await idbGet(mediaKey);
+      if (vault?.files?.length && !files.length) {
+        const restored = vault.files
+          .filter((f) => f.blob instanceof Blob)
+          .map((f) => {
+            const raw = f.blob instanceof File ? f.blob : new File([f.blob], f.name || 'media', { type: f.type || 'image/jpeg' });
+            return { raw, name: f.name || raw.name, size: `${(raw.size / 1024 / 1024).toFixed(1)} MB`, type: raw.type };
+          });
+        if (restored.length) setFiles(restored);
+      }
+      if (vault?.thumb?.blob instanceof Blob && !thumb) {
+        const b = vault.thumb.blob;
+        const raw = b instanceof File ? b : new File([b], vault.thumb.name || 'cover.jpg', { type: b.type || 'image/jpeg' });
+        setThumb({ raw, name: vault.thumb.name || raw.name });
+      }
+    })();
+  }, []);
+  useEffect(() => {
+    idbSet(mediaKey, {
+      files: files.map((f) => ({ name: f.name, type: f.type, blob: f.raw })).filter((f) => f.blob instanceof Blob),
+      thumb: thumb?.raw instanceof Blob ? { name: thumb.name, blob: thumb.raw } : null,
+    });
+  }, [mediaKey, files, thumb]);
 
   useEffect(() => {
     if (brands.length && !brands.some((b) => b.key === brandKey)) {
@@ -303,7 +384,7 @@ function Composer({ session, connections, reload }) {
 
   const runOne = async (platform, out, { connectionId = null, key = null, skipCrossPost = false } = {}) => {
     const k = key || platform;
-    out[k] = { state: 'uploading', progress: 5 };
+    out[k] = { state: 'uploading', progress: 5, jobId: null };
     setResults({ ...out });
     const res = await fetch(`${apiUrl}/api/publish`, {
       method: 'POST',
@@ -313,15 +394,42 @@ function Composer({ session, connections, reload }) {
     const data = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error(data.error || 'Publish failed');
     const jobId = data.job.id;
+    out[k] = { state: 'uploading', progress: 5, jobId };
+    setResults({ ...out });
     for (;;) {
       await new Promise((r) => setTimeout(r, 1500));
       const j = await api(`/api/jobs/${jobId}`, session.access_token);
-      out[k] = { state: j.job.state, progress: j.job.progress || 50, url: j.job.url, message: j.job.message, warning: j.job.warning };
+      out[k] = { state: j.job.state, progress: j.job.progress || 50, url: j.job.url, message: j.job.message, warning: j.job.warning, jobId };
       setResults({ ...out });
       if (j.job.state === 'completed') return;
       if (j.job.state === 'failed') throw new Error(j.job.message);
     }
   };
+
+  // Refresh during an upload: re-attach to every in-flight server job and
+  // keep polling it, so progress + the final post link are never lost.
+  const resumedRef = useRef(false);
+  useEffect(() => {
+    if (resumedRef.current) return;
+    resumedRef.current = true;
+    const pending = Object.entries(results || {}).filter(([, r]) => r?.jobId && !['completed', 'failed'].includes(r.state));
+    if (!pending.length) return;
+    (async () => {
+      for (const [k, r] of pending) {
+        try {
+          for (;;) {
+            await new Promise((res) => setTimeout(res, 1500));
+            const j = await api(`/api/jobs/${r.jobId}`, session.access_token);
+            setResults((prev) => ({ ...prev, [k]: { ...prev[k], state: j.job.state, progress: j.job.progress || 50, url: j.job.url, message: j.job.message, warning: j.job.warning, jobId: r.jobId } }));
+            if (j.job.state === 'completed' || j.job.state === 'failed') break;
+          }
+        } catch {
+          setResults((prev) => ({ ...prev, [k]: { ...prev[k], state: 'failed', message: 'Upload was interrupted by the refresh and the job is gone — please repost.', jobId: null } }));
+        }
+      }
+      reload();
+    })();
+  }, []);
 
   const publishOne = async (platform) => {
     if (busy[platform]) return;
@@ -836,9 +944,24 @@ function Composer({ session, connections, reload }) {
 function Accounts({ session, connections, setConnections }) {
   const [msg, setMsg] = useState('');
   const [busy, setBusy] = useState('');
-  const [search, setSearch] = useState('');
-  const [activeOnly, setActiveOnly] = useState(false);
-  const [showHidden, setShowHidden] = useState(false);
+  const [search, setSearch] = useState(() => {
+    try { return localStorage.getItem(`driftpost-acct-search:${session.user.id}`) || ''; }
+    catch { return ''; }
+  });
+  const [activeOnly, setActiveOnly] = useState(() => {
+    try { return localStorage.getItem(`driftpost-acct-filter:${session.user.id}`) === 'active'; }
+    catch { return false; }
+  });
+  const [showHidden, setShowHidden] = useState(() => {
+    try { return localStorage.getItem(`driftpost-acct-filter:${session.user.id}`) === 'hidden'; }
+    catch { return false; }
+  });
+  useEffect(() => {
+    try { localStorage.setItem(`driftpost-acct-search:${session.user.id}`, search); } catch {}
+  }, [search, session.user.id]);
+  useEffect(() => {
+    try { localStorage.setItem(`driftpost-acct-filter:${session.user.id}`, showHidden ? 'hidden' : activeOnly ? 'active' : 'all'); } catch {}
+  }, [showHidden, activeOnly, session.user.id]);
   const [hiddenSet, hideId, unhideId] = useLocalSet(`driftpost-hidden:${session.user.id}`);
   const [manualActive, markActive, unmarkActive] = useLocalSet(`driftpost-active:${session.user.id}`);
 
@@ -965,7 +1088,16 @@ function TourOverlay({ step, setStep, onDone }) {
 }
 
 export default function Console({ session, onSwitchAccount, onSignOut }) {
-  const [view, setView] = useState('create');
+  // Same page after refresh: the console reopens on Compose or Accounts,
+  // whichever the user was on.
+  const [view, setView] = useState(() => {
+    try {
+      return localStorage.getItem(`driftpost-view:${session.user.id}`) === 'accounts' ? 'accounts' : 'create';
+    } catch { return 'create'; }
+  });
+  useEffect(() => {
+    try { localStorage.setItem(`driftpost-view:${session.user.id}`, view); } catch {}
+  }, [view, session.user.id]);
   const [navOpen, setNavOpen] = useState(false);
   const [userOpen, setUserOpen] = useState(false);
   const [theme, setTheme] = useTheme();
