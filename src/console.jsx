@@ -156,6 +156,13 @@ function Composer({ session, connections, reload }) {
   const [aiMsg, setAiMsg] = useState('');
   const [copyMsg, setCopyMsg] = useState('');
   const [results, setResults] = useState({});
+  // AI style controls live up here (before the persist effect below) —
+  // the persist dep array reads them on every render, so declaring them
+  // later would throw "Cannot access before initialization" (TDZ).
+  const [aiTrends, setAiTrends] = useState(false);
+  const [aiTone, setAiTone] = useState(saved.aiTone || 'auto');
+  const [aiEmoji, setAiEmoji] = useState(saved.aiEmoji || 'high');
+  const [aiLength, setAiLength] = useState(saved.aiLength || 'medium');
   const inputRef = useRef();
   const thumbRef = useRef();
 
@@ -375,10 +382,6 @@ function Composer({ session, connections, reload }) {
     setYt((v) => ({ ...v, description: caption }));
   };
 
-  const [aiTrends, setAiTrends] = useState(false);
-  const [aiTone, setAiTone] = useState('auto');
-  const [aiEmoji, setAiEmoji] = useState('high');
-  const [aiLength, setAiLength] = useState('medium');
   const [aiBreakdown, setAiBreakdown] = useState(null);
   const [aiSecs, setAiSecs] = useState(0);
   const [lessonBusy, setLessonBusy] = useState(false);
