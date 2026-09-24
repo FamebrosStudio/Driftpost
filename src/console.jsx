@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { apiUrl, api, PLATFORMS, isActiveBrand, groupBrands } from './lib.js';
+import { apiUrl, api, PLATFORMS, isActiveBrand, groupBrands, TRIO_BRANDS, findTrioBrands } from './lib.js';
 import BrandIcon from './brand.jsx';
 import { getSupabase } from './session.js';
 
@@ -125,26 +125,33 @@ function StepsHeader({ step, setStep, ready }) {
 }
 
 function Composer({ session, connections, reload }) {
+  const persistKey = `driftpost-composer:${session.user.id}`;
+  const saved = (() => {
+    try { return JSON.parse(localStorage.getItem(persistKey) || '{}'); }
+    catch { return {}; }
+  })();
   const [hidden] = useLocalSet(`driftpost-hidden:${session.user.id}`);
   const [manualActive] = useLocalSet(`driftpost-active:${session.user.id}`);
   const vis = useMemo(() => connections.filter((c) => !hidden.has(c.id)), [connections, hidden]);
   const brands = useMemo(() => groupBrands(vis), [vis]);
   const brandActive = (b) => isActiveBrand(b.label) || Object.values(b.map).some((id) => manualActive.has(id));
-  const [brandKey, setBrandKey] = useState('');
-  const [step, setStep] = useState(1);
-  const [tab, setTab] = useState('youtube');
+  const [brandKey, setBrandKey] = useState(saved.brandKey || '');
+  const [step, setStep] = useState([1, 2, 3].includes(saved.step) ? saved.step : 1);
+  const [tab, setTab] = useState(saved.tab || 'youtube');
   const [showAdv, setShowAdv] = useState({});
-  const [over, setOver] = useState({});
-  const [file, setFile] = useState(null);
+  const [over, setOver] = useState(saved.over || {});
+  const [files, setFiles] = useState([]);
   const [thumb, setThumb] = useState(null);
-  const [caption, setCaption] = useState('');
-  const [yt, setYt] = useState({ title: '', description: '', tags: '', privacy: 'private', category: '', kids: '', license: '', embed: '', stats: '', notify: 'on' });
-  const [ig, setIg] = useState({ caption: '', alt: '', topics: '', partner: '', collabs: '', location: '', shareFb: false });
-  const [fb, setFb] = useState({ message: '', link: '', syndIg: false, age: '', cta: '', linkName: '', linkCaption: '', linkDesc: '', linkPic: '', unpublished: false });
-  const [x, setX] = useState({ text: '', reply: 'everyone', pollOn: false, opts: ['', '', '', ''], mins: '1440' });
+  const [trioMode, setTrioMode] = useState(false);
+  const [ytConverting, setYtConverting] = useState(false);
+  const [caption, setCaption] = useState(saved.caption || '');
+  const [yt, setYt] = useState(saved.yt || { title: '', description: '', tags: '', privacy: 'private', category: '', kids: '', license: '', embed: '', stats: '', notify: 'on' });
+  const [ig, setIg] = useState(saved.ig || { caption: '', alt: '', topics: '', partner: '', collabs: '', location: '', shareFb: false });
+  const [fb, setFb] = useState(saved.fb || { message: '', link: '', syndIg: false, age: '', cta: '', linkName: '', linkCaption: '', linkDesc: '', linkPic: '', unpublished: false });
+  const [x, setX] = useState(saved.x || { text: '', reply: 'everyone', pollOn: false, opts: ['', '', '', ''], mins: '1440' });
   const [busy, setBusy] = useState({});
-  const [enabled, setEnabled] = useState({ youtube: true, instagram: true, facebook: true, x: true });
-  const [aiBrief, setAiBrief] = useState('');
+  const [enabled, setEnabled] = useState(saved.enabled || { youtube: true, instagram: true, facebook: true, x: true });
+  const [aiBrief, setAiBrief] = useState(saved.aiBrief || '');
   const [aiBusy, setAiBusy] = useState(false);
   const [aiMsg, setAiMsg] = useState('');
   const [copyMsg, setCopyMsg] = useState('');
@@ -152,17 +159,33 @@ function Composer({ session, connections, reload }) {
   const inputRef = useRef();
   const thumbRef = useRef();
 
+  // Strict refresh survival: every keystroke lands in localStorage.
   useEffect(() => {
-    if (!brandKey && brands.length) {
+    try {
+      localStorage.setItem(persistKey, JSON.stringify({
+        brandKey, step, tab, caption, yt, ig, fb, x, enabled,
+        aiBrief, aiTone, aiEmoji, aiLength, over,
+      }));
+    } catch {}
+  }, [persistKey, brandKey, step, tab, caption, yt, ig, fb, x, enabled, aiBrief, aiTone, aiEmoji, aiLength, over]);
+
+  useEffect(() => {
+    if (brands.length && !brands.some((b) => b.key === brandKey)) {
       setBrandKey((brands.find((b) => brandActive(b)) || brands[0]).key);
     }
   }, [brands, brandKey]);
 
   const brand = brands.find((b) => b.key === brandKey) || null;
+  const trio = useMemo(() => findTrioBrands(brands), [brands]);
   const listFor = (pid) => vis.filter((c) => c.platform === pid);
-  const pick = (pid) => over[`${brand?.key}:${pid}`] || brand?.map[pid] || '';
+  const pickFor = (brandObj, pid) => over[`${brandObj?.key}:${pid}`] || brandObj?.map[pid] || '';
+  const pick = (pid) => pickFor(brand, pid);
   const setPick = (pid, id) => setOver((m) => ({ ...m, [`${brand?.key}:${pid}`]: id }));
 
+  // Carousel files (2-10 photos = 1 carousel post on IG/FB, up to 4 on X).
+  const file = files[0] || null;
+  const isCarousel = files.length >= 2 && files.every((f) => f.type.startsWith('image/'));
+  const hasVideo = files.some((f) => f.type.startsWith('video/'));
   const mediaUrl = useMemo(
     () => (file?.raw && file.type.startsWith('image/') ? URL.createObjectURL(file.raw) : null),
     [file]
@@ -172,17 +195,63 @@ function Composer({ session, connections, reload }) {
     [file]
   );
 
-  const pickFile = (f) => {
-    if (!f) return;
-    setFile({ raw: f, name: f.name, size: `${(f.size / 1024 / 1024).toFixed(1)} MB`, type: f.type });
+  const pickFiles = (list) => {
+    const arr = [...list].filter((f) => f && /^(image|video)\//.test(f.type)).slice(0, 10);
+    setFiles(arr.map((f) => ({ raw: f, name: f.name, size: `${(f.size / 1024 / 1024).toFixed(1)} MB`, type: f.type })));
+  };
+  const removeFileAt = (idx) => setFiles((fs) => fs.filter((_, i) => i !== idx));
+
+  // YouTube has no photo/Community-post API: convert an attached photo into a
+  // 6-second 1080x1920 video in-browser (Ken Burns zoom) so it posts as a Short.
+  const convertPhotoForYouTube = async () => {
+    const img = files.find((f) => f.type.startsWith('image/'));
+    if (!img || ytConverting) return;
+    setYtConverting(true);
+    try {
+      const bitmap = await createImageBitmap(img.raw);
+      const W = 1080; const H = 1920;
+      const canvas = document.createElement('canvas');
+      canvas.width = W; canvas.height = H;
+      const ctx = canvas.getContext('2d');
+      const stream = canvas.captureStream(30);
+      const rec = new MediaRecorder(stream, { mimeType: MediaRecorder.isTypeSupported('video/webm;codecs=vp9') ? 'video/webm;codecs=vp9' : 'video/webm', videoBitsPerSecond: 5_000_000 });
+      const chunks = [];
+      rec.ondataavailable = (e) => { if (e.data.size) chunks.push(e.data); };
+      const done = new Promise((res) => { rec.onstop = res; });
+      rec.start(200);
+      const scale = Math.max(W / bitmap.width, H / bitmap.height);
+      const dw = bitmap.width * scale; const dh = bitmap.height * scale;
+      const t0 = performance.now(); const DUR = 6000;
+      await new Promise((resolve) => {
+        const draw = (now) => {
+          const t = Math.min(1, (now - t0) / DUR);
+          const zoom = 1 + t * 0.12;
+          ctx.fillStyle = '#000'; ctx.fillRect(0, 0, W, H);
+          const w = dw * zoom; const h = dh * zoom;
+          ctx.drawImage(bitmap, (W - w) / 2, (H - h) / 2, w, h);
+          if (t < 1) requestAnimationFrame(draw);
+          else resolve();
+        };
+        requestAnimationFrame(draw);
+      });
+      rec.stop();
+      await done;
+      const blob = new Blob(chunks, { type: 'video/webm' });
+      const conv = new File([blob], img.name.replace(/\.[a-z]+$/i, '') + '-short.webm', { type: 'video/webm' });
+      setFiles((fs) => {
+        const rest = fs.filter((f) => !f.type.startsWith('image/'));
+        return [...rest, { raw: conv, name: conv.name, size: `${(conv.size / 1024 / 1024).toFixed(1)} MB`, type: conv.type }];
+      });
+    } catch (e) { alert(`Convert failed: ${e.message}`); }
+    setYtConverting(false);
   };
 
   const xLen = Array.from((x.text || caption).trim()).length;
 
-  const buildForm = (platform) => {
+  const buildForm = (platform, { connectionId = null, skipCrossPost = false } = {}) => {
     const form = new FormData();
     form.append('platform', platform);
-    form.append('connection_id', pick(platform));
+    form.append('connection_id', connectionId || pick(platform));
     form.append('text', caption);
     form.append('title', yt.title);
     form.append('privacy', yt.privacy);
@@ -219,18 +288,20 @@ function Composer({ session, connections, reload }) {
     form.append('x_reply', x.reply);
     form.append('x_poll_options', JSON.stringify(x.pollOn ? x.opts : []));
     form.append('x_poll_minutes', x.mins);
-    if (file?.raw) form.append('media', file.raw);
+    if (skipCrossPost) form.append('skip_crosspost', '1');
+    for (const f of files.slice(0, 10)) { if (f?.raw) form.append('media', f.raw); }
     if (platform === 'youtube' && thumb?.raw) form.append('thumbnail', thumb.raw);
     return form;
   };
 
-  const runOne = async (platform, out) => {
-    out[platform] = { state: 'uploading', progress: 5 };
+  const runOne = async (platform, out, { connectionId = null, key = null, skipCrossPost = false } = {}) => {
+    const k = key || platform;
+    out[k] = { state: 'uploading', progress: 5 };
     setResults({ ...out });
     const res = await fetch(`${apiUrl}/api/publish`, {
       method: 'POST',
       headers: { Authorization: `Bearer ${session.access_token}` },
-      body: buildForm(platform),
+      body: buildForm(platform, { connectionId, skipCrossPost }),
     });
     const data = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error(data.error || 'Publish failed');
@@ -238,7 +309,7 @@ function Composer({ session, connections, reload }) {
     for (;;) {
       await new Promise((r) => setTimeout(r, 1500));
       const j = await api(`/api/jobs/${jobId}`, session.access_token);
-      out[platform] = { state: j.job.state, progress: j.job.progress || 50, url: j.job.url, message: j.job.message, warning: j.job.warning };
+      out[k] = { state: j.job.state, progress: j.job.progress || 50, url: j.job.url, message: j.job.message, warning: j.job.warning };
       setResults({ ...out });
       if (j.job.state === 'completed') return;
       if (j.job.state === 'failed') throw new Error(j.job.message);
@@ -260,13 +331,40 @@ function Composer({ session, connections, reload }) {
   };
 
   const publishAll = async () => {
+    // "Post to all" always strips IG<->FB mirrors (skip_crosspost=1):
+    // direct IG + direct FB already cover both, mirrors would double-post.
     const targets = PLATFORMS.map((p) => p.id).filter((pid) => pick(pid) && enabled[pid]);
     if (!targets.length) return;
     const out = { ...results };
     for (const platform of targets) {
-      try { await runOne(platform, out); }
+      try { await runOne(platform, out, { skipCrossPost: true }); }
       catch (e) { out[platform] = { state: 'failed', message: e.message }; setResults({ ...out }); }
     }
+    reload();
+  };
+
+  const publishTrio = async () => {
+    // One click: same media+caption to IG + FB + YT for all 3 jeweller brands.
+    // Mirrors stripped (direct posts only) so Facebook never gets doubles.
+    if (!trio.length) return;
+    const plats = ['instagram', 'facebook', 'youtube'].filter((pid) => enabled[pid]);
+    if (!plats.length) return;
+    setBusy((b) => ({ ...b, trio: true }));
+    const out = { ...results };
+    for (const { name, brand: tb } of trio) {
+      for (const platform of plats) {
+        const cid = pickFor(tb, platform);
+        const k = `trio:${name}:${platform}`;
+        if (!cid) { out[k] = { state: 'failed', message: `No ${platform} account matched for ${name}` }; setResults({ ...out }); continue; }
+        if (platform === 'youtube' && !hasVideo) {
+          out[k] = { state: 'failed', message: 'YouTube needs a video (photo cannot post via API — use Convert first)' };
+          setResults({ ...out }); continue;
+        }
+        try { await runOne(platform, out, { connectionId: cid, key: k, skipCrossPost: true }); }
+        catch (e) { out[k] = { state: 'failed', message: e.message }; setResults({ ...out }); }
+      }
+    }
+    setBusy((b) => ({ ...b, trio: false }));
     reload();
   };
 
@@ -282,17 +380,25 @@ function Composer({ session, connections, reload }) {
   const [aiEmoji, setAiEmoji] = useState('high');
   const [aiLength, setAiLength] = useState('medium');
   const [aiBreakdown, setAiBreakdown] = useState(null);
+  const [aiSecs, setAiSecs] = useState(0);
   const [lessonBusy, setLessonBusy] = useState(false);
+  useEffect(() => {
+    if (!aiBusy) { setAiSecs(0); return; }
+    setAiSecs(0);
+    const t = setInterval(() => setAiSecs((s) => s + 1), 1000);
+    return () => clearInterval(t);
+  }, [aiBusy]);
   const writeWithAi = async () => {
     if (aiBusy || !aiBrief.trim()) return;
     setAiBusy(true); setAiMsg(''); setAiBreakdown(null);
+    const t0 = Date.now();
     try {
       const data = await api('/api/ai/captions', session.access_token, {
         method: 'POST',
           body: JSON.stringify({
             summary: aiBrief,
-            brand: brand?.label || '',
-            asset_description: file ? `${file.name} (${file.type})` : '',
+            brand: trioMode && trio.length ? trio[0].brand.label : brand?.label || '',
+            asset_description: files.length ? `${files.length} x ${files[0].type}${isCarousel ? ' (carousel)' : ''}` : '',
             goal: 'enquiries',
             trends: aiTrends,
             tone: aiTone,
@@ -308,7 +414,8 @@ function Composer({ session, connections, reload }) {
       setX((v) => ({ ...v, text: c.x.text.slice(0, 280) || v.text }));
       const tags = [...(c.youtube.tags || []), ...(c.instagram.hashtags || [])].filter(Boolean);
       if (tags.length) setYt((v) => ({ ...v, tags: v.tags || tags.slice(0, 8).join(', ') }));
-      setAiMsg(`${data.isNewBrand ? `New brand '${data.fromMemory.replace(' (new brand filed)', '')}' filed — it will keep learning. ` : data.fromMemory ? `Using ${data.fromMemory} memory — ` : ''}4 different captions written (YT search / IG discovery / FB social / X punchy)${data.trends ? ' with live SEO' : ''} — review each phone, then publish.`);
+      const secs = ((Date.now() - t0) / 1000).toFixed(1);
+      setAiMsg(`${data.cached ? `Instant (${secs}s, cached) — ` : `Done in ${secs}s — `}${data.isNewBrand ? `New brand '${data.fromMemory.replace(' (new brand filed)', '')}' filed — it will keep learning. ` : data.fromMemory ? `Using ${data.fromMemory} memory — ` : ''}4 different captions written (YT search / IG discovery / FB social / X punchy)${data.trends ? ' with live SEO' : ''} — review each phone, then publish.`);
       if (data.breakdown) setAiBreakdown(data.breakdown);
     } catch (e) {
       setAiMsg(e.message);
@@ -324,8 +431,9 @@ function Composer({ session, connections, reload }) {
     return `${r.progress || 5}%`;
   };
 
-  const contentReady = !!(file || caption.trim() || yt.title.trim() || x.text.trim());
+  const contentReady = !!(files.length || caption.trim() || yt.title.trim() || x.text.trim());
   const toggleAdv = (k) => setShowAdv((m) => ({ ...m, [k]: !m[k] }));
+  const aiButtonLabel = aiBusy ? `Writing… ${aiSecs}s — same request is cached for 30 min` : '✨ Write captions';
 
   return (
     <div className="composer">
@@ -371,6 +479,15 @@ function Composer({ session, connections, reload }) {
             <button className="skew-btn grad" onClick={() => setStep(2)} disabled={!brand}><span>Next: add content →</span></button>
           </div>
         </div>
+        {trio.length >= 2 && (
+        <div className="card step-card" style={{ marginTop: 12, border: '1px solid #c9a227' }}>
+          <span className="scope-badge everywhere">💎 Jewellers trio</span>
+          <h3>Post to 3 brands at once?</h3>
+          <p className="sub">One click → Instagram + Facebook + YouTube for {trio.map((t) => t.name).join(' · ')}. Same photo(s) + caption to all 3.</p>
+          <label className="ck"><input type="checkbox" checked={trioMode} onChange={(e) => setTrioMode(e.target.checked)} /><svg viewBox="0 0 64 64"><path className="path" d="M8 33 L26 51 L56 13" /></svg><span>Enable trio mode (Step 3 shows one “Post trio” button)</span></label>
+          {!trioMode && <p className="sub" style={{ marginTop: 6 }}>Found: {trio.map((t) => `${t.name} → ${t.brand.label}`).join(' | ')}</p>}
+        </div>
+        )}
       </div>
       )}
 
@@ -379,18 +496,23 @@ function Composer({ session, connections, reload }) {
       <div className="share-row stepped">
         <div className="card step-card">
           <span className="scope-badge everywhere">Used everywhere</span>
-          <h3>1 · Photo or video <Tip text="One file shared to every ticked platform. YouTube needs a video. Instagram / Facebook / X accept photo or video up to 2 GB." /></h3>
-          <p className="sub">Add once — it appears on every platform.</p>
-          <input ref={inputRef} type="file" accept="image/*,video/*" hidden onChange={(e) => pickFile(e.target.files[0])} />
-          {!file ? (
-            <div className="drop big" onClick={() => inputRef.current.click()}><b>＋ Add photo or video</b>Click to browse · up to 2 GB</div>
+          <h3>1 · Photo or video <Tip text="Up to 10 photos = 1 carousel post on Instagram/Facebook (up to 4 on X). YouTube needs a video — photos cannot post to YouTube via the API." /></h3>
+          <p className="sub">Add once — it appears on every platform. {isCarousel ? `Carousel: ${files.length} photos → 1 post.` : ''}</p>
+          <input ref={inputRef} type="file" accept="image/*,video/*" multiple hidden onChange={(e) => { pickFiles(e.target.files); e.target.value = ''; }} />
+          {!files.length ? (
+            <div className="drop big" onClick={() => inputRef.current.click()}><b>＋ Add photos or video</b>Click to browse · up to 10 photos (carousel) or 1 video</div>
           ) : (
             <div>
               {mediaUrl && <img className="media-preview" src={mediaUrl} alt="Shared media preview" onClick={() => window.open(mediaUrl, '_blank')} title="Click to view full size" />}
               {mediaVideoUrl && (
                 <video className="media-preview" src={mediaVideoUrl} controls preload="metadata" title="Video preview" />
               )}
-              <div className="file-row"><div><b>{file.name}</b><small>{file.size} · {file.type}</small></div><button onClick={() => setFile(null)}>Remove</button><button onClick={() => inputRef.current.click()}>Replace</button></div>
+              {files.map((f, i) => (
+                <div key={i} className="file-row"><div><b>{i + 1}. {f.name}</b><small>{f.size} · {f.type}</small></div><button onClick={() => removeFileAt(i)}>Remove</button></div>
+              ))}
+              <div className="file-row"><span /><button onClick={() => inputRef.current.click()}>＋ Add more ({files.length}/10)</button><button onClick={() => setFiles([])}>Clear all</button></div>
+              {isCarousel && <div className="banner" style={{ marginTop: 8 }}>Carousel: {files.length} photos will post as ONE carousel on Instagram + Facebook{files.length > 4 ? ' (X takes first 4)' : ' + X'}.</div>}
+              {hasVideo && files.length > 1 && <div className="sec-err">Mixed video + multiple files: carousel needs photos only. Keep 1 video, or remove the video for a photo carousel.</div>}
             </div>
           )}
         </div>
@@ -445,13 +567,13 @@ function Composer({ session, connections, reload }) {
               <span className="status-pill">✍️ {String(aiBreakdown.type).split(':')[0]}</span>
             </div>
           )}
-          <button className="skew-btn grad" style={{ width: '100%', marginTop: 10 }} disabled={aiBusy || !aiBrief.trim()} onClick={writeWithAi}><span>{aiBusy ? 'Writing…' : '✨ Write captions'}</span></button>
+          <button className="skew-btn grad" style={{ width: '100%', marginTop: 10 }} disabled={aiBusy || !aiBrief.trim()} onClick={writeWithAi}><span>{aiButtonLabel}</span></button>
           <button className="skew-btn ghost" style={{ width: '100%', marginTop: 8 }} disabled={lessonBusy || (!ig.caption && !caption)} onClick={async () => {
             if (lessonBusy || !brand?.label) return;
             setLessonBusy(true); setAiMsg('');
             try {
               const d = await api('/api/ai/learn', session.access_token, { method: 'POST',
-                body: JSON.stringify({ brand: brand.label, finalCaption: ig.caption || caption, asset_description: file ? `${file.name} (${file.type})` : aiBrief }) });
+                body: JSON.stringify({ brand: brand.label, finalCaption: ig.caption || caption, asset_description: files.length ? `${files.length} x ${files[0].type}` : aiBrief }) });
               setAiMsg(`Saved to ${d.saved} memory (${d.count} lessons) — next captions copy this style.`);
             } catch (e) { setAiMsg(e.message); }
             setLessonBusy(false);
@@ -470,8 +592,26 @@ function Composer({ session, connections, reload }) {
       <div className="step-panel">
       <div className="brandbar tight">
         <BrandPicker brands={brands} brandKey={brandKey} isActive={(b) => brandActive(b)} onPick={(k) => { setBrandKey(k); setResults({}); }} />
-        <button className="skew-btn grad pub-all" onClick={publishAll} disabled={Object.values(busy).some(Boolean)}><span>🚀 Post to all ticked</span></button>
+        <button className="skew-btn grad pub-all" onClick={publishAll} disabled={Object.values(busy).some(Boolean)}><span>🚀 Post to all ticked{isCarousel ? ` (carousel x${files.length})` : ''}</span></button>
       </div>
+      {trioMode && trio.length >= 2 && (
+        <div className="card" style={{ border: '1px solid #c9a227', marginBottom: 10 }}>
+          <span className="scope-badge everywhere">💎 Jewellers trio · IG + FB + YT × {trio.length} brands</span>
+          <p className="sub" style={{ margin: '6px 0' }}>{trio.map((t) => t.name).join(' · ')} — same media + caption to all. Facebook doubles prevented automatically (direct posts only).</p>
+          <button className="skew-btn grad" style={{ width: '100%' }} onClick={publishTrio} disabled={!!busy.trio || Object.values(busy).some(Boolean)}><span>{busy.trio ? 'Posting trio…' : `💎 Post trio now (${trio.length * ['instagram', 'facebook', 'youtube'].filter((p) => enabled[p]).length} posts)`}</span></button>
+          <div style={{ marginTop: 8 }}>
+            {trio.flatMap(({ name, brand: tb }) => ['instagram', 'facebook', 'youtube'].map((plat) => {
+              const k = `trio:${name}:${plat}`;
+              const r = results[k];
+              if (!r) return null;
+              return <div key={k} className={r.state === 'failed' ? 'sec-err' : 'banner'} style={{ marginTop: 4 }}>{name} → {plat}: {r.state}{r.message ? ` — ${r.message}` : ''} {r.url ? <a href={r.url} target="_blank" rel="noreferrer">View →</a> : null}</div>;
+            }))}
+          </div>
+        </div>
+      )}
+      {(ig.shareFb || fb.syndIg) && enabled.instagram && enabled.facebook && (
+        <div className="banner" style={{ marginBottom: 10 }}>⚠️ Double-post guard: “Post to all” ignores the ☑️ cross-post ticks and posts IG + FB directly (1 post each). Single-platform “Post to …” still honours the tick. Keep both ticks OFF unless you publish one platform at a time.</div>
+      )}
       <div className="ptabs" role="tablist">
         {PLATFORMS.map((p) => {
           const r = results[p.id];
@@ -491,7 +631,7 @@ function Composer({ session, connections, reload }) {
           const list = listFor(pid);
           const chosen = pick(pid);
           const r = results[pid];
-          const HINTS = { youtube: 'Needs a video + title', instagram: 'Needs a photo or video', facebook: 'Text, photo or video', x: 'Max 280 characters' };
+          const HINTS = { youtube: 'Video only + title (photos need Convert)', instagram: isCarousel ? `Carousel x${files.length} photos` : 'Photo(s), reel or carousel', facebook: isCarousel ? `Carousel x${files.length} photos` : 'Text, photo(s) or video', x: files.length > 4 ? 'Max 4 photos (first 4 used)' : 'Max 280 characters, up to 4 photos' };
           return (
             <div key={pid} className={chosen ? 'phone' : 'phone off'}>
               <div className="phone-head"><span className="idx">0{idx + 1}</span><span className="p-icon"><BrandIcon id={pid} size={15} /></span><span><b>{p.name}</b><small>{list.length} account{list.length === 1 ? '' : 's'} · {HINTS[pid]}</small></span><span className="led" /></div>
@@ -503,12 +643,16 @@ function Composer({ session, connections, reload }) {
                   </select>
                 </label>
 
-                <div className="media-thumb" onClick={() => inputRef.current.click()}>
-                  {mediaUrl ? <img src={mediaUrl} alt="Shared media" /> : file ? <span>{file.name}<br />{file.size}</span> : <span>Media</span>}
+                <div className="media-thumb" onClick={() => { setStep(2); setTimeout(() => inputRef.current?.click(), 50); }}>
+                  {mediaUrl ? <img src={mediaUrl} alt="Shared media" /> : file ? <span>{files.length > 1 ? `${files.length} photos (carousel) — ${file.name}` : <>{file.name}<br />{file.size}</>}</span> : <span>Media</span>}
                 </div>
 
                 {pid === 'youtube' && <>
-                  <span className="scope-badge only">Only YouTube</span>
+                  <span className="scope-badge only">Only YouTube — videos only (posts as Video; vertical &lt;60s auto-becomes a Short)</span>
+                  {files.length > 0 && !hasVideo && (
+                    <div className="sec-err">📷 Photos can't post to YouTube via the API (no Community-post endpoint). Convert to a 6s vertical video, then post as a Short — or attach a video in Step 2.<br /><button className="mini" style={{ marginTop: 6 }} disabled={ytConverting} onClick={convertPhotoForYouTube}>{ytConverting ? 'Converting…' : '🎬 Convert photo to 6s video for YouTube'}</button></div>
+                  )}
+                  {files.length > 1 && hasVideo && <div className="sec-err">YouTube takes 1 video per post — keep a single video for this card (carousel posts to IG/FB/X only).</div>}
                   <label className="field-mini"><span>Video title · {yt.title.length}/100 <Tip text="Required. This is the headline people see on YouTube." /></span><input value={yt.title} maxLength={100} onChange={(e) => setYt({ ...yt, title: e.target.value })} placeholder="e.g. Bridal glow-up at Velvet Salon" /></label>
                   <label className="field-mini"><span>About this video <Tip text="Shown under your video. If empty, we use your message from Step 2." /></span><textarea value={yt.description} onChange={(e) => setYt({ ...yt, description: e.target.value })} placeholder="Uses your Step 2 message if left empty" /></label>
                   <label className="field-mini"><span>Search words · comma separated <Tip text="Helps people find your video. Example: salon, bridal, mumbai." /></span><input value={yt.tags} onChange={(e) => setYt({ ...yt, tags: e.target.value })} placeholder="salon, bridal, mumbai" /></label>
@@ -572,9 +716,10 @@ function Composer({ session, connections, reload }) {
                 </>}
 
                 {pid === 'instagram' && <>
-                  <span className="scope-badge only">Only Instagram</span>
+                  <span className="scope-badge only">Only Instagram{isCarousel ? ` — carousel x${files.length}` : ''}</span>
+                  {isCarousel && <div className="banner" style={{ margin: 0 }}>These {files.length} photos post as ONE carousel swipe post.</div>}
                   <label className="field-mini"><span>Caption · {(ig.caption || caption).length}/2200 <Tip text="Text under your photo/reel. If empty, we use your Step 2 message." /></span><textarea value={ig.caption} onChange={(e) => setIg({ ...ig, caption: e.target.value })} placeholder="Uses your Step 2 message if left empty" /></label>
-                  <label className="ck"><input type="checkbox" checked={ig.shareFb} onChange={(e) => setIg({ ...ig, shareFb: e.target.checked })} /><svg viewBox="0 0 64 64"><path className="path" d="M8 33 L26 51 L56 13" /></svg><span>Also post this on Facebook</span></label>
+                  <label className="ck"><input type="checkbox" checked={ig.shareFb} onChange={(e) => setIg({ ...ig, shareFb: e.target.checked })} /><svg viewBox="0 0 64 64"><path className="path" d="M8 33 L26 51 L56 13" /></svg><span>Also post this on Facebook (single-post only — OFF when using “Post to all”)</span></label>
                   <button className={showAdv['ig'] ? 'adv-toggle open' : 'adv-toggle'} onClick={() => toggleAdv('ig')}>{showAdv['ig'] ? '▾ Hide extra Instagram options' : '▸ Extra options (tags, partners…)'}</button>
                   {showAdv['ig'] && (
                   <div className="adv-box">
@@ -587,10 +732,11 @@ function Composer({ session, connections, reload }) {
                 </>}
 
                 {pid === 'facebook' && <>
-                  <span className="scope-badge only">Only Facebook</span>
+                  <span className="scope-badge only">Only Facebook{isCarousel ? ` — carousel x${files.length}` : ''}</span>
+                  {isCarousel && <div className="banner" style={{ margin: 0 }}>These {files.length} photos post as ONE multi-photo post (not {files.length} separate posts).</div>}
                   <label className="field-mini"><span>What to say? <Tip text="Text shown above your photo/video. If empty, we use your Step 2 message." /></span><textarea value={fb.message} onChange={(e) => setFb({ ...fb, message: e.target.value })} placeholder="Uses your Step 2 message if left empty" /></label>
                   <label className="field-mini"><span>Website link · optional <Tip text="e.g. your booking page. Leave empty for photo/video only." /></span><input value={fb.link} onChange={(e) => setFb({ ...fb, link: e.target.value })} placeholder="https://your-website.com/offer" /></label>
-                  <label className="ck"><input type="checkbox" checked={fb.syndIg} onChange={(e) => setFb({ ...fb, syndIg: e.target.checked })} /><svg viewBox="0 0 64 64"><path className="path" d="M8 33 L26 51 L56 13" /></svg><span>Also post this on Instagram</span></label>
+                  <label className="ck"><input type="checkbox" checked={fb.syndIg} onChange={(e) => setFb({ ...fb, syndIg: e.target.checked })} /><svg viewBox="0 0 64 64"><path className="path" d="M8 33 L26 51 L56 13" /></svg><span>Also post this on Instagram (single-post only — OFF when using “Post to all”)</span></label>
                   <button className={showAdv['fb'] ? 'adv-toggle open' : 'adv-toggle'} onClick={() => toggleAdv('fb')}>{showAdv['fb'] ? '▾ Hide extra Facebook options' : '▸ Extra options (button, age, ads…)'}</button>
                   {showAdv['fb'] && (
                   <div className="adv-box">
@@ -638,7 +784,7 @@ function Composer({ session, connections, reload }) {
                         <option value="10080">7 days</option>
                       </select>
                     </label>
-                    {file && <div className="sec-err">Polls can't have a photo. Remove the Step 2 photo to run this poll.</div>}
+                    {files.length > 0 && <div className="sec-err">Polls can't have a photo. Remove the Step 2 photo(s) to run this poll.</div>}
                   </>}
                   <label className="field-mini"><span>Who can reply? <Tip text="Everyone = open chat. Followed = safer. Mentioned = private." /></span>
                     <select value={x.reply} onChange={(e) => setX({ ...x, reply: e.target.value })}>
@@ -666,7 +812,7 @@ function Composer({ session, connections, reload }) {
                     try { navigator.clipboard.writeText(texts[pid] || ''); setCopyMsg('Copied ' + p.name); } catch { setCopyMsg('Copy failed'); }
                     setTimeout(() => setCopyMsg(''), 1500);
                   }}>⧉ Copy{copyMsg ? ` — ${copyMsg}` : ''}</button>
-                  <button className="post-btn" disabled={!!busy[pid] || (pid === 'x' && (xLen > 280 || (x.pollOn && !!file)))} onClick={() => publishOne(pid)}>{busy[pid] ? 'Posting…' : `Post to ${p.name} →`}</button>
+                  <button className="post-btn" disabled={!!busy[pid] || (pid === 'x' && (xLen > 280 || (x.pollOn && !!files.length)))} onClick={() => publishOne(pid)}>{busy[pid] ? 'Posting…' : `Post to ${p.name} →`}</button>
                 </div>
               </div>
             </div>

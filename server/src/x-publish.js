@@ -114,13 +114,14 @@ export async function uploadXMedia(accessToken, file, onProgress) {
 }
 
 export async function createXPost(accessToken, text, mediaId, replySettings, poll) {
-  if (mediaId && poll) throw new Error('X does not allow a poll and media in the same post');
+  const ids = Array.isArray(mediaId) ? mediaId.map(String).filter(Boolean).slice(0, 4) : (mediaId ? [String(mediaId)] : []);
+  if (ids.length && poll) throw new Error('X does not allow a poll and media in the same post');
   const response = await fetch(POSTS_URL, {
     method: 'POST',
     headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({
       text,
-      ...(mediaId ? { media: { media_ids: [String(mediaId)] } } : {}),
+      ...(ids.length ? { media: { media_ids: ids } } : {}),
       ...(['following', 'mentionedUsers'].includes(replySettings) ? { reply_settings: replySettings } : {}),
       ...(poll ? { poll } : {}),
     }),

@@ -177,3 +177,67 @@ export async function publishInstagram({ igUserId, pageToken, caption, alt, coll
   if (!pRes.ok) throw new Error(published.error?.message || 'Instagram publish failed');
   return { id: published.id, url: 'https://www.instagram.com/' };
 }
+
+// --- Carousel: 2-10 photos (images only) as one Instagram carousel post ---
+// Meta flow: create one child container per image (is_carousel_item=true),
+// then a parent CAROUSEL container with children=[ids], then media_publish.
+export async function publishInstagramCarousel({ igUserId, pageToken, caption, collabs, locationId, mediaUrls }) {
+  const urls = (mediaUrls || []).filter(Boolean);
+  if (urls.length < 2) throw new Error('Carousel needs at least 2 photos');
+  if (urls.length > 10) throw new Error('Carousel allows up to 10 photos');
+  const childIds = [];
+  for (const url of urls) {
+    const cRes = await fetch(`${GRAPH}/${igUserId}/media`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ image_url: url, is_carousel_item: true, access_token: pageToken }),
+    });
+    const c = await cRes.json();
+    if (!cRes.ok) throw new Error(c.error?.message || 'Instagram carousel item failed');
+    childIds.push(c.id);
+  }
+  const pRes = await fetch(`${GRAPH}/${igUserId}/media`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      media_type: 'CAROUSEL',
+      children: childIds.join(','),
+      caption: caption || '',
+      access_token: pageToken,
+      ...(Array.isArray(collabs) && collabs.length ? { collaborators: collabs } : {}),
+      ...(locationId ? { location_id: String(locationId) } : {}),
+    }),
+  });
+  const parent = await pRes.json();
+  if (!pRes.ok) throw new Error(parent.error?.message || 'Instagram carousel container failed');
+  const pub = await fetch(`${GRAPH}/${igUserId}/media_publish`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ creation_id: parent.id, access_token: pageToken }),
+  });
+  const published = await pub.json();
+  if (!pub.ok) throw new Error(published.error?.message || 'Instagram carousel publish failed');
+  return { id: published.id, url: 'https://www.instagram.com/' };
+}
+
+// --- Facebook multi-photo: upload each as unpublished, then one feed post ---
+// Prevents N separate timeline posts when a carousel is intended.
+export async function publishFacebookCarousel({ pageId, pageToken, text, mediaList }) {
+  const items = (mediaList || []).filter((m) => m?.bytes && String(m.mimetype || '').startsWith('image/'));
+  if (items.length < 2) throw new Error('Carousel needs at least 2 photos');
+  if (items.length > 10) throw new Error('Facebook carousel allows up to 10 photos');
+  const attached = [];
+  for (const m of items.slice(0, 10)) {
+    const form = new FormData();
+    form.append('published', 'false');
+    form.append('source', new Blob([m.bytes], { type: m.mimetype }), m.originalname || 'photo.jpg');
+    const res = await fetch(`${GRAPH}/${pageId}/photos?access_token=${encodeURIComponent(pageToken)}`, { method: 'POST', body: form });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error?.message || 'Facebook photo upload failed');
+    attached.push({ media_fbid: data.id });
+  }
+  const res = await fetch(`${GRAPH}/${pageId}/feed`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message: text || '', attached_media: attached, access_token: pageToken }),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error?.message || 'Facebook carousel post failed');
+  return { id: data.id, url: `https://www.facebook.com/${String(data.id).replace('_', '/posts/')}` };
+}

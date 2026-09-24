@@ -34,10 +34,31 @@ export function invalidateBrandsCache() {
 
 export const PLATFORMS = [
   { id: 'youtube', name: 'YouTube', hint: 'Video + title required' },
-  { id: 'instagram', name: 'Instagram', hint: 'Photo or reel + caption' },
-  { id: 'facebook', name: 'Facebook', hint: 'Text, photo or video' },
+  { id: 'instagram', name: 'Instagram', hint: 'Photo(s) or reel + caption' },
+  { id: 'facebook', name: 'Facebook', hint: 'Text, photo(s) or video' },
   { id: 'x', name: 'X', hint: '280 characters max' },
 ];
+
+// One-tap trio: the 3 jeweller brands that always post together.
+// Matched by substring so "(Kurla)/(Chembur)/(Ghatla)" suffixes still hit.
+export const TRIO_BRANDS = [
+  'Shree Mahalaxmi Jewellers',
+  'Kanchanmala Jewellers',
+  'Mahalaxmi Jewellers',
+];
+
+export function findTrioBrands(brands) {
+  const norm = (s) => String(s || '').toLowerCase();
+  // Longest names first so "Shree Mahalaxmi" wins over plain "Mahalaxmi".
+  const sorted = [...TRIO_BRANDS].sort((a, b) => b.length - a.length);
+  const out = [];
+  const taken = new Set();
+  for (const name of sorted) {
+    const hit = (brands || []).find((b) => !taken.has(b.key) && norm(b.label).includes(norm(name)));
+    if (hit) { out.push({ name, brand: hit }); taken.add(hit.key); }
+  }
+  return out;
+}
 
 // Active client brands. Connections matching these get an "Active" badge;
 // everything else can be hidden so inactive accounts stay out of the way.

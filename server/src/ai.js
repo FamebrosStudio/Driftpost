@@ -105,6 +105,27 @@ function clean(value, max) {
   return String(value || '').trim().slice(0, max);
 }
 
+// --- Speed: short-lived in-memory cache + hard timeouts ---
+// Same brief+brand+style within 30 min returns instantly (0 LLM seconds).
+const AI_CACHE = new Map();
+const AI_CACHE_MS = 30 * 60 * 1000;
+const aiCacheKey = (brief, opts) => JSON.stringify([
+  String(brief || '').trim().slice(0, 400).toLowerCase(),
+  String(opts.brand || '').toLowerCase().slice(0, 80),
+  opts.tone || '', opts.emoji || '', opts.length || '', opts.trends ? 't' : '',
+  String(opts.assetHint || '').slice(0, 60),
+]);
+function aiCacheGet(key) {
+  const hit = AI_CACHE.get(key);
+  if (!hit) return null;
+  if (Date.now() - hit.at > AI_CACHE_MS) { AI_CACHE.delete(key); return null; }
+  return hit.value;
+}
+function aiCacheSet(key, value) {
+  AI_CACHE.set(key, { at: Date.now(), value });
+  if (AI_CACHE.size > 200) { const first = AI_CACHE.keys().next().value; AI_CACHE.delete(first); }
+}
+
 export async function generateCaptions(summary, opts = {}) {
   if (!process.env.XAI_API_KEY) throw new Error('AI is not configured yet (XAI_API_KEY missing)');
   const brief = String(summary || '').trim().slice(0, 400);
@@ -169,6 +190,13 @@ export async function generateCaptions(summary, opts = {}) {
     + mem.breakdownBlock(breakdown);
   const model = process.env.XAI_MODEL || 'grok-4-1-fast-non-reasoning';
 
+  // Cache hit pays off instantly — no LLM round-trip at all.
+  const cacheKey = aiCacheKey(brief, { brand: brand?.name || opts.brand, assetHint, tone, emoji: emojiLevel, length: capLength, trends });
+  if (!trends) {
+    const cached = aiCacheGet(cacheKey);
+    if (cached) return { ...cached, cached: true };
+  }
+
   let text;
   let usage;
   if (trends) {
@@ -178,7 +206,9 @@ export async function generateCaptions(summary, opts = {}) {
     text = r.text;
     usage = r.usage;
   } else {
-    const r = await callChat({ model, systemText, userMsg, maxTokens: 800 });
+    // Fast path: fewer output tokens + hard timeout so a slow model fails
+    // fast instead of hanging the UI. 650 tokens is plenty for 4 captions.
+    const r = await callChat({ model, systemText, userMsg, maxTokens: 650 });
     text = r.text;
     usage = r.usage;
   }
@@ -337,7 +367,7 @@ export async function generateCaptions(summary, opts = {}) {
     } catch {}
   }
 
-  return {
+  const out = {
     captions: {
       youtube: {
         title: clean(parsed.youtube?.title, 100),
@@ -358,7 +388,11 @@ export async function generateCaptions(summary, opts = {}) {
     trends,
     usage: usage || undefined,
   };
+  if (!trends) aiCacheSet(cacheKey, out);
+  return out;
 }
+
+export function clearAiCache() { AI_CACHE.clear(); }
 
 function xaiError(data, res) {
   const msg = data?.error?.message || data?.error || `xAI error ${res.status}`;
@@ -370,19 +404,30 @@ function xaiError(data, res) {
 }
 
 async function callChat({ model, systemText, userMsg, maxTokens }) {
-  const res = await fetch(CHAT_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${process.env.XAI_API_KEY}` },
-    body: JSON.stringify({
-      model,
-      temperature: 0.7,
-      max_tokens: maxTokens,
-      messages: [
-        { role: 'system', content: systemText },
-        { role: 'user', content: userMsg },
-      ],
-    }),
-  });
+  // Hard timeout: fail fast (25s) instead of hanging the composer.
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), 25000);
+  let res;
+  try {
+    res = await fetch(CHAT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${process.env.XAI_API_KEY}` },
+      signal: ctrl.signal,
+      body: JSON.stringify({
+        model,
+        temperature: 0.7,
+        max_tokens: maxTokens,
+        stream: false,
+        messages: [
+          { role: 'system', content: systemText },
+          { role: 'user', content: userMsg },
+        ],
+      }),
+    });
+  } catch (e) {
+    if (e?.name === 'AbortError') throw new Error('AI timed out after 25s. Retry — the next call is usually faster.');
+    throw e;
+  } finally { clearTimeout(timer); }
   const data = await res.json().catch(() => ({}));
   if (!res.ok) xaiError(data, res);
   return { text: data.choices?.[0]?.message?.content || '', usage: data.usage };
@@ -404,20 +449,29 @@ function extractResponsesText(data) {
 }
 
 async function callResponsesWithSearch({ model, systemText, userMsg }) {
-  const res = await fetch('https://api.x.ai/v1/responses', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${process.env.XAI_API_KEY}` },
-    body: JSON.stringify({
-      model,
-      temperature: 0.7,
-      max_output_tokens: 950,
-      tools: [{ type: 'web_search' }, { type: 'x_search' }],
-      input: [
-        { role: 'system', content: systemText },
-        { role: 'user', content: userMsg },
-      ],
-    }),
-  });
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), 45000);
+  let res;
+  try {
+    res = await fetch('https://api.x.ai/v1/responses', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${process.env.XAI_API_KEY}` },
+      signal: ctrl.signal,
+      body: JSON.stringify({
+        model,
+        temperature: 0.7,
+        max_output_tokens: 950,
+        tools: [{ type: 'web_search' }, { type: 'x_search' }],
+        input: [
+          { role: 'system', content: systemText },
+          { role: 'user', content: userMsg },
+        ],
+      }),
+    });
+  } catch (e) {
+    if (e?.name === 'AbortError') throw new Error('Live SEO search timed out. Retry without Live SEO for instant results.');
+    throw e;
+  } finally { clearTimeout(timer); }
   const data = await res.json().catch(() => ({}));
   if (!res.ok) xaiError(data, res);
   const text = extractResponsesText(data);
