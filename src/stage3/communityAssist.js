@@ -4,18 +4,19 @@
 // do the tedious half: stage the photo and caption, then hand off to Studio.
 // (YouTube renamed "Community" to "Posts" in 2025.)
 
-const STUDIO = 'https://studio.youtube.com/';
+const YT = 'https://www.youtube.com/';
 
-// Studio routes on the client, so a bad path renders "Oops, something went
-// wrong" only *after* login — the server can't tell us if a deep link is real.
-// `content` is Google's documented location (left menu → Content → Posts tab);
-// `studioHome` is the always-valid channel root we fall back to.
+// A channel's Posts tab is a real, server-rendered path (an unknown path falls
+// back to the default videos tab, so it is distinguishable), and
+// `show_create_dialog=1` opens the composer itself. The composer needs the
+// signed-in owner, which is exactly why we hand off instead of automating.
 export function postsUrl(channelId) {
-  return channelId ? `${STUDIO}channel/${channelId}/content` : STUDIO;
+  return channelId ? `${YT}channel/${channelId}/posts?show_create_dialog=1` : `${YT}feed/posts`;
 }
 
-export function studioHomeUrl(channelId) {
-  return channelId ? `${STUDIO}channel/${channelId}` : STUDIO;
+// Fallback if the dialog doesn't open — the same Posts tab, without the flag.
+export function postsTabUrl(channelId) {
+  return channelId ? `${YT}channel/${channelId}/posts` : `${YT}feed/posts`;
 }
 
 export function communityText(values = {}) {

@@ -1,6 +1,6 @@
 import React, { useMemo, useRef, useState } from 'react';
 import BrandIcon from '../brand.jsx';
-import { assistCommunityPost, studioHomeUrl } from './communityAssist.js';
+import { assistCommunityPost, postsTabUrl } from './communityAssist.js';
 
 const NAMES = { instagram: 'Instagram', facebook: 'Facebook', youtube: 'YouTube', x: 'X' };
 const FB_CTAS = ['', 'LEARN_MORE', 'SHOP_NOW', 'SIGN_UP', 'MESSAGE_PAGE'];
@@ -47,7 +47,7 @@ export default function Workspace({
       const bits = [];
       if (r.copied) bits.push('Caption copied to clipboard');
       if (r.saved) bits.push('Photo saved to your downloads');
-      if (r.opened) bits.push('Studio opened — go Content → Posts');
+      if (r.opened) bits.push('Create-post box opened');
       setAssistMsg(bits.length
         ? `${bits.join(' · ')}.`
         : 'Your browser blocked the clipboard and popup. Allow them for this site, then try again.');
@@ -227,19 +227,19 @@ export default function Workspace({
       {photoOnly && (
         <div className="s3-ytphoto">
           <p>
-            <b>Post this photo to the YouTube Posts tab.</b>
+            <b>Post this photo to your YouTube Posts tab.</b>
             {' '}YouTube has no API for posts, so we stage it for you: the photo is
-            saved to your downloads and the caption is copied. In Studio go
-            {' '}<b>Content → Posts</b>, paste and hit Post.
+            saved to your downloads, the caption is copied, and the create-post box
+            opens on your channel. Paste and hit Post.
           </p>
           <button type="button" className="go" onClick={runAssist} disabled={greyed || !accountId}>
-            Copy caption + open Studio →
+            Copy caption + open create-post box →
           </button>
           {assistMsg && <p className="s3-ytphoto-msg" aria-live="polite">{assistMsg}</p>}
           <p className="s3-ytphoto-alt">
-            Studio opened the wrong page?{' '}
-            <a href={studioHomeUrl(channelId)} target="_blank" rel="noreferrer" className="s3-link">
-              open your channel home
+            The box didn&apos;t open?{' '}
+            <a href={postsTabUrl(channelId)} target="_blank" rel="noreferrer" className="s3-link">
+              open your Posts tab
             </a>
             {' · '}or{' '}
             <button
