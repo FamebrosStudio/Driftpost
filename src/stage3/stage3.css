@@ -99,6 +99,9 @@
 .s3-ytphoto p { margin: 0 0 10px; font-size: 12.5px; line-height: 1.6; color: var(--ink); opacity: 0.88; }
 .s3-ytphoto button.go { width: 100%; background: var(--acc); border-color: transparent; color: var(--acc-ink); font-weight: 700; }
 .s3-ytphoto button.go:hover:not(:disabled) { filter: brightness(1.08); }
+.s3-ytphoto-msg { margin: 9px 0 0 !important; font-size: 12px !important; color: var(--ok) !important; }
+.s3-ytphoto-alt { margin: 9px 0 0 !important; font-size: 12px !important; color: var(--muted) !important; text-align: center; }
+.s3-ytphoto-alt .s3-link { font-size: 12px; }
 
 .s3-mini-btn { width: 100%; padding: 10px; border: 1px solid var(--line-hard); background: var(--panel2); color: var(--ink); border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; }
 .s3-mini-btn:hover { border-color: var(--acc); }

@@ -1,5 +1,6 @@
-import React, { useMemo, useRef } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import BrandIcon from '../brand.jsx';
+import { assistCommunityPost } from './communityAssist.js';
 
 const NAMES = { instagram: 'Instagram', facebook: 'Facebook', youtube: 'YouTube', x: 'X' };
 const FB_CTAS = ['', 'LEARN_MORE', 'SHOP_NOW', 'SIGN_UP', 'MESSAGE_PAGE'];
@@ -32,9 +33,28 @@ export default function Workspace({
   const setCfg = (patch) => onCfg(pid, { ...cfg, ...patch });
   const xLen = pid === 'x' ? Array.from(values.text || '').length : 0;
   const hasVideo = files.some((f) => f.type.startsWith('video/'));
-  // YouTube's API only accepts video. Rather than dead-ending the user, we let
-  // them turn the selected photo into a real clip and publish that.
+  // YouTube's API only accepts video. A community post has no API at all, so
+  // that path stages the photo + caption and hands off to Studio.
   const photoOnly = pid === 'youtube' && files.length > 0 && !hasVideo;
+  const [assistMsg, setAssistMsg] = useState('');
+
+  const runAssist = async () => {
+    setAssistMsg('Preparing…');
+    const acct = accounts.find((a) => a.id === accountId);
+    const photo = files.find((f) => f?.raw && f.type.startsWith('image/'))?.raw || null;
+    try {
+      const r = await assistCommunityPost({ file: photo, values, channelId: acct?.platform_account_id });
+      const bits = [];
+      if (r.copied) bits.push('Caption copied to clipboard');
+      if (r.saved) bits.push('Photo saved to your downloads');
+      if (r.opened) bits.push('Studio Posts tab opened');
+      setAssistMsg(bits.length
+        ? `${bits.join(' · ')} — paste and hit Post.`
+        : 'Your browser blocked the clipboard and popup. Allow them for this site, then try again.');
+    } catch (e) {
+      setAssistMsg(e.message || 'Could not prepare the community post.');
+    }
+  };
 
   let error = '';
   if (!accountId) error = 'Pick an account for this platform first.';
@@ -207,18 +227,26 @@ export default function Workspace({
       {photoOnly && (
         <div className="s3-ytphoto">
           <p>
-            <b>Your photo can go to YouTube as a Short.</b>
-            {' '}YouTube only accepts video through its API, so we turn the photo into a
-            6-second clip with a gentle zoom and post that. Your original photo stays untouched.
+            <b>Post this photo to the YouTube community tab.</b>
+            {' '}YouTube has no API for community posts, so we stage it for you: the photo is
+            saved to your downloads and the caption is copied. Then just paste and hit Post in
+            the Studio tab we open.
           </p>
-          <button
-            type="button"
-            className="go"
-            onClick={() => onPostPhotoAsVideo(pid)}
-            disabled={posting || encoding || greyed || !accountId}
-          >
-            {encoding ? 'Making video…' : 'Post photo as a video →'}
+          <button type="button" className="go" onClick={runAssist} disabled={greyed || !accountId}>
+            Copy caption + open Studio →
           </button>
+          {assistMsg && <p className="s3-ytphoto-msg" aria-live="polite">{assistMsg}</p>}
+          <p className="s3-ytphoto-alt">
+            Would rather it be fully automatic?{' '}
+            <button
+              type="button"
+              className="s3-link"
+              onClick={() => onPostPhotoAsVideo(pid)}
+              disabled={posting || encoding || greyed || !accountId}
+            >
+              {encoding ? 'Making video…' : 'post the photo as a 6s Short instead'}
+            </button>
+          </p>
         </div>
       )}
       {result?.state === 'failed' && <p className="s3-err">{result.message}</p>}
