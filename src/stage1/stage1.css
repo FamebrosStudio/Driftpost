@@ -38,6 +38,12 @@
 .s1-track { height: 2px; background: var(--line); border-radius: 2px; margin-top: 14px; overflow: hidden; }
 .s1-track i { display: block; height: 100%; width: 33.4%; background: var(--acc); border-radius: 2px; transition: width 0.5s ease; }
 
+/* two-ways message + divider between brand path and groups path */
+.s1-ways { text-align: center; color: var(--muted); font-size: 13.5px; margin: 18px auto 0; max-width: 580px; line-height: 1.6; animation: s1Up 0.5s 0.12s ease both; }
+.s1-ways b { color: var(--ink); }
+.s1-divider { grid-column: 1 / -1; display: flex; align-items: center; gap: 12px; margin: 2px 0; color: var(--faint); font-size: 11.5px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; }
+.s1-divider::before, .s1-divider::after { content: ""; flex: 1; height: 1px; background: var(--line-hard); }
+
 /* option cards */
 .stage1-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 22px; }
 @media (max-width: 720px) { .stage1-cards { grid-template-columns: 1fr; } }

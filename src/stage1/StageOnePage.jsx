@@ -150,6 +150,7 @@ export default function StageOnePage({ session, onSignOut, onNext, onHistory }) 
           <p>Choose the setup that works best for your workflow. You can change this later.</p>
         </header>
         <ProgressIndicator current={1} />
+        <p className="s1-ways">Two ways to set up — post for <b>one brand</b>, or bundle accounts into a <b>group</b>. Pick one.</p>
         {loading ? (
           <div className="stage1-loading">Loading your accounts…</div>
         ) : (
@@ -174,6 +175,7 @@ export default function StageOnePage({ session, onSignOut, onNext, onHistory }) 
               <p className="s1-note">Minimum 1 platform required{platforms.length ? ` · ${platforms.length} selected` : ''}.{brand ? ` Showing ${brand.label}’s linked platforms — unlinked ones stay grey.` : ''}</p>
             </SetupCard>
 
+            <div className="s1-divider" role="separator" aria-label="Or bundle into groups"><span>or bundle into groups</span></div>
             <SetupCard id="create_groups" selected={type === 'create_groups'} onSelect={pick} icon={ICONS.trio} title="Create Groups" summary="Group 2 or more accounts that share the same content, caption and media.">
               <button type="button" className="s1-btn" onClick={() => setBuilderOpen(true)}>Create a group</button>
               {groups.map((g) => (
