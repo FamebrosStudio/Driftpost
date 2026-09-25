@@ -92,9 +92,11 @@ export default function StageTwoPage({ session, onBack, onSignOut }) {
   const [length, setLength] = useState(() => load('driftpost-stage2-length', 'medium'));
   const [outputs, setOutputs] = useState(() => load('driftpost-stage2-outputs', {}));
   const [busy, setBusy] = useState(false);
+  const [aiMsg, setAiMsg] = useState('');
+  const [aiMsgKind, setAiMsgKind] = useState('ok');
+  const say = (msg, kind = 'ok') => { setAiMsg(msg); setAiMsgKind(kind); };
   const [crosspost, setCrosspost] = useState(() => load('driftpost-stage2-crosspost', false));
   const [genStep, setGenStep] = useState(0);
-  const [aiMsg, setAiMsg] = useState('');
   const [editing, setEditing] = useState(-1);
   const [saveTick, setSaveTick] = useState(false);
 
@@ -226,7 +228,7 @@ export default function StageTwoPage({ session, onBack, onSignOut }) {
     if (hit) {
       // Instant path: same prompt as before — no network wait at all.
       applyMapped(mapResponse(hit), targetPlatforms);
-      setAiMsg('Instant — same answer as last time for this prompt.');
+      say('Instant — same answer as last time for this prompt.', 'ok');
       return;
     }
     setBusy(true); setAiMsg(''); setGenStep(0);
@@ -235,9 +237,9 @@ export default function StageTwoPage({ session, onBack, onSignOut }) {
       const data = await requestCaptions();
       writeAiCache(key, data);
       applyMapped(mapResponse(data), targetPlatforms);
-      setAiMsg('Done — review each platform card below. Edit anything, it saves.');
+      say('Done — review each platform card below. Edit anything, it saves.', 'ok');
     } catch (e) {
-      setAiMsg(e.message || 'Generation failed.');
+      say(e.message || 'Generation failed.', 'err');
     }
     clearInterval(tick);
     setBusy(false);
@@ -252,9 +254,9 @@ export default function StageTwoPage({ session, onBack, onSignOut }) {
       const data = await requestCaptions();
       writeAiCache(aiCacheKey(brief, brandLabel, tone, emoji, length, targetPlatforms), data);
       applyMapped(mapResponse(data), [pid]);
-      setAiMsg(`Regenerated ${pid} — review the card.`);
+      say(`Regenerated ${pid} — review the card.`, 'ok');
     } catch (e) {
-      setAiMsg(e.message || 'Regeneration failed.');
+      say(e.message || 'Regeneration failed.', 'err');
     }
     setRegen('');
   };
@@ -320,7 +322,7 @@ export default function StageTwoPage({ session, onBack, onSignOut }) {
             </div>
           )}
           {!busy && aiMsg && (
-            <p className={/done —/i.test(aiMsg) ? 's2-msg ok' : 's2-msg err'}>{aiMsg}</p>
+            <p className={aiMsgKind === 'err' ? 's2-msg err' : 's2-msg ok'}>{aiMsg}</p>
           )}
         </section>
 
