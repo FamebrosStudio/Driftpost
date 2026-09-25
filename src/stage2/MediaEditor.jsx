@@ -13,6 +13,14 @@ function fitBox(nw, nh, ratio) {
   return { fx: (1 - fw) / 2, fy: (1 - fh) / 2, fw, fh };
 }
 
+// True when the media already matches the target ratio (within 1.5%):
+// cropping would change nothing, so we keep the full frame instead.
+function fitsRatio(nw, nh, ratio) {
+  if (!ratio || !nw || !nh) return true;
+  return Math.abs(nw / nh - ratio) / ratio < 0.015;
+}
+const FULL = { fx: 0, fy: 0, fw: 1, fh: 1 };
+
 export default function MediaEditor({ entry, onClose, onApply }) {
   const isVideo = entry.type.startsWith('video/');
   const [bmp, setBmp] = useState(null);
@@ -23,6 +31,7 @@ export default function MediaEditor({ entry, onClose, onApply }) {
   const [aspect, setAspect] = useState('Original');
   const [free, setFree] = useState(false);
   const [box, setBox] = useState(null);
+  const [fitNote, setFitNote] = useState('');
   const [preview, setPreview] = useState('');
   const [busy, setBusy] = useState(false);
   const [busyText, setBusyText] = useState('');
@@ -108,18 +117,72 @@ export default function MediaEditor({ entry, onClose, onApply }) {
 
   const ready = isVideo ? !!vidEl : !!bmp;
 
+  // Natural dims of the source (before rotation).
+  const natDims = () => {
+    if (isVideo) return vidEl && vidEl.videoWidth ? { w: vidEl.videoWidth, h: vidEl.videoHeight } : null;
+    return bmp ? { w: bmp.width, h: bmp.height } : null;
+  };
+  // Normalized dims after the current rotation.
+  const normDims = (r = rot) => {
+    const n = natDims();
+    if (!n) return null;
+    return r % 2 === 1 ? { w: n.h, h: n.w } : n;
+  };
   const enableFree = () => {
-    const c = normRef.current;
-    if (!c) return;
-    setBox(fitBox(c.width, c.height, RATIOS[aspect]));
-    setFree(true);
+    const d = normDims();
+    if (!d) return;
+    if (aspect === 'Original') {
+      // Freeform: always open an adjustable box.
+      setBox(fitBox(d.w, d.h, null));
+      setFree(true);
+      setFitNote('');
+      return;
+    }
+    const ratio = RATIOS[aspect];
+    if (fitsRatio(d.w, d.h, ratio)) {
+      setBox({ ...FULL });
+      setFree(false);
+      setFitNote(aspect === 'Original' ? '' : `Already ${aspect} — no crop needed.`);
+    } else {
+      setBox(fitBox(d.w, d.h, ratio));
+      setFree(true);
+      setFitNote('');
+    }
   };
   const pickAspect = (id) => {
     setAspect(id);
-    const c = normRef.current;
-    if (!c) return;
-    setBox(fitBox(c.width, c.height, RATIOS[id]));
-    setFree(true);
+    const d = normDims();
+    if (!d) return;
+    const ratio = RATIOS[id];
+    if (fitsRatio(d.w, d.h, ratio)) {
+      setBox({ ...FULL });
+      setFree(false);
+      setFitNote(id === 'Original' ? '' : `Already ${id} — no crop needed.`);
+    } else {
+      setBox(fitBox(d.w, d.h, ratio));
+      setFree(true);
+      setFitNote('');
+    }
+  };
+  const rotateTo = (nr) => {
+    setRot(nr);
+    // Rotation changes dimensions: re-fit a locked box, or confirm a match.
+    if (free && aspect !== 'Original') {
+      const n = natDims();
+      if (!n) return;
+      const d = nr % 2 === 1 ? { w: n.h, h: n.w } : n;
+      const ratio = RATIOS[aspect];
+      if (fitsRatio(d.w, d.h, ratio)) {
+        setBox({ ...FULL });
+        setFree(false);
+        setFitNote(`Already ${aspect} — no crop needed.`);
+      } else {
+        setBox(fitBox(d.w, d.h, ratio));
+        setFitNote('');
+      }
+    } else {
+      setFitNote('');
+    }
   };
 
   const onPointerDown = (e, mode) => {
@@ -326,9 +389,10 @@ export default function MediaEditor({ entry, onClose, onApply }) {
                 <button key={id} type="button" className={aspect === id ? 's2-pill on' : 's2-pill'} onClick={() => pickAspect(id)}>{id}</button>
               ))}
             </div>
+            {fitNote && <p className="s2-note">{fitNote}</p>}
             <div className="s2-ed-btns">
-              <button type="button" onClick={() => setRot((r) => (r + 3) % 4)}>Rotate left</button>
-              <button type="button" onClick={() => setRot((r) => (r + 1) % 4)}>Rotate right</button>
+              <button type="button" onClick={() => rotateTo((rot + 3) % 4)}>Rotate left</button>
+              <button type="button" onClick={() => rotateTo((rot + 1) % 4)}>Rotate right</button>
               <button type="button" className={flipV ? 'on' : ''} onClick={() => setFlipV((v) => !v)}>Flip vertical</button>
               <button type="button" className={flipH ? 'on' : ''} onClick={() => setFlipH((v) => !v)}>Flip horizontal</button>
             </div>

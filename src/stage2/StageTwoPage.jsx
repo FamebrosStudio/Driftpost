@@ -4,6 +4,7 @@ import ProgressStepper from './ProgressStepper.jsx';
 import MediaUploader from './MediaUploader.jsx';
 import MediaGallery from './MediaGallery.jsx';
 import PromptBuilder from './PromptBuilder.jsx';
+import CrosspostToggle from './CrosspostToggle.jsx';
 import OutputContainer from './OutputContainer.jsx';
 import ContinueButton from './ContinueButton.jsx';
 import './stage2.css';
@@ -11,6 +12,30 @@ import './stage2.css';
 const MediaEditor = lazy(() => import('./MediaEditor.jsx'));
 
 const GEN_STEPS = ['Analyzing media…', 'Understanding brand…', 'Creating content…', 'Finalizing outputs…'];
+
+// Answer cache: identical prompt + settings + platforms reuse the last
+// answer instantly (24h). Regenerate always fetches fresh and refreshes it.
+const AI_CACHE_KEY = 'driftpost-ai-cache';
+const AI_CACHE_TTL = 24 * 3600 * 1000;
+function readAiCache() {
+  try {
+    const list = JSON.parse(localStorage.getItem(AI_CACHE_KEY));
+    return Array.isArray(list) ? list : [];
+  } catch { return []; }
+}
+function aiCacheKey(brief, brand, tone, emoji, length, plats) {
+  return [brief.trim(), brand, tone, emoji, length, plats.join(',')].join('|');
+}
+function findAiCache(key) {
+  const hit = readAiCache().find((e) => e && e.key === key && Date.now() - e.at < AI_CACHE_TTL);
+  return hit ? hit.data : null;
+}
+function writeAiCache(key, data) {
+  try {
+    const list = [{ key, at: Date.now(), data }, ...readAiCache().filter((e) => e && e.key !== key)];
+    localStorage.setItem(AI_CACHE_KEY, JSON.stringify(list.slice(0, 20)));
+  } catch {}
+}
 
 function load(key, fallback) {
   try {
@@ -67,6 +92,7 @@ export default function StageTwoPage({ session, onBack, onSignOut }) {
   const [length, setLength] = useState(() => load('driftpost-stage2-length', 'medium'));
   const [outputs, setOutputs] = useState(() => load('driftpost-stage2-outputs', {}));
   const [busy, setBusy] = useState(false);
+  const [crosspost, setCrosspost] = useState(() => load('driftpost-stage2-crosspost', false));
   const [genStep, setGenStep] = useState(0);
   const [aiMsg, setAiMsg] = useState('');
   const [editing, setEditing] = useState(-1);
@@ -122,7 +148,7 @@ export default function StageTwoPage({ session, onBack, onSignOut }) {
   const connById = useMemo(() => Object.fromEntries(connections.map((c) => [c.id, c])), [connections]);
   const platsOf = (ids) => [...new Set((ids || []).map((id) => connById[id]?.platform).filter(Boolean))];
 
-  const targetPlatforms = useMemo(() => {
+  const basePlatforms = useMemo(() => {
     const order = PLATFORMS.map((p) => p.id);
     let list = [];
     if (s1.type === 'common_brand' && brand) list = Object.keys(brand.map || {});
@@ -134,6 +160,11 @@ export default function StageTwoPage({ session, onBack, onSignOut }) {
     }
     return order.filter((pid) => list.includes(pid));
   }, [s1, brand, connById]);
+  const crosspostOn = crosspost && basePlatforms.includes('instagram') && basePlatforms.includes('facebook');
+  // Cross-post ON: Facebook auto-posts via Instagram — hide its card so
+  // nobody tunes (or double-posts) it.
+  const targetPlatforms = crosspostOn ? basePlatforms.filter((pid) => pid !== 'facebook') : basePlatforms;
+  const setCrosspostSaved = (v) => { setCrosspost(v); save('driftpost-stage2-crosspost', v); };
   const brandLabel = s1.type === 'common_brand' ? brand?.label || '' : '';
 
   const addFiles = (list) => {
@@ -179,16 +210,31 @@ export default function StageTwoPage({ session, onBack, onSignOut }) {
     };
   };
 
+  const applyMapped = (mapped, pids) => {
+    setOutputs((prev) => {
+      const next = { ...prev };
+      pids.forEach((pid) => { next[pid] = mapped[pid]; });
+      save('driftpost-stage2-outputs', next);
+      return next;
+    });
+  };
+
   const generate = async () => {
     if (busy || regen || !brief.trim() || !targetPlatforms.length) return;
+    const key = aiCacheKey(brief, brandLabel, tone, emoji, length, targetPlatforms);
+    const hit = findAiCache(key);
+    if (hit) {
+      // Instant path: same prompt as before — no network wait at all.
+      applyMapped(mapResponse(hit), targetPlatforms);
+      setAiMsg('Instant — same answer as last time for this prompt.');
+      return;
+    }
     setBusy(true); setAiMsg(''); setGenStep(0);
-    const tick = setInterval(() => setGenStep((s) => (s + 1) % GEN_STEPS.length), 1400);
+    const tick = setInterval(() => setGenStep((s) => (s + 1) % GEN_STEPS.length), 900);
     try {
-      const mapped = mapResponse(await requestCaptions());
-      const next = { ...outputs };
-      targetPlatforms.forEach((pid) => { next[pid] = mapped[pid]; });
-      setOutputs(next);
-      save('driftpost-stage2-outputs', next);
+      const data = await requestCaptions();
+      writeAiCache(key, data);
+      applyMapped(mapResponse(data), targetPlatforms);
       setAiMsg('Done — review each platform card below. Edit anything, it saves.');
     } catch (e) {
       setAiMsg(e.message || 'Generation failed.');
@@ -203,8 +249,9 @@ export default function StageTwoPage({ session, onBack, onSignOut }) {
     if (busy || regen || !brief.trim()) return;
     setRegen(pid); setAiMsg('');
     try {
-      const mapped = mapResponse(await requestCaptions());
-      setOutputs((o) => { const n = { ...o, [pid]: mapped[pid] }; save('driftpost-stage2-outputs', n); return n; });
+      const data = await requestCaptions();
+      writeAiCache(aiCacheKey(brief, brandLabel, tone, emoji, length, targetPlatforms), data);
+      applyMapped(mapResponse(data), [pid]);
       setAiMsg(`Regenerated ${pid} — review the card.`);
     } catch (e) {
       setAiMsg(e.message || 'Regeneration failed.');
@@ -251,6 +298,10 @@ export default function StageTwoPage({ session, onBack, onSignOut }) {
           <MediaGallery files={files} onRemove={removeAt} onEdit={setEditing} />
         </section>
 
+        {basePlatforms.includes('instagram') && basePlatforms.includes('facebook') && (
+          <CrosspostToggle on={crosspostOn} onChange={setCrosspostSaved} />
+        )}
+
         <section className="s2-sec" aria-label="Write prompt">
           <h2>Write prompt</h2>
           <p className="sub">Tell AI what to create{brandLabel ? ` for ${brandLabel}` : ''}. One prompt, tuned per platform.</p>
@@ -279,7 +330,7 @@ export default function StageTwoPage({ session, onBack, onSignOut }) {
               <h2>AI output</h2>
               <span className="s2-count">{targetPlatforms.length} platform{targetPlatforms.length === 1 ? '' : 's'}</span>
             </div>
-            <p className="sub">Different output per platform — only the ones you selected in Stage 1.</p>
+            <p className="sub">Different output per platform — only the ones you selected in Stage 1.{crosspostOn ? ' Facebook hides here: it auto-posts through Instagram cross-post.' : ''}</p>
             {!hasOutputs && !busy && <p className="s2-msg ok">Nothing here yet — write a prompt above and press Generate Content.</p>}
             <OutputContainer platforms={targetPlatforms} outputs={outputs} onSave={saveOutput} regen={regen} onRegen={regenOne} busy={busy} />
           </section>
