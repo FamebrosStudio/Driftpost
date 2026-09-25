@@ -1,0 +1,89 @@
+/* Connect Accounts hub — the page before Stage 1. Same minimal language
+   as the stages: single accent, calm cards, safe-area aware. */
+.connect {
+  --acc: #7c6cf5;
+  --acc-ink: #ffffff;
+  --acc-soft: #7c6cf51f;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--ink);
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+[data-theme="light"] .connect { --acc: #5b4fd6; --acc-soft: #5b4fd614; }
+.connect-in { max-width: 980px; margin: 0 auto; padding: 16px 20px 140px; min-width: 0; }
+.cn-top { display: flex; align-items: center; justify-content: space-between; }
+.cn-top-right { display: flex; gap: 4px; }
+.cn-link { background: none; border: 0; color: var(--faint); font-size: 12.5px; font-weight: 600; cursor: pointer; padding: 8px 4px; }
+.cn-link:hover { color: var(--ink); }
+.cn-head { text-align: center; padding: 12px 0 4px; animation: cnUp 0.5s ease both; }
+.cn-badge { display: inline-block; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--acc); border: 1px solid var(--acc); border-radius: 999px; padding: 5px 14px; font-weight: 700; }
+.cn-head h1 { font-size: clamp(26px, 4.6vw, 38px); letter-spacing: -0.5px; margin: 16px 0 8px; line-height: 1.15; }
+.cn-head p { color: var(--muted); font-size: 14.5px; margin: 0 auto; max-width: 540px; line-height: 1.6; }
+
+/* journey strip: accounts -> 3 stages */
+.cn-strip { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin: 24px auto 0; max-width: 640px; animation: cnUp 0.5s 0.08s ease both; }
+.cn-step { display: inline-flex; align-items: center; gap: 7px; font-size: 12px; font-weight: 700; color: var(--faint); border: 1.5px solid var(--line); border-radius: 999px; padding: 7px 14px; background: var(--panel); }
+.cn-step.now { color: var(--acc); border-color: var(--acc); background: var(--acc-soft); }
+.cn-step b { font-weight: 800; }
+
+/* summary bar */
+.cn-summary { display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap; margin-top: 18px; font-size: 13px; color: var(--muted); animation: cnUp 0.5s 0.12s ease both; }
+.cn-pill { display: inline-flex; align-items: center; gap: 7px; border: 1px solid var(--line-hard); border-radius: 999px; padding: 6px 13px; background: var(--panel); font-weight: 700; font-size: 12.5px; }
+.cn-pill.has { border-color: var(--ok, #3ddc97); color: var(--ok, #047857); }
+
+/* platform grid */
+.cn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 22px; }
+@media (max-width: 720px) { .cn-grid { grid-template-columns: 1fr; } }
+.cn-card { background: var(--panel); border: 1.5px solid var(--line); border-radius: 18px; padding: 20px; animation: cnUp 0.45s ease both; min-width: 0; }
+.cn-card:nth-child(1) { animation-delay: 0.04s; }
+.cn-card:nth-child(2) { animation-delay: 0.08s; }
+.cn-card:nth-child(3) { animation-delay: 0.12s; }
+.cn-card:nth-child(4) { animation-delay: 0.16s; }
+.cn-card.linked { border-color: color-mix(in srgb, var(--ok, #3ddc97) 55%, var(--line)); }
+.cn-card-head { display: flex; align-items: center; gap: 11px; margin-bottom: 4px; }
+.cn-ic { width: 38px; height: 38px; border-radius: 12px; background: var(--panel2); border: 1px solid var(--line); display: grid; place-items: center; flex: 0 0 auto; }
+.cn-card-head b { font-size: 15px; }
+.cn-card-head small { display: block; color: var(--muted); font-size: 12px; font-weight: 400; }
+.cn-hint { font-size: 12.5px; color: var(--faint); margin: 8px 0 12px; line-height: 1.55; }
+.cn-list { display: flex; flex-direction: column; gap: 8px; }
+.cn-acct { display: flex; align-items: center; gap: 10px; background: var(--panel2); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; min-width: 0; }
+.cn-av { width: 30px; height: 30px; border-radius: 10px; background: var(--input); border: 1px solid var(--line); display: grid; place-items: center; font-size: 12px; font-weight: 800; flex: 0 0 auto; }
+.cn-acct b { font-size: 13.5px; display: block; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cn-acct small { color: var(--muted); font-size: 11.5px; }
+.cn-drop { margin-left: auto; border: 1px solid var(--line-hard); background: var(--panel); color: var(--muted); border-radius: 9px; padding: 7px 11px; font-size: 11.5px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+.cn-drop:hover:not(:disabled) { border-color: var(--danger, #e5484d); color: var(--danger, #e5484d); }
+.cn-drop:disabled { opacity: 0.5; cursor: wait; }
+.cn-empty { font-size: 12.5px; color: var(--faint); background: var(--panel2); border: 1px dashed var(--line-hard); border-radius: 12px; padding: 14px; text-align: center; line-height: 1.55; }
+.cn-connect { width: 100%; margin-top: 12px; background: var(--acc); color: var(--acc-ink); border: 0; border-radius: 12px; padding: 12px; font-size: 13.5px; font-weight: 700; cursor: pointer; }
+.cn-connect:hover:not(:disabled) { filter: brightness(1.08); }
+.cn-connect:disabled { opacity: 0.5; cursor: wait; }
+.cn-connect.ghost { background: transparent; border: 1.5px solid var(--line-hard); color: var(--ink); }
+.cn-connect.ghost:hover:not(:disabled) { border-color: var(--acc); color: var(--acc); filter: none; }
+
+/* brand preview */
+.cn-brands { background: var(--panel); border: 1.5px solid var(--line); border-radius: 18px; padding: 20px; margin-top: 14px; animation: cnUp 0.45s 0.2s ease both; }
+.cn-brands h2 { font-size: 15px; margin: 0 0 3px; }
+.cn-brands .sub { color: var(--muted); font-size: 13px; margin: 0 0 12px; line-height: 1.55; }
+.cn-brand-row { display: flex; align-items: center; gap: 10px; border: 1px solid var(--line); background: var(--panel2); border-radius: 12px; padding: 10px 12px; margin-top: 8px; }
+.cn-brand-row b { font-size: 13.5px; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cn-dots { display: flex; gap: 4px; align-items: center; color: var(--faint); font-size: 11.5px; }
+
+/* banner */
+.cn-msg { border-radius: 12px; padding: 11px 13px; font-size: 13px; margin-top: 16px; line-height: 1.55; }
+.cn-msg.ok { background: var(--acc-soft); border: 1px solid var(--line-hard); color: var(--muted); }
+.cn-msg.err { background: transparent; border: 1px solid var(--danger, #e5484d); border-left-width: 3px; color: var(--danger, #e5484d); }
+
+/* continue bar */
+.cn-bar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 50; background: var(--bg); border-top: 1px solid var(--line); padding: 12px 20px calc(env(safe-area-inset-bottom) + 12px); display: flex; flex-direction: column; align-items: center; gap: 6px; animation: cnBarUp 0.5s 0.15s ease both; }
+.cn-next { min-width: min(420px, 100%); background: var(--acc); color: var(--acc-ink); border: 0; border-radius: 14px; padding: 15px; font-size: 15px; font-weight: 700; cursor: pointer; }
+.cn-next:disabled { opacity: 0.4; cursor: not-allowed; }
+.cn-next:not(:disabled):hover { filter: brightness(1.08); }
+.cn-hintline { font-size: 12px; color: var(--faint); margin: 0; }
+
+@keyframes cnUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+@keyframes cnBarUp { from { opacity: 0; transform: translateY(100%); } to { opacity: 1; transform: none; } }
+.connect button:focus-visible, .connect [tabindex]:focus-visible { outline: 2px solid var(--acc); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) {
+  .connect, .connect *, .cn-bar, .cn-bar * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
