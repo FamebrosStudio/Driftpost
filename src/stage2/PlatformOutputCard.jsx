@@ -17,7 +17,7 @@ const FIELDS = {
 };
 const NAMES = { instagram: 'Instagram', facebook: 'Facebook', youtube: 'YouTube', x: 'X' };
 
-function compose(pid, v) {
+export function composeOutput(pid, v) {
   if (pid === 'youtube') return [v.title, v.description, v.tags ? `Tags: ${v.tags}` : ''].filter(Boolean).join('\n\n');
   if (pid === 'instagram') return [v.caption, v.hashtags].filter(Boolean).join('\n\n');
   if (pid === 'facebook') return v.message || '';
@@ -34,7 +34,7 @@ export default function PlatformOutputCard({ pid, values, onSave, regenning, reg
   const saveEdit = () => { onSave(pid, draft); setEditing(false); };
   const copy = async () => {
     try {
-      await navigator.clipboard.writeText(compose(pid, editing ? draft : values));
+      await navigator.clipboard.writeText(composeOutput(pid, editing ? draft : values));
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
     } catch {}

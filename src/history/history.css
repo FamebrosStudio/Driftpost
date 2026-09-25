@@ -1,0 +1,26 @@
+/* History page — same minimal language as the stages. Scoped to .hist. */
+.hist { min-height: 100vh; background: var(--bg); color: var(--ink); padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inset-bottom); }
+.hist-in { max-width: 680px; margin: 0 auto; padding: 16px 20px 60px; min-width: 0; }
+.hist-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+.hist-back { background: none; border: 0; color: var(--faint); font-size: 12.5px; font-weight: 600; cursor: pointer; padding: 8px 4px; }
+.hist-back:hover { color: var(--ink); }
+.hist-top b { font-size: 15px; }
+.hist-tabs { display: flex; gap: 8px; margin: 12px 0 16px; }
+.hist-tab { flex: 1; border: 1.5px solid var(--line-hard); background: var(--panel2); color: var(--muted); border-radius: 999px; padding: 10px 6px; font-size: 12.5px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+.hist-tab.on { background: var(--acc, #7c6cf5); border-color: transparent; color: #fff; }
+.hist-row { display: flex; align-items: center; gap: 10px; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 11px 12px; margin-top: 8px; min-width: 0; }
+.hist-ic { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 10px; background: var(--panel2); border: 1px solid var(--line); flex: 0 0 auto; }
+.hist-body { flex: 1; min-width: 0; }
+.hist-body b { display: block; font-size: 13.5px; overflow-wrap: break-word; }
+.hist-body small { color: var(--muted); font-size: 11.5px; }
+.hist-body small a { color: var(--ink); }
+.hist-mini { border: 1px solid var(--line-hard); background: var(--panel2); color: var(--ink); border-radius: 9px; padding: 8px 12px; font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+.hist-mini:hover { border-color: var(--acc, #7c6cf5); }
+.hist-mini:disabled { opacity: 0.5; cursor: wait; }
+.hist-mini.danger:hover { border-color: var(--danger, #e5484d); color: var(--danger, #e5484d); }
+.hist-empty { text-align: center; color: var(--ink); font-weight: 700; font-size: 15px; margin: 34px 0 6px; }
+.hist-note { text-align: center; color: var(--faint); font-size: 12.5px; line-height: 1.6; margin: 0 0 8px; }
+.hist button:focus-visible { outline: 2px solid var(--acc, #7c6cf5); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) {
+  .hist, .hist * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}

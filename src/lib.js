@@ -89,6 +89,27 @@ export function isActiveBrand(accountName) {
 const STOP = new Set(['for', 'the', 'and', 'of']);
 const TOKENS = (s) => norm(s).split(' ').filter((t) => t.length >= 3 && !STOP.has(t));
 
+// Edit distance for typo tolerance ("reshinee" vs "reshine",
+// missing dots/underscores). Only used on long handles.
+function lev(a, b) {
+  if (a === b) return 0;
+  const m = a.length, n = b.length;
+  if (!m) return n;
+  if (!n) return m;
+  let prev = new Array(n + 1);
+  let cur = new Array(n + 1);
+  for (let j = 0; j <= n; j++) prev[j] = j;
+  for (let i = 1; i <= m; i++) {
+    cur[0] = i;
+    const ca = a[i - 1];
+    for (let j = 1; j <= n; j++) {
+      cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (ca === b[j - 1] ? 0 : 1));
+    }
+    const tmp = prev; prev = cur; cur = tmp;
+  }
+  return prev[n];
+}
+
 // Similarity between two account names across platforms (page name vs IG handle etc).
 // Exact / substring / handle matches run FIRST so short-word brands
 // ("MAP for men" vs "@map_for_men") never fall through the token guard.
@@ -106,6 +127,12 @@ export function brandScore(a, b, rare = null) {
   if (fa === fb && fa.length > 3) return 100;
   if (fa.includes(fb) && fb.length > 5) return 90;
   if (fb.includes(fa) && fa.length > 5) return 90;
+  // Near-identical long handles: typos, missing dots ("reshinee" vs
+  // "reshine"). Scores 80 — below exact tiers, above fuzzy word scores.
+  if (fa.length >= 8 && fb.length >= 8 && Math.abs(fa.length - fb.length) <= 2) {
+    const allow = Math.max(1, Math.min(2, Math.floor(Math.min(fa.length, fb.length) * 0.12)));
+    if (lev(fa, fb) <= allow) return 80;
+  }
   const ta = TOKENS(a);
   const tb = TOKENS(b);
   if (!ta.length || !tb.length) return 0;

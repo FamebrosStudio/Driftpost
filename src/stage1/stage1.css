@@ -15,7 +15,7 @@
 .s1-step { min-width: 0; }
 .s1-step small { overflow-wrap: break-word; }
 @media (max-width: 720px) { .s1-step small { font-size: 10.5px; line-height: 1.35; } }
-.stage1-top { display: flex; justify-content: flex-end; }
+.stage1-top { display: flex; justify-content: flex-end; gap: 4px; }
 .stage1-signout { background: none; border: 0; color: var(--faint); font-size: 12px; cursor: pointer; padding: 8px 4px; }
 .stage1-signout:hover { color: var(--ink); text-decoration: underline; }
 .stage1-head { text-align: center; padding: 14px 0 4px; animation: s1Up 0.5s ease both; }
@@ -113,6 +113,13 @@
 .s1-acct span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; overflow-wrap: break-word; }
 .s1-acct small { color: var(--muted); font-size: 11px; }
 .s1-drop { border: 1.5px dashed var(--line-hard); border-radius: 12px; padding: 10px; min-height: 120px; transition: border-color 0.15s ease, background 0.15s ease; }
+/* swipe-to-disconnect rows */
+.swipe-row { position: relative; overflow: hidden; border-radius: 10px; margin-top: 6px; }
+.swipe-row .s1-acct { margin-top: 0; }
+.swipe-act { position: absolute; right: 0; top: 0; bottom: 0; width: 88px; border: 0; border-radius: 0 10px 10px 0; background: var(--danger, #e5484d); color: #fff; font-size: 12px; font-weight: 700; cursor: pointer; }
+.swipe-main { position: relative; z-index: 1; touch-action: pan-y; }
+.swipe-main.drag { transition: none; }
+.swipe-main:not(.drag) { transition: transform 0.18s ease; }
 .s1-drop.over { border-color: var(--acc); background: var(--acc-soft); }
 .s1-row { display: flex; gap: 8px; margin-top: 12px; }
 .s1-row .s1-ghost { flex: 1; width: auto; margin-top: 0; }

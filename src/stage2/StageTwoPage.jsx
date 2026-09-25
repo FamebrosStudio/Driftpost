@@ -4,6 +4,8 @@ import ProgressStepper from './ProgressStepper.jsx';
 import MediaUploader from './MediaUploader.jsx';
 import MediaGallery from './MediaGallery.jsx';
 import PromptBuilder from './PromptBuilder.jsx';
+import { composeOutput } from './PlatformOutputCard.jsx';
+import { logCaptions } from '../history/log.js';
 import CrosspostToggle from './CrosspostToggle.jsx';
 import OutputContainer from './OutputContainer.jsx';
 import ContinueButton from './ContinueButton.jsx';
@@ -83,7 +85,7 @@ async function idbGet(k) {
   } catch { return null; }
 }
 
-export default function StageTwoPage({ session, onBack, onSignOut }) {
+export default function StageTwoPage({ session, onBack, onSignOut, onHistory }) {
   const [connections, setConnections] = useState([]);
   const [files, setFiles] = useState([]);
   const [brief, setBrief] = useState(() => load('driftpost-stage2-brief', ''));
@@ -236,7 +238,9 @@ export default function StageTwoPage({ session, onBack, onSignOut }) {
     try {
       const data = await requestCaptions();
       writeAiCache(key, data);
-      applyMapped(mapResponse(data), targetPlatforms);
+      const mapped = mapResponse(data);
+      applyMapped(mapped, targetPlatforms);
+      logCaptions({ brand: brandLabel, entries: targetPlatforms.map((pid) => ({ platform: pid, text: composeOutput(pid, mapped[pid]) })) });
       say('Done — review each platform card below. Edit anything, it saves.', 'ok');
     } catch (e) {
       say(e.message || 'Generation failed.', 'err');
@@ -253,7 +257,9 @@ export default function StageTwoPage({ session, onBack, onSignOut }) {
     try {
       const data = await requestCaptions();
       writeAiCache(aiCacheKey(brief, brandLabel, tone, emoji, length, targetPlatforms), data);
-      applyMapped(mapResponse(data), [pid]);
+      const mapped = mapResponse(data);
+      applyMapped(mapped, [pid]);
+      logCaptions({ brand: brandLabel, entries: [{ platform: pid, text: composeOutput(pid, mapped[pid]) }] });
       say(`Regenerated ${pid} — review the card.`, 'ok');
     } catch (e) {
       say(e.message || 'Regeneration failed.', 'err');
@@ -281,7 +287,10 @@ export default function StageTwoPage({ session, onBack, onSignOut }) {
       <div className="stage2-in">
         <div className="s2-top">
           <button type="button" className="s2-back" onClick={onBack}>← Stage 1</button>
-          <button type="button" className="s2-signout" onClick={onSignOut}>Sign out</button>
+          <span className="s2-top-right">
+            <button type="button" className="s2-signout" onClick={onHistory}>History</button>
+            <button type="button" className="s2-signout" onClick={onSignOut}>Sign out</button>
+          </span>
         </div>
         <header className="s2-head">
           <span className="s2-badge">Stage 2 of 3</span>

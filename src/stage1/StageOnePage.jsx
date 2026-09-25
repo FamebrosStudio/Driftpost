@@ -33,7 +33,7 @@ function save(key, val) {
   try { localStorage.setItem(key, JSON.stringify(val)); } catch {}
 }
 
-export default function StageOnePage({ session, onSignOut, onNext }) {
+export default function StageOnePage({ session, onSignOut, onNext, onHistory }) {
   const [connections, setConnections] = useState([]);
   const [loading, setLoading] = useState(true);
   const [connsOk, setConnsOk] = useState(false);
@@ -141,6 +141,7 @@ export default function StageOnePage({ session, onSignOut, onNext }) {
     <div className="stage1">
       <div className="stage1-in">
         <div className="stage1-top">
+          <button type="button" className="stage1-signout" onClick={onHistory}>History</button>
           <button type="button" className="stage1-signout" onClick={onSignOut}>Sign out</button>
         </div>
         <header className="stage1-head">
@@ -194,7 +195,7 @@ export default function StageOnePage({ session, onSignOut, onNext }) {
       )}
       {builderOpen && (
         <Suspense fallback={null}>
-          <GroupBuilder connections={connections} onSave={addGroup} onClose={() => setBuilderOpen(false)} />
+          <GroupBuilder connections={connections} token={session.access_token} onConnectionsChange={setConnections} onSave={addGroup} onClose={() => setBuilderOpen(false)} />
         </Suspense>
       )}
     </div>
