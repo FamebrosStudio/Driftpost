@@ -156,8 +156,8 @@ export default function StageTwoPage({ session, onBack, onSignOut, onHistory, on
     setEditing(-1);
   };
 
-  const requestCaptions = () => fetchCaptions(session.access_token, {
-    brief, brand: brandLabel, files, tone, emoji, length,
+  const requestCaptions = (opts = {}) => fetchCaptions(session.access_token, {
+    brief, brand: brandLabel, files, tone, emoji, length, ...opts,
   });
 
   const applyMapped = (mapped, pids) => {
@@ -201,7 +201,9 @@ export default function StageTwoPage({ session, onBack, onSignOut, onHistory, on
     if (busy || regen || !brief.trim()) return;
     setRegen(pid); setAiMsg('');
     try {
-      const data = await requestCaptions();
+      // fresh=true bypasses the server's 30-min answer cache, so this really
+      // re-runs the model instead of replaying the last reply.
+      const data = await requestCaptions({ fresh: true });
       writeAiCache(aiCacheKey(brief, brandLabel, tone, emoji, length, targetPlatforms), data);
       const mapped = mapResponse(data);
       applyMapped(mapped, [pid]);

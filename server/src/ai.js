@@ -264,9 +264,11 @@ export async function generateCaptions(summary, opts = {}) {
     + mem.breakdownBlock(breakdown);
   const model = process.env.XAI_MODEL || 'grok-4-1-fast-non-reasoning';
 
-  // Cache hit pays off instantly — no LLM round-trip at all.
+  // Regenerate (`fresh`) must never return the previous answer, and must not
+  // poison the cache for the next run — so it reads nothing and writes nothing.
+  const fresh = opts.fresh === true || String(opts.fresh || '') === '1';
   const cacheKey = aiCacheKey(brief, { brand: brand?.name || opts.brand, assetHint, tone, emoji: emojiLevel, length: capLength, trends });
-  if (!trends) {
+  if (!trends && !fresh) {
     const cached = aiCacheGet(cacheKey);
     if (cached) return { ...cached, cached: true };
   }
@@ -479,7 +481,7 @@ export async function generateCaptions(summary, opts = {}) {
     trends,
     usage: usage || undefined,
   };
-  if (!trends) aiCacheSet(cacheKey, out);
+  if (!trends && !fresh) aiCacheSet(cacheKey, out);
   return out;
 }
 
