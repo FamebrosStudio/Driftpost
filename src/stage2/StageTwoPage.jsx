@@ -6,6 +6,8 @@ import MediaGallery from './MediaGallery.jsx';
 import PromptBuilder from './PromptBuilder.jsx';
 import { composeOutput } from './PlatformOutputCard.jsx';
 import { logCaptions } from '../history/log.js';
+import { readVault, writeVault, vaultFiles } from './mediaVault.js';
+import { requestCaptions as fetchCaptions, mapResponse } from './ai.js';
 import CrosspostToggle from './CrosspostToggle.jsx';
 import OutputContainer from './OutputContainer.jsx';
 import ContinueButton from './ContinueButton.jsx';
@@ -49,43 +51,9 @@ function save(key, val) {
   try { localStorage.setItem(key, JSON.stringify(val)); } catch {}
 }
 
-// Tiny IndexedDB vault: uploads survive refresh. Same-origin, per-user key.
-function idbOpen() {
-  return new Promise((res, rej) => {
-    try {
-      const r = indexedDB.open('driftpost-stage2', 1);
-      r.onupgradeneeded = () => r.result.createObjectStore('media');
-      r.onsuccess = () => res(r.result);
-      r.onerror = () => rej(r.error);
-    } catch (e) { rej(e); }
-  });
-}
-async function idbSet(k, v) {
-  try {
-    const db = await idbOpen();
-    await new Promise((res, rej) => {
-      const tx = db.transaction('media', 'readwrite');
-      tx.objectStore('media').put(v, k);
-      tx.oncomplete = res; tx.onerror = () => rej(tx.error);
-    });
-    db.close();
-  } catch {}
-}
-async function idbGet(k) {
-  try {
-    const db = await idbOpen();
-    const v = await new Promise((res, rej) => {
-      const tx = db.transaction('media', 'readonly');
-      const rq = tx.objectStore('media').get(k);
-      rq.onsuccess = () => res(rq.result);
-      rq.onerror = () => rej(rq.error);
-    });
-    db.close();
-    return v ?? null;
-  } catch { return null; }
-}
 
-export default function StageTwoPage({ session, onBack, onSignOut, onHistory }) {
+
+export default function StageTwoPage({ session, onBack, onSignOut, onHistory, onNext }) {
   const [connections, setConnections] = useState([]);
   const [files, setFiles] = useState([]);
   const [brief, setBrief] = useState(() => load('driftpost-stage2-brief', ''));
@@ -118,20 +86,19 @@ export default function StageTwoPage({ session, onBack, onSignOut, onHistory }) 
     if (restoredRef.current) return;
     restoredRef.current = true;
     (async () => {
-      const vault = await idbGet(mediaKey);
-      const list = (vault?.files || [])
-        .filter((f) => f.blob instanceof Blob)
-        .map((f) => {
-          const raw = f.blob instanceof File ? f.blob : new File([f.blob], f.name || 'media', { type: f.type || 'image/jpeg' });
-          return { raw, name: f.name || raw.name, size: `${(raw.size / 1024 / 1024).toFixed(1)} MB`, type: raw.type };
-        });
+      const list = vaultFiles(await readVault(mediaKey));
       if (list.length) setFiles(list);
     })();
   }, [mediaKey]);
   useEffect(() => {
-    idbSet(mediaKey, {
-      files: files.map((f) => ({ name: f.name, type: f.type, blob: f.raw })).filter((f) => f.blob instanceof Blob),
-    });
+    // Preserve the YouTube cover (written by Stage 3) across saves.
+    (async () => {
+      const prev = await readVault(mediaKey);
+      writeVault(mediaKey, {
+        thumb: prev?.thumb || null,
+        files: files.map((f) => ({ name: f.name, type: f.type, blob: f.raw })).filter((f) => f.blob instanceof Blob),
+      });
+    })();
   }, [mediaKey, files]);
 
   useEffect(() => { save('driftpost-stage2-brief', brief); }, [brief]);
@@ -189,30 +156,9 @@ export default function StageTwoPage({ session, onBack, onSignOut, onHistory }) 
     setEditing(-1);
   };
 
-  const requestCaptions = () => api('/api/ai/captions', session.access_token, {
-    method: 'POST',
-    body: JSON.stringify({
-      summary: brief,
-      brand: brandLabel,
-      asset_description: files.length ? `${files.length} x ${files[0].type}` : '',
-      goal: 'enquiries',
-      trends: false,
-      tone, emoji, length,
-    }),
+  const requestCaptions = () => fetchCaptions(session.access_token, {
+    brief, brand: brandLabel, files, tone, emoji, length,
   });
-
-  const mapResponse = (data) => {
-    const c = data.captions || data;
-    const ytTags = Array.isArray(c.youtube?.tags) ? c.youtube.tags.join(', ') : (c.youtube?.tags || '');
-    const igTags = Array.isArray(c.instagram?.hashtags) ? c.instagram.hashtags.join(' ') : (c.instagram?.hashtags || '');
-    const xText = typeof c.x?.text === 'string' ? c.x.text.slice(0, 280) : '';
-    return {
-      instagram: { caption: c.instagram?.caption || '', hashtags: igTags },
-      facebook: { message: c.facebook?.message || '' },
-      youtube: { title: c.youtube?.title || '', description: c.youtube?.description || '', tags: ytTags },
-      x: { text: xText },
-    };
-  };
 
   const applyMapped = (mapped, pids) => {
     setOutputs((prev) => {
@@ -280,6 +226,7 @@ export default function StageTwoPage({ session, onBack, onSignOut, onHistory }) 
     save('driftpost-stage2-done', true);
     setSaveTick(true);
     setTimeout(() => setSaveTick(false), 1600);
+    if (onNext) onNext();
   };
 
   return (

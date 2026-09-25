@@ -1,14 +1,17 @@
 import React, { lazy, Suspense, useState } from 'react';
 import StageOnePage from './stage1/StageOnePage.jsx';
 import StageTwoPage from './stage2/StageTwoPage.jsx';
+import StageThreePage from './stage3/StageThreePage.jsx';
 
 const HistoryPage = lazy(() => import('./history/HistoryPage.jsx'));
 
-// Console entry — Stage 1 → Stage 2, plus the History page.
+// Console entry — Stage 1 → 2 → 3, plus the History page.
 // Stage is persisted (refresh-safe); History is a separate view on top.
 function loadStage() {
-  try { return localStorage.getItem('driftpost-stage') === '2' ? 2 : 1; }
-  catch { return 1; }
+  try {
+    const s = localStorage.getItem('driftpost-stage');
+    return s === '2' || s === '3' ? Number(s) : 1;
+  } catch { return 1; }
 }
 
 export default function Console({ session, onSwitchAccount, onSignOut }) {
@@ -28,8 +31,11 @@ export default function Console({ session, onSwitchAccount, onSignOut }) {
       </Suspense>
     );
   }
+  if (stage === 3) {
+    return <StageThreePage session={session} onBack={() => go(2)} onSignOut={onSignOut} onHistory={openHistory} onDone={() => go(1)} />;
+  }
   if (stage === 2) {
-    return <StageTwoPage session={session} onBack={() => go(1)} onSignOut={onSignOut} onHistory={openHistory} />;
+    return <StageTwoPage session={session} onBack={() => go(1)} onSignOut={onSignOut} onHistory={openHistory} onNext={() => go(3)} />;
   }
   return <StageOnePage session={session} onSignOut={onSignOut} onNext={() => go(2)} onHistory={openHistory} />;
 }
