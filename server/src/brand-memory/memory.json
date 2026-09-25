@@ -1,1 +1,16 @@
-{"version":1,"note":"Auto-learned brand memory. Updated by POST /api/ai/learn and by publish-time hints. No secrets here. Keep each brand entry tiny (<600 chars) so prompts stay cheap.","brands":{}}
+{
+ "version": 1,
+ "note": "Auto-learned brand memory. Updated by POST /api/ai/learn and by publish-time hints. No secrets here. Keep each brand entry tiny (<600 chars) so prompts stay cheap.",
+ "brands": {
+  "demo": {
+   "count": 8,
+   "recent": [],
+   "updatedAt": "2026-09-25T15:33:11.229Z",
+   "hints": [
+    "test brief",
+    "brief",
+    "same brief"
+   ]
+  }
+ }
+}

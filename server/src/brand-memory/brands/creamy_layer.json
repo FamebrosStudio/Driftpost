@@ -1,0 +1,874 @@
+{
+  "schema_version": "3.0",
+  "brand_number": 27,
+  "brand_id": "creamy_layer",
+  "brand_name": "The Creamy Layer",
+  "aliases": [
+    "Creamy Layer",
+    "The Creamy Layer Mulund",
+    "The Creamy Layer Cake Shop",
+    "@_thecreamylayer_"
+  ],
+  "knowledge_scope": "One brand only. This file covers The Creamy Layer cake shop in Mulund West, Mumbai, its matched Instagram identity, public contact and address, established cake and dessert products, historical Rakhi menu, current and past festival campaigns, content operations, visual rules and strict food-claim controls. Product availability, prices and festival menus are date-specific and must never be carried forward automatically.",
+  "business": {
+    "category": "Cake shop, bakery and dessert gifting",
+    "industry": "Cakes, desserts, brownies, festive products and gift hampers",
+    "business_model": [
+      "Physical cake shop",
+      "WhatsApp order enquiries",
+      "Custom and celebration cake enquiries",
+      "Festival pre-orders",
+      "Dessert and gifting orders"
+    ],
+    "city": "Mumbai",
+    "locality": "Mulund West",
+    "state": "Maharashtra",
+    "country": "India",
+    "core_positioning": "A Mulund West cake and dessert shop creating celebration cakes, brownies, festive treats and gift-ready products.",
+    "approved_positioning_short": "Celebration cakes and dessert gifting in Mulund West.",
+    "primary_audience": [
+      "Birthday and celebration customers",
+      "Cake and dessert lovers",
+      "Gift buyers",
+      "Festival pre-order customers",
+      "Families in Mulund and nearby areas",
+      "Customers seeking personalized cake enquiries"
+    ],
+    "publicly_supported_categories": [
+      "Cakes",
+      "Customized or personalized cake enquiries",
+      "Brownies",
+      "Desserts",
+      "Pastries",
+      "Mini cakes",
+      "Festival modaks",
+      "Gift boxes",
+      "Festival hampers"
+    ],
+    "product_scope_rule": "Category association does not prove current flavour, size, price, eggless status, customization capacity or same-day availability.",
+    "owner_or_founder": null,
+    "owner_status": "No owner or founder name established.",
+    "currency": "INR",
+    "dataset_date": "2026-09-25",
+    "commercial_accuracy_rule": "Never invent or carry forward flavour, weight, serving size, eggless status, price, delivery, advance-order time, customization, stock or festival validity."
+  },
+  "contact": {
+    "phone_display": "+91 81049 70642",
+    "phone_e164": "+918104970642",
+    "phone_status": "Repeatedly displayed in matched official Instagram and Facebook content.",
+    "whatsapp_display": "+91 81049 70642",
+    "whatsapp_e164": "+918104970642",
+    "whatsapp_status": "Official public posts explicitly label this as WhatsApp Orders.",
+    "address_full": "Shop No. 1, Jamuna Sadan, M. G. Road, near Ali Salon, Mulund West, Mumbai 400080, Maharashtra, India",
+    "address_status": "Repeatedly matched in current public posts.",
+    "address_short": "Shop No. 1, Jamuna Sadan, M. G. Road, Mulund West",
+    "email": null,
+    "email_status": "No official email established.",
+    "website": null,
+    "website_status": "A website and Meta connection was an internal pending task, but no official public website URL is established.",
+    "google_maps_url": null,
+    "google_maps_status": "No official map link stored in this record.",
+    "order_methods": [
+      "WhatsApp +91 81049 70642",
+      "Instagram DM @_thecreamylayer_",
+      "Visit the Mulund West shop"
+    ],
+    "contact_rule": "Use only +91 81049 70642 and the Jamuna Sadan address. Do not use Famebros contact numbers as the bakery's order number."
+  },
+  "social_media": {
+    "instagram_handle": "@_thecreamylayer_",
+    "instagram_url": "https://www.instagram.com/_thecreamylayer_/",
+    "instagram_status": "User-provided exact handle and matched public posts with phone and Mulund West address.",
+    "facebook_url": "https://www.facebook.com/61559731507661/",
+    "facebook_status": "Matched public page identity through current Ganesh Chaturthi and Rakhi posts. A custom Facebook handle is not established.",
+    "youtube_url": null,
+    "threads_url": null,
+    "managing_agency": "Famebros Studio",
+    "agency_instagram_handle": "@famebrosstudio",
+    "agency_instagram_url": "https://www.instagram.com/famebrosstudio/",
+    "agency_credit_default": "💫 Managed by: @famebrosstudio",
+    "reference_rule": "Use the official page for current product names, prices, festive menus and visual language. Always check post date and current availability."
+  },
+  "established_content_knowledge": {
+    "confirmed_content_genres": [
+      "Cake showcase"
+    ],
+    "expanded_content_pillars": [
+      "Celebration cake reveals",
+      "Customized cake enquiries",
+      "Monogram Letter Cake showcases",
+      "Bento cake showcases",
+      "Brownie and brookie boxes",
+      "Cookie boxes",
+      "Swiss rolls",
+      "Dessert and pastry close-ups",
+      "Festival products and pre-orders",
+      "Gift hampers",
+      "Packaging and unboxing",
+      "Behind-the-scenes decoration when authentic",
+      "Customer reactions and testimonials",
+      "Local Mulund discovery",
+      "Pre-order reminders",
+      "Limited-time offer posts only when current"
+    ],
+    "historical_rakhi_2026_menu": {
+      "status": "Past Raksha Bandhan campaign. Do not present as current stock or price without reconfirmation.",
+      "items": [
+        {
+          "name": "Monogram Letter Cake",
+          "price": null,
+          "note": "Reference product established, price not stored."
+        },
+        {
+          "name": "Bento Cake",
+          "price": "₹299"
+        },
+        {
+          "name": "Cookie Box",
+          "price": "₹350",
+          "contents": "9 pieces: 3 NYC cookies, 3 jaggery cookies and 3 guilt-free cookies"
+        },
+        {
+          "name": "Brookie Box",
+          "price": "₹500"
+        },
+        {
+          "name": "Rakhi Hamper",
+          "price": "₹500"
+        },
+        {
+          "name": "Swiss Roll",
+          "price": "₹90"
+        }
+      ],
+      "campaign_angles": [
+        "Pre-order FOMO",
+        "Sibling hooks",
+        "Comment the first letter idea",
+        "Premium festive gifting"
+      ],
+      "rule": "Confirm every product, recipe, count, price, packaging and order deadline before reuse."
+    },
+    "recent_public_product_examples": [
+      {
+        "product": "Assorted Brownie Box of 6",
+        "price": "₹480",
+        "status": "Indexed public post. Reconfirm current price and stock."
+      },
+      {
+        "product": "Assorted brownies",
+        "prices": "Pack of 2 ₹170; pack of 4 ₹340",
+        "status": "Indexed public post. Reconfirm current price and box composition."
+      },
+      {
+        "product": "Berry almond chocolate box",
+        "price": "₹200",
+        "status": "Indexed public post. Reconfirm name, count, allergens and price."
+      },
+      {
+        "product": "Ganesh Chaturthi modaks",
+        "price": null,
+        "status": "September 2026 festival campaign. Do not treat as evergreen."
+      },
+      {
+        "product": "Diwali hampers",
+        "price": null,
+        "status": "Recent public campaign reference. Confirm active catalogue and dates."
+      }
+    ],
+    "campaign_history": {
+      "janmashtami": "Minimal premium campaign with a real cake hero and Krishna-inspired blue hand. Approved hook direction: When Kanha reaches for it, you know it's worth it.",
+      "independence_day": "Emotional child offering cake to an everyday hero. Keep the real brand cake and avoid a generic flag poster.",
+      "ganesh_chaturthi": "Real cake or modak product hero, premium minimal visual, festive pre-order and WhatsApp order context.",
+      "raksha_bandhan": "Sibling-focused gifting, product menu, pre-order urgency and real product imagery."
+    },
+    "internal_growth_and_status_notes": {
+      "website_meta_connection": "Pending in late August 2026.",
+      "auto_dm": "Solved by late August 2026.",
+      "awareness_ads": "Awareness ads on the strongest follower-gaining reel marked solved.",
+      "september_creatives_and_reel_edits": "Due by 31 August in the historical operations note.",
+      "five_percent_campaign": "A 5% off creative and daily September stories were marked solved. The exact terms and validity are not established here.",
+      "influencer_search": "Ongoing and pending approval in the historical note.",
+      "rule": "These are internal historical statuses and must not appear in customer captions."
+    },
+    "historical_package_proposals": [
+      "A proposal included Instagram and Facebook, daily posting, two shoots, 13 reels and 13 creatives per month, ₹45,000 plus GST, with a suggested minimum ad budget of ₹12,000.",
+      "Another working package pattern referenced 12 monthly posts split between AI reels and creatives.",
+      "Treat both as historical proposals, not a confirmed current scope."
+    ],
+    "content_priority": "Make the exact cake or dessert the hero. Show decoration, texture and celebration context while keeping every food, price and ordering claim current."
+  },
+  "writing_direction": {
+    "status": "Operational editorial voice based on user direction and matched public bakery content.",
+    "brand_voice": [
+      "Sweet",
+      "Playful",
+      "Craveable",
+      "Celebration focused",
+      "Warm",
+      "Local",
+      "Premium when the product requires it"
+    ],
+    "primary_language": "English or Hinglish",
+    "focus": [
+      "The exact cake or dessert shown",
+      "Celebration and sharing",
+      "Visible decoration and texture",
+      "Clear WhatsApp order action",
+      "Mulund West discovery"
+    ],
+    "preferred_copy_traits": [
+      "Short hook",
+      "Product-specific line",
+      "Emotional or occasion relevance",
+      "One order or engagement CTA",
+      "Minimal emojis"
+    ],
+    "avoid": [
+      "Eggless claims unless supplied",
+      "Fresh today claims unless confirmed",
+      "Invented flavour, filling or weight",
+      "Guaranteed delivery",
+      "Unconfirmed same-day orders",
+      "Unconfirmed customization",
+      "Past festival menu as current stock",
+      "Old price as current",
+      "Medical or guilt-free claims without recipe evidence",
+      "Overcrowded caption",
+      "Too many emojis"
+    ],
+    "emoji_style": "Use zero to three cake, dessert, gift or celebration emojis.",
+    "punctuation_style": "Short paragraphs and no em dashes."
+  },
+  "content_playbook": {
+    "cake_showcase": {
+      "objective": "Show the exact cake and create enquiry intent.",
+      "structure": [
+        "Occasion or reaction hook",
+        "Exact visible design detail",
+        "Verified flavour, size or price only when supplied",
+        "WhatsApp or DM CTA"
+      ],
+      "required_inputs": [
+        "Cake name",
+        "Flavour",
+        "Weight",
+        "Serves",
+        "Eggless status",
+        "Price",
+        "Customization",
+        "Lead time",
+        "Availability"
+      ]
+    },
+    "decoration_reveal": {
+      "objective": "Show the real decoration process or final reveal.",
+      "rule": "Do not suggest handmade, custom, edible or hand-painted details unless confirmed."
+    },
+    "brownie_or_box_post": {
+      "objective": "Explain the exact box and make count and price clear.",
+      "required_fields": [
+        "Product name",
+        "Piece count",
+        "Variants",
+        "Allergens",
+        "Price",
+        "Packaging",
+        "Order deadline",
+        "Availability"
+      ]
+    },
+    "festival_preorder": {
+      "objective": "Create urgency for a real festival menu.",
+      "required_fields": [
+        "Festival",
+        "Products",
+        "Prices",
+        "Pre-order start",
+        "Order deadline",
+        "Pickup or delivery",
+        "Payment",
+        "Availability",
+        "Contact"
+      ],
+      "rule": "Festival menus expire. Do not reuse after the stated campaign."
+    },
+    "gift_hamper_post": {
+      "objective": "Present exact contents and gifting use.",
+      "rule": "Do not imply corporate, bulk, personalized or delivery services unless confirmed."
+    },
+    "influencer_content": {
+      "objective": "Generate authentic local discovery.",
+      "must_confirm": [
+        "Creator",
+        "Deliverables",
+        "Paid or barter",
+        "Products",
+        "Talking points",
+        "Posting date",
+        "Disclosure",
+        "Usage rights"
+      ]
+    },
+    "offer_post": {
+      "objective": "Communicate an approved discount clearly.",
+      "required_fields": [
+        "Discount",
+        "Eligible products",
+        "Minimum order",
+        "Code",
+        "Start date",
+        "End date",
+        "Pickup or delivery",
+        "Exclusions"
+      ],
+      "rule": "Do not reuse the historical 5% line without full current terms."
+    },
+    "platform_adaptation": {
+      "feed": "Short product caption, contact footer, exactly three hashtags and one SEO bracket.",
+      "reel": "Quick hook, decoration or product reveal and WhatsApp CTA.",
+      "story": "One action per frame and no full feed metadata unless requested.",
+      "youtube_short": "Product-led title with Mulund location when useful."
+    }
+  },
+  "cake_dessert_and_hamper_description_framework": {
+    "purpose": "Describe each Creamy Layer product accurately without guessing recipe, size or order terms.",
+    "identity_fields": [
+      "Product name",
+      "Category",
+      "Occasion",
+      "SKU or internal reference",
+      "Current availability"
+    ],
+    "cake_fields": [
+      "Flavour",
+      "Filling",
+      "Frosting",
+      "Sponge",
+      "Weight",
+      "Serving estimate",
+      "Shape",
+      "Decoration",
+      "Topper",
+      "Name or message",
+      "Eggless status",
+      "Allergens"
+    ],
+    "box_fields": [
+      "Product count",
+      "Variant count",
+      "Exact assortment",
+      "Net weight",
+      "Packaging",
+      "Price",
+      "Best before",
+      "Storage"
+    ],
+    "order_fields": [
+      "Lead time",
+      "Cutoff",
+      "Pickup",
+      "Delivery area",
+      "Delivery fee",
+      "Payment",
+      "Cancellation",
+      "Design revision",
+      "Rush-order policy"
+    ],
+    "claim_confirmation_matrix": {
+      "eggless": "Requires current recipe or menu confirmation.",
+      "fresh": "Use only with a defined production or delivery context.",
+      "guilt_free": "Use only as an exact approved product name with ingredient information.",
+      "customized": "Requires current capacity and design approval.",
+      "same_day": "Requires current product and time confirmation.",
+      "price": "Requires current menu or approved post.",
+      "delivery": "Requires current area, fee and timing."
+    },
+    "description_order": [
+      "Exact product name",
+      "Visible decoration and texture",
+      "Verified flavour and size",
+      "Occasion relevance",
+      "Current price and order terms",
+      "WhatsApp CTA"
+    ],
+    "rule": "Omit unknown fields. Never use a generic bakery recipe as if it describes the real product."
+  },
+  "caption_format": {
+    "default_use": "Instagram and Facebook feed or reel captions",
+    "body_length": "Usually 25 to 55 words excluding footer, hashtags and SEO bracket.",
+    "body_structure": [
+      "Sweet or playful hook",
+      "One or two factual product lines",
+      "One WhatsApp, DM, tag or save CTA"
+    ],
+    "format_order": [
+      "Caption body",
+      "Blank line",
+      "Location and WhatsApp footer",
+      "Agency credit",
+      "Blank line",
+      "Exactly three hashtags",
+      "Blank line",
+      "One square-bracket SEO block"
+    ],
+    "hashtag_rule": "Exactly three relevant hashtags unless requested otherwise.",
+    "seo_rule": "One square-bracket block with five to eight comma-separated search phrases.",
+    "story_rule": "Omit feed footer, hashtags and SEO for story copy unless requested.",
+    "final_checks": [
+      "Correct product",
+      "Current price",
+      "Food claims verified",
+      "Order deadline current",
+      "Exactly three hashtags",
+      "One SEO bracket",
+      "No em dash"
+    ]
+  },
+  "fixed_footer": {
+    "standard_lines": [
+      "📍 Shop No. 1, Jamuna Sadan, M. G. Road, near Ali Salon, Mulund West, Mumbai 400080",
+      "📲 WhatsApp Orders: +91 81049 70642",
+      "💫 Managed by: @famebrosstudio"
+    ],
+    "compact_lines": [
+      "📍 Mulund West, Mumbai",
+      "📲 +91 81049 70642",
+      "💫 Managed by: @famebrosstudio"
+    ],
+    "usage": "Use the full footer for sales posts and the compact footer for product reels.",
+    "exceptions": [
+      "Omit for stories unless requested",
+      "Omit for comments and replies",
+      "Omit for repost text unless requested"
+    ]
+  },
+  "suggested_hashtag_bank": {
+    "brand": [
+      "#TheCreamyLayer",
+      "#CreamyLayerMulund"
+    ],
+    "category": [
+      "#CakeDesign",
+      "#MulundBakery",
+      "#CelebrationCake",
+      "#BrownieBox",
+      "#DessertLovers"
+    ],
+    "location": [
+      "#MulundWest",
+      "#MulundCakes",
+      "#MumbaiBakery"
+    ],
+    "occasion": [
+      "#BirthdayCake",
+      "#FestiveDesserts",
+      "#SweetGifts",
+      "#CakeInspiration"
+    ],
+    "rule": "Use exactly three hashtags matching the real product and occasion."
+  },
+  "seo_keyword_bank": {
+    "core": [
+      "The Creamy Layer",
+      "The Creamy Layer Mulund",
+      "cakes Mulund",
+      "cake shop Mulund West",
+      "bakery Mulund",
+      "cake design",
+      "celebration cake",
+      "custom cake enquiry Mulund"
+    ],
+    "product": [
+      "brownie box Mulund",
+      "dessert gifts Mumbai",
+      "bento cake Mulund",
+      "monogram letter cake",
+      "festive cake shop Mulund",
+      "cake inspiration"
+    ],
+    "conditional": [
+      "Rakhi cake hamper",
+      "Ganesh Chaturthi modaks",
+      "Diwali dessert hamper",
+      "same day cake Mulund",
+      "eggless cake Mulund"
+    ],
+    "conditional_rule": "Use festival, same-day or eggless terms only when the current brief confirms them.",
+    "selection_rule": "Choose five to eight phrases matching the actual product and current campaign."
+  },
+  "cta_bank": {
+    "order": [
+      "WhatsApp +91 81049 70642 to enquire about your cake.",
+      "DM @_thecreamylayer_ for current availability.",
+      "Visit The Creamy Layer in Mulund West."
+    ],
+    "engagement": [
+      "Tag the person who always asks for one more bite.",
+      "Save this cake inspiration.",
+      "Who would you share this with?",
+      "Pick your favourite design."
+    ],
+    "preorder": [
+      "Pre-order on WhatsApp only after the active deadline is confirmed.",
+      "Reserve your festive order only when stock and cutoff are approved."
+    ],
+    "rule": "Use one CTA. Never promise confirmation, delivery or customization before the shop approves the order."
+  },
+  "suggested_hooks": {
+    "cake": [
+      "The just one bite plan never lasts.",
+      "A celebration this special deserves a cake to match.",
+      "The cake that gets photographed before it gets sliced.",
+      "Mulund, your sweet ride just arrived."
+    ],
+    "brownie": [
+      "The box everyone opens first.",
+      "Six pieces, one difficult choice: which goes first?",
+      "A little box of chocolate comfort."
+    ],
+    "gifting": [
+      "A sweet gift for the people who make life special.",
+      "Packed for the celebration, ready for the smiles.",
+      "When the gift has to feel personal."
+    ],
+    "festival": [
+      "Festive moments just got sweeter.",
+      "When Kanha reaches for it, you know it's worth it.",
+      "Bring home a sweeter celebration."
+    ],
+    "rule": "Adapt the hook to the exact real product and remove claims the asset cannot support."
+  },
+  "visual_and_asset_guidance": {
+    "default_dimensions": {
+      "feed": "1080x1440 pixels",
+      "story": "1080x1920 pixels",
+      "reel": "1080x1920 pixels",
+      "square": "1080x1080 pixels when requested"
+    },
+    "visual_direction": [
+      "Premium minimal food campaign",
+      "Real cake as hero",
+      "Clean negative space",
+      "Appetising close-ups",
+      "Warm celebration lighting",
+      "Product-led typography",
+      "Less text",
+      "Logo clearly visible"
+    ],
+    "product_integrity_rules": [
+      "Use uploaded cake and product 100% unchanged",
+      "Do not redraw, recolour, resize disproportionately or replace decoration",
+      "Do not invent toppings or filling",
+      "Do not duplicate products to imply quantity",
+      "Do not change logo, bag or packaging",
+      "Keep cake realistic and appetising"
+    ],
+    "carousel_rule": "Generate each carousel slide separately at 1080x1440 when requested. Use the approved Monogram Letter Cake reference without changing the real product.",
+    "campaign_visual_history": {
+      "rakhi": "Premium festive product hero, sibling emotion, pre-order urgency and real product menu.",
+      "janmashtami": "Minimal premium cake hero with Krishna-inspired blue hand and approved hook direction.",
+      "independence_day": "Emotional everyday-hero story, not a generic flag poster.",
+      "ganesh_chaturthi": "Real cake or modak hero, refined festive styling and WhatsApp order action."
+    },
+    "ai_rules": [
+      "Do not generate a replacement product",
+      "AI may create background styling only",
+      "Do not fabricate product labels, customer photos or store interiors",
+      "Keep face and product unchanged in composite scenes"
+    ],
+    "accessibility": [
+      "High contrast",
+      "Readable price and order number",
+      "Minimal text",
+      "Avoid text over cake details",
+      "Factual alt text"
+    ]
+  },
+  "carousel_and_reel_system": {
+    "cake_carousel": [
+      "Slide 1: Hero cake and hook",
+      "Slide 2: Full design",
+      "Slide 3: Decoration close-up",
+      "Slide 4: Verified flavour, weight and price",
+      "Slide 5: Occasion or personalization",
+      "Slide 6: WhatsApp order CTA"
+    ],
+    "festival_menu_carousel": [
+      "Slide 1: Festival hook",
+      "Slide 2 onward: One real product per slide",
+      "Penultimate: Order deadline and terms",
+      "Final: Contact and address"
+    ],
+    "cake_reveal_reel": [
+      "0 to 2 seconds: Hook",
+      "2 to 6 seconds: Cake reveal",
+      "6 to 10 seconds: Detail shots",
+      "10 to 13 seconds: Verified product name",
+      "13 to 15 seconds: WhatsApp CTA"
+    ],
+    "decoration_reel": [
+      "Blank cake or genuine starting stage",
+      "Real decoration steps",
+      "Final reveal",
+      "Celebration message",
+      "Order CTA"
+    ],
+    "editing_style": [
+      "Clean cuts",
+      "Macro details",
+      "Natural colour",
+      "Controlled slow motion",
+      "Minimal text",
+      "No fake frosting or decoration"
+    ],
+    "music_direction": "Playful, warm or premium audio appropriate to the product and licensed use.",
+    "thumbnail_rule": "Real cake hero, short readable hook and official logo."
+  },
+  "other_output_modes": {
+    "story": {
+      "format": "One offer, product or action per frame.",
+      "footer_rule": "Do not paste full feed metadata into every frame."
+    },
+    "whatsapp_message": {
+      "format": "Cake name, flavour, weight, eggless status, design, price, lead time, pickup or delivery and payment.",
+      "rule": "Use exact approved order data."
+    },
+    "youtube_title": {
+      "examples": [
+        "A Celebration Cake Made for Mulund | The Creamy Layer",
+        "The Cake Reveal Everyone Waited For",
+        "Brownie Box in Mulund West | The Creamy Layer"
+      ]
+    },
+    "product_alt_text": {
+      "format": "Describe the visible cake shape, colour, decoration, message and setting without guessing flavour or recipe."
+    },
+    "comment_reply": {
+      "price": "Please send the cake screenshot on WhatsApp at +91 81049 70642 for the current price.",
+      "customization": "Please share your date, design reference, flavour and size requirement on WhatsApp so availability can be checked.",
+      "location": "We are at Shop No. 1, Jamuna Sadan, M. G. Road, near Ali Salon, Mulund West."
+    },
+    "ad_copy": {
+      "rule": "Use current product, price, lead time, service area and order route. Never promise delivery or eggless availability without approval."
+    }
+  },
+  "sample_caption": {
+    "status": "New illustrative caption, not a historical post and not proof of a current flavour, size or price.",
+    "scenario": "Celebration cake showcase",
+    "body": "The just one bite plan never lasts. 🎂 A closer look at this celebration cake from The Creamy Layer. Share your date and design requirement on WhatsApp at +91 81049 70642 to check current availability.",
+    "footer": [
+      "📍 Shop No. 1, Jamuna Sadan, M. G. Road, near Ali Salon, Mulund West, Mumbai 400080",
+      "📲 WhatsApp Orders: +91 81049 70642",
+      "💫 Managed by: @famebrosstudio"
+    ],
+    "hashtags": [
+      "#TheCreamyLayer",
+      "#CakeDesign",
+      "#MulundCakes"
+    ],
+    "seo_keywords": [
+      "The Creamy Layer",
+      "The Creamy Layer Mulund",
+      "cakes Mulund",
+      "cake shop Mulund West",
+      "cake design",
+      "celebration cake"
+    ],
+    "full_caption": "The just one bite plan never lasts. 🎂 A closer look at this celebration cake from The Creamy Layer. Share your date and design requirement on WhatsApp at +91 81049 70642 to check current availability.\n\n📍 Shop No. 1, Jamuna Sadan, M. G. Road, near Ali Salon, Mulund West, Mumbai 400080\n📲 WhatsApp Orders: +91 81049 70642\n💫 Managed by: @famebrosstudio\n\n#TheCreamyLayer #CakeDesign #MulundCakes\n\n[The Creamy Layer, The Creamy Layer Mulund, cakes Mulund, cake shop Mulund West, cake design, celebration cake]",
+    "validation": {
+      "hashtags": 3,
+      "seo_phrases": 6,
+      "unverified_food_claims": 0
+    }
+  },
+  "accuracy_rules": {
+    "source_priority": [
+      "Current user or authorized bakery instruction",
+      "Current menu, order confirmation or product sheet",
+      "Current official @_thecreamylayer_ post",
+      "Actual supplied product asset",
+      "This file",
+      "Review sites only for discovery, not product truth"
+    ],
+    "hard_rules": [
+      "Never invent flavour, filling, weight, serving size, eggless status, price, stock, lead time, delivery or customization",
+      "Never reuse a past festival menu as current",
+      "Never alter the real cake or packaging",
+      "Never use a Famebros number as the bakery order number",
+      "Never publish internal growth, ad or package notes",
+      "Never use an em dash"
+    ],
+    "identity_lock": {
+      "instagram": "@_thecreamylayer_",
+      "phone_and_whatsapp": "+91 81049 70642",
+      "address": "Shop No. 1, Jamuna Sadan, M. G. Road, near Ali Salon, Mulund West, Mumbai 400080"
+    },
+    "uncertainty_behavior": [
+      "Omit unknown product details",
+      "Ask for menu or order confirmation",
+      "Use an enquiry CTA",
+      "Label campaign products as historical when the date has passed"
+    ],
+    "pre_publish_checklist": [
+      "Correct product image",
+      "Current menu and price",
+      "Flavour and eggless status confirmed",
+      "Weight and serving size confirmed",
+      "Lead time and delivery confirmed",
+      "Correct WhatsApp",
+      "Exactly three hashtags",
+      "One SEO bracket",
+      "No em dash"
+    ]
+  },
+  "per_post_input": {
+    "required_core": [
+      "Output mode",
+      "Objective",
+      "Actual asset or transcript",
+      "Product name",
+      "Occasion",
+      "CTA",
+      "Publication date"
+    ],
+    "cake_inputs": [
+      "Flavour",
+      "Filling",
+      "Frosting",
+      "Weight",
+      "Serves",
+      "Eggless status",
+      "Decoration",
+      "Message",
+      "Topper",
+      "Price",
+      "Lead time",
+      "Availability"
+    ],
+    "box_inputs": [
+      "Exact products",
+      "Count",
+      "Variants",
+      "Allergens",
+      "Packaging",
+      "Price",
+      "Best before",
+      "Storage"
+    ],
+    "order_inputs": [
+      "Event date",
+      "Cutoff",
+      "Pickup",
+      "Delivery area",
+      "Delivery fee",
+      "Payment",
+      "Cancellation",
+      "Rush-order status"
+    ],
+    "creative_inputs": [
+      "Official logo",
+      "Real product image",
+      "Format",
+      "Headline",
+      "Reference",
+      "Mandatory copy",
+      "Product-integrity instruction"
+    ],
+    "input_rule": "Never substitute a common bakery assumption for missing product or order information."
+  },
+  "master_brand_instruction": "Create content only for The Creamy Layer in Mulund West, Mumbai. The official Instagram is @_thecreamylayer_, WhatsApp Orders is +91 81049 70642, and the shop is at Shop No. 1, Jamuna Sadan, M. G. Road, near Ali Salon, Mulund West, Mumbai 400080. Write in a sweet, playful, craveable and celebration-focused voice using English or Hinglish. Make the exact uploaded cake or dessert the hero and keep the product, logo, bag and packaging 100% unchanged. Never invent flavour, filling, weight, serving size, eggless status, price, offer, stock, customization, lead time, delivery or festival availability. Historical Rakhi products and prices, September festival products and recent public brownie prices must be reconfirmed before reuse. For a standard feed or reel caption, use a concise hook, verified product line and one CTA, then the approved contact footer, exactly three hashtags and one square-bracket SEO block with five to eight phrases. Remove all em dashes.",
+  "missing_information": {
+    "business": [
+      "Legal entity name",
+      "Owner or founder",
+      "Year established",
+      "GST details",
+      "Confirmed business hours"
+    ],
+    "contact": [
+      "Official email",
+      "Official website",
+      "Google Maps link",
+      "YouTube channel"
+    ],
+    "catalogue": [
+      "Current full menu",
+      "Flavours",
+      "Fillings",
+      "Weights",
+      "Serving guide",
+      "Eggless range",
+      "Prices",
+      "Allergens",
+      "Best before",
+      "Storage",
+      "Customization options"
+    ],
+    "commercial": [
+      "Lead times",
+      "Same-day policy",
+      "Delivery areas and fees",
+      "Payment",
+      "Cancellation",
+      "Rush orders",
+      "Bulk orders",
+      "Current offers"
+    ],
+    "brand_system": [
+      "Logo files",
+      "Colour codes",
+      "Fonts",
+      "Photography guide",
+      "Packaging guide"
+    ],
+    "agency": [
+      "Current approved package",
+      "Monthly deliverables",
+      "Shoot frequency",
+      "Ad scope and budget",
+      "Influencer plan",
+      "Approval workflow",
+      "Billing date"
+    ],
+    "priority": "Obtain the current menu and price list, flavour and eggless matrix, order and delivery policy, festival catalogues, brand kit and confirmed current Famebros package."
+  },
+  "sources": {
+    "user_facts": [
+      "Official Instagram @_thecreamylayer_.",
+      "Mulund, Mumbai cake brand with uploaded official logo and strict product fidelity.",
+      "Historical Rakhi 2026 products and prices.",
+      "Monogram Letter Cake reference and separate 1080x1440 carousel-slide workflow.",
+      "Historical website, auto-DM, ads, September stories and influencer-search status notes."
+    ],
+    "public_sources": [
+      {
+        "url": "https://www.instagram.com/_thecreamylayer_/",
+        "checked_on": "2026-09-25",
+        "used_for": "Official identity and current product reference."
+      },
+      {
+        "url": "https://www.instagram.com/p/DdhT61BgmEo/",
+        "checked_on": "2026-09-25",
+        "used_for": "Phone, address and Mulund identity cross-check."
+      },
+      {
+        "url": "https://www.instagram.com/reel/DdJGtBeA7UR/",
+        "checked_on": "2026-09-25",
+        "used_for": "WhatsApp Orders and Ganesh Chaturthi product campaign."
+      },
+      {
+        "url": "https://www.instagram.com/reel/DPy9JB1DR9c/",
+        "checked_on": "2026-09-25",
+        "used_for": "Assorted Brownie Box of 6 public price example."
+      },
+      {
+        "url": "https://www.facebook.com/61559731507661/",
+        "checked_on": "2026-09-25",
+        "used_for": "Matched Facebook identity and campaign cross-check."
+      }
+    ],
+    "internal_dataset": "Famebros_Brand_Caption_Dataset.json record creamy_layer.",
+    "source_rule": "Current bakery-approved menu, order confirmation and price override historical campaign posts and this file."
+  }
+}

@@ -1,14 +1,14 @@
 {
   "schema_version": "1.0",
-  "brand_number": 19,
-  "brand_id": "devi_company",
+  "brand_number": 25,
+  "brand_id": "devi_and_company_kanpur",
   "brand_name": "Devi & Company",
   "aliases": [
     "Devi and Company",
     "Devi & Company Kanpur",
     "Devis Kanpur"
   ],
-  "knowledge_scope": "One Kanpur brand only. Permanent business facts, live public sources, user-approved campaign details, historical promotions and AI content instructions are separated. Never confuse this retailer with another company using a similar name or with the unrelated deviandcompany.com domain.",
+  "knowledge_scope": "One brand only. This file covers Devi & Company in Kanpur, its two established branches, the third-branch opening campaign for 11 October 2026, product communication, public creator content, loyal-customer benefits, prizes, value offers and strict accuracy rules. Public creator messaging and private loyal-customer promo-code messaging must remain separate.",
   "business": {
     "category": "Ethnic and bridal fashion retail",
     "industry": "Sarees, women's occasion wear, textiles and selected wholesale supply",
@@ -36,7 +36,7 @@
     "public_face": "Parul Ma'am",
     "public_face_status": "Approved on-camera speaker for the third-store campaign scripts. Do not infer ownership or legal title unless separately confirmed.",
     "opening_campaign_status_as_of_dataset_date": "Upcoming",
-    "dataset_date": "2026-09-24"
+    "dataset_date": "2026-09-25"
   },
   "contact": {
     "customer_care_display": "+91 88740 00032",
@@ -260,6 +260,14 @@
       "prize_zone_setup": "Prize display zone planned with red cloth covering before reveal.",
       "daily_video_plan": "A fixed videographer planned through the offer period, with an approximate internal budget of ₹20,000.",
       "publication_rule": "These are internal production notes. Do not expose budgets, tentative dates, staff logistics or unrevealed prizes in public captions."
+    },
+    "loyal_customer_and_creator_message_separation": {
+      "status": "Current user instruction from 25 September 2026.",
+      "loyal_customer_private_offer": "The ₹500 discount connected to ₹3,000 shopping is for old loyal customers who receive the authorized promo code. Do not present this as a universal walk-in offer.",
+      "creator_public_message": "Influencer and creator content should say that shopping of ₹3,000 makes the customer eligible for the assured gift and daily lucky winner benefit. Do not mention the private ₹500 loyal-customer discount in those public creator scripts unless a new brief explicitly approves it.",
+      "promo_code_rule": "KN-500 appeared in earlier voucher work. Use it only in the approved loyal-customer voucher or direct message, and recheck the final code before publication.",
+      "speaker_rule": "Creator and influencer scripts are written for visiting creators, not for Parul Ma'am. Use Parul Ma'am only when the brief specifically requests her as the on-camera speaker.",
+      "accuracy_rule": "Do not merge private voucher benefits with public creator offers. State the ₹3,000 eligibility, daily lucky winner, assured gift, bumper rules and value deals exactly as approved for the selected output."
     }
   },
   "writing_direction": {
@@ -441,6 +449,26 @@
         "Change upcoming or coming soon to now open only after the store opens.",
         "Use real event photos and attendance.",
         "Check which offers continue after opening day."
+      ]
+    },
+    "creator_and_influencer_opening_content": {
+      "objective": "Help visiting creators explain the third-branch opening and approved public offers clearly.",
+      "must_include_when_requested": [
+        "Third Kanpur branch",
+        "Opening on 11 October 2026",
+        "Kidwai Nagar Chauraha, Kanpur",
+        "Shopping of ₹3,000 makes the customer eligible for an assured gift and the daily lucky winner benefit",
+        "Approved daily prizes when the full-offer script is requested",
+        "Weekly bumper eligibility and prizes when the full-offer script is requested",
+        "Approved value deals when the full-offer script is requested",
+        "Campaign phone +91 88740 00177"
+      ],
+      "must_not_include": [
+        "Private loyal-customer ₹500 discount unless explicitly approved",
+        "KN-500 promo code in a public creator script",
+        "Parul Ma'am dialogue or first-person identity",
+        "Guaranteed winning language",
+        "Unapproved prize, offer, date or stacking rule"
       ]
     }
   },
@@ -762,8 +790,34 @@
     "terms_post": "List eligibility, ticket allocation, draw schedule, prize, exclusions, winner verification and redemption process in readable language."
   },
   "sample_caption": {
-    "status": "Illustrative third-store invitation using approved date, location and campaign contact. Check the final event time and offer validity before publishing.",
-    "text": "Kanpur, our third chapter begins with you. ✨\n\nYou're invited to the Grand Opening Ceremony of Devi & Company's third store on 11 October 2026. Join us for a special shopping celebration with approved opening offers, an assured gift and daily lucky-winner opportunities on qualifying purchases. T&C apply.\n\n📍 Kidwai Nagar Chauraha, Kanpur\n📞 +91 88740 00177\n🎥 Managed by: @famebrosstudio ✨\n\n#DeviAndCompany #GrandOpening #KanpurShopping\n\n[Devi and Company Kanpur, third store grand opening, Kidwai Nagar shopping, ethnic wear Kanpur, bridal wear Kanpur, saree shop Kanpur]"
+    "status": "New illustrative creator caption using the approved public campaign distinction.",
+    "scenario": "Third-branch creator announcement",
+    "caption_body": "Kanpur, Devi & Company's third branch opens at Kidwai Nagar Chauraha on 11 October 2026. Shop for ₹3,000 or more during the approved campaign to become eligible for an assured gift and the daily lucky winner benefit. Visit and celebrate the grand opening with us.",
+    "footer": [
+      "📍 Kidwai Nagar Chauraha, Kanpur",
+      "📞 +91 88740 00177",
+      "💫 Managed by: @famebrosstudio"
+    ],
+    "hashtags": [
+      "#DeviAndCompany",
+      "#KanpurShopping",
+      "#GrandOpening"
+    ],
+    "seo_keywords": [
+      "Devi and Company Kanpur",
+      "Kidwai Nagar shopping",
+      "Kanpur ethnic wear",
+      "third branch opening Kanpur",
+      "women's fashion Kanpur",
+      "11 October 2026 opening"
+    ],
+    "full_caption": "Kanpur, Devi & Company's third branch opens at Kidwai Nagar Chauraha on 11 October 2026. Shop for ₹3,000 or more during the approved campaign to become eligible for an assured gift and the daily lucky winner benefit. Visit and celebrate the grand opening with us.\n\n📍 Kidwai Nagar Chauraha, Kanpur\n📞 +91 88740 00177\n💫 Managed by: @famebrosstudio\n\n#DeviAndCompany #KanpurShopping #GrandOpening\n\n[Devi and Company Kanpur, Kidwai Nagar shopping, Kanpur ethnic wear, third branch opening Kanpur, women's fashion Kanpur, 11 October 2026 opening]",
+    "validation": {
+      "hashtags": 3,
+      "seo_phrases": 6,
+      "private_loyal_customer_discount_mentioned": false,
+      "lucky_winner_guaranteed": false
+    }
   },
   "accuracy_rules": [
     "Use 11 October 2026 exactly for the third-store opening.",
@@ -790,7 +844,12 @@
     "Do not reveal internal shoot budgets or tentative production plans.",
     "If an essential offer term is missing, ask one focused question before generating transactional copy.",
     "Do not print null fields or internal notes in public content.",
-    "Do not use em dashes."
+    "Do not use em dashes.",
+    "Public creator content uses ₹3,000 shopping eligibility for the assured gift and daily lucky winner.",
+    "The private loyal-customer voucher may use the ₹500 benefit and promo code only when approved for that private audience.",
+    "Do not imply every ₹3,000 shopper receives a lucky-draw prize.",
+    "The assured gift is guaranteed only when the approved campaign conditions are met.",
+    "Use +91 88740 00177 for the third-branch opening campaign."
   ],
   "per_post_input": {
     "brand_id": "devi_and_company_kanpur",
@@ -892,6 +951,7 @@
     {
       "type": "user_writing_preferences",
       "supports": "Short hooks, English or Hinglish, agency credit, exactly three hashtags, one SEO bracket and no em dashes."
-    }
+    },
+    "User update dated 2026-09-25: separate public creator offer messaging from private loyal-customer promo-code messaging."
   ]
 }

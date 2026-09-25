@@ -1,0 +1,568 @@
+{
+  "schema_version": "3.0",
+  "brand_number": 32,
+  "brand_id": "zam_zam_motors",
+  "brand_name": "Zam Zam Motors",
+  "aliases": [
+    "Zamzam Motors",
+    "Zam Zam Motors Mulund",
+    "@zamzam_motorss",
+    "zamzammotorss"
+  ],
+  "knowledge_scope": "One brand only. This file covers Zam Zam Motors in Mulund West, its used-car dealership positioning, confirmed location and phone, historical vehicle examples, cinematic and informational content, listing-copy requirements, enquiry CTAs and strict inventory accuracy controls.",
+  "business": {
+    "category": "Pre-owned and used car dealership",
+    "industry": "Automotive retail",
+    "business_model": [
+      "Used-car discovery",
+      "Vehicle enquiries",
+      "Dealership visits",
+      "Pre-owned vehicle sales"
+    ],
+    "city": "Mumbai",
+    "locality": "Mulund West",
+    "state": "Maharashtra",
+    "country": "India",
+    "currency": "INR",
+    "core_positioning": "A Mulund West dealership presenting pre-owned cars through clear specifications, real inventory footage and cinematic vehicle storytelling.",
+    "approved_positioning_short": "Pre-owned cars in Mulund West.",
+    "primary_audience": [
+      "Mumbai buyers exploring pre-owned cars",
+      "Families comparing practical vehicles",
+      "First-time used-car buyers",
+      "Buyers comparing model year, ownership, mileage, fuel and transmission",
+      "Local automotive audiences"
+    ],
+    "confirmed_content_genres": [
+      "Car information",
+      "Cinematic automotive content"
+    ],
+    "active_since_or_billing_note": "14 August appeared in the user-provided operational record. It is not the dealership founding date.",
+    "dataset_date": "2026-09-25",
+    "legal_name": null,
+    "founding_year": null,
+    "commercial_accuracy_rule": "A vehicle can be described as available only after current confirmation. Never infer price, kilometre reading, owner count, fuel, transmission, variant, registration, insurance, service history, warranty, finance approval or mechanical condition."
+  },
+  "contact": {
+    "phone_display": "+91 83691 60734",
+    "phone_e164": "+918369160734",
+    "phone_status": "Confirmed in the user-provided brand record.",
+    "whatsapp_number": null,
+    "whatsapp_status": "Do not label the phone as WhatsApp or generate a wa.me link until confirmed.",
+    "address_full": "Runwal Greens BMC Parking, B1 Basement, Mulund West, Mumbai 400080, India",
+    "address_short": "Runwal Greens BMC Parking, B1 Basement, Mulund West",
+    "address_status": "Confirmed in the user-provided brand record.",
+    "email": null,
+    "website": null,
+    "google_maps_url": "https://www.google.com/maps/search/?api=1&query=Zam+Zam+Motors+Runwal+Greens+BMC+Parking+Mulund+West+Mumbai+400080",
+    "google_maps_status": "Search link derived from the confirmed address; replace with the brand's exact Maps pin when supplied.",
+    "business_hours": null,
+    "contact_rule": "Use the confirmed phone and address exactly. Do not add a website, email, WhatsApp label or exact map pin until supplied."
+  },
+  "social_media": {
+    "instagram_handle": "@zamzam_motorss",
+    "instagram_url": "https://www.instagram.com/zamzam_motorss/",
+    "instagram_status": "User-provided historical official handle. Current public availability was not independently confirmed on 2026-09-25.",
+    "facebook_name": "zamzammotorss",
+    "facebook_url": null,
+    "facebook_status": "User supplied the Facebook page name, but an exact verified URL is not established.",
+    "youtube_url": null,
+    "managing_agency": "Famebros Studio",
+    "agency_instagram_handle": "@famebrosstudio",
+    "agency_instagram_url": "https://www.instagram.com/famebrosstudio/",
+    "agency_credit_default": "💫 Managed by: @famebrosstudio",
+    "reference_rule": "Use the account to understand visual history only after confirming it is still controlled by the business. Never treat an old vehicle post as current inventory."
+  },
+  "established_content_knowledge": {
+    "confirmed_content_pillars": [
+      "Current vehicle walkarounds",
+      "Cinematic exterior and interior reveals",
+      "Exact vehicle specification cards",
+      "Model and variant education",
+      "Feature demonstrations using the actual car",
+      "Family-car and city-car use cases without unsupported claims",
+      "Stock arrival announcements after confirmation",
+      "Sold-car posts after confirmation",
+      "Dealership location and enquiry guidance",
+      "Comparison content using verified vehicles",
+      "Buying tips that do not replace mechanical or legal inspection"
+    ],
+    "historical_vehicle_examples": [
+      {
+        "vehicle": "Maruti Suzuki Ertiga ZDI",
+        "year": 2015,
+        "owner": "Second owner",
+        "odometer_km": 116000,
+        "fuel": "Diesel",
+        "transmission": "Manual",
+        "historical_price": "₹5.85 lakh",
+        "internal_car_reference": "6344"
+      },
+      {
+        "vehicle": "Maruti Suzuki Ertiga VDI",
+        "year": 2017,
+        "owner": "Second owner",
+        "odometer_km": 98000,
+        "fuel": "Diesel",
+        "transmission": "Manual",
+        "historical_price": "₹6.35 lakh",
+        "internal_car_reference": "7865"
+      },
+      {
+        "vehicle": "Ford EcoSport Titanium",
+        "year": 2015,
+        "owner": "Second owner",
+        "odometer_km": 78000,
+        "fuel": "Petrol",
+        "transmission": "Automatic",
+        "historical_price": null,
+        "internal_car_reference": null
+      },
+      {
+        "vehicle": "Ford EcoSport Ambiente",
+        "year": 2015,
+        "owner": "Second owner",
+        "odometer_km": 84000,
+        "fuel": "Petrol",
+        "transmission": "Manual",
+        "historical_price": null,
+        "internal_car_reference": null
+      },
+      {
+        "vehicle": "Hyundai Creta 1.6 SX CRDi",
+        "year": 2016,
+        "owner": "First owner",
+        "odometer_km": 164000,
+        "fuel": "Diesel",
+        "transmission": null,
+        "historical_price": "₹6.65 lakh",
+        "internal_car_reference": "3355"
+      },
+      {
+        "vehicle": "Hyundai Creta 1.6 SX CRDi",
+        "year": 2017,
+        "owner": "Second owner",
+        "odometer_km": 65000,
+        "fuel": "Diesel",
+        "transmission": null,
+        "historical_price": "₹6.65 lakh",
+        "internal_car_reference": "6412"
+      },
+      {
+        "vehicle": "Honda City SV i-VTEC",
+        "year": 2017,
+        "owner": "First owner",
+        "odometer_km": 70000,
+        "fuel": null,
+        "transmission": null,
+        "historical_price": null,
+        "internal_car_reference": null
+      }
+    ],
+    "historical_inventory_rule": "Every vehicle above is a historical example from supplied data. It is not proof of current availability, current kilometres, current price or current condition.",
+    "operational_content_note": "Earlier operations referenced six weekly reel edits and approximately 26 monthly reels handled by Farzan. Treat this as an internal historical workflow, not a public promise.",
+    "accounts_note": "A ₹25,000 package and ₹25,000 received entries appeared for August and September, with Sultan noted as a September payment mode or reference. Reconfirm before invoicing or reporting.",
+    "content_priority": "Show the exact vehicle and make factual comparison easy. The real car, current verified specifications and one enquiry action should lead every sales post."
+  },
+  "writing_direction": {
+    "brand_voice": [
+      "Confident",
+      "Clear",
+      "Aspirational",
+      "Practical",
+      "Automotive",
+      "Locally relevant"
+    ],
+    "primary_language": "Hinglish",
+    "alternate_language": "English",
+    "focus": [
+      "Real car",
+      "Exact supplied specifications",
+      "Strong visual reveal",
+      "Buyer-relevant feature",
+      "Clear enquiry CTA"
+    ],
+    "avoid": [
+      "Fake urgency",
+      "Guaranteed best price",
+      "Like-new claims without proof",
+      "Accident-free claims without documents",
+      "Perfect condition claims",
+      "Guaranteed loan approval",
+      "Unconfirmed stock",
+      "Unsupported mileage or performance claims",
+      "Overloaded specification paragraphs"
+    ],
+    "number_style": "Keep model year, owner count, kilometres, fuel, transmission and price visually separate and easy to scan.",
+    "punctuation_style": "Short readable sentences and no em dashes."
+  },
+  "content_playbook": {
+    "vehicle_listing_reel": {
+      "sequence": [
+        "Model and hero angle",
+        "Year and variant",
+        "Exterior details",
+        "Interior and features",
+        "Verified ownership, kilometres, fuel and transmission",
+        "Current price if approved",
+        "Phone and visit CTA"
+      ],
+      "rule": "Every visible and spoken specification must match the current stock sheet."
+    },
+    "cinematic_reveal": {
+      "sequence": [
+        "Badge or light detail",
+        "Front three-quarter reveal",
+        "Side profile",
+        "Interior transition",
+        "Hero end frame with exact model and CTA"
+      ],
+      "rule": "Cinematic language may create desire but must not imply condition, performance or ownership history."
+    },
+    "comparison_post": {
+      "objective": "Help a buyer compare two current vehicles using like-for-like verified fields.",
+      "fields": [
+        "Model",
+        "Variant",
+        "Year",
+        "Owner count",
+        "Kilometres",
+        "Fuel",
+        "Transmission",
+        "Price",
+        "Confirmed features"
+      ],
+      "rule": "Do not declare a universal winner. State the buyer use case and verified differences."
+    },
+    "buyer_education": {
+      "topics": [
+        "Documents to review",
+        "Importance of inspection",
+        "Test-drive checklist",
+        "Understanding owner count",
+        "Fuel and transmission considerations"
+      ],
+      "disclaimer": "General information only. Ask buyers to verify the individual car and documents."
+    },
+    "sold_post": {
+      "rule": "Use sold, delivered or booked only after the dealership confirms the exact status."
+    },
+    "offer_post": {
+      "required_inputs": [
+        "Exact benefit",
+        "Eligible vehicle",
+        "Start date",
+        "End date",
+        "Terms",
+        "Contact"
+      ],
+      "rule": "Never create an offer from an old listing price."
+    }
+  },
+  "vehicle_listing_and_sales_description_framework": {
+    "required_fields": [
+      "Make",
+      "Model",
+      "Variant",
+      "Year",
+      "Owner count",
+      "Odometer kilometres",
+      "Fuel",
+      "Transmission",
+      "Current asking price",
+      "Availability date",
+      "Actual photos or video",
+      "Phone"
+    ],
+    "optional_verified_fields": [
+      "Registration city",
+      "Colour",
+      "Insurance validity",
+      "Service history",
+      "Feature list",
+      "Tyre condition",
+      "Finance options",
+      "Warranty",
+      "Test-drive terms"
+    ],
+    "short_listing_template": "[Year] [make] [model] [variant]. [Owner count], [kilometres] km, [fuel], [transmission]. Current asking price: [price]. Call +91 83691 60734 to confirm availability and plan a visit.",
+    "unknown_field_rule": "Omit an unknown field or label it confirmation required. Never fill it from appearance or a similar vehicle.",
+    "price_rule": "Use current asking price, not historical price. Avoid fixed-price or final-price language unless approved.",
+    "availability_rule": "Verify on the publication date because used-car inventory can change quickly."
+  },
+  "caption_format": {
+    "default_use": "Instagram and Facebook feed posts and reels.",
+    "body_length": "Usually 25 to 70 words excluding footer, hashtags and SEO bracket. Longer educational captions are allowed when requested.",
+    "body_structure": [
+      "One strong, brand-relevant hook.",
+      "One to three clear lines using only verified details.",
+      "One direct enquiry, visit, booking, save, share or link-in-bio CTA."
+    ],
+    "format_order": [
+      "Caption body",
+      "Blank line",
+      "Approved location and contact footer when available",
+      "Agency credit when required",
+      "Blank line",
+      "Exactly three hashtags",
+      "Blank line",
+      "Exactly one square-bracket SEO block"
+    ],
+    "hashtag_rule": "Exactly three hashtags unless the user explicitly requests another count.",
+    "seo_rule": "Use five to eight natural search phrases inside one and only one pair of square brackets.",
+    "story_rule": "For story copy, use a short headline, one support line and one CTA. Omit the feed footer, hashtags and SEO unless requested.",
+    "reel_overlay_rule": "Keep each text card short enough to read comfortably on a phone. Do not repeat the whole caption on screen.",
+    "final_checks": [
+      "Use only facts approved for the selected post.",
+      "Use exactly three relevant hashtags.",
+      "Use one square-bracket SEO block containing five to eight comma-separated phrases.",
+      "Use one clear CTA.",
+      "Remove every em dash before delivery.",
+      "Confirm the vehicle is still available on the publication date.",
+      "Match every specification to the current stock record."
+    ]
+  },
+  "fixed_footer": {
+    "standard_lines": [
+      "📍 Runwal Greens BMC Parking, B1 Basement, Mulund West, Mumbai 400080",
+      "📞 +91 83691 60734",
+      "💫 Managed by: @famebrosstudio"
+    ],
+    "compact_lines": [
+      "📍 Mulund West | 📞 +91 83691 60734",
+      "💫 Managed by: @famebrosstudio"
+    ],
+    "usage": "Use the standard version for listings and dealership reels. Use the compact version when the specification block is long.",
+    "exceptions": [
+      "Story overlays",
+      "Comments and replies",
+      "A platform field that already displays the address"
+    ]
+  },
+  "suggested_hashtag_bank": [
+    "#ZamZamMotors",
+    "#UsedCarsMumbai",
+    "#PreOwnedCars",
+    "#MulundCars",
+    "#CarDealershipMumbai",
+    "#UsedCarIndia",
+    "#CarWalkaround",
+    "#MumbaiCars"
+  ],
+  "seo_keyword_bank": [
+    "Zam Zam Motors Mulund",
+    "used cars in Mulund West",
+    "pre owned cars Mumbai",
+    "used car dealership Mulund",
+    "second hand cars Mumbai",
+    "family cars in Mumbai",
+    "used car walkaround",
+    "car dealer near Runwal Greens"
+  ],
+  "cta_bank": [
+    "Call +91 83691 60734 to confirm current availability.",
+    "Visit us in Mulund West after confirming the vehicle.",
+    "DM the exact model name for current details.",
+    "Save this listing for your comparison.",
+    "Share it with someone searching for a pre-owned car."
+  ],
+  "suggested_hooks": [
+    "Your next car could be closer than you think.",
+    "One clean reveal. All the details that matter.",
+    "Looking for a practical pre-owned car in Mumbai?",
+    "Before you shortlist it, check these verified details.",
+    "A family-car option worth comparing.",
+    "Real car, clear specifications, direct enquiry."
+  ],
+  "visual_and_asset_guidance": {
+    "feed_size": "1080 x 1440 pixels",
+    "story_and_reel_size": "1080 x 1920 pixels",
+    "asset_priority": [
+      "Current real vehicle footage",
+      "Readable badge and model details",
+      "Exterior condition coverage",
+      "Interior coverage",
+      "Odometer only when current and approved",
+      "Clean dealership context"
+    ],
+    "style": [
+      "Cinematic",
+      "High contrast",
+      "Controlled reflections",
+      "Automotive detail",
+      "Clean information cards"
+    ],
+    "fidelity_rules": [
+      "Do not alter dents, scratches, paint, wheels, registration plate or interior condition.",
+      "Blur registration details when required.",
+      "Do not replace the real vehicle with stock imagery.",
+      "Do not retouch a car into a better condition than reality."
+    ],
+    "thumbnail_rule": "Show one real car, exact model name and one short hook. Keep price only if current and approved."
+  },
+  "carousel_and_reel_system": {
+    "listing_carousel": [
+      "Slide 1: Model, year and hero photo",
+      "Slide 2: Exterior",
+      "Slide 3: Interior",
+      "Slide 4: Ownership, kilometres, fuel and transmission",
+      "Slide 5: Verified features",
+      "Slide 6: Current price and contact"
+    ],
+    "cinematic_reel": [
+      "0 to 2 seconds: Detail hook",
+      "2 to 6 seconds: Full-car reveal",
+      "6 to 11 seconds: Exterior and interior",
+      "11 to 15 seconds: Key verified facts",
+      "15 to 18 seconds: Phone and location CTA"
+    ],
+    "editing_style": [
+      "Stable movement",
+      "Clean cuts",
+      "Natural vehicle colour",
+      "Minimal speed ramps",
+      "Readable specification cards"
+    ],
+    "music_direction": "Confident cinematic or automotive audio with appropriate usage rights."
+  },
+  "other_output_modes": {
+    "story_sequence": [
+      "Current car reveal",
+      "Three verified facts",
+      "Call or DM CTA"
+    ],
+    "whatsapp_listing": "Compact specification card with one current vehicle, price, availability date and phone.",
+    "marketplace_copy": "Searchable factual title followed by exact specifications, location and enquiry instruction.",
+    "comment_reply": "Answer only with current confirmed information and move personal finance or document discussion to private contact.",
+    "voiceover": "Natural Hinglish, 25 to 40 seconds, one vehicle, no unsupported superlatives."
+  },
+  "sample_caption": {
+    "status": "Illustrative format using a historical stock example. Do not publish until current availability, kilometres and price are reconfirmed.",
+    "scenario": "Maruti Suzuki Ertiga listing format",
+    "caption_body": "Family space, diesel practicality and a clear set of details to compare. This 2017 Maruti Suzuki Ertiga VDI was recorded as a second-owner diesel manual with 98,000 km. Call us to confirm its current availability and latest asking price.",
+    "footer": [
+      "📍 Runwal Greens BMC Parking, B1 Basement, Mulund West, Mumbai 400080",
+      "📞 +91 83691 60734",
+      "💫 Managed by: @famebrosstudio"
+    ],
+    "hashtags": [
+      "#ZamZamMotors",
+      "#UsedCarsMumbai",
+      "#Ertiga"
+    ],
+    "seo_keywords": [
+      "Zam Zam Motors Mulund",
+      "used Ertiga Mumbai",
+      "pre owned cars Mulund",
+      "diesel manual car Mumbai",
+      "used car dealership Mulund West",
+      "family car Mumbai"
+    ],
+    "full_caption": "Family space, diesel practicality and a clear set of details to compare. This 2017 Maruti Suzuki Ertiga VDI was recorded as a second-owner diesel manual with 98,000 km. Call us to confirm its current availability and latest asking price.\n\n📍 Runwal Greens BMC Parking, B1 Basement, Mulund West, Mumbai 400080\n📞 +91 83691 60734\n💫 Managed by: @famebrosstudio\n\n#ZamZamMotors #UsedCarsMumbai #Ertiga\n\n[Zam Zam Motors Mulund, used Ertiga Mumbai, pre owned cars Mulund, diesel manual car Mumbai, used car dealership Mulund West, family car Mumbai]",
+    "validation": {
+      "hashtags": 3,
+      "seo_phrases": 6,
+      "current_availability_confirmed": false,
+      "publication_ready": false
+    }
+  },
+  "accuracy_rules": [
+    "Treat all listed vehicle examples as historical until stock is reconfirmed.",
+    "Never invent or infer year, variant, owner count, kilometres, fuel, transmission or price.",
+    "Never claim accident-free, non-flooded, showroom condition, single-owner or company maintained without current proof.",
+    "Never promise finance approval, warranty, insurance, transfer time or test drive unless confirmed.",
+    "Never change a vehicle's visible colour or condition in creative assets.",
+    "Use the exact confirmed phone and address.",
+    "Do not present internal package, payment or staff notes publicly.",
+    "Remove every em dash."
+  ],
+  "per_post_input": {
+    "required_core": [
+      "Output type",
+      "Objective",
+      "Publication date",
+      "Current vehicle status",
+      "Actual photos or video",
+      "Make",
+      "Model",
+      "Variant",
+      "Year",
+      "Owner count",
+      "Kilometres",
+      "Fuel",
+      "Transmission",
+      "Current price",
+      "CTA"
+    ],
+    "supporting_inputs": [
+      "Colour",
+      "Registration",
+      "Insurance",
+      "Service history",
+      "Features",
+      "Condition notes",
+      "Finance terms",
+      "Warranty",
+      "Test-drive terms"
+    ],
+    "creative_inputs": [
+      "Logo",
+      "Format",
+      "Headline",
+      "Music direction",
+      "Mandatory disclaimer",
+      "Plate-blur requirement"
+    ],
+    "input_rule": "If a required listing field is missing, ask for it or omit it. Never substitute historical data without approval."
+  },
+  "master_brand_instruction": "Create content only for Zam Zam Motors, a pre-owned car dealership at Runwal Greens BMC Parking, B1 Basement, Mulund West, Mumbai 400080. The confirmed phone is +91 83691 60734 and the user-provided Instagram is @zamzam_motorss. Write clear, confident and aspirational Hinglish or English. Make the actual car and verified specifications the hero. Treat every vehicle in this file as a historical example unless the current stock sheet confirms it on the publication date. Never invent year, variant, owner count, kilometres, fuel, transmission, price, condition, service history, insurance, warranty, finance approval or availability. Use the approved footer, exactly three hashtags and one SEO bracket with five to eight phrases for standard captions. Remove all em dashes.",
+  "missing_information": {
+    "business": [
+      "Legal entity",
+      "Owner or founder",
+      "Founding year",
+      "Business hours"
+    ],
+    "digital": [
+      "Current confirmation of Instagram control",
+      "Verified Facebook URL",
+      "Website",
+      "Email",
+      "Google Maps URL",
+      "Official WhatsApp confirmation"
+    ],
+    "inventory": [
+      "Current live stock sheet",
+      "Current prices",
+      "Current photos and videos",
+      "Document and condition checks",
+      "Finance and warranty terms"
+    ],
+    "brand_system": [
+      "Logo files",
+      "Colour codes",
+      "Fonts",
+      "Photography guide",
+      "Listing template"
+    ],
+    "agency": [
+      "Current monthly package",
+      "Current reel count",
+      "Approval workflow",
+      "Current billing status"
+    ],
+    "priority": "Obtain current inventory and pricing, then confirm the Instagram page and enquiry workflow."
+  },
+  "sources": {
+    "user_facts": [
+      "Name, category, Mulund West location, full address and phone.",
+      "Historical Instagram handle and Facebook name.",
+      "Car-information and cinematic content genres.",
+      "Historical vehicle examples and operational account notes."
+    ],
+    "public_sources": [],
+    "public_search_note": "Web/phone searches on 2026-09-25 for Zam Zam Motors Mulund + 83691 60734 returned only unrelated global namesakes (US/UK/UAE). No stronger official source found; phone, address and handle stay user-provided.",
+    "internal_dataset": "Famebros_Brand_Caption_Dataset.json record zam_zam_motors.",
+    "source_rule": "A current dealership stock sheet and current brand-approved contact information override historical examples in this file."
+  }
+}

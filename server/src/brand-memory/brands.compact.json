@@ -1225,7 +1225,7 @@
     {
       "id": "asma_women_clothing",
       "name": "Asma Women Clothing",
-      "aliases": [],
+      "aliases": ["Her Choice by Asma", "herchoice_byasma"],
       "cat": "Women clothing",
       "loc": "",
       "genres": [
@@ -1236,7 +1236,7 @@
       "tone": "Graceful, stylish and uncluttered",
       "lang": "English or Hinglish",
       "cta": [
-        "DM us for details of this outfit.",
+        "DM @herchoice_byasma for details of this outfit.",
         "Which look would you choose?"
       ],
       "avoid": [
@@ -1244,6 +1244,7 @@
         "Do not assume modestwear, abayas, ethnic-only or a specific city"
       ],
       "kw": [
+        "Her Choice by Asma",
         "Asma Women Clothing",
         "women clothing",
         "outfit inspiration",
@@ -1254,8 +1255,8 @@
         "💫 Managed by: @famebrosstudio"
       ],
       "mandatory": [],
-      "ex": "Let the outfit do the talking. ✨\nA closer look at the style featured by Asma Women Clothing.\nDM us for outfit details.",
-      "ig": null,
+      "ex": "Let the outfit do the talking. ✨\nA closer look at the style featured by Her Choice by Asma.\nDM @herchoice_byasma for outfit details.",
+      "ig": "@herchoice_byasma",
       "ready": "ready_with_post_brief",
       "web": null,
       "email": null

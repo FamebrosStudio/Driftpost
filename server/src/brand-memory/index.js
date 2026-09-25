@@ -93,11 +93,16 @@ export function fullPack(brand) {
   return lines.join('\n');
 }
 
-const DEEP_DIR = path.join(here, 'brands');
+ const DEEP_DIR = path.join(here, 'brands');
 let deepCache = null;
+let deepCacheMtime = 0;
 function loadDeepAll() {
-  if (deepCache) return deepCache;
+  try {
+    const dirMtime = fs.statSync(DEEP_DIR).mtimeMs;
+    if (deepCache && deepCacheMtime >= dirMtime) return deepCache;
+  } catch {}
   deepCache = {};
+  deepCacheMtime = Date.now();
   let files = [];
   try {
     files = fs.readdirSync(DEEP_DIR).filter((f) => f.endsWith('.json'));
