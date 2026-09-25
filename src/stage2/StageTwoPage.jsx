@@ -154,31 +154,39 @@ export default function StageTwoPage({ session, onBack, onSignOut }) {
     setEditing(-1);
   };
 
+  const requestCaptions = () => api('/api/ai/captions', session.access_token, {
+    method: 'POST',
+    body: JSON.stringify({
+      summary: brief,
+      brand: brandLabel,
+      asset_description: files.length ? `${files.length} x ${files[0].type}` : '',
+      goal: 'enquiries',
+      trends: false,
+      tone, emoji, length,
+    }),
+  });
+
+  const mapResponse = (data) => {
+    const c = data.captions || data;
+    const ytTags = Array.isArray(c.youtube?.tags) ? c.youtube.tags.join(', ') : (c.youtube?.tags || '');
+    const igTags = Array.isArray(c.instagram?.hashtags) ? c.instagram.hashtags.join(' ') : (c.instagram?.hashtags || '');
+    const xText = typeof c.x?.text === 'string' ? c.x.text.slice(0, 280) : '';
+    return {
+      instagram: { caption: c.instagram?.caption || '', hashtags: igTags },
+      facebook: { message: c.facebook?.message || '' },
+      youtube: { title: c.youtube?.title || '', description: c.youtube?.description || '', tags: ytTags },
+      x: { text: xText },
+    };
+  };
+
   const generate = async () => {
-    if (busy || !brief.trim() || !targetPlatforms.length) return;
+    if (busy || regen || !brief.trim() || !targetPlatforms.length) return;
     setBusy(true); setAiMsg(''); setGenStep(0);
     const tick = setInterval(() => setGenStep((s) => (s + 1) % GEN_STEPS.length), 1400);
     try {
-      const data = await api('/api/ai/captions', session.access_token, {
-        method: 'POST',
-        body: JSON.stringify({
-          summary: brief,
-          brand: brandLabel,
-          asset_description: files.length ? `${files.length} x ${files[0].type}` : '',
-          goal: 'enquiries',
-          trends: false,
-          tone, emoji, length,
-        }),
-      });
-      const c = data.captions || data;
-      const ytTags = Array.isArray(c.youtube?.tags) ? c.youtube.tags.join(', ') : (c.youtube?.tags || '');
-      const igTags = Array.isArray(c.instagram?.hashtags) ? c.instagram.hashtags.join(' ') : (c.instagram?.hashtags || '');
-      const xText = typeof c.x?.text === 'string' ? c.x.text.slice(0, 280) : '';
+      const mapped = mapResponse(await requestCaptions());
       const next = { ...outputs };
-      if (targetPlatforms.includes('instagram')) next.instagram = { caption: c.instagram?.caption || '', hashtags: igTags };
-      if (targetPlatforms.includes('facebook')) next.facebook = { message: c.facebook?.message || '' };
-      if (targetPlatforms.includes('youtube')) next.youtube = { title: c.youtube?.title || '', description: c.youtube?.description || '', tags: ytTags };
-      if (targetPlatforms.includes('x')) next.x = { text: xText };
+      targetPlatforms.forEach((pid) => { next[pid] = mapped[pid]; });
       setOutputs(next);
       save('driftpost-stage2-outputs', next);
       setAiMsg('Done — review each platform card below. Edit anything, it saves.');
@@ -187,6 +195,21 @@ export default function StageTwoPage({ session, onBack, onSignOut }) {
     }
     clearInterval(tick);
     setBusy(false);
+  };
+
+  // Per-card regenerate: same prompt, fresh answer, only that card changes.
+  const [regen, setRegen] = useState('');
+  const regenOne = async (pid) => {
+    if (busy || regen || !brief.trim()) return;
+    setRegen(pid); setAiMsg('');
+    try {
+      const mapped = mapResponse(await requestCaptions());
+      setOutputs((o) => { const n = { ...o, [pid]: mapped[pid] }; save('driftpost-stage2-outputs', n); return n; });
+      setAiMsg(`Regenerated ${pid} — review the card.`);
+    } catch (e) {
+      setAiMsg(e.message || 'Regeneration failed.');
+    }
+    setRegen('');
   };
 
   const saveOutput = (pid, values) => {
@@ -223,7 +246,7 @@ export default function StageTwoPage({ session, onBack, onSignOut }) {
             <h2>Add media</h2>
             <span className="s2-count">{files.length}/10</span>
           </div>
-          <p className="sub">Images or video — shown on every selected platform. Tap Edit on a photo to crop it.</p>
+          <p className="sub">Images or video — shown on every selected platform. Tap Edit on a photo or video to crop it.</p>
           <MediaUploader count={files.length} onFiles={addFiles} />
           <MediaGallery files={files} onRemove={removeAt} onEdit={setEditing} />
         </section>
@@ -258,7 +281,7 @@ export default function StageTwoPage({ session, onBack, onSignOut }) {
             </div>
             <p className="sub">Different output per platform — only the ones you selected in Stage 1.</p>
             {!hasOutputs && !busy && <p className="s2-msg ok">Nothing here yet — write a prompt above and press Generate Content.</p>}
-            <OutputContainer platforms={targetPlatforms} outputs={outputs} onSave={saveOutput} />
+            <OutputContainer platforms={targetPlatforms} outputs={outputs} onSave={saveOutput} regen={regen} onRegen={regenOne} busy={busy} />
           </section>
         )}
       </div>

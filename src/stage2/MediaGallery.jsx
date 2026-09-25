@@ -17,7 +17,7 @@ function MediaCard({ entry, index, onRemove, onEdit }) {
         <small>{entry.size}</small>
       </div>
       <div className="acts">
-        {!isVideo && <button type="button" onClick={() => onEdit(index)}>Edit</button>}
+        <button type="button" onClick={() => onEdit(index)}>Edit</button>
         <button type="button" className="danger" onClick={() => onRemove(index)}>Delete</button>
       </div>
     </div>

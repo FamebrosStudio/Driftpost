@@ -24,7 +24,7 @@ function compose(pid, v) {
   return v.text || '';
 }
 
-export default function PlatformOutputCard({ pid, values, onSave }) {
+export default function PlatformOutputCard({ pid, values, onSave, regenning, regenBusy, onRegen }) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(values);
   const [copied, setCopied] = useState(false);
@@ -69,6 +69,9 @@ export default function PlatformOutputCard({ pid, values, onSave }) {
         ) : (
           <button type="button" onClick={startEdit}>Edit</button>
         )}
+        <button type="button" disabled={regenBusy} title="Fresh AI answer for this card only" onClick={() => onRegen(pid)}>
+          {regenning ? '…' : 'Regen'}
+        </button>
       </div>
     </div>
   );
