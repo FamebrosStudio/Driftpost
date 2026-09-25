@@ -219,6 +219,29 @@ export function groupBrands(connections) {
   return alive;
 }
 
+// Queue a post for the server to publish later. Media rides along as
+// multipart so the worker can rebuild the exact upload at fire time.
+export async function schedulePost(token, { platform, connectionId, when, body, files = [], thumb = null }) {
+  const form = new FormData();
+  form.append('platform', platform);
+  form.append('connection_id', connectionId || '');
+  form.append('scheduled_at', when);
+  for (const [k, v] of Object.entries(body || {})) form.append(k, v == null ? '' : String(v));
+  for (const f of files) if (f?.raw) form.append('media', f.raw, f.name);
+  if (thumb?.raw) form.append('thumbnail', thumb.raw, thumb.name);
+  const res = await fetch(`${apiUrl}/api/schedule`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+    body: form,
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || 'Could not schedule the post');
+  return data.schedule;
+}
+
+export const listSchedules = (token) => api('/api/schedules', token).then((d) => d.schedules || []);
+export const cancelSchedule = (token, id) => api(`/api/schedules/${id}`, token, { method: 'DELETE' });
+
 // Fresh start after posting: wipes the finished post's content (media,
 // prompt, outputs, done flags) and returns to Stage 1. Account setup,
 // groups, style prefs, cross-post choice and the AI answer cache survive.

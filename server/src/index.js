@@ -717,6 +717,214 @@ setInterval(() => {
   for (const [id, j] of jobs) if (j.completedAt && j.completedAt < cut) jobs.delete(id);
 }, 10 * 60 * 1000).unref();
 
+// --- Scheduled posts -----------------------------------------------------
+// The browser uploads media once, we park it in Storage with the request
+// body, and a lightweight worker re-assembles the upload when it is due.
+// Everything (tokens, connection) is validated at fire time again, so a
+// disconnected or revoked account fails loudly instead of silently.
+const SCHED_BATCH = 5;
+
+function validateMedia(platform, files) {
+  if (files.length > 10) return 'Carousel allows up to 10 photos';
+  for (const f of files) {
+    const mt = String(f.mimetype || '');
+    if (!mt.startsWith('image/') && !mt.startsWith('video/')) return 'Only image and video files are accepted';
+    if (mt.startsWith('image/') && f.size > 10 * 1024 * 1024) return 'Image is larger than 10 MB';
+    if (mt.startsWith('video/') && f.size > 512 * 1024 * 1024) return 'Video is larger than 512 MB';
+  }
+  const imgCount = files.filter((f) => String(f.mimetype || '').startsWith('image/')).length;
+  const vidCount = files.filter((f) => String(f.mimetype || '').startsWith('video/')).length;
+  if (files.length > 1 && vidCount > 0 && (platform === 'instagram' || platform === 'facebook')) {
+    return 'Carousel takes photos only (2-10). Post videos one at a time.';
+  }
+  if (platform === 'x' && files.length > 4) return 'X allows up to 4 photos per post';
+  return null;
+}
+
+async function removeStored(paths) {
+  for (const p of [].concat(paths || []).filter(Boolean)) {
+    await supabase.storage.from(BUCKET).remove([p]).catch(() => {});
+  }
+}
+
+app.get('/api/schedules', requireUser, jobsLimit, async (req, res) => {
+  const { data, error } = await supabase.from('scheduled_posts')
+    .select('*').eq('user_id', req.user.id)
+    .order('scheduled_at', { ascending: true }).limit(100);
+  if (error) return res.status(500).json({ error: 'Could not load scheduled posts' });
+  res.json({ schedules: data || [] });
+});
+
+app.post('/api/schedule', requireUser, strictBurstLimit, publishLimit, publishUpload, async (req, res) => {
+  const platform = String(req.body.platform || '').slice(0, 32);
+  const connectionId = String(req.body.connection_id || '').slice(0, 128);
+  const files = [...(req.files?.media || []), ...(req.file ? [req.file] : [])];
+  const thumbFile = req.files?.thumbnail?.[0] || null;
+  const cleanupTmp = async () => {
+    for (const f of [...files, ...(thumbFile ? [thumbFile] : [])]) await fs.unlink(f.path).catch(() => {});
+  };
+  if (!['youtube', 'facebook', 'instagram', 'x'].includes(platform)) {
+    await cleanupTmp();
+    return res.status(400).json({ error: 'Pick YouTube, Instagram, Facebook or X' });
+  }
+  const when = Date.parse(req.body.scheduled_at || '');
+  if (!Number.isFinite(when)) {
+    await cleanupTmp();
+    return res.status(400).json({ error: 'Pick a valid date and time' });
+  }
+  if (when < Date.now() + 60 * 1000) {
+    await cleanupTmp();
+    return res.status(400).json({ error: 'Schedule at least 1 minute from now' });
+  }
+  if (when > Date.now() + 365 * 24 * 3600 * 1000) {
+    await cleanupTmp();
+    return res.status(400).json({ error: 'Schedule within the next year' });
+  }
+  const mediaErr = validateMedia(platform, files);
+  if (mediaErr) {
+    await cleanupTmp();
+    return res.status(400).json({ error: mediaErr });
+  }
+  const { data: conn, error: connErr } = await supabase.from('platform_connections')
+    .select('*').eq('id', connectionId).eq('user_id', req.user.id).eq('platform', platform).maybeSingle();
+  if (connErr || !conn) {
+    await cleanupTmp();
+    return res.status(409).json({ error: `Connect a ${platform} account first` });
+  }
+  // Park the media so the worker can rebuild the upload later.
+  const prefix = `scheduled/${req.user.id}/${crypto.randomUUID()}`;
+  const stored = [];
+  try {
+    for (const f of files) {
+      const bytes = await fs.readFile(f.path);
+      const ext = (path.extname(f.originalname || '') || (String(f.mimetype).startsWith('video/') ? '.mp4' : '.jpg'))
+        .replace(/[^a-z0-9.]/gi, '').slice(0, 8);
+      const key = `${prefix}/${crypto.randomUUID()}${ext}`;
+      const { error: upErr } = await supabase.storage.from(BUCKET)
+        .upload(key, bytes, { contentType: f.mimetype, upsert: false });
+      if (upErr) throw new Error('Media upload failed. Create public bucket "' + BUCKET + '" in Supabase Storage.');
+      stored.push({ path: key, mimetype: f.mimetype, name: f.originalname || key.split('/').pop() });
+    }
+    let thumbPath = null;
+    if (thumbFile) {
+      const bytes = await fs.readFile(thumbFile.path);
+      const key = `${prefix}/cover.jpg`;
+      const { error: upErr } = await supabase.storage.from(BUCKET)
+        .upload(key, bytes, { contentType: thumbFile.mimetype, upsert: false });
+      if (upErr) throw new Error('Cover upload failed. Create public bucket "' + BUCKET + '" in Supabase Storage.');
+      thumbPath = key;
+    }
+    const { data, error } = await supabase.from('scheduled_posts').insert({
+      user_id: req.user.id,
+      platform,
+      connection_id: connectionId,
+      scheduled_at: new Date(when).toISOString(),
+      status: 'scheduled',
+      body: req.body || {},
+      media: stored,
+      thumb_path: thumbPath,
+    }).select().single();
+    if (error) throw new Error('Could not save the schedule');
+    await cleanupTmp();
+    res.status(201).json({ schedule: data });
+  } catch (e) {
+    await removeStored([...stored.map((s) => s.path), thumbPath]);
+    await cleanupTmp();
+    res.status(500).json({ error: e.message || 'Could not schedule the post' });
+  }
+});
+
+app.delete('/api/schedules/:id', requireUser, jobsLimit, async (req, res) => {
+  const { data: row } = await supabase.from('scheduled_posts')
+    .select('*').eq('id', req.params.id).eq('user_id', req.user.id).maybeSingle();
+  if (!row) return res.status(404).json({ error: 'Schedule not found' });
+  if (['publishing', 'published'].includes(row.status)) {
+    return res.status(409).json({ error: 'This post is already publishing or published' });
+  }
+  await supabase.from('scheduled_posts')
+    .update({ status: 'cancelled', updated_at: new Date().toISOString() })
+    .eq('id', row.id);
+  await removeStored([...(row.media || []).map((m) => m.path), row.thumb_path]);
+  res.json({ ok: true });
+});
+
+// Worker: pull due rows, rebuild the upload from Storage, run the real
+// publisher. One bad row never blocks the rest.
+let scheduleTickRunning = false;
+async function runDueSchedules() {
+  if (scheduleTickRunning) return;
+  scheduleTickRunning = true;
+  try {
+    const { data: due } = await supabase.from('scheduled_posts')
+      .select('*').eq('status', 'scheduled').lte('scheduled_at', new Date().toISOString())
+      .order('scheduled_at', { ascending: true }).limit(SCHED_BATCH);
+    for (const row of due || []) {
+      // Claim the row so a second instance/loop cannot double-post.
+      const { data: claimed } = await supabase.from('scheduled_posts')
+        .update({ status: 'publishing', updated_at: new Date().toISOString() })
+        .eq('id', row.id).eq('status', 'scheduled').select();
+      if (!claimed || !claimed.length) continue;
+      const { data: conn } = await supabase.from('platform_connections')
+        .select('*').eq('id', row.connection_id).eq('user_id', row.user_id).maybeSingle();
+      const job = {
+        id: crypto.randomUUID(),
+        userId: row.user_id,
+        platform: row.platform,
+        state: 'queued',
+        progress: 0,
+        message: 'Scheduled publish',
+        createdAt: Date.now(),
+      };
+      jobs.set(job.id, job);
+      try {
+        if (!conn) throw new Error('The connected account is gone — reconnect it.');
+        const localFiles = [];
+        for (const m of row.media || []) {
+          const { data, error: dlErr } = await supabase.storage.from(BUCKET).download(m.path);
+          if (dlErr || !data) throw new Error('Scheduled media is missing');
+          const tmp = path.join(os.tmpdir(), `driftpost-sched-${crypto.randomUUID()}${path.extname(m.path) || '.jpg'}`);
+          const buf = Buffer.from(await data.arrayBuffer());
+          await fs.writeFile(tmp, buf);
+          localFiles.push({ path: tmp, mimetype: m.mimetype || 'image/jpeg', originalname: m.name || 'media', size: buf.length });
+        }
+        let thumbFile = null;
+        if (row.thumb_path) {
+          const { data } = await supabase.storage.from(BUCKET).download(row.thumb_path);
+          if (data) {
+            const tmp = path.join(os.tmpdir(), `driftpost-sched-cover-${crypto.randomUUID()}.jpg`);
+            const buf = Buffer.from(await data.arrayBuffer());
+            await fs.writeFile(tmp, buf);
+            thumbFile = { path: tmp, mimetype: 'image/jpeg', originalname: 'cover.jpg', size: buf.length };
+          }
+        }
+        await runPublish(job, conn, { files: localFiles, thumbFile }, row.body || {}, row.user_id);
+        const done = jobs.get(job.id) || job;
+        await supabase.from('scheduled_posts').update({
+          status: done.state === 'completed' ? 'published' : 'failed',
+          result_url: done.url || null,
+          error: done.state === 'completed' ? null : (done.message || 'Publish failed'),
+          updated_at: new Date().toISOString(),
+        }).eq('id', row.id);
+        if (done.state === 'completed') {
+          await removeStored([...(row.media || []).map((m) => m.path), row.thumb_path]);
+        }
+      } catch (e) {
+        await supabase.from('scheduled_posts').update({
+          status: 'failed',
+          error: e.message || 'Publish failed',
+          updated_at: new Date().toISOString(),
+        }).eq('id', row.id);
+      }
+    }
+  } catch {
+    // Never let a transient Supabase error kill the interval.
+  } finally {
+    scheduleTickRunning = false;
+  }
+}
+setInterval(runDueSchedules, 60 * 1000).unref();
+setTimeout(runDueSchedules, 10 * 1000).unref();
+
 app.use((_req, res) => res.status(404).json({ error: 'Not found' }));
 
 app.use((err, _req, res, _next) => {

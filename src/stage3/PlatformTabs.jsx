@@ -23,6 +23,7 @@ export default function PlatformTabs({ platforms, tab, setTab, statusOf, greyed 
             <BrandIcon id={pid} size={15} />
             {NAMES[pid]}
             {st === 'reviewed' && <span className="st ok">✓</span>}
+            {st === 'scheduled' && <span className="st ok">Scheduled</span>}
             {st === 'posted' && <span className="st ok">Posted</span>}
             {st === 'failed' && <span className="st bad">Failed</span>}
           </button>

@@ -110,6 +110,18 @@
 .s3-acts button.go:hover:not(:disabled) { filter: brightness(1.08); }
 .s3-acts button.ok { border-color: var(--ok); color: var(--ok); }
 .s3-view { display: block; margin-top: 10px; font-size: 13px; font-weight: 700; color: var(--ok); }
+.s3-note { font-size: 12.5px; color: var(--ok); background: #3ddc9714; border: 1px solid var(--ok); border-radius: 10px; padding: 9px 12px; margin: 0 0 10px; line-height: 1.55; }
+.s3-bar-msg { font-size: 12.5px; color: var(--muted); text-align: center; margin: 2px 0 0; line-height: 1.5; max-width: 680px; }
+
+/* schedule modal */
+.s3-overlay { position: fixed; inset: 0; z-index: 200; background: rgba(0, 0, 0, 0.74); display: flex; align-items: center; justify-content: center; padding: 18px; animation: s3Fade 0.2s ease both; }
+.s3-sched { width: min(460px, 100%); max-height: 88vh; overflow: auto; background: var(--panel); border: 1.5px solid var(--line-hard); border-radius: 18px; padding: 22px; color: var(--ink); animation: s3Zoom 0.25s cubic-bezier(0.2, 0.9, 0.3, 1.05) both; }
+.s3-sched h2 { margin: 0 0 4px; font-size: 18px; }
+.s3-sched .sub { color: var(--muted); font-size: 13px; margin: 0 0 14px; line-height: 1.55; }
+.s3-quick { display: flex; gap: 8px; flex-wrap: wrap; margin: 0 0 12px; }
+.s3-quick button { border: 1.5px solid var(--line-hard); background: var(--panel2); color: var(--ink); border-radius: 999px; padding: 8px 15px; font-size: 12.5px; font-weight: 700; cursor: pointer; }
+.s3-quick button:hover { border-color: var(--acc); color: var(--acc); }
+@keyframes s3Zoom { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
 
 /* publish bar */
 .s3-pub { position: fixed; left: 0; right: 0; bottom: 0; z-index: 50; background: var(--bg); border-top: 1px solid var(--line); padding: 12px 20px calc(env(safe-area-inset-bottom) + 12px); display: flex; flex-direction: column; align-items: center; gap: 8px; animation: s3BarUp 0.5s 0.15s ease both; }
@@ -120,6 +132,9 @@
 .s3-postall { width: min(680px, 100%); background: var(--acc); color: var(--acc-ink); border: 0; border-radius: 14px; padding: 15px; font-size: 15px; font-weight: 700; cursor: pointer; }
 .s3-postall:disabled { opacity: 0.4; cursor: not-allowed; }
 .s3-postall:not(:disabled):hover { filter: brightness(1.08); }
+.s3-schedall { width: min(680px, 100%); background: transparent; border: 1.5px solid var(--line-hard); color: var(--ink); border-radius: 14px; padding: 13px; font-size: 14px; font-weight: 700; cursor: pointer; }
+.s3-schedall:hover:not(:disabled) { border-color: var(--acc); color: var(--acc); }
+.s3-schedall:disabled { opacity: 0.4; cursor: not-allowed; }
 .s3-pub-hint { font-size: 12px; color: var(--faint); margin: 0; }
 
 /* success */

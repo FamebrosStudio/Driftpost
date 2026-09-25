@@ -1,11 +1,13 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import BrandIcon from '../brand.jsx';
 import { api } from '../lib.js';
 import { readDisconnectLog, removeDisconnectLog, readCaptionLog, readPostLog, removePostLog } from './log.js';
+import { listSchedules, cancelSchedule } from '../lib.js';
 import './history.css';
 
 const TABS = [
   { id: 'posted', label: 'Posted' },
+  { id: 'scheduled', label: 'Scheduled' },
   { id: 'deleted', label: 'Deleted accounts' },
   { id: 'captions', label: 'Captions' },
 ];
@@ -47,6 +49,64 @@ export function PostedTab() {
         </div>
       ))}
       <p className="hist-note">Edit + repost arrive with Stage 3 publishing.</p>
+    </div>
+  );
+}
+
+function ScheduledTab({ token }) {
+  const [rows, setRows] = useState(null);
+  const [busy, setBusy] = useState('');
+
+  const load = () => {
+    listSchedules(token).then(setRows).catch(() => setRows([]));
+  };
+  useEffect(load, [token]);
+
+  if (rows === null) return <p className="hist-empty">Loading scheduled posts…</p>;
+  if (!rows.length) {
+    return (
+      <div>
+        <p className="hist-empty">Nothing scheduled.</p>
+        <p className="hist-note">In Stage 3, press “Schedule instead” and we publish automatically at the time you pick.</p>
+      </div>
+    );
+  }
+  return (
+    <div>
+      {rows.map((r) => {
+        const when = new Date(r.scheduled_at);
+        const whenText = `${when.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })} · ${when.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })}`;
+        const tone = r.status === 'published' ? 'ok' : r.status === 'failed' ? 'fail' : '';
+        const label = r.status === 'published' ? 'Published' : r.status === 'failed' ? 'Failed' : r.status === 'cancelled' ? 'Cancelled' : r.status === 'publishing' ? 'Publishing…' : 'Scheduled';
+        return (
+          <div key={r.id} className="hist-row">
+            <span className="hist-ic"><BrandIcon id={r.platform} size={15} /></span>
+            <span className="hist-body">
+              <b>{r.platform[0].toUpperCase() + r.platform.slice(1)}{r.result_url ? ' · ' : ''}
+                {r.result_url && <a href={r.result_url} target="_blank" rel="noreferrer">View post</a>}
+              </b>
+              <small>{whenText} · <span className={tone ? `hist-status ${tone}` : ''}>{label}</span></small>
+              {r.error && <small style={{ display: 'block', color: 'var(--danger, #e5484d)' }}>{r.error}</small>}
+            </span>
+            {['scheduled', 'publishing'].includes(r.status) && (
+              <button
+                type="button"
+                className="hist-mini danger"
+                disabled={busy === r.id}
+                onClick={async () => {
+                  setBusy(r.id);
+                  try { await cancelSchedule(token, r.id); } catch {}
+                  load();
+                  setBusy('');
+                }}
+              >
+                {busy === r.id ? '…' : 'Cancel'}
+              </button>
+            )}
+          </div>
+        );
+      })}
+      <p className="hist-note">Scheduled posts publish on their own — keep the page closed if you like.</p>
     </div>
   );
 }
@@ -156,6 +216,7 @@ export default function HistoryPage({ session, onBack }) {
           ))}
         </div>
         {tab === 'posted' && <PostedTab />}
+        {tab === 'scheduled' && <ScheduledTab token={session.access_token} />}
         {tab === 'deleted' && <DeletedTab token={session.access_token} />}
         {tab === 'captions' && <CaptionsTab />}
       </div>

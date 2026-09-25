@@ -18,7 +18,7 @@ export default function Workspace({
   greyed, greyReason,
   reviewed, onReviewed,
   result, posting, regenning, regenBusy,
-  onPost, onRegen,
+  onPost, onRegen, onSchedule,
 }) {
   const thumbRef = useRef(null);
   const thumbUrl = useMemo(() => {
@@ -42,11 +42,13 @@ export default function Workspace({
 
   const pill = result?.state === 'completed'
     ? <span className="s3-pill ok">Posted ✓</span>
-    : result?.state === 'failed'
-      ? <span className="s3-pill fail">Failed</span>
-      : posting ? <span className="s3-pill work">Posting…</span>
-      : reviewed ? <span className="s3-pill ok">Reviewed ✓</span>
-      : <span className="s3-pill">Needs review</span>;
+    : result?.state === 'scheduled'
+      ? <span className="s3-pill ok">Scheduled ✓</span>
+      : result?.state === 'failed'
+        ? <span className="s3-pill fail">Failed</span>
+        : posting ? <span className="s3-pill work">Posting…</span>
+          : reviewed ? <span className="s3-pill ok">Reviewed ✓</span>
+            : <span className="s3-pill">Needs review</span>;
 
   return (
     <div className={greyed ? 's3-work greyed' : 's3-work'}>
@@ -199,17 +201,26 @@ export default function Workspace({
 
       {error && <p className="s3-err">{error}</p>}
       {result?.state === 'failed' && <p className="s3-err">{result.message}</p>}
+      {result?.state === 'scheduled' && <p className="s3-note">{result.message}</p>}
       {result?.url && <a className="s3-view" href={result.url} target="_blank" rel="noreferrer">View your post →</a>}
 
       <div className="s3-acts">
-        {!reviewed && result?.state !== 'completed' && (
+        {!reviewed && result?.state !== 'completed' && result?.state !== 'scheduled' && (
           <button type="button" onClick={() => onReviewed(pid)} disabled={greyed}>Reviewed ✓</button>
         )}
-        {reviewed && result?.state !== 'completed' && (
+        {reviewed && result?.state !== 'completed' && result?.state !== 'scheduled' && (
           <button type="button" className="ok" disabled>✓ Reviewed</button>
         )}
         <button type="button" onClick={() => onRegen(pid)} disabled={regenBusy || greyed} title="Fresh AI answer for this card">
           {regenning ? '…' : 'Regen'}
+        </button>
+        <button
+          type="button"
+          onClick={() => onSchedule(pid)}
+          disabled={posting || greyed || !!error || result?.state === 'scheduled'}
+          title="Publish automatically later"
+        >
+          {result?.state === 'scheduled' ? '✓ Scheduled' : 'Schedule'}
         </button>
         <button type="button" className="go" onClick={() => onPost(pid)} disabled={posting || greyed || !!error}>
           {posting ? 'Posting…' : `Post to ${NAMES[pid]}`}

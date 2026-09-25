@@ -1,5 +1,5 @@
 import React, { Suspense, lazy, useEffect, useMemo, useState } from 'react';
-import { api, apiUrl, groupBrands, PLATFORMS, resetPostState } from '../lib.js';
+import { api, apiUrl, groupBrands, PLATFORMS, resetPostState, schedulePost } from '../lib.js';
 import { readVault, writeVault, vaultFiles } from '../stage2/mediaVault.js';
 import { requestCaptions, mapResponse } from '../stage2/ai.js';
 import { composeOutput } from '../stage2/PlatformOutputCard.jsx';
@@ -8,6 +8,7 @@ import ProgressStepper from './ProgressStepper.jsx';
 import PlatformTabs from './PlatformTabs.jsx';
 import Workspace from './Workspace.jsx';
 import MediaPreview from './MediaPreview.jsx';
+import ScheduleModal from './ScheduleModal.jsx';
 import './stage3.css';
 
 function load(key, fallback) {
@@ -42,6 +43,9 @@ export default function StageThreePage({ session, onBack, onSignOut, onHistory, 
   const [regen, setRegen] = useState('');
   const [brief] = useState(() => load('driftpost-stage2-brief', ''));
   const [success, setSuccess] = useState(null);
+  const [schedOpen, setSchedOpen] = useState(false);
+  const [schedBusy, setSchedBusy] = useState(false);
+  const [schedMsg, setSchedMsg] = useState('');
 
   useEffect(() => { document.title = 'Stage 3 · Driftpost'; }, []);
   useEffect(() => {
@@ -140,6 +144,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onHistory, 
   const statusOf = (pid) => {
     const r = results[pid];
     if (r?.state === 'completed') return 'posted';
+    if (r?.state === 'scheduled') return 'scheduled';
     if (r?.state === 'failed') return 'failed';
     return reviewed[pid] ? 'reviewed' : '';
   };
@@ -183,41 +188,52 @@ export default function StageThreePage({ session, onBack, onSignOut, onHistory, 
     return v.text || brief;
   };
 
-  const buildForm = (pid, { connectionId = null, skipCrossPost = false } = {}) => {
+  // One canonical body per platform: the instant publish and the scheduler
+  // both send this, so a scheduled post is byte-identical to a manual one.
+  const bodyFor = (pid, { skipCrossPost = false } = {}) => {
     const c = cfgFor(pid);
     const v = outputs[pid] || {};
+    const body = {
+      platform: pid,
+      connection_id: accountFor(pid),
+      text: mainText(pid),
+      title: v.title || '',
+      privacy: c.privacy || 'private',
+      yt_title: v.title || '',
+      yt_description: v.description || '',
+      yt_tags: v.tags || '',
+      yt_privacy: c.privacy || 'private',
+      yt_category: c.category || '',
+      yt_kids: c.kids || '',
+      ig_caption: v.caption || '',
+      ig_size: 'portrait',
+      ig_share_fb: ((s1.crosspost || c.shareFb) && pid === 'instagram') ? '1' : '',
+      ig_post_story: c.story ? '1' : '',
+      ig_alt: c.alt || '',
+      ig_topics: c.topics || '',
+      ig_partner: c.partner || '',
+      ig_collabs: c.collabs || '',
+      fb_connection_id: accountFor('facebook'),
+      fb_message: (outputs.facebook || {}).message || '',
+      fb_link: c.link || '',
+      fb_synd_ig: (pid === 'facebook' && c.syndIg) ? '1' : '',
+      ig_connection_id: accountFor('instagram'),
+      fb_cta: c.cta || '',
+      fb_age: c.age || '',
+      x_text: v.text || '',
+      x_reply: c.reply || 'everyone',
+      x_poll_options: JSON.stringify(c.pollOn ? (c.opts || []) : []),
+      x_poll_minutes: c.mins || '1440',
+    };
+    if (skipCrossPost) body.skip_crosspost = '1';
+    return body;
+  };
+
+  const buildForm = (pid, { connectionId = null, skipCrossPost = false } = {}) => {
+    const body = bodyFor(pid, { skipCrossPost });
+    if (connectionId) body.connection_id = connectionId;
     const form = new FormData();
-    form.append('platform', pid);
-    form.append('connection_id', connectionId || accountFor(pid));
-    form.append('text', mainText(pid));
-    form.append('title', v.title || '');
-    form.append('privacy', c.privacy || 'private');
-    form.append('yt_title', v.title || '');
-    form.append('yt_description', v.description || '');
-    form.append('yt_tags', v.tags || '');
-    form.append('yt_privacy', c.privacy || 'private');
-    form.append('yt_category', c.category || '');
-    form.append('yt_kids', c.kids || '');
-    form.append('ig_caption', v.caption || '');
-    form.append('ig_size', 'portrait');
-    form.append('ig_share_fb', ((s1.crosspost || c.shareFb) && pid === 'instagram') ? '1' : '');
-    form.append('ig_post_story', c.story ? '1' : '');
-    form.append('ig_alt', c.alt || '');
-    form.append('ig_topics', c.topics || '');
-    form.append('ig_partner', c.partner || '');
-    form.append('ig_collabs', c.collabs || '');
-    form.append('fb_connection_id', accountFor('facebook'));
-    form.append('fb_message', (outputs.facebook || {}).message || '');
-    form.append('fb_link', c.link || '');
-    form.append('fb_synd_ig', (pid === 'facebook' && c.syndIg) ? '1' : '');
-    form.append('ig_connection_id', accountFor('instagram'));
-    form.append('fb_cta', c.cta || '');
-    form.append('fb_age', c.age || '');
-    form.append('x_text', v.text || '');
-    form.append('x_reply', c.reply || 'everyone');
-    form.append('x_poll_options', JSON.stringify(c.pollOn ? (c.opts || []) : []));
-    form.append('x_poll_minutes', c.mins || '1440');
-    if (skipCrossPost) form.append('skip_crosspost', '1');
+    for (const [k, v] of Object.entries(body)) form.append(k, v);
     for (const f of files.slice(0, 10)) { if (f?.raw) form.append('media', f.raw); }
     if (pid === 'youtube' && thumb?.raw) form.append('thumbnail', thumb.raw);
     return form;
@@ -273,6 +289,28 @@ export default function StageThreePage({ session, onBack, onSignOut, onHistory, 
       .filter((pid) => out[pid]?.state === 'completed')
       .map((pid) => ({ pid, url: out[pid].url }));
     if (posted.length && posted.length === targets.length) setSuccess(posted);
+  };
+
+  const doSchedule = async (pid, whenIso) => {
+    if (schedBusy) return;
+    setSchedBusy(true);
+    try {
+      const strip = !(s1.crosspost && pid === 'instagram');
+      await schedulePost(session.access_token, {
+        platform: pid,
+        connectionId: accountFor(pid),
+        when: whenIso,
+        body: bodyFor(pid, { skipCrossPost: strip }),
+        files,
+        thumb: pid === 'youtube' ? thumb : null,
+      });
+      setSchedOpen(false);
+      setResults((r) => ({ ...r, [pid]: { state: 'scheduled', message: 'Scheduled — it will publish automatically.' } }));
+      setSchedMsg(`${NAMES[pid]} scheduled for ${new Date(whenIso).toLocaleString()}. Manage or cancel it in History.`);
+    } catch (e) {
+      setSchedMsg(e.message || 'Could not schedule the post');
+    }
+    setSchedBusy(false);
   };
 
   const startNew = async () => {
@@ -343,6 +381,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onHistory, 
                   regenBusy={!!regen || Object.values(busy).some(Boolean)}
                   onPost={publishOne}
                   onRegen={regenOne}
+                  onSchedule={(pid) => { setTab(pid); setSchedOpen(true); }}
                 />
               </div>
             )}
@@ -360,13 +399,33 @@ export default function StageThreePage({ session, onBack, onSignOut, onHistory, 
               >
                 {!effective.length ? 'Nothing to post' : allReviewed ? `Post to all (${effective.map((p) => NAMES[p]).join(', ')})` : `Review remaining platforms (${reviewedCount}/${effective.length})`}
               </button>
-              {!allReviewed && effective.length > 0 && (
+              <button
+                type="button"
+                className="s3-schedall"
+                onClick={() => setSchedOpen(true)}
+                disabled={!effective.length || !allReviewed || Object.values(busy).some(Boolean)}
+                title="Queue this post to publish automatically"
+              >
+                Schedule instead
+              </button>
+              {schedMsg && <p className="s3-bar-msg">{schedMsg}</p>}
+              {!allReviewed && effective.length > 0 && !schedMsg && (
                 <p className="s3-pub-hint">Open each tab and press Reviewed ✓ — posting unlocks when all are seen.</p>
               )}
             </div>
           </>
         )}
       </div>
+      {schedOpen && (
+        <ScheduleModal
+          platforms={effective}
+          platform={tab}
+          accountFor={accountFor}
+          busy={schedBusy}
+          onClose={() => setSchedOpen(false)}
+          onSchedule={doSchedule}
+        />
+      )}
     </div>
   );
 }
