@@ -483,7 +483,7 @@ html, body { overflow-x: clip; max-width: 100%; }
 .doc-intro { margin: 0 0 26px; font-size: 14px; line-height: 1.7; color: #a1a1aa; }
 .doc-list { display: flex; flex-direction: column; gap: 14px; }
 .doc-list .zig-copy h2 { font-size: 18px; }
-@media (max-width: 760px) { .land-links { order: 3; width: 100%; } .land-nav { flex-wrap: wrap; row-gap: 10px; } }
+@media (max-width: 760px) { .land-links { order: 3; width: 100%; } .land-nav { flex-wrap: wrap; row-gap: 10px; } .land-nav .skew-btn { order: 4; flex: 1 1 100%; } }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }
@@ -705,15 +705,195 @@ select:disabled { opacity: 0.6; }
 
 /* ===== Liquid background (console only — landing untouched) ===== */
 .shell.liquid { position: relative; background: transparent; }
-.shell .liquid-bg { position: fixed; inset: 0; z-index: 0; overflow: hidden; background: #07030f; pointer-events: none; }
-.shell .liquid-bg canvas { width: 100%; height: 100%; display: block; transform: scale(1.08); filter: blur(34px) saturate(1.25); opacity: 0.95; }
+/* New palette — sampled from the reference swirl: hot magenta edges,
+   violet mid-ring, deep-blue core, near-black plum base. */
+.shell.liquid {
+  --liq0: #07030f;
+  --liq1: #d6007a;
+  --liq2: #8b2ff7;
+  --liq3: #1b1b6e;
+  --liq4: #b0004d;
+}
+.shell .liquid-bg { position: fixed; inset: 0; z-index: 0; overflow: hidden; background: var(--liq0); pointer-events: none; }
+.shell .liquid-base {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(52% 42% at 4% 0%, #e6008ab8 0, transparent 70%),
+    radial-gradient(46% 40% at 100% 4%, #6a1fc066 0, transparent 70%),
+    radial-gradient(60% 52% at 50% 52%, #23238f66 0, transparent 72%),
+    radial-gradient(58% 48% at 82% 100%, #c40058a6 0, transparent 70%),
+    radial-gradient(40% 34% at 8% 96%, #2a0a5e80 0, transparent 70%),
+    var(--liq0);
+}
+.shell .liquid-goo { position: absolute; inset: -40px; filter: url(#drift-goo); }
+.shell .liquid-goo canvas { width: 100%; height: 100%; display: block; opacity: 0.5; }
+.shell .liquid-veil {
+  position: absolute; inset: 0;
+  background: radial-gradient(72% 62% at 50% 44%, rgba(4, 0, 10, 0.62) 0, rgba(4, 0, 10, 0.30) 55%, rgba(4, 0, 10, 0) 100%);
+}
 .shell.liquid .side, .shell.liquid .main { position: relative; z-index: 1; }
 .shell.liquid .side { background: rgba(13, 16, 24, 0.86); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
 .shell.liquid .top { background: rgba(13, 16, 24, 0.72); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
 .shell.liquid .page { position: relative; }
-[data-theme="light"] .shell .liquid-bg { opacity: 0.28; }
+[data-theme="light"] .shell .liquid-bg { opacity: 0.30; }
+[data-theme="light"] .shell .liquid-goo canvas { opacity: 0.35; }
 [data-theme="light"] .shell.liquid .side { background: rgba(246, 243, 236, 0.9); }
 [data-theme="light"] .shell.liquid .top { background: rgba(246, 243, 236, 0.85); }
 @media (prefers-reduced-motion: reduce) {
-  .shell .liquid-bg canvas { filter: blur(60px) saturate(1.1); transform: none; }
+  .shell .liquid-goo { filter: blur(60px); }
 }
+
+/* ===== Whole-console new look (console only — landing untouched) ===== */
+/* Palette drawn from the liquid swirl: plum glass + magenta/violet light.
+   Every console element is remade below; the marketing landing keeps its
+   own black/grid look. Light theme gets a rose-glass variant. */
+.shell.liquid {
+  --bg: #0d0618;
+  --panel: rgba(26, 13, 42, 0.80);
+  --panel2: rgba(42, 22, 66, 0.62);
+  --input: rgba(14, 7, 26, 0.88);
+  --ink: #f6eefb;
+  --muted: #cfb9de;
+  --faint: #9c87b1;
+  --line: #ffffff24;
+  --line-hard: #ffffff40;
+  --hover: #ffffff12;
+  --violet: #a06bff;
+  --blue: #7d8bff;
+  --sky: #8fd0ff;
+  --grad: linear-gradient(135deg, #ff2d95 0%, #8b2ff7 55%, #3b2fe0 100%);
+  --go: #ff2d95;
+  --go-ink: #ffffff;
+  --ok: #3ddc97;
+  --warm: #ffb020;
+  --warm-bg: #ffb02022;
+  --cool: #8fd0ff;
+  --cool-bg: #8fd0ff1f;
+  --accent-soft: #ff8ac2;
+  --danger: #ff6b81;
+  color: var(--ink);
+}
+[data-theme="light"] .shell.liquid {
+  --bg: #f7eef7;
+  --panel: rgba(255, 255, 255, 0.86);
+  --panel2: rgba(243, 230, 248, 0.9);
+  --input: #ffffff;
+  --ink: #2a1230;
+  --muted: #5d4670;
+  --faint: #8a739e;
+  --line: #d9c6e4;
+  --line-hard: #b795cc;
+  --hover: #8b2ff712;
+  --grad: linear-gradient(135deg, #d6007a 0%, #8b2ff7 60%, #3b2fe0 100%);
+  --go: #c40072;
+  --ok: #047857;
+  --warm: #b45309;
+  --cool: #0369a1;
+  --accent-soft: #a21caf;
+  --danger: #be123c;
+}
+/* shell frame */
+.shell.liquid .main { background: transparent; }
+.shell.liquid .top h1 { letter-spacing: 1.6px; }
+.shell.liquid .pill { background: rgba(20, 10, 34, 0.7); border-color: var(--line-hard); color: var(--ink); border-radius: 999px !important; }
+.shell.liquid .pill::before { background: var(--ok); }
+/* every card */
+.shell.liquid .card {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0) 30%), var(--panel);
+  border: 1px solid var(--line-hard);
+  border-radius: 18px !important;
+  box-shadow: 0 18px 50px rgba(5, 0, 15, 0.45);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+[data-theme="light"] .shell.liquid .card { box-shadow: 0 12px 30px rgba(120, 40, 140, 0.14); }
+/* steps */
+.shell.liquid .step { background: var(--panel); border: 1.5px solid var(--line-hard); border-radius: 14px !important; }
+.shell.liquid .step.cur { border-color: var(--go); box-shadow: 0 0 0 3px #ff2d9533, 0 8px 26px #8b2ff733; }
+.shell.liquid .step.cur .step-n { background: var(--grad); border-color: transparent; color: #fff; }
+.shell.liquid .step.done .step-n { background: var(--ok); border-color: var(--ok); color: #06281c; }
+.shell.liquid .step-card.stage-1 { border-left: 3px solid #ff2d95; }
+.shell.liquid .step-card.stage-2 { border-left: 3px solid #8b2ff7; }
+.shell.liquid .step-card.stage-3 { border-left: 3px solid var(--ok); }
+/* brand / platform rows */
+.shell.liquid .plat-row { background: var(--panel2); border: 1.5px solid var(--line-hard); border-radius: 14px !important; }
+.shell.liquid .plat-row.on { border-color: var(--go); box-shadow: 0 0 0 3px #ff2d9526; background: var(--panel); }
+.shell.liquid .plat-check { border-radius: 10px !important; background: var(--input); }
+.shell.liquid .plat-check.on { background: var(--grad); border-color: transparent; }
+.shell.liquid .plat-ic { background: rgba(255, 255, 255, 0.07); border: 1px solid var(--line-hard); border-radius: 12px !important; }
+.shell.liquid .plat-row select, .shell.liquid .group-row select { background: var(--input); border-color: var(--line-hard); color: var(--ink); border-radius: 10px !important; }
+/* inputs everywhere */
+.shell.liquid .phone-screen select, .shell.liquid .phone-screen input, .shell.liquid .phone-screen textarea,
+.shell.liquid .field input, .shell.liquid .field textarea, .shell.liquid .field select,
+.shell.liquid .field-mini select, .shell.liquid .dd-search, .shell.liquid .messageBox input {
+  background: var(--input); border-color: var(--line-hard); color: var(--ink);
+}
+.shell.liquid .phone-screen select:focus, .shell.liquid .phone-screen input:focus, .shell.liquid .phone-screen textarea:focus,
+.shell.liquid .field input:focus, .shell.liquid .field textarea:focus, .shell.liquid .field select:focus {
+  border-color: var(--go); box-shadow: 0 0 0 3px #ff2d9533;
+}
+/* phones + tabs */
+.shell.liquid .phone { background: var(--panel); border: 1px solid var(--line-hard); border-radius: 18px !important; box-shadow: 0 18px 46px rgba(5, 0, 15, 0.5); overflow: hidden; }
+.shell.liquid .phone::before { background: var(--grad); height: 3px; }
+.shell.liquid .phone.off { opacity: 0.6; }
+.shell.liquid .phone-screen { background: rgba(10, 4, 20, 0.45); border: 1px solid var(--line); border-radius: 14px !important; }
+[data-theme="light"] .shell.liquid .phone-screen { background: rgba(255, 255, 255, 0.6); }
+.shell.liquid .phones.single .phone::before { background: var(--grad); }
+.shell.liquid .ptab { background: var(--panel); border: 1.5px solid var(--line-hard); color: var(--muted); border-radius: 14px !important; }
+.shell.liquid .ptab.on { background: var(--grad); border-color: transparent; color: #fff; box-shadow: 0 10px 26px #8b2ff755; }
+.shell.liquid .ptab.seen { border-color: var(--ok); color: var(--ink); }
+.shell.liquid .pdot { background: var(--grad); }
+.shell.liquid .pdot.ok { background: #3ddc9722; color: var(--ok); border: 1.5px solid var(--ok); }
+.shell.liquid .pdot.warn { color: var(--warm); border-color: var(--warm); }
+/* buttons */
+.shell.liquid .skew-btn { background: var(--grad); border-radius: 12px !important; transform: none; box-shadow: 0 12px 30px #8b2ff74d; }
+.shell.liquid .skew-btn > span { transform: none; }
+.shell.liquid .skew-btn::before { display: none; }
+.shell.liquid .skew-btn:hover { filter: brightness(1.1); }
+.shell.liquid .skew-btn.ghost { background: rgba(255, 255, 255, 0.06); border: 1px solid var(--line-hard); color: var(--ink); box-shadow: none; }
+.shell.liquid .post-btn { background: var(--grad); border-radius: 14px !important; box-shadow: 0 12px 30px #8b2ff74d; }
+.shell.liquid .mini { background: rgba(255, 255, 255, 0.07); border: 1px solid var(--line-hard); color: var(--ink); border-radius: 10px !important; }
+.shell.liquid .mini:hover { border-color: var(--ink); }
+[data-theme="light"] .shell.liquid .skew-btn.ghost, [data-theme="light"] .shell.liquid .mini { background: #ffffff; }
+/* badges, pills, banners */
+.shell.liquid .scope-badge.everywhere { background: #ff2d951f; color: #ff8ac2; border-color: #ff2d95; }
+[data-theme="light"] .shell.liquid .scope-badge.everywhere { color: #a21caf; }
+.shell.liquid .scope-badge.only { background: #8fd0ff1a; color: var(--cool); border-color: var(--cool); }
+.shell.liquid .scope-badge.ai-badge { background: #8b2ff722; color: #c4a4ff; border-color: #8b2ff7; }
+[data-theme="light"] .shell.liquid .scope-badge.ai-badge { color: #6d28d9; }
+.shell.liquid .status-pill.ok { background: #3ddc9722; border-color: var(--ok); color: var(--ok); }
+.shell.liquid .review-progress { background: rgba(255, 255, 255, 0.14); }
+.shell.liquid .review-progress i { background: var(--grad); }
+.shell.liquid .review-tick { background: var(--grad); }
+.shell.liquid .banner { background: rgba(139, 47, 247, 0.12); border-color: var(--line-hard); border-left-color: var(--violet); color: var(--muted); border-radius: 12px !important; }
+.shell.liquid .sec-err, .shell.liquid .alert.err { border-color: var(--danger); color: var(--danger); border-radius: 12px !important; }
+.shell.liquid .badge.ok { border-color: var(--ok); color: var(--ok); }
+.shell.liquid .review-row, .shell.liquid .ai-out-cell, .shell.liquid .media-cell,
+.shell.liquid .file-row, .shell.liquid .adv-box, .shell.liquid .drop, .shell.liquid .list-row {
+  border-radius: 14px !important;
+}
+.shell.liquid .drop { background: rgba(139, 47, 247, 0.10); }
+.shell.liquid .drop:hover { border-color: var(--go); }
+.shell.liquid .file-row { background: var(--panel2); border: 1px solid var(--line-hard); border-left: 3px solid var(--go); }
+/* dropdowns, menus, tips */
+.shell.liquid .dd-btn { background: var(--panel2); border-color: var(--line-hard); border-radius: 12px !important; }
+.shell.liquid .dd-menu, .shell.liquid .dots-menu, .shell.liquid .user-menu {
+  background: rgba(24, 12, 40, 0.96); border-color: var(--line-hard); border-radius: 14px !important;
+}
+[data-theme="light"] .shell.liquid .dd-menu, [data-theme="light"] .shell.liquid .dots-menu, [data-theme="light"] .shell.liquid .user-menu { background: #ffffff; }
+.shell.liquid .adv-toggle { border-radius: 12px !important; }
+.shell.liquid .tip .tip-bubble { background: var(--ink); }
+/* accounts + tour + editor + lightbox */
+.shell.liquid .avatar { border-color: var(--line-hard); border-radius: 10px !important; background: rgba(255, 255, 255, 0.07); }
+.shell.liquid .tour-card, .shell.liquid .editor-card { border-radius: 18px !important; background: rgba(24, 12, 40, 0.97); border-color: var(--line-hard); }
+[data-theme="light"] .shell.liquid .tour-card, [data-theme="light"] .shell.liquid .editor-card { background: #ffffff; }
+.shell.liquid .radio-container .glider { background: var(--grad); }
+.shell.liquid .prog i, .shell.liquid .progress-loader .progress { background: var(--grad); }
+.shell.liquid .foot { border-color: var(--line); }
+.shell.liquid .tour-card .skew-btn, .shell.liquid .editor-card .skew-btn { border-radius: 12px !important; }
+/* Auth screen shares the console palette (scoped, landing untouched) */
+.auth-wrap { background: radial-gradient(52% 42% at 4% 0%, #e6008a40 0, transparent 70%), radial-gradient(58% 48% at 82% 100%, #c4005840 0, transparent 70%), var(--bg); }
+.auth-wrap .auth-card { border-radius: 18px !important; }
+.auth-wrap .login-form .skew-btn { background: linear-gradient(135deg, #ff2d95 0%, #8b2ff7 55%, #3b2fe0 100%); border-radius: 12px !important; transform: none; }
+.auth-wrap .login-form .skew-btn > span { transform: none; }
+.auth-wrap .login-form input:focus { border-color: #ff2d95; box-shadow: 0 0 0 3px #ff2d9533; }

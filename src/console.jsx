@@ -1152,7 +1152,7 @@ function Composer({ session, connections, reload }) {
       <div className="card step-card stage-3">
         <span className="scope-badge everywhere">Stage 3 · Tune each platform · Required</span>
         <h3>Click every platform, check its info</h3>
-        <p className="sub">Why? Titles, sizes, polls and links differ per platform. Open each tab below — {visitedCount}/{enabledPlatforms.length} reviewed. Posting unlocks when all are seen.</p>
+        <p className="sub">Why? Titles, sizes, polls and links differ per platform. Open each tab below — {visitedCount}/{enabledPlatforms.length} reviewed. Nothing is blocked; this just keeps surprises away.</p>
         <div className="review-progress"><i style={{ width: `${enabledPlatforms.length ? (visitedCount / enabledPlatforms.length) * 100 : 0}%` }} /></div>
         {!allVisited && enabledPlatforms.length > 0 && (
           <div className="banner" style={{ marginTop: 8 }}>Tap each platform tab ({enabledPlatforms.filter((p) => !visited[p.id]).map((p) => p.name).join(', ')}) to review it. <button className="link" onClick={markAllVisited}>I already checked — mark all reviewed</button></div>
@@ -1160,7 +1160,7 @@ function Composer({ session, connections, reload }) {
       </div>
       <div className="brandbar tight">
         <BrandPicker brands={brands} brandKey={brandKey} isActive={(b) => brandActive(b)} onPick={(k) => { setBrandKey(k); setResults({}); setVisited({}); }} />
-        <button className="skew-btn grad pub-all" onClick={publishAll} disabled={Object.values(busy).some(Boolean) || !enabledPlatforms.length || !allVisited} title={!allVisited ? 'Review every platform tab first' : 'Post to all'}><span>Post to all selected{isCarousel ? ` (carousel x${files.length})` : ''} — {enabledPlatforms.map((p) => p.name).join(', ') || 'none'}{!allVisited && enabledPlatforms.length ? ` · ${visitedCount}/${enabledPlatforms.length} seen` : ''}</span></button>
+        <button className="skew-btn grad pub-all" onClick={publishAll} disabled={Object.values(busy).some(Boolean) || !enabledPlatforms.length} title="Post to all selected platforms"><span>Post to all selected{isCarousel ? ` (carousel x${files.length})` : ''} — {enabledPlatforms.map((p) => p.name).join(', ') || 'none'}</span></button>
       </div>
       {!enabledPlatforms.length && <div className="sec-err" style={{ marginBottom: 10 }}>No platforms selected. Go back to Step 1 and tick at least one.</div>}
       {isOwner && trioMode && trio.length >= 2 && (
@@ -1403,7 +1403,7 @@ function Composer({ session, connections, reload }) {
       <div className="card step-card review-card">
         <span className="scope-badge everywhere">Posting OK · final check</span>
         <h3>Ready to post? {visitedCount}/{enabledPlatforms.length} reviewed</h3>
-        <p className="sub">Each row = one live post. Green tick = posted. Why this list? So you see exactly what goes where — no hidden cross-posts.</p>
+        <p className="sub">Each row = one live post. Tick = posted. Why this list? So you see exactly what goes where — no hidden cross-posts.</p>
         <div className="review-list">
           {enabledPlatforms.map((p) => {
             const r = results[p.id];
@@ -1421,9 +1421,9 @@ function Composer({ session, connections, reload }) {
         <div className="review-actions">
           <button className="skew-btn ghost" onClick={() => { setResults({}); }}><span>Cancel results</span></button>
           <button className="skew-btn ghost" onClick={() => { setFiles([]); setThumb(null); }}><span>Delete media</span></button>
-          <button className="skew-btn grad" onClick={publishAll} disabled={Object.values(busy).some(Boolean) || !enabledPlatforms.length || !allVisited}><span>Post {allVisited ? '' : `(${visitedCount}/${enabledPlatforms.length}) `}→</span></button>
+          <button className="skew-btn grad" onClick={publishAll} disabled={Object.values(busy).some(Boolean) || !enabledPlatforms.length}><span>Post →</span></button>
         </div>
-        {!allVisited && <p className="note">Post unlocks after every platform tab is opened — open each tab above first.</p>}
+        {!allVisited && enabledPlatforms.length > 0 && <p className="note">Tip: open each tab above ({enabledPlatforms.filter((p) => !visited[p.id]).map((p) => p.name).join(', ')}) for a quick check — nothing is blocked.</p>}
       </div>
         <div className="step-nav">
           <button className="skew-btn ghost" onClick={() => setStep(2)}><span>← Back to content</span></button>
