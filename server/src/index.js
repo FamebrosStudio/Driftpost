@@ -481,9 +481,9 @@ async function runPublish(job, conn, payload, body, userId) {
       const privacy = ['public', 'unlisted', 'private'].includes(body.yt_privacy || body.privacy)
         ? (body.yt_privacy || body.privacy) : 'private';
       if (file && String(file.mimetype || '').startsWith('image/')) {
-        throw new Error('YouTube API does not support photo / Community posts. Upload a video instead — or use “Convert photo to 6s video” in the YouTube card, then post.');
+        throw new Error('YouTube only accepts video through its API. Use “Post photo as a video” in the YouTube card and it will be converted for you.');
       }
-      if (!file || !String(file.mimetype || '').startsWith('video/')) throw new Error('YouTube needs a video file (photos cannot post to YouTube via the API)');
+      if (!file || !String(file.mimetype || '').startsWith('video/')) throw new Error('YouTube needs a video file — use “Post photo as a video” in the YouTube card to convert your photo.');
       if (allFiles.length > 1) throw new Error('YouTube takes 1 video per post');
       if (!title) throw new Error('YouTube needs a title');
       const categoryId = /^\d{1,3}$/.test(String(body.yt_category || '')) ? String(body.yt_category) : null;

@@ -19,6 +19,7 @@ export default function Workspace({
   reviewed, onReviewed,
   result, posting, regenning, regenBusy,
   onPost, onRegen, onSchedule,
+  onPostPhotoAsVideo, encoding,
 }) {
   const thumbRef = useRef(null);
   const thumbUrl = useMemo(() => {
@@ -31,14 +32,17 @@ export default function Workspace({
   const setCfg = (patch) => onCfg(pid, { ...cfg, ...patch });
   const xLen = pid === 'x' ? Array.from(values.text || '').length : 0;
   const hasVideo = files.some((f) => f.type.startsWith('video/'));
+  // YouTube's API only accepts video. Rather than dead-ending the user, we let
+  // them turn the selected photo into a real clip and publish that.
+  const photoOnly = pid === 'youtube' && files.length > 0 && !hasVideo;
 
   let error = '';
   if (!accountId) error = 'Pick an account for this platform first.';
-  else if (pid === 'youtube' && files.length > 0 && !hasVideo) error = 'Photos can’t post to YouTube via the API — attach a video in Stage 2, or post text-only platforms.';
   else if (pid === 'x' && xLen > 280) error = `Too long — ${xLen - 280} characters over.`;
   else if (pid === 'x' && cfg.pollOn && files.length > 0) error = 'Polls can’t carry photos — remove media in Stage 2 for a poll.';
   else if (pid === 'x' && cfg.pollOn && !(cfg.opts?.[0]?.trim() && cfg.opts?.[1]?.trim())) error = 'A poll needs at least 2 answers.';
   else if (pid === 'facebook' && cfg.cta && !cfg.link?.trim()) error = 'A button needs a website link above.';
+  const blocked = !!error || photoOnly;
 
   const pill = result?.state === 'completed'
     ? <span className="s3-pill ok">Posted ✓</span>
@@ -200,6 +204,23 @@ export default function Workspace({
       )}
 
       {error && <p className="s3-err">{error}</p>}
+      {photoOnly && (
+        <div className="s3-ytphoto">
+          <p>
+            <b>Your photo can go to YouTube as a Short.</b>
+            {' '}YouTube only accepts video through its API, so we turn the photo into a
+            6-second clip with a gentle zoom and post that. Your original photo stays untouched.
+          </p>
+          <button
+            type="button"
+            className="go"
+            onClick={() => onPostPhotoAsVideo(pid)}
+            disabled={posting || encoding || greyed || !accountId}
+          >
+            {encoding ? 'Making video…' : 'Post photo as a video →'}
+          </button>
+        </div>
+      )}
       {result?.state === 'failed' && <p className="s3-err">{result.message}</p>}
       {result?.state === 'scheduled' && <p className="s3-note">{result.message}</p>}
       {result?.url && <a className="s3-view" href={result.url} target="_blank" rel="noreferrer">View your post →</a>}
@@ -217,12 +238,12 @@ export default function Workspace({
         <button
           type="button"
           onClick={() => onSchedule(pid)}
-          disabled={posting || greyed || !!error || result?.state === 'scheduled'}
+          disabled={posting || greyed || blocked || result?.state === 'scheduled'}
           title="Publish automatically later"
         >
           {result?.state === 'scheduled' ? '✓ Scheduled' : 'Schedule'}
         </button>
-        <button type="button" className="go" onClick={() => onPost(pid)} disabled={posting || greyed || !!error}>
+        <button type="button" className="go" onClick={() => onPost(pid)} disabled={posting || greyed || blocked}>
           {posting ? 'Posting…' : `Post to ${NAMES[pid]}`}
         </button>
       </div>

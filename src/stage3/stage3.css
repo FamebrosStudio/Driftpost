@@ -94,6 +94,12 @@
 .s3-err { font-size: 12.5px; color: var(--danger, #e5484d); border: 1px solid var(--danger, #e5484d); border-left-width: 3px; border-radius: 10px; padding: 9px 12px; margin: 0 0 10px; line-height: 1.55; }
 .s3-link { color: var(--acc); font-size: 13px; font-weight: 700; text-decoration: underline; background: none; border: 0; cursor: pointer; padding: 0; }
 
+/* YouTube photo -> Short nudge: an action, not a dead end. */
+.s3-ytphoto { background: color-mix(in srgb, var(--acc) 7%, transparent); border: 1px solid color-mix(in srgb, var(--acc) 34%, transparent); border-left-width: 3px; border-radius: 12px; padding: 12px; margin: 0 0 10px; }
+.s3-ytphoto p { margin: 0 0 10px; font-size: 12.5px; line-height: 1.6; color: var(--ink); opacity: 0.88; }
+.s3-ytphoto button.go { width: 100%; background: var(--acc); border-color: transparent; color: var(--acc-ink); font-weight: 700; }
+.s3-ytphoto button.go:hover:not(:disabled) { filter: brightness(1.08); }
+
 .s3-mini-btn { width: 100%; padding: 10px; border: 1px solid var(--line-hard); background: var(--panel2); color: var(--ink); border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; }
 .s3-mini-btn:hover { border-color: var(--acc); }
 

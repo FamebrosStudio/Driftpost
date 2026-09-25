@@ -3,6 +3,7 @@ import { api, apiUrl, groupBrands, PLATFORMS, resetPostState, schedulePost } fro
 import { readVault, writeVault, vaultFiles } from '../stage2/mediaVault.js';
 import { requestCaptions, mapResponse } from '../stage2/ai.js';
 import { composeOutput } from '../stage2/PlatformOutputCard.jsx';
+import { photoToVideo } from './photoVideo.js';
 import { logCaptions, logPost } from '../history/log.js';
 import ProgressStepper from './ProgressStepper.jsx';
 import PlatformTabs from './PlatformTabs.jsx';
@@ -45,6 +46,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onHistory, 
   const [success, setSuccess] = useState(null);
   const [schedOpen, setSchedOpen] = useState(false);
   const [schedBusy, setSchedBusy] = useState(false);
+  const [encoding, setEncoding] = useState(false);
   const [schedMsg, setSchedMsg] = useState('');
 
   useEffect(() => { document.title = 'Stage 3 · Driftpost'; }, []);
@@ -229,24 +231,26 @@ export default function StageThreePage({ session, onBack, onSignOut, onHistory, 
     return body;
   };
 
-  const buildForm = (pid, { connectionId = null, skipCrossPost = false } = {}) => {
+  const buildForm = (pid, { connectionId = null, skipCrossPost = false, mediaOverride = null } = {}) => {
     const body = bodyFor(pid, { skipCrossPost });
     if (connectionId) body.connection_id = connectionId;
     const form = new FormData();
     for (const [k, v] of Object.entries(body)) form.append(k, v);
-    for (const f of files.slice(0, 10)) { if (f?.raw) form.append('media', f.raw); }
+    // mediaOverride replaces the selected files (used for photo -> video).
+    const media = mediaOverride || files;
+    for (const f of media.slice(0, 10)) { if (f?.raw) form.append('media', f.raw); }
     if (pid === 'youtube' && thumb?.raw) form.append('thumbnail', thumb.raw);
     return form;
   };
 
-  const runOne = async (pid, out, { connectionId = null, key = null, skipCrossPost = false } = {}) => {
+  const runOne = async (pid, out, { connectionId = null, key = null, skipCrossPost = false, mediaOverride = null } = {}) => {
     const k = key || pid;
     out[k] = { state: 'uploading', progress: 5 };
     setResults({ ...out });
     const res = await fetch(`${apiUrl}/api/publish`, {
       method: 'POST',
       headers: { Authorization: `Bearer ${session.access_token}` },
-      body: buildForm(pid, { connectionId, skipCrossPost }),
+      body: buildForm(pid, { connectionId, skipCrossPost, mediaOverride }),
     });
     const data = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error(data.error || 'Publish failed');
@@ -272,6 +276,26 @@ export default function StageThreePage({ session, onBack, onSignOut, onHistory, 
     try { await runOne(pid, out); }
     catch (e) { out[pid] = { state: 'failed', message: e.message }; setResults({ ...out }); }
     setBusy((b) => ({ ...b, [pid]: false }));
+  };
+
+  // YouTube takes a video, never a bare photo, so encode the still first and
+  // publish that. The user's photos are untouched in Stage 2.
+  const publishPhotoAsVideo = async (pid) => {
+    if (busy[pid] || greyed(pid) || !accountFor(pid)) return;
+    const photo = files.find((f) => f?.raw && f.type.startsWith('image/'))?.raw;
+    if (!photo) { setResults((r) => ({ ...r, [pid]: { state: 'failed', message: 'No photo selected — pick one in Stage 2.' } })); return; }
+    setBusy((b) => ({ ...b, [pid]: true }));
+    setEncoding(true);
+    const out = { ...results };
+    try {
+      const clip = await photoToVideo(photo);
+      await runOne(pid, out, { mediaOverride: [clip] });
+    } catch (e) {
+      out[pid] = { state: 'failed', message: e.message };
+      setResults({ ...out });
+    }
+    setBusy((b) => ({ ...b, [pid]: false }));
+    setEncoding(false);
   };
 
   const publishAll = async () => {
@@ -380,6 +404,8 @@ export default function StageThreePage({ session, onBack, onSignOut, onHistory, 
                   regenning={regen === tab}
                   regenBusy={!!regen || Object.values(busy).some(Boolean)}
                   onPost={publishOne}
+                  onPostPhotoAsVideo={publishPhotoAsVideo}
+                  encoding={encoding}
                   onRegen={regenOne}
                   onSchedule={(pid) => { setTab(pid); setSchedOpen(true); }}
                 />
