@@ -1,6 +1,6 @@
 import React, { useMemo, useRef, useState } from 'react';
 import BrandIcon from '../brand.jsx';
-import { assistCommunityPost } from './communityAssist.js';
+import { assistCommunityPost, studioHomeUrl } from './communityAssist.js';
 
 const NAMES = { instagram: 'Instagram', facebook: 'Facebook', youtube: 'YouTube', x: 'X' };
 const FB_CTAS = ['', 'LEARN_MORE', 'SHOP_NOW', 'SIGN_UP', 'MESSAGE_PAGE'];
@@ -37,22 +37,22 @@ export default function Workspace({
   // that path stages the photo + caption and hands off to Studio.
   const photoOnly = pid === 'youtube' && files.length > 0 && !hasVideo;
   const [assistMsg, setAssistMsg] = useState('');
+  const channelId = accounts.find((a) => a.id === accountId)?.platform_account_id;
 
   const runAssist = async () => {
     setAssistMsg('Preparing…');
-    const acct = accounts.find((a) => a.id === accountId);
     const photo = files.find((f) => f?.raw && f.type.startsWith('image/'))?.raw || null;
     try {
-      const r = await assistCommunityPost({ file: photo, values, channelId: acct?.platform_account_id });
+      const r = await assistCommunityPost({ file: photo, values, channelId });
       const bits = [];
       if (r.copied) bits.push('Caption copied to clipboard');
       if (r.saved) bits.push('Photo saved to your downloads');
-      if (r.opened) bits.push('Studio Posts tab opened');
+      if (r.opened) bits.push('Studio opened — go Content → Posts');
       setAssistMsg(bits.length
-        ? `${bits.join(' · ')} — paste and hit Post.`
+        ? `${bits.join(' · ')}.`
         : 'Your browser blocked the clipboard and popup. Allow them for this site, then try again.');
     } catch (e) {
-      setAssistMsg(e.message || 'Could not prepare the community post.');
+      setAssistMsg(e.message || 'Could not prepare the post.');
     }
   };
 
@@ -227,24 +227,28 @@ export default function Workspace({
       {photoOnly && (
         <div className="s3-ytphoto">
           <p>
-            <b>Post this photo to the YouTube community tab.</b>
-            {' '}YouTube has no API for community posts, so we stage it for you: the photo is
-            saved to your downloads and the caption is copied. Then just paste and hit Post in
-            the Studio tab we open.
+            <b>Post this photo to the YouTube Posts tab.</b>
+            {' '}YouTube has no API for posts, so we stage it for you: the photo is
+            saved to your downloads and the caption is copied. In Studio go
+            {' '}<b>Content → Posts</b>, paste and hit Post.
           </p>
           <button type="button" className="go" onClick={runAssist} disabled={greyed || !accountId}>
             Copy caption + open Studio →
           </button>
           {assistMsg && <p className="s3-ytphoto-msg" aria-live="polite">{assistMsg}</p>}
           <p className="s3-ytphoto-alt">
-            Would rather it be fully automatic?{' '}
+            Studio opened the wrong page?{' '}
+            <a href={studioHomeUrl(channelId)} target="_blank" rel="noreferrer" className="s3-link">
+              open your channel home
+            </a>
+            {' · '}or{' '}
             <button
               type="button"
               className="s3-link"
               onClick={() => onPostPhotoAsVideo(pid)}
               disabled={posting || encoding || greyed || !accountId}
             >
-              {encoding ? 'Making video…' : 'post the photo as a 6s Short instead'}
+              {encoding ? 'Making video…' : 'post it as a 6s Short instead'}
             </button>
           </p>
         </div>

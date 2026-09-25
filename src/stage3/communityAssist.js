@@ -1,20 +1,28 @@
 // YouTube Community Posts have no Data API endpoint — Google's resource list
 // has no posts type, and even Buffer can't do it. Only a browser logged into
 // Google can create one, so we refuse to hold your Google session and instead
-// do the tedious half: stage the photo and caption, then deep-link Studio's
-// Posts tab. The user goes from hunting for a file to paste + Post.
+// do the tedious half: stage the photo and caption, then hand off to Studio.
+// (YouTube renamed "Community" to "Posts" in 2025.)
 
 const STUDIO = 'https://studio.youtube.com/';
+
+// Studio routes on the client, so a bad path renders "Oops, something went
+// wrong" only *after* login — the server can't tell us if a deep link is real.
+// `content` is Google's documented location (left menu → Content → Posts tab);
+// `studioHome` is the always-valid channel root we fall back to.
+export function postsUrl(channelId) {
+  return channelId ? `${STUDIO}channel/${channelId}/content` : STUDIO;
+}
+
+export function studioHomeUrl(channelId) {
+  return channelId ? `${STUDIO}channel/${channelId}` : STUDIO;
+}
 
 export function communityText(values = {}) {
   const body = String(values.description || '').trim();
   const tags = String(values.tags || '').trim();
   if (body && tags) return `${body}\n\n${tags}`;
   return body || tags || '';
-}
-
-export function postsUrl(channelId) {
-  return channelId ? `${STUDIO}channel/${channelId}/editing/community` : STUDIO;
 }
 
 export async function assistCommunityPost({ file, values, channelId }) {
