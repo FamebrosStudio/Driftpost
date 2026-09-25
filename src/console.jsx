@@ -21,11 +21,14 @@ export default function Console({ session, onSwitchAccount, onSignOut }) {
   void onSwitchAccount;
   const [stage, setStage] = useState(loadStage);
   const [view, setView] = useState('flow');
-  const go = (n) => {
+  // Stages are strings everywhere ('connect' | '1' | '2' | '3') so the
+  // state and localStorage can never drift apart on a number/string mismatch.
+  const go = (next) => {
+    const n = String(next);
     setStage(n);
     try {
       if (n === 'connect') localStorage.removeItem('driftpost-stage');
-      else localStorage.setItem('driftpost-stage', String(n));
+      else localStorage.setItem('driftpost-stage', n);
     } catch {}
     try { window.scrollTo(0, 0); } catch {}
   };
