@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { apiUrl, api, PLATFORMS, isActiveBrand, groupBrands, TRIO_BRANDS, findTrioBrands } from './lib.js';
 import BrandIcon from './brand.jsx';
+import LiquidBg from './liquid.jsx';
 import { getSupabase } from './session.js';
 
 // Owner-only features (trio) are gated to this login.
@@ -187,9 +188,9 @@ function Tip({ text }) {
 
 function StepsHeader({ step, setStep, ready }) {
   const steps = [
-    { n: 1, t: 'Brand', d: 'Who is this for?' },
-    { n: 2, t: 'Content', d: 'Photo + words' },
-    { n: 3, t: 'Review & Post', d: 'Check + publish' },
+    { n: 1, t: 'Stage 1 · Brand', d: 'Brand + platforms + trios' },
+    { n: 2, t: 'Stage 2 · Content', d: 'Media + AI captions' },
+    { n: 3, t: 'Stage 3 · Tune & Post', d: 'Check each + publish' },
   ];
   return (
     <div className="steps">
@@ -392,6 +393,10 @@ function Composer({ session, connections, reload }) {
   const [brandKey, setBrandKey] = useState(saved.brandKey || '');
   const [step, setStep] = useState([1, 2, 3].includes(saved.step) ? saved.step : 1);
   const [tab, setTab] = useState(saved.tab || 'youtube');
+  // Stage 3 must-visit: which platform cards the user has actually opened.
+  // Why: the plan requires every selected platform to be seen before posting,
+  // so per-platform options (titles, sizes, polls) are never skipped by accident.
+  const [visited, setVisited] = useState(saved.visited || {});
   const [showAdv, setShowAdv] = useState(saved.showAdv || {});
   const [over, setOver] = useState(saved.over || {});
   const [files, setFiles] = useState([]);
@@ -446,10 +451,10 @@ function Composer({ session, connections, reload }) {
       localStorage.setItem(persistKey, JSON.stringify({
         brandKey, step, tab, caption, yt, ig, fb, x, enabled,
         aiBrief, aiTone, aiEmoji, aiLength, over,
-        trioMode, showAdv, aiMsg, results: persistResults, activeGroupId,
+        trioMode, showAdv, aiMsg, results: persistResults, activeGroupId, visited,
       }));
     } catch {}
-  }, [persistKey, brandKey, step, tab, caption, yt, ig, fb, x, enabled, aiBrief, aiTone, aiEmoji, aiLength, over, trioMode, showAdv, aiMsg, results, activeGroupId]);
+  }, [persistKey, brandKey, step, tab, caption, yt, ig, fb, x, enabled, aiBrief, aiTone, aiEmoji, aiLength, over, trioMode, showAdv, aiMsg, results, activeGroupId, visited]);
   useEffect(() => {
     try { localStorage.setItem(groupsKey, JSON.stringify(groups.slice(0, 20))); } catch {}
   }, [groupsKey, groups]);
@@ -504,6 +509,18 @@ function Composer({ session, connections, reload }) {
   useEffect(() => {
     if (!enabled[tab] && enabledPlatforms.length) setTab(enabledPlatforms[0].id);
   }, [enabled, tab, enabledPlatforms]);
+  // Mark the open platform as seen. New user safe: no popup, just a quiet
+  // checkmark so they know what is left. Resets when the selection changes.
+  useEffect(() => {
+    if (enabled[tab]) setVisited((v) => (v[tab] ? v : { ...v, [tab]: true }));
+  }, [tab, enabled]);
+  const markAllVisited = () => {
+    const all = {};
+    enabledPlatforms.forEach((p) => { all[p.id] = true; });
+    setVisited(all);
+  };
+  const visitedCount = enabledPlatforms.filter((p) => visited[p.id]).length;
+  const allVisited = enabledPlatforms.length > 0 && visitedCount === enabledPlatforms.length;
   // Trio counts as a valid Step-1 selection: when the owner checks it, the
   // platform error is hidden and Next is allowed even before ticking boxes.
   const trioActive = isOwner && trioMode && trio.length >= 2;
@@ -539,6 +556,7 @@ function Composer({ session, connections, reload }) {
       return;
     }
     setActiveGroupId(g.id);
+    setVisited({});
     // Exact preset: group platforms on, others off — predictable every time.
     setEnabled({ youtube: !!picks.youtube, instagram: !!picks.instagram, facebook: !!picks.facebook, x: !!picks.x });
     const bk = (g.brandKey && brands.some((b) => b.key === g.brandKey)) ? g.brandKey : brandKey;
@@ -885,18 +903,18 @@ function Composer({ session, connections, reload }) {
 
       {step === 1 && (
       <div className="step-panel">
-        <div className="card step-card">
-          <span className="scope-badge everywhere">Step 1 · Who is this for?</span>
-          <h3>Pick a brand</h3>
-          <p className="sub">One brand = one client. We auto-match their accounts on all 4 platforms.</p>
-          <BrandPicker brands={brands} brandKey={brandKey} isActive={(b) => brandActive(b)} onPick={(k) => { setBrandKey(k); setResults({}); }} />
+        <div className="card step-card stage-1">
+          <span className="scope-badge everywhere">Stage 1 · Option 1 · Required</span>
+          <h3>Pick 1 common brand</h3>
+          <p className="sub">One brand = one client. We auto-match their accounts on all 4 platforms. New here? Just type to filter — Active marks your live clients.</p>
+          <BrandPicker brands={brands} brandKey={brandKey} isActive={(b) => brandActive(b)} onPick={(k) => { setBrandKey(k); setResults({}); setVisited({}); }} />
           {!brands.length && <div className="banner" style={{ marginTop: 12 }}>No accounts yet. Go to Accounts → Connect YouTube / Facebook / Instagram / X first.</div>}
         </div>
 
-        <div className="card step-card">
-          <span className="scope-badge everywhere">Where to post?</span>
-          <h3>Choose platforms</h3>
-          <p className="sub">Only ticked platforms appear in Review and post. Unticked ones stay hidden.</p>
+        <div className="card step-card stage-1">
+          <span className="scope-badge everywhere">Stage 1 · Option 2 · Required</span>
+          <h3>Select platforms</h3>
+          <p className="sub">Only ticked platforms appear in Stage 3. Unticked ones stay hidden — less clutter, no accidents.</p>
           <div className="plat-pick">
             {PLATFORMS.map((p) => {
               const list = listFor(p.id);
@@ -906,7 +924,7 @@ function Composer({ session, connections, reload }) {
                 <div key={p.id} className={enabled[p.id] && chosen ? 'plat-row on' : 'plat-row'}>
                   <button
                     className={enabled[p.id] ? 'plat-check on' : 'plat-check'}
-                    onClick={() => setEnabled((m) => ({ ...m, [p.id]: !m[p.id] }))}
+                    onClick={() => { setEnabled((m) => ({ ...m, [p.id]: !m[p.id] })); setVisited((v) => { const n = { ...v }; delete n[p.id]; return n; }); }}
                     aria-label={`Toggle ${p.name}`}
                     disabled={missing}
                     title={missing ? `Connect a ${p.name} account first` : `Include ${p.name}`}
@@ -928,10 +946,11 @@ function Composer({ session, connections, reload }) {
             <button className="skew-btn grad" onClick={goNextFromStep1} disabled={!step1Ready}><span>Next: add content →</span></button>
           </div>
         </div>
-        <div className="card step-card">
-          <span className="scope-badge everywhere">Account groups</span>
-          <h3>Saved groups</h3>
-          <p className="sub">Bundle accounts (like trios) — one click loads brand + platforms + accounts.</p>
+        <div className="card step-card stage-1">
+          <span className="scope-badge everywhere">Stage 1 · Option 3 · Create trios</span>
+          <h3>Create trios / groups</h3>
+          <p className="sub">Bundle accounts that always post together — one click loads brand + platforms + accounts. Why? Saves repeat setup. Skip if you post one brand at a time.</p>
+          <div className="opt-label"><span className="scope-badge only">Stage 1 · Option 4 · Optional</span><span className="step-hint">Select created trios — loads a saved bundle instantly.</span></div>
           <div className="group-row">
             <select value={activeGroupId} onChange={(e) => applyGroup(groups.find((g) => g.id === e.target.value) || null)} aria-label="Saved group">
               <option value="">No group — manual</option>
@@ -1009,9 +1028,9 @@ function Composer({ session, connections, reload }) {
       {step === 2 && (
       <div className="step-panel">
       <div className="share-row stepped">
-        <div className="card step-card">
-          <span className="scope-badge everywhere">Used everywhere</span>
-          <h3>1 · Photo or video <Tip text="Up to 10 photos = 1 carousel post on Instagram/Facebook (up to 4 on X). YouTube needs a video — photos cannot post to YouTube via the API. All images auto-convert to HD (min 1080px)." /></h3>
+        <div className="card step-card stage-2">
+          <span className="scope-badge everywhere">Stage 2 · Add media · Used everywhere</span>
+          <h3>Add media <Tip text="Up to 10 photos = 1 carousel post on Instagram/Facebook (up to 4 on X). YouTube needs a video — photos cannot post to YouTube via the API. All images auto-convert to HD (min 1080px)." /></h3>
           <p className="sub">Add once — it appears on every selected platform. {isCarousel ? `Carousel: ${files.length} photos as 1 post.` : ''} HD is automatic; use Crop for exact framing.</p>
           <input ref={inputRef} type="file" accept="image/*,video/*" multiple hidden onChange={(e) => { pickFiles(e.target.files); e.target.value = ''; }} />
           {!files.length ? (
@@ -1043,10 +1062,10 @@ function Composer({ session, connections, reload }) {
             </div>
           )}
         </div>
-        <div className="card step-card ai">
-          <span className="scope-badge ai-badge">AI writer</span>
-          <h3><Icon d={ICONS.edit} size={15} /> 2 · AI writer</h3>
-          <p className="sub">Type a short summary — 4 platform captions. Edit each platform in Review next. Phone numbers always go at the end, never at the start.</p>
+        <div className="card step-card ai stage-2">
+          <span className="scope-badge ai-badge">Stage 2 · AI writer</span>
+          <h3><Icon d={ICONS.edit} size={15} /> Write prompt here</h3>
+          <p className="sub">Type a short summary — we draft 4 platform captions below. Why 4? Each platform reads differently. You fine-tune each in Stage 3 — nothing posts from here.</p>
           <label className="field" style={{ marginBottom: 0 }}><span>What is this post about? <i>brand + motive + conditions wins</i></span><textarea value={aiBrief} maxLength={500} onChange={(e) => setAiBrief(e.target.value)} placeholder="e.g. Velvet Salon has a new offer: 20% off for everyone who comes before 4pm" style={{ minHeight: 70 }} /></label>
           <label className="ck" style={{ marginTop: 8 }}><input type="checkbox" checked={aiTrends} onChange={(e) => setAiTrends(e.target.checked)} /><svg viewBox="0 0 64 64"><path className="path" d="M8 33 L26 51 L56 13" /></svg><span>Live SEO trends (slower, costs more)</span></label>
           <div className="row2" style={{ marginTop: 8 }}>
@@ -1102,6 +1121,24 @@ function Composer({ session, connections, reload }) {
           {aiBusy && <div className="progress-loader" style={{ marginTop: 10 }}><div className="progress" /></div>}
         </div>
       </div>
+        <div className="card step-card ai-out">
+          <span className="scope-badge ai-badge">Output of use AI · per platform</span>
+          <h3>What AI wrote — quick look</h3>
+          <p className="sub">Same post, tuned per platform. Full edit happens in Stage 3 — this is just a check so nothing surprises you.</p>
+          <div className="ai-out-grid">
+            {[
+              { id: 'youtube', name: 'YouTube', text: yt.title ? `${yt.title}${yt.description ? ` — ${yt.description.slice(0, 80)}` : ''}` : '' },
+              { id: 'instagram', name: 'Instagram', text: ig.caption || '' },
+              { id: 'facebook', name: 'Facebook', text: fb.message || '' },
+              { id: 'x', name: 'X', text: x.text || '' },
+            ].map((o) => (
+              <div key={o.id} className={enabled[o.id] ? 'ai-out-cell on' : 'ai-out-cell'}>
+                <span className="ai-out-head"><BrandIcon id={o.id} size={13} /> {o.name}{!enabled[o.id] && ' · off'}</span>
+                <p>{o.text ? (o.text.length > 110 ? o.text.slice(0, 110) + '…' : o.text) : '— no text yet —'}</p>
+              </div>
+            ))}
+          </div>
+        </div>
         <div className="step-nav">
           <button className="skew-btn ghost" onClick={() => setStep(1)}><span>← Back</span></button>
           <span className="step-hint">{contentReady ? 'Content ready — review each platform next.' : 'Add media or write with AI first.'}</span>
@@ -1112,9 +1149,18 @@ function Composer({ session, connections, reload }) {
 
       {step === 3 && (
       <div className="step-panel">
+      <div className="card step-card stage-3">
+        <span className="scope-badge everywhere">Stage 3 · Tune each platform · Required</span>
+        <h3>Click every platform, check its info</h3>
+        <p className="sub">Why? Titles, sizes, polls and links differ per platform. Open each tab below — {visitedCount}/{enabledPlatforms.length} reviewed. Posting unlocks when all are seen.</p>
+        <div className="review-progress"><i style={{ width: `${enabledPlatforms.length ? (visitedCount / enabledPlatforms.length) * 100 : 0}%` }} /></div>
+        {!allVisited && enabledPlatforms.length > 0 && (
+          <div className="banner" style={{ marginTop: 8 }}>Tap each platform tab ({enabledPlatforms.filter((p) => !visited[p.id]).map((p) => p.name).join(', ')}) to review it. <button className="link" onClick={markAllVisited}>I already checked — mark all reviewed</button></div>
+        )}
+      </div>
       <div className="brandbar tight">
-        <BrandPicker brands={brands} brandKey={brandKey} isActive={(b) => brandActive(b)} onPick={(k) => { setBrandKey(k); setResults({}); }} />
-        <button className="skew-btn grad pub-all" onClick={publishAll} disabled={Object.values(busy).some(Boolean) || !enabledPlatforms.length}><span>Post to all selected{isCarousel ? ` (carousel x${files.length})` : ''} — {enabledPlatforms.map((p) => p.name).join(', ') || 'none'}</span></button>
+        <BrandPicker brands={brands} brandKey={brandKey} isActive={(b) => brandActive(b)} onPick={(k) => { setBrandKey(k); setResults({}); setVisited({}); }} />
+        <button className="skew-btn grad pub-all" onClick={publishAll} disabled={Object.values(busy).some(Boolean) || !enabledPlatforms.length || !allVisited} title={!allVisited ? 'Review every platform tab first' : 'Post to all'}><span>Post to all selected{isCarousel ? ` (carousel x${files.length})` : ''} — {enabledPlatforms.map((p) => p.name).join(', ') || 'none'}{!allVisited && enabledPlatforms.length ? ` · ${visitedCount}/${enabledPlatforms.length} seen` : ''}</span></button>
       </div>
       {!enabledPlatforms.length && <div className="sec-err" style={{ marginBottom: 10 }}>No platforms selected. Go back to Step 1 and tick at least one.</div>}
       {isOwner && trioMode && trio.length >= 2 && (
@@ -1135,13 +1181,15 @@ function Composer({ session, connections, reload }) {
       {(ig.shareFb || fb.syndIg) && enabled.instagram && enabled.facebook && (
         <div className="banner" style={{ marginBottom: 10 }}>Double-post guard: Post to all ignores cross-post ticks and posts IG + FB directly (1 post each). Single-platform posting still honours the tick. Keep both ticks OFF unless you publish one platform at a time.</div>
       )}
-      <div className="ptabs" role="tablist">
+      <div className="ptabs" role="tablist" aria-label="Platforms — open each to review">
         {enabledPlatforms.map((p) => {
           const r = results[p.id];
           const dot = r?.state === 'completed' ? 'Done' : r?.state === 'failed' ? 'Failed' : busy[p.id] ? 'Sending' : '';
+          const seen = !!visited[p.id];
           return (
-            <button key={p.id} role="tab" aria-selected={tab === p.id} className={tab === p.id ? 'ptab on' : 'ptab'} onClick={() => setTab(p.id)}>
+            <button key={p.id} role="tab" aria-selected={tab === p.id} className={tab === p.id ? 'ptab on' : seen ? 'ptab seen' : 'ptab'} onClick={() => { setTab(p.id); setVisited((v) => ({ ...v, [p.id]: true })); }}>
               <BrandIcon id={p.id} size={15} /> {p.name}
+              {seen && !dot && <span className="pdot ok">seen</span>}
               {dot && <span className={r?.state === 'failed' ? 'pdot fail' : 'pdot'}>{dot}</span>}
               {!pick(p.id) && <span className="pdot warn">no account</span>}
             </button>
@@ -1351,6 +1399,31 @@ function Composer({ session, connections, reload }) {
             </div>
           );
         })}
+      </div>
+      <div className="card step-card review-card">
+        <span className="scope-badge everywhere">Posting OK · final check</span>
+        <h3>Ready to post? {visitedCount}/{enabledPlatforms.length} reviewed</h3>
+        <p className="sub">Each row = one live post. Green tick = posted. Why this list? So you see exactly what goes where — no hidden cross-posts.</p>
+        <div className="review-list">
+          {enabledPlatforms.map((p) => {
+            const r = results[p.id];
+            const acc = listFor(p.id).find((c) => c.id === pick(p.id));
+            return (
+              <div key={p.id} className="review-row">
+                <span className="plat-ic"><BrandIcon id={p.id} size={16} /></span>
+                <span className="plat-meta"><b>{p.name}</b><small>{acc ? acc.account_name : 'No account — pick in Stage 1'}</small></span>
+                <span className={r?.state === 'completed' ? 'status-pill ok' : r?.state === 'failed' ? 'status-pill fail' : 'status-pill'}>{r?.state === 'completed' ? 'Posted' : r?.state === 'failed' ? 'Failed' : visited[p.id] ? 'Reviewed' : 'Not seen'}</span>
+                {r?.state === 'completed' ? <span className="review-tick" aria-label="Posted">✓</span> : <span className="review-tick todo" aria-label="Pending">·</span>}
+              </div>
+            );
+          })}
+        </div>
+        <div className="review-actions">
+          <button className="skew-btn ghost" onClick={() => { setResults({}); }}><span>Cancel results</span></button>
+          <button className="skew-btn ghost" onClick={() => { setFiles([]); setThumb(null); }}><span>Delete media</span></button>
+          <button className="skew-btn grad" onClick={publishAll} disabled={Object.values(busy).some(Boolean) || !enabledPlatforms.length || !allVisited}><span>Post {allVisited ? '' : `(${visitedCount}/${enabledPlatforms.length}) `}→</span></button>
+        </div>
+        {!allVisited && <p className="note">Post unlocks after every platform tab is opened — open each tab above first.</p>}
       </div>
         <div className="step-nav">
           <button className="skew-btn ghost" onClick={() => setStep(2)}><span>← Back to content</span></button>
@@ -1606,7 +1679,8 @@ export default function Console({ session, onSwitchAccount, onSignOut }) {
   }
 
   return (
-    <div className="shell">
+    <div className="shell liquid">
+      <LiquidBg />
       {tour === 'ask' && (
         <div className="tour-backdrop">
           <div className="tour-card">
