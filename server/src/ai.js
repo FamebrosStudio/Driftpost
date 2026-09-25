@@ -179,26 +179,9 @@ function moveLeadingContactToEnd(body) {
   return `${moved}\n${first}`.trim();
 }
 
-// --- Speed: short-lived in-memory cache + hard timeouts ---
-// Same brief+brand+style within 30 min returns instantly (0 LLM seconds).
-const AI_CACHE = new Map();
-const AI_CACHE_MS = 30 * 60 * 1000;
-const aiCacheKey = (brief, opts) => JSON.stringify([
-  String(brief || '').trim().slice(0, 400).toLowerCase(),
-  String(opts.brand || '').toLowerCase().slice(0, 80),
-  opts.tone || '', opts.emoji || '', opts.length || '', opts.trends ? 't' : '',
-  String(opts.assetHint || '').slice(0, 60),
-]);
-function aiCacheGet(key) {
-  const hit = AI_CACHE.get(key);
-  if (!hit) return null;
-  if (Date.now() - hit.at > AI_CACHE_MS) { AI_CACHE.delete(key); return null; }
-  return hit.value;
-}
-function aiCacheSet(key, value) {
-  AI_CACHE.set(key, { at: Date.now(), value });
-  if (AI_CACHE.size > 200) { const first = AI_CACHE.keys().next().value; AI_CACHE.delete(first); }
-}
+// No answer cache, by design. Replaying a stored caption when the user hits
+// Regenerate is the single most reported complaint about tools like this, so
+// every request runs the model and every Regenerate genuinely differs.
 
 export async function generateCaptions(summary, opts = {}) {
   if (!process.env.XAI_API_KEY) throw new Error('AI is not configured yet (XAI_API_KEY missing)');
@@ -263,15 +246,6 @@ export async function generateCaptions(summary, opts = {}) {
     + (LENGTH_BLOCKS[capLength] || '') + HUMANIZER
     + mem.breakdownBlock(breakdown);
   const model = process.env.XAI_MODEL || 'grok-4-1-fast-non-reasoning';
-
-  // Regenerate (`fresh`) must never return the previous answer, and must not
-  // poison the cache for the next run — so it reads nothing and writes nothing.
-  const fresh = opts.fresh === true || String(opts.fresh || '') === '1';
-  const cacheKey = aiCacheKey(brief, { brand: brand?.name || opts.brand, assetHint, tone, emoji: emojiLevel, length: capLength, trends });
-  if (!trends && !fresh) {
-    const cached = aiCacheGet(cacheKey);
-    if (cached) return { ...cached, cached: true };
-  }
 
   let text;
   let usage;
@@ -481,11 +455,8 @@ export async function generateCaptions(summary, opts = {}) {
     trends,
     usage: usage || undefined,
   };
-  if (!trends && !fresh) aiCacheSet(cacheKey, out);
   return out;
 }
-
-export function clearAiCache() { AI_CACHE.clear(); }
 
 function xaiError(data, res) {
   const msg = data?.error?.message || data?.error || `xAI error ${res.status}`;

@@ -17,29 +17,8 @@ const MediaEditor = lazy(() => import('./MediaEditor.jsx'));
 
 const GEN_STEPS = ['Analyzing media…', 'Understanding brand…', 'Creating content…', 'Finalizing outputs…'];
 
-// Answer cache: identical prompt + settings + platforms reuse the last
-// answer instantly (24h). Regenerate always fetches fresh and refreshes it.
-const AI_CACHE_KEY = 'driftpost-ai-cache';
-const AI_CACHE_TTL = 24 * 3600 * 1000;
-function readAiCache() {
-  try {
-    const list = JSON.parse(localStorage.getItem(AI_CACHE_KEY));
-    return Array.isArray(list) ? list : [];
-  } catch { return []; }
-}
-function aiCacheKey(brief, brand, tone, emoji, length, plats) {
-  return [brief.trim(), brand, tone, emoji, length, plats.join(',')].join('|');
-}
-function findAiCache(key) {
-  const hit = readAiCache().find((e) => e && e.key === key && Date.now() - e.at < AI_CACHE_TTL);
-  return hit ? hit.data : null;
-}
-function writeAiCache(key, data) {
-  try {
-    const list = [{ key, at: Date.now(), data }, ...readAiCache().filter((e) => e && e.key !== key)];
-    localStorage.setItem(AI_CACHE_KEY, JSON.stringify(list.slice(0, 20)));
-  } catch {}
-}
+// No answer cache. An earlier version replayed the last answer for 24h on an
+// identical prompt, which made Regenerate look broken. Gone for good.
 
 function load(key, fallback) {
   try {
@@ -156,8 +135,8 @@ export default function StageTwoPage({ session, onBack, onSignOut, onHistory, on
     setEditing(-1);
   };
 
-  const requestCaptions = (opts = {}) => fetchCaptions(session.access_token, {
-    brief, brand: brandLabel, files, tone, emoji, length, ...opts,
+  const requestCaptions = () => fetchCaptions(session.access_token, {
+    brief, brand: brandLabel, files, tone, emoji, length,
   });
 
   const applyMapped = (mapped, pids) => {
@@ -171,19 +150,10 @@ export default function StageTwoPage({ session, onBack, onSignOut, onHistory, on
 
   const generate = async () => {
     if (busy || regen || !brief.trim() || !targetPlatforms.length) return;
-    const key = aiCacheKey(brief, brandLabel, tone, emoji, length, targetPlatforms);
-    const hit = findAiCache(key);
-    if (hit) {
-      // Instant path: same prompt as before — no network wait at all.
-      applyMapped(mapResponse(hit), targetPlatforms);
-      say('Instant — same answer as last time for this prompt.', 'ok');
-      return;
-    }
     setBusy(true); setAiMsg(''); setGenStep(0);
     const tick = setInterval(() => setGenStep((s) => (s + 1) % GEN_STEPS.length), 900);
     try {
       const data = await requestCaptions();
-      writeAiCache(key, data);
       const mapped = mapResponse(data);
       applyMapped(mapped, targetPlatforms);
       logCaptions({ brand: brandLabel, entries: targetPlatforms.map((pid) => ({ platform: pid, text: composeOutput(pid, mapped[pid]) })) });
@@ -201,10 +171,7 @@ export default function StageTwoPage({ session, onBack, onSignOut, onHistory, on
     if (busy || regen || !brief.trim()) return;
     setRegen(pid); setAiMsg('');
     try {
-      // fresh=true bypasses the server's 30-min answer cache, so this really
-      // re-runs the model instead of replaying the last reply.
-      const data = await requestCaptions({ fresh: true });
-      writeAiCache(aiCacheKey(brief, brandLabel, tone, emoji, length, targetPlatforms), data);
+      const data = await requestCaptions();
       const mapped = mapResponse(data);
       applyMapped(mapped, [pid]);
       logCaptions({ brand: brandLabel, entries: [{ platform: pid, text: composeOutput(pid, mapped[pid]) }] });

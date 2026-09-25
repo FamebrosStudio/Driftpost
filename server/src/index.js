@@ -193,8 +193,6 @@ app.post('/api/ai/captions', requireUser, aiLimit, async (req, res) => {
       tone: req.body?.tone,
       emoji: req.body?.emoji,
       length: req.body?.length,
-      // Regenerate: skip the answer cache so the user gets a new take.
-      fresh: req.body?.fresh === true || req.body?.fresh === '1' || req.body?.fresh === 1,
     });
     res.json(out);
   } catch (e) {
