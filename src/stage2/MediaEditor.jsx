@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 // Crop + resize only (per wireframe): aspect pills, rotate, flip,
-// free-crop box, done. Images export HD JPEG; videos re-encode
+// fit-or-crop, done. Images export exact-size JPEG; videos re-encode
 // (full duration, capped 1280px, original audio kept) as WebM.
 const RATIOS = { Original: null, '4:5': 4 / 5, '1:1': 1, '16:9': 16 / 9, '9:16': 9 / 16 };
 
@@ -21,6 +21,40 @@ function fitsRatio(nw, nh, ratio) {
 }
 const FULL = { fx: 0, fy: 0, fw: 1, fh: 1 };
 
+// Paint a source into an exact-ratio canvas without losing content:
+// a blurred cover-fill behind, the untouched frame centred on top.
+function drawFit(ctx, src, sw, sh, W, H) {
+  ctx.clearRect(0, 0, W, H);
+  if (!sw || !sh) return;
+  const cover = Math.max(W / sw, H / sh);
+  ctx.save();
+  ctx.filter = 'blur(26px) saturate(1.25) brightness(0.75)';
+  ctx.drawImage(src, (W - sw * cover) / 2, (H - sh * cover) / 2, sw * cover, sh * cover);
+  ctx.restore();
+  const fit = Math.min(W / sw, H / sh);
+  const dw = sw * fit;
+  const dh = sh * fit;
+  ctx.drawImage(src, (W - dw) / 2, (H - dh) / 2, dw, dh);
+}
+
+// Paint the user's crop window, snapped so the output is exactly the
+// target ratio (a hair of rounding drift can otherwise creep in).
+function cropWindow(box, sw, sh, ratio) {
+  const b = box || FULL;
+  let x = Math.round(b.fx * sw);
+  let y = Math.round(b.fy * sh);
+  let w = Math.round(b.fw * sw);
+  let h = Math.round(b.fh * sh);
+  if (ratio) {
+    h = Math.round(w / ratio);
+    if (h > sh) { h = sh; w = Math.round(h * ratio); }
+    if (w > sw) { w = sw; h = Math.round(w / ratio); }
+    x = Math.min(Math.max(0, x), sw - w);
+    y = Math.min(Math.max(0, y), sh - h);
+  }
+  return { x, y, w: Math.max(1, w), h: Math.max(1, h) };
+}
+
 export default function MediaEditor({ entry, onClose, onApply }) {
   const isVideo = entry.type.startsWith('video/');
   const [bmp, setBmp] = useState(null);
@@ -29,6 +63,9 @@ export default function MediaEditor({ entry, onClose, onApply }) {
   const [flipH, setFlipH] = useState(false);
   const [flipV, setFlipV] = useState(false);
   const [aspect, setAspect] = useState('Original');
+  // pad = Fit (default): keep 100% of the frame, blurred-fill the rest.
+  // pad = false + free = Crop: fill the frame by cutting edges.
+  const [pad, setPad] = useState(true);
   const [free, setFree] = useState(false);
   const [box, setBox] = useState(null);
   const [fitNote, setFitNote] = useState('');
@@ -128,61 +165,70 @@ export default function MediaEditor({ entry, onClose, onApply }) {
     if (!n) return null;
     return r % 2 === 1 ? { w: n.h, h: n.w } : n;
   };
-  const enableFree = () => {
+  // Exact output pixels for the chosen ratio: long edge clamped between
+  // 1080 and 2160, so nothing is upscaled past the source needlessly and
+  // every export lands on an exact platform ratio.
+  const targetDims = () => {
     const d = normDims();
-    if (!d) return;
-    if (aspect === 'Original') {
-      // Freeform: always open an adjustable box.
-      setBox(fitBox(d.w, d.h, null));
-      setFree(true);
-      setFitNote('');
-      return;
-    }
-    const ratio = RATIOS[aspect];
-    if (fitsRatio(d.w, d.h, ratio)) {
+    if (!d) return null;
+    const r = RATIOS[aspect];
+    if (!r) return { w: d.w, h: d.h };
+    const long = Math.max(1080, Math.min(2160, Math.max(d.w, d.h)));
+    if (r >= 1) return { w: Math.round(long), h: Math.round(long / r) };
+    return { w: Math.round(long * r), h: Math.round(long) };
+  };
+
+  // Smart default per ratio: already-correct -> no change, otherwise Fit
+  // (zero content loss). Crop is always one click away.
+  const applyRatio = (d, id) => {
+    const r = RATIOS[id];
+    if (!d || !r) {
       setBox({ ...FULL });
       setFree(false);
-      setFitNote(aspect === 'Original' ? '' : `Already ${aspect} — no crop needed.`);
-    } else {
-      setBox(fitBox(d.w, d.h, ratio));
-      setFree(true);
-      setFitNote('');
+      setFitNote(id === 'Original' ? '' : '');
+      return;
     }
+    if (fitsRatio(d.w, d.h, r)) {
+      setBox({ ...FULL });
+      setFree(false);
+      setFitNote(`Already ${id} — nothing is cropped.`);
+      return;
+    }
+    setBox(fitBox(d.w, d.h, r));
+    setFree(false);
+    setPad(true);
+    setFitNote(`Fits fully — padded to ${id}, nothing cut off.`);
   };
   const pickAspect = (id) => {
     setAspect(id);
+    applyRatio(normDims(), id);
+  };
+  const setMode = (crop) => {
     const d = normDims();
     if (!d) return;
-    const ratio = RATIOS[id];
-    if (fitsRatio(d.w, d.h, ratio)) {
-      setBox({ ...FULL });
+    if (!crop) {
+      setPad(true);
       setFree(false);
-      setFitNote(id === 'Original' ? '' : `Already ${id} — no crop needed.`);
-    } else {
-      setBox(fitBox(d.w, d.h, ratio));
-      setFree(true);
-      setFitNote('');
+      setFitNote(RATIOS[aspect] && !fitsRatio(d.w, d.h, RATIOS[aspect]) ? `Fits fully — padded to ${aspect}, nothing cut off.` : 'Fit — the whole frame is kept.');
+      return;
     }
+    setPad(false);
+    if (aspect === 'Original') {
+      setBox(fitBox(d.w, d.h, null));
+      setFree(true);
+      setFitNote('Crop mode — drag the box to choose what stays.');
+      return;
+    }
+    setBox(fitBox(d.w, d.h, RATIOS[aspect]));
+    setFree(true);
+    setFitNote(`Crop mode — edges are cut to fill ${aspect}.`);
   };
   const rotateTo = (nr) => {
     setRot(nr);
-    // Rotation changes dimensions: re-fit a locked box, or confirm a match.
-    if (free && aspect !== 'Original') {
-      const n = natDims();
-      if (!n) return;
-      const d = nr % 2 === 1 ? { w: n.h, h: n.w } : n;
-      const ratio = RATIOS[aspect];
-      if (fitsRatio(d.w, d.h, ratio)) {
-        setBox({ ...FULL });
-        setFree(false);
-        setFitNote(`Already ${aspect} — no crop needed.`);
-      } else {
-        setBox(fitBox(d.w, d.h, ratio));
-        setFitNote('');
-      }
-    } else {
-      setFitNote('');
-    }
+    // Rotation changes dimensions: re-evaluate the smart default.
+    const n = natDims();
+    if (!n) return;
+    applyRatio(nr % 2 === 1 ? { w: n.h, h: n.w } : n, aspect);
   };
 
   const onPointerDown = (e, mode) => {
@@ -246,16 +292,30 @@ export default function MediaEditor({ entry, onClose, onApply }) {
 
   const exportImage = () => {
     const c = normRef.current;
-    const b = free && box ? box : { fx: 0, fy: 0, fw: 1, fh: 1 };
-    const sx = Math.round(b.fx * c.width);
-    const sy = Math.round(b.fy * c.height);
-    const sw = Math.max(1, Math.round(b.fw * c.width));
-    const sh = Math.max(1, Math.round(b.fh * c.height));
-    const scale = Math.max(1, 1080 / Math.max(sw, sh));
+    const r = RATIOS[aspect];
     const out = document.createElement('canvas');
-    out.width = Math.round(sw * scale);
-    out.height = Math.round(sh * scale);
-    out.getContext('2d').drawImage(c, sx, sy, sw, sh, 0, 0, out.width, out.height);
+    const ctx = out.getContext('2d');
+    if (pad || !r) {
+      // Fit: exact target ratio, whole frame kept, blurred fill behind.
+      const t = targetDims();
+      out.width = t.w;
+      out.height = t.h;
+      if (!r) {
+        const scale = Math.max(1, 1080 / Math.max(c.width, c.height));
+        out.width = Math.round(c.width * scale);
+        out.height = Math.round(c.height * scale);
+        ctx.drawImage(c, 0, 0, out.width, out.height);
+      } else {
+        drawFit(ctx, c, c.width, c.height, out.width, out.height);
+      }
+    } else {
+      // Crop: the user's window, snapped to the exact ratio.
+      const t = targetDims();
+      out.width = t.w;
+      out.height = t.h;
+      const win = cropWindow(box, c.width, c.height, r);
+      ctx.drawImage(c, win.x, win.y, win.w, win.h, 0, 0, out.width, out.height);
+    }
     out.toBlob((blob) => {
       setBusy(false); setBusyText('');
       if (!blob) return;
@@ -285,14 +345,22 @@ export default function MediaEditor({ entry, onClose, onApply }) {
       const Nw = swap ? src.videoHeight : src.videoWidth;
       const Nh = swap ? src.videoWidth : src.videoHeight;
       if (!Nw || !Nh) throw new Error('unreadable');
-      const b = free && box ? box : { fx: 0, fy: 0, fw: 1, fh: 1 };
-      const sx = b.fx * Nw;
-      const sy = b.fy * Nh;
-      const sw = Math.max(2, b.fw * Nw);
-      const sh = Math.max(2, b.fh * Nh);
-      const scale = Math.min(1, 1280 / Math.max(sw, sh));
-      const W = Math.max(2, Math.round(sw * scale));
-      const H = Math.max(2, Math.round(sh * scale));
+      const r = RATIOS[aspect];
+      // Same smart rules as photos: Fit keeps everything, Crop cuts to ratio.
+      let W;
+      let H;
+      let win = null;
+      if (pad || !r) {
+        const long = Math.max(2, Math.min(1280, Math.max(Nw, Nh)));
+        if (!r) { W = Nw; H = Nh; }
+        else if (r >= 1) { W = long; H = Math.max(2, Math.round(long / r)); }
+        else { H = long; W = Math.max(2, Math.round(long * r)); }
+      } else {
+        const long = Math.max(2, Math.min(1280, Math.max(Nw, Nh)));
+        W = r >= 1 ? long : Math.max(2, Math.round(long * r));
+        H = r >= 1 ? Math.max(2, Math.round(long / r)) : long;
+        win = cropWindow(box, Nw, Nh, r);
+      }
       const norm = document.createElement('canvas');
       norm.width = Nw; norm.height = Nh;
       const nctx = norm.getContext('2d');
@@ -338,7 +406,12 @@ export default function MediaEditor({ entry, onClose, onApply }) {
         nctx.scale(flipH ? -1 : 1, flipV ? -1 : 1);
         nctx.drawImage(src, -src.videoWidth / 2, -src.videoHeight / 2, src.videoWidth, src.videoHeight);
         nctx.restore();
-        octx.drawImage(norm, sx, sy, sw, sh, 0, 0, W, H);
+        if (win) octx.drawImage(norm, win.x, win.y, win.w, win.h, 0, 0, W, H);
+        else drawFit(octx, norm, Nw, Nh, W, H);
+        // True progress: frames actually rendered vs total duration.
+        if (isFinite(dur) && dur > 0) {
+          setBusyText(`Rendering video… ${Math.min(100, Math.round((src.currentTime / dur) * 100))}%`);
+        }
         requestAnimationFrame(draw);
       };
       draw();
@@ -363,7 +436,7 @@ export default function MediaEditor({ entry, onClose, onApply }) {
     <div className="s2-overlay" onClick={onClose}>
       <div className="s2-editor" role="dialog" aria-modal="true" aria-label={`Edit ${entry.name}`} onClick={(e) => e.stopPropagation()}>
         <h2>Edit {isVideo ? 'video' : 'media'}</h2>
-        <p className="sub">{entry.name} · {isVideo ? 'crop + resize, re-encoded with audio kept' : 'crop + resize only, HD output'}</p>
+        <p className="sub">{entry.name} · {isVideo ? 'fit or crop, re-encoded with audio kept' : 'fit or crop, exact-size HD output'}</p>
         <div className="s2-ed-cols">
           <div className="crop-stage">
             <div className="crop-wrap" ref={wrapRef}>
@@ -390,17 +463,24 @@ export default function MediaEditor({ entry, onClose, onApply }) {
               ))}
             </div>
             {fitNote && <p className="s2-note">{fitNote}</p>}
+            {RATIOS[aspect] && (
+              <div className="s2-mode" role="group" aria-label="Fit or crop">
+                <button type="button" className={pad ? 'on' : ''} onClick={() => setMode(false)}>Fit · keep everything</button>
+                <button type="button" className={!pad ? 'on' : ''} onClick={() => setMode(true)}>Crop · fill the frame</button>
+              </div>
+            )}
             <div className="s2-ed-btns">
               <button type="button" onClick={() => rotateTo((rot + 3) % 4)}>Rotate left</button>
               <button type="button" onClick={() => rotateTo((rot + 1) % 4)}>Rotate right</button>
               <button type="button" className={flipV ? 'on' : ''} onClick={() => setFlipV((v) => !v)}>Flip vertical</button>
               <button type="button" className={flipH ? 'on' : ''} onClick={() => setFlipH((v) => !v)}>Flip horizontal</button>
             </div>
-            <div className="s2-ed-btns" style={{ gridTemplateColumns: '1fr' }}>
-              <button type="button" className={free ? 'on' : ''} onClick={() => (free ? setFree(false) : enableFree())}>
-                {free ? 'Crop freely · on (drag the box)' : 'Crop freely'}
-              </button>
-            </div>
+            {targetDims() && (
+              <p className="s3-xcount" style={{ marginTop: 0, marginBottom: 10 }}>
+                Output: <b style={{ color: 'var(--ink)' }}>{targetDims().w} × {targetDims().h}px</b>
+                {RATIOS[aspect] ? ` · ${aspect}` : ' · original size'}
+              </p>
+            )}
             <button type="button" className="s2-done" disabled={busy || !ready} onClick={done}>
               {busy ? (busyText || 'Saving…') : isVideo ? 'Done editing (render video)' : 'Done editing'}
             </button>
