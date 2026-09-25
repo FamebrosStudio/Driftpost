@@ -127,7 +127,10 @@ export function groupBrands(connections) {
         const s = brandScore(fb.account_name, c.account_name);
         if (s > bestScore) { bestScore = s; best = c; }
       }
-      if (best && bestScore >= 10) { brand.map[p] = best.id; used.add(best.id); }
+      // Strict threshold: exact/substring/spaceless matches score 90–100.
+      // Single generic words ("salon", "studio") only score ~10 and must
+      // never merge two different businesses into one brand.
+      if (best && bestScore >= 30) { brand.map[p] = best.id; used.add(best.id); }
     }
     brands.push(brand);
   }
