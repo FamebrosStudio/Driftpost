@@ -33,7 +33,7 @@ function save(key, val) {
   try { localStorage.setItem(key, JSON.stringify(val)); } catch {}
 }
 
-export default function StageOnePage({ session, onSignOut }) {
+export default function StageOnePage({ session, onSignOut, onNext }) {
   const [connections, setConnections] = useState([]);
   const [loading, setLoading] = useState(true);
   const [type, setType] = useState(() => {
@@ -114,6 +114,7 @@ export default function StageOnePage({ session, onSignOut }) {
     save('driftpost-stage1-done', true);
     setSavedTick(true);
     setTimeout(() => setSavedTick(false), 1600);
+    if (onNext) onNext();
   };
 
   return (
