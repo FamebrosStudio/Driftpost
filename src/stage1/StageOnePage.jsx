@@ -36,6 +36,7 @@ function save(key, val) {
 export default function StageOnePage({ session, onSignOut, onNext }) {
   const [connections, setConnections] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [connsOk, setConnsOk] = useState(false);
   const [type, setType] = useState(() => {
     const t = load('driftpost-stage1-type', '');
     // One-time carryover from the old "trios" naming.
@@ -68,7 +69,7 @@ export default function StageOnePage({ session, onSignOut, onNext }) {
   useEffect(() => {
     let live = true;
     api('/api/connections', session.access_token)
-      .then((d) => { if (live) setConnections(d.connections || []); })
+      .then((d) => { if (live) { setConnections(d.connections || []); setConnsOk(true); } })
       .catch(() => {})
       .finally(() => { if (live) setLoading(false); });
     return () => { live = false; };
@@ -86,6 +87,24 @@ export default function StageOnePage({ session, onSignOut, onNext }) {
     connections.forEach((x) => { c[x.platform] = (c[x.platform] || 0) + 1; });
     return c;
   }, [connections]);
+  // Option 2 pills follow the picked brand: platforms the brand is not
+  // linked to go grey and unclickable. With no brand, any connected
+  // platform counts. Selected-but-unavailable entries are pruned.
+  const ORDER = ['instagram', 'facebook', 'youtube', 'x'];
+  const availablePids = useMemo(() => (
+    brand ? ORDER.filter((pid) => brand.map[pid]) : ORDER.filter((pid) => (counts[pid] || 0) > 0)
+  ), [brand, counts]);
+  useEffect(() => {
+    // Only prune after accounts load: pruning against an empty list would
+    // wipe a valid saved selection on every refresh.
+    if (!connsOk) return;
+    setPlatforms((p) => {
+      const n = p.filter((id) => availablePids.includes(id));
+      if (n.length === p.length) return p;
+      save('driftpost-stage1-platforms', n);
+      return n;
+    });
+  }, [availablePids, connsOk]);
 
   const valid =
     type === 'common_brand' ? !!brand :
@@ -95,6 +114,7 @@ export default function StageOnePage({ session, onSignOut, onNext }) {
 
   const pick = (t) => { setType(t); save('driftpost-stage1-type', t); setSavedTick(false); };
   const chooseBrand = (k) => { setBrandKey(k); save('driftpost-stage1-brand', k); setBrandOpen(false); };
+  const clearBrand = () => { setBrandKey(''); save('driftpost-stage1-brand', ''); };
   const togglePlatform = (id) => setPlatforms((p) => {
     const n = p.includes(id) ? p.filter((x) => x !== id) : [...p, id];
     save('driftpost-stage1-platforms', n);
@@ -140,6 +160,7 @@ export default function StageOnePage({ session, onSignOut, onNext }) {
                   <b>{brand.label}</b>
                   <small>{brandPlats(brand).length} accounts</small>
                   <button type="button" className="s1-mini" onClick={() => setBrandOpen(true)}>Change</button>
+                  <button type="button" className="s1-mini" onClick={clearBrand} title="Clear brand — platforms follow all connected accounts">Clear</button>
                 </div>
               ) : (
                 <button type="button" className="s1-btn" onClick={() => setBrandOpen(true)}>Choose a brand</button>
@@ -148,8 +169,8 @@ export default function StageOnePage({ session, onSignOut, onNext }) {
             </SetupCard>
 
             <SetupCard id="platform_selection" selected={type === 'platform_selection'} onSelect={pick} icon={ICONS.platforms} title="Select Platforms" summary="Just pick the platforms. Nothing more.">
-              <PlatformSelector selected={platforms} counts={counts} onToggle={togglePlatform} />
-              <p className="s1-note">Minimum 1 platform required{platforms.length ? ` · ${platforms.length} selected` : ''}.</p>
+              <PlatformSelector selected={platforms} counts={counts} brand={brand} onToggle={togglePlatform} />
+              <p className="s1-note">Minimum 1 platform required{platforms.length ? ` · ${platforms.length} selected` : ''}.{brand ? ` Showing ${brand.label}’s linked platforms — unlinked ones stay grey.` : ''}</p>
             </SetupCard>
 
             <SetupCard id="create_groups" selected={type === 'create_groups'} onSelect={pick} icon={ICONS.trio} title="Create Groups" summary="Group 2 or more accounts that share the same content, caption and media.">

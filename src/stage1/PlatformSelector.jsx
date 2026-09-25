@@ -3,18 +3,24 @@ import BrandIcon from '../brand.jsx';
 import { PLATFORMS } from '../lib.js';
 
 // Option 2 tool: platform pills only. Multi-select, minimum 1.
-export default function PlatformSelector({ selected, counts, onToggle }) {
+// Platforms with no account stay grey and unclickable: with a brand picked,
+// only that brand's connected platforms count; otherwise any connected one.
+export default function PlatformSelector({ selected, counts, brand, onToggle }) {
   return (
     <div className="plat-pills" role="group" aria-label="Select platforms">
       {PLATFORMS.map((p) => {
         const on = selected.includes(p.id);
-        const n = counts[p.id] || 0;
+        const ok = brand ? !!brand.map[p.id] : (counts[p.id] || 0) > 0;
+        const title = !ok
+          ? (brand ? `No ${p.name} account under ${brand.label}` : `No ${p.name} account connected yet`)
+          : `${counts[p.id] || 0} connected`;
         return (
           <button
             key={p.id}
             type="button"
             aria-pressed={on}
-            title={n ? `${n} connected` : 'Not connected yet'}
+            disabled={!ok}
+            title={title}
             className={on ? 'plat-pill on' : 'plat-pill'}
             onClick={() => onToggle(p.id)}
           >

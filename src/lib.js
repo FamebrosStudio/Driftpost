@@ -137,22 +137,31 @@ export function groupBrands(connections) {
   const used = new Set();
   const brands = [];
   for (const fb of byPlat.facebook || []) {
-    const brand = { key: `fb:${fb.id}`, label: fb.account_name, map: { facebook: fb.id } };
-    for (const p of ['instagram', 'youtube', 'x']) {
-      let best = null;
-      let bestScore = 0;
-      for (const c of byPlat[p] || []) {
-        if (used.has(c.id)) continue;
-        const s = brandScore(fb.account_name, c.account_name, rare);
-        if (s > bestScore) { bestScore = s; best = c; }
-      }
-      // Threshold 30: exact/substring/handle matches (90–100) always pass;
-      // fuzzy word matches need a rare shared word (10 + 20 bonus).
-      // Generic single words ("salon") score 10 and never merge businesses.
-      if (best && bestScore >= 30) { brand.map[p] = best.id; used.add(best.id); }
-    }
-    brands.push(brand);
+    brands.push({ key: `fb:${fb.id}`, label: fb.account_name, map: { facebook: fb.id }, _fb: fb });
   }
+  // Two passes so a sure match always beats a fuzzy one: an exact IG handle
+  // can never be stolen by another page that only vaguely resembles it.
+  const tryMatch = (min) => {
+    for (const brand of brands) {
+      for (const p of ['instagram', 'youtube', 'x']) {
+        if (brand.map[p]) continue;
+        let best = null;
+        let bestScore = 0;
+        for (const c of byPlat[p] || []) {
+          if (used.has(c.id)) continue;
+          const s = brandScore(brand._fb.account_name, c.account_name, rare);
+          if (s > bestScore) { bestScore = s; best = c; }
+        }
+        // Threshold 30: exact/substring/handle matches (90–100) always pass;
+        // fuzzy word matches need a rare shared word (10 + 20 bonus).
+        // Generic single words ("salon") score 10 and never merge businesses.
+        if (best && bestScore >= min) { brand.map[p] = best.id; used.add(best.id); }
+      }
+    }
+  };
+  tryMatch(90);
+  tryMatch(30);
+  brands.forEach((b) => { delete b._fb; });
   for (const p of ['instagram', 'youtube', 'x']) {
     for (const c of byPlat[p] || []) {
       if (!used.has(c.id)) brands.push({ key: `${p}:${c.id}`, label: c.account_name, map: { [p]: c.id } });
