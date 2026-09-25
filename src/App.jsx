@@ -491,7 +491,6 @@ export default function App() {
   const { session } = useSession();
   const [mode, setMode] = useState('login');
   const [entry, setEntry] = useState('landing');
-  const [entered, setEntered] = useState(false);
   const [pubPage, setPubPageState] = useState(() => (typeof window !== 'undefined' ? hashPage() : 'home'));
   const setPubPage = (id) => {
     setPubPageState(id);
@@ -503,46 +502,39 @@ export default function App() {
     window.addEventListener('hashchange', onUrl);
     return () => { window.removeEventListener('popstate', onUrl); window.removeEventListener('hashchange', onUrl); };
   }, []);
-  const FRESH_KEY = 'driftpost-fresh-login';
-  const markFreshLogin = () => { try { sessionStorage.setItem(FRESH_KEY, '1'); } catch {} };
+  // Sign-out really signs out (Supabase session cleared) so the console
+  // can never trap a logged-in user, and refresh always restores the
+  // console itself — progress in every stage is persisted separately.
+  const doSignOut = async (to) => {
+    try { (await getSupabase())?.auth.signOut(); } catch {}
+    try { pokeSession(); } catch {}
+    setEntry(to);
+  };
 
   useEffect(() => {
-    // Every page open starts on the landing page — even logged in.
-    // Only a fresh sign-in inside this visit skips straight to the console
-    // (the Auth screen marks it; restored sessions never carry the mark).
-    try {
-      if (session && sessionStorage.getItem(FRESH_KEY)) {
-        sessionStorage.removeItem(FRESH_KEY);
-        setEntered(true);
-      }
-    } catch {}
-    if (!session) { setEntered(false); }
-  }, [session]);
-
-  useEffect(() => {
-    // Public landing titles follow the page; console titles live in Console.
-    // `entered` matters: logged-in visitors still see landing first.
-    if (!session || !entered) {
-      document.title = entry === 'landing'
-        ? (pubPage === 'home' ? 'Driftpost — Publish Everywhere' : `${PUB_PAGES.find((p) => p.id === pubPage)?.label} · Driftpost`)
-        : 'Sign in · Driftpost';
+    // Logged-in users live in the console (its own page, refresh-safe);
+    // its titles are set by the stages themselves.
+    if (session) {
+      document.querySelector('meta[name="robots"]')?.setAttribute('content', 'noindex, nofollow');
+      return;
     }
-    // Landing pages are public and indexable for everyone; the console and
-    // auth stay private. Based on page, never on login state — the same URL
-    // must serve the same directive to every visitor (and every crawler).
-    const isPublic = entry === 'landing';
-    document.querySelector('meta[name="robots"]')?.setAttribute('content', isPublic ? 'index, follow, max-image-preview:large' : 'noindex, nofollow');
+    // Public landing titles follow the page.
+    document.title = entry === 'landing'
+      ? (pubPage === 'home' ? 'Driftpost — Publish Everywhere' : `${PUB_PAGES.find((p) => p.id === pubPage)?.label} · Driftpost`)
+      : 'Sign in · Driftpost';
+    // Landing pages are public and indexable; auth stays private.
+    document.querySelector('meta[name="robots"]')?.setAttribute('content', entry === 'landing' ? 'index, follow, max-image-preview:large' : 'noindex, nofollow');
   }, [session, entry, pubPage]);
 
   useEffect(() => { window.scrollTo(0, 0); }, [pubPage]);
 
   // Logged-out visitors render instantly — nothing waits on the auth library.
-  if (!session) return entry === 'landing' ? <Landing session={false} pubPage={pubPage} setPubPage={setPubPage} onEnter={() => setEntry('auth')} /> : <Auth mode={mode} setMode={setMode} onBack={() => setEntry('landing')} markFresh={markFreshLogin} />;
-  if (!entered) return <Landing session pubPage={pubPage} setPubPage={setPubPage} onEnter={() => setEntered(true)} />;
-
+  if (!session) return entry === 'landing' ? <Landing session={false} pubPage={pubPage} setPubPage={setPubPage} onEnter={() => setEntry('auth')} /> : <Auth mode={mode} setMode={setMode} onBack={() => setEntry('landing')} />;
+  // Logged in = console page. Refresh restores the session, the stage, and
+  // every saved choice — never the landing page.
   return (
     <Suspense fallback={<Loader />}>
-      <Console session={session} onSwitchAccount={() => setEntry('auth')} onSignOut={() => setEntry('landing')} />
+      <Console session={session} onSwitchAccount={() => doSignOut('auth')} onSignOut={() => doSignOut('landing')} />
     </Suspense>
   );
 }

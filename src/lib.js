@@ -121,8 +121,11 @@ export function brandScore(a, b, rare = null) {
   return score;
 }
 
-// Group connections into brands keyed by Facebook page (agency thinks in pages),
-// plus standalone entries for accounts with no page match.
+// Group connections into brands. Anchors in priority order: a Facebook page
+// first (agency thinks in pages), then leftover Instagram accounts, then
+// leftover YouTube ones. X never anchors — it only joins. So IG+X (or YT+X)
+// of one business form ONE brand instead of lonely single-platform rows,
+// while page-first matching is preserved whenever a page exists.
 export function groupBrands(connections) {
   const byPlat = {};
   connections.forEach((c) => { (byPlat[c.platform] = byPlat[c.platform] || []).push(c); });
@@ -136,39 +139,88 @@ export function groupBrands(connections) {
   const rare = new Set([...df].filter(([, d]) => d <= rareLimit).map(([t]) => t));
   const used = new Set();
   const brands = [];
-  for (const fb of byPlat.facebook || []) {
-    brands.push({ key: `fb:${fb.id}`, label: fb.account_name, map: { facebook: fb.id }, _fb: fb });
+  const anchorOrder = ['facebook', 'instagram', 'youtube'];
+  const joinable = {
+    facebook: ['instagram', 'youtube', 'x'],
+    instagram: ['youtube', 'x'],
+    youtube: ['x'],
+  };
+  for (const a of anchorOrder) {
+    for (const anchor of byPlat[a] || []) {
+      if (brands.some((b) => b.map[a] === anchor.id)) continue;
+      brands.push({ key: `${a}:${anchor.id}`, label: anchor.account_name, map: { [a]: anchor.id } });
+    }
   }
-  // Two passes so a sure match always beats a fuzzy one: an exact IG handle
-  // can never be stolen by another page that only vaguely resembles it.
+  const claimedBy = new Map();
+  // Two passes so a sure match always beats a fuzzy one: an exact handle
+  // can never be stolen by another account that only vaguely resembles it.
+  // FB-seeded brands pick first (seed order), preserving page priority.
   const tryMatch = (min) => {
     for (const brand of brands) {
-      for (const p of ['instagram', 'youtube', 'x']) {
+      const anchorPlat = Object.keys(brand.map)[0];
+      for (const p of joinable[anchorPlat] || []) {
         if (brand.map[p]) continue;
         let best = null;
         let bestScore = 0;
         for (const c of byPlat[p] || []) {
           if (used.has(c.id)) continue;
-          const s = brandScore(brand._fb.account_name, c.account_name, rare);
+          const s = brandScore(brand.label, c.account_name, rare);
           if (s > bestScore) { bestScore = s; best = c; }
         }
         // Threshold 30: exact/substring/handle matches (90–100) always pass;
         // fuzzy word matches need a rare shared word (10 + 20 bonus).
         // Generic single words ("salon") score 10 and never merge businesses.
-        if (best && bestScore >= min) { brand.map[p] = best.id; used.add(best.id); }
+        if (best && bestScore >= min) { brand.map[p] = best.id; used.add(best.id); claimedBy.set(best.id, brand); }
       }
     }
   };
   tryMatch(90);
   tryMatch(30);
-  brands.forEach((b) => { delete b._fb; });
-  for (const p of ['instagram', 'youtube', 'x']) {
-    for (const c of byPlat[p] || []) {
-      if (!used.has(c.id)) brands.push({ key: `${p}:${c.id}`, label: c.account_name, map: { [p]: c.id } });
-    }
+  // Dissolve hollow seeds: an anchor claimed by a stronger brand leaves
+  // behind an empty single-account row — drop it so the account shows once,
+  // under its real brand, with all linked platforms.
+  const alive = brands.filter((b) => {
+    const ids = Object.values(b.map);
+    if (ids.length > 1) return true;
+    const by = claimedBy.get(ids[0]);
+    return !by || by === b;
+  });
+  for (const c of byPlat.x || []) {
+    if (!used.has(c.id)) alive.push({ key: `x:${c.id}`, label: c.account_name, map: { x: c.id } });
   }
-  brands.sort((a, b) => a.label.localeCompare(b.label));
-  return brands;
+  alive.sort((a, b) => a.label.localeCompare(b.label));
+  return alive;
+}
+
+// Fresh start after posting: wipes the finished post's content (media,
+// prompt, outputs, done flags) and returns to Stage 1. Account setup,
+// groups, style prefs, cross-post choice and the AI answer cache survive.
+export async function resetPostState() {
+  const DROP = ['driftpost-stage2-brief', 'driftpost-stage2-outputs', 'driftpost-stage2-done', 'driftpost-stage1-done'];
+  try {
+    const rm = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (k && DROP.some((p) => k.startsWith(p))) rm.push(k);
+    }
+    rm.forEach((k) => localStorage.removeItem(k));
+    localStorage.setItem('driftpost-stage', '1');
+  } catch {}
+  try {
+    const db = await new Promise((res, rej) => {
+      const r = indexedDB.open('driftpost-stage2', 1);
+      r.onsuccess = () => res(r.result);
+      r.onerror = () => rej(r.error);
+    });
+    await new Promise((res) => {
+      try {
+        const tx = db.transaction('media', 'readwrite');
+        tx.objectStore('media').clear();
+        tx.oncomplete = res; tx.onerror = res;
+      } catch { res(); }
+    });
+    db.close();
+  } catch {}
 }
 
 export async function api(path, token, options = {}) {
