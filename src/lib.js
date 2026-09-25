@@ -86,15 +86,18 @@ export function isActiveBrand(accountName) {
   });
 }
 
-const TOKENS = (s) => norm(s).split(' ').filter((t) => t.length > 3);
+const STOP = new Set(['for', 'the', 'and', 'of']);
+const TOKENS = (s) => norm(s).split(' ').filter((t) => t.length >= 3 && !STOP.has(t));
 
 // Similarity between two account names across platforms (page name vs IG handle etc).
-export function brandScore(a, b) {
-  const ta = TOKENS(a);
-  const tb = TOKENS(b);
-  if (!ta.length || !tb.length) return 0;
+// Exact / substring / handle matches run FIRST so short-word brands
+// ("MAP for men" vs "@map_for_men") never fall through the token guard.
+// `rare` = tokens used by few accounts: sharing one is strong evidence
+// ("map"), sharing a common one ("salon") is weak — scored accordingly.
+export function brandScore(a, b, rare = null) {
   const na = norm(a);
   const nb = norm(b);
+  if (!na || !nb) return 0;
   if (na.includes(nb) && nb.length > 4) return 100;
   if (nb.includes(na) && na.length > 4) return 100;
   // Spaceless comparison: "@famebrosstudio" must equal "Famebros Studio".
@@ -103,9 +106,17 @@ export function brandScore(a, b) {
   if (fa === fb && fa.length > 3) return 100;
   if (fa.includes(fb) && fb.length > 5) return 90;
   if (fb.includes(fa) && fa.length > 5) return 90;
+  const ta = TOKENS(a);
+  const tb = TOKENS(b);
+  if (!ta.length || !tb.length) return 0;
   let score = 0;
+  let bonusUsed = false;
+  const seen = new Set();
   for (const t of ta) {
-    if (tb.includes(t)) score += t.length >= 6 ? 30 : 10;
+    if (seen.has(t) || !tb.includes(t)) continue;
+    seen.add(t);
+    score += 10;
+    if (!bonusUsed && rare && rare.has(t)) { score += 20; bonusUsed = true; }
   }
   return score;
 }
@@ -115,6 +126,14 @@ export function brandScore(a, b) {
 export function groupBrands(connections) {
   const byPlat = {};
   connections.forEach((c) => { (byPlat[c.platform] = byPlat[c.platform] || []).push(c); });
+  // Rare-word set: tokens used by few accounts ("map") prove sameness;
+  // tokens everywhere ("salon") prove nothing. Recomputed per grouping.
+  const df = new Map();
+  connections.forEach((c) => {
+    new Set(TOKENS(c.account_name)).forEach((t) => df.set(t, (df.get(t) || 0) + 1));
+  });
+  const rareLimit = Math.max(2, Math.ceil(connections.length * 0.1));
+  const rare = new Set([...df].filter(([, d]) => d <= rareLimit).map(([t]) => t));
   const used = new Set();
   const brands = [];
   for (const fb of byPlat.facebook || []) {
@@ -124,12 +143,12 @@ export function groupBrands(connections) {
       let bestScore = 0;
       for (const c of byPlat[p] || []) {
         if (used.has(c.id)) continue;
-        const s = brandScore(fb.account_name, c.account_name);
+        const s = brandScore(fb.account_name, c.account_name, rare);
         if (s > bestScore) { bestScore = s; best = c; }
       }
-      // Strict threshold: exact/substring/spaceless matches score 90–100.
-      // Single generic words ("salon", "studio") only score ~10 and must
-      // never merge two different businesses into one brand.
+      // Threshold 30: exact/substring/handle matches (90–100) always pass;
+      // fuzzy word matches need a rare shared word (10 + 20 bonus).
+      // Generic single words ("salon") score 10 and never merge businesses.
       if (best && bestScore >= 30) { brand.map[p] = best.id; used.add(best.id); }
     }
     brands.push(brand);

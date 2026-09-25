@@ -4,12 +4,12 @@ import BrandIcon from '../brand.jsx';
 import ProgressIndicator from './ProgressIndicator.jsx';
 import SetupCard from './SetupCard.jsx';
 import PlatformSelector from './PlatformSelector.jsx';
-import ExistingTrioSelector from './ExistingTrioSelector.jsx';
+import ExistingGroupSelector from './ExistingGroupSelector.jsx';
 import ContinueButton from './ContinueButton.jsx';
 import './stage1.css';
 
 const BrandSelectorModal = lazy(() => import('./BrandSelectorModal.jsx'));
-const TrioBuilder = lazy(() => import('./TrioBuilder.jsx'));
+const GroupBuilder = lazy(() => import('./GroupBuilder.jsx'));
 
 const Svg = ({ d }) => (
   <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -36,14 +36,30 @@ function save(key, val) {
 export default function StageOnePage({ session, onSignOut }) {
   const [connections, setConnections] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [type, setType] = useState(() => load('driftpost-stage1-type', ''));
+  const [type, setType] = useState(() => {
+    const t = load('driftpost-stage1-type', '');
+    // One-time carryover from the old "trios" naming.
+    if (t === 'create_trios') return 'create_groups';
+    if (t === 'existing_trios') return 'existing_groups';
+    return t;
+  });
   const [brandKey, setBrandKey] = useState(() => load('driftpost-stage1-brand', ''));
   const [platforms, setPlatforms] = useState(() => load('driftpost-stage1-platforms', []));
-  const [trios, setTrios] = useState(() => load('driftpost-trios', []));
-  const [activeTrioId, setActiveTrioId] = useState(() => load('driftpost-stage1-trio', ''));
+  const [groups, setGroups] = useState(() => {
+    const g = load('driftpost-groups', null) ?? load('driftpost-trios', []);
+    return Array.isArray(g) ? g : [];
+  });
+  const [activeGroupId, setActiveGroupId] = useState(() => load('driftpost-stage1-group', load('driftpost-stage1-trio', '')));
   const [brandOpen, setBrandOpen] = useState(false);
   const [builderOpen, setBuilderOpen] = useState(false);
   const [savedTick, setSavedTick] = useState(false);
+  useEffect(() => {
+    try {
+      if (localStorage.getItem('driftpost-groups') == null && localStorage.getItem('driftpost-trios') != null) {
+        localStorage.setItem('driftpost-groups', localStorage.getItem('driftpost-trios'));
+      }
+    } catch {}
+  }, []);
 
   useEffect(() => {
     document.title = 'Stage 1 · Driftpost';
@@ -74,8 +90,8 @@ export default function StageOnePage({ session, onSignOut }) {
   const valid =
     type === 'common_brand' ? !!brand :
     type === 'platform_selection' ? platforms.length > 0 :
-    type === 'create_trios' ? trios.length > 0 :
-    type === 'existing_trios' ? trios.some((t) => t.id === activeTrioId) : false;
+    type === 'create_groups' ? groups.length > 0 :
+    type === 'existing_groups' ? groups.some((g) => g.id === activeGroupId) : false;
 
   const pick = (t) => { setType(t); save('driftpost-stage1-type', t); setSavedTick(false); };
   const chooseBrand = (k) => { setBrandKey(k); save('driftpost-stage1-brand', k); setBrandOpen(false); };
@@ -84,12 +100,12 @@ export default function StageOnePage({ session, onSignOut }) {
     save('driftpost-stage1-platforms', n);
     return n;
   });
-  const addTrio = (trio) => {
-    setTrios((ts) => { const n = [...ts.slice(-19), trio]; save('driftpost-trios', n); return n; });
-    setActiveTrioId(trio.id); save('driftpost-stage1-trio', trio.id);
+  const addGroup = (group) => {
+    setGroups((gs) => { const n = [...gs.slice(-19), group]; save('driftpost-groups', n); return n; });
+    setActiveGroupId(group.id); save('driftpost-stage1-group', group.id);
     setBuilderOpen(false);
   };
-  const pickTrio = (id) => { setActiveTrioId(id); save('driftpost-stage1-trio', id); };
+  const pickGroup = (id) => { setActiveGroupId(id); save('driftpost-stage1-group', id); };
   const accountName = (id) => connById[id]?.account_name || '';
   const brandPlats = (b) => ['instagram', 'facebook', 'youtube', 'x'].filter((pid) => b.map[pid]);
 
@@ -135,15 +151,15 @@ export default function StageOnePage({ session, onSignOut }) {
               <p className="s1-note">Minimum 1 platform required{platforms.length ? ` · ${platforms.length} selected` : ''}.</p>
             </SetupCard>
 
-            <SetupCard id="create_trios" selected={type === 'create_trios'} onSelect={pick} icon={ICONS.trio} title="Create Trios" summary="Group 2–3 accounts that share the same post.">
-              <button type="button" className="s1-btn" onClick={() => setBuilderOpen(true)}>Create a trio</button>
-              {trios.map((t) => (
-                <div key={t.id} className="trio-mini"><b>{t.name}</b><small>{(t.accountIds || []).length} accounts</small></div>
+            <SetupCard id="create_groups" selected={type === 'create_groups'} onSelect={pick} icon={ICONS.trio} title="Create Groups" summary="Group 2 or more accounts that share the same content, caption and media.">
+              <button type="button" className="s1-btn" onClick={() => setBuilderOpen(true)}>Create a group</button>
+              {groups.map((g) => (
+                <div key={g.id} className="trio-mini"><b>{g.name}</b><small>{(g.accountIds || []).length} accounts</small></div>
               ))}
             </SetupCard>
 
-            <SetupCard id="existing_trios" selected={type === 'existing_trios'} onSelect={pick} icon={ICONS.saved} title="Select Created Trios" summary="Reuse a group you already built.">
-              <ExistingTrioSelector trios={trios} activeId={activeTrioId} accountName={accountName} onPick={pickTrio} />
+            <SetupCard id="existing_groups" selected={type === 'existing_groups'} onSelect={pick} icon={ICONS.saved} title="Select Created Groups" summary="Reuse a group you already built.">
+              <ExistingGroupSelector groups={groups} activeId={activeGroupId} accountName={accountName} onPick={pickGroup} />
             </SetupCard>
           </div>
         )}
@@ -156,7 +172,7 @@ export default function StageOnePage({ session, onSignOut }) {
       )}
       {builderOpen && (
         <Suspense fallback={null}>
-          <TrioBuilder connections={connections} onSave={addTrio} onClose={() => setBuilderOpen(false)} />
+          <GroupBuilder connections={connections} onSave={addGroup} onClose={() => setBuilderOpen(false)} />
         </Suspense>
       )}
     </div>
