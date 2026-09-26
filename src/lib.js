@@ -388,7 +388,9 @@ export async function fetchWithAuth(url, token, init = {}) {
   const budget = Math.min(480000, 30000 + Math.round((bodyBytes / (512 * 1024)) * 1000));
   const doPost = async (t, timeoutMs) => {
     const ctrl = new AbortController();
-    const timer = setTimeout(() => ctrl.abort(), timeoutMs);
+    // File uploads are never aborted — a big video takes what it takes.
+    // Plain JSON posts keep the timeout so a dead server can't hang a button.
+    const timer = bodyBytes > 0 ? null : setTimeout(() => ctrl.abort(), timeoutMs);
     try {
       const res = await fetch(url, {
         ...init,
@@ -413,7 +415,7 @@ export async function fetchWithAuth(url, token, init = {}) {
       if (isNetworkFail(e)) throw new Error(DOWN_MSG);
       throw e;
     } finally {
-      clearTimeout(timer);
+      if (timer) clearTimeout(timer);
     }
   };
   try {
