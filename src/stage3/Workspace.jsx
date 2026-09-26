@@ -114,6 +114,7 @@ export default function Workspace({
           {pid === 'instagram' && <>
             <Field label="Caption"><textarea value={values.caption || ''} onChange={(e) => set('caption', e.target.value)} placeholder="Write the caption…" /></Field>
             <Field label="Hashtags"><input value={values.hashtags || ''} onChange={(e) => set('hashtags', e.target.value)} placeholder="#brand #fashion" /></Field>
+            {files.some((f) => f.type.startsWith('image/')) && (
             <div className="s3-row2">
               <Field label="Feed size">
                 <select value={cfg.size || 'portrait'} onChange={(e) => setCfg({ size: e.target.value })}>
@@ -124,6 +125,7 @@ export default function Workspace({
               </Field>
               <div />
             </div>
+            )}
             <label className="s3-check"><input type="checkbox" checked={!!cfg.shareFb} onChange={(e) => setCfg({ shareFb: e.target.checked })} /><span>Also post on Facebook<small>Single posts only — Post All always posts directly.</small></span></label>
             <label className="s3-check"><input type="checkbox" checked={!!cfg.story} onChange={(e) => setCfg({ story: e.target.checked })} /><span>Also post as Story (24h)<small>Same media as a story, in one tap.</small></span></label>
             <details className="s3-adv">

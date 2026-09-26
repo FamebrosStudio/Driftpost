@@ -306,6 +306,24 @@ async function freshToken() {
   }
 }
 
+// Last-resort diagnosis when even a fresh token is rejected: ask the login
+// provider directly whether this browser's login is valid.
+// Provider says YES + server says 401 = the server's login keys don't match
+// the app (re-login can never fix that — server env needs fixing).
+// Provider says NO = the login is genuinely dead (re-login fixes it).
+async function terminalAuthError() {
+  try {
+    const client = await getSupabase();
+    if (client) {
+      const { data, error } = await client.auth.getUser();
+      if (!error && data?.user) {
+        return new Error('Server is rejecting a valid login — the server login keys need fixing. Tell support and keep this screenshot.');
+      }
+    }
+  } catch {}
+  return new Error('Session expired — sign out and sign in again.');
+}
+
 // Seconds until this JWT expires (0 = unreadable — don't guess).
 const expOf = (t) => {
   try {
@@ -383,8 +401,13 @@ export async function api(path, token, options = {}) {
   } catch (e) {
     if (e?.status !== 401 || !token) throw e;
     const fresh = await freshToken();
-    if (!fresh || fresh === token) throw new Error('Session expired — sign out and sign in again.');
-    return invoke(fresh);
+    if (!fresh || fresh === token) throw await terminalAuthError();
+    try {
+      return await invoke(fresh);
+    } catch (e2) {
+      if (e2?.status === 401) throw await terminalAuthError();
+      throw e2;
+    }
   }
 }
 
@@ -475,9 +498,14 @@ export async function fetchWithAuth(url, token, init = {}) {
   } catch (e) {
     if (e?.status !== 401 || !token) throw e;
     const fresh = await freshToken();
-    if (!fresh || fresh === token) throw new Error('Session expired — sign out and sign in again.');
-    const out = await doPost(fresh, budget);
-    out.refreshedToken = fresh;
-    return out;
+    if (!fresh || fresh === token) throw await terminalAuthError();
+    try {
+      const out = await doPost(fresh, budget);
+      out.refreshedToken = fresh;
+      return out;
+    } catch (e2) {
+      if (e2?.status === 401) throw await terminalAuthError();
+      throw e2;
+    }
   }
 }
