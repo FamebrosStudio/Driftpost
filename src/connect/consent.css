@@ -1,0 +1,81 @@
+/* Consent gate — deliberately plain and readable: this screen exists to be
+   read, so it stays high contrast, unstyled-by-preference and centred. */
+.cg {
+  min-height: 100dvh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: clamp(16px, 4vw, 48px) 18px calc(48px + env(safe-area-inset-bottom));
+  background: var(--bg);
+  color: var(--ink);
+}
+
+.cg-card {
+  width: min(720px, 100%);
+  background: var(--panel);
+  border: 1.5px solid var(--line-hard);
+  border-radius: 18px;
+  padding: clamp(20px, 4vw, 34px);
+}
+
+.cg h1 { margin: 0 0 10px; font-size: clamp(21px, 3.4vw, 27px); letter-spacing: -0.02em; }
+.cg-lede { margin: 0 0 22px; font-size: 15px; line-height: 1.65; color: var(--ink); opacity: 0.86; }
+
+.cg h2 { margin: 0 0 8px; font-size: 14px; text-transform: uppercase; letter-spacing: 0.07em; }
+.cg p { font-size: 14.5px; line-height: 1.65; }
+
+.cg-required,
+.cg-optional {
+  border: 1px solid var(--line-hard);
+  border-radius: 14px;
+  padding: 16px 18px;
+  margin: 0 0 16px;
+}
+.cg-required { background: var(--panel2); }
+.cg-optional { background: color-mix(in srgb, var(--acc) 6%, transparent); border-color: color-mix(in srgb, var(--acc) 32%, transparent); }
+.cg-optional h2 { color: var(--acc); }
+
+.cg-optional ul { margin: 0 0 16px; padding-left: 20px; }
+.cg-optional li { font-size: 14px; line-height: 1.6; margin: 0 0 9px; }
+.cg-optional li b { font-weight: 700; }
+
+/* Big hit area, visible focus, no pre-ticked state. */
+.cg-check {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 14px;
+  border: 1.5px solid var(--line-hard);
+  border-radius: 12px;
+  background: var(--panel);
+  cursor: pointer;
+}
+.cg-check input { width: 22px; height: 22px; margin: 1px 0 0; flex: none; accent-color: var(--acc); }
+.cg-check span { font-size: 14.5px; line-height: 1.55; font-weight: 600; }
+.cg-check:focus-within { outline: 2px solid var(--acc); outline-offset: 2px; }
+
+.cg-acts { display: flex; flex-direction: column; gap: 10px; }
+.cg-acts button {
+  width: 100%;
+  padding: 14px 18px;
+  font-size: 15px;
+  font-weight: 700;
+  border-radius: 12px;
+  border: 1px solid var(--line-hard);
+  background: var(--panel2);
+  color: var(--ink);
+  cursor: pointer;
+}
+.cg-acts button.go { background: var(--acc); border-color: transparent; color: var(--acc-ink); }
+.cg-acts button:disabled { opacity: 0.45; cursor: not-allowed; }
+.cg-acts button:not(:disabled):hover { filter: brightness(1.08); }
+
+.cg-err { margin: 12px 0 0; font-size: 13px; color: var(--danger, #e5484d); }
+.cg-foot { margin: 18px 0 0; font-size: 12.5px; color: var(--muted); }
+.cg-foot .link { background: none; border: 0; padding: 0; color: var(--acc); text-decoration: underline; font-size: 12.5px; cursor: pointer; }
+.cg-ver { opacity: 0.7; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .cg-card { animation: cgIn 0.22s ease both; }
+  @keyframes cgIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+}

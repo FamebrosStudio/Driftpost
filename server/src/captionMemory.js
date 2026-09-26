@@ -5,7 +5,16 @@
 // or published. Kept in Supabase rather than a JSON file because a file on the
 // API host is wiped on redeploy and shared across nothing.
 //
+// This is PERSONALISATION, not model training: no weights are updated and
+// nothing is sent anywhere to train a model. We retrieve the user's own
+// previously approved captions and show them back to the model as examples for
+// that same user. It also only ever runs with explicit opt-in consent
+// (see consent.js) — every entry point here no-ops without it.
+//
 // Every function here is best-effort: learning must never break a publish.
+
+import { hasPersonalisationConsent } from './consent.js';
+import { redactPii } from './pii.js';
 
 const MAX_BODY = 4000;
 const APPROVED_EXAMPLES = 3;
@@ -45,20 +54,25 @@ export async function recordGenerated(supabase, {
 }
 
 // Record several platforms from one generation in a single round trip.
+// No-op unless the user opted in. Identifiers are scrubbed before storage.
 export async function recordGeneration(supabase, meta, entries) {
   try {
+    if (!(await hasPersonalisationConsent(supabase, meta.userId))) return [];
     const rows = (entries || [])
       .filter((e) => e && e.platform && e.body)
-      .map((e) => ({
-        user_id: meta.userId,
-        brand_key: brandKey(meta.brandLabel),
-        brand_label: clean(meta.brandLabel, 80) || null,
-        platform: e.platform,
-        brief: clean(meta.brief, 300) || null,
-        settings: meta.settings && typeof meta.settings === 'object' ? meta.settings : {},
-        body: clean(e.body, MAX_BODY),
-        used: false,
-      }));
+      .map((e) => {
+        const brief = meta.brief ? redactPii(meta.brief, { brand: meta.brand }) : meta.brief;
+        return {
+          user_id: meta.userId,
+          brand_key: brandKey(meta.brandLabel),
+          brand_label: clean(meta.brandLabel, 80) || null,
+          platform: e.platform,
+          brief: clean(brief, 300) || null,
+          settings: meta.settings && typeof meta.settings === 'object' ? meta.settings : {},
+          body: clean(redactPii(e.body, { brand: meta.brand }), MAX_BODY),
+          used: false,
+        };
+      });
     if (!rows.length) return [];
     const { data, error } = await supabase.from('caption_memory').insert(rows).select('id, platform');
     if (error) return [];
@@ -69,10 +83,11 @@ export async function recordGeneration(supabase, meta, entries) {
 }
 
 // The user said yes to this one (reviewed or published). This is the signal
-// that turns a stored caption into a future example.
+// that turns a stored caption into a future example. No-op without consent.
 export async function markUsed(supabase, { userId, id }) {
   try {
     if (!userId || !id) return false;
+    if (!(await hasPersonalisationConsent(supabase, userId))) return false;
     const { error } = await supabase.from('caption_memory')
       .update({ used: true })
       .eq('id', id).eq('user_id', userId);
@@ -87,6 +102,7 @@ export async function markUsed(supabase, { userId, id }) {
 export async function markLatestUsed(supabase, { userId, brandLabel, platform }) {
   try {
     if (!userId || !platform) return false;
+    if (!(await hasPersonalisationConsent(supabase, userId))) return false;
     const { error } = await supabase.from('caption_memory')
       .update({ used: true })
       .eq('user_id', userId)
@@ -117,6 +133,8 @@ const tally = (rows, field) => {
 export async function learnedVoice(supabase, { userId, brandLabel, platform }) {
   try {
     if (!userId) return null;
+    // Revoking consent must also stop the recall, not just the collection.
+    if (!(await hasPersonalisationConsent(supabase, userId))) return null;
     let q = supabase.from('caption_memory')
       .select('platform, brief, settings, body, used, created_at')
       .eq('user_id', userId)

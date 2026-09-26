@@ -12,6 +12,7 @@ import { createClient } from '@supabase/supabase-js';
 import { decryptJson, encryptJson, signState, verifyState } from './crypto.js';
 import { exchangeGoogleCode, getYouTubeChannel, youtubeAuthorizationUrl } from './google.js';
 import { learnedVoice, markLatestUsed, markUsed, recordGeneration } from './captionMemory.js';
+import { consentState, forgetUser, hasPersonalisationConsent, recordConsent, POLICY_VERSION, PURPOSES } from './consent.js';
 import { uploadVideoResumable, validAccessToken } from './youtube-upload.js';
 import { exchangeMetaCode, getMetaPages, longLivedToken, metaAuthorizationUrl, metaBusinessLoginUrl, publishFacebook, publishInstagram } from './meta.js';
 import { createPkcePair, exchangeXCode, getXUser, xAuthorizationUrl } from './x.js';
@@ -190,6 +191,9 @@ app.delete('/api/account', requireUser, limit({ windowMs: 60 * 1000, max: 5, key
     if (c.error) throw c.error;
     const h = await supabase.from('post_history').delete().eq('user_id', uid);
     if (h.error) throw h.error;
+    // Generated captions and the consent trail are personal data too, so they
+    // are erased with the account rather than orphaned.
+    await forgetUser(supabase, uid);
     for (const [id, j] of jobs) if (j.userId === uid) jobs.delete(id);
     const { error: uErr } = await supabase.auth.admin.deleteUser(uid);
     if (uErr) throw uErr;
@@ -203,6 +207,14 @@ app.delete('/api/account', requireUser, limit({ windowMs: 60 * 1000, max: 5, key
 app.post('/api/ai/captions', requireUser, aiLimit, async (req, res) => {
   try {
     const brandLabel = String(req.body?.brand || '');
+    // Resolved once and reused: the brand's confirmed contacts are the
+    // allow-list that stops PII scrubbing from deleting a public business
+    // phone number out of a caption footer.
+    let brandRecord = null;
+    try {
+      const mem = await import('./brand-memory/index.js');
+      brandRecord = mem.resolveBrand(brandLabel || req.body?.summary || '', 20)?.brand || null;
+    } catch { /* brand lookup is optional here */ }
     // What this user has already approved for this brand, so each generation
     // starts closer to their voice than the last one did.
     const learned = await learnedVoice(supabase, {
@@ -240,6 +252,7 @@ app.post('/api/ai/captions', requireUser, aiLimit, async (req, res) => {
       await recordGeneration(supabase, {
         userId: req.user.id,
         brandLabel,
+        brand: brandRecord,
         brief: req.body?.summary,
         settings: { tone: req.body?.tone, emoji: req.body?.emoji, length: req.body?.length },
       }, entries);
@@ -253,9 +266,61 @@ app.post('/api/ai/captions', requireUser, aiLimit, async (req, res) => {
   }
 });
 
+// Consent for the optional personalisation purpose. Read returns the current
+// state so the client can show the right screen; write appends a decision to
+// the immutable log. Declining is a first-class answer, not an error.
+app.get('/api/ai/consent', requireUser, burstLimit, async (req, res) => {
+  try {
+    const state = await consentState(supabase, req.user.id);
+    res.json({
+      ...state,
+      version: POLICY_VERSION,
+      purposes: PURPOSES,
+    });
+  } catch {
+    res.status(500).json({ error: 'Could not read your consent settings' });
+  }
+});
+
+app.post('/api/ai/consent', requireUser, burstLimit, async (req, res) => {
+  try {
+    const purpose = String(req.body?.purpose || '');
+    if (!PURPOSES[purpose]) return res.status(400).json({ error: 'Unknown purpose' });
+    // The 'service' purpose cannot be declined - it is the product itself.
+    const granted = purpose === 'service' ? true : req.body?.granted === true;
+    const ok = await recordConsent(supabase, {
+      userId: req.user.id,
+      purpose,
+      granted,
+      version: String(req.body?.version || POLICY_VERSION).slice(0, 32),
+    });
+    if (!ok) return res.status(500).json({ error: 'Could not save that choice' });
+    res.json({ ok: true, purpose, granted, version: POLICY_VERSION });
+  } catch {
+    res.status(500).json({ error: 'Could not save that choice' });
+  }
+});
+
+// Explicit "stop using my data": revoke consent and delete what was stored.
+// Reversible only by opting in again, which starts from an empty history.
+app.post('/api/ai/consent/revoke', requireUser, burstLimit, async (req, res) => {
+  try {
+    await recordConsent(supabase, { userId: req.user.id, purpose: 'personalisation', granted: false });
+    await forgetUser(supabase, req.user.id);
+    res.json({ ok: true, personalisation: false, historyCleared: true });
+  } catch {
+    res.status(500).json({ error: 'Could not clear your data' });
+  }
+});
+
 // The user approved or published a caption: promote it to a future example.
 app.post('/api/ai/feedback', requireUser, burstLimit, async (req, res) => {
   try {
+    if (!(await hasPersonalisationConsent(supabase, req.user.id))) {
+      // No consent means no storage, so there is nothing to approve. This is a
+      // normal outcome, not an error the user needs to see.
+      return res.json({ ok: false, reason: 'no_consent' });
+    }
     const platform = String(req.body?.platform || '');
     if (!['youtube', 'instagram', 'facebook', 'x'].includes(platform)) {
       return res.status(400).json({ error: 'Unknown platform' });
