@@ -99,10 +99,18 @@ export function fullPack(brand) {
     full.example?.body ? `Style example (match this energy, never copy facts):\n${String(full.example.body).slice(0, 500)}` : (brand.ex ? `Style example: ${brand.ex}` : null),
     full.instagram?.handle ? `IG handle: ${full.instagram.handle}` : null,
     full.readiness === 'needs_brand_identity' ? 'Identity incomplete: if the brief lacks product/subject, ask ONE short question instead of inventing.' : null,
+    !isBlank(full.missing_details) ? `STILL UNKNOWN (never invent): ${cap(fmt(full.missing_details), 700)}` : null,
+    !isBlank(full.always_exclude_from_captions) ? `ALWAYS EXCLUDE:\n${cap(fmt(full.always_exclude_from_captions, true), 600)}` : null,
+    typeof full.footer_policy === 'string' ? `Footer policy: ${full.footer_policy}` : null,
+    typeof full.sources?.source_rule === 'string' ? `SOURCING: ${full.sources.source_rule}` : null,
     mem?.notes ? `Owner correction (wins over all above): ${String(mem.notes).slice(0, 300)}` : null,
     mem?.recent?.length ? `Approved voice — same energy, new words, never copy exactly: ${mem.recent.slice(-3).join(' | ').slice(0, 200)}` : null,
   ].filter(Boolean);
-  return lines.join('\n');
+  // Old-schema brands get the same shared floor as researched ones. Their
+  // caption_direction is only a tone/language line, far thinner than the new
+  // schema's writing_direction, so it does not count as covering the craft
+  // and voice sections.
+  return `${lines.join('\n')}\n\n${houseStyleFor(null)}`;
 }
 
  const DEEP_DIR = path.join(here, 'brands');
@@ -166,29 +174,38 @@ export function getDeepForCompact(compactBrand) {
       }
     }
   }
-  // Token fallback: "Reshine Clinic" vs file "Reshine Skin Clinic" share
-  // a distinctive token (reshine). Accept on a 6+ char shared token.
-  const mine = new Set(
-    [compactBrand.name, ...(compactBrand.aliases || [])]
-      .flatMap((s) => norm(s).split(' '))
-      .filter((t) => t.length > 4)
-  );
+  // Fallback matching, used when the compact id and the file id differ.
+  // The only accepted shape is COVERAGE: every word of the queried name must
+  // appear in the candidate, allowing a longer qualifier or a plural
+  // ("SK Furniture" -> "SK Furniture Market", "Jolly Tailor" ->
+  // "Jolly Honest Tailor", "Qash Makeover" -> "Qash Makeovers").
+  //
+  // Partial overlap is rejected on purpose. A shared category word is not
+  // evidence of the same business: matching "Furniture" once let "Anand
+  // Furniture" inherit SK Furniture's phone and footer, and "studio" once let
+  // "Luxxe Nail Studio" inherit Qash Makeovers'. A wrong match publishes
+  // another real business's contact details into a real caption, so when in
+  // doubt it is safer to return null and write from the brief alone.
+  const allDeep = Object.keys(all).filter((k) => !k.startsWith('name:'));
+  const words = (names) => [...new Set(
+    names.flatMap((s) => norm(s).split(' ')).filter((t) => t.length >= 3)
+  )];
+
+  const mine = words([compactBrand.name, ...(compactBrand.aliases || [])]);
+  if (!mine.length) return null;
   let best = null;
-  let bestLen = 0;
-  for (const k of Object.keys(all)) {
-    if (k.startsWith('name:')) continue;
+  let bestScore = 0;
+  for (const k of allDeep) {
     const d = all[k];
-    const theirs = new Set(
-      [d.brand_name, ...(d.aliases || [])].flatMap((s) => norm(s).split(' ')).filter((t) => t.length > 4)
-    );
-    for (const t of mine) {
-      if (theirs.has(t) && t.length > bestLen) {
-        bestLen = t.length;
-        best = d;
-      }
-    }
+    const theirs = new Set(words([d.brand_name, ...(d.aliases || [])]));
+    // A queried word is accounted for when the candidate has it, or has a
+    // word that starts with it (makeover -> makeovers).
+    const covered = mine.filter((t) => [...theirs].some((u) => u === t || (t.length >= 4 && u.startsWith(t))));
+    if (covered.length !== mine.length) continue;
+    const score = covered.reduce((s, t) => s + t.length, 0);
+    if (score > bestScore) { bestScore = score; best = d; }
   }
-  return bestLen >= 6 ? best : null;
+  return best;
 }
 
 export function deepBrandIds() {
@@ -234,7 +251,53 @@ export function deepPhone(deep) {
 export function deepAddress(deep) {
   return deep?.contact?.full_address || '';
 }
-// --- deep-record rendering -------------------------------------------------
+// --- shared house style ----------------------------------------------------
+// The floor that applies to every brand, so output quality does not depend on
+// how much research a brand happens to have. A brand's own master instruction
+// and writing direction always win; this only fills the gaps, so a brand that
+// already defines a section is not sent a duplicate of it.
+//
+// Deliberately narrow: platform mechanics, emoji counts and the IG/FB/X/YT
+// shapes already live in ai.js (HOUSE_RULES, PLATFORM_SPECS). What was missing
+// is the accuracy floor and the craft standard, which is what separates a thin
+// record from no record at all.
+const HOUSE_ACCURACY = `HOUSE ACCURACY FLOOR (applies even if a brand record says nothing):
+- Write only from the current brief and this brand's confirmed record. Everything else is unknown.
+- Never state or imply a price, discount, offer, stock level, delivery time, guarantee, award, ranking, review score or certification that is not confirmed above. Omit the claim instead of softening it.
+- Never invent a phone number, address, landmark, timing or "limited period". If a contact detail is not in the record, leave it out.
+- Do not claim a product benefit, material, technique, result or outcome that was not supplied or is not visible in the asset.
+- One short factual claim per sentence beats three stacked adjectives.`;
+
+const HOUSE_CRAFT = `HOUSE CRAFT STANDARD:
+- Be concrete before being clever. Name the visible thing, the real detail, the actual benefit.
+- Open on the viewer's situation or the product's strongest single point, never on a greeting or a question the caption then ignores.
+- Vary sentence length. Short line for the hook, then plain full sentences.
+- No em dashes. No stacked hype ("best", "No.1", "premium", "luxury") unless the record confirms it.
+- No fake urgency, no fake personal experience, no invented customer quotes.
+- One clear next step, phrased as an action the reader can actually take.`;
+
+const HOUSE_STRUCTURE = `HOUSE STRUCTURE (when the record gives no format of its own):
+- 2 to 4 sentence body: hook line, then supporting detail, then one concrete call to action.
+- Blank line before the footer, then the footer exactly as given, then exactly 3 hashtags (brand + topic + location), then one [square bracket] of 5 to 8 comma-separated search phrases.`;
+
+const HOUSE_VOICE = `HOUSE VOICE (when the record gives no voice of its own):
+- Warm and human, like a good store owner recommending something, not a press release.
+- Confident and specific. Never flat, never robotic, never overhyped.`;
+
+const HOUSE_MISSING = `WHEN KEY FACTS ARE MISSING: write the strongest honest caption from what is supplied, drop any claim that would need the missing fact, and never fill the gap with a plausible guess. Do not stall the whole caption to ask.`;
+
+// Only the parts this brand has not already defined for itself.
+function houseStyleFor(deep) {
+  const out = [HOUSE_ACCURACY];
+  if (!deep || typeof deep !== 'object') {
+    out.push(HOUSE_CRAFT, HOUSE_STRUCTURE, HOUSE_VOICE, HOUSE_MISSING);
+    return `${out.join('\n\n')}\n\n(A brand's own record overrides every line above.)`;
+  }
+  if (isBlank(deep.writing_direction)) out.push(HOUSE_CRAFT, HOUSE_VOICE);
+  if (isBlank(deep.caption_format)) out.push(HOUSE_STRUCTURE);
+  out.push(HOUSE_MISSING);
+  return `${out.join('\n\n')}\n\n(A brand's own master instruction overrides every line above.)`;
+}
 // The per-brand files are researched by hand and keep growing (31 of 32 now
 // carry caption_format, visual_and_asset_guidance, per_post_input and sources).
 // Hand-listing every field meant most of that research never reached the model,
@@ -391,6 +454,7 @@ export function deepPack(deep, brand) {
     ...T(1, cap(fmt(deep.caption_format, true), 1300)),
     ...T(1, !isBlank(deep.missing_information) ? `STILL UNKNOWN (never invent): ${cap(fmt(deep.missing_information), 800)}` : null),
     ...T(1, ppi.length ? `NEEDED INPUTS (omit any claim that depends on what is missing):\n${cap(ppi.join('\n'), 1100)}` : null),
+    ...T(1, houseStyleFor(deep)),
 
     ...T(2, cap(fmt(deep.established_content_knowledge, true), 1500)),
     ...T(2, cta.length ? `CTAs (pick one, reword): ${cta.join(' / ')}` : null),
@@ -518,7 +582,9 @@ export function brandPack(brand) {
     mem?.notes ? `Learned: ${String(mem.notes).slice(0, 200)}` : null,
     mem?.recent?.length ? `Approved voice — same energy, new words, never copy exactly: ${mem.recent.slice(-3).join(' | ').slice(0, 200)}` : null,
   ].filter(Boolean);
-  return lines.join('\n');
+  // A thin index record still gets the shared floor, so an unresearched brand
+  // is held to the same accuracy and craft standard as a fully researched one.
+  return `${lines.join('\n')}\n\n${houseStyleFor(null)}`;
 }
 
 // --- Brief breakdown: GOOD PROMPT = GOOD CAPTION, BAD PROMPT = plain answer.
