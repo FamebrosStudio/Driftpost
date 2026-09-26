@@ -1,3 +1,5 @@
+import { getSupabase, pokeSession } from './session.js';
+
 const apiUrlRaw = import.meta.env.VITE_API_URL;
 export const apiUrl = apiUrlRaw?.replace(/\/$/, '') || '';
 
@@ -276,12 +278,42 @@ export async function resetPostState(userId) {
   } catch {}
 }
 
+// A dead server answers nothing at all (the browser reports it as a CORS
+// or network failure) — say what it actually means instead of passing the
+// cryptic text through.
+const DOWN_MSG = 'Server is unreachable — it may be waking up. Wait a minute and retry.';
+const isNetworkFail = (e) => e?.name === 'TypeError'
+  || /Failed to fetch|Network request failed|NetworkError|Load failed/i.test(String(e?.message || ''));
+
+// One shared refresh flight: ten 401s at once trigger exactly one token
+// refresh, and every waiter replays with the same fresh token.
+let refreshInflight = null;
+async function freshToken() {
+  try {
+    if (!refreshInflight) {
+      refreshInflight = (async () => {
+        const client = await getSupabase();
+        if (!client) return null;
+        const { data, error } = await client.auth.refreshSession();
+        if (error || !data?.session?.access_token) return null;
+        try { pokeSession(); } catch {}
+        return data.session.access_token;
+      })().finally(() => { refreshInflight = null; });
+    }
+    return await refreshInflight;
+  } catch {
+    return null;
+  }
+}
+
 export async function api(path, token, options = {}) {
   // Every request carries a timeout so a cold/sleeping server can never hang
   // a button forever. Safe GETs get one transparent retry (no side effects);
   // writes fail fast with a plain message instead of hanging.
+  // A 401 replays exactly once with a freshly-refreshed login token first —
+  // the rejected attempt never reached any route, so replays are safe.
   const method = String(options.method || 'GET').toUpperCase();
-  const call = async (timeoutMs) => {
+  const call = async (t, timeoutMs) => {
     const ctrl = new AbortController();
     const timer = setTimeout(() => ctrl.abort(), timeoutMs);
     try {
@@ -290,7 +322,7 @@ export async function api(path, token, options = {}) {
         signal: ctrl.signal,
         headers: {
           ...(options.headers || {}),
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${t}`,
           ...(options.body instanceof FormData ? {} : { 'Content-Type': 'application/json' }),
         },
       });
@@ -299,21 +331,80 @@ export async function api(path, token, options = {}) {
       // — say so plainly instead of dying downstream with no message.
       if (!ct.includes('json')) throw new Error('API unreachable — check your connection and try again.');
       const data = await res.json().catch(() => ({}));
+      if (res.status === 401) {
+        const err = new Error(data.error || 'Session expired');
+        err.status = 401;
+        throw err;
+      }
       if (!res.ok) throw new Error(data.error || 'Request failed');
       return data;
     } catch (e) {
+      if (e?.status === 401) throw e;
       if (e?.name === 'AbortError') throw new Error('Server is waking up — try again in a few seconds.');
+      if (isNetworkFail(e)) throw new Error(DOWN_MSG);
+      throw e;
+    } finally {
+      clearTimeout(timer);
+    }
+  };
+  const invoke = async (t) => {
+    try {
+      return await call(t, 25000);
+    } catch (e) {
+      if (e?.status === 401) throw e;
+      const retryable = method === 'GET' && /waking up/i.test(e.message || '');
+      if (!retryable) throw e;
+      await new Promise((r) => setTimeout(r, 1500));
+      return call(t, 30000);
+    }
+  };
+  try {
+    return await invoke(token);
+  } catch (e) {
+    if (e?.status !== 401 || !token) throw e;
+    const fresh = await freshToken();
+    if (!fresh || fresh === token) throw new Error('Session expired — sign out and sign in again.');
+    return invoke(fresh);
+  }
+}
+
+// Raw fetch with the same auth resilience (for FormData posts that need the
+// raw response). Returns { res, data, refreshedToken? }.
+export async function fetchWithAuth(url, token, init = {}) {
+  const doPost = async (t, timeoutMs) => {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), timeoutMs);
+    try {
+      const res = await fetch(url, {
+        ...init,
+        signal: ctrl.signal,
+        headers: { ...(init.headers || {}), Authorization: `Bearer ${t}` },
+      });
+      const ct = res.headers.get('content-type') || '';
+      const data = ct.includes('json') ? await res.json().catch(() => ({})) : {};
+      if (res.status === 401) {
+        const err = new Error(data.error || 'Session expired');
+        err.status = 401;
+        throw err;
+      }
+      return { res, data };
+    } catch (e) {
+      if (e?.status === 401) throw e;
+      if (e?.name === 'AbortError') throw new Error('Server is waking up — try again in a few seconds.');
+      if (isNetworkFail(e)) throw new Error(DOWN_MSG);
       throw e;
     } finally {
       clearTimeout(timer);
     }
   };
   try {
-    return await call(25000);
+    return await doPost(token, 30000);
   } catch (e) {
-    const retryable = method === 'GET' && /waking up|Failed to fetch|NetworkError|Load failed|network/i.test(e.message || '');
-    if (!retryable) throw e;
-    await new Promise((r) => setTimeout(r, 1500));
-    return call(30000);
+    if (e?.status !== 401 || !token) throw e;
+    const fresh = await freshToken();
+    if (!fresh || fresh === token) throw new Error('Session expired — sign out and sign in again.');
+    const out = await doPost(fresh, 30000);
+    out.refreshedToken = fresh;
+    return out;
   }
 }

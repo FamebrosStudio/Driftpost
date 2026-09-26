@@ -397,8 +397,9 @@ app.post('/api/meta/deauthorize', callbackLimit, express.urlencoded({ extended: 
 });
 
 // First configured origin only — FRONTEND_URL may hold a comma list for
-// CORS, but redirects need exactly one home.
-const FRONTEND_HOME = String(process.env.FRONTEND_URL || '').split(',')[0].trim();
+// CORS, but redirects need exactly one home. The fallback keeps OAuth
+// callbacks alive (redirect, not crash) even if the env var is unset.
+const FRONTEND_HOME = String(process.env.FRONTEND_URL || 'https://driftpostpage.vercel.app').split(',')[0].trim() || 'https://driftpostpage.vercel.app';
 // Single-use OAuth states: verifyState checks signature + expiry; this map
 // additionally burns each nonce so a captured callback URL can't be replayed
 // to attach someone else's channel to the attacker's account.

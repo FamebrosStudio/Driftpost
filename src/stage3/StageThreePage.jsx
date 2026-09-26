@@ -1,5 +1,5 @@
 import React, { Suspense, lazy, useEffect, useMemo, useRef, useState } from 'react';
-import { api, apiUrl, groupBrands, PLATFORMS, resetPostState, schedulePost } from '../lib.js';
+import { api, apiUrl, groupBrands, PLATFORMS, resetPostState, schedulePost, fetchWithAuth } from '../lib.js';
 import { readVault, writeVault, vaultFiles } from '../stage2/mediaVault.js';
 import { requestCaptions, mapResponse, approveCaption } from '../stage2/ai.js';
 import { composeOutput } from '../stage2/PlatformOutputCard.jsx';
@@ -309,17 +309,17 @@ export default function StageThreePage({ session, onBack, onSignOut, onHistory, 
 
   // Post to ONE connection and poll the job. Returns the post URL.
   // When connectionId is given, the form carries exactly that account.
+  // The POST itself auto-refreshes a dead login token; polls inherit it.
   const runToAccount = async (pid, connectionId, out, key, { skipCrossPost = false, mediaOverride = null } = {}) => {
     out[key] = { state: 'uploading', progress: 5 };
     setResults({ ...out });
     const form = buildForm(pid, { connectionId, skipCrossPost, mediaOverride });
     if (connectionId) form.set('connection_id', connectionId);
-    const res = await fetch(`${apiUrl}/api/publish`, {
+    const { res, data, refreshedToken } = await fetchWithAuth(`${apiUrl}/api/publish`, session.access_token, {
       method: 'POST',
-      headers: { Authorization: `Bearer ${session.access_token}` },
       body: form,
     });
-    const data = await res.json().catch(() => ({}));
+    const pollToken = refreshedToken || session.access_token;
     if (!res.ok) throw new Error(data.error || 'Publish failed');
     const jobId = data.job.id;
     // A stuck job must never lock the card forever — 5 minutes of polling
@@ -328,7 +328,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onHistory, 
     for (;;) {
       if (Date.now() - t0 > 5 * 60 * 1000) throw new Error('Publish timed out — check History, it may still have posted.');
       await new Promise((r) => setTimeout(r, 1500));
-      const j = await api(`/api/jobs/${jobId}`, session.access_token);
+      const j = await api(`/api/jobs/${jobId}`, pollToken);
       out[key] = { state: j.job.state, progress: j.job.progress || 50, url: j.job.url, message: j.job.message };
       setResults({ ...out });
       if (j.job.state === 'completed') {
