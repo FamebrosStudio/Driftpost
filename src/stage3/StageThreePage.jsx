@@ -332,11 +332,14 @@ export default function StageThreePage({ session, onBack, onSignOut, onHistory, 
     const pollToken = refreshedToken || session.access_token;
     if (!res.ok) throw new Error(data.error || 'Publish failed');
     const jobId = data.job.id;
-    // A stuck job must never lock the card forever — 5 minutes of polling
-    // fails visibly instead of hanging with Posting… indefinitely.
+    // A stuck job must never lock the card forever — but big videos need
+    // real time (upload + platform processing), so video posts get 12
+    // minutes instead of 5 before failing visibly.
+    const hasVideo = files.some((f) => f.type.startsWith('video/'));
+    const pollCap = hasVideo ? 12 * 60 * 1000 : 5 * 60 * 1000;
     const t0 = Date.now();
     for (;;) {
-      if (Date.now() - t0 > 5 * 60 * 1000) throw new Error('Publish timed out — check History, it may still have posted.');
+      if (Date.now() - t0 > pollCap) throw new Error('Publish timed out — check History, it may still have posted.');
       await new Promise((r) => setTimeout(r, 1500));
       const j = await api(`/api/jobs/${jobId}`, pollToken);
       out[key] = { state: j.job.state, progress: j.job.progress || 50, url: j.job.url, message: j.job.message };

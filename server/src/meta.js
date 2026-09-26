@@ -159,9 +159,9 @@ export async function publishInstagram({ igUserId, pageToken, caption, alt, coll
   });
   const container = await cRes.json();
   if (!cRes.ok) throw new Error(container.error?.message || 'Instagram container failed');
-  // wait for video processing
+  // wait for video processing — big files take minutes, so wait up to ~10
   if (isVideo) {
-    for (let i = 0; i < 30; i++) {
+    for (let i = 0; i < 75; i++) {
       await new Promise((r) => setTimeout(r, 8000));
       const s = await fetch(`${GRAPH}/${container.id}?fields=status_code&access_token=${encodeURIComponent(pageToken)}`);
       const sj = await s.json();
@@ -194,7 +194,7 @@ export async function publishInstagramStory({ igUserId, pageToken, mediaUrl, isV
   const container = await cRes.json();
   if (!cRes.ok) throw new Error(container.error?.message || 'Instagram story container failed');
   if (isVideo) {
-    for (let i = 0; i < 30; i++) {
+    for (let i = 0; i < 75; i++) {
       await new Promise((r) => setTimeout(r, 8000));
       const s = await fetch(`${GRAPH}/${container.id}?fields=status_code&access_token=${encodeURIComponent(pageToken)}`);
       const sj = await s.json();
