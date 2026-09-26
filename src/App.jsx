@@ -16,7 +16,7 @@ function SpotLine({ text }) {
   const ref = useRef(null);
   const centers = useRef(null);
   const raf = useRef(0);
-  // Same glow math as before â€” but char positions are measured once and
+  // Same glow math as before — but char positions are measured once and
   // cached, and repaints run at most once per animation frame. Identical
   // pixels, zero layout-thrash while scrolling or moving the mouse.
   const measure = () => {
@@ -106,11 +106,11 @@ const PUB_CONTENT = {
   about: {
     kicker: 'What is Drift Post',
     title: 'One screen for every audience you own.',
-    intro: 'Driftpost is a publishing console for people who run many brands â€” agencies, studios, creators. Instead of opening YouTube Studio, Meta Business Suite, and X in twelve tabs, you pick the brand once and post to all four platforms from four side-by-side cards.',
+    intro: 'Driftpost is a publishing console for people who run many brands — agencies, studios, creators. Instead of opening YouTube Studio, Meta Business Suite, and X in twelve tabs, you pick the brand once and post to all four platforms from four side-by-side cards.',
     sections: [
       { h: 'Brand-first, not platform-first', p: 'Agencies think in clients: Velvet Salon, SK Furniture, Sarang Hospital. Driftpost groups every connected account under its brand and auto-matches the same brand across YouTube, Instagram, Facebook and X.' },
       { h: 'Every native option', p: 'Titles, tags, thumbnails and visibility for YouTube. Captions, alt text and collaborators for Instagram. Links, buttons and age limits for Facebook. Polls and reply controls for X. If the platform API allows it, the card has it.' },
-      { h: 'Direct publishing only', p: 'Nothing is scheduled, queued, or automated behind your back. Every post goes out the second you press publish â€” from your accounts, with your tokens, encrypted at rest.' },
+      { h: 'Direct publishing only', p: 'Nothing is scheduled, queued, or automated behind your back. Every post goes out the second you press publish — from your accounts, with your tokens, encrypted at rest.' },
     ],
   },
   how: {
@@ -118,22 +118,22 @@ const PUB_CONTENT = {
     title: 'Live in five minutes.',
     intro: 'Follow these once. After that, posting for any brand takes under a minute.',
     sections: [
-      { h: '1 Â· Sign in', p: 'Open the site, press Get started, continue with Google or email. You land on the home page first every visit â€” press Enter console.' },
-      { h: '2 Â· Connect accounts', p: 'Go to Accounts and connect YouTube (Google login), Facebook + Instagram (one Meta login covers both), and X. Each brand owner connects once. Take the 30-second tour when offered.' },
-      { h: '3 Â· Pick your brand', p: 'Back on Platforms, choose the brand from the menu. Its accounts load into the four cards automatically. Star active clients with the â‹¯ menu; hide the rest.' },
-      { h: '4 Â· Drop media, write once', p: 'Add one photo or video and one caption. Shared content fills every card; open a card to fine-tune that platform only.' },
-      { h: '5 Â· Publish', p: 'Press a card to publish one platform, or Publish all for everything. Done âœ“ links appear under each card.' },
+      { h: '1 · Sign in', p: 'Open the site, press Get started, continue with Google or email. You land on the home page first every visit — press Enter console.' },
+      { h: '2 · Connect accounts', p: 'Go to Accounts and connect YouTube (Google login), Facebook + Instagram (one Meta login covers both), and X. Each brand owner connects once. Take the 30-second tour when offered.' },
+      { h: '3 · Pick your brand', p: 'Back on Platforms, choose the brand from the menu. Its accounts load into the four cards automatically. Star active clients with the ▾ menu; hide the rest.' },
+      { h: '4 · Drop media, write once', p: 'Add one photo or video and one caption. Shared content fills every card; open a card to fine-tune that platform only.' },
+      { h: '5 · Publish', p: 'Press a card to publish one platform, or Publish all for everything. Done ✓ links appear under each card.' },
     ],
   },
   platforms: {
     kicker: 'Platforms',
     title: 'Four platforms. Zero tabs.',
-    intro: 'Each card mirrors what the platform itself asks for â€” nothing missing, nothing invented.',
+    intro: 'Each card mirrors what the platform itself asks for — nothing missing, nothing invented.',
     sections: [
       { h: 'YouTube', p: 'Video + title, description, tags, visibility, thumbnail, category, made-for-kids, license, embedding, stats visibility, subscriber notifications. Private first, public when ready.' },
       { h: 'Instagram', p: 'Photo or reel + caption, alt text, topics, paid-partner mentions, up-to-3 collaborators, location, one-tap mirror to the Facebook Page.' },
       { h: 'Facebook', p: 'Message, link with custom preview title/caption/image, call-to-action buttons, 13/18/21/25+ age limits, unpublished dark posts, mirror to Instagram.' },
-      { h: 'X', p: '280 characters with live counter, photos/GIF/video, 2â€“4 choice polls with durations, who-can-reply controls.' },
+      { h: 'X', p: '280 characters with live counter, photos/GIF/video, 2—4 choice polls with durations, who-can-reply controls.' },
     ],
   },
   faq: {
@@ -141,19 +141,19 @@ const PUB_CONTENT = {
     title: 'Asked often.',
     intro: '',
     sections: [
-      { h: 'Is it free?', p: 'Yes while in beta. YouTube, Meta and Supabase free tiers cover normal agency volume. X may need a paid tier if you post at high volume â€” that is X billing you, not us.' },
-      { h: 'Why is a page missing after connecting?', p: 'Meta only returns what the logged-in Facebook user manages and what was ticked in the grant dialog. Portfolio-owned pages need their portfolio selected during login. Reconnect with â€œall current and futureâ€ and tick everything.' },
+      { h: 'Is it free?', p: 'Yes while in beta. YouTube, Meta and Supabase free tiers cover normal agency volume. X may need a paid tier if you post at high volume — that is X billing you, not us.' },
+      { h: 'Why is a page missing after connecting?', p: 'Meta only returns what the logged-in Facebook user manages and what was ticked in the grant dialog. Portfolio-owned pages need their portfolio selected during login. Reconnect with —œall current and future— and tick everything.' },
       { h: 'Where are my tokens?', p: 'Encrypted in your Supabase project. The app servers never log them, and disconnecting deletes them.' },
-      { h: 'Can clients share one login?', p: 'Yes â€” connect every portfolio under one login and switch brands from the menu. Or give each client their own login for strict isolation. Both work.' },
-      { h: 'Does it schedule posts?', p: 'No. Driftpost publishes the second you press the button â€” direct publishing only, by design.' },
+      { h: 'Can clients share one login?', p: 'Yes — connect every portfolio under one login and switch brands from the menu. Or give each client their own login for strict isolation. Both work.' },
+      { h: 'Does it schedule posts?', p: 'No. Driftpost publishes the second you press the button — direct publishing only, by design.' },
     ],
   },
   contact: {
     kicker: 'Contact',
     title: 'Talk to a human.',
-    intro: 'Bug reports, brand onboarding help, feature asks â€” everything lands in one place.',
+    intro: 'Bug reports, brand onboarding help, feature asks — everything lands in one place.',
     sections: [
-      { h: 'GitHub', p: 'Open an issue at github.com/FamebrosStudio/Driftpost â€” fastest for bugs, paste the exact error text.' },
+      { h: 'GitHub', p: 'Open an issue at github.com/FamebrosStudio/Driftpost — fastest for bugs, paste the exact error text.' },
       { h: 'Email', p: 'Write to famebros.studio@gmail.com with your brand name and a screenshot.' },
       { h: 'What to include', p: 'Platform (YouTube/Instagram/Facebook/X), brand name, what you clicked, and what the card said. That is everything needed to fix it.' },
     ],
@@ -161,11 +161,11 @@ const PUB_CONTENT = {
   privacy: {
     kicker: 'Privacy Policy',
     title: 'Your data stays yours.',
-    intro: 'Last updated September 2026. Driftpost publishes to your accounts â€” it does not sell, rent, or share your data with anyone.',
+    intro: 'Last updated September 2026. Driftpost publishes to your accounts — it does not sell, rent, or share your data with anyone.',
     sections: [
-      { h: 'What we store', p: 'Login email (Supabase Auth); connected social accounts (names and IDs); AES-256-GCM encrypted OAuth access/refresh tokens; captions, prompts and AI briefs you submit; uploaded media in transit (Instagram copies via your private Supabase storage bucket); publish history (platform, time, URL); IP, device and browser data in hosting access logs for security and diagnostics; support messages. Billing data, if paid plans ever launch, is handled by our payment provider â€” we never store card numbers.' },
+      { h: 'What we store', p: 'Login email (Supabase Auth); connected social accounts (names and IDs); AES-256-GCM encrypted OAuth access/refresh tokens; captions, prompts and AI briefs you submit; uploaded media in transit (Instagram copies via your private Supabase storage bucket); publish history (platform, time, URL); IP, device and browser data in hosting access logs for security and diagnostics; support messages. Billing data, if paid plans ever launch, is handled by our payment provider — we never store card numbers.' },
       { h: 'Why each item exists', p: 'Email identifies your account. Account IDs route your posts. Tokens let the official platform APIs publish as you. Prompts and media are the content you asked us to publish. Logs keep the service secure and diagnose failures.' },
-      { h: 'Two separate purposes', p: 'PURPOSE A â€” SERVICE (required, not optional): we process your prompts, attached media and connected-account details in order to generate and publish your posts. This is the product, and we do not retain your prompts under this purpose. PURPOSE B â€” PERSONALISATION (optional, off by default): only if you actively tick the box do we store your prompts and generated captions, so that future posts for the same brand match your own voice. If you decline, every feature keeps working and nothing is stored.' },
+      { h: 'Two separate purposes', p: 'PURPOSE A — SERVICE (required, not optional): we process your prompts, attached media and connected-account details in order to generate and publish your posts. This is the product, and we do not retain your prompts under this purpose. PURPOSE B — PERSONALISATION (optional, off by default): only if you actively tick the box do we store your prompts and generated captions, so that future posts for the same brand match your own voice. If you decline, every feature keeps working and nothing is stored.' },
       { h: 'What "personalisation" does and does not do', p: 'It is retrieval, not training. We do not fine-tune, retrain or modify any model, and we do not send your data to anyone to train one. When you have opted in, a small number of captions you previously approved are shown back to the AI as style examples for your account only, so the writing matches your voice. They are never used for another user.' },
       { h: 'What we remove before storing', p: 'Before anything is saved under Purpose B we strip email addresses, phone numbers, long digit sequences, and anything resembling a password, token or API key. A confirmed business phone number or address that belongs to a brand record is deliberately kept, because it is part of the published post rather than your personal data.' },
       { h: 'Proving your consent', p: 'Every decision you make is recorded in an append-only log with the exact version of this notice you were shown, so we can demonstrate what you agreed to and when. Revoking consent adds a new record; it does not erase the history of the earlier decision.' },
@@ -186,21 +186,21 @@ const PUB_CONTENT = {
       { h: 'Your account', p: 'You are responsible for your login credentials and everything done through your account. Minimum age follows each connected platform\'s own rules.' },
       { h: 'Connect only what is yours', p: 'You represent that you own or are authorised to manage every account, Page, portfolio or profile you connect. Connecting someone else\'s account without permission is your violation, not ours, and will get your access suspended.' },
       { h: 'Your content, your licence to us', p: 'You keep ownership of uploads and captions. You grant Driftpost a limited licence to store, process, resize and transmit them only to deliver the service. You confirm you hold the rights to everything you upload and publish.' },
-      { h: 'Review before you publish', p: 'You are responsible for reviewing every post â€” especially AI-generated captions â€” before publishing. See the AI Content Disclaimer. Driftpost never auto-publishes; every post goes out because you pressed the button.' },
+      { h: 'Review before you publish', p: 'You are responsible for reviewing every post — especially AI-generated captions — before publishing. See the AI Content Disclaimer. Driftpost never auto-publishes; every post goes out because you pressed the button.' },
       { h: 'Platforms are third parties', p: 'YouTube, Meta and X control their APIs, approvals, reach and suspensions. We cannot guarantee a post is accepted, timing is exact, or an account stays in good standing. See the Platform Disclaimer.' },
       { h: 'Acceptable use', p: 'No spam, phishing, scams, impersonation, harassment, IP infringement, bulk abuse, policy circumvention or unlawful content. Breaches mean suspension or termination. See the Acceptable Use Policy.' },
-      { h: 'Liability limit', p: 'To the maximum extent permitted by law, Driftpost is not liable for indirect losses â€” including platform downtime, suspensions, rejected posts, lost reach, revenue or followers. Direct liability, where it applies, is capped at what you paid us in the prior 3 months (currently nothing while free).' },
+      { h: 'Liability limit', p: 'To the maximum extent permitted by law, Driftpost is not liable for indirect losses — including platform downtime, suspensions, rejected posts, lost reach, revenue or followers. Direct liability, where it applies, is capped at what you paid us in the prior 3 months (currently nothing while free).' },
       { h: 'Contact', p: 'famebros.studio@gmail.com.' },
     ],
   },
   'data-deletion': {
     kicker: 'Data Deletion',
     title: 'Delete your data, anytime.',
-    intro: 'You control your data. Removing a connection deletes its tokens immediately â€” no waiting, no email needed. Full erasure completes within 7 days of request.',
+    intro: 'You control your data. Removing a connection deletes its tokens immediately — no waiting, no email needed. Full erasure completes within 7 days of request.',
     sections: [
-      { h: 'Delete one account', p: 'Console â†’ Accounts â†’ Disconnect next to the account. Its encrypted tokens are deleted from our database at once. This also revokes posting access.' },
+      { h: 'Delete one account', p: 'Console ’ Accounts ’ Disconnect next to the account. Its encrypted tokens are deleted from our database at once. This also revokes posting access.' },
       { h: 'Delete everything', p: 'Press Delete account in the account menu (removes connections, history and login), or disconnect all accounts and email famebros.studio@gmail.com from your login email with subject "Delete my data". We confirm by reply within 7 days.' },
-      { h: 'Removed our Facebook integration?', p: 'If you removed Drift Post from Facebook settings, Meta sends us a revocation notice. That notice does not identify your local account, so finish with Disconnect on the Accounts page or email us â€” then erasure is complete.' },
+      { h: 'Removed our Facebook integration?', p: 'If you removed Drift Post from Facebook settings, Meta sends us a revocation notice. That notice does not identify your local account, so finish with Disconnect on the Accounts page or email us — then erasure is complete.' },
       { h: 'What we keep', p: 'Nothing after deletion except records the law requires (e.g. billing invoices, if paid service launches). We hold no backups of tokens and never sold or shared your data.' },
     ],
   },
@@ -233,7 +233,7 @@ const PUB_CONTENT = {
     intro: 'Driftpost publishes through official APIs owned by third parties. We build the best console we can; they control the rest.',
     sections: [
       { h: 'No guarantees', p: 'We cannot guarantee Instagram, Facebook, YouTube or X will accept any post, publish at an exact second, preserve any API, or keep any account in good standing.' },
-      { h: 'Permissions are minimal', p: 'We request only the scopes each feature needs (read connected account, publish content, basic profile). If a feature needs more, we ask at that time â€” never in advance.' },
+      { h: 'Permissions are minimal', p: 'We request only the scopes each feature needs (read connected account, publish content, basic profile). If a feature needs more, we ask at that time — never in advance.' },
       { h: 'Your platform standing', p: 'Suspensions, rejections, rate limits and policy strikes are decided by the platforms under your agreement with them. Keep backups of important content.' },
       { h: 'Changes happen', p: 'Platforms change APIs, permissions and review requirements without notice. Features may pause while we adapt; we will say so openly.' },
     ],
@@ -243,7 +243,7 @@ const PUB_CONTENT = {
     title: 'Respect creators.',
     intro: 'You confirm you hold the rights to everything you upload and publish through Driftpost. Brand content you upload stays yours.',
     sections: [
-      { h: 'Your promise', p: 'Only upload photos, logos, music and text you own or are licensed to use. AI captions are drafts â€” verify they do not copy protected expression before publishing.' },
+      { h: 'Your promise', p: 'Only upload photos, logos, music and text you own or are licensed to use. AI captions are drafts — verify they do not copy protected expression before publishing.' },
       { h: 'Complaints', p: 'Rights holders: email famebros.studio@gmail.com with subject "Copyright complaint", including the infringing URL, your work, and your contact. We act on valid notices expeditiously, including removal and, for repeat offenders, account termination.' },
       { h: 'Counter-notices', p: 'If your content was removed and you believe it was a mistake, reply with your basis and consent to be contacted. Misuse of this process has consequences.' },
     ],
@@ -266,15 +266,15 @@ const PUB_CONTENT = {
       { h: 'Today', p: 'All features are free. No card is collected, no trial converts into anything.' },
       { h: 'When paid plans launch', p: 'Prices show exclusive/inclusive of GST, billing frequency, renewal, trial length and cancellation path before you pay. Cancel anytime; access runs to the end of the paid period.' },
       { h: 'Refunds', p: 'Monthly plans: refund within 7 days of first charge if unused. Annual plans: pro-rated refund within 30 days. After that, no refunds except where mandatory law requires.' },
-      { h: 'How to cancel', p: 'Billing settings â†’ Cancel, or email famebros.studio@gmail.com from your login email. Confirmation within 2 business days.' },
+      { h: 'How to cancel', p: 'Billing settings ’ Cancel, or email famebros.studio@gmail.com from your login email. Confirmation within 2 business days.' },
     ],
   },
   security: {
     kicker: 'Security & Trust Center',
     title: 'How we protect you.',
-    intro: 'Plain claims only â€” everything below describes controls that actually exist in Driftpost today.',
+    intro: 'Plain claims only — everything below describes controls that actually exist in Driftpost today.',
     sections: [
-      { h: 'Your passwords stay yours', p: 'Connections happen through official OAuth only. Driftpost will never ask for your social-media password, OTP, UPI PIN or card PIN. Anyone asking is a scammer â€” report to famebros.studio@gmail.com.' },
+      { h: 'Your passwords stay yours', p: 'Connections happen through official OAuth only. Driftpost will never ask for your social-media password, OTP, UPI PIN or card PIN. Anyone asking is a scammer — report to famebros.studio@gmail.com.' },
       { h: 'Tokens locked down', p: 'Social OAuth tokens are AES-256-GCM encrypted, stored server-side, never in frontend code, logs, analytics or this repo, and never displayed in any dashboard. In transit everything runs over HTTPS.' },
       { h: 'Isolation', p: 'Row-level security confines every query to your own user ID. Brand A can never read Brand B. Brand knowledge lives per brand and never leaks across them.' },
       { h: 'Abuse guards', p: 'Rate limits on AI generation, OAuth, publishing and account-data endpoints; signed OAuth state; upload type and size validation.' },
@@ -323,7 +323,7 @@ function Landing({ onEnter, session, pubPage, setPubPage }) {
       if (shift) shift.style.transform = `translate3d(${(nx * -22).toFixed(1)}px, ${(ny * -22).toFixed(1)}px, 0)`;
     });
   };
-  // Animations are part of the look â€” but repainting invisible pixels is pure
+  // Animations are part of the look — but repainting invisible pixels is pure
   // waste. Pause rain + marquee the moment they leave the viewport; they
   // resume pixel-identical the instant they return.
   useEffect(() => {
@@ -337,22 +337,22 @@ function Landing({ onEnter, session, pubPage, setPubPage }) {
     return () => { io.disconnect(); if (mouseRaf.current) cancelAnimationFrame(mouseRaf.current); };
   }, [pubPage]);
   const dock = [
-    { id: 'youtube', tip: 'YouTube â€” video, titles, tags', href: 'https://www.youtube.com' },
-    { id: 'instagram', tip: 'Instagram â€” reels, captions', href: 'https://www.instagram.com' },
-    { id: 'facebook', tip: 'Facebook â€” pages, links', href: 'https://www.facebook.com' },
-    { id: 'x', tip: 'X â€” 280 chars, media', href: 'https://x.com' },
+    { id: 'youtube', tip: 'YouTube — video, titles, tags', href: 'https://www.youtube.com' },
+    { id: 'instagram', tip: 'Instagram — reels, captions', href: 'https://www.instagram.com' },
+    { id: 'facebook', tip: 'Facebook — pages, links', href: 'https://www.facebook.com' },
+    { id: 'x', tip: 'X — 280 chars, media', href: 'https://x.com' },
   ];
   const cards = [
-    { id: 'youtube', t: 'YouTube, handled', d: 'Titles, descriptions, tags, thumbnails, visibility â€” every upload setting, zero Studio tabs.' },
-    { id: 'instagram', t: 'Instagram, handled', d: 'Captions, alt text, collaborators, topics, location â€” reels and photos from one card.' },
+    { id: 'youtube', t: 'YouTube, handled', d: 'Titles, descriptions, tags, thumbnails, visibility — every upload setting, zero Studio tabs.' },
+    { id: 'instagram', t: 'Instagram, handled', d: 'Captions, alt text, collaborators, topics, location — reels and photos from one card.' },
     { id: 'facebook', t: 'Facebook, handled', d: 'Messages, links with custom previews, action buttons, age limits, dark posts.' },
-    { id: 'x', t: 'X, handled', d: '280 characters, polls, reply controls, media â€” posted in one click.' },
+    { id: 'x', t: 'X, handled', d: '280 characters, polls, reply controls, media — posted in one click.' },
   ];
   const steps = [
     { n: '01', t: 'Connect once', d: 'Each brand owner links YouTube, Facebook, Instagram and X one time. Tokens stay encrypted; reconnects are one click.' },
-    { n: '02', t: 'Pick the brand', d: 'Choose Hair Match Salon, SK Furniture, Velvet Salon â€” Driftpost auto-loads that brand on all four platforms.' },
+    { n: '02', t: 'Pick the brand', d: 'Choose Hair Match Salon, SK Furniture, Velvet Salon — Driftpost auto-loads that brand on all four platforms.' },
     { n: '03', t: 'Drop and write', d: 'One photo or video, one caption. Shared everywhere instantly, then fine-tune per platform.' },
-    { n: '04', t: 'Fire everywhere', d: 'Publish per platform or hit Publish all. Watch Done âœ“ roll across all four phones with view links.' },
+    { n: '04', t: 'Fire everywhere', d: 'Publish per platform or hit Publish all. Watch Done ✓ roll across all four phones with view links.' },
   ];
   return (
     <div className="landing" ref={rootRef} onMouseMove={onGridMouse}>
@@ -364,15 +364,15 @@ function Landing({ onEnter, session, pubPage, setPubPage }) {
             <button key={p.id} className={pubPage === p.id ? 'on' : ''} onClick={() => setPubPage(p.id)}>{p.label}</button>
           ))}
         </div>
-        <button className="skew-btn grad" onClick={onEnter}><span>{session ? 'Enter console â†’' : 'Get started â†’'}</span></button>
+        <button className="skew-btn grad" onClick={onEnter}><span>{session ? 'Enter console ’' : 'Get started ’'}</span></button>
       </nav>
       {pubPage === 'home' ? <>
       <header className="landing-in">
-        <div className="landing-kicker">Driftpost â€” publish everywhere</div>
+        <div className="landing-kicker">Driftpost — publish everywhere</div>
         <h1><SpotLine text="Post once." /><br /><SpotLine text="Everywhere." /></h1>
         <p>One screen. Four platforms. Every brand in your pocket.</p>
         <div className="landing-cta">
-          <button className="skew-btn grad" onClick={onEnter}><span>{session ? 'Enter console â†’' : 'Get started free â†’'}</span></button>
+          <button className="skew-btn grad" onClick={onEnter}><span>{session ? 'Enter console ’' : 'Get started free ’'}</span></button>
         </div>
         <div className="social-dock">
           {dock.map((d) => (
@@ -387,10 +387,10 @@ function Landing({ onEnter, session, pubPage, setPubPage }) {
           <span><b>40+</b>brands</span>
           <span><b>1</b>screen</span>
         </div>
-        <div className="scroll-hint">Scroll for the tour â†“</div>
+        <div className="scroll-hint">Scroll for the tour “</div>
       </header>
       <div className="hstrip-wrap">
-        <div className="hstrip-label">Drag sideways â€” every platform, covered â†“</div>
+        <div className="hstrip-label">Drag sideways — every platform, covered “</div>
         <div className="hstrip">
           {cards.map((c) => (
             <div key={c.id} className="hcard">
@@ -401,7 +401,7 @@ function Landing({ onEnter, session, pubPage, setPubPage }) {
           ))}
           <div className="hcard hot">
             <b>40+ brands, one menu</b>
-            <p>Salons, jewellers, clinics, resorts â€” switch clients faster than opening tabs.</p>
+            <p>Salons, jewellers, clinics, resorts — switch clients faster than opening tabs.</p>
           </div>
         </div>
       </div>
@@ -414,15 +414,15 @@ function Landing({ onEnter, session, pubPage, setPubPage }) {
         ))}
       </section>
       <div className="marquee" aria-hidden="true"><div className="marquee-in">
-        {['Velvet Salon', 'SK Furniture', 'Kanchanmala Jewellers', 'Sarang Hospital', 'Luxxe Nail Studio', 'MAP Clothing', 'Pixi Grow', 'Anand Furniture', 'Velvet Salon', 'SK Furniture', 'Kanchanmala Jewellers', 'Sarang Hospital', 'Luxxe Nail Studio', 'MAP Clothing', 'Pixi Grow', 'Anand Furniture'].map((b, i) => <span key={i}>{b} âœ¦</span>)}
+        {['Velvet Salon', 'SK Furniture', 'Kanchanmala Jewellers', 'Sarang Hospital', 'Luxxe Nail Studio', 'MAP Clothing', 'Pixi Grow', 'Anand Furniture', 'Velvet Salon', 'SK Furniture', 'Kanchanmala Jewellers', 'Sarang Hospital', 'Luxxe Nail Studio', 'MAP Clothing', 'Pixi Grow', 'Anand Furniture'].map((b, i) => <span key={i}>{b} …</span>)}
       </div></div>
       </> : <DocPage page={pubPage} />}
       <footer className="land-foot">
         <h2>Stop opening four apps.</h2>
-        <button className="skew-btn grad" onClick={onEnter}><span>{session ? 'Enter console â†’' : 'Start free â†’'}</span></button>
+        <button className="skew-btn grad" onClick={onEnter}><span>{session ? 'Enter console ’' : 'Start free ’'}</span></button>
         <div className="land-fine">
-          <span>Free while in beta Â· Your logins never leave the platforms Â· Â© {new Date().getFullYear()} Driftpost</span>
-          <span className="land-legal"><button className="link" onClick={() => setPubPage('terms')}>Terms</button> Â· <button className="link" onClick={() => setPubPage('privacy')}>Privacy</button> Â· <button className="link" onClick={() => setPubPage('cookies')}>Cookies</button> Â· <button className="link" onClick={() => setPubPage('acceptable-use')}>Acceptable Use</button> Â· <button className="link" onClick={() => setPubPage('ai-disclaimer')}>AI Disclaimer</button> Â· <button className="link" onClick={() => setPubPage('platforms-disclaimer')}>Platforms</button> Â· <button className="link" onClick={() => setPubPage('copyright')}>Copyright</button> Â· <button className="link" onClick={() => setPubPage('refunds')}>Refunds</button> Â· <button className="link" onClick={() => setPubPage('data-deletion')}>Data Deletion</button> Â· <button className="link" onClick={() => setPubPage('security')}>Security</button> Â· <button className="link" onClick={() => setPubPage('contact')}>Contact</button></span>
+          <span>Free while in beta · Your logins never leave the platforms · Â© {new Date().getFullYear()} Driftpost</span>
+          <span className="land-legal"><button className="link" onClick={() => setPubPage('terms')}>Terms</button> · <button className="link" onClick={() => setPubPage('privacy')}>Privacy</button> · <button className="link" onClick={() => setPubPage('cookies')}>Cookies</button> · <button className="link" onClick={() => setPubPage('acceptable-use')}>Acceptable Use</button> · <button className="link" onClick={() => setPubPage('ai-disclaimer')}>AI Disclaimer</button> · <button className="link" onClick={() => setPubPage('platforms-disclaimer')}>Platforms</button> · <button className="link" onClick={() => setPubPage('copyright')}>Copyright</button> · <button className="link" onClick={() => setPubPage('refunds')}>Refunds</button> · <button className="link" onClick={() => setPubPage('data-deletion')}>Data Deletion</button> · <button className="link" onClick={() => setPubPage('security')}>Security</button> · <button className="link" onClick={() => setPubPage('contact')}>Contact</button></span>
         </div>
       </footer>
     </div>
@@ -480,12 +480,12 @@ function Auth({ mode, setMode, onBack, markFresh }) {
           )}
           {error && <div className="alert err">{error}</div>}
           {info && <div className="banner">{info}</div>}
-          <button className="skew-btn grad submit" disabled={busy}><span>{busy ? 'Please waitâ€¦' : mode === 'login' ? 'Sign in' : 'Create account'}</span></button>
+          <button className="skew-btn grad submit" disabled={busy}><span>{busy ? 'Please wait…' : mode === 'login' ? 'Sign in' : 'Create account'}</span></button>
         </form>
         <p className="note" style={{ textAlign: 'center' }}>
           {mode === 'login' ? 'New here?' : 'Have an account?'}{' '}
           <button className="link" onClick={() => { setMode(mode === 'login' ? 'signup' : 'login'); setError(''); setInfo(''); }}>{mode === 'login' ? 'Create account' : 'Sign in'}</button>
-          {' Â· '}<button className="link" onClick={onBack}>â† Back</button>
+          {' · '}<button className="link" onClick={onBack}>← Back</button>
         </p>
       </div>
     </div>
@@ -509,7 +509,7 @@ export default function App() {
   }, []);
   // Sign-out really signs out (Supabase session cleared) so the console
   // can never trap a logged-in user, and refresh always restores the
-  // console itself â€” progress in every stage is persisted separately.
+  // console itself — progress in every stage is persisted separately.
   const doSignOut = async (to) => {
     try { (await getSupabase())?.auth.signOut(); } catch {}
     try { pokeSession(); } catch {}
@@ -521,8 +521,8 @@ export default function App() {
     // Console/auth are private (noindex for logged-in users).
     const isLanding = entry === 'landing';
     document.title = isLanding
-      ? (pubPage === 'home' ? 'Driftpost â€” Publish Everywhere' : `${PUB_PAGES.find((p) => p.id === pubPage)?.label} Â· Driftpost`)
-      : (session ? 'Console Â· Driftpost' : 'Sign in Â· Driftpost');
+      ? (pubPage === 'home' ? 'Driftpost — Publish Everywhere' : `${PUB_PAGES.find((p) => p.id === pubPage)?.label} · Driftpost`)
+      : (session ? 'Console · Driftpost' : 'Sign in · Driftpost');
     document.querySelector('meta[name="robots"]')?.setAttribute('content', isLanding ? 'index, follow, max-image-preview:large' : 'noindex, nofollow');
   }, [session, entry, pubPage]);
 
