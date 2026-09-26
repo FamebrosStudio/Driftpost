@@ -87,10 +87,45 @@ export default function StageOnePage({ session, onSignOut, onNext, onHistory }) 
     connections.forEach((x) => { c[x.platform] = (c[x.platform] || 0) + 1; });
     return c;
   }, [connections]);
+  const ORDER = ['instagram', 'facebook', 'youtube', 'x'];
+  // Per-group platform selection: a group only feeds its ticked platforms
+  // into Stage 2/3. Stored on the group itself (g.platforms); groups saved
+  // before this feature behave as "all member platforms".
+  const activeGroup = groups.find((g) => g.id === activeGroupId) || null;
+  const activeMemberPlats = useMemo(() => (
+    ORDER.filter((pid) => (activeGroup?.accountIds || []).some((id) => connById[id]?.platform === pid))
+  ), [activeGroup, connById]);
+  const activeSelected = activeGroup && Array.isArray(activeGroup.platforms) && activeGroup.platforms.length
+    ? activeGroup.platforms.filter((p) => activeMemberPlats.includes(p))
+    : activeMemberPlats;
+  const groupCounts = useMemo(() => {
+    const c = {};
+    (activeGroup?.accountIds || []).forEach((id) => {
+      const p = connById[id]?.platform;
+      if (p) c[p] = (c[p] || 0) + 1;
+    });
+    return c;
+  }, [activeGroup, connById]);
+  const toggleGroupPlatform = (pid) => {
+    if (!activeGroup || !(groupCounts[pid] > 0)) return;
+    const cur = activeSelected.includes(pid)
+      ? activeSelected.filter((x) => x !== pid)
+      : [...ORDER.filter((p) => p === pid || activeSelected.includes(p))];
+    if (!cur.length) return; // keep at least one platform on the group
+    setGroups((gs) => {
+      const n = gs.map((g) => (g.id === activeGroup.id ? { ...g, platforms: cur } : g));
+      save('driftpost-groups', n);
+      return n;
+    });
+  };
+  const groupPlatsLabel = (g) => {
+    const member = ORDER.filter((pid) => (g.accountIds || []).some((id) => connById[id]?.platform === pid));
+    const sel = Array.isArray(g.platforms) && g.platforms.length ? g.platforms.filter((p) => member.includes(p)) : member;
+    return sel.length ? sel.join(' · ') : 'no live accounts';
+  };
   // Option 2 pills follow the picked brand: platforms the brand is not
   // linked to go grey and unclickable. With no brand, any connected
   // platform counts. Selected-but-unavailable entries are pruned.
-  const ORDER = ['instagram', 'facebook', 'youtube', 'x'];
   const availablePids = useMemo(() => (
     brand ? ORDER.filter((pid) => brand.map[pid]) : ORDER.filter((pid) => (counts[pid] || 0) > 0)
   ), [brand, counts]);
@@ -110,7 +145,7 @@ export default function StageOnePage({ session, onSignOut, onNext, onHistory }) 
     type === 'common_brand' ? !!brand :
     type === 'platform_selection' ? platforms.length > 0 :
     type === 'create_groups' ? groups.length > 0 :
-    type === 'existing_groups' ? groups.some((g) => g.id === activeGroupId) : false;
+    type === 'existing_groups' ? (!!activeGroup && activeSelected.length > 0) : false;
 
   const pick = (t) => { setType(t); save('driftpost-stage1-type', t); setSavedTick(false); };
   const chooseBrand = (k) => { setBrandKey(k); save('driftpost-stage1-brand', k); setBrandOpen(false); };
@@ -179,12 +214,18 @@ export default function StageOnePage({ session, onSignOut, onNext, onHistory }) 
             <SetupCard id="create_groups" selected={type === 'create_groups'} onSelect={pick} icon={ICONS.trio} title="Create Groups" summary="Group 2 or more accounts that share the same content, caption and media.">
               <button type="button" className="s1-btn" onClick={() => setBuilderOpen(true)}>Create a group</button>
               {groups.map((g) => (
-                <div key={g.id} className="trio-mini"><b>{g.name}</b><small>{(g.accountIds || []).length} accounts</small></div>
+                <div key={g.id} className="trio-mini"><b>{g.name}</b><small>{(g.accountIds || []).length} accounts · {groupPlatsLabel(g)}</small></div>
               ))}
             </SetupCard>
 
             <SetupCard id="existing_groups" selected={type === 'existing_groups'} onSelect={pick} icon={ICONS.saved} title="Select Created Groups" summary="Reuse a group you already built.">
               <ExistingGroupSelector groups={groups} activeId={activeGroupId} accountName={accountName} onPick={pickGroup} />
+              {activeGroup && (
+                <>
+                  <p className="s1-note" style={{ marginTop: 8 }}>Platforms for <b>{activeGroup.name}</b> — untick to leave one out. Only ticked platforms reach Stage 2/3.</p>
+                  <PlatformSelector selected={activeSelected} counts={groupCounts} brand={null} onToggle={toggleGroupPlatform} />
+                </>
+              )}
             </SetupCard>
           </div>
         )}

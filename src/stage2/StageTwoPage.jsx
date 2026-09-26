@@ -97,16 +97,24 @@ export default function StageTwoPage({ session, onBack, onSignOut, onHistory, on
   const brand = brands.find((b) => b.key === s1.brandKey) || null;
   const connById = useMemo(() => Object.fromEntries(connections.map((c) => [c.id, c])), [connections]);
   const platsOf = (ids) => [...new Set((ids || []).map((id) => connById[id]?.platform).filter(Boolean))];
+  // A group's stored platform selection (g.platforms) narrows its member
+  // platforms. Groups saved before this feature carry no selection and
+  // behave as before (all member platforms).
+  const groupPlats = (g) => {
+    const member = platsOf(g.accountIds);
+    const sel = Array.isArray(g.platforms) && g.platforms.length ? g.platforms : member;
+    return sel.filter((p) => member.includes(p));
+  };
 
   const basePlatforms = useMemo(() => {
     const order = PLATFORMS.map((p) => p.id);
     let list = [];
     if (s1.type === 'common_brand' && brand) list = Object.keys(brand.map || {});
     else if (s1.type === 'platform_selection') list = s1.platforms || [];
-    else if (s1.type === 'create_groups') list = (s1.groups || []).flatMap((g) => platsOf(g.accountIds));
+    else if (s1.type === 'create_groups') list = (s1.groups || []).flatMap((g) => groupPlats(g));
     else if (s1.type === 'existing_groups') {
       const g = (s1.groups || []).find((x) => x.id === s1.groupId);
-      list = g ? platsOf(g.accountIds) : [];
+      list = g ? groupPlats(g) : [];
     }
     return order.filter((pid) => list.includes(pid));
   }, [s1, brand, connById]);
