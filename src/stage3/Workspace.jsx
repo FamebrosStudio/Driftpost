@@ -14,6 +14,7 @@ function Field({ label, children }) {
 // fields always editable inline, options, reviewed + post.
 export default function Workspace({
   pid, accounts, accountId, onAccount,
+  accountList,
   values, onValues, cfg, onCfg,
   files, thumb, onThumb,
   greyed, greyReason,
@@ -83,11 +84,17 @@ export default function Workspace({
         {greyed && <span className="s3-grey-note">{greyReason}</span>}
       </div>
 
-      <Field label="Account">
-        <select value={accountId} onChange={(e) => onAccount(pid, e.target.value)} disabled={!accounts.length}>
-          {!accountId && <option value="">— pick —</option>}
-          {accounts.map((c) => <option key={c.id} value={c.id}>{c.account_name}</option>)}
-        </select>
+      <Field label={accountList ? `Accounts · posts to all ${accountList.length}` : 'Account'}>
+        {accountList ? (
+          <ul className="s3-accts" aria-label={`${NAMES[pid]} accounts in this group`}>
+            {accountList.map((n, i) => <li key={i}>{n}</li>)}
+          </ul>
+        ) : (
+          <select value={accountId} onChange={(e) => onAccount(pid, e.target.value)} disabled={!accounts.length}>
+            {!accountId && <option value="">— pick —</option>}
+            {accounts.map((c) => <option key={c.id} value={c.id}>{c.account_name}</option>)}
+          </select>
+        )}
       </Field>
       {!accounts.length && <p className="s3-err">No {NAMES[pid]} account connected — connect one, then come back.</p>}
 
@@ -255,7 +262,15 @@ export default function Workspace({
       )}
       {result?.state === 'failed' && <p className="s3-err">{result.message}</p>}
       {result?.state === 'scheduled' && <p className="s3-note">{result.message}</p>}
-      {result?.url && <a className="s3-view" href={result.url} target="_blank" rel="noreferrer">View your post →</a>}
+      {result?.state === 'completed' && result?.message && <p className="s3-note">{result.message}</p>}
+      {result?.url && !(result?.urls?.length > 1) && <a className="s3-view" href={result.url} target="_blank" rel="noreferrer">View your post →</a>}
+      {result?.urls?.length > 1 && (
+        <div className="s3-urls" aria-label="Posted links">
+          {result.urls.filter((u) => u.url).map((u, i) => (
+            <a key={i} className="s3-view" href={u.url} target="_blank" rel="noreferrer">{u.account ? `${u.account} →` : 'View your post →'}</a>
+          ))}
+        </div>
+      )}
 
       <div className="s3-acts">
         {!reviewed && result?.state !== 'completed' && result?.state !== 'scheduled' && (
@@ -276,7 +291,7 @@ export default function Workspace({
           {result?.state === 'scheduled' ? '✓ Scheduled' : 'Schedule'}
         </button>
         <button type="button" className="go" onClick={() => onPost(pid)} disabled={posting || greyed || blocked}>
-          {posting ? 'Posting…' : `Post to ${NAMES[pid]}`}
+          {posting ? 'Posting…' : accountList?.length > 1 ? `Post to ${NAMES[pid]} (${accountList.length})` : `Post to ${NAMES[pid]}`}
         </button>
       </div>
     </div>

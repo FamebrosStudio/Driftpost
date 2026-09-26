@@ -109,8 +109,26 @@ export default function StageThreePage({ session, onBack, onSignOut, onHistory, 
     }
     return order.filter((pid) => list.includes(pid));
   }, [s1, brand, connById]);
-  // Stage 2 cross-post already routes Facebook through Instagram.
-  const platforms = (s1.crosspost && basePlatforms.includes('instagram') && basePlatforms.includes('facebook'))
+  // Group flows post the same content to EVERY member account — never one
+  // account. Everything below keys off this flag; brand/platform flows are
+  // untouched.
+  const isGroupFlow = s1.type === 'existing_groups' || s1.type === 'create_groups';
+  const groupIds = useMemo(() => {
+    if (s1.type === 'existing_groups') {
+      const g = (s1.groups || []).find((x) => x.id === s1.groupId);
+      return g?.accountIds || [];
+    }
+    if (s1.type === 'create_groups') return (s1.groups || []).flatMap((g) => g.accountIds || []);
+    return [];
+  }, [s1]);
+  // Member account ids on one platform, in group order.
+  const groupMemberIds = (pid) => groupIds.filter((id) => connById[id]?.platform === pid);
+
+  // Stage 2 cross-post already routes Facebook through Instagram — except in
+  // group flows, where every member account gets its own direct post (a
+  // mirror would only reach one Facebook account and the rest would be
+  // missed, or double-post where direct posts also run).
+  const platforms = (s1.crosspost && !isGroupFlow && basePlatforms.includes('instagram') && basePlatforms.includes('facebook'))
     ? basePlatforms.filter((pid) => pid !== 'facebook')
     : basePlatforms;
   const brandLabel = s1.type === 'common_brand' ? brand?.label || '' : '';
@@ -120,23 +138,22 @@ export default function StageThreePage({ session, onBack, onSignOut, onHistory, 
   }, [platforms, tab]);
 
   const cfgFor = (pid) => ({ ...(DEFAULT_CFG[pid] || {}), ...(cfg[pid] || {}) });
-  const accountsFor = (pid) => connections.filter((c) => c.platform === pid);
-  const groupFirst = (pid) => {
-    let ids = [];
-    if (s1.type === 'existing_groups') {
-      const g = (s1.groups || []).find((x) => x.id === s1.groupId);
-      ids = g?.accountIds || [];
-    } else if (s1.type === 'create_groups') {
-      ids = (s1.groups || []).flatMap((g) => g.accountIds || []);
-    }
-    const hit = ids.map((id) => connById[id]).find((c) => c && c.platform === pid);
-    return hit?.id || '';
-  };
+  // Group flows only ever see group members: the dropdown/default can never
+  // point at an unrelated account. Other flows behave exactly as before.
+  const accountsFor = (pid) => isGroupFlow
+    ? groupMemberIds(pid).map((id) => connById[id]).filter(Boolean)
+    : connections.filter((c) => c.platform === pid);
   const accountFor = (pid) => {
+    if (isGroupFlow) {
+      const ids = groupMemberIds(pid);
+      const o = overrides[pid];
+      if (o && ids.includes(o)) return o;
+      return ids[0] || '';
+    }
     const o = overrides[pid];
     if (o && connById[o]?.platform === pid) return o;
     if (s1.type === 'common_brand' && brand?.map?.[pid] && connById[brand.map[pid]]) return brand.map[pid];
-    return groupFirst(pid) || accountsFor(pid)[0]?.id || '';
+    return connections.find((c) => c.platform === pid)?.id || '';
   };
 
   // Cross-post mutual exclusion: posting IG→FB and FB→IG together would
@@ -251,14 +268,17 @@ export default function StageThreePage({ session, onBack, onSignOut, onHistory, 
     return form;
   };
 
-  const runOne = async (pid, out, { connectionId = null, key = null, skipCrossPost = false, mediaOverride = null } = {}) => {
-    const k = key || pid;
-    out[k] = { state: 'uploading', progress: 5 };
+  // Post to ONE connection and poll the job. Returns the post URL.
+  // When connectionId is given, the form carries exactly that account.
+  const runToAccount = async (pid, connectionId, out, key, { skipCrossPost = false, mediaOverride = null } = {}) => {
+    out[key] = { state: 'uploading', progress: 5 };
     setResults({ ...out });
+    const form = buildForm(pid, { connectionId, skipCrossPost, mediaOverride });
+    if (connectionId) form.set('connection_id', connectionId);
     const res = await fetch(`${apiUrl}/api/publish`, {
       method: 'POST',
       headers: { Authorization: `Bearer ${session.access_token}` },
-      body: buildForm(pid, { connectionId, skipCrossPost, mediaOverride }),
+      body: form,
     });
     const data = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error(data.error || 'Publish failed');
@@ -266,30 +286,85 @@ export default function StageThreePage({ session, onBack, onSignOut, onHistory, 
     for (;;) {
       await new Promise((r) => setTimeout(r, 1500));
       const j = await api(`/api/jobs/${jobId}`, session.access_token);
-      out[k] = { state: j.job.state, progress: j.job.progress || 50, url: j.job.url, message: j.job.message };
+      out[key] = { state: j.job.state, progress: j.job.progress || 50, url: j.job.url, message: j.job.message };
       setResults({ ...out });
       if (j.job.state === 'completed') {
         logPost({ platform: pid, text: mainText(pid), url: j.job.url });
-        onReviewed(pid);
-        return;
+        return j.job.url;
       }
       if (j.job.state === 'failed') throw new Error(j.job.message);
     }
   };
 
+  // Single-account path (brand / platform flows): unchanged behaviour.
+  const runOne = async (pid, out, { key = null, skipCrossPost = false, mediaOverride = null } = {}) => {
+    const url = await runToAccount(pid, accountFor(pid), out, key || pid, { skipCrossPost, mediaOverride });
+    onReviewed(pid);
+    return url;
+  };
+
+  // Group path: the same content goes to EVERY member account on the
+  // platform, one direct post each (mirrors stripped so nothing double
+  // posts). Per-account links land in results[pid].urls.
+  const runGroup = async (pid, out, { mediaOverride = null } = {}) => {
+    const ids = groupMemberIds(pid);
+    const names = ids.map((id) => connById[id]?.account_name || 'account');
+    const urls = [];
+    const failures = [];
+    for (let i = 0; i < ids.length; i++) {
+      if (ids.length > 1) {
+        out[pid] = { ...(out[pid] || {}), state: 'uploading', progress: 5, message: `Posting ${i + 1}/${ids.length}…` };
+        setResults({ ...out });
+      }
+      try {
+        const url = await runToAccount(pid, ids[i], out, pid, { skipCrossPost: true, mediaOverride });
+        urls.push({ account: names[i], url });
+      } catch (e) {
+        failures.push(`${names[i]}: ${e.message || 'failed'}`);
+      }
+    }
+    if (!urls.length) {
+      out[pid] = { state: 'failed', message: failures.join(' · ') || 'Publish failed' };
+      setResults({ ...out });
+      throw new Error(out[pid].message);
+    }
+    out[pid] = {
+      state: 'completed',
+      urls,
+      url: urls[0]?.url,
+      message: failures.length
+        ? `Posted to ${urls.length}/${ids.length} — failed: ${failures.join(' · ')}`
+        : (ids.length > 1 ? `Posted to ${ids.length} accounts ✓` : ''),
+    };
+    setResults({ ...out });
+    onReviewed(pid);
+    return urls;
+  };
+
   const publishOne = async (pid) => {
-    if (busy[pid] || greyed(pid) || !accountFor(pid)) return;
+    if (busy[pid] || greyed(pid)) return;
+    if (isGroupFlow && !groupMemberIds(pid).length) return;
+    if (!isGroupFlow && !accountFor(pid)) return;
     setBusy((b) => ({ ...b, [pid]: true }));
     const out = { ...results };
-    try { await runOne(pid, out); }
-    catch (e) { out[pid] = { state: 'failed', message: e.message }; setResults({ ...out }); }
+    try {
+      if (isGroupFlow) await runGroup(pid, out);
+      else await runOne(pid, out);
+    } catch (e) {
+      if (out[pid]?.state !== 'failed') {
+        out[pid] = { state: 'failed', message: e.message };
+        setResults({ ...out });
+      }
+    }
     setBusy((b) => ({ ...b, [pid]: false }));
   };
 
   // YouTube takes a video, never a bare photo, so encode the still first and
   // publish that. The user's photos are untouched in Stage 2.
   const publishPhotoAsVideo = async (pid) => {
-    if (busy[pid] || greyed(pid) || !accountFor(pid)) return;
+    if (busy[pid] || greyed(pid)) return;
+    if (isGroupFlow && !groupMemberIds(pid).length) return;
+    if (!isGroupFlow && !accountFor(pid)) return;
     const photo = files.find((f) => f?.raw && f.type.startsWith('image/'))?.raw;
     if (!photo) { setResults((r) => ({ ...r, [pid]: { state: 'failed', message: 'No photo selected — pick one in Stage 2.' } })); return; }
     setBusy((b) => ({ ...b, [pid]: true }));
@@ -297,29 +372,40 @@ export default function StageThreePage({ session, onBack, onSignOut, onHistory, 
     const out = { ...results };
     try {
       const clip = await photoToVideo(photo);
-      await runOne(pid, out, { mediaOverride: [clip] });
+      if (isGroupFlow) await runGroup(pid, out, { mediaOverride: [clip] });
+      else await runOne(pid, out, { mediaOverride: [clip] });
     } catch (e) {
-      out[pid] = { state: 'failed', message: e.message };
-      setResults({ ...out });
+      if (out[pid]?.state !== 'failed') {
+        out[pid] = { state: 'failed', message: e.message };
+        setResults({ ...out });
+      }
     }
     setBusy((b) => ({ ...b, [pid]: false }));
     setEncoding(false);
   };
 
   const publishAll = async () => {
-    const targets = effective.filter((pid) => accountFor(pid));
+    const targets = effective.filter((pid) => (isGroupFlow ? groupMemberIds(pid).length > 0 : accountFor(pid)));
     if (!targets.length || targets.some((pid) => busy[pid])) return;
     const out = { ...results };
     // Direct posts only (mirrors stripped) — unless global cross-post routes
-    // Facebook through Instagram, which must keep its share flag.
-    const strip = !(s1.crosspost && targets.includes('instagram'));
+    // Facebook through Instagram, which must keep its share flag. Group
+    // flows always strip: every member gets a direct post.
+    const strip = !(s1.crosspost && !isGroupFlow && targets.includes('instagram'));
     for (const pid of targets) {
-      try { await runOne(pid, out, { skipCrossPost: strip }); }
-      catch (e) { out[pid] = { state: 'failed', message: e.message }; setResults({ ...out }); }
+      try {
+        if (isGroupFlow) await runGroup(pid, out);
+        else await runOne(pid, out, { skipCrossPost: strip });
+      } catch (e) {
+        if (out[pid]?.state !== 'failed') {
+          out[pid] = { state: 'failed', message: e.message };
+          setResults({ ...out });
+        }
+      }
     }
     const posted = targets
       .filter((pid) => out[pid]?.state === 'completed')
-      .map((pid) => ({ pid, url: out[pid].url }));
+      .map((pid) => ({ pid, urls: out[pid].urls || (out[pid].url ? [{ account: '', url: out[pid].url }] : []) }));
     if (posted.length && posted.length === targets.length) setSuccess(posted);
   };
 
@@ -327,18 +413,27 @@ export default function StageThreePage({ session, onBack, onSignOut, onHistory, 
     if (schedBusy) return;
     setSchedBusy(true);
     try {
-      const strip = !(s1.crosspost && pid === 'instagram');
-      await schedulePost(session.access_token, {
-        platform: pid,
-        connectionId: accountFor(pid),
-        when: whenIso,
-        body: bodyFor(pid, { skipCrossPost: strip }),
-        files,
-        thumb: pid === 'youtube' ? thumb : null,
-      });
+      // Group flows queue one schedule per member account; other flows keep
+      // the single-schedule behaviour.
+      const ids = isGroupFlow ? groupMemberIds(pid) : [accountFor(pid)];
+      if (!ids.length || ids.some((id) => !id)) throw new Error('Pick an account for that platform first.');
+      const when = new Date(whenIso).toLocaleString();
+      for (const id of ids) {
+        const strip = isGroupFlow ? true : !(s1.crosspost && pid === 'instagram');
+        await schedulePost(session.access_token, {
+          platform: pid,
+          connectionId: id,
+          when: whenIso,
+          body: { ...bodyFor(pid, { skipCrossPost: strip }), connection_id: id },
+          files,
+          thumb: pid === 'youtube' ? thumb : null,
+        });
+      }
       setSchedOpen(false);
-      setResults((r) => ({ ...r, [pid]: { state: 'scheduled', message: 'Scheduled — it will publish automatically.' } }));
-      setSchedMsg(`${NAMES[pid]} scheduled for ${new Date(whenIso).toLocaleString()}. Manage or cancel it in History.`);
+      setResults((r) => ({ ...r, [pid]: { state: 'scheduled', message: ids.length > 1 ? `Scheduled — ${ids.length} accounts publish automatically.` : 'Scheduled — it will publish automatically.' } }));
+      setSchedMsg(ids.length > 1
+        ? `${NAMES[pid]} ×${ids.length} scheduled for ${when}. Manage or cancel in History.`
+        : `${NAMES[pid]} scheduled for ${when}. Manage or cancel it in History.`);
     } catch (e) {
       setSchedMsg(e.message || 'Could not schedule the post');
     }
@@ -380,7 +475,15 @@ export default function StageThreePage({ session, onBack, onSignOut, onHistory, 
             <p>Every selected platform is live. The workspace is still here if you want to check — start fresh whenever.</p>
             <div className="s3-done-links">
               {success.map((s) => (
-                <span key={s.pid}>{NAMES[s.pid]} {s.url ? <a href={s.url} target="_blank" rel="noreferrer">· View post</a> : '· posted'}</span>
+                <span key={s.pid}>{NAMES[s.pid]}{' '}
+                  {(s.urls || []).filter((u) => u.url).length > 1
+                    ? s.urls.filter((u) => u.url).map((u, i) => (
+                      <span key={i}>{u.account ? `${u.account} ` : ''}<a href={u.url} target="_blank" rel="noreferrer">· View post</a>{i < s.urls.filter((u) => u.url).length - 1 ? ' ' : ''}</span>
+                    ))
+                    : s.urls?.[0]?.url
+                      ? <a href={s.urls[0].url} target="_blank" rel="noreferrer">· View post</a>
+                      : '· posted'}
+                </span>
               ))}
             </div>
             <button type="button" className="s3-new" onClick={startNew}>Start new post →</button>
@@ -396,6 +499,9 @@ export default function StageThreePage({ session, onBack, onSignOut, onHistory, 
                   accounts={accountsFor(tab)}
                   accountId={accountFor(tab)}
                   onAccount={onAccount}
+                  // Group flows post to every member account: show the fixed
+                  // member list instead of a single-account dropdown.
+                  accountList={isGroupFlow ? accountsFor(tab).map((c) => c.account_name) : null}
                   values={outputs[tab] || {}}
                   onValues={onValues}
                   cfg={cfgFor(tab)}
