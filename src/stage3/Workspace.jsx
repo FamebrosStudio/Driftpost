@@ -64,6 +64,9 @@ export default function Workspace({
   else if (pid === 'x' && cfg.pollOn && !(cfg.opts?.[0]?.trim() && cfg.opts?.[1]?.trim())) error = 'A poll needs at least 2 answers.';
   else if (pid === 'facebook' && cfg.cta && !cfg.link?.trim()) error = 'A button needs a website link above.';
   const blocked = !!error || photoOnly;
+  // Scheduling can encode a photo to video first (same as "post as a 6s
+  // Short"), so photo-only YouTube greys Post but never Schedule.
+  const scheduleBlocked = !!error;
 
   const pill = result?.state === 'completed'
     ? <span className="s3-pill ok">Posted ✓</span>
@@ -285,8 +288,8 @@ export default function Workspace({
         <button
           type="button"
           onClick={() => onSchedule(pid)}
-          disabled={posting || greyed || blocked || result?.state === 'scheduled'}
-          title="Publish automatically later"
+          disabled={posting || greyed || scheduleBlocked || result?.state === 'scheduled'}
+          title={photoOnly && pid === 'youtube' ? 'Encodes your photo to a 6s video, then schedules it' : 'Publish automatically later'}
         >
           {result?.state === 'scheduled' ? '✓ Scheduled' : 'Schedule'}
         </button>

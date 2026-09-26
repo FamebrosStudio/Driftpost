@@ -373,8 +373,10 @@ export default function StageThreePage({ session, onBack, onSignOut, onHistory, 
     const out = { ...results };
     try {
       const clip = await photoToVideo(photo);
-      if (isGroupFlow) await runGroup(pid, out, { mediaOverride: [clip] });
-      else await runOne(pid, out, { mediaOverride: [clip] });
+      // buildForm/schedulePost read entry.raw — wrap the encoded File.
+      const wrapped = [{ raw: clip, name: clip.name, type: clip.type }];
+      if (isGroupFlow) await runGroup(pid, out, { mediaOverride: wrapped });
+      else await runOne(pid, out, { mediaOverride: wrapped });
     } catch (e) {
       if (out[pid]?.state !== 'failed') {
         out[pid] = { state: 'failed', message: e.message };
@@ -414,6 +416,20 @@ export default function StageThreePage({ session, onBack, onSignOut, onHistory, 
     if (schedBusy) return;
     setSchedBusy(true);
     try {
+      // YouTube takes video only: with photos attached, encode the still to
+      // a 6s clip first (same as "post as a 6s Short") so scheduling works.
+      let schedFiles = files;
+      if (pid === 'youtube' && files.length && !files.some((f) => f.type.startsWith('video/'))) {
+        const photo = files.find((f) => f?.raw && f.type.startsWith('image/'))?.raw;
+        if (!photo) throw new Error('No photo selected — pick one in Stage 2.');
+        setSchedMsg('Making video from your photo…');
+        try {
+          const clip = await photoToVideo(photo);
+          schedFiles = [{ raw: clip, name: clip.name, type: clip.type }];
+        } finally {
+          setSchedMsg('');
+        }
+      }
       // Group flows queue one schedule per member account; other flows keep
       // the single-schedule behaviour.
       const ids = isGroupFlow ? groupMemberIds(pid) : [accountFor(pid)];
@@ -426,7 +442,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onHistory, 
           connectionId: id,
           when: whenIso,
           body: { ...bodyFor(pid, { skipCrossPost: strip }), connection_id: id },
-          files,
+          files: schedFiles,
           thumb: pid === 'youtube' ? thumb : null,
         });
       }
