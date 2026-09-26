@@ -84,6 +84,19 @@
 @keyframes cnUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
 @keyframes cnBarUp { from { opacity: 0; transform: translateY(100%); } to { opacity: 1; transform: none; } }
 .connect button:focus-visible, .connect [tabindex]:focus-visible { outline: 2px solid var(--acc); outline-offset: 2px; }
+
+/* one-time welcome hero: sits above the full connect hub, same language */
+.welcome { --acc: #7c6cf5; --acc-ink: #ffffff; --acc-soft: #7c6cf51f; min-height: 100vh; background: var(--bg); color: var(--ink); }
+[data-theme="light"] .welcome { --acc: #5b4fd6; --acc-soft: #5b4fd614; }
+.welcome-in { max-width: 980px; margin: 0 auto; padding: 16px 20px 0; min-width: 0; }
+.welcome-top { display: flex; align-items: center; justify-content: space-between; }
+.welcome-head { text-align: center; padding: 14px 0 4px; animation: cnUp 0.5s ease both; }
+.welcome-head h1 { font-size: clamp(26px, 4.6vw, 38px); letter-spacing: -0.5px; margin: 16px 0 8px; line-height: 1.15; }
+.welcome-head p { color: var(--muted); font-size: 14.5px; margin: 0 auto; max-width: 560px; line-height: 1.6; }
+.welcome-steps { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin: 20px auto 0; max-width: 720px; animation: cnUp 0.5s 0.08s ease both; }
+.welcome-steps span { display: inline-flex; align-items: center; gap: 7px; font-size: 12px; font-weight: 700; color: var(--muted); border: 1.5px solid var(--line); border-radius: 999px; padding: 7px 14px; background: var(--panel); }
+.welcome-steps b { color: var(--acc); font-weight: 800; }
+.welcome .connect { min-height: 0; }
 @media (prefers-reduced-motion: reduce) {
   .connect, .connect *, .cn-bar, .cn-bar * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }

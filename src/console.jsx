@@ -1,5 +1,6 @@
 import React, { lazy, Suspense, useState } from 'react';
 import ConnectPage from './connect/ConnectPage.jsx';
+import WelcomePage from './connect/WelcomePage.jsx';
 import StageOnePage from './stage1/StageOnePage.jsx';
 import StageTwoPage from './stage2/StageTwoPage.jsx';
 import StageThreePage from './stage3/StageThreePage.jsx';
@@ -17,10 +18,17 @@ function loadStage() {
   } catch { return 'connect'; }
 }
 
+// First-run welcome flag. The key never existed before, so every existing
+// browser sees the welcome screen exactly once, then never again.
+const WELCOME_KEY = 'driftpost-welcome-v1';
+
 export default function Console({ session, onSwitchAccount, onSignOut }) {
   void onSwitchAccount;
   const [stage, setStage] = useState(loadStage);
   const [view, setView] = useState('flow');
+  const [welcomed, setWelcomed] = useState(() => {
+    try { return localStorage.getItem(WELCOME_KEY) === '1'; } catch { return true; }
+  });
   // Stages are strings everywhere ('connect' | '1' | '2' | '3') so the
   // state and localStorage can never drift apart on a number/string mismatch.
   const go = (next) => {
@@ -33,6 +41,16 @@ export default function Console({ session, onSwitchAccount, onSignOut }) {
     try { window.scrollTo(0, 0); } catch {}
   };
   const openHistory = () => { try { window.scrollTo(0, 0); } catch {} setView('history'); };
+  // Dismiss the welcome forever. Continue also advances into Stage 1; Skip
+  // leaves the saved stage alone so mid-flow users resume where they were.
+  const doneWelcome = (next) => {
+    try { localStorage.setItem(WELCOME_KEY, '1'); } catch {}
+    setWelcomed(true);
+    if (next) go(next);
+  };
+  if (!welcomed) {
+    return <WelcomePage session={session} onHistory={openHistory} onSignOut={onSignOut} onContinue={() => doneWelcome('1')} onSkip={() => doneWelcome()} />;
+  }
   if (view === 'history') {
     return (
       <Suspense fallback={null}>
