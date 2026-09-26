@@ -210,8 +210,80 @@ export function deepPhone(deep) {
 export function deepAddress(deep) {
   return deep?.contact?.full_address || '';
 }
-// Pack built from the Specific-brands deep format (~600-800 tokens).
-// Precedence inside: owner memory correction > master instruction > playbook.
+// --- deep-record rendering -------------------------------------------------
+// The per-brand files are researched by hand and keep growing (31 of 32 now
+// carry caption_format, visual_and_asset_guidance, per_post_input and sources).
+// Hand-listing every field meant most of that research never reached the model,
+// so this renders the record generically: anything present is included, in
+// priority order, inside a fixed character budget. New research now needs no
+// code change to become visible.
+
+const isBlank = (v) => v === null || v === undefined || v === ''
+  || (Array.isArray(v) && !v.some((x) => !isBlank(x)))
+  || (typeof v === 'object' && !Array.isArray(v) && !Object.values(v).some((x) => !isBlank(x)));
+
+// Human label for a snake_case key: `words_to_use_only_when_confirmed` reads
+// as prose instead of leaking a schema name into the prompt.
+const human = (k) => k.replace(/_/g, ' ').replace(/\s+/g, ' ').trim();
+
+// Bound one rendered block. Several records restate the master instruction
+// inside business/established_content_knowledge, so an unbounded render wastes
+// the budget on duplicates. Cut on a line or sentence edge so the model never
+// receives half a rule.
+const cap = (text, n) => {
+  const t = String(text || '').trim();
+  if (t.length <= n) return t || null;
+  const slice = t.slice(0, n);
+  const edge = Math.max(slice.lastIndexOf('\n'), slice.lastIndexOf('. '), slice.lastIndexOf('; '));
+  return `${(edge > n * 0.5 ? slice.slice(0, edge) : slice).trim()} …`;
+};
+
+// Any JSON value -> prompt text, or null when it carries no signal (the deep
+// files are mostly null placeholders, and nulls must never reach the model).
+function fmt(v, top = false) {
+  if (isBlank(v)) return null;
+  if (Array.isArray(v)) {
+    const parts = v.map((x) => fmt(x)).filter(Boolean);
+    if (!parts.length) return null;
+    return parts.some((p) => p.length > 70) ? parts.map((p) => `- ${p}`).join('\n') : parts.join('; ');
+  }
+  if (typeof v === 'object') {
+    const parts = [];
+    for (const [k, val] of Object.entries(v)) {
+      const f = fmt(val);
+      if (!f) continue;
+      parts.push(top ? `${human(k)}: ${f}` : `${human(k)}: ${f}`);
+    }
+    return parts.length ? parts.join('\n') : null;
+  }
+  return String(v).trim() || null;
+}
+
+// Keys rendered with dedicated handling below; skipped by the generic sweep.
+const HANDLED = new Set([
+  'master_brand_instruction', 'accuracy_rules', 'contact', 'social_media', 'business',
+  'cta_bank', 'suggested_hashtag_bank', 'seo_keyword_bank', 'suggested_hooks', 'sources',
+  'fixed_footer', 'sample_caption', 'sample_captions', 'per_post_input', 'missing_information',
+  'visual_and_asset_guidance', 'knowledge_scope', 'schema_version', 'brand_id', 'brand_name', 'brand_number',
+]);
+
+  // per_post_input is a field template: nearly every key is a null placeholder,
+  // and a few are request metadata rather than instructions.
+  const PPI_SKIP = new Set([
+    'brand_id', 'mode', 'platform', 'post_format', 'language_override', 'goal',
+    'hashtag_count', 'content_genre', 'agency_credit_required', 'input_handling_rule',
+  ]);
+  // `*_inputs` lists are intake checklists for other formats (EMI copy, course
+  // ads, wholesale sheets). Useful to a human, dead weight in a caption prompt.
+  const isIntake = (k) => /_inputs\$|_inputs$/.test(k) || k.endsWith('_inputs');
+
+// Visual guidance is mostly art direction, which a caption model cannot act on.
+// Only the rules that stop it describing things the photo does not show are kept.
+const VISUAL_KEEP = /rule|integrity|fidelity|accessib|restriction|prohibit|forbidden|^focus$|overall_direction|^style$|layout|palette|colours?$/i;
+
+// Pack built from the Specific-brands deep format, budgeted to ~1.8k tokens.
+// Precedence: owner correction > master instruction > safety > identity >
+// writing > content > facts > CTAs > inputs > examples.
 export function deepPack(deep, brand) {
   const mem = loadMemory().brands?.[deep.brand_id];
   // CTA bank keys vary per file (booking/enquiry/visit/call/shop/...):
@@ -239,46 +311,101 @@ export function deepPack(deep, brand) {
   const campaignTags = Array.isArray(deep.suggested_hashtag_bank?.campaign_only_when_active)
     ? deep.suggested_hashtag_bank.campaign_only_when_active.filter((s) => typeof s === 'string' && s.trim())
     : [];
-  const play = deep.content_playbook
-    ? Object.entries(deep.content_playbook)
-        .slice(0, 4)
-        .map(([k, v]) => `${k}: ${v.focus || v.status || ''} ${(v.rules || []).slice(0, 3).join('; ')}`.trim())
-        .join('\n')
-    : '';
-  const lines = [
-    deep.master_brand_instruction ? `MASTER: ${deep.master_brand_instruction}` : null,
-    deep.business ? `Business: ${deep.business.category || ''}${deep.business.location_area ? `, ${deep.business.location_area}` : ''}` : null,
-    // Public-figure designation block (approved titles — never reword into current office).
-    Array.isArray(deep.business?.approved_designation_block) && deep.business.approved_designation_block.length
-      ? `Approved titles (use exactly, never upgrade to current office): ${deep.business.approved_designation_block.join(' | ')}`
-      : null,
-    deep.business?.public_positioning ? `Positioning: ${deep.business.public_positioning}` : null,
-    deepPhone(deep) ? `Phone: ${deepPhone(deep)}` : null,
-    deepAddress(deep) ? `Address: ${deepAddress(deep)}` : null,
-    deep.social_media?.instagram_handle ? `IG: ${deep.social_media.instagram_handle}` : null,
-    deep.established_content_knowledge?.previously_featured_look
-      ? `Known look: ${deep.established_content_knowledge.previously_featured_look.name} — ${deep.established_content_knowledge.previously_featured_look.reuse_rule || ''}`
-      : null,
-    (deep.writing_direction?.brand_voice || []).length ? `Voice: ${deep.writing_direction.brand_voice.join(', ')}` : null,
-    deep.writing_direction?.positioning_for_copy ? `Positioning: ${deep.writing_direction.positioning_for_copy}` : null,
-    (deep.writing_direction?.avoid_style || []).length ? `Avoid: ${deep.writing_direction.avoid_style.slice(0, 5).join('; ')}` : null,
-    cta.length ? `CTAs (pick one, reword): ${cta.join(' / ')}` : null,
-    (deep.suggested_hooks || []).length ? `Hook angles (vary, don't repeat): ${deep.suggested_hooks.slice(0, 4).join(' / ')}` : null,
-    tags.length ? `Hashtag bank (pick exactly 3): ${tags.join(' ')}` : null,
-    deep.suggested_hashtag_bank?.conditional ? `Tag conditions: ${Object.entries(deep.suggested_hashtag_bank.conditional).map(([t, r]) => `${t} ${r}`).join('; ')}` : null,
-    campaignTags.length ? `Campaign-only tags (use ONLY when that offer/campaign is active): ${campaignTags.join(' ')}` : null,
-    typeof deep.suggested_hashtag_bank?.rule === 'string' ? `Tag rule: ${deep.suggested_hashtag_bank.rule}` : null,
-    (deep.seo_keyword_bank || []).length ? `SEO keywords: ${deep.seo_keyword_bank.slice(0, 9).join(', ')}` : null,
-    (deepFooter(deep).length
-      ? `Footer (append exactly):\n${deepFooter(deep).join('\n')}`
-      : null),
-    play ? `Playbook:\n${play}` : null,
-    deep.sample_caption?.text ? `Style example (match energy, never copy facts):\n${String(deep.sample_caption.text).slice(0, 600)}` : null,
-    (deep.accuracy_rules || []).length ? `Accuracy: ${deep.accuracy_rules.slice(0, 5).join(' ')}` : null,
-    mem?.notes ? `Owner correction (wins over all above): ${String(mem.notes).slice(0, 300)}` : null,
-    mem?.recent?.length ? `Approved voice — same energy, new words, never copy exactly: ${mem.recent.slice(-3).join(' | ').slice(0, 200)}` : null,
+
+  // Anything the research added that the named sections below do not cover:
+  // per-category frameworks, compliance rules, campaign knowledge, facilities.
+  const extras = [];
+  for (const [k, v] of Object.entries(deep)) {
+    if (HANDLED.has(k)) continue;
+    const f = fmt(v, true);
+    if (f) extras.push(`${human(k)}:\n${f}`);
+  }
+  // Social URLs are long and a caption model never needs them; handles,
+  // page names and their verification status are what change the wording.
+  const social = Object.entries(deep.social_media || {})
+    .filter(([k, v]) => !/url|href|link/i.test(k) && !isBlank(v))
+    .map(([k, v]) => `${human(k)}: ${fmt(v)}`)
+    .join('\n');
+  // Confirmed facts the record already stores (jewellery purity, amenities...).
+  const ppiRows = Object.entries(deep.per_post_input || {})
+    .filter(([k, v]) => !PPI_SKIP.has(k) && !isBlank(v))
+    .map(([k, v]) => [k, `${human(k)}: ${fmt(v)}`])
+    .filter(([, s]) => s);
+  const ppi = ppiRows.filter(([k]) => !isIntake(k)).slice(0, 12).map(([, s]) => s);
+  const ppiIntake = ppiRows.filter(([k]) => isIntake(k)).slice(0, 6).map(([, s]) => s);
+  const samples = [
+    deep.sample_caption?.text ? fmt(deep.sample_caption, true) : null,
+    deep.sample_captions ? fmt(deep.sample_captions, true) : null,
   ].filter(Boolean);
-  return lines.join('\n');
+  const rules = deep.sources?.source_usage_rules;
+  const unconfirmed = /not owner-confirmed|observed/i.test(String(deep.knowledge_scope || ''));
+  // Only the copy-relevant slice of the art direction.
+  const visual = Object.entries(deep.visual_and_asset_guidance || {})
+    .filter(([k, v]) => VISUAL_KEEP.test(k) && !isBlank(v))
+    .slice(0, 4)
+    .map(([k, v]) => `${human(k)}: ${fmt(v)}`)
+    .filter((s) => !s.endsWith(': null'))
+    .join('\n');
+
+  // Priority tiers. Tier 0 is mandatory and is never dropped: without the
+  // footer a caption is unusable, and the accuracy rules are the whole point
+  // of the memory. Everything else competes for what is left.
+  const T = (p, text) => (text && String(text).trim() ? [{ p, text: String(text).trim() }] : []);
+  const sections = [
+    ...T(0, mem?.notes ? `OWNER CORRECTION (beats every other rule): ${String(mem.notes).slice(0, 300)}` : null),
+    ...T(0, deep.master_brand_instruction ? `MASTER: ${deep.master_brand_instruction}` : null),
+    ...T(0, !isBlank(deep.accuracy_rules) ? `NEVER:\n${cap(fmt(deep.accuracy_rules, true), 1500)}` : null),
+    ...T(0, deepFooter(deep).length ? `Footer (append exactly):\n${deepFooter(deep).join('\n')}` : null),
+    ...T(0, cap(fmt(deep.business, true), 700)),
+    ...T(0, deepPhone(deep) ? `Phone: ${deepPhone(deep)}` : null),
+    ...T(0, deepAddress(deep) ? `Address: ${deepAddress(deep)}` : null),
+
+    ...T(1, unconfirmed ? `TRUST: ${deep.knowledge_scope} Treat unconfirmed items as unknown, never as fact.` : null),
+    ...T(1, typeof deep.sources?.source_rule === 'string' ? `SOURCING: ${deep.sources.source_rule}` : null),
+    ...T(1, (Array.isArray(rules) ? rules : []).length ? `SOURCING:\n${rules.slice(0, 4).map((r) => `- ${r}`).join('\n')}` : null),
+    ...T(1, cap(fmt(deep.writing_direction, true), 1700)),
+    ...T(1, cap(fmt(deep.caption_format, true), 1300)),
+    ...T(1, !isBlank(deep.missing_information) ? `STILL UNKNOWN (never invent): ${cap(fmt(deep.missing_information), 800)}` : null),
+    ...T(1, ppi.length ? `NEEDED INPUTS (omit any claim that depends on what is missing):\n${cap(ppi.join('\n'), 1100)}` : null),
+
+    ...T(2, cap(fmt(deep.established_content_knowledge, true), 1500)),
+    ...T(2, cta.length ? `CTAs (pick one, reword): ${cta.join(' / ')}` : null),
+    ...T(2, (deep.suggested_hooks || []).length ? `Hook angles (vary, don't repeat): ${deep.suggested_hooks.slice(0, 5).join(' / ')}` : null),
+    ...T(2, tags.length ? `Hashtag bank (pick exactly 3): ${tags.join(' ')}` : null),
+    ...T(2, deep.suggested_hashtag_bank?.conditional ? `Tag conditions: ${Object.entries(deep.suggested_hashtag_bank.conditional).map(([t, r]) => `${t} ${r}`).join('; ')}` : null),
+    ...T(2, campaignTags.length ? `Campaign-only tags (use ONLY when that offer/campaign is active): ${campaignTags.join(' ')}` : null),
+    ...T(2, typeof deep.suggested_hashtag_bank?.rule === 'string' ? `Tag rule: ${deep.suggested_hashtag_bank.rule}` : null),
+    ...T(2, (deep.seo_keyword_bank || []).length ? `SEO keywords: ${deep.seo_keyword_bank.slice(0, 9).join(', ')}` : null),
+    ...T(2, samples.length ? `STYLE EXAMPLES (match the energy, never copy facts):\n${cap(samples.join('\n'), 1400)}` : null),
+    // Per-category description frameworks are the newest research, so they must
+    // not be the first thing the budget discards.
+    ...extras.map((e) => ({ p: 2, text: cap(e, 900) })),
+
+    // Art direction, other platforms and the reel system barely change a
+    // caption, so they yield first when the pack runs long.
+    ...T(3, visual ? `VISUAL:\n${visual}` : null),
+    ...T(3, deep.content_playbook ? `PLAYBOOK:\n${fmt(deep.content_playbook, true)}` : null),
+    ...T(3, deep.carousel_and_reel_system ? `CAROUSEL AND REEL SYSTEM:\n${fmt(deep.carousel_and_reel_system, true)}` : null),
+    ...T(3, deep.other_output_modes ? `OTHER OUTPUT MODES:\n${fmt(deep.other_output_modes, true)}` : null),
+    ...T(3, ppiIntake.length ? `INTAKE CHECKLISTS (not caption copy):\n${cap(ppiIntake.join('\n'), 500)}` : null),
+    ...T(3, social ? `CHANNELS:\n${cap(social, 500)}` : null),
+    ...T(3, mem?.recent?.length ? `Approved voice — same energy, new words, never copy exactly: ${mem.recent.slice(-3).join(' | ').slice(0, 200)}` : null),
+  ];
+
+  // Fill by priority, always keeping tier 0 whole.
+  const LIMIT = 14000;
+  let total = 0;
+  const kept = [];
+  let dropped = 0;
+  for (const tier of [0, 1, 2, 3]) {
+    for (const s of sections.filter((x) => x.p === tier)) {
+      if (total + s.text.length > LIMIT) { dropped++; continue; }
+      kept.push(s.text);
+      total += s.text.length;
+    }
+  }
+  if (dropped) kept.push(`(${dropped} lower-priority research section(s) omitted for length — ask the owner if something is missing.)`);
+  return kept.join('\n');
 }
 
 export function loadMemory() {
