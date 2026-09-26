@@ -164,13 +164,20 @@ export default function StageThreePage({ session, onBack, onSignOut, onHistory, 
 
   // Cross-post mutual exclusion: posting IG→FB and FB→IG together would
   // double-post, so the other side greys out and leaves publish-all.
-  // Group flows never grey out: every member gets its own direct post with
-  // mirrors stripped, so nothing is skipped and nothing double-posts.
+  // In group flows the greyed tab is COVERED: group fan-out posts its
+  // member accounts directly (mirrors stripped), so nothing is skipped.
   const greyed = (pid) => {
-    if (isGroupFlow) return false;
     if (pid === 'facebook' && platforms.includes('instagram') && cfgFor('instagram').shareFb) return true;
     if (pid === 'instagram' && platforms.includes('facebook') && cfgFor('facebook').syndIg) return true;
     return false;
+  };
+  // Platforms one Post button covers: itself + a mirrored platform whose
+  // tab is greyed out. Only IG↔FB mirrors exist.
+  const coveredPids = (pid) => {
+    const list = [pid];
+    if (pid === 'instagram' && platforms.includes('facebook') && cfgFor('instagram').shareFb) list.push('facebook');
+    if (pid === 'facebook' && platforms.includes('instagram') && cfgFor('facebook').syndIg) list.push('instagram');
+    return list;
   };
   const greyReason = (pid) => (pid === 'facebook'
     ? 'Skipped — Instagram auto-shares here. Turn that off to post Facebook directly.'
@@ -189,10 +196,12 @@ export default function StageThreePage({ session, onBack, onSignOut, onHistory, 
   const onValues = (pid, v) => setOutputs((o) => { const n = { ...o, [pid]: v }; save('driftpost-stage2-outputs', n); return n; });
   // One card's validity, mirroring the Workspace checks — Publish All and
   // Schedule refuse invalid cards instead of failing mid-flight.
-  const invalidReason = (pid) => {
+  // allowGreyed: a greyed-out card is still validated when another card's
+  // mirror covers it (its members get direct posts).
+  const invalidReason = (pid, { allowGreyed = false } = {}) => {
     const v = outputs[pid] || {};
     const c = cfgFor(pid);
-    if (greyed(pid)) return 'skipped by cross-post — turn the mirror off to post it directly';
+    if (!allowGreyed && greyed(pid)) return 'skipped by cross-post — turn the mirror off to post it directly';
     if (isGroupFlow ? !groupMemberIds(pid).length : !accountFor(pid)) return 'no account — pick one first';
     if (pid === 'x') {
       if (Array.from(v.text || '').length > 280) return 'too long — shorten to 280 characters';
@@ -338,25 +347,28 @@ export default function StageThreePage({ session, onBack, onSignOut, onHistory, 
   };
 
   // Group path: the same content goes to EVERY member account on the
-  // platform, one direct post each (mirrors stripped so nothing double
-  // posts). Per-account links land in results[pid].urls.
+  // platform — plus every mirrored (greyed-out) platform's members, each a
+  // direct post with mirrors stripped so nothing double-posts. Per-account
+  // links land in results[pid].urls.
   const runGroup = async (pid, out, { mediaOverride = null } = {}) => {
-    const ids = groupMemberIds(pid);
-    const names = ids.map((id) => connById[id]?.account_name || 'account');
+    const cov = coveredPids(pid);
+    const plan = cov.flatMap((q) => groupMemberIds(q).map((id) => ({ q, id })));
+    const names = plan.map(({ q, id }) => connById[id]?.account_name || NAMES[q] || 'account');
     const urls = [];
     const failures = [];
-    for (let i = 0; i < ids.length; i++) {
-      if (ids.length > 1) {
-        out[pid] = { ...(out[pid] || {}), state: 'uploading', progress: 5, message: `Posting ${i + 1}/${ids.length}…` };
+    for (let i = 0; i < plan.length; i++) {
+      if (plan.length > 1) {
+        out[pid] = { ...(out[pid] || {}), state: 'uploading', progress: 5, message: `Posting ${i + 1}/${plan.length}…` };
         setResults({ ...out });
       }
       try {
-        const url = await runToAccount(pid, ids[i], out, pid, { skipCrossPost: true, mediaOverride });
+        const url = await runToAccount(plan[i].q, plan[i].id, out, pid, { skipCrossPost: true, mediaOverride });
         urls.push({ account: names[i], url });
       } catch (e) {
         failures.push(`${names[i]}: ${e.message || 'failed'}`);
       }
     }
+    if (!plan.length) throw new Error('No accounts to post to.');
     if (!urls.length) {
       out[pid] = { state: 'failed', message: failures.join(' · ') || 'Publish failed' };
       setResults({ ...out });
@@ -366,6 +378,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onHistory, 
     // only fire when every account posted, so a missed account can be
     // retried instead of silently celebrated.
     const partial = failures.length > 0;
+    const total = plan.length;
     out[pid] = {
       state: partial ? 'failed' : 'completed',
       urls,
@@ -373,8 +386,8 @@ export default function StageThreePage({ session, onBack, onSignOut, onHistory, 
       partial,
       failures,
       message: partial
-        ? `Posted to ${urls.length}/${ids.length} — failed: ${failures.join(' · ')}`
-        : (ids.length > 1 ? `Posted to ${ids.length} accounts ✓` : ''),
+        ? `Posted to ${urls.length}/${total} — failed: ${failures.join(' · ')}`
+        : (total > 1 ? `Posted to ${total} accounts ✓` : ''),
     };
     setResults({ ...out });
     if (!partial) onReviewed(pid);
@@ -385,6 +398,16 @@ export default function StageThreePage({ session, onBack, onSignOut, onHistory, 
     if (busy[pid] || greyed(pid) || !claim(`post:${pid}`)) return;
     if (isGroupFlow && !groupMemberIds(pid).length) { release(`post:${pid}`); return; }
     if (!isGroupFlow && !accountFor(pid)) { release(`post:${pid}`); return; }
+    // A covered (greyed-out) platform rides along — refuse if ITS card is broken too.
+    if (isGroupFlow) {
+      const badCov = coveredPids(pid).filter((q) => q !== pid)
+        .map((q) => invalidReason(q, { allowGreyed: true })).find(Boolean);
+      if (badCov) {
+        release(`post:${pid}`);
+        setResults((r) => ({ ...r, [pid]: { state: 'failed', message: `Fix the covered card first: ${badCov}` } }));
+        return;
+      }
+    }
     setBusy((b) => ({ ...b, [pid]: true }));
     const out = { ...results };
     try {
@@ -462,8 +485,10 @@ export default function StageThreePage({ session, onBack, onSignOut, onHistory, 
     try {
       for (const pid of targets) {
         // Invalid cards fail up front with the reason on the card — never a
-        // silent mid-flight failure after siblings already posted.
-        const bad = invalidReason(pid);
+        // silent mid-flight failure after siblings already posted. Covered
+        // (greyed-out) platforms riding along are validated too.
+        const cov = isGroupFlow ? coveredPids(pid) : [pid];
+        const bad = cov.map((q) => (q === pid ? invalidReason(q) : invalidReason(q, { allowGreyed: true }))).find(Boolean);
         if (bad) {
           out[pid] = { state: 'failed', message: `Fix this card first: ${bad}` };
           setResults({ ...out });
@@ -493,8 +518,9 @@ export default function StageThreePage({ session, onBack, onSignOut, onHistory, 
   const doSchedule = async (pid, whenIso) => {
     if (schedBusy || !claim(`sched:${pid}`)) return;
     // Same validity as instant Post — an unsendable payload must fail here,
-    // not silently at fire time.
-    const bad = invalidReason(pid);
+    // not silently at fire time. Covered platforms ride along, validated too.
+    const cov = isGroupFlow ? coveredPids(pid) : [pid];
+    const bad = cov.map((q) => (q === pid ? invalidReason(q) : invalidReason(q, { allowGreyed: true }))).find(Boolean);
     if (bad) {
       release(`sched:${pid}`);
       setSchedMsg(`Fix the ${NAMES[pid]} card first: ${bad}`);
@@ -516,26 +542,29 @@ export default function StageThreePage({ session, onBack, onSignOut, onHistory, 
           setSchedMsg('');
         }
       }
-      // Group flows queue one schedule per member account; other flows keep
-      // the single-schedule behaviour.
-      const ids = isGroupFlow ? groupMemberIds(pid) : [accountFor(pid)];
-      if (!ids.length || ids.some((id) => !id)) throw new Error('Pick an account for that platform first.');
+      // Group flows queue one schedule per member account — including
+      // mirrored (greyed-out) platforms' members, each a direct post;
+      // other flows keep the single-schedule behaviour.
+      const pairs = isGroupFlow
+        ? cov.flatMap((q) => groupMemberIds(q).map((id) => ({ q, id })))
+        : [{ q: pid, id: accountFor(pid) }];
+      if (!pairs.length || pairs.some(({ id }) => !id)) throw new Error('Pick an account for that platform first.');
       const when = new Date(whenIso).toLocaleString();
-      for (const id of ids) {
+      for (const { q, id } of pairs) {
         const strip = isGroupFlow ? true : !(s1.crosspost && pid === 'instagram');
         await schedulePost(session.access_token, {
-          platform: pid,
+          platform: q,
           connectionId: id,
           when: whenIso,
-          body: { ...bodyFor(pid, { skipCrossPost: strip }), connection_id: id },
+          body: { ...bodyFor(q, { skipCrossPost: strip }), connection_id: id },
           files: schedFiles,
-          thumb: pid === 'youtube' ? thumb : null,
+          thumb: q === 'youtube' ? thumb : null,
         });
       }
       setSchedOpen(false);
-      setResults((r) => ({ ...r, [pid]: { state: 'scheduled', message: ids.length > 1 ? `Scheduled — ${ids.length} accounts publish automatically.` : 'Scheduled — it will publish automatically.' } }));
-      setSchedMsg(ids.length > 1
-        ? `${NAMES[pid]} ×${ids.length} scheduled for ${when}. Manage or cancel in History.`
+      setResults((r) => ({ ...r, [pid]: { state: 'scheduled', message: pairs.length > 1 ? `Scheduled — ${pairs.length} accounts publish automatically.` : 'Scheduled — it will publish automatically.' } }));
+      setSchedMsg(pairs.length > 1
+        ? `${NAMES[pid]} ×${pairs.length} scheduled for ${when}. Manage or cancel in History.`
         : `${NAMES[pid]} scheduled for ${when}. Manage or cancel it in History.`);
     } catch (e) {
       setSchedMsg(e.message || 'Could not schedule the post');
@@ -605,8 +634,9 @@ export default function StageThreePage({ session, onBack, onSignOut, onHistory, 
                   accountId={accountFor(tab)}
                   onAccount={onAccount}
                   // Group flows post to every member account: show the fixed
-                  // member list instead of a single-account dropdown.
-                  accountList={isGroupFlow ? accountsFor(tab).map((c) => c.account_name) : null}
+                  // member list instead of a single-account dropdown. Covered
+                  // (greyed-out) platforms' members ride along, labelled.
+                  accountList={isGroupFlow ? [...accountsFor(tab).map((c) => c.account_name), ...coveredPids(tab).filter((q) => q !== tab).flatMap((q) => accountsFor(q).map((c) => `${c.account_name} (${NAMES[q]})`))] : null}
                   values={outputs[tab] || {}}
                   onValues={onValues}
                   cfg={cfgFor(tab)}
