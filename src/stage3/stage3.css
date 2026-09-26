@@ -119,6 +119,11 @@
 .s3-acts button.go:hover:not(:disabled) { filter: brightness(1.08); }
 .s3-acts button.ok { border-color: var(--ok); color: var(--ok); }
 .s3-view { display: block; margin-top: 10px; font-size: 13px; font-weight: 700; color: var(--ok); }
+/* live publish progress: upload bytes + server-side job progress */
+.s3-live { margin-top: 10px; }
+.s3-live-track { height: 5px; background: var(--line); border-radius: 5px; overflow: hidden; }
+.s3-live-track i { display: block; height: 100%; background: var(--acc); border-radius: 5px; transition: width 0.3s ease; }
+.s3-live-msg { font-size: 12px; color: var(--muted); margin-top: 6px; display: block; line-height: 1.5; }
 /* Group flows: fixed member-account list + one view-link per posted account. */
 .s3-accts { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
 .s3-accts li { font-size: 12.5px; font-weight: 600; background: var(--panel2); border: 1px solid var(--line); border-radius: 999px; padding: 5px 12px; }

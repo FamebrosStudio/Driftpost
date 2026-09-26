@@ -322,6 +322,12 @@ export default function StageThreePage({ session, onBack, onSignOut, onHistory, 
     const { res, data, refreshedToken } = await fetchWithAuth(`${apiUrl}/api/publish`, session.access_token, {
       method: 'POST',
       body: form,
+      // Upload bytes drive the live bar (first 15%); server polls take over after.
+      onUploadProgress: (f) => {
+        const pct = Math.round(1 + f * 14);
+        out[key] = { ...(out[key] || {}), state: 'uploading', progress: pct, message: `Uploading ${pct}%…` };
+        setResults({ ...out });
+      },
     });
     const pollToken = refreshedToken || session.access_token;
     if (!res.ok) throw new Error(data.error || 'Publish failed');

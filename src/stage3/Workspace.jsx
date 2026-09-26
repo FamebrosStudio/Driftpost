@@ -86,6 +86,12 @@ export default function Workspace({
         {pill}
         {greyed && <span className="s3-grey-note">{greyReason}</span>}
       </div>
+      {(posting || ['queued', 'uploading', 'publishing'].includes(result?.state)) && (
+        <div className="s3-live" aria-live="polite" aria-label="Publish progress">
+          <div className="s3-live-track"><i style={{ width: `${Math.max(3, Math.min(100, result?.progress || 3))}%` }} /></div>
+          <span className="s3-live-msg">{result?.message || (posting ? 'Posting…' : '')}</span>
+        </div>
+      )}
 
       <Field label={accountList ? `Accounts · posts to all ${accountList.length}` : 'Account'}>
         {accountList ? (

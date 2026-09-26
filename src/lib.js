@@ -375,10 +375,11 @@ export async function api(path, token, options = {}) {
 // headroom, capped at 8 minutes. Slow uploads fail as "too slow", never as
 // a misleading "waking up".
 export async function fetchWithAuth(url, token, init = {}) {
+  const { onUploadProgress, ...rest } = init;
   const bodyBytes = (() => {
     try {
       let n = 0;
-      const b = init.body;
+      const b = rest.body;
       if (b && typeof b.entries === 'function') {
         for (const [, v] of b.entries()) if (v && typeof v.size === 'number') n += v.size;
       }
@@ -386,16 +387,47 @@ export async function fetchWithAuth(url, token, init = {}) {
     } catch { return 0; }
   })();
   const budget = Math.min(480000, 30000 + Math.round((bodyBytes / (512 * 1024)) * 1000));
+  // Upload phase progress needs XHR (fetch exposes download progress only).
+  // The browser fires upload events as bytes leave — mapped to the first 15%.
+  const xhrPost = (t) => new Promise((resolve, reject) => {
+    try {
+      const xhr = new XMLHttpRequest();
+      xhr.open('POST', url);
+      xhr.setRequestHeader('Authorization', `Bearer ${t}`);
+      if (xhr.upload && onUploadProgress) {
+        xhr.upload.onprogress = (e) => {
+          if (e.lengthComputable && e.total > 0) {
+            onUploadProgress(Math.max(0, Math.min(1, e.loaded / e.total)));
+          }
+        };
+      }
+      xhr.onload = () => {
+        const ct = xhr.getResponseHeader('content-type') || '';
+        let data = {};
+        try { data = ct.includes('json') ? JSON.parse(xhr.responseText || '{}') : {}; } catch {}
+        if (xhr.status === 401) {
+          const err = new Error(data.error || 'Session expired');
+          err.status = 401;
+          reject(err);
+          return;
+        }
+        resolve({ res: { ok: xhr.status >= 200 && xhr.status < 300, status: xhr.status }, data });
+      };
+      xhr.onerror = () => reject(new Error(DOWN_MSG));
+      xhr.send(rest.body || null);
+    } catch (e) { reject(e); }
+  });
   const doPost = async (t, timeoutMs) => {
+    if (onUploadProgress) return xhrPost(t);
     const ctrl = new AbortController();
     // File uploads are never aborted — a big video takes what it takes.
     // Plain JSON posts keep the timeout so a dead server can't hang a button.
     const timer = bodyBytes > 0 ? null : setTimeout(() => ctrl.abort(), timeoutMs);
     try {
       const res = await fetch(url, {
-        ...init,
+        ...rest,
         signal: ctrl.signal,
-        headers: { ...(init.headers || {}), Authorization: `Bearer ${t}` },
+        headers: { ...(rest.headers || {}), Authorization: `Bearer ${t}` },
       });
       const ct = res.headers.get('content-type') || '';
       const data = ct.includes('json') ? await res.json().catch(() => ({})) : {};
