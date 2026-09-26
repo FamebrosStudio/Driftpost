@@ -634,10 +634,10 @@ async function runPublish(job, conn, payload, body, userId) {
     }
   };
   try {
-     // onStage lets the long Meta video-processing wait update the
-     // job message live so the UI never looks frozen.
-     const onStage = (msg) => { job.message = msg; };
-     const fallbackText = String(body.text || '').trim();
+      // onStage lets the long Meta video-processing wait update the
+      // job message live so the UI never looks frozen.
+      const onStage = (msg) => { job.message = msg; };
+      const fallbackText = String(body.text || '').trim();
     // skip_crosspost=1 is sent by "Post to all" so one tap never double-posts
     // via IG->FB and FB->IG mirrors at the same time.
     const allowCrossPost = String(body.skip_crosspost || '') !== '1';
@@ -722,12 +722,24 @@ async function runPublish(job, conn, payload, body, userId) {
           .select('*').eq('id', id).eq('user_id', userId).eq('platform', platform).maybeSingle();
         return data || null;
       };
-      const isCarousel = allFiles.length >= 2 && allFiles.every((f) => String(f.mimetype || '').startsWith('image/'));
-      let media = null;
-      let mediaList = [];
-      let publicUrl = null;
-      let publicUrls = [];
-      const uploadOnePublic = async (f) => {
+       const isCarousel = (allFiles.length >= 2 && allFiles.every((f) => String(f.mimetype || '').startsWith('image/'))) || (preUploaded && preUploaded.length >= 2 && preUploaded.every((e) => String(e.mimetype || '').startsWith('image/')));
+       let media = null;
+       let mediaList = [];
+       let publicUrl = null;
+       let publicUrls = [];
+       // Pre-upload technique: the client uploaded media to
+       // Supabase while reviewing captions. Skip the re-upload
+       // here; download the file into memory only for Facebook,
+       // and hand the public URL straight to Instagram.
+       const preUploaded = (() => {
+         if (body.hasPreuploadedMedia !== '1') return null;
+         const out = [];
+         let i = 0;
+         while (true) { const u = body['mediaUrl' + i]; if (!u) break; out.push({ url: u, name: body['mediaName' + i] || ('media_' + i), mimetype: body['mediaType' + i] || '' }); i++; }
+         return out.length ? out : null;
+       })();
+       if (preUploaded) { for (const e of preUploaded) publicUrls.push(e.url); for (const e of preUploaded) mediaList.push({ originalname: e.name, mimetype: e.mimetype || '' }); publicUrl = publicUrls[0] || null; }
+       const uploadOnePublic = async (f) => {
         const bytes = await fs.readFile(f.path);
         const rawExt = path.extname(f.originalname || '');
         const safeExt = rawExt.replace(/[^a-z0-9.]/gi, '').slice(0, 8)
@@ -746,10 +758,22 @@ async function runPublish(job, conn, payload, body, userId) {
           publicUrls.push(up.url);
           mediaList.push({ ...f, bytes: up.bytes, originalname: f.originalname, mimetype: f.mimetype });
         }
-        publicUrl = publicUrls[0] || null;
-        const firstBytes = mediaList[0]?.bytes;
-        if (firstBytes) media = { ...mediaList[0], bytes: firstBytes };
-      }
+         publicUrl = publicUrls[0] || null;
+         const firstBytes = mediaList[0]?.bytes;
+         if (firstBytes) media = { ...mediaList[0], bytes: firstBytes };
+       }
+       // For pre-uploaded media, the bytes are still needed
+       // only by Facebook (Instagram uses the public URL).
+       // Download from the Supabase public URL into memory.
+       if (preUploaded && !media && mediaList.length) {
+         for (const e of preUploaded) {
+           const res = await fetch(e.url);
+           if (!res.ok) throw new Error('Media download failed from Supabase');
+           e.bytes = Buffer.from(await res.arrayBuffer());
+         }
+         for (let i = 0; i < mediaList.length; i++) mediaList[i].bytes = preUploaded[i].bytes;
+         media = { ...mediaList[0], bytes: preUploaded[0].bytes };
+       }
       job.state = 'publishing'; job.progress = 60; job.message = `Publishing to ${job.platform}${isCarousel ? ' (carousel)' : ''}`;
       if (job.platform === 'facebook') {
         const link = String(body.fb_link || '').trim() || null;
@@ -801,7 +825,7 @@ async function runPublish(job, conn, payload, body, userId) {
                  await meta.publishInstagram({
                    igUserId: igConn.platform_account_id, pageToken: igTokens.access_token,
                    caption: String(body.fb_message ?? fallbackText),
-                   mediaUrl: publicUrl, isVideo: !!file?.mimetype?.startsWith('video/'),
+                   mediaUrl: publicUrl, isVideo: !!(file?.mimetype || mediaList[0]?.mimetype || '').startsWith('video/'),
                    onStage,
                  });
               }
@@ -831,7 +855,7 @@ async function runPublish(job, conn, payload, body, userId) {
            out = await meta.publishInstagram({
              igUserId: igId, pageToken, caption,
              alt: String(body.ig_alt || ''), collabs, locationId,
-             mediaUrl: publicUrl, isVideo: !!file?.mimetype?.startsWith('video/'),
+               mediaUrl: publicUrl, isVideo: !!(file?.mimetype || mediaList[0]?.mimetype || '').startsWith('video/'),
              onStage,
            });
         }
@@ -842,7 +866,7 @@ async function runPublish(job, conn, payload, body, userId) {
           try {
             await meta.publishInstagramStory({
               igUserId: igId, pageToken,
-              mediaUrl: publicUrl, isVideo: !!file?.mimetype?.startsWith('video/'),
+              mediaUrl: publicUrl, isVideo: !!(file?.mimetype || mediaList[0]?.mimetype || '').startsWith('video/'),
             });
             job.warning = [job.warning, 'Also posted as a story.'].filter(Boolean).join(' ');
           } catch (e) {

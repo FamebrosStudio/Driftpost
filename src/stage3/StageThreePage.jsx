@@ -36,8 +36,13 @@ export default function StageThreePage({ session, onBack, onSignOut, onHistory, 
   const [thumb, setThumb] = useState(null);
   const [outputs, setOutputs] = useState(() => load('driftpost-stage2-outputs', {}));
   const [cfg, setCfg] = useState(() => load('driftpost-stage3-cfg', {}));
-  const [overrides, setOverrides] = useState(() => load('driftpost-stage3-accounts', {}));
-  const pinnedBrandAccounts = load('driftpost-stage1-brand-accounts', {});
+   const [overrides, setOverrides] = useState(() => load('driftpost-stage3-accounts', {}));
+   const pinnedBrandAccounts = load('driftpost-stage1-brand-accounts', {});
+   // Pre-upload technique: media is pushed to Supabase while the
+   // user is reviewing captions, so "Post" skips the file transfer
+   // entirely and the server just downloads once for Facebook.
+   const [cloudProgress, setCloudProgress] = useState(null);
+   const [cloudDone, setCloudDone] = useState(false);
   const [reviewed, setReviewed] = useState(() => load('driftpost-stage3-reviewed', {}));
   const [tab, setTab] = useState('');
   const [results, setResults] = useState({});
@@ -69,19 +74,51 @@ export default function StageThreePage({ session, onBack, onSignOut, onHistory, 
     return () => { live = false; };
   }, [session, connsTick]);
 
-  const mediaKey = `driftpost-stage2-media:${session.user.id}`;
-  useEffect(() => {
-    (async () => {
-      const vault = await readVault(mediaKey);
-      const list = vaultFiles(vault);
-      if (list.length) setFiles(list);
-      if (vault?.thumb?.blob instanceof Blob) {
-        const b = vault.thumb.blob;
-        const raw = b instanceof File ? b : new File([b], vault.thumb.name || 'cover.jpg', { type: b.type || 'image/jpeg' });
-        setThumb({ raw, name: vault.thumb.name || raw.name });
-      }
-    })();
-  }, [mediaKey]);
+   const mediaKey = `driftpost-stage2-media:${session.user.id}`;
+   useEffect(() => {
+     (async () => {
+       const vault = await readVault(mediaKey);
+       const list = vaultFiles(vault);
+       if (list.length) setFiles(list);
+       if (vault?.thumb?.blob instanceof Blob) {
+         const b = vault.thumb.blob;
+         const raw = b instanceof File ? b : new File([b], vault.thumb.name || 'cover.jpg', { type: b.type || 'image/jpeg' });
+         setThumb({ raw, name: vault.thumb.name || raw.name });
+       }
+     })();
+   }, [mediaKey]);
+
+   // Pre-upload media to Supabase while the user reviews captions.
+   // Stored in localStorage so "Post" can skip the file transfer.
+   useEffect(() => {
+     (async () => {
+       if (!files.length || cloudDone) return;
+       const prev = load('driftpost-media-uploads', null);
+       const prevKey = prev?.files.map((f) => f.name).join('|');
+       const curKey = files.map((f) => f.name).join('|');
+       if (prevKey === curKey && prev?.files?.length) { setCloudDone(true); return; }
+       const BUCKET = 'driftpost-media';
+       const PROJECT = 'https://vdvwgcxrygxpjewvcchj.supabase.co';
+       const KEY = 'sb_publishable_d7IMYqihO-JtdkmtWw7FEA_bXJfw7Ts';
+       const out = [];
+       setCloudProgress({ done: 0, total: files.length });
+       for (const f of files) {
+         try {
+           const ext = f.name.split('.').pop() || (String(f.type || '').startsWith('video/') ? 'mp4' : 'jpg');
+           const key = `${crypto.randomUUID()}.${ext}`;
+           const res = await fetch(`${PROJECT}/storage/v1/object/${BUCKET}/${key}`, {
+             method: 'POST',
+             headers: { 'Authorization': `Bearer ${KEY}`, 'Content-Type': f.type || 'application/octet-stream', 'x-upsert': 'true' },
+             body: f.raw,
+           });
+           if (!res.ok) throw new Error('cloud ' + res.status);
+           out.push({ name: f.name || key, publicUrl: `${PROJECT}/storage/v1/object/public/${BUCKET}/${key}`, mimetype: f.type || '' });
+         } catch (e) { /* keep going; the normal upload path will recover */ }
+         setCloudProgress({ done: out.length + 1, total: files.length });
+       }
+       if (out.length) { save('driftpost-media-uploads', { files: out, filesKey: curKey }); setCloudDone(true); }
+     })();
+   }, [files, cloudDone]);
 
   // Stage 1 + 2 context drives everything.
   const s1 = useMemo(() => ({
@@ -305,17 +342,28 @@ export default function StageThreePage({ session, onBack, onSignOut, onHistory, 
     return body;
   };
 
-  const buildForm = (pid, { connectionId = null, skipCrossPost = false, mediaOverride = null } = {}) => {
-    const body = bodyFor(pid, { skipCrossPost });
-    if (connectionId) body.connection_id = connectionId;
-    const form = new FormData();
-    for (const [k, v] of Object.entries(body)) form.append(k, v);
-    // mediaOverride replaces the selected files (used for photo -> video).
-    const media = mediaOverride || files;
-    for (const f of media.slice(0, 10)) { if (f?.raw) form.append('media', f.raw); }
-    if (pid === 'youtube' && thumb?.raw) form.append('thumbnail', thumb.raw);
-    return form;
-  };
+   const buildForm = (pid, { connectionId = null, skipCrossPost = false, mediaOverride = null } = {}) => {
+     const body = bodyFor(pid, { skipCrossPost });
+     if (connectionId) body.connection_id = connectionId;
+     const uploaded = load('driftpost-media-uploads', null);
+     const form = new FormData();
+     for (const [k, v] of Object.entries(body)) form.append(k, v);
+     if (uploaded?.files?.length && !mediaOverride && (pid === 'facebook' || pid === 'instagram')) {
+       body.hasPreuploadedMedia = '1';
+       form.append('hasPreuploadedMedia', '1');
+       uploaded.files.forEach((f, i) => {
+         form.append('mediaUrl' + i, f.publicUrl);
+         form.append('mediaName' + i, f.name);
+         form.append('mediaType' + i, f.mimetype || '');
+       });
+     } else {
+       // mediaOverride replaces the selected files (used for photo -> video).
+       const media = mediaOverride || files;
+       for (const f of media.slice(0, 10)) { if (f?.raw) form.append('media', f.raw); }
+     }
+     if (pid === 'youtube' && thumb?.raw) form.append('thumbnail', thumb.raw);
+     return form;
+   };
 
   // Post to ONE connection and poll the job. Returns the post URL.
   // When connectionId is given, the form carries exactly that account.
@@ -325,16 +373,18 @@ export default function StageThreePage({ session, onBack, onSignOut, onHistory, 
     setResults({ ...out });
     const form = buildForm(pid, { connectionId, skipCrossPost, mediaOverride });
     if (connectionId) form.set('connection_id', connectionId);
-    const { res, data, refreshedToken } = await fetchWithAuth(`${apiUrl}/api/publish`, session.access_token, {
-      method: 'POST',
-      body: form,
-      // Upload bytes drive the live bar (first 15%); server polls take over after.
-      onUploadProgress: (f) => {
-        const pct = Math.round(1 + f * 14);
-        out[key] = { ...(out[key] || {}), state: 'uploading', progress: pct, message: `Uploading ${pct}%…` };
-        setResults({ ...out });
-      },
-    });
+     const hasPre = form.has('hasPreuploadedMedia');
+     const { res, data, refreshedToken } = await fetchWithAuth(`${apiUrl}/api/publish`, session.access_token, {
+       method: 'POST',
+       body: form,
+       // The file transfer is skipped when media was pre-uploaded
+       // to Supabase while reviewing captions.
+       onUploadProgress: (f) => {
+         const pct = Math.round(1 + f * 14);
+         out[key] = { ...(out[key] || {}), state: 'uploading', progress: pct, message: hasPre ? `Preparing media… ${pct}%` : `Uploading ${pct}%…` };
+         setResults({ ...out });
+       },
+     });
     const pollToken = refreshedToken || session.access_token;
     if (!res.ok) throw new Error(data.error || 'Publish failed');
     const jobId = data.job.id;
