@@ -370,7 +370,7 @@ function Landing({ onEnter, session, pubPage, setPubPage }) {
       <header className="landing-in">
         <div className="landing-kicker">Driftpost â€” publish everywhere</div>
         <h1><SpotLine text="Post once." /><br /><SpotLine text="Everywhere." /></h1>
-        <p>Pick a brand. Drop one file. Tune each platform exactly like its own app â€” then fire YouTube, Instagram, Facebook and X together.</p>
+        <p>One screen. Four platforms. Every brand in your pocket.</p>
         <div className="landing-cta">
           <button className="skew-btn grad" onClick={onEnter}><span>{session ? 'Enter console â†’' : 'Get started free â†’'}</span></button>
         </div>
