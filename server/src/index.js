@@ -85,11 +85,20 @@ async function requireUser(req, res, next) {
   if (token.length > 4096) return res.status(401).json({ error: 'Sign in required' });
   try {
     const { data, error } = await supabase.auth.getUser(token);
-    if (error || !data.user) return res.status(401).json({ error: 'Session expired' });
+    if (error || !data.user) {
+      // Log the REAL reason in Render logs: 'invalid token' (re-login fixes)
+      // vs Auth-server outage (waiting fixes). Never sent to the client.
+      console.error('[auth] getUser failed:', error?.message || 'no user', '| status:', error?.status ?? '', '| code:', error?.code ?? '');
+      if (error && Number(error.status) >= 500) {
+        return res.status(503).json({ error: 'Login service unreachable — try again in a minute.' });
+      }
+      return res.status(401).json({ error: 'Session expired' });
+    }
     req.user = data.user;
     next();
-  } catch {
-    return res.status(401).json({ error: 'Session expired' });
+  } catch (e) {
+    console.error('[auth] getUser threw:', e?.message || e);
+    return res.status(503).json({ error: 'Login service unreachable — try again in a minute.' });
   }
 }
 

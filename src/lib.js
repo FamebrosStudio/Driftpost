@@ -306,6 +306,26 @@ async function freshToken() {
   }
 }
 
+// Seconds until this JWT expires (0 = unreadable — don't guess).
+const expOf = (t) => {
+  try {
+    const p = JSON.parse(atob(String(t || '').split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
+    return Number(p.exp) || 0;
+  } catch { return 0; }
+};
+// Pre-flight: a token dying within 60s (or already dead) is swapped BEFORE
+// the request — a 65MB upload can outlive the token it started with, and
+// every poll after that would 401 one by one.
+async function ensureFresh(token) {
+  if (!token) return token;
+  const exp = expOf(token);
+  if (!exp || exp * 1000 > Date.now() + 60000) return token;
+  try {
+    const f = await freshToken();
+    return f || token;
+  } catch { return token; }
+}
+
 export async function api(path, token, options = {}) {
   // Every request carries a timeout so a cold/sleeping server can never hang
   // a button forever. Safe GETs get one transparent retry (no side effects);
@@ -359,7 +379,7 @@ export async function api(path, token, options = {}) {
     }
   };
   try {
-    return await invoke(token);
+    return await invoke(await ensureFresh(token));
   } catch (e) {
     if (e?.status !== 401 || !token) throw e;
     const fresh = await freshToken();
@@ -451,7 +471,7 @@ export async function fetchWithAuth(url, token, init = {}) {
     }
   };
   try {
-    return await doPost(token, budget);
+    return await doPost(await ensureFresh(token), budget);
   } catch (e) {
     if (e?.status !== 401 || !token) throw e;
     const fresh = await freshToken();
