@@ -5,16 +5,16 @@
 .hist-back { background: none; border: 0; color: var(--faint); font-size: 12.5px; font-weight: 600; cursor: pointer; padding: 8px 4px; }
 .hist-back:hover { color: var(--ink); }
 .hist-top b { font-size: 15px; }
-.hist-tabs { display: flex; gap: 8px; margin: 12px 0 16px; }
-.hist-tab { flex: 1; border: 1.5px solid var(--line-hard); background: var(--panel2); color: var(--muted); border-radius: 999px; padding: 10px 6px; font-size: 12.5px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+.hist-tabs { display: flex; gap: 8px; margin: 12px 0 16px; flex-wrap: wrap; }
+.hist-tab { flex: 1 1 130px; border: 1.5px solid var(--line-hard); background: var(--panel2); color: var(--muted); border-radius: 999px; padding: 10px 6px; font-size: 12.5px; font-weight: 700; cursor: pointer; white-space: nowrap; }
 .hist-tab.on { background: var(--acc, #7c6cf5); border-color: transparent; color: #fff; }
-.hist-row { display: flex; align-items: center; gap: 10px; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 11px 12px; margin-top: 8px; min-width: 0; }
+.hist-row { display: flex; align-items: center; gap: 10px; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 11px 12px; margin-top: 8px; min-width: 0; flex-wrap: wrap; }
 .hist-ic { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 10px; background: var(--panel2); border: 1px solid var(--line); flex: 0 0 auto; }
 .hist-body { flex: 1; min-width: 0; }
 .hist-body b { display: block; font-size: 13.5px; overflow-wrap: break-word; }
 .hist-body small { color: var(--muted); font-size: 11.5px; }
 .hist-body small a { color: var(--ink); }
-.hist-mini { border: 1px solid var(--line-hard); background: var(--panel2); color: var(--ink); border-radius: 9px; padding: 8px 12px; font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+.hist-mini { border: 1px solid var(--line-hard); background: var(--panel2); color: var(--ink); border-radius: 9px; padding: 10px 14px; font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap; }
 .hist-mini:hover { border-color: var(--acc, #7c6cf5); }
 .hist-mini:disabled { opacity: 0.5; cursor: wait; }
 .hist-mini.danger:hover { border-color: var(--danger, #e5484d); color: var(--danger, #e5484d); }

@@ -31,12 +31,18 @@ export default function ConnectPage({ session, onContinue, onHistory, onSignOut 
   };
   useEffect(load, [session.access_token]);
 
-  // OAuth returns here with ?connected=platform or ?oauth_error=msg
+  // OAuth returns here with ?connected=platform or ?oauth_error=msg.
+  // Only known platform results earn a success message — anything else is
+  // noise (the server appends details like "youtube (Name)" after the id).
   useEffect(() => {
     const p = new URLSearchParams(window.location.search);
     const ok = p.get('connected');
     const bad = p.get('oauth_error');
-    if (ok) say(`${ok[0].toUpperCase() + ok.slice(1)} connected.`);
+    const known = ['youtube', 'facebook', 'instagram', 'x'];
+    if (ok && known.some((id) => ok === id || ok.startsWith(`${id} `) || ok.startsWith(`${id}(`))) {
+      const label = ok[0].toUpperCase() + ok.slice(1);
+      say(`${label} connected.`);
+    }
     if (bad) say(`Connection failed: ${bad}`, 'err');
     if (ok || bad) {
       window.history.replaceState({}, '', window.location.pathname);
@@ -97,7 +103,7 @@ export default function ConnectPage({ session, onContinue, onHistory, onSignOut 
           <span className="cn-step"><b>4</b> Publishing</span>
         </div>
 
-        {msg && <div className={msgKind === 'err' ? 'cn-msg err' : 'cn-msg ok'}>{msg}</div>}
+        {msg && <div className={msgKind === 'err' ? 'cn-msg err' : 'cn-msg ok'}>{msg}{msgKind === 'err' && <div style={{ marginTop: 8 }}><button type="button" className="cn-connect ghost" style={{ width: 'auto', marginTop: 0, padding: '9px 18px' }} onClick={load}>Retry</button></div>}</div>}
 
         {loading ? (
           <div className="cn-empty" style={{ marginTop: 22 }}>Loading your accounts…</div>

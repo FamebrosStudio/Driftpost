@@ -15,7 +15,7 @@
 .s1-step { min-width: 0; }
 .s1-step small { overflow-wrap: break-word; }
 @media (max-width: 720px) { .s1-step small { font-size: 10.5px; line-height: 1.35; } }
-.stage1-top { display: flex; justify-content: flex-end; gap: 4px; }
+.stage1-top { display: flex; justify-content: flex-end; gap: 4px; flex-wrap: wrap; }
 .stage1-signout { background: none; border: 0; color: var(--faint); font-size: 12px; cursor: pointer; padding: 8px 4px; }
 .stage1-signout:hover { color: var(--ink); text-decoration: underline; }
 .stage1-head { text-align: center; padding: 14px 0 4px; animation: s1Up 0.5s ease both; }
@@ -66,7 +66,7 @@
 .s1-pick { display: flex; align-items: center; gap: 10px; background: var(--panel2); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; margin-bottom: 8px; }
 .s1-pick b { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13.5px; }
 .s1-pick small { color: var(--muted); font-size: 11.5px; white-space: nowrap; }
-.s1-mini { border: 1px solid var(--line-hard); background: var(--panel); color: var(--ink); border-radius: 9px; padding: 7px 12px; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+.s1-mini { border: 1px solid var(--line-hard); background: var(--panel); color: var(--ink); border-radius: 9px; padding: 9px 12px; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; }
 .s1-mini:hover { border-color: var(--acc); color: var(--acc); }
 .s1-icons { display: flex; gap: 5px; align-items: center; }
 .s1-note { font-size: 12.5px; color: var(--faint); margin: 8px 0 0; line-height: 1.6; }
@@ -92,6 +92,14 @@
 .trio-radio.on .rdo::after { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--acc); }
 .trio-radio b { display: block; font-size: 13.5px; }
 .trio-radio small { color: var(--muted); font-size: 12px; line-height: 1.5; }
+/* group row: radio + delete side by side */
+.trio-line { display: flex; gap: 8px; align-items: stretch; }
+.trio-line .trio-radio { flex: 1; min-width: 0; }
+.trio-line .s1-mini { align-self: center; flex: 0 0 auto; }
+.s1-mini.danger:hover { border-color: var(--danger, #e5484d); color: var(--danger, #e5484d); }
+/* accounts load failure */
+.s1-loaderr { font-size: 13px; color: var(--danger, #e5484d); border: 1px solid var(--danger, #e5484d); border-left-width: 3px; border-radius: 10px; padding: 10px 12px; margin: 12px 0 0; line-height: 1.55; }
+.s1-loaderr .s1-mini { margin-left: 8px; }
 
 /* modals */
 .s1-overlay { position: fixed; inset: 0; z-index: 80; background: rgba(0, 0, 0, 0.6); display: flex; align-items: center; justify-content: center; padding: 18px; animation: s1Fade 0.2s ease; }
@@ -127,7 +135,8 @@
 .swipe-main.drag { transition: none; }
 .swipe-main:not(.drag) { transition: transform 0.18s ease; }
 .s1-drop.over { border-color: var(--acc); background: var(--acc-soft); }
-.s1-row { display: flex; gap: 8px; margin-top: 12px; }
+.s1-row { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+.s1-row .s1-primary { flex: 1 1 160px; min-width: 0; }
 .s1-row .s1-ghost { flex: 1; width: auto; margin-top: 0; }
 .s1-primary { flex: 1; background: var(--acc); color: var(--acc-ink); border: 0; border-radius: 12px; padding: 12px; font-weight: 700; font-size: 14px; cursor: pointer; white-space: nowrap; }
 .s1-primary:disabled { opacity: 0.4; cursor: not-allowed; }

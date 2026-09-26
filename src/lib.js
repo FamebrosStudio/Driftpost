@@ -243,10 +243,12 @@ export const listSchedules = (token) => api('/api/schedules', token).then((d) =>
 export const cancelSchedule = (token, id) => api(`/api/schedules/${id}`, token, { method: 'DELETE' });
 
 // Fresh start after posting: wipes the finished post's content (media,
-// prompt, outputs, done flags) and returns to Stage 1. Account setup,
-// groups, style prefs, cross-post choice and the AI answer cache survive.
-export async function resetPostState() {
-  const DROP = ['driftpost-stage2-brief', 'driftpost-stage2-outputs', 'driftpost-stage2-done', 'driftpost-stage1-done'];
+// prompt, outputs, per-card review/account choices, done flags) and returns
+// to Stage 1. Account setup, groups, style prefs, cross-post choice and the
+// AI answer cache survive. Only the given user's media vault entry is
+// dropped — never the whole vault (shared browsers hold several users).
+export async function resetPostState(userId) {
+  const DROP = ['driftpost-stage2-brief', 'driftpost-stage2-outputs', 'driftpost-stage2-done', 'driftpost-stage1-done', 'driftpost-stage3-reviewed', 'driftpost-stage3-accounts'];
   try {
     const rm = [];
     for (let i = 0; i < localStorage.length; i++) {
@@ -256,6 +258,7 @@ export async function resetPostState() {
     rm.forEach((k) => localStorage.removeItem(k));
     localStorage.setItem('driftpost-stage', '1');
   } catch {}
+  if (!userId) return;
   try {
     const db = await new Promise((res, rej) => {
       const r = indexedDB.open('driftpost-stage2', 1);
@@ -265,7 +268,7 @@ export async function resetPostState() {
     await new Promise((res) => {
       try {
         const tx = db.transaction('media', 'readwrite');
-        tx.objectStore('media').clear();
+        tx.objectStore('media').delete(`driftpost-stage2-media:${userId}`);
         tx.oncomplete = res; tx.onerror = res;
       } catch { res(); }
     });

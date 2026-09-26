@@ -164,7 +164,10 @@ export default function StageThreePage({ session, onBack, onSignOut, onHistory, 
 
   // Cross-post mutual exclusion: posting IG→FB and FB→IG together would
   // double-post, so the other side greys out and leaves publish-all.
+  // Group flows never grey out: every member gets its own direct post with
+  // mirrors stripped, so nothing is skipped and nothing double-posts.
   const greyed = (pid) => {
+    if (isGroupFlow) return false;
     if (pid === 'facebook' && platforms.includes('instagram') && cfgFor('instagram').shareFb) return true;
     if (pid === 'instagram' && platforms.includes('facebook') && cfgFor('facebook').syndIg) return true;
     return false;
@@ -184,6 +187,21 @@ export default function StageThreePage({ session, onBack, onSignOut, onHistory, 
   const reviewedCount = effective.filter((pid) => reviewed[pid] || results[pid]?.state === 'completed').length;
 
   const onValues = (pid, v) => setOutputs((o) => { const n = { ...o, [pid]: v }; save('driftpost-stage2-outputs', n); return n; });
+  // One card's validity, mirroring the Workspace checks — Publish All and
+  // Schedule refuse invalid cards instead of failing mid-flight.
+  const invalidReason = (pid) => {
+    const v = outputs[pid] || {};
+    const c = cfgFor(pid);
+    if (greyed(pid)) return 'skipped by cross-post — turn the mirror off to post it directly';
+    if (isGroupFlow ? !groupMemberIds(pid).length : !accountFor(pid)) return 'no account — pick one first';
+    if (pid === 'x') {
+      if (Array.from(v.text || '').length > 280) return 'too long — shorten to 280 characters';
+      if (c.pollOn && files.length > 0) return 'polls can’t carry photos — remove media in Stage 2';
+      if (c.pollOn && !(c.opts?.[0]?.trim() && c.opts?.[1]?.trim())) return 'a poll needs at least 2 answers';
+    }
+    if (pid === 'facebook' && c.cta && !c.link?.trim()) return 'a button needs a website link above';
+    return '';
+  };
   const onCfg = (pid, patch) => setCfg((c) => { const n = { ...c, [pid]: { ...cfgFor(pid), ...patch } }; save('driftpost-stage3-cfg', n); return n; });
   const onAccount = (pid, id) => setOverrides((o) => { const n = { ...o, [pid]: id }; save('driftpost-stage3-accounts', n); return n; });
   const onThumb = (t) => {
@@ -290,7 +308,11 @@ export default function StageThreePage({ session, onBack, onSignOut, onHistory, 
     const data = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error(data.error || 'Publish failed');
     const jobId = data.job.id;
+    // A stuck job must never lock the card forever — 5 minutes of polling
+    // fails visibly instead of hanging with Posting… indefinitely.
+    const t0 = Date.now();
     for (;;) {
+      if (Date.now() - t0 > 5 * 60 * 1000) throw new Error('Publish timed out — check History, it may still have posted.');
       await new Promise((r) => setTimeout(r, 1500));
       const j = await api(`/api/jobs/${jobId}`, session.access_token);
       out[key] = { state: j.job.state, progress: j.job.progress || 50, url: j.job.url, message: j.job.message };
@@ -335,16 +357,22 @@ export default function StageThreePage({ session, onBack, onSignOut, onHistory, 
       setResults({ ...out });
       throw new Error(out[pid].message);
     }
+    // Partial success is NOT completed: Publish All and the success banner
+    // only fire when every account posted, so a missed account can be
+    // retried instead of silently celebrated.
+    const partial = failures.length > 0;
     out[pid] = {
-      state: 'completed',
+      state: partial ? 'failed' : 'completed',
       urls,
       url: urls[0]?.url,
-      message: failures.length
+      partial,
+      failures,
+      message: partial
         ? `Posted to ${urls.length}/${ids.length} — failed: ${failures.join(' · ')}`
         : (ids.length > 1 ? `Posted to ${ids.length} accounts ✓` : ''),
     };
     setResults({ ...out });
-    onReviewed(pid);
+    if (!partial) onReviewed(pid);
     return urls;
   };
 
@@ -405,11 +433,42 @@ export default function StageThreePage({ session, onBack, onSignOut, onHistory, 
     // Facebook through Instagram, which must keep its share flag. Group
     // flows always strip: every member gets a direct post.
     const strip = !(s1.crosspost && !isGroupFlow && targets.includes('instagram'));
+    // YouTube takes video only: with photos attached, encode once and reuse
+    // the clip for every YouTube account instead of failing each one.
+    let clipWrapped = null;
+    if (targets.includes('youtube') && files.length && !files.some((f) => f.type.startsWith('video/'))) {
+      const photo = files.find((f) => f?.raw && f.type.startsWith('image/'))?.raw;
+      if (!photo) {
+        out.youtube = { state: 'failed', message: 'No photo selected — pick one in Stage 2.' };
+        setResults({ ...out });
+      } else {
+        setEncoding(true);
+        try {
+          const clip = await photoToVideo(photo);
+          clipWrapped = [{ raw: clip, name: clip.name, type: clip.type }];
+        } catch (e) {
+          out.youtube = { state: 'failed', message: e.message };
+          setResults({ ...out });
+        } finally {
+          setEncoding(false);
+        }
+      }
+    }
     try {
       for (const pid of targets) {
+        // Invalid cards fail up front with the reason on the card — never a
+        // silent mid-flight failure after siblings already posted.
+        const bad = invalidReason(pid);
+        if (bad) {
+          out[pid] = { state: 'failed', message: `Fix this card first: ${bad}` };
+          setResults({ ...out });
+          continue;
+        }
+        if (pid === 'youtube' && !clipWrapped && files.length && !files.some((f) => f.type.startsWith('video/'))) continue;
+        const mo = (pid === 'youtube' && clipWrapped) ? clipWrapped : undefined;
         try {
-          if (isGroupFlow) await runGroup(pid, out);
-          else await runOne(pid, out, { skipCrossPost: strip });
+          if (isGroupFlow) await runGroup(pid, out, { mediaOverride: mo });
+          else await runOne(pid, out, { skipCrossPost: strip, mediaOverride: mo });
         } catch (e) {
           if (out[pid]?.state !== 'failed') {
             out[pid] = { state: 'failed', message: e.message };
@@ -428,6 +487,14 @@ export default function StageThreePage({ session, onBack, onSignOut, onHistory, 
 
   const doSchedule = async (pid, whenIso) => {
     if (schedBusy || !claim(`sched:${pid}`)) return;
+    // Same validity as instant Post — an unsendable payload must fail here,
+    // not silently at fire time.
+    const bad = invalidReason(pid);
+    if (bad) {
+      release(`sched:${pid}`);
+      setSchedMsg(`Fix the ${NAMES[pid]} card first: ${bad}`);
+      return;
+    }
     setSchedBusy(true);
     try {
       // YouTube takes video only: with photos attached, encode the still to
@@ -474,7 +541,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onHistory, 
   };
 
   const startNew = async () => {
-    await resetPostState();
+    await resetPostState(session.user.id);
     onDone();
   };
 
@@ -594,6 +661,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onHistory, 
           platforms={effective}
           platform={tab}
           accountFor={accountFor}
+          invalidFor={invalidReason}
           busy={schedBusy}
           onClose={() => setSchedOpen(false)}
           onSchedule={doSchedule}

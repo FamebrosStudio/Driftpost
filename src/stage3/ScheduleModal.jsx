@@ -8,9 +8,10 @@ function defaultWhen() {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 
-export default function ScheduleModal({ platforms, accountFor, busy, onClose, onSchedule, platform }) {
+export default function ScheduleModal({ platforms, accountFor, invalidFor, busy, onClose, onSchedule, platform }) {
   const [when, setWhen] = useState(defaultWhen);
-  const [sel, setSel] = useState(platforms[0] || '');
+  // Preselect the tab the user scheduled from — not just platforms[0].
+  const [sel, setSel] = useState(platform && platforms.includes(platform) ? platform : (platforms[0] || ''));
   const [err, setErr] = useState('');
 
   const quick = useMemo(() => {
@@ -33,6 +34,8 @@ export default function ScheduleModal({ platforms, accountFor, busy, onClose, on
     if (!Number.isFinite(t)) return setErr('Pick a valid date and time.');
     if (t < Date.now() + 60 * 1000) return setErr('Choose a time at least 1 minute from now.');
     if (!accountFor(sel)) return setErr('Pick an account for that platform first.');
+    const bad = invalidFor?.(sel);
+    if (bad) return setErr(`Fix the card first: ${bad}`);
     setErr('');
     onSchedule(sel, new Date(t).toISOString());
   };

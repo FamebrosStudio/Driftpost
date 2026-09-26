@@ -252,8 +252,10 @@ export async function generateCaptions(summary, opts = {}) {
   const only = ['youtube', 'instagram', 'facebook', 'x'].includes(String(opts.only || '')) ? opts.only : null;
 
   // Local resolve — 0 tokens. Dynamic import keeps cold start fast.
+  // Explicit brand picks match loosely (20); bare-brief matches need 50+ so
+  // a weak word overlap can never inject another brand's phone/footer.
   const mem = await import('./brand-memory/index.js');
-  const hit = mem.resolveBrand(brandQuery);
+  const hit = mem.resolveBrand(brandQuery, opts.brand ? 20 : 50);
   let brand = hit?.brand || null;
   let autoNew = null;
   if (!brand) {

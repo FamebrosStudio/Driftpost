@@ -51,12 +51,14 @@ export function useSession() {
     };
     listeners.add(update);
     // Only download the auth library when it can possibly do something:
-    // a returning visitor with a stored session, or an OAuth redirect
-    // carrying tokens in the URL hash. Pure landing visitors get nothing.
+    // a returning visitor with a stored session, an OAuth redirect carrying
+    // tokens in the URL hash, or a PKCE ?code= exchange waiting to happen.
+    // Pure landing visitors get nothing.
     let mayHaveSession = false;
     try {
       mayHaveSession =
         window.location.hash.includes('access_token') ||
+        /[?&]code=/.test(window.location.search) ||
         Object.keys(localStorage).some((k) => k.startsWith('sb-') && k.endsWith('-auth-token'));
     } catch {}
     if (!mayHaveSession) {

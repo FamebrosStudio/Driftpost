@@ -86,6 +86,14 @@ export default function GroupBuilder({ connections, token, onConnectionsChange, 
   // Toggling a platform off also drops already-picked accounts on it, so the
   // group can never hold an account outside its own platform selection.
   const togglePlat = (pid) => {
+    // Unticking from "all" (empty = all) means all-BUT-this — otherwise one
+    // click would silently narrow the group to a single platform.
+    if (!plats.length) {
+      const all = PLATFORMS.map((p) => p.id).filter((id) => (platCounts[id] || 0) > 0 && id !== pid);
+      setPlats(all);
+      setIds((s) => s.filter((id) => byId[id]?.platform !== pid));
+      return;
+    }
     const wasOn = plats.includes(pid);
     setPlats((p) => (wasOn ? p.filter((x) => x !== pid) : [...p, pid]));
     if (wasOn) setIds((s) => s.filter((id) => byId[id]?.platform !== pid));
@@ -162,7 +170,7 @@ export default function GroupBuilder({ connections, token, onConnectionsChange, 
               className={over ? 's1-drop over' : 's1-drop'}
               onDragOver={(e) => { e.preventDefault(); setOver(true); }}
               onDragLeave={() => setOver(false)}
-              onDrop={(e) => { e.preventDefault(); setOver(false); const id = e.dataTransfer.getData('text/plain'); if (id && byId[id]) add(id); }}
+              onDrop={(e) => { e.preventDefault(); setOver(false); const id = e.dataTransfer.getData('text/plain'); if (id && byId[id] && (!plats.length || plats.includes(byId[id].platform))) add(id); }}
             >
               {!ids.length && <p className="s1-empty">Click or drop accounts here.</p>}
               {ids.map((id) => (

@@ -23,7 +23,7 @@ export function PostedTab() {
     return (
       <div>
         <p className="hist-empty">Nothing posted yet.</p>
-        <p className="hist-note">Finish Stage 3 and every post lands here — delete, edit and repost from this list.</p>
+        <p className="hist-note">Finish Stage 3 and every post lands here — remove entries, edit and repost from this list.</p>
       </div>
     );
   }
@@ -39,16 +39,17 @@ export function PostedTab() {
           <button
             type="button"
             className="hist-mini danger"
+            title="Removes this entry from the list only — the live post stays up"
             onClick={() => {
               removePostLog(p.at);
               setPosts(readPostLog());
             }}
           >
-            Delete
+            Remove
           </button>
         </div>
       ))}
-      <p className="hist-note">Edit + repost arrive with Stage 3 publishing.</p>
+      <p className="hist-note">Removing clears this list only — live posts stay up on the platform.</p>
     </div>
   );
 }

@@ -44,9 +44,21 @@ export function loadBrands() {
 }
 
 let fullCache = null;
+let fullCacheMtime = 0;
 function loadFull() {
-  if (!fullCache) fullCache = JSON.parse(fs.readFileSync(FULL_PATH, 'utf8'));
-  return fullCache;
+  // Owner edits to brands.full.json show up without a restart (mtime check).
+  try {
+    const m = fs.statSync(FULL_PATH).mtimeMs;
+    if (!fullCache || fullCacheMtime < m) {
+      fullCache = JSON.parse(fs.readFileSync(FULL_PATH, 'utf8'));
+      fullCacheMtime = m;
+    }
+    return fullCache;
+  } catch {
+    if (fullCache) return fullCache;
+    fullCache = JSON.parse(fs.readFileSync(FULL_PATH, 'utf8'));
+    return fullCache;
+  }
 }
 
 export function getFullBrand(brandId) {
@@ -95,22 +107,34 @@ export function fullPack(brand) {
 
  const DEEP_DIR = path.join(here, 'brands');
 let deepCache = null;
-let deepCacheMtime = 0;
+let deepCacheFiles = {};
 function loadDeepAll() {
-  try {
-    const dirMtime = fs.statSync(DEEP_DIR).mtimeMs;
-    if (deepCache && deepCacheMtime >= dirMtime) return deepCache;
-  } catch {}
-  deepCache = {};
-  deepCacheMtime = Date.now();
+  // Per-file mtimes: edited, added AND deleted deep files are all picked up
+  // without a restart (a directory mtime alone misses in-place edits).
   let files = [];
   try {
     files = fs.readdirSync(DEEP_DIR).filter((f) => f.endsWith('.json'));
   } catch {
-    return deepCache;
+    return deepCache || {};
   }
+  let dirty = !deepCache || Object.keys(deepCacheFiles).length !== files.length;
+  const seen = {};
+  if (!dirty) {
+    for (const f of files) {
+      let m = 0;
+      try {
+        m = fs.statSync(path.join(DEEP_DIR, f)).mtimeMs;
+      } catch {}
+      seen[f] = m;
+      if (deepCacheFiles[f] !== m) { dirty = true; break; }
+    }
+  }
+  if (!dirty) return deepCache;
+  deepCache = {};
+  deepCacheFiles = {};
   for (const f of files) {
     try {
+      deepCacheFiles[f] = fs.statSync(path.join(DEEP_DIR, f)).mtimeMs;
       const d = JSON.parse(fs.readFileSync(path.join(DEEP_DIR, f), 'utf8'));
       const id = d.brand_id || f.replace(/\.json$/, '');
       deepCache[id] = d;
@@ -442,7 +466,10 @@ function scoreBrand(b, q) {
 }
 
 // Find brand from free text (prompt, picked brand label, file name). Returns {brand, score} or null.
-export function resolveBrand(query) {
+// minScore is strictness: explicit brand picks use 20, but bare-brief
+// matches need 50+ — a weak token overlap must never inject another
+// brand's phone/footer into a published caption.
+export function resolveBrand(query, minScore = 20) {
   const q = String(query || '').trim();
   if (q.length < 2) return null;
   let best = null;
@@ -455,7 +482,7 @@ export function resolveBrand(query) {
     }
   }
   // threshold 20 avoids false positives on generic words like "salon"
-  if (!best || bestScore < 20) return null;
+  if (!best || bestScore < minScore) return null;
   return { brand: best, score: bestScore };
 }
 
@@ -619,7 +646,8 @@ export function ensureAutoBrand({ brandParam, brief, assetHint }) {
     via = 'brief';
   }
   if (!name || name.length < 3) return null;
-  if (/^(instagram|facebook|youtube|post|reel|photo|video|offer|diwali)$/i.test(name)) return null;
+  if (/^(instagram|facebook|youtube|post|reel|photo|video|offer|diwali|test|testing|demo|sample|example|trial|hello|abc|xyz|qwerty|asdf)$/i.test(name)) return null;
+  if (!/[a-zA-Z]{3,}/.test(name)) return null;
 
   const custom = loadCustom();
   const slug = slugify(name);

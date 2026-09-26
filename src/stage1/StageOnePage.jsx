@@ -33,10 +33,12 @@ function save(key, val) {
   try { localStorage.setItem(key, JSON.stringify(val)); } catch {}
 }
 
-export default function StageOnePage({ session, onSignOut, onNext, onHistory }) {
+export default function StageOnePage({ session, onSignOut, onNext, onHistory, onBackAccounts }) {
   const [connections, setConnections] = useState([]);
   const [loading, setLoading] = useState(true);
   const [connsOk, setConnsOk] = useState(false);
+  const [connsError, setConnsError] = useState('');
+  const [reloadTick, setReloadTick] = useState(0);
   const [type, setType] = useState(() => {
     const t = load('driftpost-stage1-type', '');
     // One-time carryover from the old "trios" naming.
@@ -59,6 +61,9 @@ export default function StageOnePage({ session, onSignOut, onNext, onHistory }) 
       if (localStorage.getItem('driftpost-groups') == null && localStorage.getItem('driftpost-trios') != null) {
         localStorage.setItem('driftpost-groups', localStorage.getItem('driftpost-trios'));
       }
+      // One-time cleanup of the retired "trios" keys.
+      localStorage.removeItem('driftpost-trios');
+      localStorage.removeItem('driftpost-stage1-trio');
     } catch {}
   }, []);
 
@@ -68,18 +73,26 @@ export default function StageOnePage({ session, onSignOut, onNext, onHistory }) 
 
   useEffect(() => {
     let live = true;
+    setLoading(true);
+    setConnsError('');
     api('/api/connections', session.access_token)
       .then((d) => { if (live) { setConnections(d.connections || []); setConnsOk(true); } })
-      .catch(() => {})
+      .catch(() => { if (live) setConnsError('Could not load your accounts — the server may be waking up.'); })
       .finally(() => { if (live) setLoading(false); });
     return () => { live = false; };
-  }, [session]);
+  }, [session, reloadTick]);
 
   const brands = useMemo(() => groupBrands(connections), [connections]);
   const brand = brands.find((b) => b.key === brandKey) || null;
   useEffect(() => {
-    if (!loading && brands.length && brandKey && !brands.some((b) => b.key === brandKey)) setBrandKey('');
-  }, [loading, brands, brandKey]);
+    // Clear a stale saved brand once accounts are known — including the
+    // empty list (all disconnected), which the old guard never handled.
+    if (!connsOk) return;
+    if (brandKey && !brands.some((b) => b.key === brandKey)) {
+      setBrandKey('');
+      save('driftpost-stage1-brand', '');
+    }
+  }, [connsOk, brands, brandKey]);
 
   const connById = useMemo(() => Object.fromEntries(connections.map((c) => [c.id, c])), [connections]);
   const counts = useMemo(() => {
@@ -141,15 +154,31 @@ export default function StageOnePage({ session, onSignOut, onNext, onHistory }) 
     });
   }, [availablePids, connsOk]);
 
+  // Live platforms across all groups (member accounts only, honouring each
+  // group's own platform selection) — drives create_groups validity.
+  const groupLivePlats = useMemo(() => {
+    const s = new Set();
+    (groups || []).forEach((g) => (g.accountIds || []).forEach((id) => {
+      const p = connById[id]?.platform;
+      if (!p) return;
+      const sel = Array.isArray(g.platforms) && g.platforms.length ? g.platforms : null;
+      if (!sel || sel.includes(p)) s.add(p);
+    }));
+    return s;
+  }, [groups, connById]);
+
   const valid =
     type === 'common_brand' ? !!brand :
-    type === 'platform_selection' ? platforms.length > 0 :
-    type === 'create_groups' ? groups.length > 0 :
+    type === 'platform_selection' ? (connsOk && platforms.length > 0 && platforms.every((p) => (counts[p] || 0) > 0)) :
+    type === 'create_groups' ? (connsOk ? groupLivePlats.size > 0 : groups.length > 0) :
     type === 'existing_groups' ? (!!activeGroup && activeSelected.length > 0) : false;
 
   const pick = (t) => { setType(t); save('driftpost-stage1-type', t); setSavedTick(false); };
-  const chooseBrand = (k) => { setBrandKey(k); save('driftpost-stage1-brand', k); setBrandOpen(false); };
-  const clearBrand = () => { setBrandKey(''); save('driftpost-stage1-brand', ''); };
+  // Outputs belong to one brand's brief — switching brands drops the old
+  // cards so yesterday's caption can never publish under a new brand.
+  const clearOutputs = () => { try { localStorage.removeItem('driftpost-stage2-outputs'); } catch {} };
+  const chooseBrand = (k) => { setBrandKey(k); save('driftpost-stage1-brand', k); setBrandOpen(false); clearOutputs(); };
+  const clearBrand = () => { setBrandKey(''); save('driftpost-stage1-brand', ''); clearOutputs(); };
   const togglePlatform = (id) => setPlatforms((p) => {
     const n = p.includes(id) ? p.filter((x) => x !== id) : [...p, id];
     save('driftpost-stage1-platforms', n);
@@ -161,6 +190,10 @@ export default function StageOnePage({ session, onSignOut, onNext, onHistory }) 
     setBuilderOpen(false);
   };
   const pickGroup = (id) => { setActiveGroupId(id); save('driftpost-stage1-group', id); };
+  const removeGroup = (id) => {
+    setGroups((gs) => { const n = gs.filter((g) => g.id !== id); save('driftpost-groups', n); return n; });
+    if (activeGroupId === id) { setActiveGroupId(''); save('driftpost-stage1-group', ''); }
+  };
   const accountName = (id) => connById[id]?.account_name || '';
   const brandPlats = (b) => ['instagram', 'facebook', 'youtube', 'x'].filter((pid) => b.map[pid]);
 
@@ -176,6 +209,7 @@ export default function StageOnePage({ session, onSignOut, onNext, onHistory }) 
     <div className="stage1">
       <div className="stage1-in">
         <div className="stage1-top">
+          {onBackAccounts && <button type="button" className="stage1-signout" onClick={onBackAccounts}>← Accounts</button>}
           <button type="button" className="stage1-signout" onClick={onHistory}>History</button>
           <button type="button" className="stage1-signout" onClick={onSignOut}>Sign out</button>
         </div>
@@ -186,6 +220,9 @@ export default function StageOnePage({ session, onSignOut, onNext, onHistory }) 
         </header>
         <ProgressIndicator current={1} />
         <p className="s1-ways">Two ways to set up — post for <b>one brand</b>, or bundle accounts into a <b>group</b>. Pick one.</p>
+        {connsError && (
+          <p className="s1-loaderr">{connsError} <button type="button" className="s1-mini" onClick={() => setReloadTick((t) => t + 1)}>Retry</button></p>
+        )}
         {loading ? (
           <div className="stage1-loading">Loading your accounts…</div>
         ) : (
@@ -194,7 +231,7 @@ export default function StageOnePage({ session, onSignOut, onNext, onHistory }) 
               {brand ? (
                 <div className="s1-pick">
                   <span className="s1-icons">{brandPlats(brand).map((pid) => <BrandIcon key={pid} id={pid} size={14} />)}</span>
-                  <b>{brand.label}</b>
+                  <b title={brand.label}>{brand.label}</b>
                   <small>{brandPlats(brand).length} accounts</small>
                   <button type="button" className="s1-mini" onClick={() => setBrandOpen(true)}>Change</button>
                   <button type="button" className="s1-mini" onClick={clearBrand} title="Clear brand — platforms follow all connected accounts">Clear</button>
@@ -214,12 +251,12 @@ export default function StageOnePage({ session, onSignOut, onNext, onHistory }) 
             <SetupCard id="create_groups" selected={type === 'create_groups'} onSelect={pick} icon={ICONS.trio} title="Create Groups" summary="Group 2 or more accounts that share the same content, caption and media.">
               <button type="button" className="s1-btn" onClick={() => setBuilderOpen(true)}>Create a group</button>
               {groups.map((g) => (
-                <div key={g.id} className="trio-mini"><b>{g.name}</b><small>{(g.accountIds || []).length} accounts · {groupPlatsLabel(g)}</small></div>
+                <div key={g.id} className="trio-mini"><b title={g.name}>{g.name}</b><small>{(g.accountIds || []).length} accounts · {groupPlatsLabel(g)}</small><button type="button" className="s1-mini danger" title={`Delete ${g.name}`} onClick={() => { if (window.confirm(`Delete group “${g.name}”? Your accounts stay connected.`)) removeGroup(g.id); }}>✕</button></div>
               ))}
             </SetupCard>
 
             <SetupCard id="existing_groups" selected={type === 'existing_groups'} onSelect={pick} icon={ICONS.saved} title="Select Created Groups" summary="Reuse a group you already built.">
-              <ExistingGroupSelector groups={groups} activeId={activeGroupId} accountName={accountName} onPick={pickGroup} />
+              <ExistingGroupSelector groups={groups} activeId={activeGroupId} accountName={accountName} onPick={pickGroup} onDelete={removeGroup} />
               {activeGroup && (
                 <>
                   <p className="s1-note" style={{ marginTop: 8 }}>Platforms for <b>{activeGroup.name}</b> — untick to leave one out. Only ticked platforms reach Stage 2/3.</p>

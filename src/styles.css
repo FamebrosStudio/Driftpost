@@ -338,7 +338,7 @@ details.adv[open] > summary::before { content: "– "; }
 .landing-cta .skew-btn { background: #fff; color: #000; }
 .landing-cta .skew-btn::before { background: #333; }
 .landing-cta .skew-btn:hover { color: #fff; }
-.landing-stats { display: flex; gap: 26px; margin-top: 6px; font-family: var(--mono); font-size: 11px; color: #a3a3a3; text-transform: uppercase; letter-spacing: 1px; }
+.landing-stats { display: flex; gap: 26px; flex-wrap: wrap; row-gap: 12px; margin-top: 6px; font-family: var(--mono); font-size: 11px; color: #a3a3a3; text-transform: uppercase; letter-spacing: 1px; }
 .landing-stats b { color: #fff; font-size: 16px; display: block; }
 .social-dock { display: flex; justify-content: center; align-items: center; margin-top: 4px; }
 .social-dock .icon-content { margin: 0 8px; position: relative; }

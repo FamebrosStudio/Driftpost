@@ -48,15 +48,15 @@ export default function Console({ session, onSwitchAccount, onSignOut }) {
     setWelcomed(true);
     if (next) go(next);
   };
-  if (!welcomed) {
-    return <WelcomePage session={session} onHistory={openHistory} onSignOut={onSignOut} onContinue={() => doneWelcome('1')} onSkip={() => doneWelcome()} />;
-  }
   if (view === 'history') {
     return (
       <Suspense fallback={null}>
         <HistoryPage session={session} onBack={() => setView('flow')} />
       </Suspense>
     );
+  }
+  if (!welcomed) {
+    return <WelcomePage session={session} onHistory={openHistory} onSignOut={onSignOut} onContinue={() => doneWelcome('1')} onSkip={() => doneWelcome()} />;
   }
   if (stage === '3') {
     return <StageThreePage session={session} onBack={() => go(2)} onSignOut={onSignOut} onHistory={openHistory} onDone={() => go(1)} />;
@@ -65,7 +65,7 @@ export default function Console({ session, onSwitchAccount, onSignOut }) {
     return <StageTwoPage session={session} onBack={() => go(1)} onSignOut={onSignOut} onHistory={openHistory} onNext={() => go(3)} />;
   }
   if (stage === '1') {
-    return <StageOnePage session={session} onSignOut={onSignOut} onNext={() => go(2)} onHistory={openHistory} />;
+    return <StageOnePage session={session} onSignOut={onSignOut} onNext={() => go(2)} onHistory={openHistory} onBackAccounts={() => go('connect')} />;
   }
   return <ConnectPage session={session} onContinue={() => go(1)} onHistory={openHistory} onSignOut={onSignOut} />;
 }

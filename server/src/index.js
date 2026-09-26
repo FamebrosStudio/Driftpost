@@ -45,7 +45,7 @@ const corsOptions = {
 
 const upload = multer({
   dest: path.join(os.tmpdir(), 'driftpost-uploads'),
-  limits: { fileSize: 512 * 1024 * 1024, files: 1 },
+  limits: { fileSize: 512 * 1024 * 1024, files: 1, fields: 60, fieldSize: 200 * 1024, fieldNameSize: 100 },
   fileFilter: (_req, file, cb) => {
     const mt = file.mimetype || '';
     if (mt.startsWith('image/') || mt.startsWith('video/')) {
@@ -93,10 +93,13 @@ async function requireUser(req, res, next) {
 
 // --- Abuse guards: in-memory sliding-window limits (single instance) ---
 // Cheap endpoints get a wide burst allowance; money/queue endpoints are tight.
+// Each limiter owns a namespaced bucket — cheap-endpoint traffic can never
+// trip (or dodge) an unrelated endpoint's limit.
 const buckets = new Map();
-function limit({ windowMs, max, key }) {
+function limit({ windowMs, max, key, ns }) {
   return (req, res, next) => {
-    const id = typeof key === 'function' ? key(req) : String(req.ip);
+    const raw = typeof key === 'function' ? key(req) : String(req.ip);
+    const id = `${ns || 'd'}:${raw}`;
     const now = Date.now();
     const arr = (buckets.get(id) || []).filter((t) => now - t < windowMs);
     if (arr.length >= max) return res.status(429).json({ error: 'Too many requests. Slow down and retry.' });
@@ -114,14 +117,14 @@ setInterval(() => {
   }
 }, 15 * 60 * 1000).unref();
 const userKey = (req) => `u:${req.user?.id || req.ip}`;
-const burstLimit = limit({ windowMs: 60 * 1000, max: 180, key: (req) => `ip:${req.ip}` });
-const strictBurstLimit = limit({ windowMs: 60 * 1000, max: 30, key: (req) => `ip:${req.ip}` });
-const publishLimit = limit({ windowMs: 60 * 1000, max: 10, key: userKey });
-const aiLimit = limit({ windowMs: 60 * 60 * 1000, max: 30, key: userKey });
-const oauthLimit = limit({ windowMs: 60 * 1000, max: 20, key: userKey });
-const connectionsLimit = limit({ windowMs: 60 * 1000, max: 60, key: userKey });
-const jobsLimit = limit({ windowMs: 60 * 1000, max: 60, key: userKey });
-const callbackLimit = limit({ windowMs: 60 * 1000, max: 30, key: (req) => `ip:${req.ip}` });
+const burstLimit = limit({ windowMs: 60 * 1000, max: 180, ns: 'burst', key: (req) => `ip:${req.ip}` });
+const strictBurstLimit = limit({ windowMs: 60 * 1000, max: 30, ns: 'strict', key: (req) => `ip:${req.ip}` });
+const publishLimit = limit({ windowMs: 60 * 1000, max: 10, ns: 'pub', key: userKey });
+const aiLimit = limit({ windowMs: 60 * 60 * 1000, max: 30, ns: 'ai', key: userKey });
+const oauthLimit = limit({ windowMs: 60 * 1000, max: 20, ns: 'oauth', key: userKey });
+const connectionsLimit = limit({ windowMs: 60 * 1000, max: 60, ns: 'conn', key: userKey });
+const jobsLimit = limit({ windowMs: 60 * 1000, max: 60, ns: 'jobs', key: userKey });
+const callbackLimit = limit({ windowMs: 60 * 1000, max: 30, ns: 'cb', key: (req) => `ip:${req.ip}` });
 
 function activeJobCount(userId) {
   let n = 0;
@@ -130,6 +133,19 @@ function activeJobCount(userId) {
   }
   return n;
 }
+
+// Watchdog: a provider call that never returns must not lock the user at
+// "3 publishes already running" forever — fail stuck jobs after 10 minutes.
+setInterval(() => {
+  const now = Date.now();
+  for (const j of jobs.values()) {
+    if (!['completed', 'failed'].includes(j.state) && now - (j.createdAt || now) > 10 * 60 * 1000) {
+      j.state = 'failed';
+      j.message = 'Publish timed out — check the platform, it may still have posted.';
+      j.completedAt = now;
+    }
+  }
+}, 60 * 1000).unref();
 
 app.get('/', (_req, res) => res.json({ ok: true, service: 'driftpost-api', platforms: ['youtube', 'instagram', 'facebook', 'x'] }));
 app.get('/health', (_req, res) => res.json({ ok: true }));
@@ -253,13 +269,29 @@ app.post('/api/meta/deauthorize', callbackLimit, express.urlencoded({ extended: 
     console.log(`Meta deauthorize: app user ${fbUserId} revoked access`);
     const code = crypto.randomUUID().slice(0, 8);
     res.json({
-      url: `${process.env.FRONTEND_URL}/#/data-deletion?code=${code}`,
+      url: `${FRONTEND_HOME}/#/data-deletion?code=${code}`,
       confirmation_code: code,
     });
   } catch {
     res.status(400).json({ error: 'Invalid signed request' });
   }
 });
+
+// First configured origin only — FRONTEND_URL may hold a comma list for
+// CORS, but redirects need exactly one home.
+const FRONTEND_HOME = String(process.env.FRONTEND_URL || '').split(',')[0].trim();
+// Single-use OAuth states: verifyState checks signature + expiry; this map
+// additionally burns each nonce so a captured callback URL can't be replayed
+// to attach someone else's channel to the attacker's account.
+const usedStates = new Map();
+function burnState(state) {
+  const n = String(state?.nonce || '');
+  if (!n) throw new Error('Invalid OAuth state');
+  const now = Date.now();
+  for (const [k, exp] of usedStates) if (exp < now) usedStates.delete(k);
+  if (usedStates.has(n)) throw new Error('OAuth link already used — start over.');
+  usedStates.set(n, state.exp || now + 10 * 60 * 1000);
+}
 
 // --- OAuth: YouTube (Google) ---
 app.post('/api/oauth/youtube/start', requireUser, oauthLimit, (req, res) => {
@@ -268,10 +300,11 @@ app.post('/api/oauth/youtube/start', requireUser, oauthLimit, (req, res) => {
 });
 
 app.get('/api/oauth/youtube/callback', callbackLimit, async (req, res) => {
-  const back = new URL(process.env.FRONTEND_URL);
+  const back = new URL(FRONTEND_HOME);
   try {
     if (req.query.error) throw new Error(String(req.query.error_description || req.query.error));
     const state = verifyState(req.query.state);
+    burnState(state);
     const tokens = await exchangeGoogleCode(String(req.query.code || ''));
     const ch = await getYouTubeChannel(tokens.access_token);
     const { error } = await supabase.from('platform_connections').upsert({
@@ -299,10 +332,11 @@ app.post('/api/oauth/instagram/start', requireUser, oauthLimit, (req, res) => {
 });
 
 app.get('/api/oauth/meta/callback', callbackLimit, async (req, res) => {
-  const back = new URL(process.env.FRONTEND_URL);
+  const back = new URL(FRONTEND_HOME);
   try {
     if (req.query.error) throw new Error(String(req.query.error_description || req.query.error));
     const state = verifyState(req.query.state);
+    burnState(state);
     const short = await exchangeMetaCode(String(req.query.code || ''));
     const long = await longLivedToken(short.access_token);
     const userToken = long.access_token;
@@ -348,13 +382,14 @@ app.post('/api/oauth/x/start', requireUser, oauthLimit, (req, res) => {
 });
 
 app.get('/api/oauth/x/callback', callbackLimit, async (req, res) => {
-  const back = new URL(process.env.FRONTEND_URL);
+  const back = new URL(FRONTEND_HOME);
   try {
     if (!process.env.X_CLIENT_ID || !process.env.X_CLIENT_SECRET || !process.env.X_REDIRECT_URI) {
       throw new Error('X OAuth is not configured yet');
     }
     if (req.query.error) throw new Error(String(req.query.error_description || req.query.error));
     const state = verifyState(req.query.state);
+    burnState(state);
     const { verifier } = decryptJson(state.pkce);
     const tokens = await exchangeXCode(String(req.query.code || ''), verifier);
     const account = await getXUser(tokens.access_token);
@@ -525,8 +560,14 @@ async function runPublish(job, conn, payload, body, userId) {
       }
       job.state = 'publishing'; job.progress = 95; job.message = 'Posting to X';
       let poll = null;
-      try {
-        const opts = JSON.parse(body.x_poll_options || '[]');
+      const rawOpts = String(body.x_poll_options || '').trim();
+      if (rawOpts && rawOpts !== '[]') {
+        let opts;
+        try {
+          opts = JSON.parse(rawOpts);
+        } catch {
+          throw new Error('X poll options were unreadable — turn the poll off or retype the answers');
+        }
         if (Array.isArray(opts) && opts.length) {
           const clean = opts.map((o) => String(o || '').trim()).filter(Boolean);
           if (clean.length < 2 || clean.length > 4) throw new Error('X polls need 2 to 4 options');
@@ -534,8 +575,6 @@ async function runPublish(job, conn, payload, body, userId) {
           const mins = Math.min(10080, Math.max(5, Number(body.x_poll_minutes) || 1440));
           poll = { options: clean, duration_minutes: mins };
         }
-      } catch (e) {
-        if (/poll/i.test(e.message)) throw e;
       }
       const post = await createXPost(token, xText, mediaIds.length ? mediaIds : null, body.x_reply, poll);
       job.url = `https://x.com/i/status/${post.id}`;
@@ -792,6 +831,14 @@ app.post('/api/schedule', requireUser, strictBurstLimit, publishLimit, publishUp
     await cleanupTmp();
     return res.status(409).json({ error: `Connect a ${platform} account first` });
   }
+  // Quota: parked media lives in your Storage bucket — cap live schedules.
+  const { count: liveCount } = await supabase.from('scheduled_posts')
+    .select('id', { count: 'exact', head: true })
+    .eq('user_id', req.user.id).in('status', ['scheduled', 'publishing']);
+  if ((liveCount || 0) >= 50) {
+    await cleanupTmp();
+    return res.status(429).json({ error: 'Schedule limit reached (50) — cancel one or let some publish first.' });
+  }
   // Park the media so the worker can rebuild the upload later.
   const prefix = `scheduled/${req.user.id}/${crypto.randomUUID()}`;
   const stored = [];
@@ -842,9 +889,14 @@ app.delete('/api/schedules/:id', requireUser, jobsLimit, async (req, res) => {
   if (['publishing', 'published'].includes(row.status)) {
     return res.status(409).json({ error: 'This post is already publishing or published' });
   }
-  await supabase.from('scheduled_posts')
+  // Conditional cancel: if the worker claimed the row a millisecond ago,
+  // zero rows update and we report it instead of deleting media under it.
+  const { data: cancelled } = await supabase.from('scheduled_posts')
     .update({ status: 'cancelled', updated_at: new Date().toISOString() })
-    .eq('id', row.id);
+    .eq('id', row.id).eq('status', row.status).select('id');
+  if (!cancelled || !cancelled.length) {
+    return res.status(409).json({ error: 'This post just started publishing — too late to cancel' });
+  }
   await removeStored([...(row.media || []).map((m) => m.path), row.thumb_path]);
   res.json({ ok: true });
 });
