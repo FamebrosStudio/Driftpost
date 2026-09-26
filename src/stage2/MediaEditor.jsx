@@ -224,8 +224,9 @@ export default function MediaEditor({ entry, onClose, onApply }) {
     return { w: Math.round(long * r), h: Math.round(long) };
   };
 
-  // Smart default per ratio: already-correct -> no change, otherwise Fit
-  // (zero content loss). Crop is always one click away.
+  // Smart default per ratio: already-correct -> no change, otherwise CROP
+  // (literal cut to the exact ratio — no blur, no padding). Fit stays one
+  // click away for anyone who wants the whole frame kept.
   const applyRatio = (d, id) => {
     const r = RATIOS[id];
     if (!d || !r) {
@@ -241,9 +242,9 @@ export default function MediaEditor({ entry, onClose, onApply }) {
       return;
     }
     setBox(fitBox(d.w, d.h, r));
-    setFree(false);
-    setPad(true);
-    setFitNote(`Fits fully — padded to ${id}, nothing cut off.`);
+    setFree(true);
+    setPad(false);
+    setFitNote(`Cropped to ${id} — drag the box or draw on the photo to choose what stays.`);
   };
   const pickAspect = (id) => {
     setAspect(id);
@@ -255,7 +256,7 @@ export default function MediaEditor({ entry, onClose, onApply }) {
     if (!crop) {
       setPad(true);
       setFree(false);
-      setFitNote(RATIOS[aspect] && !fitsRatio(d.w, d.h, RATIOS[aspect]) ? `Fits fully — padded to ${aspect}, nothing cut off.` : 'Fit — the whole frame is kept.');
+      setFitNote(RATIOS[aspect] && !fitsRatio(d.w, d.h, RATIOS[aspect]) ? `Fit — whole frame kept, padded to ${aspect}.` : 'Fit — the whole frame is kept.');
       return;
     }
     setPad(false);
