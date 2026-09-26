@@ -144,7 +144,7 @@ export async function publishFacebook({ pageId, pageToken, text, link, linkMeta,
   return { id: data.id, url: `https://www.facebook.com/${String(data.id).replace('_', '/posts/')}` };
 }
 
-export async function publishInstagram({ igUserId, pageToken, caption, alt, collabs, locationId, mediaUrl, isVideo }) {
+export async function publishInstagram({ igUserId, pageToken, caption, alt, collabs, locationId, mediaUrl, isVideo, onStage }) {
   if (!mediaUrl) throw new Error('Instagram needs a photo or video. Attach media first.');
   const createParams = {
     caption: caption || '',
@@ -161,12 +161,17 @@ export async function publishInstagram({ igUserId, pageToken, caption, alt, coll
   if (!cRes.ok) throw new Error(container.error?.message || 'Instagram container failed');
   // wait for video processing — big files take minutes, so wait up to ~10
   if (isVideo) {
+    const t0 = Date.now();
     for (let i = 0; i < 75; i++) {
       await new Promise((r) => setTimeout(r, 8000));
       const s = await fetch(`${GRAPH}/${container.id}?fields=status_code&access_token=${encodeURIComponent(pageToken)}`);
       const sj = await s.json();
       if (sj.status_code === 'FINISHED') break;
       if (sj.status_code === 'ERROR') throw new Error('Instagram could not process this video');
+      if (onStage) {
+        const sec = Math.round((Date.now() - t0) / 1000);
+        onStage(`Instagram: processing video… ${sec}s`);
+      }
     }
   }
   const pRes = await fetch(`${GRAPH}/${igUserId}/media_publish`, {

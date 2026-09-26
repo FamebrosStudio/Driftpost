@@ -634,7 +634,10 @@ async function runPublish(job, conn, payload, body, userId) {
     }
   };
   try {
-    const fallbackText = String(body.text || '').trim();
+     // onStage lets the long Meta video-processing wait update the
+     // job message live so the UI never looks frozen.
+     const onStage = (msg) => { job.message = msg; };
+     const fallbackText = String(body.text || '').trim();
     // skip_crosspost=1 is sent by "Post to all" so one tap never double-posts
     // via IG->FB and FB->IG mirrors at the same time.
     const allowCrossPost = String(body.skip_crosspost || '') !== '1';
@@ -795,11 +798,12 @@ async function runPublish(job, conn, payload, body, userId) {
                   mediaUrls: publicUrls,
                 });
               } else {
-                await meta.publishInstagram({
-                  igUserId: igConn.platform_account_id, pageToken: igTokens.access_token,
-                  caption: String(body.fb_message ?? fallbackText),
-                  mediaUrl: publicUrl, isVideo: !!file?.mimetype?.startsWith('video/'),
-                });
+                 await meta.publishInstagram({
+                   igUserId: igConn.platform_account_id, pageToken: igTokens.access_token,
+                   caption: String(body.fb_message ?? fallbackText),
+                   mediaUrl: publicUrl, isVideo: !!file?.mimetype?.startsWith('video/'),
+                   onStage,
+                 });
               }
               job.warning = 'Also mirrored to Instagram.';
             } catch (e) {
@@ -824,11 +828,12 @@ async function runPublish(job, conn, payload, body, userId) {
             mediaUrls: publicUrls,
           });
         } else {
-          out = await meta.publishInstagram({
-            igUserId: igId, pageToken, caption,
-            alt: String(body.ig_alt || ''), collabs, locationId,
-            mediaUrl: publicUrl, isVideo: !!file?.mimetype?.startsWith('video/'),
-          });
+           out = await meta.publishInstagram({
+             igUserId: igId, pageToken, caption,
+             alt: String(body.ig_alt || ''), collabs, locationId,
+             mediaUrl: publicUrl, isVideo: !!file?.mimetype?.startsWith('video/'),
+             onStage,
+           });
         }
         job.url = out.url;
         // Optional auto story: same media re-published as a 24h IG story.

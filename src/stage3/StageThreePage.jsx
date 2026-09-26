@@ -37,6 +37,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onHistory, 
   const [outputs, setOutputs] = useState(() => load('driftpost-stage2-outputs', {}));
   const [cfg, setCfg] = useState(() => load('driftpost-stage3-cfg', {}));
   const [overrides, setOverrides] = useState(() => load('driftpost-stage3-accounts', {}));
+  const pinnedBrandAccounts = load('driftpost-stage1-brand-accounts', {});
   const [reviewed, setReviewed] = useState(() => load('driftpost-stage3-reviewed', {}));
   const [tab, setTab] = useState('');
   const [results, setResults] = useState({});
@@ -153,13 +154,18 @@ export default function StageThreePage({ session, onBack, onSignOut, onHistory, 
   const accountsFor = (pid) => isGroupFlow
     ? groupMemberIds(pid).map((id) => connById[id]).filter(Boolean)
     : connections.filter((c) => c.platform === pid);
-  const accountFor = (pid) => {
+   const accountFor = (pid) => {
     if (isGroupFlow) {
       const ids = groupMemberIds(pid);
       const o = overrides[pid];
       if (o && ids.includes(o)) return o;
       return ids[0] || '';
     }
+    // common_brand keeps the exact accounts pinned when the brand
+    // was chosen, so the same account is used regardless of later
+    // connection reshuffling in groupBrands().
+    const p = pinnedBrandAccounts[pid];
+    if (p && connById[p]) return p;
     const o = overrides[pid];
     if (o && connById[o]?.platform === pid) return o;
     if (s1.type === 'common_brand' && brand?.map?.[pid] && connById[brand.map[pid]]) return brand.map[pid];

@@ -250,7 +250,7 @@ export const cancelSchedule = (token, id) => api(`/api/schedules/${id}`, token, 
 // AI answer cache survive. Only the given user's media vault entry is
 // dropped — never the whole vault (shared browsers hold several users).
 export async function resetPostState(userId) {
-  const DROP = ['driftpost-stage2-brief', 'driftpost-stage2-outputs', 'driftpost-stage2-done', 'driftpost-stage1-done', 'driftpost-stage3-reviewed', 'driftpost-stage3-accounts'];
+  const DROP = ['driftpost-stage2-brief', 'driftpost-stage2-outputs', 'driftpost-stage2-done', 'driftpost-stage1-done', 'driftpost-stage3-reviewed', 'driftpost-stage3-accounts', 'driftpost-stage1-brand-accounts'];
   try {
     const rm = [];
     for (let i = 0; i < localStorage.length; i++) {
