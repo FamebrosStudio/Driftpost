@@ -48,6 +48,9 @@ export default function StageThreePage({ session, onBack, onSignOut, onHistory, 
   const [schedBusy, setSchedBusy] = useState(false);
   const [encoding, setEncoding] = useState(false);
   const [schedMsg, setSchedMsg] = useState('');
+  const [pubMsg, setPubMsg] = useState('');
+  const [connsError, setConnsError] = useState('');
+  const [connsTick, setConnsTick] = useState(0);
   // Same-tick double clicks slip past state guards (state updates async), so
   // every fire-once action also claims a sync ref — no double posts, no
   // double schedules, ever.
@@ -58,11 +61,12 @@ export default function StageThreePage({ session, onBack, onSignOut, onHistory, 
   useEffect(() => { document.title = 'Stage 3 · Driftpost'; }, []);
   useEffect(() => {
     let live = true;
+    setConnsError('');
     api('/api/connections', session.access_token)
       .then((d) => { if (live) setConnections(d.connections || []); })
-      .catch(() => {});
+      .catch((e) => { if (live) setConnsError(e.message || 'Could not load your accounts.'); });
     return () => { live = false; };
-  }, [session]);
+  }, [session, connsTick]);
 
   const mediaKey = `driftpost-stage2-media:${session.user.id}`;
   useEffect(() => {
@@ -455,7 +459,20 @@ export default function StageThreePage({ session, onBack, onSignOut, onHistory, 
 
   const publishAll = async () => {
     const targets = effective.filter((pid) => (isGroupFlow ? groupMemberIds(pid).length > 0 : accountFor(pid)));
-    if (!targets.length || targets.some((pid) => busy[pid]) || !claim('all')) return;
+    setPubMsg('');
+    // Never die silently: every early exit explains itself on the button bar.
+    if (!targets.length) {
+      setPubMsg(connsError || !connections.length
+        ? 'No accounts ready — accounts are still loading or failed to load. Wait a few seconds, then retry.'
+        : 'No accounts selected for these platforms — check Stage 1.');
+      return;
+    }
+    if (targets.some((pid) => busy[pid]) || !claim('all')) {
+      setPubMsg('Already posting — wait for it to finish.');
+      return;
+    }
+    // Light every target card so the run is visible even before first progress.
+    setBusy((b) => { const n = { ...b }; targets.forEach((p) => { n[p] = true; }); return n; });
     const out = { ...results };
     // Direct posts only (mirrors stripped) — unless global cross-post routes
     // Facebook through Instagram, which must keep its share flag. Group
@@ -510,8 +527,10 @@ export default function StageThreePage({ session, onBack, onSignOut, onHistory, 
         .filter((pid) => out[pid]?.state === 'completed')
         .map((pid) => ({ pid, urls: out[pid].urls || (out[pid].url ? [{ account: '', url: out[pid].url }] : []) }));
       if (posted.length && posted.length === targets.length) setSuccess(posted);
+      else if (!posted.length) setPubMsg('Nothing posted — see the reason on each card.');
     } finally {
       release('all');
+      setBusy((b) => { const n = { ...b }; targets.forEach((p) => { delete n[p]; }); return n; });
     }
   };
 
@@ -597,6 +616,12 @@ export default function StageThreePage({ session, onBack, onSignOut, onHistory, 
           <p>Your AI-generated content is ready. Review each platform before publishing.</p>
         </header>
         <ProgressStepper current={3} />
+        {connsError && !connections.length && (
+          <div className="s3-work">
+            <p className="s3-err" style={{ margin: 0 }}>{connsError} Nothing can post until accounts load.</p>
+            <div className="s3-acts"><button type="button" onClick={() => setConnsTick((t) => t + 1)}>Retry loading accounts</button></div>
+          </div>
+        )}
 
         {!platforms.length ? (
           <div className="s3-work">
@@ -684,7 +709,8 @@ export default function StageThreePage({ session, onBack, onSignOut, onHistory, 
                 Schedule instead
               </button>
               {schedMsg && <p className="s3-bar-msg">{schedMsg}</p>}
-              {!allReviewed && effective.length > 0 && !schedMsg && (
+              {pubMsg && <p className="s3-bar-msg">{pubMsg}</p>}
+              {!allReviewed && effective.length > 0 && !schedMsg && !pubMsg && (
                 <p className="s3-pub-hint">Open each tab and press Reviewed ✓ — posting unlocks when all are seen.</p>
               )}
             </div>

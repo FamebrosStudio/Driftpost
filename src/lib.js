@@ -370,7 +370,22 @@ export async function api(path, token, options = {}) {
 
 // Raw fetch with the same auth resilience (for FormData posts that need the
 // raw response). Returns { res, data, refreshedToken? }.
+// The timeout scales with the upload size — a 65MB video can never make a
+// 30s budget on a normal connection, so the budget is ~0.5MB/s + 30s
+// headroom, capped at 8 minutes. Slow uploads fail as "too slow", never as
+// a misleading "waking up".
 export async function fetchWithAuth(url, token, init = {}) {
+  const bodyBytes = (() => {
+    try {
+      let n = 0;
+      const b = init.body;
+      if (b && typeof b.entries === 'function') {
+        for (const [, v] of b.entries()) if (v && typeof v.size === 'number') n += v.size;
+      }
+      return n;
+    } catch { return 0; }
+  })();
+  const budget = Math.min(480000, 30000 + Math.round((bodyBytes / (512 * 1024)) * 1000));
   const doPost = async (t, timeoutMs) => {
     const ctrl = new AbortController();
     const timer = setTimeout(() => ctrl.abort(), timeoutMs);
@@ -390,7 +405,11 @@ export async function fetchWithAuth(url, token, init = {}) {
       return { res, data };
     } catch (e) {
       if (e?.status === 401) throw e;
-      if (e?.name === 'AbortError') throw new Error('Server is waking up — try again in a few seconds.');
+      if (e?.name === 'AbortError') {
+        throw new Error(timeoutMs > 60000
+          ? 'Upload timed out — the file is too big for this connection. Try a smaller file or faster network.'
+          : 'Server is waking up — try again in a few seconds.');
+      }
       if (isNetworkFail(e)) throw new Error(DOWN_MSG);
       throw e;
     } finally {
@@ -398,12 +417,12 @@ export async function fetchWithAuth(url, token, init = {}) {
     }
   };
   try {
-    return await doPost(token, 30000);
+    return await doPost(token, budget);
   } catch (e) {
     if (e?.status !== 401 || !token) throw e;
     const fresh = await freshToken();
     if (!fresh || fresh === token) throw new Error('Session expired — sign out and sign in again.');
-    const out = await doPost(fresh, 30000);
+    const out = await doPost(fresh, budget);
     out.refreshedToken = fresh;
     return out;
   }
