@@ -77,6 +77,7 @@ export default function MediaEditor({ entry, onClose, onApply }) {
   const wrapRef = useRef(null);
   const dragRef = useRef(null);
   const prevToken = useRef(0);
+  const pixelsRef = useRef(''); // last-rendered preview pixels (skips identical re-renders)
   const url = useMemo(() => URL.createObjectURL(entry.raw), [entry]);
 
   useEffect(() => () => { try { URL.revokeObjectURL(url); } catch {} }, [url]);
@@ -157,16 +158,20 @@ export default function MediaEditor({ entry, onClose, onApply }) {
   // control change. Fit/Original render the final padded frame at the exact
   // target ratio; Crop mode renders the full frame under the ratio-locked
   // box overlay (the box IS the output). rAF-throttled + token-guarded so
-  // fast drags never flash a stale frame.
+  // fast drags never flash a stale frame. In crop mode the pixels never
+  // change with the box — only the overlay moves — so re-renders are
+  // skipped while dragging (no flicker under your fingers).
   useEffect(() => {
     const c = normRef.current;
     if (!c || !c.width || !c.height) return;
+    const r = RATIOS[aspect];
+    const pixelsKey = free && r ? `crop|${normTick}|${aspect}` : `final|${normTick}|${aspect}|${pad}`;
+    if (pixelsKey === pixelsRef.current) return;
     const tk = ++prevToken.current;
     let raf = 0;
     const render = () => {
       raf = 0;
       if (tk !== prevToken.current) return;
-      const r = RATIOS[aspect];
       const out = document.createElement('canvas');
       const ctx = out.getContext('2d');
       const fitScale = (w, h, max = 880) => Math.min(1, max / Math.max(w, h));
@@ -190,6 +195,7 @@ export default function MediaEditor({ entry, onClose, onApply }) {
       }
       out.toBlob((blob) => {
         if (!blob || tk !== prevToken.current) return;
+        pixelsRef.current = pixelsKey;
         setPreview((old) => { try { if (old) URL.revokeObjectURL(old); } catch {} return URL.createObjectURL(blob); });
       }, 'image/jpeg', 0.85);
     };
@@ -199,6 +205,13 @@ export default function MediaEditor({ entry, onClose, onApply }) {
   }, [normTick, aspect, pad, free, box]);
 
   const ready = isVideo ? !!vidEl : !!bmp;
+
+  // If the user picked a ratio before the media finished loading, the box
+  // couldn't be computed then — apply it now that dimensions are known.
+  useEffect(() => {
+    if (ready && !box) applyRatio(normDims(), aspect);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ready]);
 
   // Natural dims of the source (before rotation).
   const natDims = () => {

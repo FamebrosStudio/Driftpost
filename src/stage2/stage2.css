@@ -124,8 +124,8 @@
 .s2-ed-cols { display: grid; grid-template-columns: 1.2fr 1fr; gap: 16px; align-items: start; }
 @media (max-width: 720px) { .s2-ed-cols { grid-template-columns: 1fr; } }
 .crop-stage { position: relative; background: #000; border-radius: 14px; min-height: 260px; display: flex; align-items: center; justify-content: center; overflow: hidden; touch-action: none; }
-.crop-wrap { position: relative; line-height: 0; max-width: 100%; }
-.crop-wrap img { max-width: 100%; max-height: 52vh; display: block; }
+.crop-wrap { position: relative; line-height: 0; max-width: 100%; touch-action: none; }
+.crop-wrap img { max-width: 100%; max-height: 52vh; display: block; touch-action: none; }
 @media (max-width: 720px) { .crop-wrap img { max-height: 40vh; } }
 .crop-box { position: absolute; border: 2px solid var(--acc); box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.55); cursor: move; touch-action: none; }
 .crop-handle { position: absolute; width: 22px; height: 22px; border-radius: 6px; background: var(--acc); border: 2px solid #fff; touch-action: none; box-shadow: 0 1px 6px rgba(0,0,0,0.5); }
