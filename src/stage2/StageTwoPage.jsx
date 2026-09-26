@@ -157,8 +157,14 @@ export default function StageTwoPage({ session, onBack, onSignOut, onHistory, on
     });
   };
 
+  // Same-tick double clicks slip past state guards — sync ref claims make
+  // Generate/Regen fire exactly once (each run also costs AI credits).
+  const firing = useRef(new Set());
+  const claim = (k) => { if (firing.current.has(k)) return false; firing.current.add(k); return true; };
+  const release = (k) => { firing.current.delete(k); };
+
   const generate = async () => {
-    if (busy || regen || !brief.trim() || !targetPlatforms.length) return;
+    if (busy || regen || !brief.trim() || !targetPlatforms.length || !claim('gen')) return;
     setBusy(true); setAiMsg(''); setGenStep(0);
     const tick = setInterval(() => setGenStep((s) => (s + 1) % GEN_STEPS.length), 900);
     try {
@@ -169,16 +175,18 @@ export default function StageTwoPage({ session, onBack, onSignOut, onHistory, on
       say('Done — review each platform card below. Edit anything, it saves.', 'ok');
     } catch (e) {
       say(e.message || 'Generation failed.', 'err');
+    } finally {
+      release('gen');
+      clearInterval(tick);
+      setBusy(false);
     }
-    clearInterval(tick);
-    setBusy(false);
   };
 
   // Per-card regenerate: same prompt, ONE card from the server (fast), only
   // that card changes. An empty answer keeps the old card, never wipes it.
   const [regen, setRegen] = useState('');
   const regenOne = async (pid) => {
-    if (busy || regen || !brief.trim()) return;
+    if (busy || regen || !brief.trim() || !claim(`regen:${pid}`)) return;
     setRegen(pid); setAiMsg('');
     try {
       const data = await requestCaptions(pid);
@@ -188,8 +196,10 @@ export default function StageTwoPage({ session, onBack, onSignOut, onHistory, on
       say(`Regenerated ${pid} — review the card.`, 'ok');
     } catch (e) {
       say(e.message || 'Regeneration failed.', 'err');
+    } finally {
+      release(`regen:${pid}`);
+      setRegen('');
     }
-    setRegen('');
   };
 
   const saveOutput = (pid, values) => {

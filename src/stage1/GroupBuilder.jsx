@@ -67,6 +67,9 @@ export default function GroupBuilder({ connections, token, onConnectionsChange, 
   // the selected platforms are pickable, and only those platforms flow into
   // Stage 2/3 when this group is used.
   const [plats, setPlats] = useState([]);
+  // Double-clicking Save slips past the disabled state (updates async) and
+  // would create the group twice — sync ref makes it fire exactly once.
+  const savedRef = useRef(false);
   const [over, setOver] = useState(false);
   const [disBusy, setDisBusy] = useState('');
   useEffect(() => {
@@ -179,7 +182,7 @@ export default function GroupBuilder({ connections, token, onConnectionsChange, 
             className="s1-primary"
             disabled={!ready}
             title={ready ? 'Save group' : 'Name it and pick at least 2 accounts'}
-            onClick={() => onSave({ id: `g${Date.now()}`, name: name.trim().slice(0, 60), accountIds: ids, platforms: plats })}
+            onClick={() => { if (savedRef.current) return; savedRef.current = true; onSave({ id: `g${Date.now()}`, name: name.trim().slice(0, 60), accountIds: ids, platforms: plats }); }}
           >
             Save group
           </button>

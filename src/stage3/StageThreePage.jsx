@@ -1,4 +1,4 @@
-import React, { Suspense, lazy, useEffect, useMemo, useState } from 'react';
+import React, { Suspense, lazy, useEffect, useMemo, useRef, useState } from 'react';
 import { api, apiUrl, groupBrands, PLATFORMS, resetPostState, schedulePost } from '../lib.js';
 import { readVault, writeVault, vaultFiles } from '../stage2/mediaVault.js';
 import { requestCaptions, mapResponse } from '../stage2/ai.js';
@@ -48,6 +48,12 @@ export default function StageThreePage({ session, onBack, onSignOut, onHistory, 
   const [schedBusy, setSchedBusy] = useState(false);
   const [encoding, setEncoding] = useState(false);
   const [schedMsg, setSchedMsg] = useState('');
+  // Same-tick double clicks slip past state guards (state updates async), so
+  // every fire-once action also claims a sync ref — no double posts, no
+  // double schedules, ever.
+  const firing = useRef(new Set());
+  const claim = (k) => { if (firing.current.has(k)) return false; firing.current.add(k); return true; };
+  const release = (k) => { firing.current.delete(k); };
 
   useEffect(() => { document.title = 'Stage 3 · Driftpost'; }, []);
   useEffect(() => {
@@ -343,9 +349,9 @@ export default function StageThreePage({ session, onBack, onSignOut, onHistory, 
   };
 
   const publishOne = async (pid) => {
-    if (busy[pid] || greyed(pid)) return;
-    if (isGroupFlow && !groupMemberIds(pid).length) return;
-    if (!isGroupFlow && !accountFor(pid)) return;
+    if (busy[pid] || greyed(pid) || !claim(`post:${pid}`)) return;
+    if (isGroupFlow && !groupMemberIds(pid).length) { release(`post:${pid}`); return; }
+    if (!isGroupFlow && !accountFor(pid)) { release(`post:${pid}`); return; }
     setBusy((b) => ({ ...b, [pid]: true }));
     const out = { ...results };
     try {
@@ -356,18 +362,20 @@ export default function StageThreePage({ session, onBack, onSignOut, onHistory, 
         out[pid] = { state: 'failed', message: e.message };
         setResults({ ...out });
       }
+    } finally {
+      release(`post:${pid}`);
+      setBusy((b) => ({ ...b, [pid]: false }));
     }
-    setBusy((b) => ({ ...b, [pid]: false }));
   };
 
   // YouTube takes a video, never a bare photo, so encode the still first and
   // publish that. The user's photos are untouched in Stage 2.
   const publishPhotoAsVideo = async (pid) => {
-    if (busy[pid] || greyed(pid)) return;
-    if (isGroupFlow && !groupMemberIds(pid).length) return;
-    if (!isGroupFlow && !accountFor(pid)) return;
+    if (busy[pid] || greyed(pid) || !claim(`photo:${pid}`)) return;
+    if (isGroupFlow && !groupMemberIds(pid).length) { release(`photo:${pid}`); return; }
+    if (!isGroupFlow && !accountFor(pid)) { release(`photo:${pid}`); return; }
     const photo = files.find((f) => f?.raw && f.type.startsWith('image/'))?.raw;
-    if (!photo) { setResults((r) => ({ ...r, [pid]: { state: 'failed', message: 'No photo selected — pick one in Stage 2.' } })); return; }
+    if (!photo) { setResults((r) => ({ ...r, [pid]: { state: 'failed', message: 'No photo selected — pick one in Stage 2.' } })); release(`photo:${pid}`); return; }
     setBusy((b) => ({ ...b, [pid]: true }));
     setEncoding(true);
     const out = { ...results };
@@ -382,38 +390,44 @@ export default function StageThreePage({ session, onBack, onSignOut, onHistory, 
         out[pid] = { state: 'failed', message: e.message };
         setResults({ ...out });
       }
+    } finally {
+      release(`photo:${pid}`);
+      setBusy((b) => ({ ...b, [pid]: false }));
+      setEncoding(false);
     }
-    setBusy((b) => ({ ...b, [pid]: false }));
-    setEncoding(false);
   };
 
   const publishAll = async () => {
     const targets = effective.filter((pid) => (isGroupFlow ? groupMemberIds(pid).length > 0 : accountFor(pid)));
-    if (!targets.length || targets.some((pid) => busy[pid])) return;
+    if (!targets.length || targets.some((pid) => busy[pid]) || !claim('all')) return;
     const out = { ...results };
     // Direct posts only (mirrors stripped) — unless global cross-post routes
     // Facebook through Instagram, which must keep its share flag. Group
     // flows always strip: every member gets a direct post.
     const strip = !(s1.crosspost && !isGroupFlow && targets.includes('instagram'));
-    for (const pid of targets) {
-      try {
-        if (isGroupFlow) await runGroup(pid, out);
-        else await runOne(pid, out, { skipCrossPost: strip });
-      } catch (e) {
-        if (out[pid]?.state !== 'failed') {
-          out[pid] = { state: 'failed', message: e.message };
-          setResults({ ...out });
+    try {
+      for (const pid of targets) {
+        try {
+          if (isGroupFlow) await runGroup(pid, out);
+          else await runOne(pid, out, { skipCrossPost: strip });
+        } catch (e) {
+          if (out[pid]?.state !== 'failed') {
+            out[pid] = { state: 'failed', message: e.message };
+            setResults({ ...out });
+          }
         }
       }
+      const posted = targets
+        .filter((pid) => out[pid]?.state === 'completed')
+        .map((pid) => ({ pid, urls: out[pid].urls || (out[pid].url ? [{ account: '', url: out[pid].url }] : []) }));
+      if (posted.length && posted.length === targets.length) setSuccess(posted);
+    } finally {
+      release('all');
     }
-    const posted = targets
-      .filter((pid) => out[pid]?.state === 'completed')
-      .map((pid) => ({ pid, urls: out[pid].urls || (out[pid].url ? [{ account: '', url: out[pid].url }] : []) }));
-    if (posted.length && posted.length === targets.length) setSuccess(posted);
   };
 
   const doSchedule = async (pid, whenIso) => {
-    if (schedBusy) return;
+    if (schedBusy || !claim(`sched:${pid}`)) return;
     setSchedBusy(true);
     try {
       // YouTube takes video only: with photos attached, encode the still to
@@ -453,8 +467,10 @@ export default function StageThreePage({ session, onBack, onSignOut, onHistory, 
         : `${NAMES[pid]} scheduled for ${when}. Manage or cancel it in History.`);
     } catch (e) {
       setSchedMsg(e.message || 'Could not schedule the post');
+    } finally {
+      release(`sched:${pid}`);
+      setSchedBusy(false);
     }
-    setSchedBusy(false);
   };
 
   const startNew = async () => {

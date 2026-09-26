@@ -274,15 +274,43 @@ export async function resetPostState() {
 }
 
 export async function api(path, token, options = {}) {
-  const res = await fetch(`${apiUrl}${path}`, {
-    ...options,
-    headers: {
-      ...(options.headers || {}),
-      Authorization: `Bearer ${token}`,
-      ...(options.body instanceof FormData ? {} : { 'Content-Type': 'application/json' }),
-    },
-  });
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data.error || 'Request failed');
-  return data;
+  // Every request carries a timeout so a cold/sleeping server can never hang
+  // a button forever. Safe GETs get one transparent retry (no side effects);
+  // writes fail fast with a plain message instead of hanging.
+  const method = String(options.method || 'GET').toUpperCase();
+  const call = async (timeoutMs) => {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), timeoutMs);
+    try {
+      const res = await fetch(`${apiUrl}${path}`, {
+        ...options,
+        signal: ctrl.signal,
+        headers: {
+          ...(options.headers || {}),
+          Authorization: `Bearer ${token}`,
+          ...(options.body instanceof FormData ? {} : { 'Content-Type': 'application/json' }),
+        },
+      });
+      const ct = res.headers.get('content-type') || '';
+      // A same-origin index.html fallback (wrong API URL) is HTML, not JSON
+      // — say so plainly instead of dying downstream with no message.
+      if (!ct.includes('json')) throw new Error('API unreachable — check your connection and try again.');
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || 'Request failed');
+      return data;
+    } catch (e) {
+      if (e?.name === 'AbortError') throw new Error('Server is waking up — try again in a few seconds.');
+      throw e;
+    } finally {
+      clearTimeout(timer);
+    }
+  };
+  try {
+    return await call(25000);
+  } catch (e) {
+    const retryable = method === 'GET' && /waking up|Failed to fetch|NetworkError|Load failed|network/i.test(e.message || '');
+    if (!retryable) throw e;
+    await new Promise((r) => setTimeout(r, 1500));
+    return call(30000);
+  }
 }
