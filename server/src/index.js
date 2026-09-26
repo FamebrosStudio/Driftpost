@@ -734,7 +734,7 @@ async function runPublish(job, conn, payload, body, userId) {
           || (String(f.mimetype || '').startsWith('video/') ? '.mp4' : '.jpg');
         const key = `${crypto.randomUUID()}${safeExt}`;
         const { error: upErr } = await supabase.storage.from(BUCKET).upload(key, bytes, { contentType: f.mimetype, upsert: true });
-        if (upErr) throw new Error('Media upload failed. Create public bucket "' + BUCKET + '" in Supabase Storage.');
+         if (upErr) throw new Error('Media upload failed (' + BUCKET + '): ' + (upErr.message || upErr) + '. Make sure the "' + BUCKET + '" bucket exists and is public.');
         const { data } = supabase.storage.from(BUCKET).getPublicUrl(key);
         return { url: data.publicUrl, bytes, file: f };
       };
@@ -984,7 +984,7 @@ app.post('/api/schedule', requireUser, strictBurstLimit, publishLimit, publishUp
       const key = `${prefix}/${crypto.randomUUID()}${ext}`;
       const { error: upErr } = await supabase.storage.from(BUCKET)
         .upload(key, bytes, { contentType: f.mimetype, upsert: false });
-      if (upErr) throw new Error('Media upload failed. Create public bucket "' + BUCKET + '" in Supabase Storage.');
+       if (upErr) throw new Error('Media upload failed (' + BUCKET + '): ' + (upErr.message || upErr) + '. Make sure the "' + BUCKET + '" bucket exists and is public.');
       stored.push({ path: key, mimetype: f.mimetype, name: f.originalname || key.split('/').pop() });
     }
     let thumbPath = null;
