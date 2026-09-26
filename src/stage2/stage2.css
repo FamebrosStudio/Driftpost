@@ -133,6 +133,7 @@
 .crop-handle.ne { right: 3px; top: 3px; cursor: nesw-resize; }
 .crop-handle.sw { left: 3px; bottom: 3px; cursor: nesw-resize; }
 .crop-handle.se { right: 3px; bottom: 3px; cursor: nwse-resize; }
+.crop-hint { color: #8a8a93; font-size: 11.5px; line-height: 1.5; margin: 8px 4px 0; text-align: center; max-width: 420px; }
 .s2-pills { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
 .s2-pill { border: 1.5px solid var(--line-hard); background: var(--panel2); color: var(--ink); border-radius: 999px; padding: 10px 18px; font-size: 12.5px; font-weight: 700; cursor: pointer; }
 .s2-pill.on { border-color: var(--acc); background: var(--acc-soft); color: var(--acc); }

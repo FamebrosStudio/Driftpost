@@ -72,9 +72,11 @@ export default function MediaEditor({ entry, onClose, onApply }) {
   const [preview, setPreview] = useState('');
   const [busy, setBusy] = useState(false);
   const [busyText, setBusyText] = useState('');
+  const [normTick, setNormTick] = useState(0); // bumped whenever the baked base changes
   const normRef = useRef(null);
   const wrapRef = useRef(null);
   const dragRef = useRef(null);
+  const prevToken = useRef(0);
   const url = useMemo(() => URL.createObjectURL(entry.raw), [entry]);
 
   useEffect(() => () => { try { URL.revokeObjectURL(url); } catch {} }, [url]);
@@ -130,6 +132,8 @@ export default function MediaEditor({ entry, onClose, onApply }) {
   }, [entry, isVideo]);
 
   // Normalized bitmap: rotation + flip baked in (preview + export base).
+  // The visible preview renders separately below so every control
+  // (aspect, fit/crop, box) shows up live.
   useEffect(() => {
     const bake = (src, sw, sh) => {
       if (!sw || !sh) return;
@@ -143,14 +147,56 @@ export default function MediaEditor({ entry, onClose, onApply }) {
       ctx.scale(flipH ? -1 : 1, flipV ? -1 : 1);
       ctx.drawImage(src, -sw / 2, -sh / 2, sw, sh);
       normRef.current = c;
-      c.toBlob((blob) => {
-        if (!blob) return;
-        setPreview((old) => { try { if (old) URL.revokeObjectURL(old); } catch {} return URL.createObjectURL(blob); });
-      }, 'image/jpeg', 0.85);
+      setNormTick((t) => t + 1);
     };
     if (!isVideo && bmp) bake(bmp, bmp.width, bmp.height);
     else if (isVideo && vidEl && vidEl.videoWidth) bake(vidEl, vidEl.videoWidth, vidEl.videoHeight);
   }, [bmp, vidEl, rot, flipH, flipV, isVideo]);
+
+  // WYSIWYG preview: exactly what Done will export, re-rendered on every
+  // control change. Fit/Original render the final padded frame at the exact
+  // target ratio; Crop mode renders the full frame under the ratio-locked
+  // box overlay (the box IS the output). rAF-throttled + token-guarded so
+  // fast drags never flash a stale frame.
+  useEffect(() => {
+    const c = normRef.current;
+    if (!c || !c.width || !c.height) return;
+    const tk = ++prevToken.current;
+    let raf = 0;
+    const render = () => {
+      raf = 0;
+      if (tk !== prevToken.current) return;
+      const r = RATIOS[aspect];
+      const out = document.createElement('canvas');
+      const ctx = out.getContext('2d');
+      const fitScale = (w, h, max = 880) => Math.min(1, max / Math.max(w, h));
+      if (free && r) {
+        const s = fitScale(c.width, c.height);
+        out.width = Math.max(1, Math.round(c.width * s));
+        out.height = Math.max(1, Math.round(c.height * s));
+        ctx.drawImage(c, 0, 0, out.width, out.height);
+      } else if (!r) {
+        const s = fitScale(c.width, c.height);
+        out.width = Math.max(1, Math.round(c.width * s));
+        out.height = Math.max(1, Math.round(c.height * s));
+        ctx.drawImage(c, 0, 0, out.width, out.height);
+      } else {
+        const t = targetDims();
+        if (!t) return;
+        const s = fitScale(t.w, t.h);
+        out.width = Math.max(1, Math.round(t.w * s));
+        out.height = Math.max(1, Math.round(t.h * s));
+        drawFit(ctx, c, c.width, c.height, out.width, out.height);
+      }
+      out.toBlob((blob) => {
+        if (!blob || tk !== prevToken.current) return;
+        setPreview((old) => { try { if (old) URL.revokeObjectURL(old); } catch {} return URL.createObjectURL(blob); });
+      }, 'image/jpeg', 0.85);
+    };
+    raf = requestAnimationFrame(render);
+    return () => { if (raf) cancelAnimationFrame(raf); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [normTick, aspect, pad, free, box]);
 
   const ready = isVideo ? !!vidEl : !!bmp;
 
@@ -238,6 +284,20 @@ export default function MediaEditor({ entry, onClose, onApply }) {
     try { e.target.setPointerCapture?.(e.pointerId); } catch {}
     dragRef.current = { mode, x0: e.clientX, y0: e.clientY, box: { ...box } };
   };
+  // Drag anywhere on the photo (outside the box) to draw a fresh crop window
+  // — the fastest way to keep the whole image then cut exactly what you want.
+  // Box/handle drags stopPropagation above, so this only fires for new boxes.
+  const startDraw = (e) => {
+    if (!free || !wrapRef.current || !normRef.current) return;
+    if (e.target?.closest?.('.crop-hint')) return;
+    const r = wrapRef.current.getBoundingClientRect();
+    if (!r.width || !r.height) return;
+    const ax = (e.clientX - r.left) / r.width;
+    const ay = (e.clientY - r.top) / r.height;
+    if (ax < 0 || ax > 1 || ay < 0 || ay > 1) return;
+    e.preventDefault();
+    dragRef.current = { mode: 'draw', x0: e.clientX, y0: e.clientY, ax, ay };
+  };
   const onPointerMove = useCallback((e) => {
     const d = dragRef.current;
     const wrap = wrapRef.current;
@@ -259,6 +319,24 @@ export default function MediaEditor({ entry, onClose, onApply }) {
     };
     if (d.mode === 'move') {
       setBox(clampBox({ fx: d.box.fx + dx, fy: d.box.fy + dy, fw: d.box.fw, fh: d.box.fh }));
+      return;
+    }
+    if (d.mode === 'draw') {
+      // Anchor stays fixed, opposite corner follows the pointer; the window
+      // stays ratio-locked to the target aspect when one is chosen.
+      const c2 = normRef.current;
+      const dratio = RATIOS[aspect];
+      const dImg = c2 ? c2.width / c2.height : 1;
+      let fw = Math.abs(dx);
+      let fh = Math.abs(dy);
+      if (dratio) {
+        const target = dratio / dImg;
+        if (fw / target >= fh) fh = fw / target;
+        else fw = fh * target;
+      }
+      const fx = dx >= 0 ? d.ax : d.ax - fw;
+      const fy = dy >= 0 ? d.ay : d.ay - fh;
+      setBox(clampBox({ fx, fy, fw: Math.max(fw, MIN), fh: Math.max(fh, MIN) }));
       return;
     }
     const imgRatio = c ? c.width / c.height : 1;
@@ -439,7 +517,7 @@ export default function MediaEditor({ entry, onClose, onApply }) {
         <p className="sub">{entry.name} · {isVideo ? 'fit or crop, re-encoded with audio kept' : 'fit or crop, exact-size HD output'}</p>
         <div className="s2-ed-cols">
           <div className="crop-stage">
-            <div className="crop-wrap" ref={wrapRef}>
+            <div className="crop-wrap" ref={wrapRef} onPointerDown={free ? startDraw : undefined}>
               {preview
                 ? <img src={preview} alt="Edit preview" draggable={false} />
                 : <span style={{ color: '#888', fontSize: 13 }}>Loading…</span>}
@@ -453,6 +531,9 @@ export default function MediaEditor({ entry, onClose, onApply }) {
                     <span key={h} className={`crop-handle ${h}`} onPointerDown={(e) => onPointerDown(e, h)} />
                   ))}
                 </div>
+              )}
+              {free && (
+                <p className="crop-hint">Drag on the photo to draw a new crop · drag the box to move · corners to resize</p>
               )}
             </div>
           </div>
