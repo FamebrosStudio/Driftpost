@@ -199,6 +199,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onHistory, 
       const data = await requestCaptions(session.access_token, {
         brief, brand: brandLabel, files,
         tone: s1.tone, emoji: s1.emoji, length: s1.length,
+        only: pid,
       });
       const mapped = mapResponse(data);
       onValues(pid, mapped[pid]);

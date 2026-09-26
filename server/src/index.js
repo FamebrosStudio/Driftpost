@@ -193,6 +193,7 @@ app.post('/api/ai/captions', requireUser, aiLimit, async (req, res) => {
       tone: req.body?.tone,
       emoji: req.body?.emoji,
       length: req.body?.length,
+      only: req.body?.only,
     });
     res.json(out);
   } catch (e) {

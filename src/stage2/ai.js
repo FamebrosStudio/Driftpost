@@ -1,7 +1,8 @@
 import { api } from '../lib.js';
 
 // Shared Stage 2/3 caption generation: one request, per-platform answers.
-export function requestCaptions(token, { brief, brand, files, tone, emoji, length }) {
+// Pass only:<platform> for a fast single-card regen (one card, ~1/3 tokens).
+export function requestCaptions(token, { brief, brand, files, tone, emoji, length, only }) {
   return api('/api/ai/captions', token, {
     method: 'POST',
     body: JSON.stringify({
@@ -11,6 +12,7 @@ export function requestCaptions(token, { brief, brand, files, tone, emoji, lengt
       goal: 'enquiries',
       trends: false,
       tone, emoji, length,
+      ...(only ? { only } : {}),
     }),
   });
 }

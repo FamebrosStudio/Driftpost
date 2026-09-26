@@ -143,8 +143,9 @@ export default function StageTwoPage({ session, onBack, onSignOut, onHistory, on
     setEditing(-1);
   };
 
-  const requestCaptions = () => fetchCaptions(session.access_token, {
+  const requestCaptions = (pid) => fetchCaptions(session.access_token, {
     brief, brand: brandLabel, files, tone, emoji, length,
+    ...(pid ? { only: pid } : {}),
   });
 
   const applyMapped = (mapped, pids) => {
@@ -173,13 +174,14 @@ export default function StageTwoPage({ session, onBack, onSignOut, onHistory, on
     setBusy(false);
   };
 
-  // Per-card regenerate: same prompt, fresh answer, only that card changes.
+  // Per-card regenerate: same prompt, ONE card from the server (fast), only
+  // that card changes. An empty answer keeps the old card, never wipes it.
   const [regen, setRegen] = useState('');
   const regenOne = async (pid) => {
     if (busy || regen || !brief.trim()) return;
     setRegen(pid); setAiMsg('');
     try {
-      const data = await requestCaptions();
+      const data = await requestCaptions(pid);
       const mapped = mapResponse(data);
       applyMapped(mapped, [pid]);
       logCaptions({ brand: brandLabel, entries: [{ platform: pid, text: composeOutput(pid, mapped[pid]) }] });
