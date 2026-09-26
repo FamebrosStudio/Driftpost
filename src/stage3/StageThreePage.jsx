@@ -1,7 +1,7 @@
 import React, { Suspense, lazy, useEffect, useMemo, useRef, useState } from 'react';
 import { api, apiUrl, groupBrands, PLATFORMS, resetPostState, schedulePost } from '../lib.js';
 import { readVault, writeVault, vaultFiles } from '../stage2/mediaVault.js';
-import { requestCaptions, mapResponse } from '../stage2/ai.js';
+import { requestCaptions, mapResponse, approveCaption } from '../stage2/ai.js';
 import { composeOutput } from '../stage2/PlatformOutputCard.jsx';
 import { photoToVideo } from './photoVideo.js';
 import { logCaptions, logPost } from '../history/log.js';
@@ -214,7 +214,12 @@ export default function StageThreePage({ session, onBack, onSignOut, onHistory, 
       });
     })();
   };
-  const onReviewed = (pid) => setReviewed((r) => { const n = { ...r, [pid]: true }; save('driftpost-stage3-reviewed', n); return n; });
+  // Reviewing a card is the approval signal: the server keeps this caption as a
+  // reference so the next generation for the same brand writes closer to it.
+  const onReviewed = (pid) => {
+    approveCaption(session.access_token, { brand: brandLabel, platform: pid });
+    setReviewed((r) => { const n = { ...r, [pid]: true }; save('driftpost-stage3-reviewed', n); return n; });
+  };
 
   const regenOne = async (pid) => {
     if (busy[pid] || regen || !brief.trim()) return;

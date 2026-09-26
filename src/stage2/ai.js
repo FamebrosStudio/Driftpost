@@ -17,6 +17,19 @@ export function requestCaptions(token, { brief, brand, files, tone, emoji, lengt
   });
 }
 
+// Tell the server this caption was approved. The server promotes it to a
+// reference for future generations of the same brand by the same user, so the
+// writing drifts toward what they actually accept rather than a guess.
+// Fire-and-forget: a failed preference ping must never interrupt the flow.
+export function approveCaption(token, { brand, platform }) {
+  try {
+    void api('/api/ai/feedback', token, {
+      method: 'POST',
+      body: JSON.stringify({ brand, platform }),
+    }).catch(() => {});
+  } catch {}
+}
+
 export function mapResponse(data) {
   const c = data.captions || data;
   const ytTags = Array.isArray(c.youtube?.tags) ? c.youtube.tags.join(', ') : (c.youtube?.tags || '');

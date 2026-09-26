@@ -11,6 +11,7 @@ import path from 'node:path';
 import { createClient } from '@supabase/supabase-js';
 import { decryptJson, encryptJson, signState, verifyState } from './crypto.js';
 import { exchangeGoogleCode, getYouTubeChannel, youtubeAuthorizationUrl } from './google.js';
+import { learnedVoice, markLatestUsed, markUsed, recordGeneration } from './captionMemory.js';
 import { uploadVideoResumable, validAccessToken } from './youtube-upload.js';
 import { exchangeMetaCode, getMetaPages, longLivedToken, metaAuthorizationUrl, metaBusinessLoginUrl, publishFacebook, publishInstagram } from './meta.js';
 import { createPkcePair, exchangeXCode, getXUser, xAuthorizationUrl } from './x.js';
@@ -201,8 +202,16 @@ app.delete('/api/account', requireUser, limit({ windowMs: 60 * 1000, max: 5, key
 // --- AI captions (Grok + local brand memory, server-side key) ---
 app.post('/api/ai/captions', requireUser, aiLimit, async (req, res) => {
   try {
+    const brandLabel = String(req.body?.brand || '');
+    // What this user has already approved for this brand, so each generation
+    // starts closer to their voice than the last one did.
+    const learned = await learnedVoice(supabase, {
+      userId: req.user.id,
+      brandLabel,
+      platform: ['youtube', 'instagram', 'facebook', 'x'].includes(req.body?.only) ? req.body.only : null,
+    });
     const out = await generateCaptions(req.body?.summary, {
-      brand: req.body?.brand,
+      brand: brandLabel,
       assetHint: req.body?.asset_description || req.body?.assetHint,
       goal: req.body?.goal,
       trends: req.body?.trends === true || req.body?.trends === '1' || req.body?.trends === 1,
@@ -210,12 +219,57 @@ app.post('/api/ai/captions', requireUser, aiLimit, async (req, res) => {
       emoji: req.body?.emoji,
       length: req.body?.length,
       only: req.body?.only,
+      learned,
     });
     res.json(out);
+    // Store after responding: learning must never delay or fail a generation.
+    // Guarded separately because the response is already sent, so re-entering
+    // the outer catch would try to write headers a second time.
+    try {
+      const c = out?.captions || out;
+      const entries = [
+        ['instagram', c?.instagram?.caption],
+        ['facebook', c?.facebook?.message],
+        ['youtube', [c?.youtube?.title, c?.youtube?.description].filter(Boolean).join('\n\n')],
+        ['x', c?.x?.text],
+      ]
+        .filter(([, body]) => typeof body === 'string' && body.trim())
+        .map(([platform, body]) => ({ platform, body }));
+      // Stored per user, never in the shared brand files: one account's writing
+      // must not become another account's default.
+      await recordGeneration(supabase, {
+        userId: req.user.id,
+        brandLabel,
+        brief: req.body?.summary,
+        settings: { tone: req.body?.tone, emoji: req.body?.emoji, length: req.body?.length },
+      }, entries);
+    } catch {
+      // Memory is best-effort; the caption is already delivered.
+    }
   } catch (e) {
     const msg = String(e.message || 'AI failed');
     const code = /credits/i.test(msg) ? 402 : /configured/i.test(msg) ? 503 : 500;
     res.status(code).json({ error: msg });
+  }
+});
+
+// The user approved or published a caption: promote it to a future example.
+app.post('/api/ai/feedback', requireUser, burstLimit, async (req, res) => {
+  try {
+    const platform = String(req.body?.platform || '');
+    if (!['youtube', 'instagram', 'facebook', 'x'].includes(platform)) {
+      return res.status(400).json({ error: 'Unknown platform' });
+    }
+    const ok = req.body?.id
+      ? await markUsed(supabase, { userId: req.user.id, id: req.body.id })
+      : await markLatestUsed(supabase, {
+        userId: req.user.id,
+        brandLabel: req.body?.brand,
+        platform,
+      });
+    res.json({ ok });
+  } catch {
+    res.status(500).json({ error: 'Could not save that preference' });
   }
 });
 
