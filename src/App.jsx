@@ -512,26 +512,22 @@ export default function App() {
   };
 
   useEffect(() => {
-    // Logged-in users live in the console (its own page, refresh-safe);
-    // its titles are set by the stages themselves.
-    if (session) {
-      document.querySelector('meta[name="robots"]')?.setAttribute('content', 'noindex, nofollow');
-      return;
-    }
-    // Public landing titles follow the page.
-    document.title = entry === 'landing'
+    // Landing page is always public and indexable.
+    // Console/auth are private (noindex for logged-in users).
+    const isLanding = entry === 'landing';
+    document.title = isLanding
       ? (pubPage === 'home' ? 'Driftpost — Publish Everywhere' : `${PUB_PAGES.find((p) => p.id === pubPage)?.label} · Driftpost`)
-      : 'Sign in · Driftpost';
-    // Landing pages are public and indexable; auth stays private.
-    document.querySelector('meta[name="robots"]')?.setAttribute('content', entry === 'landing' ? 'index, follow, max-image-preview:large' : 'noindex, nofollow');
+      : (session ? 'Console · Driftpost' : 'Sign in · Driftpost');
+    document.querySelector('meta[name="robots"]')?.setAttribute('content', isLanding ? 'index, follow, max-image-preview:large' : 'noindex, nofollow');
   }, [session, entry, pubPage]);
 
   useEffect(() => { window.scrollTo(0, 0); }, [pubPage]);
 
-  // Logged-out visitors render instantly — nothing waits on the auth library.
-  if (!session) return entry === 'landing' ? <Landing session={false} pubPage={pubPage} setPubPage={setPubPage} onEnter={() => setEntry('auth')} /> : <Auth mode={mode} setMode={setMode} onBack={() => setEntry('landing')} />;
-  // Logged in = console page. Refresh restores the session, the stage, and
-  // every saved choice — never the landing page.
+  // Everyone lands on the landing page first; console is reached
+  // by clicking "Enter console" from there.
+  if (entry === 'landing') return <Landing session={session} pubPage={pubPage} setPubPage={setPubPage} onEnter={() => session ? setEntry('console') : setEntry('auth')} />;
+  if (entry === 'auth') return <Auth mode={mode} setMode={setMode} onBack={() => setEntry('landing')} />;
+  // console
   return (
     <Suspense fallback={<Loader />}>
       <Console session={session} onSwitchAccount={() => doSignOut('auth')} onSignOut={() => doSignOut('landing')} />
