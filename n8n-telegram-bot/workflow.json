@@ -1,5 +1,6 @@
 {
   "name": "Driftpost Telegram Bot v2 (multi-platform)",
+  "active": false,
   "nodes": [
     {
       "parameters": {
@@ -25,22 +26,90 @@
     },
     {
       "parameters": {
-        "dataType": "string",
-        "value1": "={{ $json.route }}",
-        "rules": {
-          "rules": [
-            { "operation": "equals", "value2": "callback" },
-            { "operation": "equals", "value2": "video" },
-            { "operation": "equals", "value2": "text" }
-          ]
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "route-is-callback",
+              "leftValue": "={{ $json.route }}",
+              "rightValue": "callback",
+              "operator": {
+                "type": "equals",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
         },
-        "fallbackOutput": 3
+        "options": {}
       },
-      "id": "router",
-      "name": "Router",
-      "type": "n8n-nodes-base.switch",
-      "typeVersion": 3,
+      "id": "if-callback",
+      "name": "IF Callback?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
       "position": [-1160, 400]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "route-is-video",
+              "leftValue": "={{ $json.route }}",
+              "rightValue": "video",
+              "operator": {
+                "type": "equals",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "if-video",
+      "name": "IF Video?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [-940, 560]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "route-is-text",
+              "leftValue": "={{ $json.route }}",
+              "rightValue": "text",
+              "operator": {
+                "type": "equals",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "if-text",
+      "name": "IF Text?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [-720, 620]
     },
     {
       "parameters": {
@@ -145,20 +214,31 @@
     },
     {
       "parameters": {
-        "dataType": "string",
-        "value1": "={{ $json.action }}",
-        "rules": {
-          "rules": [
-            { "operation": "equals", "value2": "set_brand" },
-            { "operation": "equals", "value2": "help" }
-          ]
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "action-is-setbrand",
+              "leftValue": "={{ $json.action }}",
+              "rightValue": "set_brand",
+              "operator": {
+                "type": "equals",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
         },
-        "fallbackOutput": 2
+        "options": {}
       },
-      "id": "text-router",
-      "name": "Text: Router",
-      "type": "n8n-nodes-base.switch",
-      "typeVersion": 3,
+      "id": "if-setbrand",
+      "name": "IF Set Brand?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
       "position": [-500, 420]
     },
     {
@@ -253,23 +333,90 @@
     },
     {
       "parameters": {
-        "dataType": "string",
-        "value1": "={{ $json.action }}",
-        "rules": {
-          "rules": [
-            { "operation": "equals", "value2": "toggle" },
-            { "operation": "equals", "value2": "done" },
-            { "operation": "equals", "value2": "cancel" },
-            { "operation": "equals", "value2": "empty" }
-          ]
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "action-is-toggle",
+              "leftValue": "={{ $json.action }}",
+              "rightValue": "toggle",
+              "operator": {
+                "type": "equals",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
         },
-        "fallbackOutput": 4
+        "options": {}
       },
-      "id": "cb-router",
-      "name": "Callback: Router",
-      "type": "n8n-nodes-base.switch",
-      "typeVersion": 3,
-      "position": [-500, 660]
+      "id": "if-toggle",
+      "name": "IF Toggle?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [-500, 620]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "action-is-done",
+              "leftValue": "={{ $json.action }}",
+              "rightValue": "done",
+              "operator": {
+                "type": "equals",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "if-done",
+      "name": "IF Done?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [-280, 700]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "action-is-cancel",
+              "leftValue": "={{ $json.action }}",
+              "rightValue": "cancel",
+              "operator": {
+                "type": "equals",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "if-cancel",
+      "name": "IF Cancel?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [-60, 700]
     },
     {
       "parameters": {
@@ -615,11 +762,21 @@
   ],
   "connections": {
     "Telegram Trigger": { "main": [[{ "node": "Classify Update", "type": "main", "index": 0 }]] },
-    "Classify Update": { "main": [[{ "node": "Router", "type": "main", "index": 0 }]] },
-    "Router": {
+    "Classify Update": { "main": [[{ "node": "IF Callback?", "type": "main", "index": 0 }]] },
+    "IF Callback?": {
       "main": [
         [{ "node": "Callback: Load", "type": "main", "index": 0 }],
+        [{ "node": "IF Video?", "type": "main", "index": 0 }]
+      ]
+    },
+    "IF Video?": {
+      "main": [
         [{ "node": "Video: Save Session", "type": "main", "index": 0 }],
+        [{ "node": "IF Text?", "type": "main", "index": 0 }]
+      ]
+    },
+    "IF Text?": {
+      "main": [
         [{ "node": "Text: Load Session", "type": "main", "index": 0 }],
         [{ "node": "Other: Hint", "type": "main", "index": 0 }]
       ]
@@ -627,23 +784,31 @@
     "Video: Save Session": { "main": [[{ "node": "Video: Decide", "type": "main", "index": 0 }]] },
     "Video: Decide": { "main": [[{ "node": "Send Picker / Ask", "type": "main", "index": 0 }]] },
     "Text: Load Session": { "main": [[{ "node": "Text: Handle", "type": "main", "index": 0 }]] },
-    "Text: Handle": { "main": [[{ "node": "Text: Router", "type": "main", "index": 0 }]] },
-    "Text: Router": {
+    "Text: Handle": { "main": [[{ "node": "IF Set Brand?", "type": "main", "index": 0 }]] },
+    "IF Set Brand?": {
       "main": [
         [{ "node": "Text: Save Brand", "type": "main", "index": 0 }],
-        [{ "node": "Text: Help/Hint", "type": "main", "index": 0 }],
         [{ "node": "Text: Help/Hint", "type": "main", "index": 0 }]
       ]
     },
     "Text: Save Brand": { "main": [[{ "node": "Text: Send Picker", "type": "main", "index": 0 }]] },
     "Callback: Load": { "main": [[{ "node": "Callback: Handle", "type": "main", "index": 0 }]] },
-    "Callback: Handle": { "main": [[{ "node": "Callback: Router", "type": "main", "index": 0 }]] },
-    "Callback: Router": {
+    "Callback: Handle": { "main": [[{ "node": "IF Toggle?", "type": "main", "index": 0 }]] },
+    "IF Toggle?": {
       "main": [
         [{ "node": "Callback: Save Sel", "type": "main", "index": 0 }],
+        [{ "node": "IF Done?", "type": "main", "index": 0 }]
+      ]
+    },
+    "IF Done?": {
+      "main": [
         [{ "node": "Done: Status Msg", "type": "main", "index": 0 }],
+        [{ "node": "IF Cancel?", "type": "main", "index": 0 }]
+      ]
+    },
+    "IF Cancel?": {
+      "main": [
         [{ "node": "Callback: Delete", "type": "main", "index": 0 }],
-        [{ "node": "Callback: Answer", "type": "main", "index": 0 }],
         [{ "node": "Callback: Answer", "type": "main", "index": 0 }]
       ]
     },
