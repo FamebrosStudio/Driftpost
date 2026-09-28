@@ -99,24 +99,17 @@ export default function StageThreePage({ session, onBack, onSignOut, onHistory, 
         if (prevKey === curKey && prev?.files?.length) { setCloudDone(true); return; }
         const out = [];
         setCloudProgress({ done: 0, total: files.length });
-        // Read each file as base64 and ask the server to upload to
+        // Send each file as multipart and ask the server to upload to
         // Supabase Storage using the service key. This bypasses
         // browser CORS restrictions that would otherwise block a
         // direct client-side POST to Supabase Storage.
-        const toBase64 = (blob) => new Promise((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onload = () => { const s = reader.result; resolve(s.split(',')[1]); };
-          reader.onerror = reject;
-          reader.readAsDataURL(blob);
-        });
         for (const f of files) {
           try {
-            const ext = f.name.split('.').pop() || (String(f.type || '').startsWith('video/') ? 'mp4' : 'jpg');
-            const b64 = await toBase64(f.raw);
+            const body = new FormData();
+            body.append('file', f.raw, f.name || `upload-${Date.now()}`);
             const res = await api('/api/storage/upload', session.access_token, {
               method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ files: [{ name: f.name || `${Date.now()}.${ext}`, mimetype: f.type || '', base64: b64 }] }),
+              body,
             });
             if (!res.results?.[0]?.publicUrl) throw new Error('server upload failed');
             out.push({ name: f.name || res.results[0].name, publicUrl: res.results[0].publicUrl, mimetype: f.type || '' });

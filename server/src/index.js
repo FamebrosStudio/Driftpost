@@ -81,21 +81,46 @@ const globalLimiter = rateLimit({
 });
 app.use(globalLimiter);
 
-// Server-side Supabase Storage upload endpoint. Its larger route-specific
-// parser must run before the 1 MB global JSON parser below.
-app.post('/api/storage/upload', requireUser, express.json({ limit: '50mb' }), async (req, res) => {
+// Accept multipart files without base64 expansion. Keep the legacy JSON path
+// briefly compatible with already-open frontend tabs during deployments.
+function parseStorageUpload(req, res, next) {
+  if (req.is('application/json')) {
+    return express.json({ limit: '50mb' })(req, res, next);
+  }
+  return upload.single('file')(req, res, next);
+}
+
+app.post('/api/storage/upload', requireUser, parseStorageUpload, async (req, res) => {
+  let tempPath = null;
   try {
-    const raw = req.body?.files;
-    if (!raw || !Array.isArray(raw) || !raw.length) {
+    let files;
+    if (req.file) {
+      tempPath = req.file.path;
+      files = [{
+        name: req.file.originalname,
+        mimetype: req.file.mimetype,
+        bytes: await fs.readFile(req.file.path),
+      }];
+    } else {
+      const raw = req.body?.files;
+      if (!Array.isArray(raw) || !raw.length) {
+        return res.status(400).json({ error: 'No files to upload' });
+      }
+      files = raw.map(({ name, mimetype, base64 }) => ({
+        name,
+        mimetype,
+        bytes: base64 ? Buffer.from(String(base64), 'base64') : null,
+      }));
+    }
+    if (!files.length) {
       return res.status(400).json({ error: 'No files to upload' });
     }
     const results = [];
-    for (const item of raw) {
-      const { name, mimetype, base64 } = item;
-      if (!name || !base64) { results.push({ name, error: 'missing name or base64' }); continue; }
-      const ext = name.split('.').pop() || (String(mimetype || '').startsWith('video/') ? 'mp4' : 'jpg');
+    for (const { name, mimetype, bytes } of files) {
+      if (!name || !bytes) { results.push({ name, error: 'missing name or file data' }); continue; }
+      const ext = path.extname(name).replace(/[^a-z0-9.]/gi, '').slice(1, 8)
+        || (String(mimetype || '').startsWith('video/') ? 'mp4' : 'jpg');
       const key = `${crypto.randomUUID()}.${ext}`;
-      const bytes = Buffer.from(String(base64), 'base64');
       const { error: upErr } = await supabase.storage.from(BUCKET).upload(key, bytes, { contentType: mimetype || 'application/octet-stream', upsert: true });
       if (upErr) { results.push({ name, error: upErr.message }); continue; }
       const { data } = supabase.storage.from(BUCKET).getPublicUrl(key);
@@ -104,6 +129,8 @@ app.post('/api/storage/upload', requireUser, express.json({ limit: '50mb' }), as
     res.json({ results });
   } catch (e) {
     res.status(500).json({ error: e.message || 'Storage upload failed' });
+  } finally {
+    if (tempPath) await fs.unlink(tempPath).catch(() => {});
   }
 });
 
@@ -120,7 +147,8 @@ async function requireUser(req, res, next) {
       // Log the REAL reason in Render logs: 'invalid token' (re-login fixes)
       // vs Auth-server outage (waiting fixes). Never sent to the client.
       console.error('[auth] getUser failed:', error?.message || 'no user', '| status:', error?.status ?? '', '| code:', error?.code ?? '');
-      if (error && Number(error.status) >= 500) {
+      const status = Number(error?.status);
+      if (status >= 500 || status === 0 || /fetch failed|network error/i.test(error?.message || '')) {
         return res.status(503).json({ error: 'Login service unreachable — try again in a minute.' });
       }
       return res.status(401).json({ error: 'Session expired' });
@@ -1175,6 +1203,9 @@ app.use((err, _req, res, _next) => {
   console.error(err);
   if (err && err.message === 'Not allowed by CORS') {
     return res.status(403).json({ error: 'CORS policy blocked this request' });
+  }
+  if (err?.type === 'entity.too.large') {
+    return res.status(413).json({ error: 'Upload is too large. Reload the app and try again.' });
   }
   if (err && (err.code === 'LIMIT_FILE_SIZE' || err.code === 'LIMIT_FILE_COUNT' || err.code === 'LIMIT_UNEXPECTED_FILE')) {
     return res.status(400).json({ error: 'File is too large. Images max 10 MB, videos max 512 MB.' });
