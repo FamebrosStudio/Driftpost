@@ -1,9 +1,0 @@
-# Names for start-bot.ps1 (plain `n8n start` won't see them).
-# The workflow reads them as $env.* — no Enterprise plan needed.
-$env:TELEGRAM_BOT_TOKEN = ""
-$env:DRIFTPOST_API_URL = "http://localhost:10000"
-$env:SUPABASE_URL = ""
-$env:SUPABASE_SERVICE_KEY = ""
-$env:BOT_USER_ID = ""
-$env:BOT_JWT = ""
-$env:XAI_API_KEY = ""
