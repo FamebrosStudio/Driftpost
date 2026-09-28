@@ -90,35 +90,42 @@ export default function StageThreePage({ session, onBack, onSignOut, onHistory, 
 
    // Pre-upload media to Supabase while the user reviews captions.
    // Stored in localStorage so "Post" can skip the file transfer.
-   useEffect(() => {
-     (async () => {
-       if (!files.length || cloudDone) return;
-       const prev = load('driftpost-media-uploads', null);
-       const prevKey = prev?.files.map((f) => f.name).join('|');
-       const curKey = files.map((f) => f.name).join('|');
-       if (prevKey === curKey && prev?.files?.length) { setCloudDone(true); return; }
-       const BUCKET = 'driftpost-media';
-       const PROJECT = 'https://vdvwgcxrygxpjewvcchj.supabase.co';
-       const KEY = 'sb_publishable_d7IMYqihO-JtdkmtWw7FEA_bXJfw7Ts';
-       const out = [];
-       setCloudProgress({ done: 0, total: files.length });
-       for (const f of files) {
-         try {
-           const ext = f.name.split('.').pop() || (String(f.type || '').startsWith('video/') ? 'mp4' : 'jpg');
-           const key = `${crypto.randomUUID()}.${ext}`;
-           const res = await fetch(`${PROJECT}/storage/v1/object/${BUCKET}/${key}`, {
-             method: 'POST',
-             headers: { 'Authorization': `Bearer ${KEY}`, 'Content-Type': f.type || 'application/octet-stream', 'x-upsert': 'true' },
-             body: f.raw,
-           });
-           if (!res.ok) throw new Error('cloud ' + res.status);
-           out.push({ name: f.name || key, publicUrl: `${PROJECT}/storage/v1/object/public/${BUCKET}/${key}`, mimetype: f.type || '' });
-         } catch (e) { /* keep going; the normal upload path will recover */ }
-         setCloudProgress({ done: out.length + 1, total: files.length });
-       }
-       if (out.length) { save('driftpost-media-uploads', { files: out, filesKey: curKey }); setCloudDone(true); }
-     })();
-   }, [files, cloudDone]);
+    useEffect(() => {
+      (async () => {
+        if (!files.length || cloudDone) return;
+        const prev = load('driftpost-media-uploads', null);
+        const prevKey = prev?.files.map((f) => f.name).join('|');
+        const curKey = files.map((f) => f.name).join('|');
+        if (prevKey === curKey && prev?.files?.length) { setCloudDone(true); return; }
+        const out = [];
+        setCloudProgress({ done: 0, total: files.length });
+        // Read each file as base64 and ask the server to upload to
+        // Supabase Storage using the service key. This bypasses
+        // browser CORS restrictions that would otherwise block a
+        // direct client-side POST to Supabase Storage.
+        const toBase64 = (blob) => new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => { const s = reader.result; resolve(s.split(',')[1]); };
+          reader.onerror = reject;
+          reader.readAsDataURL(blob);
+        });
+        for (const f of files) {
+          try {
+            const ext = f.name.split('.').pop() || (String(f.type || '').startsWith('video/') ? 'mp4' : 'jpg');
+            const b64 = await toBase64(f.raw);
+            const res = await api('/api/storage/upload', session.access_token, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ files: [{ name: f.name || `${Date.now()}.${ext}`, mimetype: f.type || '', base64: b64 }] }),
+            });
+            if (!res.results?.[0]?.publicUrl) throw new Error('server upload failed');
+            out.push({ name: f.name || res.results[0].name, publicUrl: res.results[0].publicUrl, mimetype: f.type || '' });
+          } catch (e) { /* keep going; the normal upload path will recover */ }
+          setCloudProgress({ done: out.length + 1, total: files.length });
+        }
+        if (out.length) { save('driftpost-media-uploads', { files: out, filesKey: curKey }); setCloudDone(true); }
+      })();
+    }, [files, cloudDone]);
 
   // Stage 1 + 2 context drives everything.
   const s1 = useMemo(() => ({

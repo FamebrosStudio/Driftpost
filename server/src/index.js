@@ -47,7 +47,7 @@ const corsOptions = {
 
 const upload = multer({
   dest: path.join(os.tmpdir(), 'driftpost-uploads'),
-  limits: { fileSize: 512 * 1024 * 1024, files: 1, fields: 60, fieldSize: 200 * 1024, fieldNameSize: 100 },
+  limits: { fileSize: 512 * 1024 * 1024, files: 60, fields: 60, fieldSize: 200 * 1024, fieldNameSize: 100 },
   fileFilter: (_req, file, cb) => {
     const mt = file.mimetype || '';
     if (mt.startsWith('image/') || mt.startsWith('video/')) {
@@ -56,6 +56,33 @@ const upload = multer({
       cb(new Error('Only image and video files are accepted'));
     }
   },
+});
+
+// Server-side Supabase Storage upload endpoint. Bypasses browser
+// CORS restrictions and uses the service key (SUPABASE_SECRET_KEY)
+// so pre-upload always succeeds regardless of anon/RLS policy state.
+app.post('/api/storage/upload', requireUser, express.json({ limit: '50mb' }), async (req, res) => {
+  try {
+    const raw = req.body?.files;
+    if (!raw || !Array.isArray(raw) || !raw.length) {
+      return res.status(400).json({ error: 'No files to upload' });
+    }
+    const results = [];
+    for (const item of raw) {
+      const { name, mimetype, base64 } = item;
+      if (!name || !base64) { results.push({ name, error: 'missing name or base64' }); continue; }
+      const ext = name.split('.').pop() || (String(mimetype || '').startsWith('video/') ? 'mp4' : 'jpg');
+      const key = `${crypto.randomUUID()}.${ext}`;
+      const bytes = Buffer.from(String(base64), 'base64');
+      const { error: upErr } = await supabase.storage.from(BUCKET).upload(key, bytes, { contentType: mimetype || 'application/octet-stream', upsert: true });
+      if (upErr) { results.push({ name, error: upErr.message }); continue; }
+      const { data } = supabase.storage.from(BUCKET).getPublicUrl(key);
+      results.push({ name, publicUrl: data.publicUrl });
+    }
+    res.json({ results });
+  } catch (e) {
+    res.status(500).json({ error: e.message || 'Storage upload failed' });
+  }
 });
 
 app.set('trust proxy', 1);
@@ -722,15 +749,12 @@ async function runPublish(job, conn, payload, body, userId) {
           .select('*').eq('id', id).eq('user_id', userId).eq('platform', platform).maybeSingle();
         return data || null;
       };
-       const isCarousel = (allFiles.length >= 2 && allFiles.every((f) => String(f.mimetype || '').startsWith('image/'))) || (preUploaded && preUploaded.length >= 2 && preUploaded.every((e) => String(e.mimetype || '').startsWith('image/')));
-       let media = null;
-       let mediaList = [];
-       let publicUrl = null;
-       let publicUrls = [];
        // Pre-upload technique: the client uploaded media to
        // Supabase while reviewing captions. Skip the re-upload
        // here; download the file into memory only for Facebook,
        // and hand the public URL straight to Instagram.
+       // (Must be declared before isCarousel below — referencing it
+       // earlier crashed every Facebook/Instagram publish.)
        const preUploaded = (() => {
          if (body.hasPreuploadedMedia !== '1') return null;
          const out = [];
@@ -738,6 +762,11 @@ async function runPublish(job, conn, payload, body, userId) {
          while (true) { const u = body['mediaUrl' + i]; if (!u) break; out.push({ url: u, name: body['mediaName' + i] || ('media_' + i), mimetype: body['mediaType' + i] || '' }); i++; }
          return out.length ? out : null;
        })();
+       const isCarousel = (allFiles.length >= 2 && allFiles.every((f) => String(f.mimetype || '').startsWith('image/'))) || (preUploaded && preUploaded.length >= 2 && preUploaded.every((e) => String(e.mimetype || '').startsWith('image/')));
+       let media = null;
+       let mediaList = [];
+       let publicUrl = null;
+       let publicUrls = [];
        if (preUploaded) { for (const e of preUploaded) publicUrls.push(e.url); for (const e of preUploaded) mediaList.push({ originalname: e.name, mimetype: e.mimetype || '' }); publicUrl = publicUrls[0] || null; }
        const uploadOnePublic = async (f) => {
         const bytes = await fs.readFile(f.path);
