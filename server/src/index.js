@@ -62,9 +62,27 @@ const upload = multer({
   },
 });
 
-// Server-side Supabase Storage upload endpoint. Bypasses browser
-// CORS restrictions and uses the service key (SUPABASE_SECRET_KEY)
-// so pre-upload always succeeds regardless of anon/RLS policy state.
+app.set('trust proxy', 1);
+app.use(helmet({
+  crossOriginResourcePolicy: false,
+  contentSecurityPolicy: false,
+  frameguard: { action: 'deny' },
+  hsts: { maxAge: 31536000, includeSubDomains: true, preload: true },
+}));
+app.use(cors(corsOptions));
+
+// Global abuse guard (generous: normal use never hits it).
+const globalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 1000,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many requests. Please try again later.' },
+});
+app.use(globalLimiter);
+
+// Server-side Supabase Storage upload endpoint. Its larger route-specific
+// parser must run before the 1 MB global JSON parser below.
 app.post('/api/storage/upload', requireUser, express.json({ limit: '50mb' }), async (req, res) => {
   try {
     const raw = req.body?.files;
@@ -89,26 +107,8 @@ app.post('/api/storage/upload', requireUser, express.json({ limit: '50mb' }), as
   }
 });
 
-app.set('trust proxy', 1);
-app.use(helmet({
-  crossOriginResourcePolicy: false,
-  contentSecurityPolicy: false,
-  frameguard: { action: 'deny' },
-  hsts: { maxAge: 31536000, includeSubDomains: true, preload: true },
-}));
-app.use(cors(corsOptions));
 app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: false, limit: '1mb' }));
-
-// Global abuse guard (generous: normal use never hits it).
-const globalLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 1000,
-  standardHeaders: true,
-  legacyHeaders: false,
-  message: { error: 'Too many requests. Please try again later.' },
-});
-app.use(globalLimiter);
 
 async function requireUser(req, res, next) {
   const token = req.headers.authorization?.replace(/^Bearer\s+/i, '');
