@@ -5,3 +5,6 @@ SUPABASE_URL=https://xyz.supabase.co
 SUPABASE_SERVICE_KEY=
 BOT_USER_ID=
 BOT_JWT=
+XAI_API_KEY=
+# FFMPEG_PATH is hardcoded in the Extract Frames node:
+# C:\Users\faiza\ffmpeg\ffmpeg-9.0.2-essentials_build\bin\ffmpeg.exe

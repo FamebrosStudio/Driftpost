@@ -560,6 +560,70 @@
     },
     {
       "parameters": {
+        "fileName": "=C:\\Users\\faiza\\AppData\\Local\\Temp\\opencode\\bot-{{ $('Callback: Handle').first().json.chat_id }}.mp4",
+        "dataPropertyName": "data"
+      },
+      "id": "save-video",
+      "name": "Save Video File",
+      "type": "n8n-nodes-base.writeBinaryFile",
+      "typeVersion": 1,
+      "position": [200, 1040]
+    },
+    {
+      "parameters": {
+        "jsCode": "const h = $('Callback: Handle').first().json;\nreturn [{ json: { chat_id: h.chat_id, video_path: 'C:\\\\Users\\\\faiza\\\\AppData\\\\Local\\\\Temp\\\\opencode\\\\bot-' + h.chat_id + '.mp4' } }];"
+      },
+      "id": "set-videopath",
+      "name": "Set Video Path",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [420, 1040]
+    },
+    {
+      "parameters": {
+        "command": "=powershell -NoProfile -ExecutionPolicy Bypass -File \"C:\\Users\\faiza\\Driftpost\\n8n-telegram-bot\\extract-frames.ps1\" -Video \"{{ $json.video_path }}\" -OutDir \"C:\\Users\\faiza\\AppData\\Local\\Temp\\opencode\\frames-{{ $json.chat_id }}\" -Ffmpeg \"C:\\Users\\faiza\\ffmpeg\\ffmpeg-9.0.2-essentials_build\\bin\\ffmpeg.exe\""
+      },
+      "id": "extract-frames",
+      "name": "Extract Frames",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [640, 1040]
+    },
+    {
+      "parameters": {
+        "jsCode": "const out = $input.first().json;\nlet frames = [];\ntry { frames = JSON.parse(out.stdout || '{}').frames || []; } catch (e) { frames = []; }\nframes = frames.slice(0, 5);\nconst content = [{ type: 'text', text: 'You are watching frames from a short business promo video. Describe concretely for writing social media captions: setting, people, actions, objects, mood, and transcribe ALL visible text, numbers, prices and offers exactly. Max 90 words.' }];\nfor (const b of frames) content.push({ type: 'image_url', image_url: { url: 'data:image/jpeg;base64,' + b } });\nreturn [{ json: { model: 'grok-4.20-0309-non-reasoning', temperature: 0.3, max_tokens: 300, messages: [{ role: 'user', content }] } }];"
+      },
+      "id": "build-vision",
+      "name": "Build Vision Request",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [860, 1040]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.x.ai/v1/chat/completions",
+        "sendHeaders": true,
+        "specifyHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Authorization", "value": "={{ 'Bearer ' + $vars.XAI_API_KEY }}" },
+            { "name": "Content-Type", "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json) }}",
+        "options": { "timeout": 90000 }
+      },
+      "id": "describe-video",
+      "name": "Describe Video (Grok Vision)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1080, 1040]
+    },
+    {
+      "parameters": {
         "method": "POST",
         "url": "={{ $vars.DRIFTPOST_API_URL }}/api/ai/captions",
         "sendHeaders": true,
@@ -572,7 +636,7 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify({ brand: $('Callback: Handle').first().json.brand, summary: $('Callback: Handle').first().json.summary || ($('Callback: Handle').first().json.brand + ' new video'), asset_description: 'Video received via Telegram bot', goal: 'engagement', tone: 'warm', emoji: 'high', length: 'medium' }) }}",
+        "jsonBody": "={{ JSON.stringify({ brand: $('Callback: Handle').first().json.brand, summary: ($('Callback: Handle').first().json.summary || ($('Callback: Handle').first().json.brand + ' new video')) + '\\n\\nWhat the video actually shows: ' + ($('Describe Video (Grok Vision)').first().json.choices?.[0]?.message?.content || 'not analyzed'), asset_description: String($('Describe Video (Grok Vision)').first().json.choices?.[0]?.message?.content || 'Video received via Telegram bot').slice(0, 500), goal: 'engagement', tone: 'warm', emoji: 'high', length: 'medium' }) }}",
         "options": { "timeout": 60000 }
       },
       "id": "captions",
@@ -603,13 +667,66 @@
     },
     {
       "parameters": {
-        "jsCode": "// Build one publish item per selected platform.\n// Matches brand -> connection with substring/handle logic (mirrors lib.js).\nconst norm = (s) => String(s || '').toLowerCase().replace(/[^a-z0-9 ]/g, ' ').replace(/\\s+/g, ' ').trim();\nconst sess = $('Callback: Handle').first().json;\nconst brand = sess.brand || '';\nconst selected = sess.selected || [];\nconst caps = $('Gen Captions (Grok)').first().json?.captions || {};\nconst conns = $input.first().json;\nconst list = Array.isArray(conns) ? conns : [];\nconst nb = norm(brand);\nconst score = (label) => {\n  const a = norm(label);\n  if (!a || !nb) return 0;\n  if (a.includes(nb) && nb.length > 3) return 100;\n  if (nb.includes(a) && a.length > 3) return 100;\n  if (a.replace(/ /g, '') === nb.replace(/ /g, '') && nb.length > 3) return 90;\n  const ta = new Set(a.split(' ').filter(t => t.length >= 3));\n  const tb = new Set(nb.split(' ').filter(t => t.length >= 3));\n  let s = 0; for (const t of ta) if (tb.has(t)) s += 10;\n  return s;\n};\nconst items = [];\nfor (const p of selected) {\n  const cands = list.filter(c => c.platform === p).map(c => ({ c, s: score(c.account_name) })).sort((x, y) => y.s - x.s);\n  const best = cands.length ? cands[0] : null;\n  if (!best || best.s < 10) {\n    items.push({ json: { platform: p, error: `No ${p} account matched brand \"${brand}\" — connect it in Driftpost first.`, chat_id: sess.chat_id, brand, selected } });\n    continue;\n  }\n  const yt = caps.youtube || {}, ig = caps.instagram || {}, fb = caps.facebook || {}, x = caps.x || {};\n  const tags = Array.isArray(yt.tags) ? yt.tags.join(',') : '';\n  const hash = Array.isArray(ig.hashtags) ? ig.hashtags.map(t => '#' + t).join(' ') : '';\n  const base = { platform: p, connection_id: best.c.id, account: best.c.account_name, chat_id: sess.chat_id, brand, selected };\n  if (p === 'youtube') Object.assign(base, { text: yt.description || ig.caption || '', yt_title: String(yt.title || brand).slice(0, 100), yt_description: yt.description || '', yt_tags: tags });\n  if (p === 'instagram') Object.assign(base, { text: ig.caption || '', ig_caption: [ig.caption, hash].filter(Boolean).join('\\n\\n') });\n  if (p === 'facebook') Object.assign(base, { text: fb.message || '', fb_message: fb.message || '' });\n  if (p === 'x') Object.assign(base, { text: String(x.text || ig.caption || '').slice(0, 280), x_text: String(x.text || '').slice(0, 280) });\n  items.push({ json: base });\n}\nif (!items.length) items.push({ json: { platform: 'none', error: 'Nothing selected', chat_id: sess.chat_id, brand, selected } });\nreturn items;"
+        "jsCode": "// Build one publish item per selected platform.\n// Matches brand -> connection with substring/handle logic (mirrors lib.js).\nconst norm = (s) => String(s || '').toLowerCase().replace(/[^a-z0-9 ]/g, ' ').replace(/\\s+/g, ' ').trim();\nconst sess = $('Callback: Handle').first().json;\nconst brand = sess.brand || '';\nconst selected = sess.selected || [];\nconst caps = $('Gen Captions (Grok)').first().json?.captions || {};\nconst conns = $input.first().json;\nconst list = Array.isArray(conns) ? conns : [];\nconst nb = norm(brand);\nconst score = (label) => {\n  const a = norm(label);\n  if (!a || !nb) return 0;\n  if (a.includes(nb) && nb.length > 3) return 100;\n  if (nb.includes(a) && a.length > 3) return 100;\n  if (a.replace(/ /g, '') === nb.replace(/ /g, '') && nb.length > 3) return 90;\n  const ta = new Set(a.split(' ').filter(t => t.length >= 3));\n  const tb = new Set(nb.split(' ').filter(t => t.length >= 3));\n  let s = 0; for (const t of ta) if (tb.has(t)) s += 10;\n  return s;\n};\nconst items = [];\nfor (const p of selected) {\n  const cands = list.filter(c => c.platform === p).map(c => ({ c, s: score(c.account_name) })).sort((x, y) => y.s - x.s);\n  const best = cands.length ? cands[0] : null;\n  if (!best || best.s < 10) {\n    items.push({ json: { platform: p, error: `No ${p} account matched brand \"${brand}\" — connect it in Driftpost first.`, chat_id: sess.chat_id, brand, selected } });\n    continue;\n  }\n  const yt = caps.youtube || {}, ig = caps.instagram || {}, fb = caps.facebook || {}, x = caps.x || {};\n  const tags = Array.isArray(yt.tags) ? yt.tags.join(',') : '';\n  const hash = Array.isArray(ig.hashtags) ? ig.hashtags.map(t => '#' + t).join(' ') : '';\n  const base = { platform: p, connection_id: best.c.id, account: best.c.account_name, chat_id: sess.chat_id, brand, selected, file_id: sess.file_id };\n  if (p === 'youtube') Object.assign(base, { text: yt.description || ig.caption || '', yt_title: String(yt.title || brand).slice(0, 100), yt_description: yt.description || '', yt_tags: tags });\n  if (p === 'instagram') Object.assign(base, { text: ig.caption || '', ig_caption: [ig.caption, hash].filter(Boolean).join('\\n\\n') });\n  if (p === 'facebook') Object.assign(base, { text: fb.message || '', fb_message: fb.message || '' });\n  if (p === 'x') Object.assign(base, { text: String(x.text || ig.caption || '').slice(0, 280), x_text: String(x.text || '').slice(0, 280) });\n  items.push({ json: base });\n}\nif (!items.length) items.push({ json: { platform: 'none', error: 'Nothing selected', chat_id: sess.chat_id, brand, selected } });\nreturn items;"
       },
       "id": "build-jobs",
       "name": "Build Publish Jobs",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [820, 880]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "has-connection",
+              "leftValue": "={{ $json.connection_id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "notEmpty",
+                "operation": "notEmpty"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "if-has-conn",
+      "name": "IF Has Connection?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [920, 880]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=https://api.telegram.org/bot{{ $vars.TELEGRAM_BOT_TOKEN }}/getFile?file_id={{ $json.file_id }}",
+        "options": {}
+      },
+      "id": "get-file-2",
+      "name": "Get Telegram File 2",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1010, 760]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=https://api.telegram.org/file/bot{{ $vars.TELEGRAM_BOT_TOKEN }}/{{ $json.result.file_path }}",
+        "options": { "response": { "response": { "responseFormat": "file", "outputPropertyName": "data" } } }
+      },
+      "id": "download-2",
+      "name": "Download Media 2",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1010, 1000]
     },
     {
       "parameters": {
@@ -818,10 +935,23 @@
     "Callback: Cancelled": { "main": [[{ "node": "Callback: Answer", "type": "main", "index": 0 }]] },
     "Done: Status Msg": { "main": [[{ "node": "Get Telegram File", "type": "main", "index": 0 }]] },
     "Get Telegram File": { "main": [[{ "node": "Download Media", "type": "main", "index": 0 }]] },
-    "Download Media": { "main": [[{ "node": "Gen Captions (Grok)", "type": "main", "index": 0 }]] },
+    "Download Media": { "main": [[{ "node": "Save Video File", "type": "main", "index": 0 }]] },
+    "Save Video File": { "main": [[{ "node": "Set Video Path", "type": "main", "index": 0 }]] },
+    "Set Video Path": { "main": [[{ "node": "Extract Frames", "type": "main", "index": 0 }]] },
+    "Extract Frames": { "main": [[{ "node": "Build Vision Request", "type": "main", "index": 0 }]] },
+    "Build Vision Request": { "main": [[{ "node": "Describe Video (Grok Vision)", "type": "main", "index": 0 }]] },
+    "Describe Video (Grok Vision)": { "main": [[{ "node": "Gen Captions (Grok)", "type": "main", "index": 0 }]] },
     "Gen Captions (Grok)": { "main": [[{ "node": "Load Connections", "type": "main", "index": 0 }]] },
     "Load Connections": { "main": [[{ "node": "Build Publish Jobs", "type": "main", "index": 0 }]] },
-    "Build Publish Jobs": { "main": [[{ "node": "Publish One", "type": "main", "index": 0 }]] },
+    "Build Publish Jobs": { "main": [[{ "node": "IF Has Connection?", "type": "main", "index": 0 }]] },
+    "IF Has Connection?": {
+      "main": [
+        [{ "node": "Get Telegram File 2", "type": "main", "index": 0 }],
+        [{ "node": "Format Results", "type": "main", "index": 0 }]
+      ]
+    },
+    "Get Telegram File 2": { "main": [[{ "node": "Download Media 2", "type": "main", "index": 0 }]] },
+    "Download Media 2": { "main": [[{ "node": "Publish One", "type": "main", "index": 0 }]] },
     "Publish One": { "main": [[{ "node": "Wait 20s", "type": "main", "index": 0 }]] },
     "Wait 20s": { "main": [[{ "node": "Check Job 1", "type": "main", "index": 0 }]] },
     "Check Job 1": { "main": [[{ "node": "Job Finished?", "type": "main", "index": 0 }]] },

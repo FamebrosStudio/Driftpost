@@ -7,7 +7,7 @@ Send a video to `@drift_post_sender_bot`, pick platforms (multi-select), it post
 1. User sends video, caption first line = brand (e.g. `Hair Match Salon`)
 2. No caption brand? Bot asks for it.
 3. Bot shows inline keyboard: YouTube / Instagram / Facebook / X (toggle ✅/⬜, many allowed) + 🚀 POST NOW / ❌ Cancel
-4. On POST NOW: downloads video → Grok captions (`/api/ai/captions`) → matches brand to `platform_connections` → publishes each via `/api/publish` → polls `/api/jobs/:id` → replies ✅/❌ per platform.
+4. On POST NOW: downloads video → **Grok Vision watches 5 frames** (setting, actions, visible text/offers) → Grok captions (`/api/ai/captions`, brand voice + what the video shows) → matches brand to `platform_connections` → publishes each via `/api/publish` → polls `/api/jobs/:id` → replies ✅/❌ per platform.
 
 ## Files
 
@@ -42,6 +42,16 @@ banks, genre rules, SEO keywords) into Grok. Verified wiring:
 Brand matching is loose (threshold 20, typo/handle tolerant), so reply with the
 brand name as in Driftpost, e.g. `Hair Match Salon`. Unknown names fall back to
 a generic caption and get auto-filed for learning.
+
+## Video understanding (Option B is built in)
+
+Grok sees the video, not just your typed summary: `Save Video File` →
+`Extract Frames` (`extract-frames.ps1`, needs the ffmpeg path above, grabs up
+to 5 frames at 768px) → `Describe Video (Grok Vision)` transcribes scenes AND
+visible text/offers → that description feeds `Gen Captions` as both summary
+context and `asset_description`. Requires the extra `XAI_API_KEY` variable
+(same key as the backend). If vision ever fails, captions fall back to your
+typed summary — posting never blocks on it.
 
 Open item: `31_Asma_Women_Clothing_AI_Knowledge (2).json` renames the brand to
 "HerChoice by Asma" — server still uses "Asma Women Clothing". Confirm the
