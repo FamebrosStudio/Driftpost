@@ -99,12 +99,16 @@ export async function markUsed(supabase, { userId, id }) {
 
 // Approve by brand+platform instead of by id, for clients that only know which
 // card the user tapped (the common case: one generation, four cards).
-export async function markLatestUsed(supabase, { userId, brandLabel, platform }) {
+export async function markLatestUsed(supabase, { userId, brandLabel, platform, caption, brand }) {
   try {
     if (!userId || !platform) return false;
     if (!(await hasPersonalisationConsent(supabase, userId))) return false;
+    const update = { used: true };
+    if (typeof caption === 'string' && caption.trim()) {
+      update.body = clean(redactPii(caption, { brand }), MAX_BODY);
+    }
     const { error } = await supabase.from('caption_memory')
-      .update({ used: true })
+      .update(update)
       .eq('user_id', userId)
       .eq('brand_key', brandKey(brandLabel))
       .eq('platform', platform)

@@ -4,22 +4,29 @@ import BrandIcon from '../brand.jsx';
 // Per-platform editable fields.
 const FIELDS = {
   instagram: [
-    { k: 'caption', label: 'Caption', ta: true },
-    { k: 'hashtags', label: 'Hashtags', ta: false },
+    { k: 'caption', label: 'Caption', ta: true, maxLength: 2200 },
+    { k: 'hashtags', label: 'Hashtags', ta: false, maxLength: 500 },
   ],
   facebook: [{ k: 'message', label: 'Post copy', ta: true }],
   youtube: [
-    { k: 'title', label: 'Title', ta: false },
-    { k: 'description', label: 'Description', ta: true },
+    { k: 'title', label: 'Title', ta: false, maxLength: 100 },
+    { k: 'description', label: 'Description', ta: true, maxLength: 5000 },
     { k: 'tags', label: 'Tags · comma separated', ta: false },
   ],
-  x: [{ k: 'text', label: 'Post', ta: true }],
+  x: [{ k: 'text', label: 'Post', ta: true, maxLength: 280 }],
 };
 const NAMES = { instagram: 'Instagram', facebook: 'Facebook', youtube: 'YouTube', x: 'X' };
 
 export function composeOutput(pid, v) {
   if (pid === 'youtube') return [v.title, v.description, v.tags ? `Tags: ${v.tags}` : ''].filter(Boolean).join('\n\n');
-  if (pid === 'instagram') return [v.caption, v.hashtags].filter(Boolean).join('\n\n');
+  if (pid === 'instagram') {
+    const caption = v.caption || '';
+    const existing = new Set((caption.match(/#[\p{L}\p{N}_]+/gu) || []).map((t) => t.toLowerCase()));
+    const tags = String(v.hashtags || '').split(/[,\s]+/).filter(Boolean)
+      .map((t) => `#${t.replace(/^#+/, '')}`)
+      .filter((t) => { const key = t.toLowerCase(); if (existing.has(key)) return false; existing.add(key); return true; });
+    return [caption, tags.join(' ')].filter(Boolean).join('\n\n');
+  }
   if (pid === 'facebook') return v.message || '';
   return v.text || '';
 }
@@ -52,9 +59,9 @@ export default function PlatformOutputCard({ pid, values, onSave, regenning, reg
           <span>{f.label}</span>
           {editing ? (
             f.ta ? (
-              <textarea value={draft[f.k] || ''} maxLength={2200} onChange={(e) => setDraft({ ...draft, [f.k]: e.target.value })} />
+              <textarea value={draft[f.k] || ''} maxLength={f.maxLength} onChange={(e) => setDraft({ ...draft, [f.k]: e.target.value })} />
             ) : (
-              <input value={draft[f.k] || ''} maxLength={500} onChange={(e) => setDraft({ ...draft, [f.k]: e.target.value })} />
+              <input value={draft[f.k] || ''} maxLength={f.maxLength} onChange={(e) => setDraft({ ...draft, [f.k]: e.target.value })} />
             )
           ) : (
             <p>{values[f.k] || '—'}</p>

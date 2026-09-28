@@ -179,7 +179,7 @@ export default function StageOnePage({ session, onSignOut, onNext, onHistory, on
   const clearOutputs = () => { try { localStorage.removeItem('driftpost-stage2-outputs'); } catch {} };
   const chooseBrand = (k) => {
     const b = brands.find((x) => x.key === k);
-    if (b) save('driftpost-stage1-brand-accounts', JSON.stringify(b.map));
+    if (b) save('driftpost-stage1-brand-accounts', b.map);
     setBrandKey(k); save('driftpost-stage1-brand', k); setBrandOpen(false); clearOutputs();
   };
   const clearBrand = () => { setBrandKey(''); save('driftpost-stage1-brand', ''); clearOutputs(); };

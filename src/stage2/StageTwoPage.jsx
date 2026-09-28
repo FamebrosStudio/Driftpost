@@ -15,7 +15,7 @@ import './stage2.css';
 
 const MediaEditor = lazy(() => import('./MediaEditor.jsx'));
 
-const GEN_STEPS = ['Analyzing media…', 'Understanding brand…', 'Creating content…', 'Finalizing outputs…'];
+const GEN_STEPS = ['Writing for your selected platforms…', 'Applying your brand voice…', 'Polishing the captions…'];
 
 // No answer cache. An earlier version replayed the last answer for 24h on an
 // identical prompt, which made Regenerate look broken. Gone for good.
@@ -145,7 +145,7 @@ export default function StageTwoPage({ session, onBack, onSignOut, onHistory, on
 
   const requestCaptions = (pid) => fetchCaptions(session.access_token, {
     brief, brand: brandLabel, files, tone, emoji, length,
-    ...(pid ? { only: pid } : {}),
+    ...(pid ? { only: pid } : targetPlatforms.length === 1 ? { only: targetPlatforms[0] } : {}),
   });
 
   const applyMapped = (mapped, pids) => {
@@ -164,7 +164,8 @@ export default function StageTwoPage({ session, onBack, onSignOut, onHistory, on
   const release = (k) => { firing.current.delete(k); };
 
   const generate = async () => {
-    if (busy || regen || !brief.trim() || !targetPlatforms.length || !claim('gen')) return;
+    const hasPhotos = files.some((f) => f.raw?.type?.startsWith('image/'));
+    if (busy || regen || (!brief.trim() && !hasPhotos) || !targetPlatforms.length || !claim('gen')) return;
     setBusy(true); setAiMsg(''); setGenStep(0);
     const tick = setInterval(() => setGenStep((s) => (s + 1) % GEN_STEPS.length), 900);
     try {
@@ -186,7 +187,8 @@ export default function StageTwoPage({ session, onBack, onSignOut, onHistory, on
   // that card changes. An empty answer keeps the old card, never wipes it.
   const [regen, setRegen] = useState('');
   const regenOne = async (pid) => {
-    if (busy || regen || !brief.trim() || !claim(`regen:${pid}`)) return;
+    const hasPhotos = files.some((f) => f.raw?.type?.startsWith('image/'));
+    if (busy || regen || (!brief.trim() && !hasPhotos) || !claim(`regen:${pid}`)) return;
     setRegen(pid); setAiMsg('');
     try {
       const data = await requestCaptions(pid);
@@ -255,7 +257,7 @@ export default function StageTwoPage({ session, onBack, onSignOut, onHistory, on
           <PromptBuilder
             brief={brief} setBrief={setBrief}
             tone={tone} setTone={setTone} emoji={emoji} setEmoji={setEmoji} length={length} setLength={setLength}
-            busy={busy} canGenerate={!!brief.trim() && !!targetPlatforms.length} onGenerate={generate}
+            busy={busy} canGenerate={(!!brief.trim() || files.some((f) => f.raw?.type?.startsWith('image/'))) && !!targetPlatforms.length} onGenerate={generate}
           />
           {!targetPlatforms.length && (
             <p className="s2-msg err">No platforms from Stage 1 — go back and finish Stage 1 first.</p>

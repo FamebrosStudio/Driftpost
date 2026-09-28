@@ -1,5 +1,6 @@
 import React, { useMemo, useRef, useState } from 'react';
 import BrandIcon from '../brand.jsx';
+import { composeOutput } from '../stage2/PlatformOutputCard.jsx';
 import { assistCommunityPost, postsTabUrl } from './communityAssist.js';
 
 const NAMES = { instagram: 'Instagram', facebook: 'Facebook', youtube: 'YouTube', x: 'X' };
@@ -59,10 +60,18 @@ export default function Workspace({
 
   let error = '';
   if (!accountId) error = 'Pick an account for this platform first.';
+  else if (pid === 'x' && !values.text?.trim()) error = 'Write the post text first.';
   else if (pid === 'x' && xLen > 280) error = `Too long — ${xLen - 280} characters over.`;
   else if (pid === 'x' && cfg.pollOn && files.length > 0) error = 'Polls can’t carry photos — remove media in Stage 2 for a poll.';
   else if (pid === 'x' && cfg.pollOn && !(cfg.opts?.[0]?.trim() && cfg.opts?.[1]?.trim())) error = 'A poll needs at least 2 answers.';
   else if (pid === 'facebook' && cfg.cta && !cfg.link?.trim()) error = 'A button needs a website link above.';
+  else if (pid === 'facebook' && !values.message?.trim() && !cfg.link?.trim() && !files.length) error = 'Add post text, a website link, or media.';
+  else if (pid === 'instagram' && !files.some((f) => /^(image|video)\//.test(f.type))) error = 'Instagram needs a photo or video.';
+  else if (pid === 'instagram' && Array.from(composeOutput(pid, values)).length > 2200) error = 'Caption plus hashtags is over Instagram’s 2,200 character limit.';
+  else if (pid === 'youtube' && !hasVideo && !files.length) error = 'YouTube needs a video file, or a photo to convert into a Short.';
+  else if (pid === 'youtube' && files.length > 1) error = 'YouTube accepts one video per post.';
+  else if (pid === 'youtube' && !values.title?.trim()) error = 'Add a title before posting to YouTube.';
+  else if (pid === 'youtube' && (values.title || '').length > 100) error = 'YouTube titles must be 100 characters or less.';
   const blocked = !!error || photoOnly;
   // Scheduling can encode a photo to video first (same as "post as a 6s
   // Short"), so photo-only YouTube greys Post but never Schedule.
@@ -114,18 +123,6 @@ export default function Workspace({
           {pid === 'instagram' && <>
             <Field label="Caption"><textarea value={values.caption || ''} onChange={(e) => set('caption', e.target.value)} placeholder="Write the caption…" /></Field>
             <Field label="Hashtags"><input value={values.hashtags || ''} onChange={(e) => set('hashtags', e.target.value)} placeholder="#brand #fashion" /></Field>
-            {files.some((f) => f.type.startsWith('image/')) && (
-            <div className="s3-row2">
-              <Field label="Feed size">
-                <select value={cfg.size || 'portrait'} onChange={(e) => setCfg({ size: e.target.value })}>
-                  <option value="portrait">Portrait 4:5</option>
-                  <option value="square">Square 1:1</option>
-                  <option value="landscape">Landscape 1.91:1</option>
-                </select>
-              </Field>
-              <div />
-            </div>
-            )}
             <label className="s3-check"><input type="checkbox" checked={!!cfg.shareFb} onChange={(e) => setCfg({ shareFb: e.target.checked })} /><span>Also post on Facebook<small>Single posts only — Post All always posts directly.</small></span></label>
             <label className="s3-check"><input type="checkbox" checked={!!cfg.story} onChange={(e) => setCfg({ story: e.target.checked })} /><span>Also post as Story (24h)<small>Same media as a story, in one tap.</small></span></label>
             <details className="s3-adv">
@@ -157,6 +154,7 @@ export default function Workspace({
                     <option value="13">13 and older</option>
                     <option value="18">18 and older</option>
                     <option value="21">21 and older</option>
+                    <option value="25">25 and older</option>
                   </select>
                 </Field>
               </div>

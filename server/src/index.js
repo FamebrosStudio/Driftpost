@@ -13,7 +13,7 @@ import { decryptJson, encryptJson, signState, verifyState } from './crypto.js';
 import { exchangeGoogleCode, getYouTubeChannel, youtubeAuthorizationUrl } from './google.js';
 import { learnedVoice, markLatestUsed, markUsed, recordGeneration } from './captionMemory.js';
 import { consentState, forgetUser, hasPersonalisationConsent, recordConsent, POLICY_VERSION, PURPOSES } from './consent.js';
-import { uploadVideoResumable, validAccessToken } from './youtube-upload.js';
+import { setVideoThumbnail, uploadVideoResumable, validAccessToken } from './youtube-upload.js';
 import { exchangeMetaCode, getMetaPages, longLivedToken, metaAuthorizationUrl, metaBusinessLoginUrl, publishFacebook, publishInstagram } from './meta.js';
 import { createPkcePair, exchangeXCode, getXUser, xAuthorizationUrl } from './x.js';
 import { createXPost, uploadXMedia, validXAccessToken } from './x-publish.js';
@@ -132,6 +132,13 @@ app.post('/api/storage/upload', requireUser, parseStorageUpload, async (req, res
   } finally {
     if (tempPath) await fs.unlink(tempPath).catch(() => {});
   }
+});
+// AI vision inputs are browser-resized preview copies only; this is a small
+// per-image analysis payload limit, not a posting/media-storage file limit.
+const aiImageUpload = multer({
+  dest: path.join(os.tmpdir(), 'driftpost-ai-images'),
+  limits: { fileSize: 2 * 1024 * 1024, files: 4, fields: 20, fieldSize: 16 * 1024 },
+  fileFilter: (_req, file, cb) => cb(null, ['image/jpeg', 'image/png'].includes(file.mimetype)),
 });
 
 app.use(express.json({ limit: '1mb' }));
@@ -281,7 +288,10 @@ app.delete('/api/account', requireUser, limit({ windowMs: 60 * 1000, max: 5, key
 });
 
 // --- AI captions (Grok + local brand memory, server-side key) ---
-app.post('/api/ai/captions', requireUser, aiLimit, async (req, res) => {
+app.post('/api/ai/captions', requireUser, aiLimit, (req, res, next) => {
+  if (req.is('multipart/form-data')) return aiImageUpload.array('images', 4)(req, res, next);
+  next();
+}, async (req, res) => {
   try {
     const brandLabel = String(req.body?.brand || '');
     // Resolved once and reused: the brand's confirmed contacts are the
@@ -309,6 +319,11 @@ app.post('/api/ai/captions', requireUser, aiLimit, async (req, res) => {
       length: req.body?.length,
       only: req.body?.only,
       learned,
+      images: await Promise.all((req.files || []).map(async (file) => ({
+        name: file.originalname,
+        mimetype: file.mimetype,
+        base64: (await fs.readFile(file.path)).toString('base64'),
+      }))),
     });
     res.json(out);
     // Store after responding: learning must never delay or fail a generation.
@@ -340,6 +355,8 @@ app.post('/api/ai/captions', requireUser, aiLimit, async (req, res) => {
     const msg = String(e.message || 'AI failed');
     const code = /credits/i.test(msg) ? 402 : /configured/i.test(msg) ? 503 : 500;
     res.status(code).json({ error: msg });
+  } finally {
+    await Promise.all((req.files || []).map((file) => fs.unlink(file.path).catch(() => {})));
   }
 });
 
@@ -408,6 +425,8 @@ app.post('/api/ai/feedback', requireUser, burstLimit, async (req, res) => {
         userId: req.user.id,
         brandLabel: req.body?.brand,
         platform,
+        caption: req.body?.caption,
+        brand: (await import('./brand-memory/index.js')).resolveBrand(String(req.body?.brand || ''), 20)?.brand || null,
       });
     res.json({ ok });
   } catch {
@@ -693,6 +712,7 @@ function splitTags(raw) {
 }
 
 async function runPublish(job, conn, payload, body, userId) {
+  const thumbFile = payload?.thumbFile || null;
   const files = payload?.files || (payload?.path ? [payload] : []);
   const file = files[0] || null;
   const allFiles = files;
@@ -737,6 +757,15 @@ async function runPublish(job, conn, payload, body, userId) {
         onProgress: (p) => { job.progress = p; },
       });
       job.url = `https://www.youtube.com/watch?v=${video.id}`;
+      if (thumbFile) {
+        try {
+          await setVideoThumbnail({ accessToken: token, videoId: video.id, file: thumbFile });
+        } catch (e) {
+          // The video is already published. A thumbnail failure must not mark
+          // the video job failed, which could prompt a duplicate upload retry.
+          job.warning = `Video published, but YouTube did not apply the cover: ${e.message}`;
+        }
+      }
     } else if (job.platform === 'x') {
       const xText = String(body.x_text ?? fallbackText).trim();
       if (!xText) throw new Error('Write some text for X');
@@ -971,7 +1000,7 @@ async function runPublish(job, conn, payload, body, userId) {
         }
       }
     }
-    job.state = 'completed'; job.progress = 100; job.message = 'Published'; job.completedAt = Date.now();
+    job.state = 'completed'; job.progress = 100; job.message = job.warning || 'Published'; job.completedAt = Date.now();
     await supabase.from('post_history').insert({ user_id: userId, platform: job.platform, status: 'published', url: job.url || null, caption: String(body.text || '').slice(0, 500) }).then(() => {});
   } catch (e) {
     job.state = 'failed'; job.message = e.message; job.completedAt = Date.now();
@@ -1070,6 +1099,7 @@ app.post('/api/schedule', requireUser, strictBurstLimit, publishLimit, publishUp
   // Park the media so the worker can rebuild the upload later.
   const prefix = `scheduled/${req.user.id}/${crypto.randomUUID()}`;
   const stored = [];
+  let thumbPath = null;
   try {
     for (const f of files) {
       const bytes = await fs.readFile(f.path);
@@ -1081,7 +1111,6 @@ app.post('/api/schedule', requireUser, strictBurstLimit, publishLimit, publishUp
        if (upErr) throw new Error('Media upload failed (' + BUCKET + '): ' + (upErr.message || upErr) + '. Make sure the "' + BUCKET + '" bucket exists and is public.');
       stored.push({ path: key, mimetype: f.mimetype, name: f.originalname || key.split('/').pop() });
     }
-    let thumbPath = null;
     if (thumbFile) {
       const bytes = await fs.readFile(thumbFile.path);
       const key = `${prefix}/cover.jpg`;
@@ -1096,7 +1125,7 @@ app.post('/api/schedule', requireUser, strictBurstLimit, publishLimit, publishUp
       connection_id: connectionId,
       scheduled_at: new Date(when).toISOString(),
       status: 'scheduled',
-      body: req.body || {},
+      body: { ...(req.body || {}), yt_thumbnail_mimetype: thumbFile?.mimetype || '' },
       media: stored,
       thumb_path: thumbPath,
     }).select().single();
@@ -1175,7 +1204,7 @@ async function runDueSchedules() {
             const tmp = path.join(os.tmpdir(), `driftpost-sched-cover-${crypto.randomUUID()}.jpg`);
             const buf = Buffer.from(await data.arrayBuffer());
             await fs.writeFile(tmp, buf);
-            thumbFile = { path: tmp, mimetype: 'image/jpeg', originalname: 'cover.jpg', size: buf.length };
+            thumbFile = { path: tmp, mimetype: row.body?.yt_thumbnail_mimetype || 'image/jpeg', originalname: 'cover.jpg', size: buf.length };
           }
         }
         await runPublish(job, conn, { files: localFiles, thumbFile }, row.body || {}, row.user_id);

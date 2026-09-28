@@ -261,6 +261,7 @@ export async function resetPostState(userId) {
     localStorage.setItem('driftpost-stage', '1');
   } catch {}
   if (!userId) return;
+  try { localStorage.removeItem(`driftpost-media-uploads:${userId}`); } catch {}
   try {
     const db = await new Promise((res, rej) => {
       const r = indexedDB.open('driftpost-stage2', 1);
@@ -378,7 +379,7 @@ export async function api(path, token, options = {}) {
       return data;
     } catch (e) {
       if (e?.status === 401) throw e;
-      if (e?.name === 'AbortError') throw new Error('Server is waking up — try again in a few seconds.');
+      if (e?.name === 'AbortError') throw new Error(path === '/api/ai/captions' ? 'Caption writing timed out. Retry once; image analysis can take longer.' : 'Server is waking up — try again in a few seconds.');
       if (isNetworkFail(e)) throw new Error(DOWN_MSG);
       throw e;
     } finally {
@@ -387,7 +388,7 @@ export async function api(path, token, options = {}) {
   };
   const invoke = async (t) => {
     try {
-      return await call(t, 25000);
+      return await call(t, path === '/api/ai/captions' ? 60000 : 25000);
     } catch (e) {
       if (e?.status === 401) throw e;
       const retryable = method === 'GET' && /waking up/i.test(e.message || '');

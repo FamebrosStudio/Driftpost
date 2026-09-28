@@ -21,9 +21,15 @@ function load(key, fallback) {
 function save(key, val) {
   try { localStorage.setItem(key, JSON.stringify(val)); } catch {}
 }
+const mediaSignature = (items) => JSON.stringify(items.map((f) => ({
+  name: f.name || f.raw?.name || '',
+  size: f.raw?.size || 0,
+  modified: f.raw?.lastModified || 0,
+  type: f.type || f.raw?.type || '',
+})));
 
 const DEFAULT_CFG = {
-  instagram: { size: 'portrait', shareFb: false, story: false, alt: '', topics: '', partner: '', collabs: '' },
+  instagram: { shareFb: false, story: false, alt: '', topics: '', partner: '', collabs: '' },
   facebook: { link: '', syndIg: false, cta: '', age: '' },
   youtube: { privacy: 'private', category: '', kids: '' },
   x: { pollOn: false, opts: ['', '', '', ''], mins: '1440', reply: 'everyone' },
@@ -75,6 +81,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onHistory, 
   }, [session, connsTick]);
 
    const mediaKey = `driftpost-stage2-media:${session.user.id}`;
+   const cloudCacheKey = `driftpost-media-uploads:${session.user.id}`;
    useEffect(() => {
      (async () => {
        const vault = await readVault(mediaKey);
@@ -93,17 +100,21 @@ export default function StageThreePage({ session, onBack, onSignOut, onHistory, 
     useEffect(() => {
       (async () => {
         if (!files.length || cloudDone) return;
-        const prev = load('driftpost-media-uploads', null);
-        const prevKey = prev?.files.map((f) => f.name).join('|');
-        const curKey = files.map((f) => f.name).join('|');
-        if (prevKey === curKey && prev?.files?.length) { setCloudDone(true); return; }
+        const prev = load(cloudCacheKey, null);
+        const curKey = mediaSignature(files);
+        if (prev?.filesKey === curKey && prev?.files?.length === files.length && prev.files.every((f) => f.publicUrl)) {
+          setCloudDone(true);
+          return;
+        }
+        try { localStorage.removeItem(cloudCacheKey); } catch {}
         const out = [];
         setCloudProgress({ done: 0, total: files.length });
         // Send each file as multipart and ask the server to upload to
         // Supabase Storage using the service key. This bypasses
         // browser CORS restrictions that would otherwise block a
         // direct client-side POST to Supabase Storage.
-        for (const f of files) {
+        for (let i = 0; i < files.length; i++) {
+          const f = files[i];
           try {
             const body = new FormData();
             body.append('file', f.raw, f.name || `upload-${Date.now()}`);
@@ -114,11 +125,14 @@ export default function StageThreePage({ session, onBack, onSignOut, onHistory, 
             if (!res.results?.[0]?.publicUrl) throw new Error('server upload failed');
             out.push({ name: f.name || res.results[0].name, publicUrl: res.results[0].publicUrl, mimetype: f.type || '' });
           } catch (e) { /* keep going; the normal upload path will recover */ }
-          setCloudProgress({ done: out.length + 1, total: files.length });
+          setCloudProgress({ done: i + 1, total: files.length });
         }
-        if (out.length) { save('driftpost-media-uploads', { files: out, filesKey: curKey }); setCloudDone(true); }
+        if (out.length === files.length) {
+          save(cloudCacheKey, { files: out, filesKey: curKey });
+          setCloudDone(true);
+        }
       })();
-    }, [files, cloudDone]);
+    }, [files, cloudDone, cloudCacheKey]);
 
   // Stage 1 + 2 context drives everything.
   const s1 = useMemo(() => ({
@@ -251,11 +265,19 @@ export default function StageThreePage({ session, onBack, onSignOut, onHistory, 
     if (!allowGreyed && greyed(pid)) return 'skipped by cross-post — turn the mirror off to post it directly';
     if (isGroupFlow ? !groupMemberIds(pid).length : !accountFor(pid)) return 'no account — pick one first';
     if (pid === 'x') {
+      if (!v.text?.trim()) return 'write the post text first';
       if (Array.from(v.text || '').length > 280) return 'too long — shorten to 280 characters';
       if (c.pollOn && files.length > 0) return 'polls can’t carry photos — remove media in Stage 2';
       if (c.pollOn && !(c.opts?.[0]?.trim() && c.opts?.[1]?.trim())) return 'a poll needs at least 2 answers';
     }
     if (pid === 'facebook' && c.cta && !c.link?.trim()) return 'a button needs a website link above';
+    if (pid === 'facebook' && !v.message?.trim() && !c.link?.trim() && !files.length) return 'add post text, a website link, or media';
+    if (pid === 'instagram' && !files.some((f) => /^(image|video)\//.test(f.type))) return 'Instagram needs a photo or video';
+    if (pid === 'instagram' && Array.from(composeOutput(pid, v)).length > 2200) return 'caption plus hashtags exceeds Instagram’s 2,200 character limit';
+    if (pid === 'youtube' && !files.some((f) => f.type.startsWith('video/')) && !files.length) return 'YouTube needs a video file, or a photo to convert into a Short';
+    if (pid === 'youtube' && files.length > 1) return 'YouTube accepts one video per post';
+    if (pid === 'youtube' && !v.title?.trim()) return 'add a title before posting to YouTube';
+    if (pid === 'youtube' && (v.title || '').length > 100) return 'YouTube titles must be 100 characters or less';
     return '';
   };
   const onCfg = (pid, patch) => setCfg((c) => { const n = { ...c, [pid]: { ...cfgFor(pid), ...patch } }; save('driftpost-stage3-cfg', n); return n; });
@@ -273,12 +295,12 @@ export default function StageThreePage({ session, onBack, onSignOut, onHistory, 
   // Reviewing a card is the approval signal: the server keeps this caption as a
   // reference so the next generation for the same brand writes closer to it.
   const onReviewed = (pid) => {
-    approveCaption(session.access_token, { brand: brandLabel, platform: pid });
+    approveCaption(session.access_token, { brand: brandLabel, platform: pid, caption: composeOutput(pid, outputs[pid] || {}) });
     setReviewed((r) => { const n = { ...r, [pid]: true }; save('driftpost-stage3-reviewed', n); return n; });
   };
 
   const regenOne = async (pid) => {
-    if (busy[pid] || regen || !brief.trim()) return;
+    if (busy[pid] || regen || (!brief.trim() && !files.some((f) => f.raw?.type?.startsWith('image/')))) return;
     setRegen(pid);
     try {
       const data = await requestCaptions(session.access_token, {
@@ -295,7 +317,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onHistory, 
 
   const mainText = (pid) => {
     const v = outputs[pid] || {};
-    if (pid === 'instagram') return v.caption || brief;
+    if (pid === 'instagram') return composeOutput(pid, v) || brief;
     if (pid === 'facebook') return v.message || brief;
     if (pid === 'youtube') return v.description || brief;
     return v.text || brief;
@@ -318,8 +340,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onHistory, 
       yt_privacy: c.privacy || 'private',
       yt_category: c.category || '',
       yt_kids: c.kids || '',
-      ig_caption: v.caption || '',
-      ig_size: 'portrait',
+      ig_caption: composeOutput('instagram', v),
       ig_share_fb: ((s1.crosspost || c.shareFb) && pid === 'instagram') ? '1' : '',
       ig_post_story: c.story ? '1' : '',
       ig_alt: c.alt || '',
@@ -345,10 +366,13 @@ export default function StageThreePage({ session, onBack, onSignOut, onHistory, 
    const buildForm = (pid, { connectionId = null, skipCrossPost = false, mediaOverride = null } = {}) => {
      const body = bodyFor(pid, { skipCrossPost });
      if (connectionId) body.connection_id = connectionId;
-     const uploaded = load('driftpost-media-uploads', null);
+     const uploaded = load(cloudCacheKey, null);
+     const usePreuploaded = uploaded?.filesKey === mediaSignature(files)
+       && uploaded?.files?.length === files.length
+       && uploaded.files.every((f) => f.publicUrl);
      const form = new FormData();
      for (const [k, v] of Object.entries(body)) form.append(k, v);
-     if (uploaded?.files?.length && !mediaOverride && (pid === 'facebook' || pid === 'instagram')) {
+     if (usePreuploaded && !mediaOverride && (pid === 'facebook' || pid === 'instagram')) {
        body.hasPreuploadedMedia = '1';
        form.append('hasPreuploadedMedia', '1');
        uploaded.files.forEach((f, i) => {

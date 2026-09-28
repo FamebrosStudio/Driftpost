@@ -1,0 +1,528 @@
+{
+  "schema_version": "3.0",
+  "brand_number": 34,
+  "brand_id": "gs_shetty_school",
+  "brand_name": "G S Shetty International School",
+  "aliases": [
+    "GS Shetty International School",
+    "GSSIS",
+    "Gs shetty school Bhandup",
+    "@gsshettyschool"
+  ],
+  "knowledge_scope": "One brand only. This file covers G S Shetty International School in Bhandup West, its ICSE identity, contact details, blended-schooling and education positioning, curriculum and activity signals, IIT and IIT-IIM campaign language, admissions communication, student-content safeguards and established visual system.",
+  "business": {
+    "category": "ICSE school",
+    "industry": "Education",
+    "school_type": "Co-educational day school",
+    "grades_publicly_stated": "Nursery to Grade X",
+    "affiliation": "ICSE curriculum and CISCE affiliation as stated by the official website.",
+    "city": "Mumbai",
+    "locality": "Bhandup West",
+    "state": "Maharashtra",
+    "country": "India",
+    "founded": 2012,
+    "founded_status": "Public LinkedIn company profile. Reconfirm for formal anniversary communication.",
+    "tagline": "Education Beyond Excellence",
+    "core_positioning": "An ICSE school in Bhandup West combining academics, values, experiential learning, technology, sports and skill development through a blended-schooling philosophy.",
+    "primary_audience": [
+      "Parents considering school admission",
+      "Current parents",
+      "Students",
+      "School community",
+      "Families in Bhandup and Mulund"
+    ],
+    "dataset_date": "2026-09-26",
+    "commercial_accuracy_rule": "Never invent admission status, fees, seats, rankings, affiliation scope, transport route, result, scholarship or guarantee."
+  },
+  "contact": {
+    "admissions_phone_display": [
+      "+91 96199 33715",
+      "+91 91366 68409"
+    ],
+    "admissions_phone_e164": [
+      "+919619933715",
+      "+919136668409"
+    ],
+    "email_general": "gsshettyinternationalschool@gmail.com",
+    "email_admissions": "admissions@gsinternationalschool.com",
+    "website": "https://gsinternationalschool.com/",
+    "address_full": "Sangeetkar Sudhir Phadke Marg, Bhandup Village Road, Bhandup West, Mumbai, Maharashtra 400078, India",
+    "address_short": "Bhandup Village Road, Bhandup West, Mumbai 400078",
+    "google_maps_url": null,
+    "contact_status": "Supported by the official website and school brochure.",
+    "contact_rule": "Use the two official admissions numbers. Confirm current form dates, grades and seat status before every admissions campaign."
+  },
+  "social_media": {
+    "instagram_handle": "@gsshettyschool",
+    "instagram_url": "https://www.instagram.com/gsshettyschool/",
+    "instagram_status": "Official page supplied by the user and matched to the school identity.",
+    "linkedin_url": "https://in.linkedin.com/company/gs-shetty-international-school",
+    "facebook_url": null,
+    "youtube_url": null,
+    "managing_agency": "Famebros Studio",
+    "agency_instagram_handle": "@famebrosstudio",
+    "agency_instagram_url": "https://www.instagram.com/famebrosstudio/",
+    "agency_credit_default": "💫 Managed by: @famebrosstudio",
+    "reference_rule": "Use school-owned content only with child-safety and consent rules. Current campaign claims must be verified before reuse."
+  },
+  "established_content_knowledge": {
+    "confirmed_content_genres": [
+      "Informational",
+      "Student activity",
+      "Experiential learning",
+      "Admissions",
+      "Robotics and innovation",
+      "School community"
+    ],
+    "public_education_pillars": [
+      "ICSE-based curriculum",
+      "Blended schooling",
+      "Gurukul value-based learning",
+      "Coding",
+      "Robotics",
+      "Drones",
+      "3D printing",
+      "Project-based learning",
+      "Field trips",
+      "Workshops",
+      "Career guidance",
+      "Yoga and meditation",
+      "Communication and leadership skills",
+      "Environmental education",
+      "Sports",
+      "Performing arts",
+      "School-after-school support"
+    ],
+    "public_extracurricular_signals": [
+      "Roller-skating",
+      "Music",
+      "Football",
+      "Horse-riding",
+      "Swimming",
+      "Martial arts",
+      "Dance",
+      "Gymnastics"
+    ],
+    "public_achievement_signals": [
+      "Guinness Book of World Records entry in skating",
+      "National aerobic championship gold cup",
+      "Little League baseball championship win",
+      "Martial arts gold cup"
+    ],
+    "achievement_rule": "Use the exact year, event, category and proof in any new achievement post. Website summaries alone are not enough for a fresh award claim.",
+    "user_approved_campaign_claims": [
+      "IIT Bombay Collaboration",
+      "Ranked No.1",
+      "IIT & IIM Experts"
+    ],
+    "campaign_claim_rule": "These phrases were explicitly selected by the user for ad creative. Preserve approved wording but attach the correct programme, survey, organization, year and substantiation before paid advertising.",
+    "robotics_campaign_history": [
+      "IIT Bombay Robotics at GSSIS",
+      "GSSIS x IIT",
+      "Let's Hear From Our Young Innovators! 🤖🚀",
+      "Student feedback overlays"
+    ],
+    "content_priority": "Show real students learning, building and participating. Explain the educational value without exposing children or making guaranteed-outcome claims."
+  },
+  "writing_direction": {
+    "brand_voice": [
+      "Warm",
+      "Credible",
+      "Encouraging",
+      "Parent-friendly",
+      "Future-focused",
+      "Student-centred"
+    ],
+    "primary_language": "English",
+    "alternate_languages": [
+      "Hindi when requested",
+      "Marathi when requested"
+    ],
+    "focus": [
+      "Real learning",
+      "Student participation",
+      "Skills",
+      "Values",
+      "Innovation",
+      "Parent clarity",
+      "Verified admissions action"
+    ],
+    "avoid": [
+      "Guaranteed admission",
+      "Guaranteed academic result",
+      "Unqualified No.1 claim",
+      "Invented student quote",
+      "Publishing child data",
+      "Comparative attacks on other schools",
+      "IIT affiliation beyond the approved programme",
+      "Cluttered ad copy"
+    ],
+    "student_language_rule": "Celebrate effort, curiosity and participation. Do not label a child by ability or disclose marks without consent.",
+    "punctuation_style": "Clear parent-friendly sentences and no em dashes."
+  },
+  "content_playbook": {
+    "activity_reel": {
+      "sequence": [
+        "Student curiosity hook",
+        "Real activity",
+        "Skill being practised",
+        "Student reflection with consent",
+        "School CTA"
+      ],
+      "rule": "Do not script fake feedback."
+    },
+    "robotics_reel": {
+      "approved_hooks": [
+        "Let's Hear From Our Young Innovators! 🤖🚀",
+        "GSSIS x IIT"
+      ],
+      "rule": "State the exact collaborator and programme. IIT Bombay collaboration must not be expanded into school affiliation."
+    },
+    "admissions_carousel": {
+      "required_inputs": [
+        "Academic year",
+        "Grades open",
+        "Application dates",
+        "Seats",
+        "Process",
+        "Fees if shown",
+        "Documents",
+        "Contact"
+      ],
+      "rule": "Admissions open and limited seats require current written confirmation."
+    },
+    "school_claim_post": {
+      "required_inputs": [
+        "Exact claim",
+        "Awarding body",
+        "Survey or programme",
+        "Year",
+        "Geography or category",
+        "Evidence"
+      ],
+      "rule": "No isolated Ranked No.1 badge without context."
+    },
+    "parent_testimonial": {
+      "required": [
+        "Written consent",
+        "Exact approved wording",
+        "No child data beyond permission",
+        "No result guarantee"
+      ]
+    },
+    "festival_post": {
+      "direction": "Keep the school theme warm, inclusive, educational and visually minimal."
+    }
+  },
+  "school_admissions_and_student_story_framework": {
+    "required_fields": [
+      "Topic",
+      "Programme",
+      "Grade",
+      "Activity",
+      "Learning objective",
+      "Actual assets",
+      "Consent",
+      "Current CTA"
+    ],
+    "safe_story_order": [
+      "What students did",
+      "What skill it supported",
+      "What they observed",
+      "Where to learn more"
+    ],
+    "admissions_rule": "State only current grades, dates, fees and availability.",
+    "minor_safety_rule": "Do not publish full names, contact details, schedules, IDs, locations in real time or sensitive records without authorization.",
+    "claim_rule": "Rankings and collaborations need exact context and evidence."
+  },
+  "caption_format": {
+    "default_use": "Instagram and Facebook feed posts and reels.",
+    "body_length": "Usually 25 to 70 words excluding footer, hashtags and SEO block.",
+    "body_structure": [
+      "One specific hook connected to the real asset or topic.",
+      "One to three useful lines using verified information.",
+      "One visit, enquiry, admissions, booking, save, share or shop CTA."
+    ],
+    "format_order": [
+      "Caption body",
+      "Blank line",
+      "Exactly three hashtags",
+      "Blank line",
+      "Approved CTA, location and contact lines",
+      "Agency credit when required",
+      "Blank line",
+      "Exactly one square-bracket SEO block"
+    ],
+    "hashtag_rule": "Exactly three hashtags unless the user requests another count.",
+    "seo_rule": "Use five to eight natural search phrases inside one pair of square brackets.",
+    "story_rule": "For story copy, use a short headline, one support line and one CTA. Omit feed hashtags and SEO unless requested.",
+    "reel_overlay_rule": "Keep each overlay short, readable and supported by the footage.",
+    "final_checks": [
+      "Use only verified facts from the current brief and this knowledge file.",
+      "Use exactly three relevant hashtags.",
+      "Use one square-bracket SEO block with five to eight comma-separated phrases.",
+      "Use one clear CTA.",
+      "Remove every em dash before delivery.",
+      "Child consent and privacy checked.",
+      "Admissions status is current.",
+      "Rankings, affiliations and collaborations include exact context."
+    ]
+  },
+  "fixed_footer": {
+    "standard_lines": [
+      "📍 Bhandup Village Road, Bhandup West, Mumbai 400078",
+      "📞 +91 96199 33715 | +91 91366 68409",
+      "🌐 www.gsinternationalschool.com",
+      "💫 Managed by: @famebrosstudio"
+    ],
+    "compact_lines": [
+      "📍 Bhandup West | 📞 96199 33715 / 91366 68409",
+      "💫 Managed by: @famebrosstudio"
+    ],
+    "usage": "Use the standard footer for admissions and information posts. Use the compact footer for long captions.",
+    "exceptions": [
+      "Story overlays",
+      "Comments",
+      "When the design already displays full contact"
+    ]
+  },
+  "suggested_hashtag_bank": [
+    "#GSShettyInternationalSchool",
+    "#GSSIS",
+    "#ICSESchool",
+    "#BhandupSchool",
+    "#ExperientialLearning",
+    "#YoungInnovators",
+    "#RoboticsEducation",
+    "#EducationBeyondExcellence"
+  ],
+  "seo_keyword_bank": [
+    "G S Shetty International School",
+    "ICSE school in Bhandup West",
+    "school near Mulund",
+    "robotics education Mumbai",
+    "experiential learning school Mumbai",
+    "school admissions Bhandup",
+    "coding and robotics school",
+    "GSSIS Mumbai"
+  ],
+  "cta_bank": [
+    "Call the school for current admission information.",
+    "Visit gsinternationalschool.com to explore the school.",
+    "Watch what our young innovators discovered.",
+    "Save this activity for your school research.",
+    "Contact the admissions team to confirm grades and application dates."
+  ],
+  "suggested_hooks": [
+    "Let's hear from our young innovators!",
+    "Learning becomes memorable when students build it themselves.",
+    "Beyond textbooks, into real exploration.",
+    "Curiosity is where every strong idea begins.",
+    "A school day can build skills for far beyond the classroom.",
+    "GSSIS x IIT: young minds, real questions."
+  ],
+  "visual_and_asset_guidance": {
+    "feed_size": "1080 x 1440 pixels",
+    "square_ad_size": "1080 x 1080 pixels",
+    "story_and_reel_size": "1080 x 1920 pixels",
+    "reel_grid_safe_area": "Keep the primary title, student and logo inside the central 1080 x 1440 area.",
+    "brand_colours": [
+      {
+        "name": "Bright red",
+        "hex": "#FF3131"
+      },
+      {
+        "name": "Orange",
+        "hex": "#FFA800"
+      },
+      {
+        "name": "Yellow",
+        "hex": "#FFED00"
+      }
+    ],
+    "style": [
+      "Bright",
+      "Minimal",
+      "Youthful",
+      "Credible",
+      "High readability"
+    ],
+    "fidelity_rules": [
+      "Use real approved students and school assets.",
+      "Do not alter a student's identity or uniform.",
+      "Do not create fake testimonials, certificates or awards.",
+      "Keep ads uncluttered and reference-led."
+    ],
+    "logo_rule": "Use the official school logo with clear space and high contrast."
+  },
+  "carousel_and_reel_system": {
+    "admissions_carousel": [
+      "Slide 1: One parent-relevant hook",
+      "Slide 2: ICSE and learning approach",
+      "Slide 3: Technology and skill programmes",
+      "Slide 4: Sports and arts",
+      "Slide 5: Verified proof point",
+      "Slide 6: Admissions CTA"
+    ],
+    "robotics_reel": [
+      "0 to 3 seconds: GSSIS x IIT or approved hook",
+      "3 to 10 seconds: Students building",
+      "10 to 20 seconds: Real explanation",
+      "20 to 28 seconds: Student feedback",
+      "28 to 32 seconds: Contact CTA"
+    ],
+    "editing_style": [
+      "Bright clean frames",
+      "Large subtitles",
+      "Student-first storytelling",
+      "Minimal icons",
+      "No crowded copy"
+    ]
+  },
+  "other_output_modes": {
+    "youtube_title": "Use a factual activity title with GSSIS, programme and student focus.",
+    "parent_whatsapp": "Short official update with date, grade, action and school contact.",
+    "ad_copy": "One verified differentiator, one parent outcome without guarantee, one admissions action.",
+    "student_quote": "Use exact approved words and consent.",
+    "website_news": "Add programme details, date, photos and learning objective."
+  },
+  "sample_caption": {
+    "status": "Illustrative robotics-activity caption based on established campaign direction.",
+    "scenario": "Young innovators robotics reel",
+    "caption_body": "Let's hear from our young innovators! 🤖🚀 At GSSIS, hands-on activities help students explore, build and explain their ideas with confidence. Watch this classroom moment, then contact the school for current programme and admission information.",
+    "footer": [
+      "📍 Bhandup Village Road, Bhandup West, Mumbai 400078",
+      "📞 +91 96199 33715 | +91 91366 68409",
+      "🌐 www.gsinternationalschool.com",
+      "💫 Managed by: @famebrosstudio"
+    ],
+    "hashtags": [
+      "#GSShettyInternationalSchool",
+      "#YoungInnovators",
+      "#RoboticsEducation"
+    ],
+    "seo_keywords": [
+      "G S Shetty International School",
+      "ICSE school in Bhandup West",
+      "robotics education Mumbai",
+      "experiential learning school Mumbai",
+      "school admissions Bhandup",
+      "GSSIS young innovators"
+    ],
+    "full_caption": "Let's hear from our young innovators! 🤖🚀 At GSSIS, hands-on activities help students explore, build and explain their ideas with confidence. Watch this classroom moment, then contact the school for current programme and admission information.\n\n📍 Bhandup Village Road, Bhandup West, Mumbai 400078\n📞 +91 96199 33715 | +91 91366 68409\n🌐 www.gsinternationalschool.com\n💫 Managed by: @famebrosstudio\n\n#GSShettyInternationalSchool #YoungInnovators #RoboticsEducation\n\n[G S Shetty International School, ICSE school in Bhandup West, robotics education Mumbai, experiential learning school Mumbai, school admissions Bhandup, GSSIS young innovators]",
+    "validation": {
+      "hashtags": 3,
+      "seo_phrases": 6,
+      "verified_fields_only": true,
+      "student_consent_required": true
+    }
+  },
+  "accuracy_rules": [
+    "Use the ICSE and CISCE wording supported by the official website.",
+    "Do not imply IIT Bombay affiliation beyond the confirmed collaboration or programme.",
+    "Attach year, survey and category to Ranked No.1 claims.",
+    "Use IIT and IIM experts wording only in the approved 10X or campaign context.",
+    "Confirm admissions dates, grades, fees and seats before publication.",
+    "Never invent student feedback or publish child data without consent.",
+    "Use the official phone, email, website and address exactly.",
+    "Remove every em dash."
+  ],
+  "per_post_input": {
+    "required_core": [
+      "Output mode",
+      "Objective",
+      "Programme or event",
+      "Grade",
+      "Date",
+      "Actual assets",
+      "Consent",
+      "CTA"
+    ],
+    "admissions_inputs": [
+      "Academic year",
+      "Grades",
+      "Form dates",
+      "Seats",
+      "Fees",
+      "Process",
+      "Documents",
+      "Contact"
+    ],
+    "claim_inputs": [
+      "Claim",
+      "Body",
+      "Year",
+      "Category",
+      "Evidence",
+      "Approved wording"
+    ],
+    "student_inputs": [
+      "Consent",
+      "Display name",
+      "Quote",
+      "Class disclosure approval",
+      "Image approval"
+    ],
+    "input_rule": "Do not turn an old campaign line into a current claim without evidence and approval."
+  },
+  "master_brand_instruction": "Create content only for G S Shetty International School, an ICSE school at Sangeetkar Sudhir Phadke Marg, Bhandup Village Road, Bhandup West, Mumbai 400078. The official Instagram is @gsshettyschool, website is gsinternationalschool.com, and admissions contacts are +91 96199 33715 and +91 91366 68409. Write warm, credible, encouraging and parent-friendly content about real learning, values, technology, sports, arts and student participation. Preserve the approved red #FF3131, orange #FFA800 and yellow #FFED00 system and keep layouts minimal. Treat IIT Bombay Collaboration, Ranked No.1 and IIT & IIM Experts as context-dependent campaign claims requiring exact programme, survey, year and evidence. Protect minors and never invent student feedback, admission availability, fees or outcomes. Use exactly three hashtags and one SEO bracket with five to eight phrases. Remove all em dashes.",
+  "missing_information": {
+    "admissions": [
+      "Current academic-year dates",
+      "Grades open",
+      "Seat status",
+      "Fees",
+      "Required documents",
+      "Transport routes"
+    ],
+    "claims": [
+      "Current evidence package for No.1 ranking",
+      "Exact IIT Bombay collaboration document",
+      "10X programme reviewer and current details"
+    ],
+    "digital": [
+      "Facebook URL",
+      "YouTube URL",
+      "Google Maps URL"
+    ],
+    "brand_system": [
+      "Master logo files",
+      "Font names",
+      "Photography and consent guide"
+    ],
+    "priority": "Keep the admissions sheet and claim-evidence pack current before every paid campaign."
+  },
+  "sources": {
+    "user_facts": [
+      "Official website and Instagram.",
+      "Shorter Bhandup address preference.",
+      "Campaign phrases IIT Bombay Collaboration, Ranked No.1 and IIT & IIM Experts.",
+      "Robotics reel cover and student-feedback direction.",
+      "Theme colours and minimal layout preference."
+    ],
+    "public_sources": [
+      {
+        "url": "https://gsinternationalschool.com/",
+        "checked_on": "2026-09-26",
+        "used_for": "ICSE identity, grades, learning approach, curriculum and activities."
+      },
+      {
+        "url": "https://gsinternationalschool.com/assets/img/ebrochure.pdf",
+        "checked_on": "2026-09-26",
+        "used_for": "Address, phones, emails and 10X programme wording."
+      },
+      {
+        "url": "https://in.linkedin.com/company/gs-shetty-international-school",
+        "checked_on": "2026-09-26",
+        "used_for": "Public founding-year and organization profile."
+      },
+      {
+        "url": "https://www.instagram.com/gsshettyschool/",
+        "checked_on": "2026-09-26",
+        "used_for": "Official Instagram identity."
+      }
+    ],
+    "internal_dataset": "Famebros_Brand_Caption_Dataset.json record gs_shetty_school.",
+    "source_rule": "Current school-approved admissions and claim documents override public website summaries."
+  }
+}

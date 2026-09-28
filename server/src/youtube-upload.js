@@ -85,3 +85,19 @@ export async function uploadVideoResumable({ accessToken, file, metadata, onProg
   if (!video?.id) throw new Error('YouTube did not return a video id');
   return video;
 }
+
+export async function setVideoThumbnail({ accessToken, videoId, file }) {
+  if (!file || !['image/jpeg', 'image/png'].includes(file.mimetype)) {
+    throw new Error('YouTube covers must be JPEG or PNG images');
+  }
+  if (file.size > 50 * 1024 * 1024) throw new Error('YouTube cover image exceeds 50 MB');
+  const bytes = await fs.readFile(file.path);
+  const url = `https://www.googleapis.com/upload/youtube/v3/thumbnails/set?videoId=${encodeURIComponent(videoId)}&uploadType=media`;
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': file.mimetype },
+    body: bytes,
+  });
+  if (!res.ok) throw await gerr(res, 'YouTube could not set this video cover');
+  return res.json().catch(() => ({}));
+}

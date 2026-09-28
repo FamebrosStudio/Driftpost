@@ -1,0 +1,448 @@
+{
+  "schema_version": "3.0",
+  "brand_number": 35,
+  "brand_id": "seven_cube_footwear",
+  "brand_name": "Seven Cube Footwear",
+  "aliases": [
+    "Seven Cube",
+    "Seven cube footwear"
+  ],
+  "knowledge_scope": "One brand only. This file covers Seven Cube Footwear based on the confirmed footwear category and informational and edit-led content genres. Official social, location, contact, audience segment, catalogue and commercial terms remain unresolved, so the system emphasizes real-product fidelity and strict anti-invention controls.",
+  "business": {
+    "category": "Footwear",
+    "industry": "Fashion and footwear",
+    "business_model": null,
+    "location": null,
+    "country": null,
+    "currency": null,
+    "core_positioning": "A footwear brand requiring crisp, contemporary and product-focused presentation of real pairs, visible details and confirmed fit information.",
+    "primary_audience": "Footwear shoppers. Gender, age segment and wholesale or retail focus are unconfirmed.",
+    "confirmed_content_genres": [
+      "Informational",
+      "Edit-led product content"
+    ],
+    "onboarding_or_billing_note": "17 September appeared in the user-provided working record. It is not a founding date.",
+    "dataset_date": "2026-09-26",
+    "commercial_accuracy_rule": "Never invent material, construction, size, fit, price, stock, authenticity, warranty, shipping or returns."
+  },
+  "contact": {
+    "phone": null,
+    "whatsapp": null,
+    "email": null,
+    "website": null,
+    "address": null,
+    "location": null,
+    "google_maps_url": null,
+    "contact_status": "No confirmed contact details.",
+    "contact_rule": "Do not use details from a similarly named footwear seller."
+  },
+  "social_media": {
+    "instagram_handle": null,
+    "instagram_url": null,
+    "instagram_status": "Not resolved after exact-name public searches.",
+    "facebook_url": null,
+    "website_url": null,
+    "managing_agency": "Famebros Studio",
+    "agency_instagram_handle": "@famebrosstudio",
+    "agency_instagram_url": "https://www.instagram.com/famebrosstudio/",
+    "agency_credit_default": "💫 Managed by: @famebrosstudio",
+    "reference_rule": "Obtain the official page directly. Do not tag a guessed account."
+  },
+  "established_content_knowledge": {
+    "confirmed_content_pillars": [
+      "Footwear hero reveal",
+      "Edit-led model or product reveal",
+      "Upper, sole, closure and finish close-ups",
+      "On-foot styling",
+      "Confirmed size and fit education",
+      "Product comparison using current pairs",
+      "Care instructions from supplied product data",
+      "New arrival or stock post after confirmation"
+    ],
+    "category_boundaries": [
+      "Do not assume men's only",
+      "Do not assume women's only",
+      "Do not assume children's footwear",
+      "Do not assume leather",
+      "Do not assume sports or orthopaedic benefits",
+      "Do not assume original branded or replica merchandise"
+    ],
+    "content_priority": "Show the actual pair accurately and provide only the fit, construction and commerce details supplied for that item.",
+    "data_confidence": {
+      "name": "Confirmed",
+      "category": "Confirmed",
+      "genres": "Confirmed",
+      "social": "Unknown",
+      "contact": "Unknown",
+      "catalogue": "Unknown"
+    }
+  },
+  "writing_direction": {
+    "brand_voice": [
+      "Contemporary",
+      "Crisp",
+      "Product-focused",
+      "Confident",
+      "Style-aware"
+    ],
+    "primary_language": "English or Hinglish",
+    "focus": [
+      "Actual pair",
+      "Visible design",
+      "Confirmed fit",
+      "Styling",
+      "Clear enquiry action"
+    ],
+    "avoid": [
+      "Fake comfort promise",
+      "Orthopaedic or medical claim",
+      "Unverified leather or vegan claim",
+      "Branded authenticity claim",
+      "Invented size, price or stock",
+      "Assuming gender",
+      "Changing product design"
+    ],
+    "punctuation_style": "Short energetic lines and no em dashes."
+  },
+  "content_playbook": {
+    "product_edit": {
+      "sequence": [
+        "Detail hook",
+        "Full pair reveal",
+        "On-foot or angle transition",
+        "Verified feature",
+        "Enquiry CTA"
+      ],
+      "rule": "Keep the real product unchanged."
+    },
+    "information_post": {
+      "topics": [
+        "Exact product details",
+        "Size chart",
+        "Fit guidance",
+        "Care",
+        "Styling",
+        "Closure and sole only when confirmed"
+      ],
+      "rule": "Do not infer material or comfort from the image."
+    },
+    "on_foot_reel": {
+      "rule": "Show movement safely and do not make performance claims without testing evidence."
+    },
+    "comparison_post": {
+      "fields": [
+        "Category",
+        "Size range",
+        "Material",
+        "Closure",
+        "Sole",
+        "Weight",
+        "Price",
+        "Use case"
+      ],
+      "rule": "Compare only current verified pairs."
+    },
+    "offer_post": {
+      "required_inputs": [
+        "Product",
+        "Offer",
+        "Price",
+        "Dates",
+        "Stock",
+        "Terms",
+        "Order route"
+      ]
+    }
+  },
+  "footwear_product_and_fit_description_framework": {
+    "required_fields": [
+      "Product name",
+      "Code",
+      "Audience",
+      "Category",
+      "Colour",
+      "Upper material",
+      "Lining",
+      "Sole",
+      "Closure",
+      "Heel",
+      "Sizes",
+      "Fit note",
+      "Price",
+      "Stock",
+      "Care",
+      "Shipping",
+      "Returns"
+    ],
+    "safe_order": [
+      "Style hook",
+      "Exact pair",
+      "Verified construction or fit",
+      "Styling use",
+      "Enquiry CTA"
+    ],
+    "fit_rule": "Do not guarantee comfort or true-to-size fit for every person.",
+    "authenticity_rule": "Do not mention branded authenticity unless documentation exists.",
+    "unknown_rule": "Omit unknown fields and request the product sheet."
+  },
+  "caption_format": {
+    "default_use": "Instagram and Facebook feed posts and reels.",
+    "body_length": "Usually 25 to 70 words excluding footer, hashtags and SEO block.",
+    "body_structure": [
+      "One specific hook connected to the real asset or topic.",
+      "One to three useful lines using verified information.",
+      "One visit, enquiry, admissions, booking, save, share or shop CTA."
+    ],
+    "format_order": [
+      "Caption body",
+      "Blank line",
+      "Exactly three hashtags",
+      "Blank line",
+      "Approved CTA, location and contact lines",
+      "Agency credit when required",
+      "Blank line",
+      "Exactly one square-bracket SEO block"
+    ],
+    "hashtag_rule": "Exactly three hashtags unless the user requests another count.",
+    "seo_rule": "Use five to eight natural search phrases inside one pair of square brackets.",
+    "story_rule": "For story copy, use a short headline, one support line and one CTA. Omit feed hashtags and SEO unless requested.",
+    "reel_overlay_rule": "Keep each overlay short, readable and supported by the footage.",
+    "final_checks": [
+      "Use only verified facts from the current brief and this knowledge file.",
+      "Use exactly three relevant hashtags.",
+      "Use one square-bracket SEO block with five to eight comma-separated phrases.",
+      "Use one clear CTA.",
+      "Remove every em dash before delivery.",
+      "Product category, audience and stock confirmed.",
+      "No material, comfort, authenticity or medical claim inferred."
+    ]
+  },
+  "fixed_footer": {
+    "standard_lines": [
+      "DM Seven Cube Footwear for current details.",
+      "💫 Managed by: @famebrosstudio"
+    ],
+    "status": "Temporary wording. Replace with the official handle and contact after confirmation.",
+    "usage": "Use only when the publication is going through the confirmed brand account.",
+    "exceptions": [
+      "Story overlays",
+      "Comments",
+      "Unpublished concepts"
+    ]
+  },
+  "suggested_hashtag_bank": [
+    "#SevenCubeFootwear",
+    "#FootwearStyle",
+    "#ShoeDetails",
+    "#FootwearCollection",
+    "#StyleYourStep",
+    "#ShoeReel",
+    "#EverydayFootwear"
+  ],
+  "seo_keyword_bank": [
+    "Seven Cube Footwear",
+    "footwear collection",
+    "shoe styling ideas",
+    "footwear product details",
+    "shoes and sandals collection",
+    "on foot shoe showcase",
+    "footwear size information"
+  ],
+  "cta_bank": [
+    "DM us to enquire about this pair.",
+    "Save the pair you would style.",
+    "Ask for the confirmed sizes, price and stock.",
+    "Which pair would you choose?",
+    "Share this with someone looking for their next pair."
+  ],
+  "suggested_hooks": [
+    "A closer look at your next outfit detail.",
+    "The pair that completes the look.",
+    "Every angle deserves a closer look.",
+    "Style starts from the ground up.",
+    "One pair, more than one way to wear it.",
+    "Before you choose, check the details."
+  ],
+  "visual_and_asset_guidance": {
+    "feed_size": "1080 x 1440 pixels",
+    "story_and_reel_size": "1080 x 1920 pixels",
+    "style": [
+      "Crisp",
+      "Contemporary",
+      "Product-led",
+      "Edit-driven",
+      "Clean"
+    ],
+    "asset_priority": [
+      "Actual pair",
+      "Accurate colour",
+      "Multiple angles",
+      "Sole",
+      "Closure",
+      "On-foot scale"
+    ],
+    "fidelity_rules": [
+      "Do not redesign or recolour the footwear.",
+      "Do not add or remove logos.",
+      "Do not hide visible condition.",
+      "Do not replace the pair with stock imagery."
+    ],
+    "thumbnail_rule": "One real pair, one short hook and no unconfirmed price."
+  },
+  "carousel_and_reel_system": {
+    "product_carousel": [
+      "Slide 1: Hero pair",
+      "Slide 2: Upper detail",
+      "Slide 3: Sole and closure",
+      "Slide 4: On-foot styling",
+      "Slide 5: Verified size and product facts",
+      "Slide 6: Enquiry CTA"
+    ],
+    "edit_reel": [
+      "0 to 2 seconds: Detail hook",
+      "2 to 6 seconds: Full reveal",
+      "6 to 11 seconds: Angles and on-foot",
+      "11 to 14 seconds: Verified feature",
+      "14 to 16 seconds: CTA"
+    ],
+    "editing_style": [
+      "Clean transitions",
+      "Accurate colour",
+      "Texture close-ups",
+      "Minimal text",
+      "No fake performance effects"
+    ]
+  },
+  "other_output_modes": {
+    "story_sequence": [
+      "Pair reveal",
+      "Style poll",
+      "DM CTA"
+    ],
+    "catalogue_copy": "Use only current product data.",
+    "marketplace_title": "Searchable category, colour and product code after confirmation.",
+    "comment_reply": "Answer size, price and stock only from current inventory.",
+    "voiceover": "Short Hinglish or English product reveal using verified facts."
+  },
+  "sample_caption": {
+    "status": "Illustrative low-risk footwear edit caption. Add official contact and product facts after confirmation.",
+    "scenario": "Footwear reveal",
+    "caption_body": "A closer look at your next outfit detail. Explore the real pair featured by Seven Cube Footwear, from its silhouette to the visible finish. DM the brand for the confirmed sizes, price and current availability.",
+    "footer": [
+      "💫 Managed by: @famebrosstudio"
+    ],
+    "hashtags": [
+      "#SevenCubeFootwear",
+      "#FootwearStyle",
+      "#ShoeDetails"
+    ],
+    "seo_keywords": [
+      "Seven Cube Footwear",
+      "footwear collection",
+      "shoe styling ideas",
+      "footwear product details",
+      "on foot shoe showcase",
+      "shoe size information"
+    ],
+    "full_caption": "A closer look at your next outfit detail. Explore the real pair featured by Seven Cube Footwear, from its silhouette to the visible finish. DM the brand for the confirmed sizes, price and current availability.\n\n💫 Managed by: @famebrosstudio\n\n#SevenCubeFootwear #FootwearStyle #ShoeDetails\n\n[Seven Cube Footwear, footwear collection, shoe styling ideas, footwear product details, on foot shoe showcase, shoe size information]",
+    "validation": {
+      "hashtags": 3,
+      "seo_phrases": 6,
+      "verified_fields_only": true,
+      "official_contact_confirmed": false
+    }
+  },
+  "accuracy_rules": [
+    "Do not invent or guess the official Instagram page.",
+    "Do not assume gender or age segment.",
+    "Never infer material, leather, comfort, orthopaedic benefit, authenticity, size, price or stock.",
+    "Preserve the real footwear design and colour.",
+    "Confirm every offer and commerce term.",
+    "Use a generic DM CTA only through the confirmed brand account.",
+    "Remove every em dash."
+  ],
+  "per_post_input": {
+    "required_core": [
+      "Output mode",
+      "Objective",
+      "Actual product assets",
+      "Product name or code",
+      "Audience",
+      "CTA",
+      "Publication date"
+    ],
+    "product_inputs": [
+      "Category",
+      "Colour",
+      "Upper",
+      "Lining",
+      "Sole",
+      "Closure",
+      "Heel",
+      "Sizes",
+      "Fit",
+      "Price",
+      "Stock",
+      "Care"
+    ],
+    "commerce_inputs": [
+      "Official account",
+      "Order method",
+      "Shipping",
+      "Returns",
+      "Warranty"
+    ],
+    "input_rule": "Ask for the product sheet and official account before sales-ready copy."
+  },
+  "master_brand_instruction": "Create content only for Seven Cube Footwear. The confirmed facts are the footwear category and informational and edit-led content genres. The official Instagram, location, contact, audience segment, catalogue and commerce rules are not established. Write crisp, contemporary English or Hinglish focused on the actual pair and visible details. Never assume gender, leather, branded authenticity, orthopaedic value, comfort, fit, size, price or stock. Preserve the uploaded footwear exactly. Use only a generic enquiry CTA until the official account is supplied. Standard captions use exactly three hashtags and one SEO bracket with five to eight phrases. Remove all em dashes.",
+  "missing_information": {
+    "identity": [
+      "Official Instagram",
+      "Website",
+      "Owner",
+      "Location",
+      "Audience segment"
+    ],
+    "contact": [
+      "Phone",
+      "WhatsApp",
+      "Email",
+      "Address"
+    ],
+    "catalogue": [
+      "Product categories",
+      "Codes",
+      "Materials",
+      "Size charts",
+      "Prices",
+      "Stock",
+      "Care"
+    ],
+    "commerce": [
+      "Order route",
+      "Shipping",
+      "Returns",
+      "Warranty",
+      "Payment"
+    ],
+    "brand_system": [
+      "Logo",
+      "Colours",
+      "Fonts",
+      "Photography guide"
+    ],
+    "priority": "Confirm the official Instagram and target segment, then obtain the current catalogue and size chart."
+  },
+  "sources": {
+    "user_facts": [
+      "Seven Cube Footwear name.",
+      "Footwear category.",
+      "Informational and edit-led content genres.",
+      "17 September operational note."
+    ],
+    "public_sources": [],
+    "public_search_note": "Exact-name searches on 2026-09-26 did not safely resolve an official page.",
+    "internal_dataset": "Famebros_Brand_Caption_Dataset.json record seven_cube_footwear.",
+    "source_rule": "Direct owner confirmation is required before adding public identity and commerce data."
+  }
+}
