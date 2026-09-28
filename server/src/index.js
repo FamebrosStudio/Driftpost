@@ -29,12 +29,16 @@ const BUCKET = process.env.MEDIA_BUCKET || 'driftpost-media';
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SECRET_KEY, { auth: { persistSession: false, autoRefreshToken: false } });
 const jobs = new Map();
 const allowedOrigins = (process.env.FRONTEND_URL || '').split(',').map((o) => o.trim()).filter(Boolean);
+// Hardcoded fallback so the API stays reachable from the deployed frontend
+// even if FRONTEND_URL is missing on the server env.
+const KNOWN_ORIGINS = ['https://driftpostpage.vercel.app'];
 const corsOptions = {
   origin: (origin, callback) => {
     // Allow server-to-server / curl / mobile apps with no Origin header,
-    // plus any explicitly configured frontend URL. Same behaviour as before
-    // for a single FRONTEND_URL, with support for "url1,url2".
-    if (!origin || allowedOrigins.includes(origin)) {
+    // plus any explicitly configured frontend URL and the known deployed
+    // frontend origin (handles the case where FRONTEND_URL env var is
+    // empty on the server, which silently breaks all CORS).
+    if (!origin || allowedOrigins.includes(origin) || KNOWN_ORIGINS.includes(origin)) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));
