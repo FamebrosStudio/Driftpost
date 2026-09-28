@@ -142,7 +142,16 @@ async function requireUser(req, res, next) {
   if (!token) return res.status(401).json({ error: 'Sign in required' });
   if (token.length > 4096) return res.status(401).json({ error: 'Sign in required' });
   try {
-    const { data, error } = await supabase.auth.getUser(token);
+    let data;
+    let error;
+    for (let attempt = 0; attempt < 3; attempt++) {
+      ({ data, error } = await supabase.auth.getUser(token));
+      if (!error) break;
+      const status = Number(error.status);
+      const transient = status >= 500 || status === 0 || /fetch failed|network error/i.test(error.message || '');
+      if (!transient || attempt === 2) break;
+      await new Promise((resolve) => setTimeout(resolve, 300 * (attempt + 1)));
+    }
     if (error || !data.user) {
       // Log the REAL reason in Render logs: 'invalid token' (re-login fixes)
       // vs Auth-server outage (waiting fixes). Never sent to the client.
