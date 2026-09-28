@@ -1,0 +1,677 @@
+{
+  "name": "Driftpost Telegram Bot v2 (multi-platform)",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": ["message", "callback_query"],
+        "additionalFields": {}
+      },
+      "id": "tg-trigger",
+      "name": "Telegram Trigger",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [-1600, 400],
+      "webhookId": "driftpost-telegram-v2"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Classify every Telegram update into one route.\nconst u = $input.first().json;\nconst msg = u.message || u.edited_message || null;\nconst cb = u.callback_query || null;\nlet route = 'other', chat_id = null, out = {};\nif (cb) {\n  route = 'callback';\n  chat_id = cb.message?.chat?.id || cb.from?.id;\n  out = { callback_id: cb.id, callback_data: cb.data || '', chat_id, message_id: cb.message?.message_id };\n} else if (msg) {\n  chat_id = msg.chat?.id;\n  const hasVideo = !!(msg.video || (msg.document && /video|mp4|mov|mkv|webm/i.test(msg.document.mime_type || '' + (msg.document.file_name || ''))));\n  const hasPhoto = !!(!hasVideo && (msg.photo || (msg.document && /image/i.test(msg.document.mime_type || ''))));\n  if (hasVideo || hasPhoto) {\n    route = 'video';\n    const media = msg.video || msg.document || (Array.isArray(msg.photo) ? msg.photo[msg.photo.length - 1] : null);\n    const caption = msg.caption || '';\n    const lines = String(caption).split('\\n').map(s => s.trim()).filter(Boolean);\n    out = {\n      chat_id,\n      file_id: media?.file_id || '',\n      file_unique_id: media?.file_unique_id || '',\n      kind: hasVideo ? 'video' : 'photo',\n      brand: lines.length ? lines[0].slice(0, 120) : '',\n      summary: lines.length > 1 ? lines.slice(1).join('\\n').slice(0, 400) : ''\n    };\n  } else if (msg.text) {\n    route = 'text';\n    out = { chat_id, text: String(msg.text || '').slice(0, 500) };\n  } else {\n    out = { chat_id };\n  }\n}\nreturn [{ json: { route, ...out } }];"
+      },
+      "id": "classify",
+      "name": "Classify Update",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [-1380, 400]
+    },
+    {
+      "parameters": {
+        "dataType": "string",
+        "value1": "={{ $json.route }}",
+        "rules": {
+          "rules": [
+            { "operation": "equals", "value2": "callback" },
+            { "operation": "equals", "value2": "video" },
+            { "operation": "equals", "value2": "text" }
+          ]
+        },
+        "fallbackOutput": 3
+      },
+      "id": "router",
+      "name": "Router",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3,
+      "position": [-1160, 400]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.telegram.org/bot{{ $vars.TELEGRAM_BOT_TOKEN }}/sendMessage",
+        "sendHeaders": true,
+        "specifyHeaders": true,
+        "headerParameters": { "parameters": [{ "name": "Content-Type", "value": "application/json" }] },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"chat_id\": {{ $json.chat_id }},\n  \"text\": \"Send a video to start.\\n\\nTip: put the brand on the first line of the caption, e.g.\\nHair Match Salon\\nbalayage transformation reel\"\n}",
+        "options": {}
+      },
+      "id": "other-hint",
+      "name": "Other: Hint",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-940, 940]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://vdvwgcxrygxpjewvcchj.supabase.co/rest/v1/telegram_sessions",
+        "sendHeaders": true,
+        "specifyHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "apikey", "value": "={{ $vars.SUPABASE_SERVICE_KEY }}" },
+            { "name": "Authorization", "value": "={{ 'Bearer ' + $vars.SUPABASE_SERVICE_KEY }}" },
+            { "name": "Content-Type", "value": "application/json" },
+            { "name": "Prefer", "value": "resolution=merge-duplicates" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"chat_id\": {{ $json.chat_id }},\n  \"file_id\": \"{{ $json.file_id }}\",\n  \"file_unique_id\": \"{{ $json.file_unique_id }}\",\n  \"brand\": {{ JSON.stringify($json.brand || '') }},\n  \"summary\": {{ JSON.stringify($json.summary || '') }},\n  \"selected\": [],\n  \"status\": \"{{ $json.brand ? 'awaiting_platform' : 'awaiting_brand' }}\"\n}",
+        "options": {}
+      },
+      "id": "video-upsert",
+      "name": "Video: Save Session",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-940, 180]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Decide what to send after a video arrives.\nconst j = $input.first().json;\n// video-upsert returns the row (array) or echoes input; recover chat context:\nconst prev = $('Classify Update').first().json;\nconst chat_id = prev.chat_id;\nconst brand = (prev.brand || '').trim();\nconst hasBrand = !!brand;\nconst kb = (sel) => {\n  const on = (s) => (sel || []).includes(s) ? '✅' : '⬜';\n  return { inline_keyboard: [[{ text: `${on('youtube')} YouTube`, callback_data: 'toggle:youtube' }, { text: `${on('instagram')} Instagram`, callback_data: 'toggle:instagram' }], [{ text: `${on('facebook')} Facebook`, callback_data: 'toggle:facebook' }, { text: `${on('x')} X`, callback_data: 'toggle:x' }], [{ text: '🚀 POST NOW', callback_data: 'done' }, { text: '❌ Cancel', callback_data: 'cancel' }]] };\n};\nif (!hasBrand) {\n  return [{ json: {\n    send_kind: 'ask_brand', chat_id,\n    text: '🎬 Video received!\\n\\nWhich *brand* is this for? Reply with the brand name exactly as in Driftpost (e.g. Hair Match Salon).'\n  } }];\n}\nreturn [{ json: {\n  send_kind: 'picker', chat_id,\n  text: `🎬 Video received for *${brand}*!\\n\\nTap to select platforms (you can pick many), then press 🚀 POST NOW:`,\n  reply_markup: kb([])\n} }];"
+      },
+      "id": "video-decide",
+      "name": "Video: Decide",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [-720, 180]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.telegram.org/bot{{ $vars.TELEGRAM_BOT_TOKEN }}/sendMessage",
+        "sendHeaders": true,
+        "specifyHeaders": true,
+        "headerParameters": { "parameters": [{ "name": "Content-Type", "value": "application/json" }] },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ chat_id: $json.chat_id, text: $json.text, parse_mode: 'Markdown', ...( $json.reply_markup ? { reply_markup: $json.reply_markup } : {}) }) }}",
+        "options": {}
+      },
+      "id": "send-picker",
+      "name": "Send Picker / Ask",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-500, 180]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=https://vdvwgcxrygxpjewvcchj.supabase.co/rest/v1/telegram_sessions?chat_id=eq.{{ $json.chat_id }}&select=*",
+        "sendHeaders": true,
+        "specifyHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "apikey", "value": "={{ $vars.SUPABASE_SERVICE_KEY }}" },
+            { "name": "Authorization", "value": "={{ 'Bearer ' + $vars.SUPABASE_SERVICE_KEY }}" }
+          ]
+        },
+        "options": {}
+      },
+      "id": "text-load",
+      "name": "Text: Load Session",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-940, 420]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Decide what a text message means.\nconst rows = $input.first().json;\nconst sess = Array.isArray(rows) ? rows[0] : rows;\nconst prev = $('Classify Update').first().json;\nconst text = (prev.text || '').trim();\nconst chat_id = prev.chat_id;\nconst kb = (sel) => {\n  const on = (s) => (sel || []).includes(s) ? '✅' : '⬜';\n  return { inline_keyboard: [[{ text: `${on('youtube')} YouTube`, callback_data: 'toggle:youtube' }, { text: `${on('instagram')} Instagram`, callback_data: 'toggle:instagram' }], [{ text: `${on('facebook')} Facebook`, callback_data: 'toggle:facebook' }, { text: `${on('x')} X`, callback_data: 'toggle:x' }], [{ text: '🚀 POST NOW', callback_data: 'done' }, { text: '❌ Cancel', callback_data: 'cancel' }]] };\n};\nif (/^\\/start/i.test(text)) {\n  return [{ json: { action: 'help', chat_id, text: '👋 *Driftpost Bot*\\n\\n1️⃣ Send a video (caption first line = brand)\\n2️⃣ Tap platforms (many allowed)\\n3️⃣ Press 🚀 POST NOW\\n\\nCaptions are auto-written with your brand voice, then posted to each platform.' } }];\n}\nif (sess && sess.status === 'awaiting_brand' && text && !text.startsWith('/')) {\n  return [{ json: { action: 'set_brand', chat_id, brand: text.slice(0, 120), selected: [], reply_markup: kb([]) } }];\n}\nif (!sess) {\n  return [{ json: { action: 'hint', chat_id, text: 'Send a video first — I will ask for platforms after that. 🎬' } }];\n}\nreturn [{ json: { action: 'hint', chat_id, text: `Already waiting on your video for *${sess.brand || 'unknown brand'}*. Tap the buttons above, then 🚀 POST NOW.` } }];"
+      },
+      "id": "text-handle",
+      "name": "Text: Handle",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [-720, 420]
+    },
+    {
+      "parameters": {
+        "dataType": "string",
+        "value1": "={{ $json.action }}",
+        "rules": {
+          "rules": [
+            { "operation": "equals", "value2": "set_brand" },
+            { "operation": "equals", "value2": "help" }
+          ]
+        },
+        "fallbackOutput": 2
+      },
+      "id": "text-router",
+      "name": "Text: Router",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3,
+      "position": [-500, 420]
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=https://vdvwgcxrygxpjewvcchj.supabase.co/rest/v1/telegram_sessions?chat_id=eq.{{ $json.chat_id }}",
+        "sendHeaders": true,
+        "specifyHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "apikey", "value": "={{ $vars.SUPABASE_SERVICE_KEY }}" },
+            { "name": "Authorization", "value": "={{ 'Bearer ' + $vars.SUPABASE_SERVICE_KEY }}" },
+            { "name": "Content-Type", "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"brand\": {{ JSON.stringify($json.brand) }},\n  \"status\": \"awaiting_platform\"\n}",
+        "options": {}
+      },
+      "id": "text-save-brand",
+      "name": "Text: Save Brand",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-280, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.telegram.org/bot{{ $vars.TELEGRAM_BOT_TOKEN }}/sendMessage",
+        "sendHeaders": true,
+        "specifyHeaders": true,
+        "headerParameters": { "parameters": [{ "name": "Content-Type", "value": "application/json" }] },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ chat_id: $('Text: Handle').first().json.chat_id, text: `Got it — *${$('Text: Handle').first().json.brand}*. Now tap platforms (many allowed), then 🚀 POST NOW:`, parse_mode: 'Markdown', reply_markup: $('Text: Handle').first().json.reply_markup }) }}",
+        "options": {}
+      },
+      "id": "text-picker-send",
+      "name": "Text: Send Picker",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-60, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.telegram.org/bot{{ $vars.TELEGRAM_BOT_TOKEN }}/sendMessage",
+        "sendHeaders": true,
+        "specifyHeaders": true,
+        "headerParameters": { "parameters": [{ "name": "Content-Type", "value": "application/json" }] },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ chat_id: $json.chat_id, text: $json.text, parse_mode: 'Markdown' }) }}",
+        "options": {}
+      },
+      "id": "text-help",
+      "name": "Text: Help/Hint",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-280, 480]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=https://vdvwgcxrygxpjewvcchj.supabase.co/rest/v1/telegram_sessions?chat_id=eq.{{ $json.chat_id }}&select=*",
+        "sendHeaders": true,
+        "specifyHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "apikey", "value": "={{ $vars.SUPABASE_SERVICE_KEY }}" },
+            { "name": "Authorization", "value": "={{ 'Bearer ' + $vars.SUPABASE_SERVICE_KEY }}" }
+          ]
+        },
+        "options": {}
+      },
+      "id": "cb-load",
+      "name": "Callback: Load",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-940, 660]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Toggle platform selection or resolve done/cancel.\nconst rows = $input.first().json;\nconst sess = Array.isArray(rows) ? rows[0] : rows;\nconst prev = $('Classify Update').first().json;\nconst data = prev.callback_data || '';\nconst chat_id = prev.chat_id;\nconst callback_id = prev.callback_id;\nconst message_id = prev.message_id;\nif (!sess) return [{ json: { action: 'stale', chat_id, callback_id, alert: 'Session expired — send the video again 🎬' } }];\nlet selected = Array.isArray(sess.selected) ? [...sess.selected] : [];\nif (data.startsWith('toggle:')) {\n  const p = data.split(':')[1];\n  selected = selected.includes(p) ? selected.filter(x => x !== p) : [...selected, p];\n  return [{ json: { action: 'toggle', chat_id, callback_id, message_id, brand: sess.brand, summary: sess.summary, file_id: sess.file_id, selected } }];\n}\nif (data === 'done') {\n  if (!selected.length) return [{ json: { action: 'empty', chat_id, callback_id, alert: 'Pick at least 1 platform first ☝️' } }];\n  return [{ json: { action: 'done', chat_id, callback_id, message_id, brand: sess.brand, summary: sess.summary, file_id: sess.file_id, selected } }];\n}\nif (data === 'cancel') return [{ json: { action: 'cancel', chat_id, callback_id, message_id } }];\nreturn [{ json: { action: 'stale', chat_id, callback_id, alert: 'Unknown button' } }];"
+      },
+      "id": "cb-handle",
+      "name": "Callback: Handle",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [-720, 660]
+    },
+    {
+      "parameters": {
+        "dataType": "string",
+        "value1": "={{ $json.action }}",
+        "rules": {
+          "rules": [
+            { "operation": "equals", "value2": "toggle" },
+            { "operation": "equals", "value2": "done" },
+            { "operation": "equals", "value2": "cancel" },
+            { "operation": "equals", "value2": "empty" }
+          ]
+        },
+        "fallbackOutput": 4
+      },
+      "id": "cb-router",
+      "name": "Callback: Router",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3,
+      "position": [-500, 660]
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=https://vdvwgcxrygxpjewvcchj.supabase.co/rest/v1/telegram_sessions?chat_id=eq.{{ $json.chat_id }}",
+        "sendHeaders": true,
+        "specifyHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "apikey", "value": "={{ $vars.SUPABASE_SERVICE_KEY }}" },
+            { "name": "Authorization", "value": "={{ 'Bearer ' + $vars.SUPABASE_SERVICE_KEY }}" },
+            { "name": "Content-Type", "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={ \"selected\": {{ JSON.stringify($json.selected) }} }",
+        "options": {}
+      },
+      "id": "cb-save",
+      "name": "Callback: Save Sel",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-280, 560]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.telegram.org/bot{{ $vars.TELEGRAM_BOT_TOKEN }}/editMessageText",
+        "sendHeaders": true,
+        "specifyHeaders": true,
+        "headerParameters": { "parameters": [{ "name": "Content-Type", "value": "application/json" }] },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ chat_id: $('Callback: Handle').first().json.chat_id, message_id: $('Callback: Handle').first().json.message_id, text: `Brand: ${$('Callback: Handle').first().json.brand}\\n\\nSelected: ${($('Callback: Handle').first().json.selected || []).join(', ') || 'none'} — tap to toggle, then 🚀 POST NOW:`, reply_markup: (() => { const sel = $('Callback: Handle').first().json.selected || []; const on = s => sel.includes(s) ? '✅' : '⬜'; return { inline_keyboard: [[{ text: `${on('youtube')} YouTube`, callback_data: 'toggle:youtube' }, { text: `${on('instagram')} Instagram`, callback_data: 'toggle:instagram' }], [{ text: `${on('facebook')} Facebook`, callback_data: 'toggle:facebook' }, { text: `${on('x')} X`, callback_data: 'toggle:x' }], [{ text: '🚀 POST NOW', callback_data: 'done' }, { text: '❌ Cancel', callback_data: 'cancel' }]] }; })() }) }}",
+        "options": {}
+      },
+      "id": "cb-edit",
+      "name": "Callback: Edit Kbd",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-60, 560]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.telegram.org/bot{{ $vars.TELEGRAM_BOT_TOKEN }}/answerCallbackQuery",
+        "sendHeaders": true,
+        "specifyHeaders": true,
+        "headerParameters": { "parameters": [{ "name": "Content-Type", "value": "application/json" }] },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ callback_query_id: $json.callback_id, ...( $json.alert ? { text: $json.alert, show_alert: true } : {}) }) }}",
+        "options": {}
+      },
+      "id": "cb-answer",
+      "name": "Callback: Answer",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [160, 620]
+    },
+    {
+      "parameters": {
+        "method": "DELETE",
+        "url": "=https://vdvwgcxrygxpjewvcchj.supabase.co/rest/v1/telegram_sessions?chat_id=eq.{{ $json.chat_id }}",
+        "sendHeaders": true,
+        "specifyHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "apikey", "value": "={{ $vars.SUPABASE_SERVICE_KEY }}" },
+            { "name": "Authorization", "value": "={{ 'Bearer ' + $vars.SUPABASE_SERVICE_KEY }}" }
+          ]
+        },
+        "options": {}
+      },
+      "id": "cb-delete",
+      "name": "Callback: Delete",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-280, 760]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.telegram.org/bot{{ $vars.TELEGRAM_BOT_TOKEN }}/sendMessage",
+        "sendHeaders": true,
+        "specifyHeaders": true,
+        "headerParameters": { "parameters": [{ "name": "Content-Type", "value": "application/json" }] },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ chat_id: $('Callback: Handle').first().json.chat_id, text: '❌ Cancelled. Send a new video anytime 🎬' }) }}",
+        "options": {}
+      },
+      "id": "cb-cancel-msg",
+      "name": "Callback: Cancelled",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-60, 760]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.telegram.org/bot{{ $vars.TELEGRAM_BOT_TOKEN }}/sendMessage",
+        "sendHeaders": true,
+        "specifyHeaders": true,
+        "headerParameters": { "parameters": [{ "name": "Content-Type", "value": "application/json" }] },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ chat_id: $json.chat_id, text: `⏳ Posting *${$json.brand}* to: ${$json.selected.join(', ')}…\\nWriting captions with your brand voice…`, parse_mode: 'Markdown' }) }}",
+        "options": {}
+      },
+      "id": "done-status",
+      "name": "Done: Status Msg",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-280, 880]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=https://api.telegram.org/bot{{ $vars.TELEGRAM_BOT_TOKEN }}/getFile?file_id={{ $json.file_id }}",
+        "options": {}
+      },
+      "id": "get-file",
+      "name": "Get Telegram File",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-60, 880]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=https://api.telegram.org/file/bot{{ $vars.TELEGRAM_BOT_TOKEN }}/{{ $json.result.file_path }}",
+        "options": { "response": { "response": { "responseFormat": "file", "outputPropertyName": "data" } } }
+      },
+      "id": "download",
+      "name": "Download Media",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [160, 880]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $vars.DRIFTPOST_API_URL }}/api/ai/captions",
+        "sendHeaders": true,
+        "specifyHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Authorization", "value": "={{ 'Bearer ' + $vars.BOT_JWT }}" },
+            { "name": "Content-Type", "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ brand: $('Callback: Handle').first().json.brand, summary: $('Callback: Handle').first().json.summary || ($('Callback: Handle').first().json.brand + ' new video'), asset_description: 'Video received via Telegram bot', goal: 'engagement', tone: 'warm', emoji: 'high', length: 'medium' }) }}",
+        "options": { "timeout": 60000 }
+      },
+      "id": "captions",
+      "name": "Gen Captions (Grok)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [380, 880]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=https://vdvwgcxrygxpjewvcchj.supabase.co/rest/v1/platform_connections?user_id=eq.{{ $vars.BOT_USER_ID }}&select=id,platform,platform_account_id,account_name",
+        "sendHeaders": true,
+        "specifyHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "apikey", "value": "={{ $vars.SUPABASE_SERVICE_KEY }}" },
+            { "name": "Authorization", "value": "={{ 'Bearer ' + $vars.SUPABASE_SERVICE_KEY }}" }
+          ]
+        },
+        "options": {}
+      },
+      "id": "connections",
+      "name": "Load Connections",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [600, 880]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Build one publish item per selected platform.\n// Matches brand -> connection with substring/handle logic (mirrors lib.js).\nconst norm = (s) => String(s || '').toLowerCase().replace(/[^a-z0-9 ]/g, ' ').replace(/\\s+/g, ' ').trim();\nconst sess = $('Callback: Handle').first().json;\nconst brand = sess.brand || '';\nconst selected = sess.selected || [];\nconst caps = $('Gen Captions (Grok)').first().json?.captions || {};\nconst conns = $input.first().json;\nconst list = Array.isArray(conns) ? conns : [];\nconst nb = norm(brand);\nconst score = (label) => {\n  const a = norm(label);\n  if (!a || !nb) return 0;\n  if (a.includes(nb) && nb.length > 3) return 100;\n  if (nb.includes(a) && a.length > 3) return 100;\n  if (a.replace(/ /g, '') === nb.replace(/ /g, '') && nb.length > 3) return 90;\n  const ta = new Set(a.split(' ').filter(t => t.length >= 3));\n  const tb = new Set(nb.split(' ').filter(t => t.length >= 3));\n  let s = 0; for (const t of ta) if (tb.has(t)) s += 10;\n  return s;\n};\nconst items = [];\nfor (const p of selected) {\n  const cands = list.filter(c => c.platform === p).map(c => ({ c, s: score(c.account_name) })).sort((x, y) => y.s - x.s);\n  const best = cands.length ? cands[0] : null;\n  if (!best || best.s < 10) {\n    items.push({ json: { platform: p, error: `No ${p} account matched brand \"${brand}\" — connect it in Driftpost first.`, chat_id: sess.chat_id, brand, selected } });\n    continue;\n  }\n  const yt = caps.youtube || {}, ig = caps.instagram || {}, fb = caps.facebook || {}, x = caps.x || {};\n  const tags = Array.isArray(yt.tags) ? yt.tags.join(',') : '';\n  const hash = Array.isArray(ig.hashtags) ? ig.hashtags.map(t => '#' + t).join(' ') : '';\n  const base = { platform: p, connection_id: best.c.id, account: best.c.account_name, chat_id: sess.chat_id, brand, selected };\n  if (p === 'youtube') Object.assign(base, { text: yt.description || ig.caption || '', yt_title: String(yt.title || brand).slice(0, 100), yt_description: yt.description || '', yt_tags: tags });\n  if (p === 'instagram') Object.assign(base, { text: ig.caption || '', ig_caption: [ig.caption, hash].filter(Boolean).join('\\n\\n') });\n  if (p === 'facebook') Object.assign(base, { text: fb.message || '', fb_message: fb.message || '' });\n  if (p === 'x') Object.assign(base, { text: String(x.text || ig.caption || '').slice(0, 280), x_text: String(x.text || '').slice(0, 280) });\n  items.push({ json: base });\n}\nif (!items.length) items.push({ json: { platform: 'none', error: 'Nothing selected', chat_id: sess.chat_id, brand, selected } });\nreturn items;"
+      },
+      "id": "build-jobs",
+      "name": "Build Publish Jobs",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [820, 880]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $vars.DRIFTPOST_API_URL }}/api/publish",
+        "sendHeaders": true,
+        "specifyHeaders": true,
+        "headerParameters": {
+          "parameters": [{ "name": "Authorization", "value": "={{ 'Bearer ' + $vars.BOT_JWT }}" }]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            { "parameterType": "formBinaryData", "name": "media", "inputDataFieldName": "data" },
+            { "parameterType": "formText", "name": "platform", "value": "={{ $json.platform }}" },
+            { "parameterType": "formText", "name": "connection_id", "value": "={{ $json.connection_id }}" },
+            { "parameterType": "formText", "name": "text", "value": "={{ $json.text }}" },
+            { "parameterType": "formText", "name": "yt_title", "value": "={{ $json.yt_title || $json.brand }}" },
+            { "parameterType": "formText", "name": "yt_description", "value": "={{ $json.yt_description || $json.text }}" },
+            { "parameterType": "formText", "name": "yt_tags", "value": "={{ $json.yt_tags || '' }}" },
+            { "parameterType": "formText", "name": "ig_caption", "value": "={{ $json.ig_caption || $json.text }}" },
+            { "parameterType": "formText", "name": "fb_message", "value": "={{ $json.fb_message || $json.text }}" },
+            { "parameterType": "formText", "name": "x_text", "value": "={{ $json.x_text || $json.text }}" }
+          ]
+        },
+        "options": { "timeout": 600000 }
+      },
+      "id": "publish-one",
+      "name": "Publish One",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1040, 880]
+    },
+    {
+      "parameters": { "amount": 20, "unit": "seconds" },
+      "id": "wait1",
+      "name": "Wait 20s",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [1260, 880]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $vars.DRIFTPOST_API_URL }}/api/jobs/{{ $json.job.id }}",
+        "sendHeaders": true,
+        "specifyHeaders": true,
+        "headerParameters": {
+          "parameters": [{ "name": "Authorization", "value": "={{ 'Bearer ' + $vars.BOT_JWT }}" }]
+        },
+        "options": {}
+      },
+      "id": "check1",
+      "name": "Check Job 1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1480, 880]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict" },
+          "conditions": [
+            { "id": "c1", "leftValue": "={{ $json.job.state }}", "rightValue": "completed", "operator": { "type": "equals", "operation": "equals" } },
+            { "id": "c2", "leftValue": "={{ $json.job.state }}", "rightValue": "failed", "operator": { "type": "equals", "operation": "equals" } }
+          ],
+          "combinator": "any"
+        }
+      },
+      "id": "if-done1",
+      "name": "Job Finished?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [1700, 880]
+    },
+    {
+      "parameters": { "amount": 30, "unit": "seconds" },
+      "id": "wait2",
+      "name": "Wait 30s",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [1700, 1100]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $vars.DRIFTPOST_API_URL }}/api/jobs/{{ $('Publish One').first().json.job.id }}",
+        "sendHeaders": true,
+        "specifyHeaders": true,
+        "headerParameters": {
+          "parameters": [{ "name": "Authorization", "value": "={{ 'Bearer ' + $vars.BOT_JWT }}" }]
+        },
+        "options": {}
+      },
+      "id": "check2",
+      "name": "Check Job 2",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1920, 1100]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Format one Telegram result line per platform item.\nconst items = $input.all();\nconst out = [];\nfor (const it of items) {\n  const j = it.json;\n  const chat_id = j.chat_id || $('Callback: Handle').first().json.chat_id;\n  if (j.error && !j.job) {\n    out.push({ json: { chat_id, text: `⚠️ *${j.platform}*: ${j.error}` } });\n    continue;\n  }\n  const job = j.job || {};\n  const plat = job.platform || j.platform || 'post';\n  if (job.state === 'completed') out.push({ json: { chat_id, text: `✅ *${plat}* published!\\n${job.url || ''}${job.warning ? '\\n_' + job.warning + '_' : ''}` } });\n  else if (job.state === 'failed') out.push({ json: { chat_id, text: `❌ *${plat}* failed: ${job.message || 'unknown error'}` } });\n  else out.push({ json: { chat_id, text: `⏳ *${plat}* still processing (job ${job.id || ''}). Check Driftpost History — it finishes server-side.` } });\n}\nreturn out;"
+      },
+      "id": "format-result",
+      "name": "Format Results",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2140, 980]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.telegram.org/bot{{ $vars.TELEGRAM_BOT_TOKEN }}/sendMessage",
+        "sendHeaders": true,
+        "specifyHeaders": true,
+        "headerParameters": { "parameters": [{ "name": "Content-Type", "value": "application/json" }] },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ chat_id: $json.chat_id, text: $json.text, parse_mode: 'Markdown', disable_web_page_preview: true }) }}",
+        "options": {}
+      },
+      "id": "notify",
+      "name": "Notify Results",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [2360, 980]
+    },
+    {
+      "parameters": {
+        "method": "DELETE",
+        "url": "=https://vdvwgcxrygxpjewvcchj.supabase.co/rest/v1/telegram_sessions?chat_id=eq.{{ $('Callback: Handle').first().json.chat_id }}",
+        "sendHeaders": true,
+        "specifyHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "apikey", "value": "={{ $vars.SUPABASE_SERVICE_KEY }}" },
+            { "name": "Authorization", "value": "={{ 'Bearer ' + $vars.SUPABASE_SERVICE_KEY }}" }
+          ]
+        },
+        "options": {}
+      },
+      "id": "cleanup",
+      "name": "Cleanup Session",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [2580, 980]
+    }
+  ],
+  "connections": {
+    "Telegram Trigger": { "main": [[{ "node": "Classify Update", "type": "main", "index": 0 }]] },
+    "Classify Update": { "main": [[{ "node": "Router", "type": "main", "index": 0 }]] },
+    "Router": {
+      "main": [
+        [{ "node": "Callback: Load", "type": "main", "index": 0 }],
+        [{ "node": "Video: Save Session", "type": "main", "index": 0 }],
+        [{ "node": "Text: Load Session", "type": "main", "index": 0 }],
+        [{ "node": "Other: Hint", "type": "main", "index": 0 }]
+      ]
+    },
+    "Video: Save Session": { "main": [[{ "node": "Video: Decide", "type": "main", "index": 0 }]] },
+    "Video: Decide": { "main": [[{ "node": "Send Picker / Ask", "type": "main", "index": 0 }]] },
+    "Text: Load Session": { "main": [[{ "node": "Text: Handle", "type": "main", "index": 0 }]] },
+    "Text: Handle": { "main": [[{ "node": "Text: Router", "type": "main", "index": 0 }]] },
+    "Text: Router": {
+      "main": [
+        [{ "node": "Text: Save Brand", "type": "main", "index": 0 }],
+        [{ "node": "Text: Help/Hint", "type": "main", "index": 0 }],
+        [{ "node": "Text: Help/Hint", "type": "main", "index": 0 }]
+      ]
+    },
+    "Text: Save Brand": { "main": [[{ "node": "Text: Send Picker", "type": "main", "index": 0 }]] },
+    "Callback: Load": { "main": [[{ "node": "Callback: Handle", "type": "main", "index": 0 }]] },
+    "Callback: Handle": { "main": [[{ "node": "Callback: Router", "type": "main", "index": 0 }]] },
+    "Callback: Router": {
+      "main": [
+        [{ "node": "Callback: Save Sel", "type": "main", "index": 0 }],
+        [{ "node": "Done: Status Msg", "type": "main", "index": 0 }],
+        [{ "node": "Callback: Delete", "type": "main", "index": 0 }],
+        [{ "node": "Callback: Answer", "type": "main", "index": 0 }],
+        [{ "node": "Callback: Answer", "type": "main", "index": 0 }]
+      ]
+    },
+    "Callback: Save Sel": { "main": [[{ "node": "Callback: Edit Kbd", "type": "main", "index": 0 }]] },
+    "Callback: Edit Kbd": { "main": [[{ "node": "Callback: Answer", "type": "main", "index": 0 }]] },
+    "Callback: Delete": { "main": [[{ "node": "Callback: Cancelled", "type": "main", "index": 0 }]] },
+    "Callback: Cancelled": { "main": [[{ "node": "Callback: Answer", "type": "main", "index": 0 }]] },
+    "Done: Status Msg": { "main": [[{ "node": "Get Telegram File", "type": "main", "index": 0 }]] },
+    "Get Telegram File": { "main": [[{ "node": "Download Media", "type": "main", "index": 0 }]] },
+    "Download Media": { "main": [[{ "node": "Gen Captions (Grok)", "type": "main", "index": 0 }]] },
+    "Gen Captions (Grok)": { "main": [[{ "node": "Load Connections", "type": "main", "index": 0 }]] },
+    "Load Connections": { "main": [[{ "node": "Build Publish Jobs", "type": "main", "index": 0 }]] },
+    "Build Publish Jobs": { "main": [[{ "node": "Publish One", "type": "main", "index": 0 }]] },
+    "Publish One": { "main": [[{ "node": "Wait 20s", "type": "main", "index": 0 }]] },
+    "Wait 20s": { "main": [[{ "node": "Check Job 1", "type": "main", "index": 0 }]] },
+    "Check Job 1": { "main": [[{ "node": "Job Finished?", "type": "main", "index": 0 }]] },
+    "Job Finished?": {
+      "main": [
+        [{ "node": "Format Results", "type": "main", "index": 0 }],
+        [{ "node": "Wait 30s", "type": "main", "index": 0 }]
+      ]
+    },
+    "Wait 30s": { "main": [[{ "node": "Check Job 2", "type": "main", "index": 0 }]] },
+    "Check Job 2": { "main": [[{ "node": "Format Results", "type": "main", "index": 0 }]] },
+    "Format Results": { "main": [[{ "node": "Notify Results", "type": "main", "index": 0 }]] },
+    "Notify Results": { "main": [[{ "node": "Cleanup Session", "type": "main", "index": 0 }]] }
+  },
+  "settings": { "executionOrder": "v1", "timezone": "Asia/Kolkata" },
+  "staticData": null,
+  "pinData": {}
+}

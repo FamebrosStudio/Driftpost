@@ -1,0 +1,424 @@
+{
+  "schema_version": "3.0",
+  "brand_number": 38,
+  "brand_id": "anand_furniture",
+  "brand_name": "Anand Furniture",
+  "aliases": [
+    "anand furniture"
+  ],
+  "knowledge_scope": "One brand only. This file covers the user's Anand Furniture record. The furniture category is confirmed, but exact city, business identity, official social account, contacts, catalogue and service terms remain unresolved because many unrelated businesses use the same name.",
+  "business": {
+    "category": "Furniture",
+    "industry": "Furniture retail or manufacturing, exact model unconfirmed",
+    "business_model": null,
+    "location": null,
+    "country": null,
+    "currency": null,
+    "core_positioning": "A furniture brand requiring helpful, product-focused communication built from real items, visible design and supplied practical details.",
+    "primary_audience": [
+      "Furniture shoppers",
+      "Home or business buyers only when the item and audience are supplied"
+    ],
+    "operational_status": "Not started yet in the source record.",
+    "dataset_date": "2026-09-26",
+    "commercial_accuracy_rule": "Never adopt an Anand Furniture directory listing or claim material, price, delivery, warranty or manufacturing without owner confirmation."
+  },
+  "contact": {
+    "phone": null,
+    "whatsapp": null,
+    "email": null,
+    "website": null,
+    "address": null,
+    "city": null,
+    "google_maps_url": null,
+    "contact_status": "Unknown due to multiple same-name businesses.",
+    "contact_rule": "Do not use phone or address from Mumbai, Delhi, Kalyan, Thane or another listing until the exact branch is confirmed."
+  },
+  "social_media": {
+    "instagram_handle": null,
+    "instagram_url": null,
+    "instagram_status": "Not resolved.",
+    "public_match_problem": "Searches returned several unrelated Anand Furniture businesses in different cities.",
+    "facebook_url": null,
+    "website_url": null,
+    "managing_agency": "Famebros Studio",
+    "agency_instagram_handle": "@famebrosstudio",
+    "agency_instagram_url": "https://www.instagram.com/famebrosstudio/",
+    "agency_credit_default": "💫 Managed by: @famebrosstudio",
+    "reference_rule": "Require the official link directly from the user or owner before learning from social content."
+  },
+  "established_content_knowledge": {
+    "confirmed_facts": [
+      "Brand name Anand Furniture",
+      "Furniture category",
+      "Project not started yet in the internal record"
+    ],
+    "confirmed_content_genres": [],
+    "proposed_content_pillars": [
+      "Product reveal",
+      "Visible design details",
+      "Storage and function",
+      "Dimensions when supplied",
+      "Room planning",
+      "Material and finish when verified",
+      "Price and availability after confirmation",
+      "Delivery and assembly explanation after confirmation"
+    ],
+    "separation_rule": "Do not copy SK Furniture or Sarama Furniture facts, tone, contacts, offers or locations.",
+    "data_confidence": {
+      "name": "Confirmed",
+      "category": "Confirmed",
+      "location": "Unknown",
+      "social": "Unknown",
+      "contacts": "Unknown",
+      "catalogue": "Unknown"
+    },
+    "content_priority": "Use the exact product brief and avoid all same-name directory assumptions."
+  },
+  "writing_direction": {
+    "brand_voice": [
+      "Helpful",
+      "Product-focused",
+      "Practical",
+      "Clear"
+    ],
+    "voice_status": "Proposed starting direction, not established historical voice.",
+    "primary_language": "Hinglish or English",
+    "focus": [
+      "Actual furniture",
+      "Visible design",
+      "Supplied feature",
+      "Room relevance",
+      "Clear enquiry CTA"
+    ],
+    "avoid": [
+      "Assumed city",
+      "Assumed manufacturing",
+      "Unverified wood or metal",
+      "Unverified warranty",
+      "Delivery promise",
+      "Stale price",
+      "Copying another furniture client's humour"
+    ],
+    "punctuation_style": "Clear readable lines and no em dashes."
+  },
+  "content_playbook": {
+    "product_reveal": {
+      "sequence": [
+        "Room hook",
+        "Full product",
+        "Visible detail",
+        "Verified feature",
+        "Enquiry CTA"
+      ],
+      "rule": "Use one actual item and its current product sheet."
+    },
+    "room_planning": {
+      "required_inputs": [
+        "Room dimensions",
+        "Product dimensions",
+        "Clearance",
+        "Use case",
+        "Delivery path"
+      ],
+      "rule": "Do not promise fit from a photo."
+    },
+    "storage_reel": {
+      "rule": "Show the actual mechanism and capacity without exaggeration."
+    },
+    "material_post": {
+      "rule": "Name wood, board, metal, foam, fabric and finish only from the manufacturer or product specification."
+    },
+    "offer_post": {
+      "required_inputs": [
+        "Product",
+        "Price",
+        "Discount",
+        "Dates",
+        "Stock",
+        "Terms",
+        "Contact"
+      ]
+    }
+  },
+  "furniture_product_and_room_planning_framework": {
+    "required_fields": [
+      "Product name",
+      "Code",
+      "Category",
+      "Material",
+      "Finish",
+      "Dimensions",
+      "Features",
+      "Capacity",
+      "Price",
+      "Stock",
+      "Warranty",
+      "Assembly",
+      "Delivery",
+      "Returns"
+    ],
+    "safe_order": [
+      "Room need",
+      "Exact product",
+      "Verified function",
+      "Measurements",
+      "Current commercial detail",
+      "Enquiry CTA"
+    ],
+    "fit_rule": "Do not claim a product fits every room.",
+    "material_rule": "Appearance is not proof of material.",
+    "identity_rule": "No directory contact becomes official without direct match."
+  },
+  "caption_format": {
+    "default_use": "Instagram and Facebook feed posts and reels.",
+    "body_length": "Usually 25 to 70 words excluding footer, hashtags and SEO block.",
+    "body_structure": [
+      "One specific hook connected to the real asset or topic.",
+      "One to three useful lines using verified information.",
+      "One visit, enquiry, admissions, booking, save, share or shop CTA."
+    ],
+    "format_order": [
+      "Caption body",
+      "Blank line",
+      "Exactly three hashtags",
+      "Blank line",
+      "Approved CTA, location and contact lines",
+      "Agency credit when required",
+      "Blank line",
+      "Exactly one square-bracket SEO block"
+    ],
+    "hashtag_rule": "Exactly three hashtags unless the user requests another count.",
+    "seo_rule": "Use five to eight natural search phrases inside one pair of square brackets.",
+    "story_rule": "For story copy, use a short headline, one support line and one CTA. Omit feed hashtags and SEO unless requested.",
+    "reel_overlay_rule": "Keep each overlay short, readable and supported by the footage.",
+    "final_checks": [
+      "Use only verified facts from the current brief and this knowledge file.",
+      "Use exactly three relevant hashtags.",
+      "Use one square-bracket SEO block with five to eight comma-separated phrases.",
+      "Use one clear CTA.",
+      "Remove every em dash before delivery.",
+      "Official account and location confirmed before publication.",
+      "Material, dimensions, price and terms come from the selected product."
+    ]
+  },
+  "fixed_footer": {
+    "standard_lines": [
+      "DM Anand Furniture for current product details.",
+      "💫 Managed by: @famebrosstudio"
+    ],
+    "status": "Temporary generic wording. Official handle and contact are missing.",
+    "usage": "Use only through the confirmed brand account.",
+    "exceptions": [
+      "Story overlays",
+      "Comments",
+      "Unpublished concepts"
+    ]
+  },
+  "suggested_hashtag_bank": [
+    "#AnandFurniture",
+    "#FurnitureDesign",
+    "#HomeFurniture",
+    "#RoomPlanning",
+    "#FurnitureIdeas",
+    "#HomeInteriors",
+    "#FurnitureCollection"
+  ],
+  "seo_keyword_bank": [
+    "Anand Furniture",
+    "home furniture collection",
+    "furniture design ideas",
+    "room planning furniture",
+    "storage furniture",
+    "furniture product details",
+    "furniture enquiry"
+  ],
+  "cta_bank": [
+    "DM us to enquire about the featured piece.",
+    "Ask for the current dimensions, material and price.",
+    "Save this for your room planning.",
+    "Share it with someone furnishing a new space.",
+    "Confirm delivery and assembly before ordering."
+  ],
+  "suggested_hooks": [
+    "A new piece can change the feel of a room.",
+    "Good furniture starts with the right details.",
+    "Measure first, choose better.",
+    "Function deserves a closer look.",
+    "One room, one practical upgrade.",
+    "Before you choose, check how the piece works."
+  ],
+  "visual_and_asset_guidance": {
+    "feed_size": "1080 x 1440 pixels",
+    "story_and_reel_size": "1080 x 1920 pixels",
+    "style": [
+      "Practical",
+      "Product-led",
+      "Clean",
+      "Room-focused"
+    ],
+    "brand_style_status": "Proposed only until the brand kit is supplied.",
+    "asset_priority": [
+      "Actual product",
+      "Room scale",
+      "Function",
+      "Measurements",
+      "Finish"
+    ],
+    "fidelity_rules": [
+      "Do not change colour, proportions or material.",
+      "Do not show accessories as included.",
+      "Do not create fake storage or mechanism.",
+      "Do not use another furniture brand's showroom."
+    ],
+    "thumbnail_rule": "One real product and one practical hook."
+  },
+  "carousel_and_reel_system": {
+    "product_carousel": [
+      "Slide 1: Product in room",
+      "Slide 2: Full view",
+      "Slide 3: Visible feature",
+      "Slide 4: Measurements",
+      "Slide 5: Verified material and terms",
+      "Slide 6: Enquiry CTA"
+    ],
+    "product_reel": [
+      "0 to 3 seconds: Room hook",
+      "3 to 8 seconds: Reveal",
+      "8 to 15 seconds: Function",
+      "15 to 20 seconds: Details",
+      "20 to 24 seconds: CTA"
+    ],
+    "editing_style": [
+      "Natural scale",
+      "Accurate colour",
+      "Readable labels",
+      "No fake mechanism"
+    ]
+  },
+  "other_output_modes": {
+    "story_sequence": [
+      "Product reveal",
+      "Feature or measurement",
+      "DM CTA"
+    ],
+    "catalogue_copy": "Blocked until the product sheet is supplied.",
+    "whatsapp_copy": "Blocked until the official number is confirmed.",
+    "comment_reply": "Do not answer price, stock or delivery from assumptions.",
+    "voiceover": "Short Hinglish or English based on actual product facts."
+  },
+  "sample_caption": {
+    "status": "Illustrative low-risk furniture caption. Official account and product details are still required.",
+    "scenario": "Furniture product reveal",
+    "caption_body": "A new piece can change the feel of a room. Take a closer look at the actual item featured by Anand Furniture, then ask for its confirmed dimensions, material, price and availability before planning your space.",
+    "footer": [
+      "💫 Managed by: @famebrosstudio"
+    ],
+    "hashtags": [
+      "#AnandFurniture",
+      "#FurnitureDesign",
+      "#RoomPlanning"
+    ],
+    "seo_keywords": [
+      "Anand Furniture",
+      "home furniture collection",
+      "furniture design ideas",
+      "room planning furniture",
+      "furniture product details",
+      "furniture enquiry"
+    ],
+    "full_caption": "A new piece can change the feel of a room. Take a closer look at the actual item featured by Anand Furniture, then ask for its confirmed dimensions, material, price and availability before planning your space.\n\n💫 Managed by: @famebrosstudio\n\n#AnandFurniture #FurnitureDesign #RoomPlanning\n\n[Anand Furniture, home furniture collection, furniture design ideas, room planning furniture, furniture product details, furniture enquiry]",
+    "validation": {
+      "hashtags": 3,
+      "seo_phrases": 6,
+      "verified_fields_only": true,
+      "official_contact_confirmed": false
+    }
+  },
+  "accuracy_rules": [
+    "Do not choose one of the many public Anand Furniture listings without direct confirmation.",
+    "Do not assume a city, address, phone, website or Instagram.",
+    "Do not borrow SK Furniture or Sarama Furniture data.",
+    "Never infer material, dimensions, warranty, delivery, assembly, price or stock.",
+    "Preserve the actual product.",
+    "Keep proposed tone separate from established facts.",
+    "Remove every em dash."
+  ],
+  "per_post_input": {
+    "required_identity": [
+      "Official Instagram",
+      "Website",
+      "City",
+      "Address",
+      "Phone",
+      "Business model"
+    ],
+    "required_product": [
+      "Name",
+      "Code",
+      "Material",
+      "Finish",
+      "Dimensions",
+      "Features",
+      "Price",
+      "Stock",
+      "Warranty",
+      "Assembly",
+      "Delivery",
+      "Returns"
+    ],
+    "required_post": [
+      "Output mode",
+      "Objective",
+      "Assets",
+      "Audience",
+      "CTA",
+      "Publication date"
+    ],
+    "input_rule": "Do not create sales-ready copy until identity and product details are supplied."
+  },
+  "master_brand_instruction": "Create content only for the user's Anand Furniture brand. Furniture is confirmed, but the exact business identity, city, social accounts, contacts, catalogue and terms are not. Many unrelated businesses use this name, so never select a public listing without direct confirmation. Write helpful, practical English or Hinglish based on the actual product. Do not copy SK Furniture or Sarama Furniture details. Never invent material, dimensions, price, stock, warranty, delivery, assembly or returns. Preserve the product exactly. Use a generic DM CTA only through the confirmed brand account. Standard concept captions use exactly three hashtags and one SEO bracket with five to eight phrases. Remove all em dashes.",
+  "missing_information": {
+    "identity": [
+      "Official Instagram",
+      "Website",
+      "Owner",
+      "City",
+      "Address",
+      "Phone"
+    ],
+    "business": [
+      "Retail or manufacturing model",
+      "Audience",
+      "Product categories",
+      "Showroom details"
+    ],
+    "commerce": [
+      "Prices",
+      "Stock",
+      "Warranty",
+      "Delivery",
+      "Assembly",
+      "Returns",
+      "Payment"
+    ],
+    "brand_system": [
+      "Logo",
+      "Colours",
+      "Fonts",
+      "Photography guide"
+    ],
+    "priority": "Confirm the official page and city before connecting any public data to this brand."
+  },
+  "sources": {
+    "user_facts": [
+      "Anand Furniture name.",
+      "Furniture category.",
+      "Not started yet status."
+    ],
+    "public_sources": [],
+    "public_search_note": "Searches returned multiple unrelated same-name businesses, so none was adopted.",
+    "internal_dataset": "Famebros_Brand_Caption_Dataset.json record anand_furniture.",
+    "source_rule": "Direct owner confirmation is required to select the correct public business."
+  }
+}

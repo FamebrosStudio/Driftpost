@@ -1,0 +1,361 @@
+{
+  "schema_version": "3.0",
+  "brand_number": 37,
+  "brand_id": "olvkiixk",
+  "brand_name": "OLVKIIXK",
+  "aliases": [],
+  "knowledge_scope": "One brand only. This file preserves the exact working spelling OLVKIIXK and the confirmed edit-led content note. Category, pronunciation, official account, audience, location, product or service, contacts and brand story remain unknown. The system is deliberately restrictive to prevent autocorrection and identity invention.",
+  "business": {
+    "category": null,
+    "industry": null,
+    "business_model": null,
+    "location": null,
+    "country": null,
+    "currency": null,
+    "core_positioning": null,
+    "primary_audience": null,
+    "operational_status": "Not started yet in the source record.",
+    "dataset_date": "2026-09-26",
+    "name_rule": "Preserve OLVKIIXK exactly until the user confirms another display spelling.",
+    "commercial_accuracy_rule": "Do not create a product, service, offer, price or customer claim."
+  },
+  "contact": {
+    "phone": null,
+    "whatsapp": null,
+    "email": null,
+    "website": null,
+    "address": null,
+    "google_maps_url": null,
+    "contact_status": "Unknown.",
+    "contact_rule": "No contact can be published until the official identity is supplied."
+  },
+  "social_media": {
+    "instagram_handle": null,
+    "instagram_url": null,
+    "instagram_status": "Not resolved. Exact-name searches returned no trustworthy official page.",
+    "facebook_url": null,
+    "website_url": null,
+    "managing_agency": "Famebros Studio",
+    "agency_instagram_handle": "@famebrosstudio",
+    "agency_instagram_url": "https://www.instagram.com/famebrosstudio/",
+    "agency_credit_default": "💫 Managed by: @famebrosstudio",
+    "reference_rule": "Do not autocorrect the name into an account guess or learn from an unrelated result."
+  },
+  "established_content_knowledge": {
+    "confirmed_facts": [
+      "Working name: OLVKIIXK",
+      "Content genre note: edits",
+      "Operational note: not started yet"
+    ],
+    "confirmed_content_genres": [
+      "Edits"
+    ],
+    "safe_content_pillars": [
+      "Brand-name reveal using an approved logo",
+      "Edit showcase using supplied footage",
+      "Before-and-after edit process when context is supplied",
+      "Teaser using exact approved wording"
+    ],
+    "prohibited_assumptions": [
+      "Fashion label",
+      "Music artist",
+      "Nightlife brand",
+      "Creator",
+      "Editing agency",
+      "Product brand",
+      "Location"
+    ],
+    "data_confidence": {
+      "spelling": "Working record only",
+      "category": "Unknown",
+      "social": "Unknown",
+      "offer": "Unknown",
+      "audience": "Unknown"
+    },
+    "content_priority": "Confirm spelling and category before public strategy. Until then, edit only the approved assets and copy."
+  },
+  "writing_direction": {
+    "brand_voice": [
+      "Undetermined",
+      "Minimal until confirmed",
+      "Asset-led"
+    ],
+    "primary_language": "Match the supplied brief.",
+    "focus": [
+      "Exact spelling",
+      "Approved asset",
+      "Approved edit style",
+      "Explicit CTA"
+    ],
+    "avoid": [
+      "Autocorrecting the name",
+      "Adding pronunciation",
+      "Inferring fashion, music or lifestyle identity",
+      "Invented contacts",
+      "Invented brand story",
+      "Unapproved tone"
+    ],
+    "punctuation_style": "No em dashes."
+  },
+  "content_playbook": {
+    "edit_showcase": {
+      "required_inputs": [
+        "What the brand is",
+        "What the asset shows",
+        "Desired edit",
+        "Audience",
+        "CTA",
+        "Logo"
+      ],
+      "rule": "A visual edit must not become a product or service claim."
+    },
+    "identity_reveal": {
+      "required_inputs": [
+        "Confirmed spelling",
+        "Pronunciation",
+        "Category",
+        "Tagline",
+        "Official page",
+        "Launch date"
+      ],
+      "rule": "Blocked until identity is verified."
+    },
+    "asset_transform": {
+      "rule": "Preserve product, person, logo and factual text exactly unless the brief authorizes a specific change."
+    },
+    "teaser": {
+      "rule": "Use only approved timing and message."
+    }
+  },
+  "unresolved_identity_and_edit_brief_framework": {
+    "identity_gate": [
+      "Correct display name",
+      "Pronunciation",
+      "Category",
+      "Audience",
+      "Official account",
+      "Location",
+      "Offer"
+    ],
+    "edit_gate": [
+      "Source asset",
+      "Allowed changes",
+      "Forbidden changes",
+      "Format",
+      "Reference",
+      "Text",
+      "CTA"
+    ],
+    "safe_rule": "Withhold public-facing category copy until identity is confirmed.",
+    "name_rule": "Do not change OLVKIIXK.",
+    "readiness": "Needs identity and brief."
+  },
+  "caption_format": {
+    "default_use": "Instagram and Facebook feed posts and reels.",
+    "body_length": "Usually 25 to 70 words excluding footer, hashtags and SEO block.",
+    "body_structure": [
+      "One specific hook connected to the real asset or topic.",
+      "One to three useful lines using verified information.",
+      "One visit, enquiry, admissions, booking, save, share or shop CTA."
+    ],
+    "format_order": [
+      "Caption body",
+      "Blank line",
+      "Exactly three hashtags",
+      "Blank line",
+      "Approved CTA, location and contact lines",
+      "Agency credit when required",
+      "Blank line",
+      "Exactly one square-bracket SEO block"
+    ],
+    "hashtag_rule": "Exactly three hashtags unless the user requests another count.",
+    "seo_rule": "Use five to eight natural search phrases inside one pair of square brackets.",
+    "story_rule": "For story copy, use a short headline, one support line and one CTA. Omit feed hashtags and SEO unless requested.",
+    "reel_overlay_rule": "Keep each overlay short, readable and supported by the footage.",
+    "final_checks": [
+      "Use only verified facts from the current brief and this knowledge file.",
+      "Use exactly three relevant hashtags.",
+      "Use one square-bracket SEO block with five to eight comma-separated phrases.",
+      "Use one clear CTA.",
+      "Remove every em dash before delivery.",
+      "Exact spelling confirmed.",
+      "Category and official account confirmed before publication.",
+      "No category-specific hashtag or SEO without approval."
+    ]
+  },
+  "fixed_footer": {
+    "standard_lines": [
+      "💫 Managed by: @famebrosstudio"
+    ],
+    "status": "Agency credit only. No brand contact is established.",
+    "usage": "Use only in an approved Famebros output.",
+    "exceptions": [
+      "Story overlay",
+      "Comment",
+      "When agency credit is not required"
+    ]
+  },
+  "suggested_hashtag_bank": [
+    "#OLVKIIXK",
+    "#BrandEdit",
+    "#VisualEdit",
+    "#BrandReveal",
+    "#CreativeEdit"
+  ],
+  "seo_keyword_bank": [
+    "OLVKIIXK",
+    "OLVKIIXK official",
+    "OLVKIIXK brand",
+    "OLVKIIXK edits",
+    "OLVKIIXK information"
+  ],
+  "cta_bank": [
+    "Use the action specified in the approved brief.",
+    "Watch this space for verified brand details.",
+    "Follow the official account after it is confirmed."
+  ],
+  "suggested_hooks": [
+    "OLVKIIXK begins here.",
+    "One edit. One exact identity.",
+    "The first frame is only the beginning.",
+    "More verified details coming soon."
+  ],
+  "visual_and_asset_guidance": {
+    "feed_size": "1080 x 1440 pixels",
+    "story_and_reel_size": "1080 x 1920 pixels",
+    "style": "Not established. Follow the supplied reference only.",
+    "fidelity_rules": [
+      "Preserve the exact name.",
+      "Use only supplied logo and assets.",
+      "Do not invent brand colours or category imagery.",
+      "Do not alter people or products beyond the approved edit."
+    ],
+    "thumbnail_rule": "Exact name plus one approved hook."
+  },
+  "carousel_and_reel_system": {
+    "edit_reel": [
+      "Source-asset hook",
+      "Approved transformation",
+      "Detail",
+      "Final frame",
+      "Approved CTA"
+    ],
+    "identity_carousel": [
+      "Name",
+      "Category",
+      "Purpose",
+      "Offer",
+      "Official link"
+    ],
+    "rule": "The identity carousel remains blocked until every field is supplied."
+  },
+  "other_output_modes": {
+    "bio": "Blocked until category and official account are confirmed.",
+    "story": "Asset-led teaser only.",
+    "caption": "Use supplied factual copy only.",
+    "comment_reply": "Do not guess what the brand offers.",
+    "logo_animation": "Use the approved master logo and motion reference."
+  },
+  "sample_caption": {
+    "status": "Concept-only neutral sample. Not publication-ready.",
+    "scenario": "Name and edit teaser",
+    "caption_body": "OLVKIIXK begins here. One exact name, one approved visual direction and more verified details to come.",
+    "footer": [
+      "💫 Managed by: @famebrosstudio"
+    ],
+    "hashtags": [
+      "#OLVKIIXK",
+      "#BrandEdit",
+      "#VisualEdit"
+    ],
+    "seo_keywords": [
+      "OLVKIIXK",
+      "OLVKIIXK official",
+      "OLVKIIXK brand",
+      "OLVKIIXK edits",
+      "OLVKIIXK information"
+    ],
+    "full_caption": "OLVKIIXK begins here. One exact name, one approved visual direction and more verified details to come.\n\n💫 Managed by: @famebrosstudio\n\n#OLVKIIXK #BrandEdit #VisualEdit\n\n[OLVKIIXK, OLVKIIXK official, OLVKIIXK brand, OLVKIIXK edits, OLVKIIXK information]",
+    "validation": {
+      "hashtags": 3,
+      "seo_phrases": 5,
+      "verified_fields_only": true,
+      "publication_ready": false
+    }
+  },
+  "accuracy_rules": [
+    "Preserve OLVKIIXK exactly.",
+    "Do not infer a category, pronunciation, audience, location or offer.",
+    "Do not invent or tag an Instagram account.",
+    "Do not define a tone from the name alone.",
+    "Use only the approved asset brief.",
+    "Do not present concept copy as established brand language.",
+    "Remove every em dash."
+  ],
+  "per_post_input": {
+    "identity_required": [
+      "Correct name",
+      "Pronunciation",
+      "Category",
+      "Audience",
+      "Official Instagram",
+      "Website",
+      "Location",
+      "Contact"
+    ],
+    "edit_required": [
+      "Source asset",
+      "Allowed changes",
+      "Forbidden changes",
+      "Format",
+      "Text",
+      "Reference",
+      "CTA"
+    ],
+    "input_rule": "Do not generate public strategy until the identity gate is complete."
+  },
+  "master_brand_instruction": "Create content only for the user's OLVKIIXK record. Preserve the name exactly and never autocorrect it. The category, pronunciation, audience, location, product or service, official social account, contact details and brand voice are unknown. The only established content note is edits, and the project had not started in the source record. Use only the supplied asset, permitted edits and exact brief. Do not add category-specific hashtags, SEO or claims. Neutral concept captions may use exactly three hashtags and one SEO bracket with five to eight neutral phrases, but must be labelled not publication-ready. Remove all em dashes.",
+  "missing_information": {
+    "identity": [
+      "Correct spelling",
+      "Pronunciation",
+      "Category",
+      "Owner",
+      "Audience",
+      "Location"
+    ],
+    "digital": [
+      "Instagram",
+      "Website",
+      "Email",
+      "Phone",
+      "Address"
+    ],
+    "offer": [
+      "Products or services",
+      "USPs",
+      "Prices",
+      "Availability",
+      "CTA"
+    ],
+    "brand_system": [
+      "Logo",
+      "Colours",
+      "Fonts",
+      "Edit style",
+      "References"
+    ],
+    "priority": "Confirm the exact identity before any public content is produced."
+  },
+  "sources": {
+    "user_facts": [
+      "Working name OLVKIIXK.",
+      "Edit-led content note.",
+      "Not started yet status."
+    ],
+    "public_sources": [],
+    "public_search_note": "Exact-name searches on 2026-09-26 did not return a trustworthy official identity.",
+    "internal_dataset": "Famebros_Brand_Caption_Dataset.json record olvkiixk.",
+    "source_rule": "Only direct user or owner confirmation may establish this brand's identity."
+  }
+}

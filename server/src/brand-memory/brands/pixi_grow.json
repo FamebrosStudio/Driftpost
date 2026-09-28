@@ -1,0 +1,395 @@
+{
+  "schema_version": "3.0",
+  "brand_number": 32,
+  "brand_id": "pixi_grow",
+  "brand_name": "Pixi Grow",
+  "aliases": [
+    "PixiGrow",
+    "Pixigrow Media"
+  ],
+  "knowledge_scope": "One brand only. This file covers every currently known and researched fact for Pixi Grow. The internal record confirms the name and onboarding note, but the exact business category, owner, location, official social page and service catalogue are not safely established. The file is designed to prevent identity mixing while still supporting brand-introduction and asset-led content.",
+  "business": {
+    "category": null,
+    "industry": null,
+    "business_model": null,
+    "location": null,
+    "country": null,
+    "currency": null,
+    "core_positioning": "Not established. Define only after the official brand identity and offer are supplied.",
+    "primary_audience": null,
+    "onboarding_or_billing_note": "The first day of an unspecified month appeared in the user-provided brand list. This is not a founding date.",
+    "dataset_date": "2026-09-26",
+    "identity_confidence": "Low until the official account is supplied.",
+    "commercial_accuracy_rule": "Do not invent a service, product, audience, location, price, result or business model from the name."
+  },
+  "contact": {
+    "phone": null,
+    "whatsapp": null,
+    "email": null,
+    "website": null,
+    "address": null,
+    "google_maps_url": null,
+    "contact_status": "No confirmed contact details.",
+    "contact_rule": "Do not use contact details from a similar Pixi, Pixigrow or agriculture product."
+  },
+  "social_media": {
+    "instagram_handle": null,
+    "instagram_url": null,
+    "instagram_status": "Not resolved.",
+    "public_candidates_not_confirmed": [
+      {
+        "identity": "Pixigrow Media",
+        "location_signal": "Rajkot, Gujarat",
+        "source": "https://in.linkedin.com/in/pixigrow-media-994378421",
+        "reason_not_adopted": "The exact connection to the user's client is not confirmed."
+      },
+      {
+        "identity": "PIXIGROW design studio",
+        "website": "https://pixigrow.com/",
+        "reason_not_adopted": "This may be an unrelated international design studio."
+      },
+      {
+        "identity": "PIXI GROW agricultural product",
+        "reason_not_adopted": "This is a product listing and must not be treated as the client brand."
+      }
+    ],
+    "managing_agency": "Famebros Studio",
+    "agency_instagram_handle": "@famebrosstudio",
+    "agency_instagram_url": "https://www.instagram.com/famebrosstudio/",
+    "agency_credit_default": "💫 Managed by: @famebrosstudio",
+    "reference_rule": "Do not tag or learn from a candidate until the user or owner confirms the official identity."
+  },
+  "established_content_knowledge": {
+    "confirmed_facts": [
+      "The working brand name is Pixi Grow."
+    ],
+    "confirmed_content_genres": [],
+    "content_status": "Business identity required before category-specific strategy.",
+    "safe_content_pillars": [
+      "Logo or identity reveal using supplied assets",
+      "Founder statement using supplied copy",
+      "Coming-soon announcement without category claims",
+      "Exact product or service brief",
+      "Behind-the-scenes footage with approved context"
+    ],
+    "prohibited_assumptions": [
+      "Digital agency",
+      "Design studio",
+      "Agriculture or fertiliser",
+      "Children's brand",
+      "Beauty brand",
+      "Software company",
+      "Rajkot location"
+    ],
+    "data_confidence": {
+      "name": "Confirmed by internal record",
+      "category": "Unknown",
+      "social": "Unknown",
+      "location": "Unknown",
+      "contacts": "Unknown",
+      "offer": "Unknown"
+    },
+    "content_priority": "Confirm identity first. Until then, produce only asset-led drafts that state no unsupported category or result."
+  },
+  "writing_direction": {
+    "brand_voice": [
+      "Neutral until identity is confirmed",
+      "Clear",
+      "Minimal",
+      "Non-speculative"
+    ],
+    "primary_language": "Match the supplied brief.",
+    "focus": [
+      "Exact supplied name",
+      "Actual approved asset",
+      "Explicit brief",
+      "One safe CTA"
+    ],
+    "avoid": [
+      "Guessing category",
+      "Guessing audience",
+      "Using another Pixi brand's language",
+      "Invented results",
+      "Invented city",
+      "Invented contact",
+      "Generic growth promises"
+    ],
+    "punctuation_style": "Short readable sentences and no em dashes."
+  },
+  "content_playbook": {
+    "identity_reveal": {
+      "required_inputs": [
+        "Official logo",
+        "Exact display name",
+        "One-line category",
+        "Audience",
+        "Launch date",
+        "CTA"
+      ],
+      "rule": "Do not publish until category and official account are confirmed."
+    },
+    "asset_led_post": {
+      "objective": "Describe only the approved asset and supplied facts.",
+      "rule": "Do not infer the business from visuals alone."
+    },
+    "service_or_product_post": {
+      "required_inputs": [
+        "Exact offering",
+        "Features",
+        "Audience",
+        "Price",
+        "Availability",
+        "Proof",
+        "CTA"
+      ],
+      "rule": "Build the voice from approved facts, not the brand name."
+    },
+    "founder_post": {
+      "required_inputs": [
+        "Founder name",
+        "Role",
+        "Approved quote",
+        "Business purpose",
+        "Consent"
+      ],
+      "rule": "Do not invent a founder story."
+    },
+    "coming_soon_post": {
+      "safe_direction": "Use curiosity without promising a category, date or offer that has not been supplied."
+    }
+  },
+  "unknown_brand_identity_and_brief_framework": {
+    "identity_gate": [
+      "Official Instagram or website",
+      "Exact category",
+      "Location",
+      "Owner or authorized contact",
+      "Offer",
+      "Audience"
+    ],
+    "post_gate": [
+      "Output format",
+      "Objective",
+      "Approved facts",
+      "Asset",
+      "CTA",
+      "Publication date"
+    ],
+    "safe_rule": "If identity is missing, produce a labelled concept draft only. Do not create sales-ready facts.",
+    "candidate_rule": "Candidates are research leads, not approved brand data.",
+    "readiness": "Needs brand identity."
+  },
+  "caption_format": {
+    "default_use": "Instagram and Facebook feed posts and reels.",
+    "body_length": "Usually 25 to 70 words excluding footer, hashtags and SEO block.",
+    "body_structure": [
+      "One specific hook connected to the real asset or topic.",
+      "One to three useful lines using verified information.",
+      "One visit, enquiry, admissions, booking, save, share or shop CTA."
+    ],
+    "format_order": [
+      "Caption body",
+      "Blank line",
+      "Exactly three hashtags",
+      "Blank line",
+      "Approved CTA, location and contact lines",
+      "Agency credit when required",
+      "Blank line",
+      "Exactly one square-bracket SEO block"
+    ],
+    "hashtag_rule": "Exactly three hashtags unless the user requests another count.",
+    "seo_rule": "Use five to eight natural search phrases inside one pair of square brackets.",
+    "story_rule": "For story copy, use a short headline, one support line and one CTA. Omit feed hashtags and SEO unless requested.",
+    "reel_overlay_rule": "Keep each overlay short, readable and supported by the footage.",
+    "final_checks": [
+      "Use only verified facts from the current brief and this knowledge file.",
+      "Use exactly three relevant hashtags.",
+      "Use one square-bracket SEO block with five to eight comma-separated phrases.",
+      "Use one clear CTA.",
+      "Remove every em dash before delivery.",
+      "Confirm the official account and category before publication.",
+      "Do not add category-specific SEO."
+    ]
+  },
+  "fixed_footer": {
+    "standard_lines": [
+      "💫 Managed by: @famebrosstudio"
+    ],
+    "status": "Agency credit only. No brand contact is established.",
+    "usage": "Use only on an approved Famebros draft.",
+    "exceptions": [
+      "Story overlays",
+      "Comments",
+      "If agency credit is not required"
+    ]
+  },
+  "suggested_hashtag_bank": [
+    "#PixiGrow",
+    "#BrandIntroduction",
+    "#ComingSoon",
+    "#NewBrand",
+    "#BrandReveal"
+  ],
+  "seo_keyword_bank": [
+    "Pixi Grow",
+    "PixiGrow official",
+    "Pixi Grow brand",
+    "Pixi Grow launch",
+    "Pixi Grow information"
+  ],
+  "cta_bank": [
+    "Follow the official page once confirmed.",
+    "Watch this space for verified details.",
+    "Use the action specified in the approved brief."
+  ],
+  "suggested_hooks": [
+    "Something new is taking shape.",
+    "Meet Pixi Grow.",
+    "The first look starts here.",
+    "More details are coming soon."
+  ],
+  "visual_and_asset_guidance": {
+    "feed_size": "1080 x 1440 pixels",
+    "story_and_reel_size": "1080 x 1920 pixels",
+    "style": [
+      "Minimal",
+      "Identity-led",
+      "High contrast",
+      "Flexible until brand kit is supplied"
+    ],
+    "fidelity_rules": [
+      "Use only the supplied logo and assets.",
+      "Do not invent colours, fonts, products or services.",
+      "Do not use candidate-business imagery."
+    ],
+    "thumbnail_rule": "Use the exact name and one neutral hook only."
+  },
+  "carousel_and_reel_system": {
+    "identity_carousel": [
+      "Slide 1: Exact name",
+      "Slide 2: Approved one-line category",
+      "Slide 3: Approved purpose",
+      "Slide 4: Approved offering",
+      "Slide 5: Official CTA"
+    ],
+    "neutral_reel": [
+      "0 to 3 seconds: Name reveal",
+      "3 to 8 seconds: Approved visual",
+      "8 to 12 seconds: One verified line",
+      "12 to 15 seconds: CTA"
+    ],
+    "rule": "Do not use until required identity fields are supplied."
+  },
+  "other_output_modes": {
+    "story": "Neutral teaser with no category claim.",
+    "bio": "Blocked until category, location and official offer are confirmed.",
+    "website_copy": "Blocked until official ownership and services are confirmed.",
+    "comment_reply": "Do not answer category, price or contact questions from assumptions."
+  },
+  "sample_caption": {
+    "status": "Concept-only sample. Not publication-ready until the official account and category are confirmed.",
+    "scenario": "Neutral identity teaser",
+    "caption_body": "Something new is taking shape. Meet Pixi Grow. Watch this space for verified details from the official brand.",
+    "footer": [
+      "💫 Managed by: @famebrosstudio"
+    ],
+    "hashtags": [
+      "#PixiGrow",
+      "#BrandIntroduction",
+      "#ComingSoon"
+    ],
+    "seo_keywords": [
+      "Pixi Grow",
+      "PixiGrow official",
+      "Pixi Grow brand",
+      "Pixi Grow launch",
+      "Pixi Grow information"
+    ],
+    "full_caption": "Something new is taking shape. Meet Pixi Grow. Watch this space for verified details from the official brand.\n\n💫 Managed by: @famebrosstudio\n\n#PixiGrow #BrandIntroduction #ComingSoon\n\n[Pixi Grow, PixiGrow official, Pixi Grow brand, Pixi Grow launch, Pixi Grow information]",
+    "validation": {
+      "hashtags": 3,
+      "seo_phrases": 5,
+      "verified_fields_only": true,
+      "publication_ready": false
+    }
+  },
+  "accuracy_rules": [
+    "Do not assume Pixi Grow is the Pixigrow Media profile, pixigrow.com design studio or PIXI GROW agriculture product.",
+    "Do not invent category, location, owner, contact, price or services.",
+    "Do not tag any unconfirmed account.",
+    "Use only supplied assets and brief facts.",
+    "Keep candidates labelled as unconfirmed research leads.",
+    "Remove every em dash."
+  ],
+  "per_post_input": {
+    "required_identity": [
+      "Official Instagram",
+      "Website",
+      "Category",
+      "Audience",
+      "Location",
+      "Owner or contact",
+      "Logo"
+    ],
+    "required_post": [
+      "Output mode",
+      "Objective",
+      "Approved facts",
+      "Asset",
+      "CTA",
+      "Publication date"
+    ],
+    "input_rule": "Do not create category-specific copy until the identity gate is complete."
+  },
+  "master_brand_instruction": "Create content only for the user's Pixi Grow brand. Its business category, location, official Instagram, website, contacts, audience and offer are not yet confirmed. Never connect it automatically to Pixigrow Media in Rajkot, pixigrow.com, an agriculture product or another similarly named business. Use only the exact supplied asset and brief. Until identity is confirmed, limit output to clearly labelled neutral concepts, use no category-specific SEO and do not invent contact details. Standard concept captions use exactly three hashtags and one SEO bracket with five to eight neutral phrases. Remove all em dashes.",
+  "missing_information": {
+    "identity": [
+      "Official page",
+      "Exact spelling and capitalization",
+      "Category",
+      "Owner",
+      "Location"
+    ],
+    "contact": [
+      "Phone",
+      "Email",
+      "Website",
+      "Address"
+    ],
+    "offer": [
+      "Services or products",
+      "Audience",
+      "Prices",
+      "Availability",
+      "USPs"
+    ],
+    "brand_system": [
+      "Logo",
+      "Colours",
+      "Fonts",
+      "Visual references",
+      "Tone"
+    ],
+    "priority": "Obtain the official Instagram page and exact category before using this file for public content."
+  },
+  "sources": {
+    "user_facts": [
+      "Brand name Pixi Grow.",
+      "Onboarding or billing note listed as the first day of an unspecified month."
+    ],
+    "public_sources": [
+      {
+        "url": "https://in.linkedin.com/in/pixigrow-media-994378421",
+        "checked_on": "2026-09-26",
+        "used_for": "Unconfirmed Rajkot candidate only."
+      },
+      {
+        "url": "https://pixigrow.com/",
+        "checked_on": "2026-09-26",
+        "used_for": "Unconfirmed design-studio candidate only."
+      }
+    ],
+    "internal_dataset": "Famebros_Brand_Caption_Dataset.json record pixi_grow.",
+    "source_rule": "Direct user or owner confirmation is required before adopting any public candidate."
+  }
+}

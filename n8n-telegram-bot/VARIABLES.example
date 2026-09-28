@@ -1,0 +1,7 @@
+# Copy these names into n8n Variables (never commit real values).
+TELEGRAM_BOT_TOKEN=
+DRIFTPOST_API_URL=http://localhost:10000
+SUPABASE_URL=https://xyz.supabase.co
+SUPABASE_SERVICE_KEY=
+BOT_USER_ID=
+BOT_JWT=
