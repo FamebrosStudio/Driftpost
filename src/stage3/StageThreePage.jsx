@@ -164,13 +164,13 @@ export default function StageThreePage({ session, onBack, onSignOut, onHistory, 
   const groupIds = useMemo(() => {
     if (s1.type === 'existing_groups') {
       const g = (s1.groups || []).find((x) => x.id === s1.groupId);
-      return g?.accountIds || [];
+      return [...new Set(g?.accountIds || [])];
     }
-    if (s1.type === 'create_groups') return (s1.groups || []).flatMap((g) => g.accountIds || []);
+    if (s1.type === 'create_groups') return [...new Set((s1.groups || []).flatMap((g) => g.accountIds || []))];
     return [];
   }, [s1]);
   // Member account ids on one platform, in group order.
-  const groupMemberIds = (pid) => groupIds.filter((id) => connById[id]?.platform === pid);
+  const groupMemberIds = (pid) => [...new Set(groupIds)].filter((id) => connById[id]?.platform === pid);
 
   // Stage 2 cross-post already routes Facebook through Instagram — except in
   // group flows, where every member account gets its own direct post (a
@@ -421,7 +421,8 @@ export default function StageThreePage({ session, onBack, onSignOut, onHistory, 
   // links land in results[pid].urls.
   const runGroup = async (pid, out, { mediaOverride = null } = {}) => {
     const cov = coveredPids(pid);
-    const plan = cov.flatMap((q) => groupMemberIds(q).map((id) => ({ q, id })));
+    const plan = [...new Set(cov.flatMap((q) => groupMemberIds(q)))].map((id) => ({ q: connById[id]?.platform, id }))
+      .filter(({ q }) => q);
     const names = plan.map(({ q, id }) => connById[id]?.account_name || NAMES[q] || 'account');
     const urls = [];
     const failures = [];
