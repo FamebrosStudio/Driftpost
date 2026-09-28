@@ -21,7 +21,10 @@ Send a video to `@drift_post_sender_bot`, pick platforms (multi-select), it post
 1. Driftpost backend running (`server/.env` filled, `npm run dev` on :10000). Connect YT/IG/FB/X accounts in the Driftpost UI first.
 2. Run `telegram_sessions.sql` in Supabase.
 3. Create a Supabase auth user for the bot, then `node get-bot-jwt.mjs` to get `BOT_USER_ID` + `BOT_JWT`.
-4. In n8n, set variables per `VARIABLES.example`, attach your Telegram credential to the Trigger node, activate the workflow.
+4. Fill values once in `start-bot.ps1` (names in `VARIABLES.example`), run it
+   instead of `n8n start`, attach your Telegram credential to the Trigger node,
+   delete duplicate imports, activate the ONE workflow. (n8n Variables need the
+   Enterprise plan — this project uses `$env.*`, which works everywhere.)
 
 ## Brand data (captions use your DataSet)
 

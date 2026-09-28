@@ -1,10 +1,9 @@
-# Copy these names into n8n Variables (never commit real values).
-TELEGRAM_BOT_TOKEN=
-DRIFTPOST_API_URL=http://localhost:10000
-SUPABASE_URL=https://xyz.supabase.co
-SUPABASE_SERVICE_KEY=
-BOT_USER_ID=
-BOT_JWT=
-XAI_API_KEY=
-# FFMPEG_PATH is hardcoded in the Extract Frames node:
-# C:\Users\faiza\ffmpeg\ffmpeg-9.0.2-essentials_build\bin\ffmpeg.exe
+# Names for start-bot.ps1 (plain `n8n start` won't see them).
+# The workflow reads them as $env.* — no Enterprise plan needed.
+$env:TELEGRAM_BOT_TOKEN = ""
+$env:DRIFTPOST_API_URL = "http://localhost:10000"
+$env:SUPABASE_URL = ""
+$env:SUPABASE_SERVICE_KEY = ""
+$env:BOT_USER_ID = ""
+$env:BOT_JWT = ""
+$env:XAI_API_KEY = ""

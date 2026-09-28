@@ -114,7 +114,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "=https://api.telegram.org/bot{{ $vars.TELEGRAM_BOT_TOKEN }}/sendMessage",
+        "url": "=https://api.telegram.org/bot{{ $env.TELEGRAM_BOT_TOKEN }}/sendMessage",
         "sendHeaders": true,
         "specifyHeaders": true,
         "headerParameters": { "parameters": [{ "name": "Content-Type", "value": "application/json" }] },
@@ -137,8 +137,8 @@
         "specifyHeaders": true,
         "headerParameters": {
           "parameters": [
-            { "name": "apikey", "value": "={{ $vars.SUPABASE_SERVICE_KEY }}" },
-            { "name": "Authorization", "value": "={{ 'Bearer ' + $vars.SUPABASE_SERVICE_KEY }}" },
+            { "name": "apikey", "value": "={{ $env.SUPABASE_SERVICE_KEY }}" },
+            { "name": "Authorization", "value": "={{ 'Bearer ' + $env.SUPABASE_SERVICE_KEY }}" },
             { "name": "Content-Type", "value": "application/json" },
             { "name": "Prefer", "value": "resolution=merge-duplicates" }
           ]
@@ -167,7 +167,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "=https://api.telegram.org/bot{{ $vars.TELEGRAM_BOT_TOKEN }}/sendMessage",
+        "url": "=https://api.telegram.org/bot{{ $env.TELEGRAM_BOT_TOKEN }}/sendMessage",
         "sendHeaders": true,
         "specifyHeaders": true,
         "headerParameters": { "parameters": [{ "name": "Content-Type", "value": "application/json" }] },
@@ -190,8 +190,8 @@
         "specifyHeaders": true,
         "headerParameters": {
           "parameters": [
-            { "name": "apikey", "value": "={{ $vars.SUPABASE_SERVICE_KEY }}" },
-            { "name": "Authorization", "value": "={{ 'Bearer ' + $vars.SUPABASE_SERVICE_KEY }}" }
+            { "name": "apikey", "value": "={{ $env.SUPABASE_SERVICE_KEY }}" },
+            { "name": "Authorization", "value": "={{ 'Bearer ' + $env.SUPABASE_SERVICE_KEY }}" }
           ]
         },
         "options": {}
@@ -249,8 +249,8 @@
         "specifyHeaders": true,
         "headerParameters": {
           "parameters": [
-            { "name": "apikey", "value": "={{ $vars.SUPABASE_SERVICE_KEY }}" },
-            { "name": "Authorization", "value": "={{ 'Bearer ' + $vars.SUPABASE_SERVICE_KEY }}" },
+            { "name": "apikey", "value": "={{ $env.SUPABASE_SERVICE_KEY }}" },
+            { "name": "Authorization", "value": "={{ 'Bearer ' + $env.SUPABASE_SERVICE_KEY }}" },
             { "name": "Content-Type", "value": "application/json" }
           ]
         },
@@ -268,7 +268,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "=https://api.telegram.org/bot{{ $vars.TELEGRAM_BOT_TOKEN }}/sendMessage",
+        "url": "=https://api.telegram.org/bot{{ $env.TELEGRAM_BOT_TOKEN }}/sendMessage",
         "sendHeaders": true,
         "specifyHeaders": true,
         "headerParameters": { "parameters": [{ "name": "Content-Type", "value": "application/json" }] },
@@ -286,7 +286,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "=https://api.telegram.org/bot{{ $vars.TELEGRAM_BOT_TOKEN }}/sendMessage",
+        "url": "=https://api.telegram.org/bot{{ $env.TELEGRAM_BOT_TOKEN }}/sendMessage",
         "sendHeaders": true,
         "specifyHeaders": true,
         "headerParameters": { "parameters": [{ "name": "Content-Type", "value": "application/json" }] },
@@ -309,8 +309,8 @@
         "specifyHeaders": true,
         "headerParameters": {
           "parameters": [
-            { "name": "apikey", "value": "={{ $vars.SUPABASE_SERVICE_KEY }}" },
-            { "name": "Authorization", "value": "={{ 'Bearer ' + $vars.SUPABASE_SERVICE_KEY }}" }
+            { "name": "apikey", "value": "={{ $env.SUPABASE_SERVICE_KEY }}" },
+            { "name": "Authorization", "value": "={{ 'Bearer ' + $env.SUPABASE_SERVICE_KEY }}" }
           ]
         },
         "options": {}
@@ -426,8 +426,8 @@
         "specifyHeaders": true,
         "headerParameters": {
           "parameters": [
-            { "name": "apikey", "value": "={{ $vars.SUPABASE_SERVICE_KEY }}" },
-            { "name": "Authorization", "value": "={{ 'Bearer ' + $vars.SUPABASE_SERVICE_KEY }}" },
+            { "name": "apikey", "value": "={{ $env.SUPABASE_SERVICE_KEY }}" },
+            { "name": "Authorization", "value": "={{ 'Bearer ' + $env.SUPABASE_SERVICE_KEY }}" },
             { "name": "Content-Type", "value": "application/json" }
           ]
         },
@@ -445,7 +445,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "=https://api.telegram.org/bot{{ $vars.TELEGRAM_BOT_TOKEN }}/editMessageText",
+        "url": "=https://api.telegram.org/bot{{ $env.TELEGRAM_BOT_TOKEN }}/editMessageText",
         "sendHeaders": true,
         "specifyHeaders": true,
         "headerParameters": { "parameters": [{ "name": "Content-Type", "value": "application/json" }] },
@@ -463,7 +463,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "=https://api.telegram.org/bot{{ $vars.TELEGRAM_BOT_TOKEN }}/answerCallbackQuery",
+        "url": "=https://api.telegram.org/bot{{ $env.TELEGRAM_BOT_TOKEN }}/answerCallbackQuery",
         "sendHeaders": true,
         "specifyHeaders": true,
         "headerParameters": { "parameters": [{ "name": "Content-Type", "value": "application/json" }] },
@@ -486,8 +486,8 @@
         "specifyHeaders": true,
         "headerParameters": {
           "parameters": [
-            { "name": "apikey", "value": "={{ $vars.SUPABASE_SERVICE_KEY }}" },
-            { "name": "Authorization", "value": "={{ 'Bearer ' + $vars.SUPABASE_SERVICE_KEY }}" }
+            { "name": "apikey", "value": "={{ $env.SUPABASE_SERVICE_KEY }}" },
+            { "name": "Authorization", "value": "={{ 'Bearer ' + $env.SUPABASE_SERVICE_KEY }}" }
           ]
         },
         "options": {}
@@ -501,7 +501,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "=https://api.telegram.org/bot{{ $vars.TELEGRAM_BOT_TOKEN }}/sendMessage",
+        "url": "=https://api.telegram.org/bot{{ $env.TELEGRAM_BOT_TOKEN }}/sendMessage",
         "sendHeaders": true,
         "specifyHeaders": true,
         "headerParameters": { "parameters": [{ "name": "Content-Type", "value": "application/json" }] },
@@ -519,7 +519,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "=https://api.telegram.org/bot{{ $vars.TELEGRAM_BOT_TOKEN }}/sendMessage",
+        "url": "=https://api.telegram.org/bot{{ $env.TELEGRAM_BOT_TOKEN }}/sendMessage",
         "sendHeaders": true,
         "specifyHeaders": true,
         "headerParameters": { "parameters": [{ "name": "Content-Type", "value": "application/json" }] },
@@ -537,7 +537,7 @@
     {
       "parameters": {
         "method": "GET",
-        "url": "=https://api.telegram.org/bot{{ $vars.TELEGRAM_BOT_TOKEN }}/getFile?file_id={{ $json.file_id }}",
+        "url": "=https://api.telegram.org/bot{{ $env.TELEGRAM_BOT_TOKEN }}/getFile?file_id={{ $json.file_id }}",
         "options": {}
       },
       "id": "get-file",
@@ -549,7 +549,7 @@
     {
       "parameters": {
         "method": "GET",
-        "url": "=https://api.telegram.org/file/bot{{ $vars.TELEGRAM_BOT_TOKEN }}/{{ $json.result.file_path }}",
+        "url": "=https://api.telegram.org/file/bot{{ $env.TELEGRAM_BOT_TOKEN }}/{{ $json.result.file_path }}",
         "options": { "response": { "response": { "responseFormat": "file", "outputPropertyName": "data" } } }
       },
       "id": "download",
@@ -607,7 +607,7 @@
         "specifyHeaders": true,
         "headerParameters": {
           "parameters": [
-            { "name": "Authorization", "value": "={{ 'Bearer ' + $vars.XAI_API_KEY }}" },
+            { "name": "Authorization", "value": "={{ 'Bearer ' + $env.XAI_API_KEY }}" },
             { "name": "Content-Type", "value": "application/json" }
           ]
         },
@@ -625,12 +625,12 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ $vars.DRIFTPOST_API_URL }}/api/ai/captions",
+        "url": "={{ $env.DRIFTPOST_API_URL }}/api/ai/captions",
         "sendHeaders": true,
         "specifyHeaders": true,
         "headerParameters": {
           "parameters": [
-            { "name": "Authorization", "value": "={{ 'Bearer ' + $vars.BOT_JWT }}" },
+            { "name": "Authorization", "value": "={{ 'Bearer ' + $env.BOT_JWT }}" },
             { "name": "Content-Type", "value": "application/json" }
           ]
         },
@@ -648,13 +648,13 @@
     {
       "parameters": {
         "method": "GET",
-        "url": "=https://vdvwgcxrygxpjewvcchj.supabase.co/rest/v1/platform_connections?user_id=eq.{{ $vars.BOT_USER_ID }}&select=id,platform,platform_account_id,account_name",
+        "url": "=https://vdvwgcxrygxpjewvcchj.supabase.co/rest/v1/platform_connections?user_id=eq.{{ $env.BOT_USER_ID }}&select=id,platform,platform_account_id,account_name",
         "sendHeaders": true,
         "specifyHeaders": true,
         "headerParameters": {
           "parameters": [
-            { "name": "apikey", "value": "={{ $vars.SUPABASE_SERVICE_KEY }}" },
-            { "name": "Authorization", "value": "={{ 'Bearer ' + $vars.SUPABASE_SERVICE_KEY }}" }
+            { "name": "apikey", "value": "={{ $env.SUPABASE_SERVICE_KEY }}" },
+            { "name": "Authorization", "value": "={{ 'Bearer ' + $env.SUPABASE_SERVICE_KEY }}" }
           ]
         },
         "options": {}
@@ -707,7 +707,7 @@
     {
       "parameters": {
         "method": "GET",
-        "url": "=https://api.telegram.org/bot{{ $vars.TELEGRAM_BOT_TOKEN }}/getFile?file_id={{ $json.file_id }}",
+        "url": "=https://api.telegram.org/bot{{ $env.TELEGRAM_BOT_TOKEN }}/getFile?file_id={{ $json.file_id }}",
         "options": {}
       },
       "id": "get-file-2",
@@ -719,7 +719,7 @@
     {
       "parameters": {
         "method": "GET",
-        "url": "=https://api.telegram.org/file/bot{{ $vars.TELEGRAM_BOT_TOKEN }}/{{ $json.result.file_path }}",
+        "url": "=https://api.telegram.org/file/bot{{ $env.TELEGRAM_BOT_TOKEN }}/{{ $json.result.file_path }}",
         "options": { "response": { "response": { "responseFormat": "file", "outputPropertyName": "data" } } }
       },
       "id": "download-2",
@@ -731,11 +731,11 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ $vars.DRIFTPOST_API_URL }}/api/publish",
+        "url": "={{ $env.DRIFTPOST_API_URL }}/api/publish",
         "sendHeaders": true,
         "specifyHeaders": true,
         "headerParameters": {
-          "parameters": [{ "name": "Authorization", "value": "={{ 'Bearer ' + $vars.BOT_JWT }}" }]
+          "parameters": [{ "name": "Authorization", "value": "={{ 'Bearer ' + $env.BOT_JWT }}" }]
         },
         "sendBody": true,
         "contentType": "multipart-form-data",
@@ -772,11 +772,11 @@
     {
       "parameters": {
         "method": "GET",
-        "url": "={{ $vars.DRIFTPOST_API_URL }}/api/jobs/{{ $json.job.id }}",
+        "url": "={{ $env.DRIFTPOST_API_URL }}/api/jobs/{{ $json.job.id }}",
         "sendHeaders": true,
         "specifyHeaders": true,
         "headerParameters": {
-          "parameters": [{ "name": "Authorization", "value": "={{ 'Bearer ' + $vars.BOT_JWT }}" }]
+          "parameters": [{ "name": "Authorization", "value": "={{ 'Bearer ' + $env.BOT_JWT }}" }]
         },
         "options": {}
       },
@@ -814,11 +814,11 @@
     {
       "parameters": {
         "method": "GET",
-        "url": "={{ $vars.DRIFTPOST_API_URL }}/api/jobs/{{ $('Publish One').first().json.job.id }}",
+        "url": "={{ $env.DRIFTPOST_API_URL }}/api/jobs/{{ $('Publish One').first().json.job.id }}",
         "sendHeaders": true,
         "specifyHeaders": true,
         "headerParameters": {
-          "parameters": [{ "name": "Authorization", "value": "={{ 'Bearer ' + $vars.BOT_JWT }}" }]
+          "parameters": [{ "name": "Authorization", "value": "={{ 'Bearer ' + $env.BOT_JWT }}" }]
         },
         "options": {}
       },
@@ -841,7 +841,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "=https://api.telegram.org/bot{{ $vars.TELEGRAM_BOT_TOKEN }}/sendMessage",
+        "url": "=https://api.telegram.org/bot{{ $env.TELEGRAM_BOT_TOKEN }}/sendMessage",
         "sendHeaders": true,
         "specifyHeaders": true,
         "headerParameters": { "parameters": [{ "name": "Content-Type", "value": "application/json" }] },
@@ -864,8 +864,8 @@
         "specifyHeaders": true,
         "headerParameters": {
           "parameters": [
-            { "name": "apikey", "value": "={{ $vars.SUPABASE_SERVICE_KEY }}" },
-            { "name": "Authorization", "value": "={{ 'Bearer ' + $vars.SUPABASE_SERVICE_KEY }}" }
+            { "name": "apikey", "value": "={{ $env.SUPABASE_SERVICE_KEY }}" },
+            { "name": "Authorization", "value": "={{ 'Bearer ' + $env.SUPABASE_SERVICE_KEY }}" }
           ]
         },
         "options": {}
