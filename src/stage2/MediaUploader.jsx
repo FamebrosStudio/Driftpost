@@ -29,7 +29,7 @@ export default function MediaUploader({ count, onFiles }) {
         onDrop={(e) => { e.preventDefault(); setOver(false); take(e.dataTransfer.files); }}
       >
         <b>+ Add Media{count ? ` (${count}/10)` : ''}</b>
-        <small>Images or video · up to 4 photos are sent to xAI to ground caption suggestions</small>
+        <small>Images or video. Choose Analyze photo + video in the prompt settings to include visual and spoken details.</small>
       </button>
     </div>
   );

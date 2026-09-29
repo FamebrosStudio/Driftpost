@@ -77,7 +77,14 @@ export const ACTIVE_BRANDS = [
   'Sarama Furniture', 'OLVKIIXK', 'Anand Furniture',
 ];
 
-const norm = (s) => String(s || '').toLowerCase().replace(/[^a-z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim();
+export const normalizeSearchText = (s) => String(s || '')
+  .normalize('NFKD')
+  .replace(/[\u0300-\u036f]/g, '')
+  .toLowerCase()
+  .replace(/[^a-z0-9]+/g, ' ')
+  .replace(/\s+/g, ' ')
+  .trim();
+const norm = normalizeSearchText;
 
 export function isActiveBrand(accountName) {
   const a = norm(accountName);
@@ -393,7 +400,7 @@ export async function api(path, token, options = {}) {
       return data;
     } catch (e) {
       if (e?.status === 401) throw e;
-      if (e?.name === 'AbortError') throw new Error(path === '/api/ai/captions' ? 'Caption writing timed out. Retry once; image analysis can take longer.' : 'Server is waking up — try again in a few seconds.');
+      if (e?.name === 'AbortError') throw new Error(path === '/api/ai/captions' ? 'Caption analysis timed out. Retry once; long videos can take more time to transcribe.' : 'Server is waking up — try again in a few seconds.');
       if (isNetworkFail(e)) throw new Error(DOWN_MSG);
       throw e;
     } finally {
@@ -402,7 +409,7 @@ export async function api(path, token, options = {}) {
   };
   const invoke = async (t) => {
     try {
-      return await call(t, path === '/api/ai/captions' ? 60000 : 25000);
+      return await call(t, path === '/api/ai/captions' ? 30 * 60 * 1000 : 25000);
     } catch (e) {
       if (e?.status === 401) throw e;
       const retryable = method === 'GET' && /waking up/i.test(e.message || '');

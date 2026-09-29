@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { api, groupBrands, PLATFORMS } from '../lib.js';
+import { api, groupBrands, normalizeSearchText, PLATFORMS } from '../lib.js';
 import BrandIcon from '../brand.jsx';
 import './connect.css';
 
@@ -18,6 +18,7 @@ export default function ConnectPage({ session, onContinue, onHistory, onSignOut 
   const [busy, setBusy] = useState('');
   const [msg, setMsg] = useState('');
   const [msgKind, setMsgKind] = useState('ok');
+  const [accountSearch, setAccountSearch] = useState({});
   const say = (m, k = 'ok') => { setMsg(m); setMsgKind(k); };
 
   useEffect(() => { document.title = 'Connect accounts · Driftpost'; }, []);
@@ -77,7 +78,10 @@ export default function ConnectPage({ session, onContinue, onHistory, onSignOut 
     setBusy('');
   };
 
-  const listFor = (pid) => connections.filter((c) => c.platform === pid);
+  const listFor = (pid) => {
+    const needle = normalizeSearchText(accountSearch[pid] || '');
+    return connections.filter((c) => c.platform === pid && (!needle || normalizeSearchText(c.account_name).includes(needle)));
+  };
   const brands = useMemo(() => groupBrands(connections), [connections]);
   const total = connections.length;
 
@@ -113,7 +117,7 @@ export default function ConnectPage({ session, onContinue, onHistory, onSignOut 
           <>
             <div className="cn-summary">
               {PLATFORMS.map((p) => {
-                const n = listFor(p.id).length;
+                const n = connections.filter((c) => c.platform === p.id).length;
                 return (
                   <span key={p.id} className={n ? 'cn-pill has' : 'cn-pill'}>
                     <BrandDot pid={p.id} /> {p.name} {n}
@@ -125,6 +129,7 @@ export default function ConnectPage({ session, onContinue, onHistory, onSignOut 
             <div className="cn-grid">
               {PLATFORMS.map((p) => {
                 const list = listFor(p.id);
+                const accountCount = connections.filter((c) => c.platform === p.id).length;
                 return (
                   <div key={p.id} className={list.length ? 'cn-card linked' : 'cn-card'}>
                     <div className="cn-card-head">
@@ -135,6 +140,7 @@ export default function ConnectPage({ session, onContinue, onHistory, onSignOut 
                       </span>
                     </div>
                     <p className="cn-hint">{HINTS[p.id]}</p>
+                    {accountCount > 3 && <input className="cn-search" value={accountSearch[p.id] || ''} onChange={(e) => setAccountSearch((s) => ({ ...s, [p.id]: e.target.value }))} placeholder={`Search ${p.name} accounts`} aria-label={`Search ${p.name} accounts`} />}
                     <div className="cn-list">
                       {list.length ? list.map((c) => (
                         <div key={c.id} className="cn-acct">
@@ -148,7 +154,7 @@ export default function ConnectPage({ session, onContinue, onHistory, onSignOut 
                           </button>
                         </div>
                       )) : (
-                        <div className="cn-empty">No {p.name} account yet.</div>
+                        <div className="cn-empty">{connections.some((c) => c.platform === p.id) ? 'No accounts match that search.' : `No ${p.name} account yet.`}</div>
                       )}
                     </div>
                     <button

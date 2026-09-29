@@ -3,7 +3,7 @@ import AISettings from './AISettings.jsx';
 import GenerateButton from './GenerateButton.jsx';
 
 // Section 2: prompt box + quick controls + generate.
-export default function PromptBuilder({ brief, setBrief, tone, setTone, emoji, setEmoji, length, setLength, busy, canGenerate, onGenerate }) {
+export default function PromptBuilder({ brief, setBrief, tone, setTone, emoji, setEmoji, length, setLength, analysis, setAnalysis, busy, canGenerate, onGenerate }) {
   return (
     <div>
       <label htmlFor="s2-brief" style={{ display: 'block', fontSize: 13, fontWeight: 700, marginBottom: 8 }}>
@@ -17,7 +17,7 @@ export default function PromptBuilder({ brief, setBrief, tone, setTone, emoji, s
         onChange={(e) => setBrief(e.target.value)}
         placeholder="Example: Create a premium festive post for my jewellery brand…"
       />
-      <AISettings tone={tone} setTone={setTone} emoji={emoji} setEmoji={setEmoji} length={length} setLength={setLength} />
+      <AISettings tone={tone} setTone={setTone} emoji={emoji} setEmoji={setEmoji} length={length} setLength={setLength} analysis={analysis} setAnalysis={setAnalysis} />
       <GenerateButton disabled={!canGenerate || busy} busy={busy} onClick={onGenerate} />
     </div>
   );

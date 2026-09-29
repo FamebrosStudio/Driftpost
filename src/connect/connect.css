@@ -47,6 +47,8 @@
 .cn-card-head small { display: block; color: var(--muted); font-size: 12px; font-weight: 400; }
 .cn-hint { font-size: 12.5px; color: var(--faint); margin: 8px 0 12px; line-height: 1.55; }
 .cn-list { display: flex; flex-direction: column; gap: 8px; }
+.cn-search { width: 100%; margin: 0 0 8px; border: 1px solid var(--line-hard); border-radius: 9px; background: var(--input); color: var(--ink); padding: 9px 10px; font: inherit; font-size: 12.5px; outline: none; }
+.cn-search:focus { border-color: var(--acc); }
 .cn-acct { display: flex; align-items: center; gap: 10px; background: var(--panel2); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; min-width: 0; }
 .cn-av { width: 30px; height: 30px; border-radius: 10px; background: var(--input); border: 1px solid var(--line); display: grid; place-items: center; font-size: 12px; font-weight: 800; flex: 0 0 auto; }
 .cn-acct b { font-size: 13.5px; display: block; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -97,6 +99,10 @@
 .welcome-steps span { display: inline-flex; align-items: center; gap: 7px; font-size: 12px; font-weight: 700; color: var(--muted); border: 1.5px solid var(--line); border-radius: 999px; padding: 7px 14px; background: var(--panel); }
 .welcome-steps b { color: var(--acc); font-weight: 800; }
 .welcome .connect { min-height: 0; }
+@media (min-width: 1280px) {
+  .connect-in { max-width: min(1600px, 94vw); }
+  .welcome-in { max-width: min(1400px, 94vw); }
+}
 @media (prefers-reduced-motion: reduce) {
   .connect, .connect *, .cn-bar, .cn-bar * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }

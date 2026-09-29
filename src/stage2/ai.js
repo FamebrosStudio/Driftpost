@@ -27,32 +27,79 @@ async function compactImage(file) {
   }
 }
 
+// Extract a few evenly spaced stills in-browser; videos stay on the user's
+// device apart from the small JPEG samples and audio sent for analysis.
+async function sampleVideo(file, count = 3) {
+  if (!file?.type?.startsWith('video/')) return [];
+  const url = URL.createObjectURL(file);
+  const video = document.createElement('video');
+  video.preload = 'metadata';
+  video.muted = true;
+  video.playsInline = true;
+  video.src = url;
+  try {
+    await new Promise((resolve, reject) => {
+      const timer = setTimeout(() => reject(new Error('Video preview timed out')), 10000);
+      video.onloadedmetadata = () => { clearTimeout(timer); resolve(); };
+      video.onerror = () => { clearTimeout(timer); reject(new Error('Video preview could not be read')); };
+    });
+    const duration = Number(video.duration) || 0;
+    if (!Number.isFinite(duration) || duration <= 0) throw new Error('Video has no readable duration');
+    const frames = [];
+    const frameCount = Math.min(count, Math.max(1, Math.floor(duration * 2)));
+    for (let i = 0; i < frameCount; i++) {
+      const time = Math.max(0, Math.min(duration - 0.05, duration * ((i + 0.5) / frameCount)));
+      await new Promise((resolve, reject) => {
+        if (Math.abs(video.currentTime - time) < 0.01) { resolve(); return; }
+        const timer = setTimeout(() => reject(new Error('Video frame extraction timed out')), 8000);
+        video.onseeked = () => { clearTimeout(timer); resolve(); };
+        video.currentTime = time;
+      });
+      const scale = Math.min(1, 1024 / Math.max(video.videoWidth, video.videoHeight));
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.max(1, Math.round(video.videoWidth * scale));
+      canvas.height = Math.max(1, Math.round(video.videoHeight * scale));
+      canvas.getContext('2d')?.drawImage(video, 0, 0, canvas.width, canvas.height);
+      const blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/jpeg', 0.76));
+      if (blob) frames.push(new File([blob], `video-frame-${i + 1}.jpg`, { type: 'image/jpeg' }));
+    }
+    return frames;
+  } finally {
+    video.removeAttribute('src');
+    video.load();
+    URL.revokeObjectURL(url);
+  }
+}
+
 // Shared Stage 2/3 caption generation: one request, per-platform answers.
 // Pass only:<platform> for a fast single-card regen (one card, ~1/3 tokens).
-export function requestCaptions(token, { brief, brand, files, tone, emoji, length, only }) {
+export function requestCaptions(token, { brief, brand, files, tone, emoji, length, analysis = 'fast', only }) {
   return (async () => {
-    const photos = (files || []).filter((f) => f?.raw?.type?.startsWith('image/')).slice(0, 4);
+    const entries = files || [];
+    const analyzeMedia = analysis === 'analyze';
+    const photos = analyzeMedia ? entries.filter((f) => f?.raw?.type?.startsWith('image/')) : [];
+    const video = analyzeMedia ? entries.find((f) => f?.raw?.type?.startsWith('video/')) : null;
+    const frames = video ? await sampleVideo(video.raw) : [];
+    // Keep one generation call light: three video moments plus one photo, or
+    // four photos. The video itself is sent once for speech transcription.
+    const selected = video ? [...photos.slice(0, 1), ...frames] : photos.slice(0, 4);
     const form = new FormData();
     const body = {
-      summary: String(brief || '').trim() || (photos.length ? 'Write a caption grounded in the visible subject and details in these photos.' : ''),
+      summary: String(brief || '').trim() || (selected.length ? 'Write a caption grounded in the visible subject and details in the attached media.' : ''),
       brand: brand || '',
-      asset_description: files && files.length ? `${files.length} selected media file(s)` : '',
+      asset_description: analyzeMedia && entries.length ? `${entries.length} selected media file(s)${video ? '; video frames sampled across the full clip' : ''}` : '',
       image_count: 0,
       goal: 'enquiries',
       trends: false,
       tone, emoji, length,
       ...(only ? { only } : {}),
     };
-    // Inspect up to four selected photos in the SAME generation call: the
-    // model sees the visual evidence before writing, with no extra analysis
-    // round-trip or raw full-resolution upload.
-    for (const photo of photos) {
-      const compact = await compactImage(photo.raw);
-      if (compact) form.append('images', compact, compact.name);
-    }
-    if (photos.length && !form.getAll('images').length) {
+    const compacted = await Promise.all(selected.map((photo) => compactImage(photo?.raw || photo)));
+    compacted.filter(Boolean).forEach((file) => form.append('images', file, file.name));
+    if (selected.length && !form.getAll('images').length) {
       throw new Error('Could not prepare your selected photos for caption analysis. Try a JPG or PNG photo.');
     }
+    if (video) form.append('video', video.raw, video.name || 'video.mp4');
     body.image_count = form.getAll('images').length;
     for (const [key, value] of Object.entries(body)) form.append(key, String(value ?? ''));
     return api('/api/ai/captions', token, { method: 'POST', body: form });
@@ -62,14 +109,13 @@ export function requestCaptions(token, { brief, brand, files, tone, emoji, lengt
 // Tell the server this caption was approved. The server promotes it to a
 // reference for future generations of the same brand by the same user, so the
 // writing drifts toward what they actually accept rather than a guess.
-// Fire-and-forget: a failed preference ping must never interrupt the flow.
+// Await persistence so the UI can report failures instead of silently losing
+// the user's approval signal.
 export function approveCaption(token, { brand, platform, caption }) {
-  try {
-    void api('/api/ai/feedback', token, {
+  return api('/api/ai/feedback', token, {
       method: 'POST',
       body: JSON.stringify({ brand, platform, caption }),
-    }).catch(() => {});
-  } catch {}
+    });
 }
 
 export function mapResponse(data) {

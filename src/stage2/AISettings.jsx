@@ -14,7 +14,7 @@ const LENGTHS = [
 ];
 
 // Tone / emoji / length controls inside the prompt box.
-export default function AISettings({ tone, setTone, emoji, setEmoji, length, setLength }) {
+export default function AISettings({ tone, setTone, emoji, setEmoji, length, setLength, analysis, setAnalysis }) {
   return (
     <div className="s2-settings">
       <div className="s2-setting">
@@ -34,6 +34,15 @@ export default function AISettings({ tone, setTone, emoji, setEmoji, length, set
         <select id="s2-length" value={length} onChange={(e) => setLength(e.target.value)}>
           {LENGTHS.map((o) => <option key={o.id} value={o.id}>{o.label}</option>)}
         </select>
+      </div>
+      <div className="s2-setting">
+        <label htmlFor="s2-analysis">Media analyzer</label>
+        <select id="s2-analysis" value={analysis} onChange={(e) => setAnalysis(e.target.value)}>
+          <option value="fast">Fast captions</option>
+          <option value="analyze">Analyze photo + video</option>
+        </select>
+        {analysis === 'analyze' && <small className="s2-analysis-note">Reads up to 4 photos, or 1 photo plus frames from the first video and its speech. This can take longer.</small>}
+        {analysis === 'fast' && <small className="s2-analysis-note">Fast mode uses your prompt without scanning attached media.</small>}
       </div>
     </div>
   );

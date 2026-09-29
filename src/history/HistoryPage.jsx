@@ -236,7 +236,7 @@ export function CaptionsTab() {
     return (
       <div>
         <p className="hist-empty">No saved captions yet.</p>
-        <p className="hist-note">Generate content in Stage 2 — every caption is kept here automatically.</p>
+        <p className="hist-note">Generate content in Stage 2 — your 50 most recent captions appear here automatically.</p>
       </div>
     );
   }

@@ -15,8 +15,6 @@ import './stage2.css';
 
 const MediaEditor = lazy(() => import('./MediaEditor.jsx'));
 
-const GEN_STEPS = ['Writing for your selected platforms…', 'Applying your brand voice…', 'Polishing the captions…'];
-
 // No answer cache. An earlier version replayed the last answer for 24h on an
 // identical prompt, which made Regenerate look broken. Gone for good.
 
@@ -39,13 +37,13 @@ export default function StageTwoPage({ session, onBack, onSignOut, onHistory, on
   const [tone, setTone] = useState(() => load('driftpost-stage2-tone', 'auto'));
   const [emoji, setEmoji] = useState(() => load('driftpost-stage2-emoji', 'medium'));
   const [length, setLength] = useState(() => load('driftpost-stage2-length', 'medium'));
+  const [analysis, setAnalysis] = useState(() => load('driftpost-stage2-analysis', 'fast'));
   const [outputs, setOutputs] = useState(() => load('driftpost-stage2-outputs', {}));
   const [busy, setBusy] = useState(false);
   const [aiMsg, setAiMsg] = useState('');
   const [aiMsgKind, setAiMsgKind] = useState('ok');
   const say = (msg, kind = 'ok') => { setAiMsg(msg); setAiMsgKind(kind); };
   const [crosspost, setCrosspost] = useState(() => load('driftpost-stage2-crosspost', false));
-  const [genStep, setGenStep] = useState(0);
   const [editing, setEditing] = useState(-1);
   const [saveTick, setSaveTick] = useState(false);
 
@@ -84,6 +82,7 @@ export default function StageTwoPage({ session, onBack, onSignOut, onHistory, on
   useEffect(() => { save('driftpost-stage2-tone', tone); }, [tone]);
   useEffect(() => { save('driftpost-stage2-emoji', emoji); }, [emoji]);
   useEffect(() => { save('driftpost-stage2-length', length); }, [length]);
+  useEffect(() => { save('driftpost-stage2-analysis', analysis); }, [analysis]);
 
   // Stage 1 selections drive everything here.
   const s1 = useMemo(() => ({
@@ -144,7 +143,7 @@ export default function StageTwoPage({ session, onBack, onSignOut, onHistory, on
   };
 
   const requestCaptions = (pid) => fetchCaptions(session.access_token, {
-    brief, brand: brandLabel, files, tone, emoji, length,
+    brief, brand: brandLabel, files, tone, emoji, length, analysis,
     ...(pid ? { only: pid } : targetPlatforms.length === 1 ? { only: targetPlatforms[0] } : {}),
   });
 
@@ -164,21 +163,25 @@ export default function StageTwoPage({ session, onBack, onSignOut, onHistory, on
   const release = (k) => { firing.current.delete(k); };
 
   const generate = async () => {
-    const hasPhotos = files.some((f) => f.raw?.type?.startsWith('image/'));
-    if (busy || regen || (!brief.trim() && !hasPhotos) || !targetPlatforms.length || !claim('gen')) return;
-    setBusy(true); setAiMsg(''); setGenStep(0);
-    const tick = setInterval(() => setGenStep((s) => (s + 1) % GEN_STEPS.length), 900);
+    const hasMedia = files.length > 0;
+    if (busy || regen || (!brief.trim() && !(analysis === 'analyze' && hasMedia)) || !targetPlatforms.length || !claim('gen')) return;
+    setBusy(true); setAiMsg('');
     try {
       const data = await requestCaptions();
       const mapped = mapResponse(data);
       applyMapped(mapped, targetPlatforms);
       logCaptions({ brand: brandLabel, entries: targetPlatforms.map((pid) => ({ platform: pid, text: composeOutput(pid, mapped[pid]) })) });
-      say('Done — review each platform card below. Edit anything, it saves.', 'ok');
+      const saved = data.captionMemoryStatus === 'saved'
+        ? 'All generated captions were saved to your private account memory; reviewed captions will guide future examples.'
+        : data.captionMemoryStatus === 'unavailable'
+          ? 'Your captions are in local History, but account learning could not confirm a save.'
+          : 'Your captions are saved in local History. Opt in to personalisation to save and reuse account examples.';
+      const mediaNote = data.videoAnalysisWarning ? ` Video speech could not be analyzed: ${data.videoAnalysisWarning}` : '';
+      say(`Done — review each platform card below. ${saved}${mediaNote}`, data.captionMemoryStatus === 'unavailable' || !!data.videoAnalysisWarning ? 'err' : 'ok');
     } catch (e) {
       say(e.message || 'Generation failed.', 'err');
     } finally {
       release('gen');
-      clearInterval(tick);
       setBusy(false);
     }
   };
@@ -187,15 +190,20 @@ export default function StageTwoPage({ session, onBack, onSignOut, onHistory, on
   // that card changes. An empty answer keeps the old card, never wipes it.
   const [regen, setRegen] = useState('');
   const regenOne = async (pid) => {
-    const hasPhotos = files.some((f) => f.raw?.type?.startsWith('image/'));
-    if (busy || regen || (!brief.trim() && !hasPhotos) || !claim(`regen:${pid}`)) return;
+    const hasMedia = files.length > 0;
+    if (busy || regen || (!brief.trim() && !(analysis === 'analyze' && hasMedia)) || !claim(`regen:${pid}`)) return;
     setRegen(pid); setAiMsg('');
     try {
       const data = await requestCaptions(pid);
       const mapped = mapResponse(data);
       applyMapped(mapped, [pid]);
       logCaptions({ brand: brandLabel, entries: [{ platform: pid, text: composeOutput(pid, mapped[pid]) }] });
-      say(`Regenerated ${pid} — review the card.`, 'ok');
+      const saved = data.captionMemoryStatus === 'saved'
+        ? 'Saved to your account memory.'
+        : data.captionMemoryStatus === 'unavailable'
+          ? 'Account memory could not confirm the save.'
+          : 'Saved in local History; personalisation memory is off.';
+      say(`Regenerated ${pid} — review the card. ${saved}`, data.captionMemoryStatus === 'unavailable' ? 'err' : 'ok');
     } catch (e) {
       say(e.message || 'Regeneration failed.', 'err');
     } finally {
@@ -257,15 +265,18 @@ export default function StageTwoPage({ session, onBack, onSignOut, onHistory, on
           <PromptBuilder
             brief={brief} setBrief={setBrief}
             tone={tone} setTone={setTone} emoji={emoji} setEmoji={setEmoji} length={length} setLength={setLength}
-            busy={busy} canGenerate={(!!brief.trim() || files.some((f) => f.raw?.type?.startsWith('image/'))) && !!targetPlatforms.length} onGenerate={generate}
+            busy={busy} analysis={analysis} setAnalysis={setAnalysis}
+            canGenerate={(!!brief.trim() || (analysis === 'analyze' && files.length > 0)) && !!targetPlatforms.length} onGenerate={generate}
           />
           {!targetPlatforms.length && (
             <p className="s2-msg err">No platforms from Stage 1 — go back and finish Stage 1 first.</p>
           )}
           {busy && (
             <div className="s2-status" aria-live="polite">
-              <div className="s2-bar"><i style={{ width: `${((genStep + 1) / GEN_STEPS.length) * 100}%` }} /></div>
-              <span>{GEN_STEPS[genStep]}</span>
+              <div className="s2-bar"><i /></div>
+              <span>{analysis === 'analyze'
+                ? files.some((f) => f.raw?.type?.startsWith('video/')) ? 'Analyzing media and transcribing video audio… This can take longer.' : 'Analyzing your photos and writing captions…'
+                : 'Writing captions…'}</span>
             </div>
           )}
           {!busy && aiMsg && (

@@ -5,6 +5,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import multer from 'multer';
+import { transcribeVideo } from './video-analysis.js';
 import os from 'node:os';
 import fs from 'node:fs/promises';
 import path from 'node:path';
@@ -137,8 +138,9 @@ app.post('/api/storage/upload', requireUser, parseStorageUpload, async (req, res
 // per-image analysis payload limit, not a posting/media-storage file limit.
 const aiImageUpload = multer({
   dest: path.join(os.tmpdir(), 'driftpost-ai-images'),
-  limits: { fileSize: 2 * 1024 * 1024, files: 4, fields: 20, fieldSize: 16 * 1024 },
-  fileFilter: (_req, file, cb) => cb(null, ['image/jpeg', 'image/png'].includes(file.mimetype)),
+  limits: { fileSize: 500 * 1024 * 1024, files: 5, fields: 20, fieldSize: 16 * 1024 },
+  fileFilter: (_req, file, cb) => cb(null,
+    ['image/jpeg', 'image/png'].includes(file.mimetype) || /^video\//.test(file.mimetype)),
 });
 
 app.use(express.json({ limit: '1mb' }));
@@ -289,10 +291,31 @@ app.delete('/api/account', requireUser, limit({ windowMs: 60 * 1000, max: 5, key
 
 // --- AI captions (Grok + local brand memory, server-side key) ---
 app.post('/api/ai/captions', requireUser, aiLimit, (req, res, next) => {
-  if (req.is('multipart/form-data')) return aiImageUpload.array('images', 4)(req, res, next);
+  if (req.is('multipart/form-data')) return aiImageUpload.fields([
+    { name: 'images', maxCount: 4 }, { name: 'video', maxCount: 1 },
+  ])(req, res, next);
   next();
 }, async (req, res) => {
+  const uploads = [...(req.files?.images || []), ...(req.files?.video || [])];
   try {
+    const imageFiles = req.files?.images || [];
+    const videoFile = req.files?.video?.[0] || null;
+    if (imageFiles.some((file) => file.size > 2 * 1024 * 1024)) {
+      return res.status(413).json({ error: 'Each image for caption analysis must be 2 MB or smaller.' });
+    }
+    let transcript = '';
+    let transcriptLanguage = null;
+    let videoAnalysisWarning = '';
+    if (videoFile) {
+      try {
+        const speech = await transcribeVideo(videoFile.path, videoFile.originalname, videoFile.mimetype);
+        transcript = speech.text;
+        transcriptLanguage = speech.language;
+      } catch (error) {
+        videoAnalysisWarning = String(error?.message || 'Audio transcription failed').slice(0, 240);
+        console.warn('[ai] video transcription failed:', videoAnalysisWarning);
+      }
+    }
     const brandLabel = String(req.body?.brand || '');
     // Resolved once and reused: the brand's confirmed contacts are the
     // allow-list that stops PII scrubbing from deleting a public business
@@ -319,16 +342,16 @@ app.post('/api/ai/captions', requireUser, aiLimit, (req, res, next) => {
       length: req.body?.length,
       only: req.body?.only,
       learned,
-      images: await Promise.all((req.files || []).map(async (file) => ({
+      transcript,
+      images: await Promise.all(imageFiles.map(async (file) => ({
         name: file.originalname,
         mimetype: file.mimetype,
         base64: (await fs.readFile(file.path)).toString('base64'),
       }))),
     });
-    res.json(out);
-    // Store after responding: learning must never delay or fail a generation.
-    // Guarded separately because the response is already sent, so re-entering
-    // the outer catch would try to write headers a second time.
+    // Persist before returning so an immediate approve/publish action cannot
+    // race the insert and lose its feedback. This is still opt-in and best-effort.
+    let captionMemoryStatus = 'disabled';
     try {
       const c = out?.captions || out;
       const entries = [
@@ -341,22 +364,26 @@ app.post('/api/ai/captions', requireUser, aiLimit, (req, res, next) => {
         .map(([platform, body]) => ({ platform, body }));
       // Stored per user, never in the shared brand files: one account's writing
       // must not become another account's default.
-      await recordGeneration(supabase, {
+      const optedIn = await hasPersonalisationConsent(supabase, req.user.id);
+      if (optedIn) captionMemoryStatus = 'unavailable';
+      const saved = await recordGeneration(supabase, {
         userId: req.user.id,
         brandLabel,
         brand: brandRecord,
         brief: req.body?.summary,
         settings: { tone: req.body?.tone, emoji: req.body?.emoji, length: req.body?.length },
       }, entries);
+      if (optedIn) captionMemoryStatus = saved.length === entries.length && entries.length > 0 ? 'saved' : 'unavailable';
     } catch {
-      // Memory is best-effort; the caption is already delivered.
+      // Memory is best-effort; generation can continue if storage is unavailable.
     }
+    res.json({ ...out, captionMemoryStatus, transcriptLanguage, videoAnalysisWarning });
   } catch (e) {
     const msg = String(e.message || 'AI failed');
-    const code = /credits/i.test(msg) ? 402 : /configured/i.test(msg) ? 503 : 500;
+    const code = /credits/i.test(msg) ? 402 : /configured/i.test(msg) ? 503 : /transcription|video audio/i.test(msg) ? 502 : 500;
     res.status(code).json({ error: msg });
   } finally {
-    await Promise.all((req.files || []).map((file) => fs.unlink(file.path).catch(() => {})));
+    await Promise.all(uploads.map((file) => fs.unlink(file.path).catch(() => {})));
   }
 });
 

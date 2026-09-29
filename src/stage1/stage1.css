@@ -15,6 +15,7 @@
 .s1-step { min-width: 0; }
 .s1-step small { overflow-wrap: break-word; }
 @media (max-width: 720px) { .s1-step small { font-size: 10.5px; line-height: 1.35; } }
+@media (min-width: 1280px) { .stage1-in { max-width: min(1720px, 94vw); } }
 .stage1-top { display: flex; justify-content: flex-end; gap: 4px; flex-wrap: wrap; }
 .stage1-signout { background: none; border: 0; color: var(--faint); font-size: 12px; cursor: pointer; padding: 8px 4px; }
 .stage1-signout:hover { color: var(--ink); text-decoration: underline; }
@@ -164,3 +165,5 @@
 @media (prefers-reduced-motion: reduce) {
   .stage1, .stage1 *, .s1-overlay, .s1-overlay *, .continue-bar, .continue-bar * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }
+
+@media (min-width: 1280px) { .s1-modal { width: min(1040px, 100%); } }

@@ -364,7 +364,7 @@ function Landing({ onEnter, session, pubPage, setPubPage }) {
             <button key={p.id} className={pubPage === p.id ? 'on' : ''} onClick={() => setPubPage(p.id)}>{p.label}</button>
           ))}
         </div>
-        <button className="skew-btn grad" onClick={onEnter}><span>{session ? 'Enter console ’' : 'Get started ’'}</span></button>
+        <button className="skew-btn grad" onClick={onEnter}><span>{session ? 'Enter console' : 'Get started ’'}</span></button>
       </nav>
       {pubPage === 'home' ? <>
       <header className="landing-in">
@@ -372,7 +372,7 @@ function Landing({ onEnter, session, pubPage, setPubPage }) {
         <h1><SpotLine text="Post once." /><br /><SpotLine text="Everywhere." /></h1>
         <p>One screen. Four platforms. Every brand in your pocket.</p>
         <div className="landing-cta">
-          <button className="skew-btn grad" onClick={onEnter}><span>{session ? 'Enter console ’' : 'Get started free ’'}</span></button>
+          <button className="skew-btn grad" onClick={onEnter}><span>{session ? 'Enter console' : 'Get started free ’'}</span></button>
         </div>
         <div className="social-dock">
           {dock.map((d) => (
@@ -390,7 +390,7 @@ function Landing({ onEnter, session, pubPage, setPubPage }) {
         <div className="scroll-hint">Scroll for the tour “</div>
       </header>
       <div className="hstrip-wrap">
-        <div className="hstrip-label">Drag sideways — every platform, covered “</div>
+        <div className="hstrip-label">Every platform, covered</div>
         <div className="hstrip">
           {cards.map((c) => (
             <div key={c.id} className="hcard">
@@ -419,7 +419,7 @@ function Landing({ onEnter, session, pubPage, setPubPage }) {
       </> : <DocPage page={pubPage} />}
       <footer className="land-foot">
         <h2>Stop opening four apps.</h2>
-        <button className="skew-btn grad" onClick={onEnter}><span>{session ? 'Enter console ’' : 'Start free ’'}</span></button>
+        <button className="skew-btn grad" onClick={onEnter}><span>{session ? 'Enter console' : 'Start free ’'}</span></button>
         <div className="land-fine">
           <span>Free while in beta · Your logins never leave the platforms · © {new Date().getFullYear()} Driftpost</span>
           <span className="land-legal"><button className="link" onClick={() => setPubPage('terms')}>Terms</button> · <button className="link" onClick={() => setPubPage('privacy')}>Privacy</button> · <button className="link" onClick={() => setPubPage('cookies')}>Cookies</button> · <button className="link" onClick={() => setPubPage('acceptable-use')}>Acceptable Use</button> · <button className="link" onClick={() => setPubPage('ai-disclaimer')}>AI Disclaimer</button> · <button className="link" onClick={() => setPubPage('platforms-disclaimer')}>Platforms</button> · <button className="link" onClick={() => setPubPage('copyright')}>Copyright</button> · <button className="link" onClick={() => setPubPage('refunds')}>Refunds</button> · <button className="link" onClick={() => setPubPage('data-deletion')}>Data Deletion</button> · <button className="link" onClick={() => setPubPage('security')}>Security</button> · <button className="link" onClick={() => setPubPage('contact')}>Contact</button></span>

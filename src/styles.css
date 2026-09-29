@@ -426,8 +426,8 @@ html, body { overflow-x: clip; max-width: 100%; }
 @keyframes bob { 0%, 100% { transform: translateY(0); opacity: 0.7; } 50% { transform: translateY(6px); opacity: 1; } }
 .hstrip-wrap { position: relative; z-index: 2; padding: 10px 0 8px; }
 .hstrip-label { font-family: var(--mono); font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: #8b8b8b; text-align: center; margin-bottom: 12px; }
-.hstrip { display: flex; gap: 14px; overflow-x: auto; padding: 6px 28px 18px; scroll-snap-type: x mandatory; scrollbar-width: thin; }
-.hcard { flex: 0 0 270px; scroll-snap-align: start; background: #0b0b0e; border: 1px solid #26262b; padding: 22px; transition: transform 0.35s ease, border-color 0.35s ease; }
+.hstrip { width: min(100%, 1880px); margin: 0 auto; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); align-items: stretch; gap: clamp(10px, 1vw, 18px); overflow: visible; padding: 6px clamp(12px, 2vw, 36px) 18px; }
+.hcard { min-width: 0; display: flex; flex-direction: column; justify-content: center; background: #0b0b0e; border: 1px solid #26262b; padding: clamp(16px, 1.5vw, 26px); transition: transform 0.35s ease, border-color 0.35s ease; }
 .hcard:hover { transform: scale(1.03); border-color: #8b5cf6; }
 .hcard.hot { background: linear-gradient(135deg, #8b5cf6, #3b82f6 55%, #38bdf8); border: none; }
 .hcard.hot b, .hcard.hot p { color: #fff; }
@@ -454,6 +454,22 @@ html, body { overflow-x: clip; max-width: 100%; }
 .landing h1 { font-size: clamp(44px, 8vw, 88px); }
 .landing img.logo-img { height: 64px; }
 
+@media (max-width: 1100px) {
+  .hstrip { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .hcard:nth-child(4) { grid-column: 2; }
+  .hcard:last-child { grid-column: 3; }
+}
+@media (max-width: 760px) {
+  .hstrip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .hcard:nth-child(4) { grid-column: auto; }
+  .hcard:last-child { grid-column: 1 / -1; justify-self: center; width: min(100%, 540px); }
+}
+@media (max-width: 520px) {
+  .hstrip { grid-template-columns: minmax(0, 1fr); padding-inline: 16px; }
+  .hcard:last-child { grid-column: auto; width: 100%; }
+  .hcard { min-height: 176px; }
+}
+
 @media (max-width: 760px) {
   .zig-row, .zig-row.flip .zig-copy, .zig-row.flip .zig-art { grid-template-columns: 1fr; }
   .zig-row.flip .zig-copy { order: 1; }
@@ -475,6 +491,11 @@ html, body { overflow-x: clip; max-width: 100%; }
 }
 html, body { overflow-x: clip; max-width: 100%; }
 .doc-wrap { overflow-wrap: break-word; }
+
+@media (min-width: 1600px) {
+  .page { width: 100%; max-width: min(1760px, calc(100% - 48px)); padding-inline: clamp(32px, 3vw, 60px); }
+  .top { padding-inline: clamp(32px, 3vw, 60px); }
+}
 
 @media (max-width: 1200px) { .phones { grid-template-columns: repeat(2, 1fr); } .share-row { grid-template-columns: 1fr; } }
 @media (max-width: 900px) {

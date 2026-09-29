@@ -55,6 +55,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onHistory, 
   const [busy, setBusy] = useState({});
   const [regen, setRegen] = useState('');
   const [brief] = useState(() => load('driftpost-stage2-brief', ''));
+  const [analysisMode] = useState(() => load('driftpost-stage2-analysis', 'fast'));
   const [success, setSuccess] = useState(null);
   const [schedOpen, setSchedOpen] = useState(false);
   const [schedBusy, setSchedBusy] = useState(false);
@@ -295,17 +296,18 @@ export default function StageThreePage({ session, onBack, onSignOut, onHistory, 
   // Reviewing a card is the approval signal: the server keeps this caption as a
   // reference so the next generation for the same brand writes closer to it.
   const onReviewed = (pid) => {
-    approveCaption(session.access_token, { brand: brandLabel, platform: pid, caption: composeOutput(pid, outputs[pid] || {}) });
+    approveCaption(session.access_token, { brand: brandLabel, platform: pid, caption: composeOutput(pid, outputs[pid] || {}) }).catch(() => {});
     setReviewed((r) => { const n = { ...r, [pid]: true }; save('driftpost-stage3-reviewed', n); return n; });
   };
 
   const regenOne = async (pid) => {
-    if (busy[pid] || regen || (!brief.trim() && !files.some((f) => f.raw?.type?.startsWith('image/')))) return;
+    if (busy[pid] || regen || (!brief.trim() && !(analysisMode === 'analyze' && files.length))) return;
     setRegen(pid);
     try {
       const data = await requestCaptions(session.access_token, {
         brief, brand: brandLabel, files,
         tone: s1.tone, emoji: s1.emoji, length: s1.length,
+        analysis: analysisMode,
         only: pid,
       });
       const mapped = mapResponse(data);

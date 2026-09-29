@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import BrandIcon from '../brand.jsx';
+import { normalizeSearchText } from '../lib.js';
 
 const ORDER = ['instagram', 'facebook', 'youtube', 'x'];
 
 // Option 1 tool: pick one brand that already holds several platform accounts.
-export default function BrandSelectorModal({ brands, activeKey, onPick, onClose }) {
+export default function BrandSelectorModal({ brands, connections, activeKey, onPick, onClose }) {
   const [q, setQ] = useState('');
   useEffect(() => {
     const h = (e) => { if (e.key === 'Escape') onClose(); };
@@ -12,8 +13,12 @@ export default function BrandSelectorModal({ brands, activeKey, onPick, onClose 
     return () => window.removeEventListener('keydown', h);
   }, [onClose]);
 
-  const needle = q.trim().toLowerCase();
-  const list = needle ? brands.filter((b) => b.label.toLowerCase().includes(needle)) : brands;
+  const needle = normalizeSearchText(q);
+  const accountNames = new Map((connections || []).map((c) => [c.id, c.account_name || '']));
+  const list = needle ? brands.filter((b) => {
+    const names = [b.label, ...Object.values(b.map || {}).map((id) => accountNames.get(id) || '')];
+    return names.some((name) => normalizeSearchText(name).includes(needle));
+  }) : brands;
 
   return (
     <div className="s1-overlay" onClick={onClose}>

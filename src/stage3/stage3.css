@@ -13,6 +13,7 @@
 }
 [data-theme="light"] .stage3 { --acc: #5b4fd6; --acc-soft: #5b4fd614; --ok: #047857; }
 .stage3-in { max-width: 1020px; margin: 0 auto; padding: 16px 20px 200px; min-width: 0; }
+@media (min-width: 1280px) { .stage3-in { max-width: min(1760px, 94vw); } }
 .s3-top { display: flex; align-items: center; justify-content: space-between; }
 .s3-back, .s3-signout { background: none; border: 0; color: var(--faint); font-size: 12.5px; font-weight: 600; cursor: pointer; padding: 8px 4px; }
 .s3-back:hover, .s3-signout:hover { color: var(--ink); }

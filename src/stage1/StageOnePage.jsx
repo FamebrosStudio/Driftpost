@@ -274,7 +274,7 @@ export default function StageOnePage({ session, onSignOut, onNext, onHistory, on
       <ContinueButton disabled={!valid} saved={savedTick} onClick={cont} />
       {brandOpen && (
         <Suspense fallback={null}>
-          <BrandSelectorModal brands={brands} activeKey={brandKey} onPick={chooseBrand} onClose={() => setBrandOpen(false)} />
+          <BrandSelectorModal brands={brands} connections={connections} activeKey={brandKey} onPick={chooseBrand} onClose={() => setBrandOpen(false)} />
         </Suspense>
       )}
       {builderOpen && (
