@@ -4,7 +4,8 @@
 .ws-wordmark img.logo-img { width: 168px; height: auto; max-height: 44px; object-fit: contain; }
 .ws-nav { display: flex; align-items: stretch; align-self: stretch; gap: 3px; flex: 1; }
 .ws-nav button { position: relative; display: inline-flex; align-items: center; gap: 8px; padding: 0 12px; border: 0; background: transparent; color: var(--muted); font-size: 13px; font-weight: 550; white-space: nowrap; transition: color .18s ease, background .18s ease; }
-.ws-nav button > span { font-size: 17px; line-height: 1; color: var(--faint); }
+.ws-nav button > span { display: inline-flex; font-size: 17px; line-height: 1; color: var(--faint); }
+.ws-nav button > span svg { display: block; }
 .ws-nav button:hover { color: var(--ink); background: var(--hover); }
 .ws-nav button.active { color: var(--ink); }
 .ws-nav button.active::after { content: ''; position: absolute; height: 2px; bottom: 0; left: 12px; right: 12px; background: var(--go); }
@@ -60,7 +61,9 @@
 .ws-empty.compact { min-height: 92px; align-items: flex-start; text-align: left; }
 .ws-quick-panel h2 { margin-bottom: 9px; }
 .ws-quick-panel > button { display: flex; align-items: center; gap: 11px; width: 100%; padding: 12px 0; border: 0; border-top: 1px solid var(--line); background: transparent; text-align: left; }
-.ws-quick-icon { width: 31px; height: 31px; flex: 0 0 auto; display: grid; place-items: center; border: 1px solid var(--line); background: var(--panel2); color: var(--muted); font-size: 16px; }
+.ws-quick-icon { width: 31px; height: 31px; flex: 0 0 auto; display: grid; place-items: center; border: 1px solid var(--line); background: var(--panel2); color: var(--muted); }
+.ws-quick-panel > button > i { display: inline-flex; }
+.ws-primary > svg, .ws-secondary > svg, .ws-text-button > svg, .ws-stat > button > svg, .ws-empty button > svg { vertical-align: middle; }
 .ws-quick-panel > button > span:nth-child(2) { flex: 1; }
 .ws-quick-panel b { display: block; font-size: 11px; }
 .ws-quick-panel small { display: block; margin-top: 3px; color: var(--faint); font-size: 10px; }
@@ -116,7 +119,7 @@
 .ws-bar i { height: 100%; min-width: 2px; display: block; background: var(--go); }
 .ws-platform-row > b { color: var(--ink); font-size: 10px; text-align: right; }
 .ws-insight { display: flex; align-items: center; gap: 14px; margin-top: 14px; padding: 16px 19px; }
-.ws-insight-mark { width: 31px; height: 31px; display: grid; place-items: center; flex: 0 0 auto; color: var(--go); background: var(--panel2); font-size: 16px; }
+.ws-insight-mark { width: 31px; height: 31px; display: grid; place-items: center; flex: 0 0 auto; color: var(--go); background: var(--panel2); }
 .ws-insight > div { flex: 1; }
 .ws-insight b { font-size: 11px; }
 .ws-insight p { margin: 4px 0 0; color: var(--muted); font-size: 10px; line-height: 1.5; }
