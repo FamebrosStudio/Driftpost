@@ -4,6 +4,7 @@ import WelcomePage from './connect/WelcomePage.jsx';
 import StageOnePage from './stage1/StageOnePage.jsx';
 import StageTwoPage from './stage2/StageTwoPage.jsx';
 import StageThreePage from './stage3/StageThreePage.jsx';
+import PageLoading from './PageLoading.jsx';
 
 const HistoryPage = lazy(() => import('./history/HistoryPage.jsx'));
 
@@ -50,7 +51,7 @@ export default function Console({ session, onSwitchAccount, onSignOut }) {
   };
   if (view === 'history') {
     return (
-      <Suspense fallback={null}>
+      <Suspense fallback={<PageLoading label="Loading History…" />}>
         <HistoryPage session={session} onBack={() => setView('flow')} />
       </Suspense>
     );

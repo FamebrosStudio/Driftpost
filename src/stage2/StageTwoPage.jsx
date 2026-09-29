@@ -11,6 +11,7 @@ import { requestCaptions as fetchCaptions, mapResponse } from './ai.js';
 import CrosspostToggle from './CrosspostToggle.jsx';
 import OutputContainer from './OutputContainer.jsx';
 import ContinueButton from './ContinueButton.jsx';
+import PageLoading from '../PageLoading.jsx';
 import './stage2.css';
 
 const MediaEditor = lazy(() => import('./MediaEditor.jsx'));
@@ -298,7 +299,7 @@ export default function StageTwoPage({ session, onBack, onSignOut, onHistory, on
       </div>
       <ContinueButton disabled={!canContinue} saved={saveTick} onClick={cont} />
       {editing >= 0 && files[editing] && (
-        <Suspense fallback={null}>
+        <Suspense fallback={<PageLoading label="Loading media editor…" />}>
           <MediaEditor entry={files[editing]} onClose={() => setEditing(-1)} onApply={(f) => applyEditAt(editing, f)} />
         </Suspense>
       )}

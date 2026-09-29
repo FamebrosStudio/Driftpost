@@ -55,7 +55,14 @@
     <title>Driftpost — Publish Everywhere</title>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <main role="status" aria-live="polite" style="min-height:100vh;display:grid;place-content:center;justify-items:center;gap:14px;padding:24px;background:#10141b;color:#f4f6fb;font:500 15px system-ui,sans-serif;text-align:center">
+        <span style="width:28px;height:28px;border:3px solid #43536f;border-top-color:#8b5cf6;border-radius:50%;animation:driftpost-spin .8s linear infinite"></span>
+        <strong>Driftpost is loading…</strong>
+        <p style="margin:0;color:#c3ccd9">If this page stays blank, <a href="/" style="color:#c4b5fd">reload Driftpost</a>.</p>
+      </main>
+    </div>
+    <style>@keyframes driftpost-spin{to{transform:rotate(360deg)}}</style>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

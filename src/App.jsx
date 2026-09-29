@@ -2,15 +2,9 @@
 import { useSession, getSupabase, pokeSession } from './session.js';
 import BrandIcon from './brand.jsx';
 import ConsentGate from './connect/ConsentGate.jsx';
+import PageLoading from './PageLoading.jsx';
 
 const Console = lazy(() => import('./console.jsx'));
-
-function Loader() {
-  return <div className="loader-wrap"><div className="bounce"><span className="circle" /><span className="circle" /><span className="circle" /><span className="shadow" /><span className="shadow" /><span className="shadow" /></div></div>;
-}
-
-
-
 
 function SpotLine({ text }) {
   const ref = useRef(null);
@@ -286,7 +280,13 @@ const PUB_CONTENT = {
 
 function DocPage({ page }) {
   const c = PUB_CONTENT[page];
-  if (!c) return null;
+  if (!c) return (
+    <div className="doc-wrap" role="status">
+      <div className="landing-kicker">Driftpost</div>
+      <h1 className="doc-title">This page isn’t available.</h1>
+      <p className="doc-intro">The page may have moved. Return to the home page and choose another section.</p>
+    </div>
+  );
   return (
     <div className="doc-wrap">
       <div className="landing-kicker">{c.kicker}</div>
@@ -532,9 +532,10 @@ export default function App() {
   // by clicking "Enter console" from there.
   if (entry === 'landing') return <Landing session={session} pubPage={pubPage} setPubPage={setPubPage} onEnter={() => session ? setEntry('console') : setEntry('auth')} />;
   if (entry === 'auth') return <Auth mode={mode} setMode={setMode} onBack={() => setEntry('landing')} />;
+  if (!session) return <Auth mode={mode} setMode={setMode} onBack={() => setEntry('landing')} />;
   // console
   return (
-    <Suspense fallback={<Loader />}>
+    <Suspense fallback={<PageLoading label="Opening your workspace…" />}>
       <ConsentGate
         session={session}
         onOpenPage={(p) => { setPubPageState(p); setEntry('landing'); }}

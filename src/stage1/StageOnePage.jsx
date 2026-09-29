@@ -1,6 +1,7 @@
 import React, { Suspense, lazy, useEffect, useMemo, useState } from 'react';
 import { api, groupBrands } from '../lib.js';
 import BrandIcon from '../brand.jsx';
+import PageLoading from '../PageLoading.jsx';
 import ProgressIndicator from './ProgressIndicator.jsx';
 import SetupCard from './SetupCard.jsx';
 import PlatformSelector from './PlatformSelector.jsx';
@@ -273,12 +274,12 @@ export default function StageOnePage({ session, onSignOut, onNext, onHistory, on
       </div>
       <ContinueButton disabled={!valid} saved={savedTick} onClick={cont} />
       {brandOpen && (
-        <Suspense fallback={null}>
+        <Suspense fallback={<PageLoading label="Loading brand selector…" />}>
           <BrandSelectorModal brands={brands} connections={connections} activeKey={brandKey} onPick={chooseBrand} onClose={() => setBrandOpen(false)} />
         </Suspense>
       )}
       {builderOpen && (
-        <Suspense fallback={null}>
+        <Suspense fallback={<PageLoading label="Loading account groups…" />}>
           <GroupBuilder connections={connections} token={session.access_token} onConnectionsChange={setConnections} onSave={addGroup} onClose={() => setBuilderOpen(false)} />
         </Suspense>
       )}
