@@ -28,7 +28,7 @@ function Icon({ name, size = 16 }) {
   return <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true" focusable="false" {...common}>{shapes[name] || shapes.sparkles}</svg>;
 }
 
-export function WorkspaceNav({ page, onNavigate, email }) {
+export function WorkspaceNav({ page, onNavigate, email, onSignOut }) {
   return <header className="ws-topbar">
     <button type="button" className="ws-wordmark" onClick={() => onNavigate('home')} aria-label="Driftpost overview">
       <img className="logo-img logo-d" src="/logo-dark-620.png" srcSet="/logo-dark-620.png 620w, /logo-dark.png 1984w" sizes="168px" width="1984" height="512" decoding="async" alt="Driftpost" />
@@ -37,12 +37,12 @@ export function WorkspaceNav({ page, onNavigate, email }) {
     <nav className="ws-nav" aria-label="Main navigation">
       {NAV.map(([id, label, icon]) => <button key={id} type="button" className={page === id ? 'active' : ''} onClick={() => onNavigate(id)}><span><Icon name={icon} size={16} /></span>{label}</button>)}
     </nav>
-    <div className="ws-user"><span className="ws-user-dot">{(email || 'U')[0].toUpperCase()}</span><span>{email || 'Workspace'}</span></div>
+    <div className="ws-user"><span className="ws-user-dot">{(email || 'U')[0].toUpperCase()}</span><span>{email || 'Workspace'}</span>{onSignOut && <button type="button" className="ws-signout" onClick={onSignOut}>Sign out</button>}</div>
   </header>;
 }
 
-function PageFrame({ page, onNavigate, email, eyebrow, title, intro, children, action }) {
-  return <div className="ws"><WorkspaceNav page={page} onNavigate={onNavigate} email={email} />
+function PageFrame({ page, onNavigate, email, onSignOut, eyebrow, title, intro, children, action }) {
+  return <div className="ws"><WorkspaceNav page={page} onNavigate={onNavigate} email={email} onSignOut={onSignOut} />
     <main className="ws-main"><div className="ws-heading"><div><span className="ws-eyebrow">{eyebrow}</span><h1>{title}</h1>{intro && <p>{intro}</p>}</div>{action && <div className="ws-heading-action">{action}</div>}</div>{children}</main>
   </div>;
 }
@@ -55,39 +55,38 @@ function PlatformBars({ posts }) {
   </div>)}</div>;
 }
 
-export function DashboardPage({ session, onNavigate, onCreate }) {
+export function DashboardPage({ session, onNavigate, onCreate, onSignOut }) {
   const [connections, setConnections] = useState(null);
   const [schedules, setSchedules] = useState(null);
   useEffect(() => {
     let active = true;
-    Promise.allSettled([api('/api/connections', session.access_token), listSchedules(session.access_token, { from: new Date().toISOString() })])
-      .then(([a, b]) => { if (!active) return; setConnections(a.status === 'fulfilled' ? a.value.connections || [] : []); setSchedules(b.status === 'fulfilled' ? b.value : []); });
+    api('/api/connections', session.access_token)
+      .then((data) => { if (active) setConnections(data.connections || []); })
+      .catch(() => { if (active) setConnections([]); });
+    listSchedules(session.access_token, { from: new Date().toISOString() })
+      .then((data) => { if (active) setSchedules(data); })
+      .catch(() => { if (active) setSchedules([]); });
     return () => { active = false; };
   }, [session.access_token]);
   const posts = useMemo(readPostLog, []);
   const upcoming = (schedules || []).filter((s) => s.status === 'scheduled').slice(0, 4);
-  return <PageFrame page="home" onNavigate={onNavigate} email={session.user?.email} eyebrow="Your workspace" title={`Good to see you, ${greetingName(session.user?.email)}.`} intro="A clear view of what’s going out and what needs your attention." action={<button className="ws-primary" onClick={onCreate}><Icon name="plus" size={15} /> Create a post</button>}>
+  return <PageFrame page="home" onNavigate={onNavigate} email={session.user?.email} onSignOut={onSignOut} eyebrow="Your workspace" title={`Good to see you, ${greetingName(session.user?.email)}.`} intro="A clear view of what’s going out and what needs your attention.">
     <section className="ws-welcome"><div><span className="ws-eyebrow">Publishing workspace</span><h2>Make room for the work.</h2><p>Plan your next post, pick a client, and publish across your connected channels.</p><button className="ws-primary" onClick={onCreate}>Start a post <Icon name="arrowRight" size={15} /></button></div><div className="ws-welcome-art" aria-hidden="true"><span><Icon name="sparkles" size={72} /></span><i /><b /></div></section>
     <div className="ws-stat-grid">
       <article className="ws-stat"><span>Connected accounts</span><strong>{connections === null ? '—' : connections.length}</strong><small>{connections?.length ? 'Ready to publish' : 'Connect your first channel'}</small><button onClick={() => onNavigate('accounts')}>Manage accounts <Icon name="arrowRight" size={13} /></button></article>
       <article className="ws-stat"><span>Scheduled posts</span><strong>{schedules === null ? '—' : schedules.filter((s) => s.status === 'scheduled').length}</strong><small>Waiting in your calendar</small><button onClick={() => onNavigate('calendar')}>Open calendar <Icon name="arrowRight" size={13} /></button></article>
       <article className="ws-stat"><span>Posts in this browser</span><strong>{posts.length}</strong><small>Saved publishing history</small><button onClick={() => onNavigate('analytics')}>View analytics <Icon name="arrowRight" size={13} /></button></article>
     </div>
-    <div className="ws-two-col">
+    <div className="ws-dashboard-grid">
       <section className="ws-panel"><div className="ws-panel-head"><div><span className="ws-eyebrow">Coming up</span><h2>Next on your calendar</h2></div><button className="ws-text-button" onClick={() => onNavigate('calendar')}>View calendar <Icon name="arrowRight" size={13} /></button></div>
         {upcoming.length ? <div className="ws-upcoming">{upcoming.map((item) => <div className="ws-upcoming-row" key={item.id}><span className="ws-icon"><BrandIcon id={item.platform} size={17} /></span><div><b>{platformName(item.platform)}</b><small>{item.body?.text || item.body?.caption || 'Scheduled post'}</small></div><time>{new Date(item.scheduled_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}<small>{new Date(item.scheduled_at).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })}</small></time></div>)}</div> : <div className="ws-empty"><span><Icon name="calendar" size={22} /></span><b>No upcoming posts</b><small>Your next scheduled post will show up here.</small><button onClick={() => onNavigate('calendar')}>Plan a post <Icon name="arrowRight" size={13} /></button></div>}
-      </section>
-      <section className="ws-panel ws-quick-panel"><span className="ws-eyebrow">Quick links</span><h2>Keep things moving</h2>
-        <button onClick={onCreate}><span className="ws-quick-icon"><Icon name="plus" /></span><span><b>Create a post</b><small>Write once, publish where it matters.</small></span><i><Icon name="arrowRight" size={14} /></i></button>
-        <button onClick={() => onNavigate('accounts')}><span className="ws-quick-icon"><Icon name="users" /></span><span><b>Manage accounts</b><small>Connect and organize your channels.</small></span><i><Icon name="arrowRight" size={14} /></i></button>
-        <button onClick={() => onNavigate('history')}><span className="ws-quick-icon"><Icon name="clock" /></span><span><b>Open history</b><small>Find past posts and saved captions.</small></span><i><Icon name="arrowRight" size={14} /></i></button>
       </section>
     </div>
     <footer className="ws-footnote">Your publishing details stay in your account. Overview metrics reflect the post history saved in this browser.</footer>
   </PageFrame>;
 }
 
-export function CalendarPage({ session, onNavigate, onCreate }) {
+export function CalendarPage({ session, onNavigate, onCreate, onSignOut }) {
   const [month, setMonth] = useState(() => { const d = new Date(); return new Date(d.getFullYear(), d.getMonth(), 1); });
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -110,7 +109,7 @@ export function CalendarPage({ session, onNavigate, onCreate }) {
   const dayRows = byDate[selected] || [];
   const changeMonth = (delta) => { const next = new Date(month.getFullYear(), month.getMonth() + delta, 1); setMonth(next); setSelected(localIso(next)); };
   const cancel = async (id) => { setBusy(id); try { await cancelSchedule(session.access_token, id); setRows((old) => old.filter((r) => r.id !== id)); setNotice('Scheduled post cancelled.'); } catch (e) { setNotice(e.message || 'Could not cancel this post.'); } finally { setBusy(''); } };
-  return <PageFrame page="calendar" onNavigate={onNavigate} email={session.user?.email} eyebrow="Plan ahead" title="Calendar" intro="See what’s scheduled and keep your publishing rhythm in view." action={<button className="ws-primary" onClick={onCreate}><Icon name="plus" size={15} /> Create a post</button>}>
+  return <PageFrame page="calendar" onNavigate={onNavigate} email={session.user?.email} onSignOut={onSignOut} eyebrow="Plan ahead" title="Calendar" intro="See what’s scheduled and keep your publishing rhythm in view." action={<button className="ws-primary" onClick={onCreate}><Icon name="plus" size={15} /> Create a post</button>}>
     <section className="ws-panel ws-calendar-panel"><div className="ws-calendar-toolbar"><div><h2>{month.toLocaleDateString(undefined, { month: 'long', year: 'numeric' })}</h2><span className="ws-legend"><i /> Scheduled</span></div><div className="ws-month-actions"><button aria-label="Previous month" onClick={() => changeMonth(-1)}><Icon name="arrowLeft" size={15} /></button><button onClick={() => { const now = new Date(); setMonth(new Date(now.getFullYear(), now.getMonth(), 1)); setSelected(localIso(now)); }}>Today</button><button aria-label="Next month" onClick={() => changeMonth(1)}><Icon name="arrowRight" size={15} /></button></div></div>
       <div className="ws-calendar-grid ws-weekdays">{['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((d) => <span key={d}>{d}</span>)}</div>
       <div className="ws-calendar-grid ws-days">{dates.map((date) => { const key = localIso(date); const items = byDate[key] || []; const today = key === localIso(new Date()); return <button key={key} className={`ws-day ${date.getMonth() === month.getMonth() ? '' : 'outside'} ${selected === key ? 'selected' : ''} ${today ? 'today' : ''}`} onClick={() => setSelected(key)}><span className="ws-day-number">{date.getDate()}</span>{items.slice(0, 2).map((item) => <span className={`ws-event ${item.status}`} key={item.id}><BrandIcon id={item.platform} size={12} /><b>{platformName(item.platform)}</b></span>)}{items.length > 2 && <small className="ws-more">+{items.length - 2} more</small>}</button>; })}</div>
@@ -123,7 +122,7 @@ export function CalendarPage({ session, onNavigate, onCreate }) {
   </PageFrame>;
 }
 
-export function AnalyticsPage({ session, onNavigate }) {
+export function AnalyticsPage({ session, onNavigate, onSignOut }) {
   const posts = useMemo(() => readPostLog().filter((p) => p && Number.isFinite(Number(p.at))).sort((a, b) => Number(b.at) - Number(a.at)), []);
   const [schedules, setSchedules] = useState([]);
   useEffect(() => { let active = true; listSchedules(session.access_token, { from: new Date().toISOString() }).then((data) => { if (active) setSchedules(data); }).catch(() => {}); return () => { active = false; }; }, [session.access_token]);
@@ -135,7 +134,7 @@ export function AnalyticsPage({ session, onNavigate }) {
   const activeDays = new Set(monthPosts.map((p) => new Date(Number(p.at)).toDateString())).size;
   const chart = Array.from({ length: 7 }, (_, i) => { const d = new Date(weekStart); d.setDate(weekStart.getDate() + i); const next = new Date(d); next.setDate(d.getDate() + 1); return { date: d, count: posts.filter((p) => Number(p.at) >= d.getTime() && Number(p.at) < next.getTime()).length }; });
   const max = Math.max(1, ...chart.map((d) => d.count));
-  return <PageFrame page="analytics" onNavigate={onNavigate} email={session.user?.email} eyebrow="Understand your cadence" title="Analytics" intro="A simple snapshot of your publishing activity." action={<button className="ws-secondary" onClick={() => onNavigate('history')}>View post history <Icon name="arrowRight" size={13} /></button>}>
+  return <PageFrame page="analytics" onNavigate={onNavigate} email={session.user?.email} onSignOut={onSignOut} eyebrow="Understand your cadence" title="Analytics" intro="A simple snapshot of your publishing activity." action={<button className="ws-secondary" onClick={() => onNavigate('history')}>View post history <Icon name="arrowRight" size={13} /></button>}>
     <div className="ws-stat-grid ws-analytics-stats"><article className="ws-stat"><span>Published this month</span><strong>{monthPosts.length}</strong><small>Posts recorded in this browser</small></article><article className="ws-stat"><span>Last 7 days</span><strong>{thisWeek}</strong><small>Published across your channels</small></article><article className="ws-stat"><span>Scheduled next</span><strong>{scheduled}</strong><small>Posts waiting to publish</small></article><article className="ws-stat"><span>Active publishing days</span><strong>{activeDays}</strong><small>Days with a saved post</small></article></div>
     <div className="ws-two-col ws-analytics-grid"><section className="ws-panel"><div className="ws-panel-head"><div><span className="ws-eyebrow">Recent activity</span><h2>Posts over the last 7 days</h2></div></div><div className="ws-chart" role="img" aria-label="Number of saved published posts per day for the last seven days">{chart.map((d) => <div className="ws-chart-day" key={d.date.toISOString()}><div className="ws-chart-track"><i style={{ height: `${Math.max(d.count ? 10 : 3, d.count / max * 100)}%` }} title={`${d.count} posts`} /></div><b>{d.count}</b><small>{d.date.toLocaleDateString(undefined, { weekday: 'short' })}</small></div>)}</div></section>
       <section className="ws-panel"><div className="ws-panel-head"><div><span className="ws-eyebrow">Channel mix</span><h2>Publishing by platform</h2></div></div><PlatformBars posts={posts} /></section>

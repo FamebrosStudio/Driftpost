@@ -37,7 +37,7 @@ const DEFAULT_CFG = {
 };
 const NAMES = { instagram: 'Instagram', facebook: 'Facebook', youtube: 'YouTube', x: 'X' };
 
-export default function StageThreePage({ session, onBack, onSignOut, onHistory, onHome, onNavigate, onDone }) {
+export default function StageThreePage({ session, onBack, onSignOut, onNavigate, onDone }) {
   const [connections, setConnections] = useState([]);
   const [files, setFiles] = useState([]);
   const [thumb, setThumb] = useState(null);
@@ -695,15 +695,10 @@ export default function StageThreePage({ session, onBack, onSignOut, onHistory, 
 
   return (
     <div className="stage3">
-      {onNavigate && <WorkspaceNav page="create" onNavigate={onNavigate} email={session.user?.email} />}
+      {onNavigate && <WorkspaceNav page="create" onNavigate={onNavigate} email={session.user?.email} onSignOut={onSignOut} />}
       <div className="stage3-in">
         <div className="s3-top">
           <button type="button" className="s3-back" onClick={onBack}>← Stage 2</button>
-          <span className="s3-top-right">
-            {onHome && <button type="button" className="s3-signout" onClick={onHome}>Overview</button>}
-            <button type="button" className="s3-signout" onClick={onHistory}>History</button>
-            <button type="button" className="s3-signout" onClick={onSignOut}>Sign out</button>
-          </span>
         </div>
         <header className="s3-head">
           <span className="s3-badge">Stage 3 of 3</span>

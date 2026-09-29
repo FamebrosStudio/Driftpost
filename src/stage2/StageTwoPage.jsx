@@ -32,7 +32,7 @@ function save(key, val) {
 
 
 
-export default function StageTwoPage({ session, onBack, onSignOut, onHistory, onHome, onNavigate, onNext }) {
+export default function StageTwoPage({ session, onBack, onSignOut, onNavigate, onNext }) {
   const [connections, setConnections] = useState([]);
   const [files, setFiles] = useState([]);
   const [brief, setBrief] = useState(() => load('driftpost-stage2-brief', ''));
@@ -232,15 +232,10 @@ export default function StageTwoPage({ session, onBack, onSignOut, onHistory, on
 
   return (
     <div className="stage2">
-      {onNavigate && <WorkspaceNav page="create" onNavigate={onNavigate} email={session.user?.email} />}
+      {onNavigate && <WorkspaceNav page="create" onNavigate={onNavigate} email={session.user?.email} onSignOut={onSignOut} />}
       <div className="stage2-in">
         <div className="s2-top">
           <button type="button" className="s2-back" onClick={onBack}>← Stage 1</button>
-          <span className="s2-top-right">
-            {onHome && <button type="button" className="s2-signout" onClick={onHome}>Overview</button>}
-            <button type="button" className="s2-signout" onClick={onHistory}>History</button>
-            <button type="button" className="s2-signout" onClick={onSignOut}>Sign out</button>
-          </span>
         </div>
         <header className="s2-head">
           <span className="s2-badge">Stage 2 of 3</span>

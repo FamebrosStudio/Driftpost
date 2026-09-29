@@ -35,7 +35,7 @@ function save(key, val) {
   try { localStorage.setItem(key, JSON.stringify(val)); } catch {}
 }
 
-export default function StageOnePage({ session, onSignOut, onNext, onHistory, onBackAccounts, onHome, onNavigate }) {
+export default function StageOnePage({ session, onNext, onNavigate, onSignOut }) {
   const [connections, setConnections] = useState([]);
   const [loading, setLoading] = useState(true);
   const [connsOk, setConnsOk] = useState(false);
@@ -213,14 +213,8 @@ export default function StageOnePage({ session, onSignOut, onNext, onHistory, on
 
   return (
     <div className="stage1">
-      {onNavigate && <WorkspaceNav page="create" onNavigate={onNavigate} email={session.user?.email} />}
+      {onNavigate && <WorkspaceNav page="create" onNavigate={onNavigate} email={session.user?.email} onSignOut={onSignOut} />}
       <div className="stage1-in">
-        <div className="stage1-top">
-          {onHome && <button type="button" className="stage1-signout" onClick={onHome}>⌂ Overview</button>}
-          {onBackAccounts && <button type="button" className="stage1-signout" onClick={onBackAccounts}>← Accounts</button>}
-          <button type="button" className="stage1-signout" onClick={onHistory}>History</button>
-          <button type="button" className="stage1-signout" onClick={onSignOut}>Sign out</button>
-        </div>
         <header className="stage1-head">
           <span className="stage1-badge">Stage 1 of 3</span>
           <h1>How do you want to organize your accounts?</h1>

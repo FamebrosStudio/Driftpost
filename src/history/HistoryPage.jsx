@@ -4,6 +4,7 @@ import { api } from '../lib.js';
 import { readDisconnectLog, removeDisconnectLog, readCaptionLog, readPostLog, removePostLog, updatePostLog } from './log.js';
 import { listSchedules, cancelSchedule } from '../lib.js';
 import './history.css';
+import { WorkspaceNav } from '../workspace/Workspace.jsx';
 
 const TABS = [
   { id: 'posted', label: 'Posted' },
@@ -258,16 +259,14 @@ export function CaptionsTab() {
   );
 }
 
-export default function HistoryPage({ session, onBack }) {
+export default function HistoryPage({ session, onNavigate, onSignOut }) {
   const [tab, setTab] = useState('posted');
   return (
+    <>
+    <WorkspaceNav page="history" onNavigate={onNavigate} email={session.user?.email} onSignOut={onSignOut} />
     <div className="hist">
       <div className="hist-in">
-        <div className="hist-top">
-          <button type="button" className="hist-back" onClick={onBack}>← Back</button>
-          <b>History</b>
-          <span style={{ width: 60 }} />
-        </div>
+        <div className="hist-heading"><h1>History</h1><p>Find published work, scheduled posts, saved captions and accounts.</p></div>
         <div className="hist-tabs" role="tablist" aria-label="History sections">
           {TABS.map((t) => (
             <button
@@ -288,5 +287,6 @@ export default function HistoryPage({ session, onBack }) {
         {tab === 'captions' && <CaptionsTab />}
       </div>
     </div>
+    </>
   );
 }

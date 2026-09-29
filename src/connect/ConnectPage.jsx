@@ -12,7 +12,7 @@ const HINTS = {
 
 const BrandDot = ({ pid }) => <BrandIcon id={pid} size={14} />;
 
-export default function ConnectPage({ session, onContinue, onHistory, onSignOut }) {
+export default function ConnectPage({ session, onContinue, onHistory, onSignOut, embedded = false }) {
   const [connections, setConnections] = useState([]);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState('');
@@ -88,13 +88,13 @@ export default function ConnectPage({ session, onContinue, onHistory, onSignOut 
   return (
     <div className="connect">
       <div className="connect-in">
-        <div className="cn-top">
+        {!embedded && <div className="cn-top">
           <span />
           <span className="cn-top-right">
             <button type="button" className="cn-link" onClick={onHistory}>History</button>
             <button type="button" className="cn-link" onClick={onSignOut}>Sign out</button>
           </span>
-        </div>
+        </div>}
 
         <header className="cn-head">
           <span className="cn-badge">Before you start</span>

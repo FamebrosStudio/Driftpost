@@ -43,25 +43,25 @@ export default function Console({ session, onSwitchAccount, onSignOut }) {
     setView(next);
   };
   const openHistory = () => navigate('history');
-  if (view === 'home') return <DashboardPage session={session} onNavigate={navigate} onCreate={() => navigate('create')} />;
-  if (view === 'calendar') return <CalendarPage session={session} onNavigate={navigate} onCreate={() => navigate('create')} />;
-  if (view === 'analytics') return <AnalyticsPage session={session} onNavigate={navigate} />;
+  if (view === 'home') return <DashboardPage session={session} onNavigate={navigate} onCreate={() => navigate('create')} onSignOut={onSignOut} />;
+  if (view === 'calendar') return <CalendarPage session={session} onNavigate={navigate} onCreate={() => navigate('create')} onSignOut={onSignOut} />;
+  if (view === 'analytics') return <AnalyticsPage session={session} onNavigate={navigate} onSignOut={onSignOut} />;
   if (view === 'history') {
     return (
       <Suspense fallback={<PageLoading label="Loading History…" />}>
-        <HistoryPage session={session} onBack={() => setView('home')} />
+        <HistoryPage session={session} onNavigate={navigate} onSignOut={onSignOut} />
       </Suspense>
     );
   }
-  if (view === 'accounts') return <><WorkspaceNav page="accounts" onNavigate={navigate} email={session.user?.email} /><ConnectPage session={session} onContinue={() => navigate('create')} onHistory={openHistory} onSignOut={onSignOut} /></>;
+  if (view === 'accounts') return <><WorkspaceNav page="accounts" onNavigate={navigate} email={session.user?.email} onSignOut={onSignOut} /><ConnectPage session={session} onContinue={() => navigate('create')} onHistory={openHistory} onSignOut={onSignOut} embedded /></>;
   if (stage === '3') {
-    return <StageThreePage session={session} onBack={() => go(2)} onSignOut={onSignOut} onHistory={openHistory} onHome={() => setView('home')} onNavigate={navigate} onDone={() => go(1)} />;
+    return <StageThreePage session={session} onBack={() => go(2)} onNavigate={navigate} onSignOut={onSignOut} onDone={() => go(1)} />;
   }
   if (stage === '2') {
-    return <StageTwoPage session={session} onBack={() => go(1)} onSignOut={onSignOut} onHistory={openHistory} onHome={() => setView('home')} onNavigate={navigate} onNext={() => go(3)} />;
+    return <StageTwoPage session={session} onBack={() => go(1)} onNavigate={navigate} onSignOut={onSignOut} onNext={() => go(3)} />;
   }
   if (stage === '1') {
-    return <StageOnePage session={session} onSignOut={onSignOut} onNext={() => go(2)} onHistory={openHistory} onHome={() => setView('home')} onNavigate={navigate} onBackAccounts={() => { go('connect'); setView('accounts'); }} />;
+    return <StageOnePage session={session} onNext={() => go(2)} onNavigate={navigate} onSignOut={onSignOut} />;
   }
   return <ConnectPage session={session} onContinue={() => go(1)} onHistory={openHistory} onSignOut={onSignOut} />;
 }
