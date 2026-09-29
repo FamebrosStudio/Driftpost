@@ -1,7 +1,7 @@
 .ws { min-height: 100vh; color: var(--ink); background: var(--bg); }
 .ws-topbar { min-height: 70px; padding: 0 clamp(18px, 4vw, 64px); display: flex; align-items: center; gap: clamp(24px, 5vw, 76px); border-bottom: 1px solid var(--line); background: color-mix(in srgb, var(--bg) 90%, transparent); position: sticky; top: 0; z-index: 20; backdrop-filter: blur(16px); }
-.ws-wordmark { display: inline-flex; align-items: center; gap: 9px; border: 0; padding: 0; background: transparent; font-size: 19px; font-weight: 750; letter-spacing: -.8px; white-space: nowrap; }
-.ws-mark { width: 29px; height: 29px; display: grid; place-items: center; color: #fff; background: linear-gradient(140deg, #16a982, #4c76e8); font-size: 21px; font-family: Georgia, serif; font-style: italic; }
+.ws-wordmark { display: inline-flex; align-items: center; flex: 0 0 auto; border: 0; padding: 0; background: transparent; white-space: nowrap; }
+.ws-wordmark img.logo-img { width: 168px; height: auto; max-height: 44px; object-fit: contain; }
 .ws-nav { display: flex; align-items: stretch; align-self: stretch; gap: 3px; flex: 1; }
 .ws-nav button { position: relative; display: inline-flex; align-items: center; gap: 8px; padding: 0 12px; border: 0; background: transparent; color: var(--muted); font-size: 13px; font-weight: 550; white-space: nowrap; transition: color .18s ease, background .18s ease; }
 .ws-nav button > span { font-size: 17px; line-height: 1; color: var(--faint); }
@@ -126,6 +126,7 @@
 @media (max-width: 980px) {
   .ws-topbar { flex-wrap: wrap; gap: 0 24px; padding: 10px 20px 0; }
   .ws-wordmark { height: 42px; }
+  .ws-wordmark img.logo-img { width: 150px; }
   .ws-user { margin-left: auto; }
   .ws-nav { order: 3; flex-basis: 100%; overflow-x: auto; min-height: 46px; scrollbar-width: none; }
   .ws-nav::-webkit-scrollbar { display: none; }
@@ -137,6 +138,7 @@
   .ws-topbar { gap: 0 10px; padding: 7px 14px 0; }
   .ws-user { max-width: 46%; font-size: 10px; }
   .ws-user-dot { width: 26px; height: 26px; }
+  .ws-wordmark img.logo-img { width: 128px; }
   .ws-nav { margin: 0 -2px; min-height: 43px; }
   .ws-nav button { gap: 5px; padding: 0 9px; font-size: 11px; }
   .ws-nav button > span { font-size: 14px; }

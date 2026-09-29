@@ -14,7 +14,10 @@ const localIso = (date) => new Date(date.getTime() - date.getTimezoneOffset() * 
 
 export function WorkspaceNav({ page, onNavigate, email }) {
   return <header className="ws-topbar">
-    <button type="button" className="ws-wordmark" onClick={() => onNavigate('home')} aria-label="Driftpost overview"><span className="ws-mark">d</span><span>driftpost</span></button>
+    <button type="button" className="ws-wordmark" onClick={() => onNavigate('home')} aria-label="Driftpost overview">
+      <img className="logo-img logo-d" src="/logo-dark-620.png" srcSet="/logo-dark-620.png 620w, /logo-dark.png 1984w" sizes="168px" width="1984" height="512" decoding="async" alt="Driftpost" />
+      <img className="logo-img logo-l" src="/logo-light.png" width="1908" height="512" decoding="async" alt="Driftpost" />
+    </button>
     <nav className="ws-nav" aria-label="Main navigation">
       {NAV.map(([id, label, icon]) => <button key={id} type="button" className={page === id ? 'active' : ''} onClick={() => onNavigate(id)}><span aria-hidden="true">{icon}</span>{label}</button>)}
     </nav>
