@@ -267,6 +267,10 @@ details.adv[open] > summary::before { content: "– "; }
 .loader-wrap { min-height: 100vh; display: grid; place-items: center; background: var(--bg); }
 .page-loading { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 24px; background: var(--bg); color: var(--muted); font-size: 14px; text-align: center; }
 .page-loading-mark { width: 28px; height: 28px; border: 3px solid var(--line-hard); border-top-color: var(--violet); border-radius: 50% !important; animation: pageLoadSpin 0.8s linear infinite; }
+.page-loading-recovery { display: grid; justify-items: center; gap: 10px; max-width: 420px; margin-top: 10px; }
+.page-loading-recovery p { margin: 0 0 4px; }
+.page-loading-recovery button, .page-loading-recovery a { border: 1px solid var(--line-hard); padding: 9px 13px; background: var(--panel2); color: var(--ink); font: inherit; font-size: 13px; text-decoration: none; }
+.page-loading-recovery button { background: var(--violet); border-color: var(--violet); color: #fff; cursor: pointer; }
 @keyframes pageLoadSpin { to { transform: rotate(360deg); } }
 .app-error { min-height: 100vh; display: grid; place-items: center; padding: 24px; background: var(--bg); color: var(--ink); }
 .app-error-card { width: min(100%, 440px); padding: 32px; border: 1px solid var(--line-hard); background: var(--panel); text-align: center; box-shadow: 0 18px 55px #0005; }
