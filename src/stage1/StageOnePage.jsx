@@ -8,6 +8,7 @@ import PlatformSelector from './PlatformSelector.jsx';
 import ExistingGroupSelector from './ExistingGroupSelector.jsx';
 import ContinueButton from './ContinueButton.jsx';
 import './stage1.css';
+import { WorkspaceNav } from '../workspace/Workspace.jsx';
 
 const BrandSelectorModal = lazy(() => import('./BrandSelectorModal.jsx'));
 const GroupBuilder = lazy(() => import('./GroupBuilder.jsx'));
@@ -34,7 +35,7 @@ function save(key, val) {
   try { localStorage.setItem(key, JSON.stringify(val)); } catch {}
 }
 
-export default function StageOnePage({ session, onSignOut, onNext, onHistory, onBackAccounts }) {
+export default function StageOnePage({ session, onSignOut, onNext, onHistory, onBackAccounts, onHome, onNavigate }) {
   const [connections, setConnections] = useState([]);
   const [loading, setLoading] = useState(true);
   const [connsOk, setConnsOk] = useState(false);
@@ -212,8 +213,10 @@ export default function StageOnePage({ session, onSignOut, onNext, onHistory, on
 
   return (
     <div className="stage1">
+      {onNavigate && <WorkspaceNav page="create" onNavigate={onNavigate} email={session.user?.email} />}
       <div className="stage1-in">
         <div className="stage1-top">
+          {onHome && <button type="button" className="stage1-signout" onClick={onHome}>⌂ Overview</button>}
           {onBackAccounts && <button type="button" className="stage1-signout" onClick={onBackAccounts}>← Accounts</button>}
           <button type="button" className="stage1-signout" onClick={onHistory}>History</button>
           <button type="button" className="stage1-signout" onClick={onSignOut}>Sign out</button>

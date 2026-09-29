@@ -11,6 +11,7 @@ import Workspace from './Workspace.jsx';
 import MediaPreview from './MediaPreview.jsx';
 import ScheduleModal from './ScheduleModal.jsx';
 import './stage3.css';
+import { WorkspaceNav } from '../workspace/Workspace.jsx';
 
 function load(key, fallback) {
   try {
@@ -36,7 +37,7 @@ const DEFAULT_CFG = {
 };
 const NAMES = { instagram: 'Instagram', facebook: 'Facebook', youtube: 'YouTube', x: 'X' };
 
-export default function StageThreePage({ session, onBack, onSignOut, onHistory, onDone }) {
+export default function StageThreePage({ session, onBack, onSignOut, onHistory, onHome, onNavigate, onDone }) {
   const [connections, setConnections] = useState([]);
   const [files, setFiles] = useState([]);
   const [thumb, setThumb] = useState(null);
@@ -694,10 +695,12 @@ export default function StageThreePage({ session, onBack, onSignOut, onHistory, 
 
   return (
     <div className="stage3">
+      {onNavigate && <WorkspaceNav page="create" onNavigate={onNavigate} email={session.user?.email} />}
       <div className="stage3-in">
         <div className="s3-top">
           <button type="button" className="s3-back" onClick={onBack}>← Stage 2</button>
           <span className="s3-top-right">
+            {onHome && <button type="button" className="s3-signout" onClick={onHome}>Overview</button>}
             <button type="button" className="s3-signout" onClick={onHistory}>History</button>
             <button type="button" className="s3-signout" onClick={onSignOut}>Sign out</button>
           </span>

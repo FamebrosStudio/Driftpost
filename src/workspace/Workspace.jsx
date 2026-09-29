@@ -1,0 +1,127 @@
+import React, { useEffect, useMemo, useState } from 'react';
+import BrandIcon from '../brand.jsx';
+import { api, listSchedules, cancelSchedule, PLATFORMS } from '../lib.js';
+import { readPostLog } from '../history/log.js';
+import './workspace.css';
+
+const NAV = [
+  ['home', 'Overview', '⌂'], ['create', 'Create post', '＋'], ['calendar', 'Calendar', '▦'],
+  ['analytics', 'Analytics', '↗'], ['history', 'History', '◷'], ['accounts', 'Accounts', '◎'],
+];
+const platformName = (id) => PLATFORMS.find((p) => p.id === id)?.name || id;
+const greetingName = (email) => (email || '').split('@')[0].split(/[._-]/)[0] || 'there';
+const localIso = (date) => new Date(date.getTime() - date.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+
+export function WorkspaceNav({ page, onNavigate, email }) {
+  return <header className="ws-topbar">
+    <button type="button" className="ws-wordmark" onClick={() => onNavigate('home')} aria-label="Driftpost overview"><span className="ws-mark">d</span><span>driftpost</span></button>
+    <nav className="ws-nav" aria-label="Main navigation">
+      {NAV.map(([id, label, icon]) => <button key={id} type="button" className={page === id ? 'active' : ''} onClick={() => onNavigate(id)}><span aria-hidden="true">{icon}</span>{label}</button>)}
+    </nav>
+    <div className="ws-user"><span className="ws-user-dot">{(email || 'U')[0].toUpperCase()}</span><span>{email || 'Workspace'}</span></div>
+  </header>;
+}
+
+function PageFrame({ page, onNavigate, email, eyebrow, title, intro, children, action }) {
+  return <div className="ws"><WorkspaceNav page={page} onNavigate={onNavigate} email={email} />
+    <main className="ws-main"><div className="ws-heading"><div><span className="ws-eyebrow">{eyebrow}</span><h1>{title}</h1>{intro && <p>{intro}</p>}</div>{action && <div className="ws-heading-action">{action}</div>}</div>{children}</main>
+  </div>;
+}
+
+function PlatformBars({ posts }) {
+  const counts = PLATFORMS.map((p) => ({ ...p, count: posts.reduce((n, post) => n + (Array.isArray(post.publishedPosts) && post.publishedPosts.length ? post.publishedPosts.filter((x) => x.platform === p.id).length : post.platform === p.id ? 1 : 0), 0) }));
+  const max = Math.max(1, ...counts.map((p) => p.count));
+  return <div className="ws-platform-bars">{counts.map((p) => <div className="ws-platform-row" key={p.id}>
+    <span className="ws-platform-label"><BrandIcon id={p.id} size={15} />{p.name}</span><span className="ws-bar"><i style={{ width: `${p.count / max * 100}%` }} /></span><b>{p.count}</b>
+  </div>)}</div>;
+}
+
+export function DashboardPage({ session, onNavigate, onCreate }) {
+  const [connections, setConnections] = useState(null);
+  const [schedules, setSchedules] = useState(null);
+  useEffect(() => {
+    let active = true;
+    Promise.allSettled([api('/api/connections', session.access_token), listSchedules(session.access_token, { from: new Date().toISOString() })])
+      .then(([a, b]) => { if (!active) return; setConnections(a.status === 'fulfilled' ? a.value.connections || [] : []); setSchedules(b.status === 'fulfilled' ? b.value : []); });
+    return () => { active = false; };
+  }, [session.access_token]);
+  const posts = useMemo(readPostLog, []);
+  const upcoming = (schedules || []).filter((s) => s.status === 'scheduled').slice(0, 4);
+  return <PageFrame page="home" onNavigate={onNavigate} email={session.user?.email} eyebrow="Your workspace" title={`Good to see you, ${greetingName(session.user?.email)}.`} intro="A clear view of what’s going out and what needs your attention." action={<button className="ws-primary" onClick={onCreate}>＋ Create a post</button>}>
+    <section className="ws-welcome"><div><span className="ws-eyebrow">Publishing workspace</span><h2>Make room for the work.</h2><p>Plan your next post, pick a client, and publish across your connected channels.</p><button className="ws-primary" onClick={onCreate}>Start a post <span aria-hidden="true">→</span></button></div><div className="ws-welcome-art" aria-hidden="true"><span>✳</span><i /><b /></div></section>
+    <div className="ws-stat-grid">
+      <article className="ws-stat"><span>Connected accounts</span><strong>{connections === null ? '—' : connections.length}</strong><small>{connections?.length ? 'Ready to publish' : 'Connect your first channel'}</small><button onClick={() => onNavigate('accounts')}>Manage accounts <span>→</span></button></article>
+      <article className="ws-stat"><span>Scheduled posts</span><strong>{schedules === null ? '—' : schedules.filter((s) => s.status === 'scheduled').length}</strong><small>Waiting in your calendar</small><button onClick={() => onNavigate('calendar')}>Open calendar <span>→</span></button></article>
+      <article className="ws-stat"><span>Posts in this browser</span><strong>{posts.length}</strong><small>Saved publishing history</small><button onClick={() => onNavigate('analytics')}>View analytics <span>→</span></button></article>
+    </div>
+    <div className="ws-two-col">
+      <section className="ws-panel"><div className="ws-panel-head"><div><span className="ws-eyebrow">Coming up</span><h2>Next on your calendar</h2></div><button className="ws-text-button" onClick={() => onNavigate('calendar')}>View calendar →</button></div>
+        {upcoming.length ? <div className="ws-upcoming">{upcoming.map((item) => <div className="ws-upcoming-row" key={item.id}><span className="ws-icon"><BrandIcon id={item.platform} size={17} /></span><div><b>{platformName(item.platform)}</b><small>{item.body?.text || item.body?.caption || 'Scheduled post'}</small></div><time>{new Date(item.scheduled_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}<small>{new Date(item.scheduled_at).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })}</small></time></div>)}</div> : <div className="ws-empty"><span>▦</span><b>No upcoming posts</b><small>Your next scheduled post will show up here.</small><button onClick={() => onNavigate('calendar')}>Plan a post →</button></div>}
+      </section>
+      <section className="ws-panel ws-quick-panel"><span className="ws-eyebrow">Quick links</span><h2>Keep things moving</h2>
+        <button onClick={onCreate}><span className="ws-quick-icon">＋</span><span><b>Create a post</b><small>Write once, publish where it matters.</small></span><i>→</i></button>
+        <button onClick={() => onNavigate('accounts')}><span className="ws-quick-icon">◎</span><span><b>Manage accounts</b><small>Connect and organize your channels.</small></span><i>→</i></button>
+        <button onClick={() => onNavigate('history')}><span className="ws-quick-icon">◷</span><span><b>Open history</b><small>Find past posts and saved captions.</small></span><i>→</i></button>
+      </section>
+    </div>
+    <footer className="ws-footnote">Your publishing details stay in your account. Overview metrics reflect the post history saved in this browser.</footer>
+  </PageFrame>;
+}
+
+export function CalendarPage({ session, onNavigate, onCreate }) {
+  const [month, setMonth] = useState(() => { const d = new Date(); return new Date(d.getFullYear(), d.getMonth(), 1); });
+  const [rows, setRows] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [notice, setNotice] = useState('');
+  const [busy, setBusy] = useState('');
+  const [selected, setSelected] = useState(() => localIso(new Date()));
+  const startDay = new Date(month.getFullYear(), month.getMonth(), 1);
+  const gridStart = new Date(startDay); gridStart.setDate(1 - startDay.getDay());
+  const gridEnd = new Date(gridStart); gridEnd.setDate(gridStart.getDate() + 42);
+  useEffect(() => {
+    let active = true; setLoading(true); setNotice('');
+    listSchedules(session.access_token, { from: gridStart.toISOString(), to: gridEnd.toISOString() })
+      .then((data) => { if (active) setRows(data); })
+      .catch((err) => { if (active) setNotice(err.message || 'Could not load your calendar.'); })
+      .finally(() => { if (active) setLoading(false); });
+    return () => { active = false; };
+  }, [session.access_token, month.getFullYear(), month.getMonth()]);
+  const byDate = useMemo(() => rows.reduce((map, row) => { const key = localIso(new Date(row.scheduled_at)); (map[key] ||= []).push(row); return map; }, {}), [rows]);
+  const dates = Array.from({ length: 42 }, (_, i) => { const d = new Date(gridStart); d.setDate(gridStart.getDate() + i); return d; });
+  const dayRows = byDate[selected] || [];
+  const changeMonth = (delta) => { const next = new Date(month.getFullYear(), month.getMonth() + delta, 1); setMonth(next); setSelected(localIso(next)); };
+  const cancel = async (id) => { setBusy(id); try { await cancelSchedule(session.access_token, id); setRows((old) => old.filter((r) => r.id !== id)); setNotice('Scheduled post cancelled.'); } catch (e) { setNotice(e.message || 'Could not cancel this post.'); } finally { setBusy(''); } };
+  return <PageFrame page="calendar" onNavigate={onNavigate} email={session.user?.email} eyebrow="Plan ahead" title="Calendar" intro="See what’s scheduled and keep your publishing rhythm in view." action={<button className="ws-primary" onClick={onCreate}>＋ Create a post</button>}>
+    <section className="ws-panel ws-calendar-panel"><div className="ws-calendar-toolbar"><div><h2>{month.toLocaleDateString(undefined, { month: 'long', year: 'numeric' })}</h2><span className="ws-legend"><i /> Scheduled</span></div><div className="ws-month-actions"><button aria-label="Previous month" onClick={() => changeMonth(-1)}>←</button><button onClick={() => { const now = new Date(); setMonth(new Date(now.getFullYear(), now.getMonth(), 1)); setSelected(localIso(now)); }}>Today</button><button aria-label="Next month" onClick={() => changeMonth(1)}>→</button></div></div>
+      <div className="ws-calendar-grid ws-weekdays">{['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((d) => <span key={d}>{d}</span>)}</div>
+      <div className="ws-calendar-grid ws-days">{dates.map((date) => { const key = localIso(date); const items = byDate[key] || []; const today = key === localIso(new Date()); return <button key={key} className={`ws-day ${date.getMonth() === month.getMonth() ? '' : 'outside'} ${selected === key ? 'selected' : ''} ${today ? 'today' : ''}`} onClick={() => setSelected(key)}><span className="ws-day-number">{date.getDate()}</span>{items.slice(0, 2).map((item) => <span className={`ws-event ${item.status}`} key={item.id}><BrandIcon id={item.platform} size={12} /><b>{platformName(item.platform)}</b></span>)}{items.length > 2 && <small className="ws-more">+{items.length - 2} more</small>}</button>; })}</div>
+      {loading && <div className="ws-inline-state">Loading schedule…</div>}{notice && <div className="ws-inline-state" role="status">{notice}</div>}
+    </section>
+    <section className="ws-panel ws-day-panel"><div className="ws-panel-head"><div><span className="ws-eyebrow">Selected day</span><h2>{new Date(`${selected}T12:00:00`).toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' })}</h2></div></div>
+      {!dayRows.length ? <div className="ws-empty compact"><b>{loading ? 'Checking your schedule…' : 'Nothing planned for this day'}</b><small>Choose another date or create a post to get started.</small></div> : <div className="ws-upcoming">{dayRows.map((row) => <div className="ws-upcoming-row" key={row.id}><span className="ws-icon"><BrandIcon id={row.platform} size={17} /></span><div><b>{platformName(row.platform)} <em className={`ws-status ${row.status}`}>{row.status}</em></b><small>{row.body?.text || row.body?.caption || 'Scheduled post'}</small></div><time>{new Date(row.scheduled_at).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })}</time>{['scheduled', 'publishing'].includes(row.status) && <button className="ws-cancel" disabled={busy === row.id} onClick={() => cancel(row.id)}>{busy === row.id ? '…' : 'Cancel'}</button>}</div>)}</div>}
+    </section>
+    <footer className="ws-footnote">Scheduled posts publish automatically at the selected time. Past, failed, and cancelled items remain available in History.</footer>
+  </PageFrame>;
+}
+
+export function AnalyticsPage({ session, onNavigate }) {
+  const posts = useMemo(() => readPostLog().filter((p) => p && Number.isFinite(Number(p.at))).sort((a, b) => Number(b.at) - Number(a.at)), []);
+  const [schedules, setSchedules] = useState([]);
+  useEffect(() => { let active = true; listSchedules(session.access_token, { from: new Date().toISOString() }).then((data) => { if (active) setSchedules(data); }).catch(() => {}); return () => { active = false; }; }, [session.access_token]);
+  const now = new Date(); const weekStart = new Date(now); weekStart.setDate(now.getDate() - 6); weekStart.setHours(0, 0, 0, 0);
+  const thisWeek = posts.filter((p) => Number(p.at) >= weekStart.getTime()).length;
+  const scheduled = schedules.filter((p) => p.status === 'scheduled').length;
+  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+  const monthPosts = posts.filter((p) => Number(p.at) >= monthStart);
+  const activeDays = new Set(monthPosts.map((p) => new Date(Number(p.at)).toDateString())).size;
+  const chart = Array.from({ length: 7 }, (_, i) => { const d = new Date(weekStart); d.setDate(weekStart.getDate() + i); const next = new Date(d); next.setDate(d.getDate() + 1); return { date: d, count: posts.filter((p) => Number(p.at) >= d.getTime() && Number(p.at) < next.getTime()).length }; });
+  const max = Math.max(1, ...chart.map((d) => d.count));
+  return <PageFrame page="analytics" onNavigate={onNavigate} email={session.user?.email} eyebrow="Understand your cadence" title="Analytics" intro="A simple snapshot of your publishing activity." action={<button className="ws-secondary" onClick={() => onNavigate('history')}>View post history →</button>}>
+    <div className="ws-stat-grid ws-analytics-stats"><article className="ws-stat"><span>Published this month</span><strong>{monthPosts.length}</strong><small>Posts recorded in this browser</small></article><article className="ws-stat"><span>Last 7 days</span><strong>{thisWeek}</strong><small>Published across your channels</small></article><article className="ws-stat"><span>Scheduled next</span><strong>{scheduled}</strong><small>Posts waiting to publish</small></article><article className="ws-stat"><span>Active publishing days</span><strong>{activeDays}</strong><small>Days with a saved post</small></article></div>
+    <div className="ws-two-col ws-analytics-grid"><section className="ws-panel"><div className="ws-panel-head"><div><span className="ws-eyebrow">Recent activity</span><h2>Posts over the last 7 days</h2></div></div><div className="ws-chart" role="img" aria-label="Number of saved published posts per day for the last seven days">{chart.map((d) => <div className="ws-chart-day" key={d.date.toISOString()}><div className="ws-chart-track"><i style={{ height: `${Math.max(d.count ? 10 : 3, d.count / max * 100)}%` }} title={`${d.count} posts`} /></div><b>{d.count}</b><small>{d.date.toLocaleDateString(undefined, { weekday: 'short' })}</small></div>)}</div></section>
+      <section className="ws-panel"><div className="ws-panel-head"><div><span className="ws-eyebrow">Channel mix</span><h2>Publishing by platform</h2></div></div><PlatformBars posts={posts} /></section>
+    </div>
+    <section className="ws-panel ws-insight"><span className="ws-insight-mark">✳</span><div><b>Activity, kept simple</b><p>These numbers summarize posts saved in this browser’s History. They show publishing cadence, not views, reach, or engagement from social networks.</p></div><button className="ws-text-button" onClick={() => onNavigate('history')}>Open history →</button></section>
+    <footer className="ws-footnote">For accurate account performance metrics, each platform must provide access to its insights API. Driftpost currently uses your saved publishing activity for this overview.</footer>
+  </PageFrame>;
+}

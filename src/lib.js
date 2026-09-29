@@ -248,7 +248,13 @@ export async function schedulePost(token, { platform, connectionId, when, body, 
   return data.schedule;
 }
 
-export const listSchedules = (token) => api('/api/schedules', token).then((d) => d.schedules || []);
+export const listSchedules = (token, range = {}) => {
+  const params = new URLSearchParams();
+  if (range.from) params.set('from', range.from);
+  if (range.to) params.set('to', range.to);
+  const query = params.toString();
+  return api(`/api/schedules${query ? `?${query}` : ''}`, token).then((d) => d.schedules || []);
+};
 export const cancelSchedule = (token, id) => api(`/api/schedules/${id}`, token, { method: 'DELETE' });
 
 // Fresh start after posting: wipes the finished post's content (media,

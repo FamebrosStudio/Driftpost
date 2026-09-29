@@ -1155,9 +1155,16 @@ async function removeStored(paths) {
 }
 
 app.get('/api/schedules', requireUser, jobsLimit, async (req, res) => {
-  const { data, error } = await supabase.from('scheduled_posts')
+  let query = supabase.from('scheduled_posts')
     .select('*').eq('user_id', req.user.id)
     .order('scheduled_at', { ascending: true }).limit(100);
+  const from = typeof req.query.from === 'string' ? Date.parse(req.query.from) : NaN;
+  const to = typeof req.query.to === 'string' ? Date.parse(req.query.to) : NaN;
+  if (req.query.from && !Number.isFinite(from)) return res.status(400).json({ error: 'Invalid schedule start date' });
+  if (req.query.to && !Number.isFinite(to)) return res.status(400).json({ error: 'Invalid schedule end date' });
+  if (Number.isFinite(from)) query = query.gte('scheduled_at', new Date(from).toISOString());
+  if (Number.isFinite(to)) query = query.lt('scheduled_at', new Date(to).toISOString());
+  const { data, error } = await query;
   if (error) return res.status(500).json({ error: 'Could not load scheduled posts' });
   res.json({ schedules: data || [] });
 });
