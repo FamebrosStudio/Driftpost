@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import BrandIcon from '../brand.jsx';
 import { api } from '../lib.js';
-import { readDisconnectLog, removeDisconnectLog, readCaptionLog, readPostLog, removePostLog } from './log.js';
+import { readDisconnectLog, removeDisconnectLog, readCaptionLog, readPostLog, removePostLog, updatePostLog } from './log.js';
 import { listSchedules, cancelSchedule } from '../lib.js';
 import './history.css';
 
@@ -17,7 +17,7 @@ function fmtDate(at) {
   catch { return ''; }
 }
 
-export function PostedTab() {
+function LegacyPostedTab() {
   const [posts, setPosts] = useState(readPostLog);
   if (!posts.length) {
     return (
@@ -52,6 +52,72 @@ export function PostedTab() {
       <p className="hist-note">Removing clears this list only — live posts stay up on the platform.</p>
     </div>
   );
+}
+
+export function PostedTab({ token }) {
+  const [posts, setPosts] = useState(readPostLog);
+  const [busy, setBusy] = useState(null);
+  const [notice, setNotice] = useState('');
+  const refresh = () => setPosts(readPostLog());
+  const getTargets = (post) => Array.isArray(post.publishedPosts) && post.publishedPosts.length
+    ? post.publishedPosts
+    : (post.postId && post.connectionId ? [{ platform: post.platform, postId: post.postId, connectionId: post.connectionId }] : []);
+  const deleteLive = async (post) => {
+    const targets = getTargets(post);
+    const deletable = targets.filter((p) => ['facebook', 'youtube', 'x'].includes(p.platform));
+    if (!deletable.length) {
+      setNotice('Instagram does not allow deleting published media through its official API. Delete it in Instagram, then use Forget here.');
+      return;
+    }
+    const names = [...new Set(deletable.map((p) => p.platform))].join(', ');
+    if (!window.confirm(`Permanently delete this post${deletable.length > 1 ? 's' : ''} from ${names}? This cannot be undone.`)) return;
+    setBusy(post.at);
+    setNotice('');
+    try {
+      const result = await api('/api/posts', token, { method: 'DELETE', body: JSON.stringify({ posts: targets }) });
+      const failed = result.results.filter((r) => !r.ok);
+      if (!failed.length) {
+        removePostLog(post.at);
+        refresh();
+        setNotice('Post deleted from the platform and removed from History.');
+      } else {
+        const deletedIds = new Set(result.results.filter((r) => r.ok).map((r) => `${r.platform}:${r.postId}`));
+        const remaining = targets.filter((p) => !deletedIds.has(`${p.platform}:${p.postId}`));
+        updatePostLog(post.at, {
+          publishedPosts: remaining,
+          ...(remaining.length === 1 ? { platform: remaining[0].platform, postId: remaining[0].postId, connectionId: remaining[0].connectionId } : {}),
+        });
+        refresh();
+        setNotice(`${result.deleted} post${result.deleted === 1 ? '' : 's'} deleted. ${failed.map((r) => r.error).join(' ')}`);
+      }
+    } catch (e) {
+      setNotice(e.message || 'Could not delete the post. It is still in History.');
+    } finally {
+      setBusy(null);
+    }
+  };
+  if (!posts.length) return <div><p className="hist-empty">Nothing posted yet.</p><p className="hist-note">Posts published after delete support was added can be deleted from the platform here.</p></div>;
+  return <div>
+    {posts.map((p) => {
+      const targets = getTargets(p);
+      const canDelete = targets.some((x) => ['facebook', 'youtube', 'x'].includes(x.platform));
+      const hasInstagram = targets.some((x) => x.platform === 'instagram');
+      return <div key={p.at} className="hist-row">
+        <span className="hist-ic"><BrandIcon id={p.platform} size={15} /></span>
+        <span className="hist-body">
+          <b>{p.text ? (p.text.length > 90 ? p.text.slice(0, 90) + '…' : p.text) : p.platform}</b>
+          <small>{fmtDate(p.at)}{p.url ? ' · ' : ''}{p.url && <a href={p.url} target="_blank" rel="noreferrer">View</a>}</small>
+        </span>
+        {canDelete && <button type="button" className="hist-mini danger" disabled={busy === p.at} title="Permanently delete the published post from its platform" onClick={() => deleteLive(p)}>
+          {busy === p.at ? 'Deleting…' : 'Delete post'}
+        </button>}
+        {hasInstagram && <button type="button" className="hist-mini" onClick={() => setNotice('Instagram does not allow deleting published media through its official API. Open View and delete it in Instagram.')}>Delete on Instagram</button>}
+        <button type="button" className="hist-mini" title="Remove this History entry only; the live post stays up" onClick={() => { removePostLog(p.at); refresh(); }}>Forget</button>
+      </div>;
+    })}
+    {notice && <p className="hist-note" role="status">{notice}</p>}
+    <p className="hist-note">Delete post permanently removes supported posts from the platform. Forget only clears this History entry. Instagram posts must be deleted in Instagram.</p>
+  </div>;
 }
 
 function ScheduledTab({ token }) {
@@ -216,7 +282,7 @@ export default function HistoryPage({ session, onBack }) {
             </button>
           ))}
         </div>
-        {tab === 'posted' && <PostedTab />}
+        {tab === 'posted' && <PostedTab token={session.access_token} />}
         {tab === 'scheduled' && <ScheduledTab token={session.access_token} />}
         {tab === 'deleted' && <DeletedTab token={session.access_token} />}
         {tab === 'captions' && <CaptionsTab />}

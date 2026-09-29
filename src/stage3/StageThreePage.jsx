@@ -425,7 +425,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onHistory, 
       out[key] = { state: j.job.state, progress: j.job.progress || 50, url: j.job.url, message: j.job.message };
       setResults({ ...out });
       if (j.job.state === 'completed') {
-        logPost({ platform: pid, text: mainText(pid), url: j.job.url });
+        logPost({ platform: pid, text: mainText(pid), url: j.job.url, postId: j.job.postId, connectionId: j.job.connectionId || connectionId, publishedPosts: j.job.publishedPosts });
         return j.job.url;
       }
       if (j.job.state === 'failed') throw new Error(j.job.message);

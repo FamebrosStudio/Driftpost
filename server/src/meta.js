@@ -61,39 +61,41 @@ export async function longLivedToken(shortToken) {
 
 export async function getMetaPages(userToken) {
   // 1) Personal assets.
-  // 2) Portfolio-owned assets: /me/accounts never lists pages owned by a
-  //    business portfolio (e.g. skfurnituremarket), even when the user owns
-  //    that portfolio — so walk /me/businesses -> owned_pages as fallback.
+  // 2) Business portfolio assets: /me/accounts can omit pages in a business
+  //    portfolio. Walk both owned_pages and client_pages so agency-managed
+  //    client pages are discoverable as well as pages owned by the portfolio.
   const auth = { headers: { Authorization: `Bearer ${userToken}` } };
   const all = [];
   let url = `${GRAPH}/me/accounts?fields=id,name,tasks,access_token,instagram_business_account{id,username}&limit=100`;
   for (let i = 0; i < 5 && url; i++) {
-    const res = await fetch(url, auth);
+    const res = await fetch(url, { ...auth, signal: AbortSignal.timeout(30000) });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error?.message || 'Unable to list Facebook Pages');
     all.push(...(data.data || []));
     url = data.paging?.next || null;
   }
   try {
-    const bRes = await fetch(`${GRAPH}/me/businesses?fields=id,name&limit=50`, auth);
+    const bRes = await fetch(`${GRAPH}/me/businesses?fields=id,name&limit=50`, { ...auth, signal: AbortSignal.timeout(30000) });
     const bData = await bRes.json();
     if (!bRes.ok) throw new Error('no-business-access');
     for (const biz of (bData.data || []).slice(0, 20)) {
-      try {
-        const pRes = await fetch(`${GRAPH}/${biz.id}/owned_pages?fields=id,name&limit=100`, auth);
-        const pData = await pRes.json();
-        if (!pRes.ok) continue;
-        for (const p of (pData.data || [])) {
-          if (all.some((x) => x.id === p.id)) continue;
-          try {
-            const dRes = await fetch(`${GRAPH}/${p.id}?fields=access_token,instagram_business_account{id,username}`, auth);
-            const d = await dRes.json();
-            if (dRes.ok && d.access_token) {
-              all.push({ id: p.id, name: p.name, access_token: d.access_token, instagram_business_account: d.instagram_business_account || null });
-            }
-          } catch { /* skip one page, keep the rest */ }
-        }
-      } catch { /* skip one business, keep the rest */ }
+      for (const edge of ['owned_pages', 'client_pages']) {
+        try {
+          const pRes = await fetch(`${GRAPH}/${biz.id}/${edge}?fields=id,name&limit=100`, { ...auth, signal: AbortSignal.timeout(30000) });
+          const pData = await pRes.json();
+          if (!pRes.ok) continue;
+          for (const p of (pData.data || [])) {
+            if (all.some((x) => x.id === p.id)) continue;
+            try {
+              const dRes = await fetch(`${GRAPH}/${p.id}?fields=access_token,instagram_business_account{id,username}`, { ...auth, signal: AbortSignal.timeout(30000) });
+              const d = await dRes.json();
+              if (dRes.ok && d.access_token) {
+                all.push({ id: p.id, name: p.name, access_token: d.access_token, instagram_business_account: d.instagram_business_account || null });
+              }
+            } catch { /* skip one page, keep the rest */ }
+          }
+        } catch { /* edge may be unavailable; keep other business assets */ }
+      }
     }
   } catch { /* businesses unavailable without business_management: keep personal pages */ }
   // De-duplicate by page id.
@@ -144,6 +146,48 @@ export async function publishFacebook({ pageId, pageToken, text, link, linkMeta,
   return { id: data.id, url: `https://www.facebook.com/${String(data.id).replace('_', '/posts/')}` };
 }
 
+export async function deleteFacebookPost({ postId, pageToken }) {
+  const response = await fetch(`${GRAPH}/${encodeURIComponent(postId)}?access_token=${encodeURIComponent(pageToken)}`, { method: 'DELETE' });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok || data.success !== true) {
+    throw new Error(data.error?.message || 'Facebook could not delete this post. Check that the Page connection has permission and the post is still available.');
+  }
+  return true;
+}
+
+async function instagramPostUrl(mediaId, pageToken) {
+  try {
+    const response = await fetch(`${GRAPH}/${encodeURIComponent(mediaId)}?fields=permalink&access_token=${encodeURIComponent(pageToken)}`, { signal: AbortSignal.timeout(10000) });
+    const data = await response.json();
+    return response.ok && data.permalink ? data.permalink : 'https://www.instagram.com/';
+  } catch {
+    return 'https://www.instagram.com/';
+  }
+}
+
+async function waitForInstagramContainer({ id, pageToken, onStage, label = 'video' }) {
+  const started = Date.now();
+  const deadline = 10 * 60 * 1000;
+  let delay = 2000;
+  while (Date.now() - started < deadline) {
+    await new Promise((resolve) => setTimeout(resolve, delay));
+    const response = await fetch(`${GRAPH}/${id}?fields=status_code&access_token=${encodeURIComponent(pageToken)}`, {
+      signal: AbortSignal.timeout(15000),
+    });
+    const status = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(status.error?.message || `Could not check Instagram ${label} processing`);
+    if (status.status_code === 'FINISHED') return;
+    if (status.status_code === 'ERROR') throw new Error(`Instagram could not process this ${label}`);
+    if (status.status_code === 'EXPIRED') throw new Error(`Instagram ${label} processing expired; try posting again`);
+    const seconds = Math.round((Date.now() - started) / 1000);
+    if (onStage) onStage(`Instagram: processing ${label}… ${seconds}s`);
+    // Check quickly at first to avoid an unnecessary eight-second pause for
+    // short clips, then back off to reduce Graph API polling for long renders.
+    delay = Math.min(8000, delay + 1500);
+  }
+  throw new Error(`Instagram is still processing this ${label} after 10 minutes. Check the Instagram account before retrying.`);
+}
+
 export async function publishInstagram({ igUserId, pageToken, caption, alt, collabs, locationId, mediaUrl, isVideo, onStage }) {
   if (!mediaUrl) throw new Error('Instagram needs a photo or video. Attach media first.');
   const createParams = {
@@ -155,41 +199,28 @@ export async function publishInstagram({ igUserId, pageToken, caption, alt, coll
     ...(isVideo ? { media_type: 'REELS', video_url: mediaUrl } : { image_url: mediaUrl }),
   };
   const cRes = await fetch(`${GRAPH}/${igUserId}/media`, {
-    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(createParams),
+    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(createParams), signal: AbortSignal.timeout(30000),
   });
   const container = await cRes.json();
   if (!cRes.ok) throw new Error(container.error?.message || 'Instagram container failed');
-  // wait for video processing — big files take minutes, so wait up to ~10
-  if (isVideo) {
-    const t0 = Date.now();
-    for (let i = 0; i < 75; i++) {
-      await new Promise((r) => setTimeout(r, 8000));
-      const s = await fetch(`${GRAPH}/${container.id}?fields=status_code&access_token=${encodeURIComponent(pageToken)}`);
-      const sj = await s.json();
-      if (sj.status_code === 'FINISHED') break;
-      if (sj.status_code === 'ERROR') throw new Error('Instagram could not process this video');
-      if (onStage) {
-        const sec = Math.round((Date.now() - t0) / 1000);
-        onStage(`Instagram: processing video… ${sec}s`);
-      }
-    }
-  }
+  if (isVideo) await waitForInstagramContainer({ id: container.id, pageToken, onStage });
   const pRes = await fetch(`${GRAPH}/${igUserId}/media_publish`, {
-    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    method: 'POST', headers: { 'Content-Type': 'application/json' }, signal: AbortSignal.timeout(30000),
     body: JSON.stringify({ creation_id: container.id, access_token: pageToken }),
   });
   const published = await pRes.json();
   if (!pRes.ok) throw new Error(published.error?.message || 'Instagram publish failed');
-  return { id: published.id, url: 'https://www.instagram.com/' };
+  return { id: published.id, url: await instagramPostUrl(published.id, pageToken) };
 }
 
 // --- Instagram Story: single photo/video as a 24h story ---
 // Meta flow mirrors reels: create a STORIES container, wait for processing
 // when video, then media_publish. Stories need no caption hashtags.
-export async function publishInstagramStory({ igUserId, pageToken, mediaUrl, isVideo }) {
+export async function publishInstagramStory({ igUserId, pageToken, mediaUrl, isVideo, onStage }) {
   if (!mediaUrl) throw new Error('Attach a photo or video to post a story.');
   const cRes = await fetch(`${GRAPH}/${igUserId}/media`, {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
+    signal: AbortSignal.timeout(30000),
     body: JSON.stringify({
       media_type: 'STORIES',
       ...(isVideo ? { video_url: mediaUrl } : { image_url: mediaUrl }),
@@ -198,22 +229,14 @@ export async function publishInstagramStory({ igUserId, pageToken, mediaUrl, isV
   });
   const container = await cRes.json();
   if (!cRes.ok) throw new Error(container.error?.message || 'Instagram story container failed');
-  if (isVideo) {
-    for (let i = 0; i < 75; i++) {
-      await new Promise((r) => setTimeout(r, 8000));
-      const s = await fetch(`${GRAPH}/${container.id}?fields=status_code&access_token=${encodeURIComponent(pageToken)}`);
-      const sj = await s.json();
-      if (sj.status_code === 'FINISHED') break;
-      if (sj.status_code === 'ERROR') throw new Error('Instagram could not process this story video');
-    }
-  }
+  if (isVideo) await waitForInstagramContainer({ id: container.id, pageToken, onStage, label: 'story video' });
   const pRes = await fetch(`${GRAPH}/${igUserId}/media_publish`, {
-    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    method: 'POST', headers: { 'Content-Type': 'application/json' }, signal: AbortSignal.timeout(30000),
     body: JSON.stringify({ creation_id: container.id, access_token: pageToken }),
   });
   const published = await pRes.json();
   if (!pRes.ok) throw new Error(published.error?.message || 'Instagram story publish failed');
-  return { id: published.id, url: 'https://www.instagram.com/' };
+  return { id: published.id, url: await instagramPostUrl(published.id, pageToken) };
 }
 
 // --- Carousel: 2-10 photos (images only) as one Instagram carousel post ---
@@ -252,7 +275,7 @@ export async function publishInstagramCarousel({ igUserId, pageToken, caption, c
   });
   const published = await pub.json();
   if (!pub.ok) throw new Error(published.error?.message || 'Instagram carousel publish failed');
-  return { id: published.id, url: 'https://www.instagram.com/' };
+  return { id: published.id, url: await instagramPostUrl(published.id, pageToken) };
 }
 
 // --- Facebook multi-photo: upload each as unpublished, then one feed post ---

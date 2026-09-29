@@ -14,9 +14,9 @@ import { exchangeGoogleCode, getYouTubeChannel, youtubeAuthorizationUrl } from '
 import { learnedVoice, markLatestUsed, markUsed, recordGeneration } from './captionMemory.js';
 import { consentState, forgetUser, hasPersonalisationConsent, recordConsent, POLICY_VERSION, PURPOSES } from './consent.js';
 import { setVideoThumbnail, uploadVideoResumable, validAccessToken } from './youtube-upload.js';
-import { exchangeMetaCode, getMetaPages, longLivedToken, metaAuthorizationUrl, metaBusinessLoginUrl, publishFacebook, publishInstagram } from './meta.js';
+import { deleteFacebookPost, exchangeMetaCode, getMetaPages, longLivedToken, metaAuthorizationUrl, metaBusinessLoginUrl, publishFacebook, publishInstagram } from './meta.js';
 import { createPkcePair, exchangeXCode, getXUser, xAuthorizationUrl } from './x.js';
-import { createXPost, uploadXMedia, validXAccessToken } from './x-publish.js';
+import { createXPost, deleteXPost, uploadXMedia, validXAccessToken } from './x-publish.js';
 import { generateCaptions } from './ai.js';
 
 const required = ['FRONTEND_URL', 'SUPABASE_URL', 'SUPABASE_SECRET_KEY', 'TOKEN_ENCRYPTION_KEY', 'STATE_SIGNING_SECRET'];
@@ -360,6 +360,57 @@ app.post('/api/ai/captions', requireUser, aiLimit, (req, res, next) => {
   }
 });
 
+app.delete('/api/posts', requireUser, strictBurstLimit, async (req, res) => {
+  const requested = Array.isArray(req.body?.posts) ? req.body.posts.slice(0, 10) : [];
+  if (!requested.length) return res.status(400).json({ error: 'No published posts selected' });
+  const results = [];
+  for (const item of requested) {
+    const platform = String(item?.platform || '');
+    const postId = String(item?.postId || '');
+    const connectionId = String(item?.connectionId || '');
+    if (!['facebook', 'youtube', 'x'].includes(platform)) {
+      results.push({ platform, postId, ok: false, error: platform === 'instagram'
+        ? 'Instagram does not allow deleting published media through its official API. Delete it in Instagram.'
+        : 'This platform cannot be deleted from Driftpost.' });
+      continue;
+    }
+    if (!postId || postId.length > 160 || !/^[A-Za-z0-9_.:-]+$/.test(postId) || !connectionId) {
+      results.push({ platform, postId, ok: false, error: 'This history entry is missing its platform post ID or account link.' });
+      continue;
+    }
+    try {
+      const { data: connection, error } = await supabase.from('platform_connections')
+        .select('*').eq('id', connectionId).eq('user_id', req.user.id).eq('platform', platform).maybeSingle();
+      if (error || !connection) throw new Error('Reconnect the account used for this post before deleting it.');
+      if (platform === 'facebook') {
+        const tokens = decryptJson(connection.encrypted_tokens);
+        await deleteFacebookPost({ postId, pageToken: tokens.access_token });
+      } else if (platform === 'youtube') {
+        const accessToken = await validAccessToken(supabase, connection);
+        const response = await fetch(`https://www.googleapis.com/youtube/v3/videos?id=${encodeURIComponent(postId)}`, {
+          method: 'DELETE', headers: { Authorization: `Bearer ${accessToken}` },
+        });
+        if (response.status === 204) {
+          results.push({ platform, postId, ok: true });
+          continue;
+        }
+        const body = await response.json().catch(() => ({}));
+        if (response.status === 403) throw new Error('YouTube refused deletion. Reconnect YouTube to grant the new delete permission, then try again.');
+        throw new Error(body.error?.message || 'YouTube could not delete this video.');
+      } else {
+        const accessToken = await validXAccessToken(supabase, connection);
+        await deleteXPost(accessToken, postId);
+      }
+      results.push({ platform, postId, ok: true });
+    } catch (error) {
+      results.push({ platform, postId, ok: false, error: error.message || 'Delete failed' });
+    }
+  }
+  const failed = results.filter((result) => !result.ok);
+  res.status(failed.length ? (failed.length === results.length ? 502 : 207) : 200)
+    .json({ results, deleted: results.length - failed.length });
+});
+
 // Consent for the optional personalisation purpose. Read returns the current
 // state so the client can show the right screen; write appends a decision to
 // the immutable log. Declining is a first-class answer, not an error.
@@ -560,24 +611,43 @@ app.get('/api/oauth/meta/callback', callbackLimit, async (req, res) => {
     if (!pages.length) throw new Error('No Facebook Page found. Create a Page and link Instagram in Page Settings first.');
     let igCount = 0;
     for (const page of pages.slice(0, 200)) {
-      await supabase.from('platform_connections').upsert({
+      const { error: pageSaveError } = await supabase.from('platform_connections').upsert({
         user_id: state.userId, platform: 'facebook', platform_account_id: page.id,
         account_name: page.name, avatar_url: null,
         encrypted_tokens: encryptJson({ access_token: page.access_token }),
         token_expires_at: null, updated_at: new Date().toISOString(),
       }, { onConflict: 'user_id,platform,platform_account_id' });
+      if (pageSaveError) {
+        console.error('[meta] Could not save Facebook Page connection:', page.name, pageSaveError.message);
+        throw new Error(`Meta found ${page.name || 'a Facebook Page'} but Driftpost could not save it. Try connecting again.`);
+      }
       const ig = page.instagram_business_account;
       if (ig?.id) {
         igCount++;
-        await supabase.from('platform_connections').upsert({
+        const { error: igSaveError } = await supabase.from('platform_connections').upsert({
           user_id: state.userId, platform: 'instagram', platform_account_id: ig.id,
           account_name: ig.username ? `@${ig.username}` : page.name, avatar_url: null,
           encrypted_tokens: encryptJson({ access_token: page.access_token, page_id: page.id }),
           token_expires_at: null, updated_at: new Date().toISOString(),
         }, { onConflict: 'user_id,platform,platform_account_id' });
+        if (igSaveError) {
+          console.error('[meta] Could not save Instagram connection:', ig.username || ig.id, igSaveError.message);
+          throw new Error(`Meta found ${ig.username ? `@${ig.username}` : 'an Instagram account'} on ${page.name || 'a Page'}, but Driftpost could not save it. Try connecting again.`);
+        }
       }
     }
-    back.searchParams.set('connected', `facebook/instagram (${pages.length} pages, ${igCount} IG)`);
+    const igNames = pages.slice(0, 200).map((page) => page.instagram_business_account?.username)
+      .filter(Boolean).map((username) => `@${username}`);
+    const shownIgNames = igNames.slice(0, 6);
+    const igLabel = shownIgNames.length
+      ? ` (${shownIgNames.join(', ')}${igNames.length > shownIgNames.length ? `, +${igNames.length - shownIgNames.length} more` : ''})`
+      : '';
+    const pageNames = pages.slice(0, 6).map((page) => page.name).filter(Boolean);
+    const pageLabel = pageNames.length
+      ? `; Pages: ${pageNames.join(', ')}${pages.length > pageNames.length ? ', …' : ''}`
+      : '';
+    back.searchParams.set('connected', 'meta');
+    back.searchParams.set('connected_details', `${pages.length} Page${pages.length === 1 ? '' : 's'}, ${igCount} Instagram account${igCount === 1 ? '' : 's'} found${pageLabel}${igLabel}`);
   } catch (e) { back.searchParams.set('oauth_error', e.message); }
   res.redirect(back.toString());
 });
@@ -701,7 +771,7 @@ app.post('/api/publish', requireUser, strictBurstLimit, publishLimit, publishUpl
     return res.status(409).json({ error: `Connect a ${platform} account first` });
   }
   const id = crypto.randomUUID();
-  const job = { id, userId: req.user.id, platform, state: 'queued', progress: 0, message: 'Queued', createdAt: Date.now() };
+  const job = { id, userId: req.user.id, platform, connectionId: conn.id, publishedPosts: [], state: 'queued', progress: 0, message: 'Queued', createdAt: Date.now() };
   jobs.set(id, job);
   res.status(202).json({ job });
   void runPublish(job, conn, { files, thumbFile }, req.body, req.user.id);
@@ -757,6 +827,8 @@ async function runPublish(job, conn, payload, body, userId) {
         onProgress: (p) => { job.progress = p; },
       });
       job.url = `https://www.youtube.com/watch?v=${video.id}`;
+      job.postId = String(video.id);
+      job.publishedPosts.push({ platform: job.platform, connectionId: conn.id, postId: String(video.id) });
       if (thumbFile) {
         try {
           await setVideoThumbnail({ accessToken: token, videoId: video.id, file: thumbFile });
@@ -807,6 +879,8 @@ async function runPublish(job, conn, payload, body, userId) {
       }
       const post = await createXPost(token, xText, mediaIds.length ? mediaIds : null, body.x_reply, poll);
       job.url = `https://x.com/i/status/${post.id}`;
+      job.postId = String(post.id);
+      job.publishedPosts.push({ platform: job.platform, connectionId: conn.id, postId: String(post.id) });
     } else {
       const { decryptJson: dec } = await import('./crypto.js');
       const meta = await import('./meta.js');
@@ -903,6 +977,8 @@ async function runPublish(job, conn, payload, body, userId) {
           });
         }
         job.url = out.url;
+        job.postId = out.id ? String(out.id) : null;
+        if (job.postId) job.publishedPosts.push({ platform: job.platform, connectionId: conn.id, postId: job.postId });
         // Optional mirror to Instagram (needs media; text-only cannot mirror).
         // Skipped automatically on "Post to all" (skip_crosspost=1) to avoid doubles.
         if (allowCrossPost && String(body.fb_synd_ig || '') === '1') {
@@ -915,18 +991,20 @@ async function runPublish(job, conn, payload, body, userId) {
             try {
               const igTokens = dec(igConn.encrypted_tokens);
               if (isCarousel) {
-                await meta.publishInstagramCarousel({
+                const mirror = await meta.publishInstagramCarousel({
                   igUserId: igConn.platform_account_id, pageToken: igTokens.access_token,
                   caption: String(body.fb_message ?? fallbackText),
                   mediaUrls: publicUrls,
                 });
+                if (mirror.id) job.publishedPosts.push({ platform: 'instagram', connectionId: igConn.id, postId: String(mirror.id) });
               } else {
-                 await meta.publishInstagram({
+                 const mirror = await meta.publishInstagram({
                    igUserId: igConn.platform_account_id, pageToken: igTokens.access_token,
                    caption: String(body.fb_message ?? fallbackText),
                    mediaUrl: publicUrl, isVideo: !!(file?.mimetype || mediaList[0]?.mimetype || '').startsWith('video/'),
                    onStage,
                  });
+                 if (mirror.id) job.publishedPosts.push({ platform: 'instagram', connectionId: igConn.id, postId: String(mirror.id) });
               }
               job.warning = 'Also mirrored to Instagram.';
             } catch (e) {
@@ -959,6 +1037,8 @@ async function runPublish(job, conn, payload, body, userId) {
            });
         }
         job.url = out.url;
+        job.postId = out.id ? String(out.id) : null;
+        if (job.postId) job.publishedPosts.push({ platform: job.platform, connectionId: conn.id, postId: job.postId });
         // Optional auto story: same media re-published as a 24h IG story.
         // Runs after the feed post so one tap covers feed + story.
         if (String(body.ig_post_story || '') === '1' && publicUrl) {
@@ -966,6 +1046,7 @@ async function runPublish(job, conn, payload, body, userId) {
             await meta.publishInstagramStory({
               igUserId: igId, pageToken,
               mediaUrl: publicUrl, isVideo: !!(file?.mimetype || mediaList[0]?.mimetype || '').startsWith('video/'),
+              onStage,
             });
             job.warning = [job.warning, 'Also posted as a story.'].filter(Boolean).join(' ');
           } catch (e) {
@@ -982,15 +1063,17 @@ async function runPublish(job, conn, payload, body, userId) {
             try {
               const fbTokens = dec(fbConn.encrypted_tokens);
               if (isCarousel) {
-                await meta.publishFacebookCarousel({
+                const mirror = await meta.publishFacebookCarousel({
                   pageId: fbConn.platform_account_id, pageToken: fbTokens.access_token,
                   text: caption, mediaList,
                 });
+                if (mirror.id) job.publishedPosts.push({ platform: 'facebook', connectionId: fbConn.id, postId: String(mirror.id) });
               } else {
-                await publishFacebook({
+                const mirror = await publishFacebook({
                   pageId: fbConn.platform_account_id, pageToken: fbTokens.access_token,
                   text: caption, media,
                 });
+                if (mirror.id) job.publishedPosts.push({ platform: 'facebook', connectionId: fbConn.id, postId: String(mirror.id) });
               }
               job.warning = 'Also shared to the Facebook Page.';
             } catch (e) {
@@ -1180,6 +1263,8 @@ async function runDueSchedules() {
         id: crypto.randomUUID(),
         userId: row.user_id,
         platform: row.platform,
+        connectionId: row.connection_id,
+        publishedPosts: [],
         state: 'queued',
         progress: 0,
         message: 'Scheduled publish',

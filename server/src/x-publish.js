@@ -131,3 +131,13 @@ export async function createXPost(accessToken, text, mediaId, replySettings, pol
   if (!body.data?.id) throw new Error('X did not return a post id');
   return body.data;
 }
+
+export async function deleteXPost(accessToken, postId) {
+  const response = await fetch(`https://api.x.com/2/tweets/${encodeURIComponent(postId)}`, {
+    method: 'DELETE', headers: { Authorization: `Bearer ${accessToken}` },
+  });
+  if (!response.ok) throw await xError(response, 'X could not delete this post');
+  const body = await response.json();
+  if (body.data?.deleted !== true) throw new Error('X did not confirm that the post was deleted');
+  return true;
+}

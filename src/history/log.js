@@ -33,10 +33,13 @@ export function logCaptions({ brand, entries }) {
 // Posted things. Stage 3 writes entries {at, platform, text, url};
 // delete works locally here, edit/repost arrive with Stage 3.
 export const readPostLog = () => read('driftpost-post-log', []);
-export function logPost({ platform, text, url }) {
-  const list = [{ platform, text: String(text || '').slice(0, 140), url: url || '', at: Date.now() }, ...readPostLog()].slice(0, 50);
+export function logPost({ platform, text, url, postId, connectionId, publishedPosts }) {
+  const list = [{ platform, text: String(text || '').slice(0, 140), url: url || '', postId: postId || '', connectionId: connectionId || '', publishedPosts: Array.isArray(publishedPosts) ? publishedPosts : [], at: Date.now() }, ...readPostLog()].slice(0, 50);
   write('driftpost-post-log', list);
 }
 export function removePostLog(at) {
   write('driftpost-post-log', readPostLog().filter((e) => e.at !== at));
+}
+export function updatePostLog(at, update) {
+  write('driftpost-post-log', readPostLog().map((e) => e.at === at ? { ...e, ...update } : e));
 }

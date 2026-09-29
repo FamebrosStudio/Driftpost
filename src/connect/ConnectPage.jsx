@@ -39,7 +39,9 @@ export default function ConnectPage({ session, onContinue, onHistory, onSignOut 
     const ok = p.get('connected');
     const bad = p.get('oauth_error');
     const known = ['youtube', 'facebook', 'instagram', 'x'];
-    if (ok && known.some((id) => ok === id || ok.startsWith(`${id} `) || ok.startsWith(`${id}(`))) {
+    if (ok === 'meta') {
+      say(`Meta connected. ${p.get('connected_details') || 'Refreshing your account list.'}`);
+    } else if (ok && known.some((id) => ok === id || ok.startsWith(`${id} `) || ok.startsWith(`${id}(`))) {
       const label = ok[0].toUpperCase() + ok.slice(1);
       say(`${label} connected.`);
     }

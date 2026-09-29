@@ -289,6 +289,17 @@ const isNetworkFail = (e) => e?.name === 'TypeError'
 // One shared refresh flight: ten 401s at once trigger exactly one token
 // refresh, and every waiter replays with the same fresh token.
 let refreshInflight = null;
+async function settleWithin(promise, ms, fallback = null) {
+  let timer;
+  try {
+    return await Promise.race([
+      promise,
+      new Promise((resolve) => { timer = setTimeout(() => resolve(fallback), ms); }),
+    ]);
+  } finally {
+    clearTimeout(timer);
+  }
+}
 async function freshToken() {
   try {
     if (!refreshInflight) {
@@ -316,7 +327,8 @@ async function terminalAuthError() {
   try {
     const client = await getSupabase();
     if (client) {
-      const { data, error } = await client.auth.getUser();
+      const result = await settleWithin(client.auth.getUser(), 4000, null);
+      const { data, error } = result || {};
       if (!error && data?.user) {
         return new Error('Server is rejecting a valid login — the server login keys need fixing. Tell support and keep this screenshot.');
       }
@@ -340,7 +352,9 @@ async function ensureFresh(token) {
   const exp = expOf(token);
   if (!exp || exp * 1000 > Date.now() + 60000) return token;
   try {
-    const f = await freshToken();
+    // A stalled Supabase refresh must not keep account screens on their
+    // loading state before the API request's own timeout can begin.
+    const f = await settleWithin(freshToken(), 5000, null);
     return f || token;
   } catch { return token; }
 }
@@ -401,7 +415,7 @@ export async function api(path, token, options = {}) {
     return await invoke(await ensureFresh(token));
   } catch (e) {
     if (e?.status !== 401 || !token) throw e;
-    const fresh = await freshToken();
+    const fresh = await settleWithin(freshToken(), 5000, null);
     if (!fresh || fresh === token) throw await terminalAuthError();
     try {
       return await invoke(fresh);
@@ -498,7 +512,7 @@ export async function fetchWithAuth(url, token, init = {}) {
     return await doPost(await ensureFresh(token), budget);
   } catch (e) {
     if (e?.status !== 401 || !token) throw e;
-    const fresh = await freshToken();
+    const fresh = await settleWithin(freshToken(), 5000, null);
     if (!fresh || fresh === token) throw await terminalAuthError();
     try {
       const out = await doPost(fresh, budget);
