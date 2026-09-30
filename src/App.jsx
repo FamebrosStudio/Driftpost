@@ -2,6 +2,7 @@
 import { useSession, getSupabase, pokeSession } from './session.js';
 import BrandIcon from './brand.jsx';
 import ConsentGate from './connect/ConsentGate.jsx';
+import AiAccessGate from './connect/AiAccessGate.jsx';
 import PageLoading from './PageLoading.jsx';
 import ApprovalPage from './workspace/ApprovalPage.jsx';
 
@@ -549,7 +550,9 @@ export default function App() {
         session={session}
         onOpenPage={(p) => { setPubPageState(p); setEntry('landing'); }}
       >
-        <Console session={session} onSwitchAccount={() => doSignOut('auth')} onSignOut={() => doSignOut('landing')} />
+        <AiAccessGate session={session}>
+          <Console session={session} onSwitchAccount={() => doSignOut('auth')} onSignOut={() => doSignOut('landing')} />
+        </AiAccessGate>
       </ConsentGate>
     </Suspense>
   );

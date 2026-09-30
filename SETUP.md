@@ -151,5 +151,5 @@ Brand dataset location: `C:\Users\faiza\Driftpost\server\src\brand-memory\brands
 - **"AI is not configured"**: Set `XAI_API_KEY` in Driftpost `.env`
 - **"Sign in required"**: Use correct Supabase token
 - **"Connection not found"**: Connect platforms in Driftpost first
-- **Video too large**: Max 512MB video, 10MB image
+- **Video too large**: Max 400MB video, 10MB image
 - **Tunnel not working**: Ensure `npx n8n start --tunnel` is running

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { api } from '../lib.js';
+import { isAiAccount } from '../ai-access.js';
 import './consent.css';
 
 const POINTS = [
@@ -16,13 +17,20 @@ const POINTS = [
 // consent lookup is unavailable, the app can still open with personalisation
 // off; the backend also checks consent before storing examples.
 export default function ConsentGate({ session, onOpenPage, children }) {
+  const allowed = isAiAccount(session?.user?.email);
   const [opt, setOpt] = useState(false); // never pre-ticked
   const [state, setState] = useState(undefined); // undefined = still checking
   const [retry, setRetry] = useState(0);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState('');
 
+  // AI consent and personalization are only relevant to accounts with AI access.
+  // Everyone else enters the regular publishing workspace without an AI-only screen.
   useEffect(() => {
+    if (!allowed) {
+      setState({ recorded: true, personalisation: false });
+      return undefined;
+    }
     let live = true;
     // Consent is read-only here. If the API is cold or unreachable, enter the
     // app with personalisation off and keep the backend's fail-closed check in
@@ -38,7 +46,7 @@ export default function ConsentGate({ session, onOpenPage, children }) {
       })
       .finally(() => clearTimeout(timer));
     return () => { live = false; clearTimeout(timer); };
-  }, [session.access_token, retry]);
+  }, [allowed, session.access_token, retry]);
 
   const decide = async (grant) => {
     if (busy) return;
@@ -59,6 +67,7 @@ export default function ConsentGate({ session, onOpenPage, children }) {
     }
   };
 
+  if (!allowed) return children;
   if (state === undefined) return <div className="cg"><div className="cg-card" aria-busy="true">Checking your privacy settings…</div></div>;
   if (state?.recorded || state?.unverified) return <>
     {state.unverified && <div className="cg-fallback" role="status">

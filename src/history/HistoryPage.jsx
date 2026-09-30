@@ -5,6 +5,7 @@ import { readDisconnectLog, removeDisconnectLog, readCaptionLog, readPostLog, re
 import { listSchedules, cancelSchedule } from '../lib.js';
 import './history.css';
 import { WorkspaceNav } from '../workspace/Workspace.jsx';
+import { hasAiAccess } from '../ai-access.js';
 
 const TABS = [
   { id: 'posted', label: 'Posted' },
@@ -226,8 +227,8 @@ export function DeletedTab({ token }) {
   );
 }
 
-export function CaptionsTab() {
-  const [items] = useState(readCaptionLog);
+export function CaptionsTab({ userId }) {
+  const [items] = useState(() => readCaptionLog(userId));
   const [copied, setCopied] = useState(0);
   const copy = async (text, at) => {
     try {
@@ -264,14 +265,19 @@ export function CaptionsTab() {
 
 export default function HistoryPage({ session, onNavigate, onSignOut }) {
   const [tab, setTab] = useState('posted');
+  const canUseAi = hasAiAccess(session);
+  const tabs = canUseAi ? TABS : TABS.filter((t) => t.id !== 'captions');
+  useEffect(() => {
+    if (!canUseAi && tab === 'captions') setTab('posted');
+  }, [canUseAi, tab]);
   return (
     <>
     <WorkspaceNav page="history" onNavigate={onNavigate} email={session.user?.email} onSignOut={onSignOut} />
     <div className="hist">
       <div className="hist-in">
-        <div className="hist-heading"><h1>History</h1><p>Find published work, scheduled posts, saved captions and accounts.</p></div>
+        <div className="hist-heading"><h1>History</h1><p>{canUseAi ? 'Find published work, scheduled posts, saved captions and accounts.' : 'Find published work, scheduled posts and accounts.'}</p></div>
         <div className="hist-tabs" role="tablist" aria-label="History sections">
-          {TABS.map((t) => (
+          {tabs.map((t) => (
             <button
               key={t.id}
               type="button"
@@ -287,7 +293,7 @@ export default function HistoryPage({ session, onNavigate, onSignOut }) {
         {tab === 'posted' && <PostedTab token={session.access_token} />}
         {tab === 'scheduled' && <ScheduledTab token={session.access_token} />}
         {tab === 'deleted' && <DeletedTab token={session.access_token} />}
-        {tab === 'captions' && <CaptionsTab />}
+        {canUseAi && tab === 'captions' && <CaptionsTab userId={session.user.id} />}
       </div>
     </div>
     </>

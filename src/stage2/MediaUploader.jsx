@@ -1,12 +1,15 @@
 import React, { useRef, useState } from 'react';
 
 // Big minimal dropzone: click to browse, or drag & drop. Images + video.
-export default function MediaUploader({ count, onFiles }) {
+export default function MediaUploader({ count, onFiles, canUseAi = false }) {
   const inputRef = useRef(null);
   const [over, setOver] = useState(false);
+  const [message, setMessage] = useState('');
 
   const take = (list) => {
-    const arr = [...(list || [])].filter((f) => f && /^(image|video)\//.test(f.type));
+    const selected = [...(list || [])].filter((f) => f && /^(image|video)\//.test(f.type));
+    const arr = selected.filter((f) => f.size <= 400 * 1024 * 1024);
+    setMessage(selected.length !== arr.length ? 'Each file must be 400 MB or smaller.' : '');
     if (arr.length) onFiles(arr);
   };
 
@@ -29,8 +32,9 @@ export default function MediaUploader({ count, onFiles }) {
         onDrop={(e) => { e.preventDefault(); setOver(false); take(e.dataTransfer.files); }}
       >
         <b>+ Add Media{count ? ` (${count}/10)` : ''}</b>
-        <small>Images or video. Choose Analyze photo + video in the prompt settings to include visual and spoken details.</small>
+        <small>{canUseAi ? 'Images or video, up to 400 MB per file. Choose Analyze photo + video in the prompt settings to include visual and spoken details.' : 'Images or video, up to 400 MB per file.'}</small>
       </button>
+      {message && <small role="status" style={{ display: 'block', marginTop: 8, color: '#e28e8e' }}>{message}</small>}
     </div>
   );
 }

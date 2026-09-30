@@ -20,14 +20,15 @@ export function removeDisconnectLog(at) {
 }
 
 // Generated captions worth keeping.
-export const readCaptionLog = () => read('driftpost-caption-log', []);
-export function logCaptions({ brand, entries }) {
+export const readCaptionLog = (userId) => read(`driftpost-caption-log:${userId}`, []);
+export function logCaptions({ userId, brand, entries }) {
+  if (!userId) return;
   const now = Date.now();
   const fresh = (entries || [])
     .filter((e) => e && e.text && String(e.text).trim())
     .map((e, i) => ({ platform: e.platform, text: String(e.text).trim(), brand: brand || '', at: now - i }));
   if (!fresh.length) return;
-  write('driftpost-caption-log', [...fresh, ...readCaptionLog()].slice(0, 50));
+  write(`driftpost-caption-log:${userId}`, [...fresh, ...readCaptionLog(userId)].slice(0, 50));
 }
 
 // Posted things. Stage 3 writes entries {at, platform, text, url};

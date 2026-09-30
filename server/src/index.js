@@ -27,6 +27,11 @@ if (missing.length) throw new Error(`Missing env: ${missing.join(', ')}`);
 const app = express();
 const port = Number(process.env.PORT || 10000);
 const BUCKET = process.env.MEDIA_BUCKET || 'driftpost-media';
+const MAX_UPLOAD_BYTES = 400 * 1024 * 1024;
+const AI_ALLOWED_EMAILS = new Set([
+  'famebros.studio@gmail.com',
+  'kabirsayed.k@gmail.com',
+]);
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SECRET_KEY, { auth: { persistSession: false, autoRefreshToken: false } });
 const jobs = new Map();
 const allowedOrigins = (process.env.FRONTEND_URL || '').split(',').map((o) => o.trim()).filter(Boolean);
@@ -47,12 +52,12 @@ const corsOptions = {
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Driftpost-AI-Grant'],
 };
 
 const upload = multer({
   dest: path.join(os.tmpdir(), 'driftpost-uploads'),
-  limits: { fileSize: 512 * 1024 * 1024, files: 60, fields: 60, fieldSize: 200 * 1024, fieldNameSize: 100 },
+  limits: { fileSize: MAX_UPLOAD_BYTES, files: 60, fields: 60, fieldSize: 200 * 1024, fieldNameSize: 100 },
   fileFilter: (_req, file, cb) => {
     const mt = file.mimetype || '';
     if (mt.startsWith('image/') || mt.startsWith('video/')) {
@@ -201,7 +206,7 @@ app.post('/api/meta/webhook', express.raw({ type: 'application/json', limit: '1m
 // per-image analysis payload limit, not a posting/media-storage file limit.
 const aiImageUpload = multer({
   dest: path.join(os.tmpdir(), 'driftpost-ai-images'),
-  limits: { fileSize: 500 * 1024 * 1024, files: 5, fields: 20, fieldSize: 16 * 1024 },
+  limits: { fileSize: MAX_UPLOAD_BYTES, files: 5, fields: 20, fieldSize: 16 * 1024 },
   fileFilter: (_req, file, cb) => cb(null,
     ['image/jpeg', 'image/png'].includes(file.mimetype) || /^video\//.test(file.mimetype)),
 });
@@ -276,6 +281,56 @@ const oauthLimit = limit({ windowMs: 60 * 1000, max: 20, ns: 'oauth', key: userK
 const connectionsLimit = limit({ windowMs: 60 * 1000, max: 60, ns: 'conn', key: userKey });
 const jobsLimit = limit({ windowMs: 60 * 1000, max: 60, ns: 'jobs', key: userKey });
 const callbackLimit = limit({ windowMs: 60 * 1000, max: 30, ns: 'cb', key: (req) => `ip:${req.ip}` });
+const aiUnlockLimit = limit({ windowMs: 15 * 60 * 1000, max: 5, ns: 'ai-unlock', key: userKey });
+
+function isAiAllowedUser(user) {
+  const email = String(user?.email || '').trim().toLowerCase();
+  return !!user?.email_confirmed_at && AI_ALLOWED_EMAILS.has(email);
+}
+
+function aiGrantKey() {
+  const passphrase = process.env.AI_UNLOCK_PASSPHRASE;
+  if (!passphrase) return null;
+  return crypto.createHmac('sha256', process.env.STATE_SIGNING_SECRET)
+    .update('driftpost:ai-device-grant:v1\0')
+    .update(passphrase)
+    .digest();
+}
+
+function issueAiDeviceGrant(user) {
+  const key = aiGrantKey();
+  if (!key) return null;
+  const payload = Buffer.from(JSON.stringify({
+    v: 1,
+    sub: user.id,
+    exp: Date.now() + 10 * 365 * 24 * 60 * 60 * 1000,
+  })).toString('base64url');
+  const signature = crypto.createHmac('sha256', key).update(payload).digest('base64url');
+  return `${payload}.${signature}`;
+}
+
+function hasValidAiDeviceGrant(req) {
+  const key = aiGrantKey();
+  const grant = String(req.get('X-Driftpost-AI-Grant') || '');
+  if (!key || !grant || grant.length > 2048) return false;
+  try {
+    const [payload, signature, extra] = grant.split('.');
+    if (!payload || !signature || extra) return false;
+    const expected = crypto.createHmac('sha256', key).update(payload).digest();
+    const received = Buffer.from(signature, 'base64url');
+    if (received.length !== expected.length || !crypto.timingSafeEqual(received, expected)) return false;
+    const claims = JSON.parse(Buffer.from(payload, 'base64url').toString('utf8'));
+    return claims.v === 1 && claims.sub === req.user?.id && Number(claims.exp) > Date.now();
+  } catch {
+    return false;
+  }
+}
+
+function requireAiAccess(req, res, next) {
+  if (!isAiAllowedUser(req.user)) return res.status(403).json({ error: 'AI access is unavailable for this account.' });
+  if (!hasValidAiDeviceGrant(req)) return res.status(403).json({ error: 'AI access must be unlocked on this browser.' });
+  next();
+}
 
 function activeJobCount(userId) {
   let n = 0;
@@ -300,6 +355,27 @@ setInterval(() => {
 
 app.get('/', (_req, res) => res.json({ ok: true, service: 'driftpost-api', platforms: ['youtube', 'instagram', 'facebook', 'x'] }));
 app.get('/health', (_req, res) => res.json({ ok: true }));
+
+app.post('/api/ai/unlock', requireUser, aiUnlockLimit, (req, res) => {
+  if (!isAiAllowedUser(req.user)) return res.status(403).json({ error: 'AI access is unavailable for this account.' });
+  const expected = String(process.env.AI_UNLOCK_PASSPHRASE || '');
+  if (!expected) return res.status(503).json({ error: 'AI access is not configured yet.' });
+  const candidate = typeof req.body?.password === 'string' ? req.body.password : '';
+  if (!candidate || candidate.length > 256) return res.status(403).json({ error: 'Access could not be verified.' });
+  const key = process.env.STATE_SIGNING_SECRET;
+  const digest = (value) => crypto.createHmac('sha256', key)
+    .update('driftpost:ai-passphrase-check:v1\0')
+    .update(value)
+    .digest();
+  if (!crypto.timingSafeEqual(digest(candidate), digest(expected))) {
+    return res.status(403).json({ error: 'Access could not be verified.' });
+  }
+  const grant = issueAiDeviceGrant(req.user);
+  if (!grant) return res.status(503).json({ error: 'AI access is not configured yet.' });
+  res.json({ grant });
+});
+
+app.get('/api/ai/access', requireUser, requireAiAccess, (_req, res) => res.json({ unlocked: true }));
 
 app.get('/api/connections', requireUser, connectionsLimit, burstLimit, async (req, res) => {
   try {
@@ -444,7 +520,7 @@ app.delete('/api/account', requireUser, limit({ windowMs: 60 * 1000, max: 5, key
 });
 
 // --- AI captions (Grok + local brand memory, server-side key) ---
-app.post('/api/ai/captions', requireUser, aiLimit, (req, res, next) => {
+app.post('/api/ai/captions', requireUser, requireAiAccess, aiLimit, (req, res, next) => {
   if (req.is('multipart/form-data')) return aiImageUpload.fields([
     { name: 'images', maxCount: 4 }, { name: 'video', maxCount: 1 },
   ])(req, res, next);
@@ -640,7 +716,7 @@ app.post('/api/ai/consent/revoke', requireUser, burstLimit, async (req, res) => 
 });
 
 // The user approved or published a caption: promote it to a future example.
-app.post('/api/ai/feedback', requireUser, burstLimit, async (req, res) => {
+app.post('/api/ai/feedback', requireUser, requireAiAccess, burstLimit, async (req, res) => {
   try {
     if (!(await hasPersonalisationConsent(supabase, req.user.id))) {
       // No consent means no storage, so there is nothing to approve. This is a
@@ -677,7 +753,7 @@ app.get('/api/ai/brands', requireUser, burstLimit, async (req, res) => {
 });
 
 // Save an approved caption / correction into memory (no LLM call, file append).
-app.post('/api/ai/learn', requireUser, burstLimit, async (req, res) => {
+app.post('/api/ai/learn', requireUser, requireAiAccess, burstLimit, async (req, res) => {
   try {
     const { resolveBrand, learnBrand } = await import('./brand-memory/index.js');
     const q = String(req.body?.brand || '').slice(0, 160);
@@ -928,10 +1004,10 @@ app.post('/api/publish', requireUser, strictBurstLimit, publishLimit, publishUpl
       await cleanup();
       return res.status(400).json({ error: 'That file is not a real image' });
     }
-    const cap = isVid ? 512 * 1024 * 1024 : platform === 'instagram' ? 8 * 1024 * 1024 : 10 * 1024 * 1024;
+    const cap = isVid ? MAX_UPLOAD_BYTES : platform === 'instagram' ? 8 * 1024 * 1024 : 10 * 1024 * 1024;
     if (f.size > cap) {
       await cleanup();
-      return res.status(400).json({ error: isVid ? 'Video is larger than 512 MB' : platform === 'instagram' ? 'Instagram photos must be 8 MB or smaller' : 'Image is larger than 10 MB' });
+      return res.status(400).json({ error: isVid ? 'Video is larger than 400 MB' : platform === 'instagram' ? 'Instagram photos must be 8 MB or smaller' : 'Image is larger than 10 MB' });
     }
     if (platform === 'instagram' && isImg && mt !== 'image/jpeg') {
       await cleanup();
@@ -1351,7 +1427,7 @@ function validateMedia(platform, files) {
     if (mt.startsWith('image/') && platform === 'instagram' && f.size > 8 * 1024 * 1024) return 'Instagram photos must be 8 MB or smaller';
     if (mt.startsWith('image/') && platform === 'instagram' && mt !== 'image/jpeg') return 'Instagram photos must be JPEG. Reopen Stage 3 to prepare this photo.';
     if (mt.startsWith('image/') && platform !== 'instagram' && f.size > 10 * 1024 * 1024) return 'Image is larger than 10 MB';
-    if (mt.startsWith('video/') && f.size > 512 * 1024 * 1024) return 'Video is larger than 512 MB';
+    if (mt.startsWith('video/') && f.size > MAX_UPLOAD_BYTES) return 'Video is larger than 400 MB';
   }
   const imgCount = files.filter((f) => String(f.mimetype || '').startsWith('image/')).length;
   const vidCount = files.filter((f) => String(f.mimetype || '').startsWith('video/')).length;
@@ -1742,7 +1818,7 @@ app.use((err, _req, res, _next) => {
     return res.status(413).json({ error: 'Upload is too large. Reload the app and try again.' });
   }
   if (err && (err.code === 'LIMIT_FILE_SIZE' || err.code === 'LIMIT_FILE_COUNT' || err.code === 'LIMIT_UNEXPECTED_FILE')) {
-    return res.status(400).json({ error: 'File is too large. Images max 10 MB, videos max 512 MB.' });
+    return res.status(400).json({ error: 'File is too large. Images max 10 MB, videos max 400 MB.' });
   }
   if (err && err.message === 'Only image and video files are accepted') {
     return res.status(400).json({ error: err.message });

@@ -1,4 +1,5 @@
 import { getSupabase, pokeSession } from './session.js';
+import { AI_ACCESS_HEADER, readAiGrantForAccessToken } from './ai-access.js';
 
 const apiUrlRaw = import.meta.env.VITE_API_URL;
 export const apiUrl = apiUrlRaw?.replace(/\/$/, '') || '';
@@ -267,12 +268,13 @@ export const cancelSchedule = (token, id) => api(`/api/schedules/${id}`, token, 
 // AI answer cache survive. Only the given user's media vault entry is
 // dropped — never the whole vault (shared browsers hold several users).
 export async function resetPostState(userId) {
-  const DROP = ['driftpost-stage2-brief', 'driftpost-stage2-outputs', 'driftpost-stage2-done', 'driftpost-stage1-done', 'driftpost-stage3-reviewed', 'driftpost-stage3-accounts', 'driftpost-stage1-brand-accounts'];
+  const DROP = ['driftpost-stage2-done', 'driftpost-stage1-done', 'driftpost-stage1-brand-accounts'];
+  const DROP_USER = ['driftpost-stage2-brief', 'driftpost-stage2-outputs', 'driftpost-stage2-tone', 'driftpost-stage2-emoji', 'driftpost-stage2-length', 'driftpost-stage2-analysis', 'driftpost-stage3-cfg', 'driftpost-stage3-reviewed', 'driftpost-stage3-accounts'].map((key) => `${key}:${userId}`);
   try {
     const rm = [];
     for (let i = 0; i < localStorage.length; i++) {
       const k = localStorage.key(i);
-      if (k && DROP.some((p) => k.startsWith(p))) rm.push(k);
+      if (k && (DROP.includes(k) || DROP_USER.includes(k))) rm.push(k);
     }
     rm.forEach((k) => localStorage.removeItem(k));
     localStorage.setItem('driftpost-stage', '1');
@@ -362,7 +364,7 @@ const expOf = (t) => {
   } catch { return 0; }
 };
 // Pre-flight: a token dying within 60s (or already dead) is swapped BEFORE
-// the request — a 65MB upload can outlive the token it started with, and
+// the request — a 400MB upload can outlive the token it started with, and
 // every poll after that would 401 one by one.
 async function ensureFresh(token) {
   if (!token) return token;
@@ -393,6 +395,9 @@ export async function api(path, token, options = {}) {
         headers: {
           ...(options.headers || {}),
           Authorization: `Bearer ${t}`,
+          ...(path.startsWith('/api/ai/') && readAiGrantForAccessToken(t)
+            ? { [AI_ACCESS_HEADER]: readAiGrantForAccessToken(t) }
+            : {}),
           ...(options.body instanceof FormData ? {} : { 'Content-Type': 'application/json' }),
         },
       });
@@ -445,9 +450,9 @@ export async function api(path, token, options = {}) {
 
 // Raw fetch with the same auth resilience (for FormData posts that need the
 // raw response). Returns { res, data, refreshedToken? }.
-// The timeout scales with the upload size — a 65MB video can never make a
+// The timeout scales with the upload size — a 400MB video can never make a
 // 30s budget on a normal connection, so the budget is ~0.5MB/s + 30s
-// headroom, capped at 8 minutes. Slow uploads fail as "too slow", never as
+// headroom, capped at 15 minutes. Slow uploads fail as "too slow", never as
 // a misleading "waking up".
 export async function fetchWithAuth(url, token, init = {}) {
   const { onUploadProgress, ...rest } = init;
@@ -461,7 +466,7 @@ export async function fetchWithAuth(url, token, init = {}) {
       return n;
     } catch { return 0; }
   })();
-  const budget = Math.min(480000, 30000 + Math.round((bodyBytes / (512 * 1024)) * 1000));
+  const budget = Math.min(900000, 30000 + Math.round((bodyBytes / (512 * 1024)) * 1000));
   // Upload phase progress needs XHR (fetch exposes download progress only).
   // The browser fires upload events as bytes leave — mapped to the first 15%.
   const xhrPost = (t) => new Promise((resolve, reject) => {

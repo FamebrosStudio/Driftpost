@@ -14,6 +14,7 @@ import ContinueButton from './ContinueButton.jsx';
 import PageLoading from '../PageLoading.jsx';
 import './stage2.css';
 import { WorkspaceNav } from '../workspace/Workspace.jsx';
+import { hasAiAccess } from '../ai-access.js';
 
 const MediaEditor = lazy(() => import('./MediaEditor.jsx'));
 
@@ -29,18 +30,21 @@ function load(key, fallback) {
 function save(key, val) {
   try { localStorage.setItem(key, JSON.stringify(val)); } catch {}
 }
+const scopedKey = (key, userId) => `${key}:${userId}`;
 
 
 
 export default function StageTwoPage({ session, onBack, onSignOut, onNavigate, onNext }) {
+  const userId = session.user.id;
+  const canUseAi = hasAiAccess(session);
   const [connections, setConnections] = useState([]);
   const [files, setFiles] = useState([]);
-  const [brief, setBrief] = useState(() => load('driftpost-stage2-brief', ''));
-  const [tone, setTone] = useState(() => load('driftpost-stage2-tone', 'auto'));
-  const [emoji, setEmoji] = useState(() => load('driftpost-stage2-emoji', 'medium'));
-  const [length, setLength] = useState(() => load('driftpost-stage2-length', 'medium'));
-  const [analysis, setAnalysis] = useState(() => load('driftpost-stage2-analysis', 'fast'));
-  const [outputs, setOutputs] = useState(() => load('driftpost-stage2-outputs', {}));
+  const [brief, setBrief] = useState(() => load(scopedKey('driftpost-stage2-brief', userId), ''));
+  const [tone, setTone] = useState(() => load(scopedKey('driftpost-stage2-tone', userId), 'auto'));
+  const [emoji, setEmoji] = useState(() => load(scopedKey('driftpost-stage2-emoji', userId), 'medium'));
+  const [length, setLength] = useState(() => load(scopedKey('driftpost-stage2-length', userId), 'medium'));
+  const [analysis, setAnalysis] = useState(() => load(scopedKey('driftpost-stage2-analysis', userId), 'fast'));
+  const [outputs, setOutputs] = useState(() => load(scopedKey('driftpost-stage2-outputs', userId), {}));
   const [busy, setBusy] = useState(false);
   const [aiMsg, setAiMsg] = useState('');
   const [aiMsgKind, setAiMsgKind] = useState('ok');
@@ -80,11 +84,11 @@ export default function StageTwoPage({ session, onBack, onSignOut, onNavigate, o
     })();
   }, [mediaKey, files]);
 
-  useEffect(() => { save('driftpost-stage2-brief', brief); }, [brief]);
-  useEffect(() => { save('driftpost-stage2-tone', tone); }, [tone]);
-  useEffect(() => { save('driftpost-stage2-emoji', emoji); }, [emoji]);
-  useEffect(() => { save('driftpost-stage2-length', length); }, [length]);
-  useEffect(() => { save('driftpost-stage2-analysis', analysis); }, [analysis]);
+  useEffect(() => { save(scopedKey('driftpost-stage2-brief', userId), brief); }, [brief, userId]);
+  useEffect(() => { save(scopedKey('driftpost-stage2-tone', userId), tone); }, [tone, userId]);
+  useEffect(() => { save(scopedKey('driftpost-stage2-emoji', userId), emoji); }, [emoji, userId]);
+  useEffect(() => { save(scopedKey('driftpost-stage2-length', userId), length); }, [length, userId]);
+  useEffect(() => { save(scopedKey('driftpost-stage2-analysis', userId), analysis); }, [analysis, userId]);
 
   // Stage 1 selections drive everything here.
   const s1 = useMemo(() => ({
@@ -153,7 +157,7 @@ export default function StageTwoPage({ session, onBack, onSignOut, onNavigate, o
     setOutputs((prev) => {
       const next = { ...prev };
       pids.forEach((pid) => { next[pid] = mapped[pid]; });
-      save('driftpost-stage2-outputs', next);
+      save(scopedKey('driftpost-stage2-outputs', userId), next);
       return next;
     });
   };
@@ -166,13 +170,13 @@ export default function StageTwoPage({ session, onBack, onSignOut, onNavigate, o
 
   const generate = async () => {
     const hasMedia = files.length > 0;
-    if (busy || regen || (!brief.trim() && !(analysis === 'analyze' && hasMedia)) || !targetPlatforms.length || !claim('gen')) return;
+    if (!canUseAi || busy || regen || (!brief.trim() && !(analysis === 'analyze' && hasMedia)) || !targetPlatforms.length || !claim('gen')) return;
     setBusy(true); setAiMsg('');
     try {
       const data = await requestCaptions();
       const mapped = mapResponse(data);
       applyMapped(mapped, targetPlatforms);
-      logCaptions({ brand: brandLabel, entries: targetPlatforms.map((pid) => ({ platform: pid, text: composeOutput(pid, mapped[pid]) })) });
+      logCaptions({ userId, brand: brandLabel, entries: targetPlatforms.map((pid) => ({ platform: pid, text: composeOutput(pid, mapped[pid]) })) });
       const saved = data.captionMemoryStatus === 'saved'
         ? 'All generated captions were saved to your private account memory; reviewed captions will guide future examples.'
         : data.captionMemoryStatus === 'unavailable'
@@ -193,13 +197,13 @@ export default function StageTwoPage({ session, onBack, onSignOut, onNavigate, o
   const [regen, setRegen] = useState('');
   const regenOne = async (pid) => {
     const hasMedia = files.length > 0;
-    if (busy || regen || (!brief.trim() && !(analysis === 'analyze' && hasMedia)) || !claim(`regen:${pid}`)) return;
+    if (!canUseAi || busy || regen || (!brief.trim() && !(analysis === 'analyze' && hasMedia)) || !claim(`regen:${pid}`)) return;
     setRegen(pid); setAiMsg('');
     try {
       const data = await requestCaptions(pid);
       const mapped = mapResponse(data);
       applyMapped(mapped, [pid]);
-      logCaptions({ brand: brandLabel, entries: [{ platform: pid, text: composeOutput(pid, mapped[pid]) }] });
+      logCaptions({ userId, brand: brandLabel, entries: [{ platform: pid, text: composeOutput(pid, mapped[pid]) }] });
       const saved = data.captionMemoryStatus === 'saved'
         ? 'Saved to your account memory.'
         : data.captionMemoryStatus === 'unavailable'
@@ -215,7 +219,7 @@ export default function StageTwoPage({ session, onBack, onSignOut, onNavigate, o
   };
 
   const saveOutput = (pid, values) => {
-    setOutputs((o) => { const n = { ...o, [pid]: values }; save('driftpost-stage2-outputs', n); return n; });
+    setOutputs((o) => { const n = { ...o, [pid]: values }; save(scopedKey('driftpost-stage2-outputs', userId), n); return n; });
   };
 
   const hasOutputs = targetPlatforms.some((pid) => {
@@ -240,7 +244,7 @@ export default function StageTwoPage({ session, onBack, onSignOut, onNavigate, o
         <header className="s2-head">
           <span className="s2-badge">Stage 2 of 3</span>
           <h1>Create Your Content</h1>
-          <p>Upload your media, customize your format and let AI create platform-ready content.</p>
+          <p>{canUseAi ? 'Upload your media, customize your format and let AI create platform-ready content.' : 'Upload your media and prepare platform-ready drafts to review before posting.'}</p>
         </header>
         <ProgressStepper current={2} />
 
@@ -250,7 +254,7 @@ export default function StageTwoPage({ session, onBack, onSignOut, onNavigate, o
             <span className="s2-count">{files.length}/10</span>
           </div>
           <p className="sub">Images or video — shown on every selected platform. Tap Edit on a photo or video to crop it.</p>
-          <MediaUploader count={files.length} onFiles={addFiles} />
+          <MediaUploader count={files.length} onFiles={addFiles} canUseAi={canUseAi} />
           <MediaGallery files={files} onRemove={removeAt} onEdit={setEditing} />
         </section>
 
@@ -258,8 +262,9 @@ export default function StageTwoPage({ session, onBack, onSignOut, onNavigate, o
           <CrosspostToggle on={crosspostOn} onChange={setCrosspostSaved} />
         )}
 
-        <section className="s2-sec" aria-label="Write prompt">
-          <h2>Write prompt</h2>
+        <section className="s2-sec" aria-label={canUseAi ? 'Write prompt' : 'Write content'}>
+          <h2>{canUseAi ? 'Write prompt' : 'Write your content'}</h2>
+          {canUseAi ? <>
           <p className="sub">Tell AI what to create{brandLabel ? ` for ${brandLabel}` : ''}. One prompt, tuned per platform.</p>
           <PromptBuilder
             brief={brief} setBrief={setBrief}
@@ -267,6 +272,7 @@ export default function StageTwoPage({ session, onBack, onSignOut, onNavigate, o
             busy={busy} analysis={analysis} setAnalysis={setAnalysis}
             canGenerate={(!!brief.trim() || (analysis === 'analyze' && files.length > 0)) && !!targetPlatforms.length} onGenerate={generate}
           />
+          </> : <p className="sub">Edit each platform draft below, or continue with your own prepared captions.</p>}
           {!targetPlatforms.length && (
             <p className="s2-msg err">No platforms from Stage 1 — go back and finish Stage 1 first.</p>
           )}
@@ -284,14 +290,14 @@ export default function StageTwoPage({ session, onBack, onSignOut, onNavigate, o
         </section>
 
         {targetPlatforms.length > 0 && (
-          <section className="s2-sec" aria-label="AI output">
+          <section className="s2-sec" aria-label={canUseAi ? 'AI output' : 'Platform drafts'}>
             <div className="s2-sec-head">
-              <h2>AI output</h2>
+              <h2>{canUseAi ? 'AI output' : 'Platform drafts'}</h2>
               <span className="s2-count">{targetPlatforms.length} platform{targetPlatforms.length === 1 ? '' : 's'}</span>
             </div>
             <p className="sub">Different output per platform — only the ones you selected in Stage 1.{crosspostOn ? ' Facebook hides here: it auto-posts through Instagram cross-post.' : ''}</p>
-            {!hasOutputs && !busy && <p className="s2-msg ok">Nothing here yet — write a prompt above and press Generate Content.</p>}
-            <OutputContainer platforms={targetPlatforms} outputs={outputs} onSave={saveOutput} regen={regen} onRegen={regenOne} busy={busy} />
+            {!hasOutputs && !busy && <p className="s2-msg ok">{canUseAi ? "Nothing here yet - write a prompt above and press Generate Content." : "Use Edit on a platform card to add your post text."}</p>}
+            <OutputContainer platforms={targetPlatforms} outputs={outputs} onSave={saveOutput} regen={regen} onRegen={canUseAi ? regenOne : undefined} busy={busy} />
           </section>
         )}
       </div>

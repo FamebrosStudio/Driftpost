@@ -178,7 +178,7 @@ export default function StageOnePage({ session, onNext, onNavigate, onSignOut })
   const pick = (t) => { setType(t); save('driftpost-stage1-type', t); setSavedTick(false); };
   // Outputs belong to one brand's brief — switching brands drops the old
   // cards so yesterday's caption can never publish under a new brand.
-  const clearOutputs = () => { try { localStorage.removeItem('driftpost-stage2-outputs'); } catch {} };
+  const clearOutputs = () => { try { localStorage.removeItem(`driftpost-stage2-outputs:${session.user.id}`); } catch {} };
   const chooseBrand = (k) => {
     const b = brands.find((x) => x.key === k);
     if (b) save('driftpost-stage1-brand-accounts', b.map);

@@ -76,9 +76,9 @@ export default function PlatformOutputCard({ pid, values, onSave, regenning, reg
         ) : (
           <button type="button" onClick={startEdit}>Edit</button>
         )}
-        <button type="button" disabled={regenBusy} title="Fresh AI answer for this card only" onClick={() => onRegen(pid)}>
+        {onRegen && <button type="button" disabled={regenBusy} title="Fresh AI answer for this card only" onClick={() => onRegen(pid)}>
           {regenning ? '…' : 'Regen'}
-        </button>
+        </button>}
       </div>
     </div>
   );

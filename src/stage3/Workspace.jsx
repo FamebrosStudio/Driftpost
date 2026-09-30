@@ -290,9 +290,9 @@ export default function Workspace({
         {reviewed && result?.state !== 'completed' && result?.state !== 'scheduled' && (
           <button type="button" className="ok" disabled>✓ Reviewed</button>
         )}
-        <button type="button" onClick={() => onRegen(pid)} disabled={regenBusy || greyed} title="Fresh AI answer for this card">
+        {onRegen && <button type="button" onClick={() => onRegen(pid)} disabled={regenBusy || greyed} title="Fresh AI answer for this card">
           {regenning ? '…' : 'Regen'}
-        </button>
+        </button>}
         <button
           type="button"
           onClick={() => onSchedule(pid)}

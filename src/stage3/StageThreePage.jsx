@@ -13,6 +13,7 @@ import MediaPreview from './MediaPreview.jsx';
 import ScheduleModal from './ScheduleModal.jsx';
 import './stage3.css';
 import { WorkspaceNav } from '../workspace/Workspace.jsx';
+import { hasAiAccess } from '../ai-access.js';
 
 function load(key, fallback) {
   try {
@@ -29,6 +30,7 @@ const mediaSignature = (items) => JSON.stringify(items.map((f) => ({
   modified: f.raw?.lastModified || 0,
   type: f.type || f.raw?.type || '',
 })));
+const scopedKey = (key, userId) => `${key}:${userId}`;
 
 const DEFAULT_CFG = {
   instagram: { shareFb: false, story: false, alt: '', topics: '', partner: '', collabs: '' },
@@ -39,25 +41,27 @@ const DEFAULT_CFG = {
 const NAMES = { instagram: 'Instagram', facebook: 'Facebook', youtube: 'YouTube', x: 'X' };
 
 export default function StageThreePage({ session, onBack, onSignOut, onNavigate, onDone }) {
+  const userId = session.user.id;
+  const canUseAi = hasAiAccess(session);
   const [connections, setConnections] = useState([]);
   const [files, setFiles] = useState([]);
   const [thumb, setThumb] = useState(null);
-  const [outputs, setOutputs] = useState(() => load('driftpost-stage2-outputs', {}));
-  const [cfg, setCfg] = useState(() => load('driftpost-stage3-cfg', {}));
-   const [overrides, setOverrides] = useState(() => load('driftpost-stage3-accounts', {}));
+  const [outputs, setOutputs] = useState(() => load(scopedKey('driftpost-stage2-outputs', userId), {}));
+  const [cfg, setCfg] = useState(() => load(scopedKey('driftpost-stage3-cfg', userId), {}));
+   const [overrides, setOverrides] = useState(() => load(scopedKey('driftpost-stage3-accounts', userId), {}));
    const pinnedBrandAccounts = load('driftpost-stage1-brand-accounts', {});
    // Pre-upload technique: media is pushed to Supabase while the
    // user is reviewing captions, so "Post" skips the file transfer
    // entirely and the server just downloads once for Facebook.
    const [cloudProgress, setCloudProgress] = useState(null);
    const [cloudDone, setCloudDone] = useState(false);
-  const [reviewed, setReviewed] = useState(() => load('driftpost-stage3-reviewed', {}));
+  const [reviewed, setReviewed] = useState(() => load(scopedKey('driftpost-stage3-reviewed', userId), {}));
   const [tab, setTab] = useState('');
   const [results, setResults] = useState({});
   const [busy, setBusy] = useState({});
   const [regen, setRegen] = useState('');
-  const [brief] = useState(() => load('driftpost-stage2-brief', ''));
-  const [analysisMode] = useState(() => load('driftpost-stage2-analysis', 'fast'));
+  const [brief] = useState(() => load(scopedKey('driftpost-stage2-brief', userId), ''));
+  const [analysisMode] = useState(() => load(scopedKey('driftpost-stage2-analysis', userId), 'fast'));
   const [success, setSuccess] = useState(null);
   const [schedOpen, setSchedOpen] = useState(false);
   const [schedBusy, setSchedBusy] = useState(false);
@@ -156,9 +160,9 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
     groups: load('driftpost-groups', []),
     groupId: load('driftpost-stage1-group', ''),
     crosspost: load('driftpost-stage2-crosspost', false),
-    tone: load('driftpost-stage2-tone', 'auto'),
-    emoji: load('driftpost-stage2-emoji', 'medium'),
-    length: load('driftpost-stage2-length', 'medium'),
+    tone: load(scopedKey('driftpost-stage2-tone', userId), 'auto'),
+    emoji: load(scopedKey('driftpost-stage2-emoji', userId), 'medium'),
+    length: load(scopedKey('driftpost-stage2-length', userId), 'medium'),
   }), []);
   const brands = useMemo(() => groupBrands(connections), [connections]);
   const brand = brands.find((b) => b.key === s1.brandKey) || null;
@@ -259,7 +263,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
   };
   const reviewedCount = effective.filter((pid) => reviewed[pid] || results[pid]?.state === 'completed').length;
 
-  const onValues = (pid, v) => setOutputs((o) => { const n = { ...o, [pid]: v }; save('driftpost-stage2-outputs', n); return n; });
+  const onValues = (pid, v) => setOutputs((o) => { const n = { ...o, [pid]: v }; save(scopedKey('driftpost-stage2-outputs', userId), n); return n; });
   // One card's validity, mirroring the Workspace checks — Publish All and
   // Schedule refuse invalid cards instead of failing mid-flight.
   // allowGreyed: a greyed-out card is still validated when another card's
@@ -305,10 +309,10 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
     const n = { ...c, [pid]: { ...cfgFor(pid), ...patch } };
     if (pid === 'instagram' && patch.shareFb) n.facebook = { ...cfgFor('facebook'), syndIg: false };
     if (pid === 'facebook' && patch.syndIg) n.instagram = { ...cfgFor('instagram'), shareFb: false };
-    save('driftpost-stage3-cfg', n);
+    save(scopedKey('driftpost-stage3-cfg', userId), n);
     return n;
   });
-  const onAccount = (pid, id) => setOverrides((o) => { const n = { ...o, [pid]: id }; save('driftpost-stage3-accounts', n); return n; });
+  const onAccount = (pid, id) => setOverrides((o) => { const n = { ...o, [pid]: id }; save(scopedKey('driftpost-stage3-accounts', userId), n); return n; });
   const onThumb = (t) => {
     setThumb(t);
     (async () => {
@@ -322,12 +326,12 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
   // Reviewing a card is the approval signal: the server keeps this caption as a
   // reference so the next generation for the same brand writes closer to it.
   const onReviewed = (pid) => {
-    approveCaption(session.access_token, { brand: brandLabel, platform: pid, caption: composeOutput(pid, outputs[pid] || {}) }).catch(() => {});
-    setReviewed((r) => { const n = { ...r, [pid]: true }; save('driftpost-stage3-reviewed', n); return n; });
+    if (canUseAi) approveCaption(session.access_token, { brand: brandLabel, platform: pid, caption: composeOutput(pid, outputs[pid] || {}) }).catch(() => {});
+    setReviewed((r) => { const n = { ...r, [pid]: true }; save(scopedKey('driftpost-stage3-reviewed', userId), n); return n; });
   };
 
   const regenOne = async (pid) => {
-    if (busy[pid] || regen || (!brief.trim() && !(analysisMode === 'analyze' && files.length))) return;
+    if (!canUseAi || busy[pid] || regen || (!brief.trim() && !(analysisMode === 'analyze' && files.length))) return;
     setRegen(pid);
     try {
       const data = await requestCaptions(session.access_token, {
@@ -338,7 +342,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
       });
       const mapped = mapResponse(data);
       onValues(pid, mapped[pid]);
-      logCaptions({ brand: brandLabel, entries: [{ platform: pid, text: composeOutput(pid, mapped[pid]) }] });
+      logCaptions({ userId, brand: brandLabel, entries: [{ platform: pid, text: composeOutput(pid, mapped[pid]) }] });
     } catch {}
     setRegen('');
   };
@@ -800,7 +804,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
         <header className="s3-head">
           <span className="s3-badge">Stage 3 of 3</span>
           <h1>Review &amp; Finalize Your Content</h1>
-          <p>Your AI-generated content is ready. Review each platform before publishing.</p>
+          <p>Review your platform content before publishing.</p>
         </header>
         <ProgressStepper current={3} />
         {connsError && !connections.length && (
@@ -868,7 +872,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
                   onPostPhotoAsVideo={publishPhotoAsVideo}
                   encoding={encoding}
                   hideInstagramCrosspost={!!s1.crosspost}
-                  onRegen={regenOne}
+                  onRegen={canUseAi ? regenOne : undefined}
                   onSchedule={(pid) => { setTab(pid); setSchedOpen(true); }}
                 />
               </div>

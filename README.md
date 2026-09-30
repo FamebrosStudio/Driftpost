@@ -51,18 +51,19 @@ Without items 1–7 the app opens and auth screen shows, but Connect/Publish wil
 
 ## Deploy (frontend → Vercel, API → Render)
 
-The API does resumable 2 GB uploads with local temp files, which Vercel serverless can't do
+The API accepts uploads up to 400 MB per file with local temp files, which Vercel serverless can't do
 (4.5 MB payload cap) — so: **frontend on Vercel, API on Render**. Both free.
 
 1. **API → Render:** Dashboard → New → Web Service → select repo (or use `server/render.yaml`
    blueprint) → root dir `server`, build `npm install`, start `node src/index.js`.
    Fill env vars (same values as `server/.env`). Note your URL:
-   `https://driftpost-api.onrender.com`.
+   `https://driftpost.onrender.com`.
 2. **Frontend → Vercel:** vercel.com → Add New Project → import `FamebrosStudio/Driftpost`
    (`vercel.json` is already in the repo). Env vars:
    - `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`
-   - `VITE_API_URL=https://driftpost-api.onrender.com` (Vite bakes this at build time —
+   - `VITE_API_URL=https://driftpost.onrender.com` (Vite bakes this at build time —
      set it **before** deploying, or redeploy after changing it).
+   - Set AI_UNLOCK_PASSPHRASE in the Render API environment to enable AI for the two approved Gmail accounts. Keep it in Render's secret environment settings; do not put it in Vercel or commit it to the repository.
    Note your URL: `https://driftpost.vercel.app`.
 
 The schedule worker runs inside the API process and checks due posts every 15 seconds. It needs an always-on API host to publish at the scheduled time; a free host that sleeps while idle can delay a due post until the service wakes.
@@ -71,14 +72,14 @@ The schedule worker runs inside the API process and checks due posts every 15 se
 
 1. **Render env:** `FRONTEND_URL=https://driftpost.vercel.app` (CORS) → restart service.
 2. **Google Cloud Console** (OAuth client): add Authorized redirect URI
-   `https://driftpost-api.onrender.com/api/oauth/youtube/callback`;
+   `https://driftpost.onrender.com/api/oauth/youtube/callback`;
    set backend `GOOGLE_REDIRECT_URI` to the same → restart API.
 3. **Meta App** (Facebook Login → Settings): add Valid OAuth Redirect URI
-   `https://driftpost-api.onrender.com/api/oauth/meta/callback`;
+   `https://driftpost.onrender.com/api/oauth/meta/callback`;
    set backend `META_REDIRECT_URI` to the same → restart API.
    (Business Login configuration uses the same redirect — no separate change.)
 4. **X Developer Portal** (auth settings): Callback URI
-   `https://driftpost-api.onrender.com/api/oauth/x/callback`;
+   `https://driftpost.onrender.com/api/oauth/x/callback`;
    set backend `X_REDIRECT_URI` to the same → restart API.
 5. **Supabase** → Auth → URL Configuration: Site URL + Redirect URLs → add
    `https://driftpost.vercel.app`.
