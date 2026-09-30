@@ -87,3 +87,11 @@ The schedule worker runs inside the API process and checks due posts every 15 se
    Supabase sessions from localhost do not transfer to prod.
 
 Keep the localhost URIs alongside prod ones during testing — both can coexist.
+
+## Uptime monitoring
+
+See [docs/uptime-monitoring.md](docs/uptime-monitoring.md) for UptimeRobot setup.
+Monitor `https://driftpost.onrender.com/health` every five minutes and enable
+email alerts for downtime/recovery. The owner must confirm UptimeRobot's
+activation email before its monitoring starts. The existing GitHub Actions
+check remains a backup; neither monitor guarantees that every publish succeeds.
