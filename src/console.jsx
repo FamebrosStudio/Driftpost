@@ -44,7 +44,10 @@ export default function Console({ session, onSwitchAccount, onSignOut }) {
   };
   const openHistory = () => navigate('history');
   if (view === 'home') return <DashboardPage session={session} onNavigate={navigate} onCreate={() => navigate('create')} onSignOut={onSignOut} />;
-  if (view === 'calendar') return <CalendarPage session={session} onNavigate={navigate} onCreate={() => navigate('create')} onSignOut={onSignOut} />;
+  if (view === 'calendar') return <CalendarPage session={session} onNavigate={navigate} onCreate={(date) => {
+    try { sessionStorage.setItem('driftpost-calendar-prefill', JSON.stringify({ date, createdAt: Date.now() })); } catch {}
+    navigate('create');
+  }} onSignOut={onSignOut} />;
   if (view === 'analytics') return <AnalyticsPage session={session} onNavigate={navigate} onSignOut={onSignOut} />;
   if (view === 'history') {
     return (

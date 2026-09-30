@@ -4,12 +4,33 @@ import React, { useEffect, useMemo, useState } from 'react';
 function defaultWhen() {
   const d = new Date(Date.now() + 60 * 60 * 1000);
   d.setSeconds(0, 0);
+  return formatLocal(d);
+}
+
+function formatLocal(d) {
   const pad = (n) => String(n).padStart(2, '0');
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 
+function calendarWhen() {
+  try {
+    const raw = sessionStorage.getItem('driftpost-calendar-prefill');
+    sessionStorage.removeItem('driftpost-calendar-prefill');
+    const item = JSON.parse(raw || 'null');
+    if (!item || Date.now() - item.createdAt > 6 * 60 * 60 * 1000 || !/^\d{4}-\d{2}-\d{2}$/.test(item.date)) return defaultWhen();
+    const [year, month, day] = item.date.split('-').map(Number);
+    const d = new Date(year, month - 1, day, 9, 0, 0, 0);
+    if (d.getFullYear() !== year || d.getMonth() !== month - 1 || d.getDate() !== day || d.getTime() < Date.now() + 60_000) return defaultWhen();
+    return formatLocal(d);
+  } catch { return defaultWhen(); }
+}
+
+function minimumWhen() {
+  return formatLocal(new Date(Date.now() + 60_000));
+}
+
 export default function ScheduleModal({ platforms, accountFor, invalidFor, busy, onClose, onSchedule, platform }) {
-  const [when, setWhen] = useState(defaultWhen);
+  const [when, setWhen] = useState(calendarWhen);
   // Preselect the tab the user scheduled from — not just platforms[0].
   const [sel, setSel] = useState(platform && platforms.includes(platform) ? platform : (platforms[0] || ''));
   const [err, setErr] = useState('');
@@ -65,7 +86,7 @@ export default function ScheduleModal({ platforms, accountFor, invalidFor, busy,
 
         <label className="s3-field">
           <span>Date and time</span>
-          <input type="datetime-local" value={when} min={defaultWhen()} onChange={(e) => setWhen(e.target.value)} />
+          <input type="datetime-local" value={when} min={minimumWhen()} onChange={(e) => setWhen(e.target.value)} />
         </label>
 
         {err && <p className="s3-err">{err}</p>}

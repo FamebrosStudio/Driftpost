@@ -104,7 +104,7 @@ const PUB_CONTENT = {
     sections: [
       { h: 'Brand-first, not platform-first', p: 'Agencies think in clients: Velvet Salon, SK Furniture, Sarang Hospital. Driftpost groups every connected account under its brand and auto-matches the same brand across YouTube, Instagram, Facebook and X.' },
       { h: 'Every native option', p: 'Titles, tags, thumbnails and visibility for YouTube. Captions, alt text and collaborators for Instagram. Links, buttons and age limits for Facebook. Polls and reply controls for X. If the platform API allows it, the card has it.' },
-      { h: 'Direct publishing only', p: 'Nothing is scheduled, queued, or automated behind your back. Every post goes out the second you press publish — from your accounts, with your tokens, encrypted at rest.' },
+      { h: 'Publish now or plan ahead', p: 'Publish as soon as you are ready, or schedule a post for a future time from the calendar. Scheduled posts stay visible in your workspace, and you can cancel them before they run.' },
     ],
   },
   how: {
@@ -139,7 +139,7 @@ const PUB_CONTENT = {
       { h: 'Why is a page missing after connecting?', p: 'Meta only returns what the logged-in Facebook user manages and what was ticked in the grant dialog. Portfolio-owned pages need their portfolio selected during login. Reconnect with —œall current and future— and tick everything.' },
       { h: 'Where are my tokens?', p: 'Encrypted in your Supabase project. The app servers never log them, and disconnecting deletes them.' },
       { h: 'Can clients share one login?', p: 'Yes — connect every portfolio under one login and switch brands from the menu. Or give each client their own login for strict isolation. Both work.' },
-      { h: 'Does it schedule posts?', p: 'No. Driftpost publishes the second you press the button — direct publishing only, by design.' },
+      { h: 'Can I schedule posts?', p: 'Yes. Open the calendar, choose a day, create your post, and schedule it for a time in your local timezone. You can review or cancel scheduled posts from Calendar or History.' },
     ],
   },
   contact: {
@@ -167,7 +167,7 @@ const PUB_CONTENT = {
       { h: 'AI processing and third-party transfer', p: 'Caption text you submit is transmitted to our AI provider (xAI / Grok) and to the social platforms you connect, solely to fulfil your generation and publishing requests. Those processors act on our instructions under their own terms and privacy policies. We do not use your content to train shared AI models. Do not paste passwords, OTPs or other secrets into the AI writer.' },
       { h: 'Your content stays yours', p: 'You keep full ownership of uploads and captions. You grant Driftpost only the limited licence to store, process and transmit them to platforms you chose. We claim no ownership over client brand content.' },
       { h: 'Your rights', p: 'Access, correct, withdraw consent or erase your data at any time. Withdrawing personalisation consent stops all storage immediately and deletes what was already stored; the app continues to work unchanged. Deleting your account erases your account, connected accounts, publish history, stored captions and consent records. Full erasure is completed within 7 days. Contact, and our privacy contact: famebros.studio@gmail.com. You may also complain to your local data protection authority, including the Data Protection Board of India.' },
-      { h: 'What we never do', p: 'No resale or renting of data, no advertising profiles, no analytics on other users, no automated posting. Posts go out only when you press publish. We do not sell or trade raw prompt logs to data brokers.' },
+      { h: 'What we never do', p: 'No resale or renting of data, no advertising profiles, and no posting without your instruction. A scheduled post publishes only after you choose its account and future time. We do not sell or trade raw prompt logs to data brokers.' },
       { h: 'Platform data', p: 'Publishing uses the official YouTube, Meta, and X APIs under permissions you grant. Each platform applies its own privacy policy to content you publish there.' },
     ],
   },
@@ -180,7 +180,7 @@ const PUB_CONTENT = {
       { h: 'Your account', p: 'You are responsible for your login credentials and everything done through your account. Minimum age follows each connected platform\'s own rules.' },
       { h: 'Connect only what is yours', p: 'You represent that you own or are authorised to manage every account, Page, portfolio or profile you connect. Connecting someone else\'s account without permission is your violation, not ours, and will get your access suspended.' },
       { h: 'Your content, your licence to us', p: 'You keep ownership of uploads and captions. You grant Driftpost a limited licence to store, process, resize and transmit them only to deliver the service. You confirm you hold the rights to everything you upload and publish.' },
-      { h: 'Review before you publish', p: 'You are responsible for reviewing every post — especially AI-generated captions — before publishing. See the AI Content Disclaimer. Driftpost never auto-publishes; every post goes out because you pressed the button.' },
+      { h: 'Review before you publish', p: 'You are responsible for reviewing every post — especially AI-generated captions — before publishing. See the AI Content Disclaimer. Posts publish immediately when you choose Publish, or at the future time you explicitly choose when scheduling.' },
       { h: 'Platforms are third parties', p: 'YouTube, Meta and X control their APIs, approvals, reach and suspensions. We cannot guarantee a post is accepted, timing is exact, or an account stays in good standing. See the Platform Disclaimer.' },
       { h: 'Acceptable use', p: 'No spam, phishing, scams, impersonation, harassment, IP infringement, bulk abuse, policy circumvention or unlawful content. Breaches mean suspension or termination. See the Acceptable Use Policy.' },
       { h: 'Liability limit', p: 'To the maximum extent permitted by law, Driftpost is not liable for indirect losses — including platform downtime, suspensions, rejected posts, lost reach, revenue or followers. Direct liability, where it applies, is capped at what you paid us in the prior 3 months (currently nothing while free).' },
@@ -352,7 +352,7 @@ function Landing({ onEnter, session, pubPage, setPubPage }) {
     { n: '01', t: 'Connect once', d: 'Each brand owner links YouTube, Facebook, Instagram and X one time. Tokens stay encrypted; reconnects are one click.' },
     { n: '02', t: 'Pick the brand', d: 'Choose Hair Match Salon, SK Furniture, Velvet Salon — Driftpost auto-loads that brand on all four platforms.' },
     { n: '03', t: 'Drop and write', d: 'One photo or video, one caption. Shared everywhere instantly, then fine-tune per platform.' },
-    { n: '04', t: 'Fire everywhere', d: 'Publish per platform or hit Publish all. Watch Done ✓ roll across all four phones with view links.' },
+    { n: '04', t: 'Publish or schedule', d: 'Publish to a platform now, send to all selected accounts, or pick a future date in the calendar. Track scheduled posts and cancel them from one place.' },
   ];
   return (
     <div className="landing" ref={rootRef} onMouseMove={onGridMouse}>
@@ -370,7 +370,7 @@ function Landing({ onEnter, session, pubPage, setPubPage }) {
       <header className="landing-in">
         <div className="landing-kicker">Driftpost — publish everywhere</div>
         <h1><SpotLine text="Post once." /><br /><SpotLine text="Everywhere." /></h1>
-        <p>One screen. Four platforms. Every brand in your pocket.</p>
+        <p>Create, schedule and publish across four platforms from one brand-first workspace.</p>
         <div className="landing-cta">
           <button className="skew-btn grad" onClick={onEnter}><span>{session ? 'Enter console' : 'Get started free ’'}</span></button>
         </div>
@@ -418,7 +418,7 @@ function Landing({ onEnter, session, pubPage, setPubPage }) {
       </div></div>
       </> : <DocPage page={pubPage} />}
       <footer className="land-foot">
-        <h2>Stop opening four apps.</h2>
+        <h2>Plan and publish from one workspace.</h2>
         <button className="skew-btn grad" onClick={onEnter}><span>{session ? 'Enter console' : 'Start free ’'}</span></button>
         <div className="land-fine">
           <span>Free while in beta · Your logins never leave the platforms · © {new Date().getFullYear()} Driftpost</span>
