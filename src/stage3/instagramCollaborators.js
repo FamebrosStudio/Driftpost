@@ -14,6 +14,6 @@ export function parseInstagramCollaborators(value) {
     const key = username.toLowerCase();
     if (!seen.has(key)) { seen.add(key); usernames.push(username); }
   }
-  if (usernames.length > 3) return { usernames: [], error: 'Instagram allows up to 3 co-authors.' };
+  if (usernames.length > 3) return { usernames: [], error: 'Instagram allows up to 3 collaborators.' };
   return { usernames, error: '' };
 }

@@ -108,6 +108,26 @@
 
 .s3-mini-btn { width: 100%; padding: 10px; border: 1px solid var(--line-hard); background: var(--panel2); color: var(--ink); border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; }
 .s3-mini-btn:hover { border-color: var(--acc); }
+.s3-cover-picker { display: grid; gap: 9px; margin: 10px 0 14px; padding: 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--panel2); }
+.s3-cover-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.s3-cover-head b { font-size: 12px; }
+.s3-cover-head small, .s3-frame-picker label span { color: var(--muted); font-size: 11px; }
+.s3-cover-preview { display: flex; align-items: center; gap: 10px; }
+.s3-cover-preview img { display: block; width: min(190px, 58%); aspect-ratio: 16 / 9; object-fit: cover; border-radius: 8px; background: #111; }
+.s3-cover-preview.instagram img { width: min(110px, 38%); aspect-ratio: 9 / 16; }
+.s3-cover-preview button { border: 0; color: var(--danger, #e5484d); background: transparent; font: inherit; font-size: 11px; font-weight: 700; cursor: pointer; }
+.s3-cover-actions { display: flex; }
+.s3-frame-picker { display: grid; grid-template-columns: minmax(110px, 180px) 1fr; gap: 9px 12px; align-items: center; }
+.s3-frame-picker video { grid-row: span 2; display: block; width: 100%; max-height: 125px; object-fit: contain; border-radius: 8px; background: #111; }
+.s3-frame-picker label { display: grid; gap: 6px; }
+.s3-frame-picker input[type="range"] { width: 100%; accent-color: var(--acc); }
+.s3-frame-picker .s3-mini-btn { grid-column: 2; }
+.s3-collab-picker { position: relative; }
+.s3-collab-options { position: absolute; z-index: 20; top: calc(100% + 4px); left: 0; right: 0; max-height: 220px; overflow: auto; padding: 4px; border: 1px solid var(--line-hard); border-radius: 10px; background: var(--panel); box-shadow: 0 10px 28px #0005; }
+.s3-collab-options button { display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; padding: 9px 10px; border: 0; border-radius: 7px; color: var(--ink); background: transparent; text-align: left; cursor: pointer; }
+.s3-collab-options button:hover, .s3-collab-options button:focus-visible { background: var(--panel2); }
+.s3-collab-options button span { font-size: 12px; font-weight: 700; }
+.s3-collab-options button small { color: var(--muted); font-size: 10px; }
 
 /* skeleton */
 .s3-sk { border-radius: 10px; background: linear-gradient(90deg, var(--panel2) 25%, var(--line) 50%, var(--panel2) 75%); background-size: 200% 100%; animation: s3Sh 1.2s linear infinite; min-height: 76px; margin-bottom: 12px; }

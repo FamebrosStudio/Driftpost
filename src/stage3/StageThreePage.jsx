@@ -47,6 +47,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
   const [connections, setConnections] = useState([]);
   const [files, setFiles] = useState([]);
   const [thumb, setThumb] = useState(null);
+  const [coverMap, setCoverMap] = useState({ instagram: null, facebook: null });
   const [outputs, setOutputs] = useState(() => load(scopedKey('driftpost-stage2-outputs', userId), {}));
   const [cfg, setCfg] = useState(() => load(scopedKey('driftpost-stage3-cfg', userId), {}));
    const [overrides, setOverrides] = useState(() => load(scopedKey('driftpost-stage3-accounts', userId), {}));
@@ -101,6 +102,14 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
          const raw = b instanceof File ? b : new File([b], vault.thumb.name || 'cover.jpg', { type: b.type || 'image/jpeg' });
          setThumb({ raw, name: vault.thumb.name || raw.name });
        }
+       const restoredCovers = {};
+       for (const platform of ['instagram', 'facebook']) {
+         const saved = vault?.coverMap?.[platform];
+         if (!(saved?.blob instanceof Blob)) continue;
+         const raw = saved.blob instanceof File ? saved.blob : new File([saved.blob], saved.name || `${platform}-cover.jpg`, { type: saved.blob.type || 'image/jpeg' });
+         restoredCovers[platform] = { raw, name: saved.name || raw.name };
+       }
+       setCoverMap((old) => ({ ...old, ...restoredCovers }));
      })();
    }, [mediaKey]);
 
@@ -321,9 +330,19 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
     (async () => {
       const prev = await readVault(mediaKey);
       writeVault(mediaKey, {
+        ...(prev || {}),
         files: (prev?.files || []),
         thumb: t?.raw instanceof Blob ? { name: t.name, blob: t.raw } : null,
       });
+    })();
+  };
+  const onPlatformCover = (platform, t) => {
+    setCoverMap((old) => ({ ...old, [platform]: t }));
+    (async () => {
+      const prev = await readVault(mediaKey);
+      const stored = { ...(prev?.coverMap || {}) };
+      stored[platform] = t?.raw instanceof Blob ? { name: t.name, blob: t.raw } : null;
+      writeVault(mediaKey, { ...(prev || {}), files: prev?.files || [], coverMap: stored });
     })();
   };
   // Reviewing a card is the approval signal: the server keeps this caption as a
@@ -440,7 +459,14 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
          if (f?.raw && f.type?.startsWith('image/')) form.append('facebook_media', f.raw, f.name);
        }
      }
-     if (pid === 'youtube' && thumb?.raw) form.append('thumbnail', thumb.raw);
+     if (pid === 'youtube' && thumb?.raw) form.append('thumbnail', thumb.raw, thumb.name);
+     const destinations = [pid];
+     if (pid === 'instagram' && mirrorTarget === 'facebook') destinations.push('facebook');
+     if (pid === 'facebook' && mirrorTarget === 'instagram') destinations.push('instagram');
+     for (const platform of destinations) {
+       const cover = coverMap[platform];
+       if (platform !== 'youtube' && cover?.raw) form.append(`cover_${platform}`, cover.raw, cover.name);
+     }
      return form;
    };
 
@@ -786,6 +812,8 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
             instagramFiles,
             facebookFiles,
             thumb: q === 'youtube' ? thumb : null,
+            instagramCover: (q === 'instagram' || (q === 'facebook' && mirrorTarget === 'instagram')) ? coverMap.instagram : null,
+            facebookCover: (q === 'facebook' || (q === 'instagram' && mirrorTarget === 'facebook')) ? coverMap.facebook : null,
           });
           if (requestApproval && schedule?.id) reviewLinks.push(`${window.location.origin}/approve/${schedule.id}`);
           scheduledCount++;
@@ -877,8 +905,14 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
                   cfg={cfgFor(tab)}
                   onCfg={onCfg}
                   files={files}
-                  thumb={thumb}
-                  onThumb={onThumb}
+                  thumb={tab === 'youtube' ? thumb : coverMap[tab]}
+                  onThumb={tab === 'youtube'
+                    ? onThumb
+                    : (cover) => onPlatformCover(tab, cover)}
+                  instagramAccounts={connections.filter((connection) => connection.platform === 'instagram')}
+                  mirrorPlatform={tab === 'instagram' && mirrorTarget === 'facebook' ? 'facebook' : tab === 'facebook' && mirrorTarget === 'instagram' ? 'instagram' : ''}
+                  mirrorCover={tab === 'instagram' && mirrorTarget === 'facebook' ? coverMap.facebook : tab === 'facebook' && mirrorTarget === 'instagram' ? coverMap.instagram : null}
+                  onMirrorCover={(cover) => onPlatformCover(tab === 'instagram' ? 'facebook' : 'instagram', cover)}
                   greyed={greyed(tab)}
                   greyReason={greyReason(tab)}
                   reviewed={!!reviewed[tab]}

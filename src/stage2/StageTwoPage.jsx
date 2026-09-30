@@ -79,6 +79,7 @@ export default function StageTwoPage({ session, onBack, onSignOut, onNavigate, o
       const prev = await readVault(mediaKey);
       writeVault(mediaKey, {
         thumb: prev?.thumb || null,
+        coverMap: prev?.coverMap || {},
         files: files.map((f) => ({ name: f.name, type: f.type, blob: f.raw })).filter((f) => f.blob instanceof Blob),
       });
     })();

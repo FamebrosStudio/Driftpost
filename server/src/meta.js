@@ -104,12 +104,13 @@ export async function getMetaPages(userToken) {
   return all.filter((p) => (seen.has(p.id) ? false : (seen.add(p.id), true)));
 }
 
-export async function publishFacebook({ pageId, pageToken, text, link, linkMeta, targeting, cta, unpublished, media }) {
+export async function publishFacebook({ pageId, pageToken, text, link, linkMeta, targeting, cta, unpublished, media, cover }) {
   // media: multer file or undefined. Text-only -> /feed. Photo -> /photos. Video -> /videos.
   if (media?.mimetype?.startsWith('video/')) {
     const form = new FormData();
     form.append('description', text || '');
     form.append('source', await mediaBlob(media), media.originalname);
+    if (cover?.path) form.append('thumb', await mediaBlob(cover), cover.originalname || 'cover.jpg');
     const res = await fetch(`${GRAPH}/${pageId}/videos?access_token=${encodeURIComponent(pageToken)}`, { method: 'POST', body: form });
     const data = await res.json();
     if (!res.ok) throw await graphError(res, 'Facebook video failed', data);
@@ -189,7 +190,7 @@ async function waitForInstagramContainer({ id, pageToken, onStage, label = 'vide
   throw new Error(`Instagram is still processing this ${label} after 10 minutes. Check the Instagram account before retrying.`);
 }
 
-export async function publishInstagram({ igUserId, pageToken, caption, alt, collabs, locationId, mediaUrl, isVideo, onStage }) {
+export async function publishInstagram({ igUserId, pageToken, caption, alt, collabs, locationId, mediaUrl, isVideo, coverUrl, onStage }) {
   if (!mediaUrl) throw new Error('Instagram needs a photo or video. Attach media first.');
   const createParams = {
     caption: caption || '',
@@ -197,7 +198,7 @@ export async function publishInstagram({ igUserId, pageToken, caption, alt, coll
     ...(alt ? { accessibility_caption: String(alt).slice(0, 500) } : {}),
     ...(Array.isArray(collabs) && collabs.length ? { collaborators: collabs } : {}),
     ...(locationId ? { location_id: String(locationId) } : {}),
-    ...(isVideo ? { media_type: 'REELS', video_url: mediaUrl } : { image_url: mediaUrl }),
+    ...(isVideo ? { media_type: 'REELS', video_url: mediaUrl, ...(coverUrl ? { cover_url: coverUrl } : {}) } : { image_url: mediaUrl }),
   };
   const cRes = await fetch(`${GRAPH}/${igUserId}/media`, {
     method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(createParams), signal: AbortSignal.timeout(30000),

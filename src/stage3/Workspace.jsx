@@ -1,8 +1,10 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useState } from 'react';
 import BrandIcon from '../brand.jsx';
 import { composeOutput } from '../stage2/PlatformOutputCard.jsx';
 import { assistCommunityPost, postsTabUrl } from './communityAssist.js';
 import { parseInstagramCollaborators } from './instagramCollaborators.js';
+import CoverPicker from './CoverPicker.jsx';
+import CollaboratorInput from './CollaboratorInput.jsx';
 
 const NAMES = { instagram: 'Instagram', facebook: 'Facebook', youtube: 'YouTube', x: 'X' };
 const FB_CTAS = ['', 'LEARN_MORE', 'SHOP_NOW', 'SIGN_UP', 'MESSAGE_PAGE'];
@@ -28,14 +30,11 @@ export default function Workspace({
   showInstagramCollaborators = false,
   instagramCollaborators = '',
   onInstagramCollaborators,
+  instagramAccounts = [],
+  mirrorPlatform = '',
+  mirrorCover = null,
+  onMirrorCover,
 }) {
-  const thumbRef = useRef(null);
-  const thumbUrl = useMemo(() => {
-    try { return thumb?.raw ? URL.createObjectURL(thumb.raw) : null; }
-    catch { return null; }
-  }, [thumb]);
-  // (Revoked on replace/unmount by the page vault write; short-lived preview.)
-
   const set = (k, v) => onValues(pid, { ...values, [k]: v });
   const setCfg = (patch) => onCfg(pid, { ...cfg, ...patch });
   const xLen = pid === 'x' ? Array.from(values.text || '').length : 0;
@@ -127,6 +126,8 @@ export default function Workspace({
         <>
           {pid === 'instagram' && <>
             <p className="s3-note">Instagram photos are prepared as 1080 × 1350 JPEGs. Facebook uses its own 1200 × 630 version; your original stays unchanged.</p>
+            <CoverPicker platform="instagram" files={files} cover={thumb} onChange={onThumb} />
+            {mirrorPlatform === 'facebook' && <CoverPicker platform="facebook" files={files} cover={mirrorCover} onChange={onMirrorCover} />}
             <Field label="Caption"><textarea value={values.caption || ''} onChange={(e) => set('caption', e.target.value)} placeholder="Write the caption…" /></Field>
             <Field label="Hashtags"><input value={values.hashtags || ''} onChange={(e) => set('hashtags', e.target.value)} placeholder="#brand #fashion" /></Field>
             {!hideInstagramCrosspost && <label className="s3-check"><input type="checkbox" checked={!!cfg.shareFb} onChange={(e) => setCfg({ shareFb: e.target.checked })} /><span>Also post on Facebook<small>Facebook is published once and removed from the Stage 3 platform list.</small></span></label>}
@@ -136,8 +137,8 @@ export default function Workspace({
               <div className="s3-adv-in">
                 <Field label="Topics · up to 3"><input value={cfg.topics || ''} onChange={(e) => setCfg({ topics: e.target.value })} placeholder="bridal, mumbai" /></Field>
                 <Field label="Business partner"><input value={cfg.partner || ''} onChange={(e) => setCfg({ partner: e.target.value })} placeholder="brand handle, no @ needed" /></Field>
-                <Field label="Co-authors · up to 3"><input value={cfg.collabs || ''} onChange={(e) => setCfg({ collabs: e.target.value })} placeholder="@makeup_artist, @photographer" /></Field>
-                <p className="s3-subnote">Instagram sends invitations when the post publishes. Each account must accept the invite on Instagram. Use usernames, not display names.</p>
+                <Field label="Collaborators · up to 3"><CollaboratorInput value={cfg.collabs} onChange={(value) => setCfg({ collabs: value })} accounts={instagramAccounts} /></Field>
+                <p className="s3-subnote">Type an account name or ID and choose a match, or enter the exact Instagram username. Instagram sends the invite when the post publishes; each person must accept it there.</p>
                 {!!cfg.collabs && !!parseInstagramCollaborators(cfg.collabs).error && <p className="s3-err">{parseInstagramCollaborators(cfg.collabs).error}</p>}
                 <Field label="Alt text (accessibility)"><input value={cfg.alt || ''} maxLength={500} onChange={(e) => setCfg({ alt: e.target.value })} placeholder="Describe the photo in one line" /></Field>
               </div>
@@ -145,12 +146,14 @@ export default function Workspace({
           </>}
 
           {pid === 'facebook' && <>
+            <CoverPicker platform="facebook" files={files} cover={thumb} onChange={onThumb} />
+            {mirrorPlatform === 'instagram' && <CoverPicker platform="instagram" files={files} cover={mirrorCover} onChange={onMirrorCover} />}
             <Field label="Post text"><textarea value={values.message || ''} onChange={(e) => set('message', e.target.value)} placeholder="What should this post say?" /></Field>
             <Field label="Website link · optional"><input value={cfg.link || ''} onChange={(e) => setCfg({ link: e.target.value })} placeholder="https://your-website.com/offer" /></Field>
             <label className="s3-check"><input type="checkbox" checked={!!cfg.syndIg} onChange={(e) => setCfg({ syndIg: e.target.checked })} /><span>Also post on Instagram<small>Instagram is published once and removed from the Stage 3 platform list.</small></span></label>
             {showInstagramCollaborators && <div className="s3-mirror-collabs">
-              <Field label="Instagram co-authors · up to 3"><input value={instagramCollaborators} onChange={(e) => onInstagramCollaborators?.(e.target.value)} placeholder="@makeup_artist, @photographer" /></Field>
-              <p className="s3-subnote">Instagram sends invitations when the cross-post publishes. Each account must accept the invite on Instagram.</p>
+              <Field label="Instagram collaborators · up to 3"><CollaboratorInput value={instagramCollaborators} onChange={(value) => onInstagramCollaborators?.(value)} accounts={instagramAccounts} /></Field>
+              <p className="s3-subnote">Type an account name or ID and choose a match, or enter the exact Instagram username. Instagram sends the invite when the cross-post publishes.</p>
               {!!instagramCollaborators && !!parseInstagramCollaborators(instagramCollaborators).error && <p className="s3-err">{parseInstagramCollaborators(instagramCollaborators).error}</p>}
             </div>}
             <details className="s3-adv">
@@ -186,13 +189,8 @@ export default function Workspace({
                   <option value="public">Public (everyone)</option>
                 </select>
               </Field>
-              <Field label="Cover image">
-                <button type="button" className="s3-mini-btn" onClick={() => thumbRef.current?.click()}>
-                  {thumb ? `✓ ${thumb.name.slice(0, 22)}` : 'Add cover'}
-                </button>
-                <input ref={thumbRef} type="file" accept="image/jpeg,image/png" hidden onChange={(e) => { const f = e.target.files[0]; if (f) onThumb({ raw: f, name: f.name }); e.target.value = ''; }} />
-              </Field>
             </div>
+            <CoverPicker platform="youtube" files={files} cover={thumb} onChange={onThumb} />
             <details className="s3-adv">
               <summary>More options (category, kids…)</summary>
               <div className="s3-adv-in">
