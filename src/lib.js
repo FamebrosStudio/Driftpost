@@ -5,6 +5,9 @@ const apiUrlRaw = import.meta.env.VITE_API_URL;
 export const apiUrl = apiUrlRaw?.replace(/\/$/, '') || '';
 const useVercelApiProxy = typeof window !== 'undefined' && /(^|\.)vercel\.app$/i.test(window.location.hostname);
 const DIRECT_UPLOAD_PATHS = ['/api/schedule', '/api/storage/upload', '/api/ai/captions'];
+let publishApiWarmPromise = null;
+let publishApiWarmUntil = 0;
+let publishApiWarmBlockedUntil = 0;
 export function apiRequestUrl(path, method = 'GET') {
   const directUpload = String(method).toUpperCase() === 'POST'
     && DIRECT_UPLOAD_PATHS.includes(path.split('?')[0]);
@@ -499,33 +502,54 @@ export async function fetchWithAuth(url, token, init = {}) {
     && bodyBytes > 32 * 1024 * 1024
     ? url
     : apiRequestUrl(requestPath, 'POST');
-  // Render's free instance can sleep between visits. A cold-start 503 is
-  // served by Render before Express, so the browser reports it as a CORS
-  // failure and XHR cannot safely distinguish it from a failed POST. Wake and
-  // verify the API first; this keeps the upload itself from being ambiguous.
+  // Only direct large uploads need a warm-up (proxy requests already avoid
+  // browser CORS). Share the probe across grouped account posts, contact
+  // Render directly, and stop immediately on 429 so a failed warm-up cannot
+  // create a request storm through the frontend proxy.
   const warmApi = async () => {
-    const deadline = Date.now() + 70000;
-    while (Date.now() < deadline) {
-      const ctrl = new AbortController();
-      const timer = setTimeout(() => ctrl.abort(), 12000);
-      try {
-        const healthUrl = useVercelApiProxy
-          ? `${window.location.origin}/health`
-          : new URL('/health', url).toString();
-        const res = await fetch(healthUrl, { method: 'GET', cache: 'no-store', signal: ctrl.signal });
-        const contentType = res.headers.get('content-type') || '';
-        if (res.ok && contentType.includes('json')) {
-          const health = await res.json().catch(() => null);
-          if (health?.ok) return;
-        }
-      } catch {
-        // A sleeping Render instance may return a non-CORS 503 until it wakes.
-      } finally {
-        clearTimeout(timer);
-      }
-      await new Promise((resolve) => setTimeout(resolve, 5000));
+    if (Date.now() < publishApiWarmUntil) return;
+    if (publishApiWarmPromise) return publishApiWarmPromise;
+    if (Date.now() < publishApiWarmBlockedUntil) {
+      throw new Error('Publishing server is temporarily unavailable or rate-limiting requests. Wait a minute, then retry.');
     }
-    throw new Error('Publishing server is still waking up. Try again in a minute; your post was not sent.');
+    publishApiWarmPromise = (async () => {
+      const healthUrl = new URL('/health', url).toString();
+      for (let attempt = 0; attempt < 4; attempt++) {
+        const ctrl = new AbortController();
+        const timer = setTimeout(() => ctrl.abort(), 12000);
+        try {
+          const res = await fetch(healthUrl, { method: 'GET', cache: 'no-store', signal: ctrl.signal });
+          if (res.status === 429) {
+            const retryAfter = Math.max(1, Number(res.headers.get('retry-after') || 30));
+            publishApiWarmBlockedUntil = Date.now() + Math.min(60000, retryAfter * 1000);
+            throw new Error('Publishing server is rate-limiting requests. Wait before retrying; your post was not sent.');
+          }
+          const contentType = res.headers.get('content-type') || '';
+          if (res.ok && contentType.includes('json')) {
+            const health = await res.json().catch(() => null);
+            if (health?.ok) {
+              publishApiWarmUntil = Date.now() + 60000;
+              publishApiWarmBlockedUntil = 0;
+              return;
+            }
+          } else if (![502, 503, 504].includes(res.status)) {
+            throw new Error(`Publishing server health check failed (${res.status}).`);
+          }
+        } catch (error) {
+          if (/rate-limiting|health check failed/i.test(error?.message || '')) throw error;
+        } finally {
+          clearTimeout(timer);
+        }
+        if (attempt < 3) await new Promise((resolve) => setTimeout(resolve, 5000 * (attempt + 1)));
+      }
+      publishApiWarmBlockedUntil = Date.now() + 15000;
+      throw new Error('Publishing server is unavailable. Wait a minute and retry; your post was not sent.');
+    })();
+    try {
+      return await publishApiWarmPromise;
+    } finally {
+      publishApiWarmPromise = null;
+    }
   };
   // Upload phase progress needs XHR (fetch exposes download progress only).
   // The browser fires upload events as bytes leave — mapped to the first 15%.
@@ -559,7 +583,7 @@ export async function fetchWithAuth(url, token, init = {}) {
   });
   const doPost = async (t, timeoutMs) => {
     if (onUploadProgress) {
-      await warmApi();
+      if (requestUrl === url) await warmApi();
       return xhrPost(t);
     }
     const ctrl = new AbortController();
