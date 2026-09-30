@@ -12,26 +12,33 @@ const POINTS = [
 
 // Consent gate: decides whether to show the choice screen or the app.
 //
-// Until a decision is on record the console is not shown at all, so nobody
-// can generate a single post before being told what happens to their text.
-// The product itself does not depend on the answer - declining only turns off
-// storage, and the full app renders identically afterwards.
+// The choice screen appears when no decision is on record. If the read-only
+// consent lookup is unavailable, the app can still open with personalisation
+// off; the backend also checks consent before storing examples.
 export default function ConsentGate({ session, onOpenPage, children }) {
   const [opt, setOpt] = useState(false); // never pre-ticked
   const [state, setState] = useState(undefined); // undefined = still checking
+  const [retry, setRetry] = useState(0);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState('');
 
   useEffect(() => {
     let live = true;
+    // Consent is read-only here. If the API is cold or unreachable, enter the
+    // app with personalisation off and keep the backend's fail-closed check in
+    // force instead of trapping navigation behind an endless loading screen.
+    const safeFallback = { recorded: false, personalisation: false, unverified: true };
+    const timer = setTimeout(() => {
+      if (live) setState(safeFallback);
+    }, 10000);
     api('/api/ai/consent', session.access_token)
       .then((d) => { if (live) setState(d); })
       .catch(() => {
-        // Cannot verify consent, so we must ask rather than assume it.
-        if (live) setState({ recorded: false, personalisation: false });
-      });
-    return () => { live = false; };
-  }, [session.access_token]);
+        if (live) setState(safeFallback);
+      })
+      .finally(() => clearTimeout(timer));
+    return () => { live = false; clearTimeout(timer); };
+  }, [session.access_token, retry]);
 
   const decide = async (grant) => {
     if (busy) return;
@@ -53,7 +60,13 @@ export default function ConsentGate({ session, onOpenPage, children }) {
   };
 
   if (state === undefined) return <div className="cg"><div className="cg-card" aria-busy="true">Checking your privacy settings…</div></div>;
-  if (state?.recorded) return children;
+  if (state?.recorded || state?.unverified) return <>
+    {state.unverified && <div className="cg-fallback" role="status">
+      <span>Privacy settings could not be checked. Personalisation stays off until confirmed.</span>
+      <button type="button" onClick={() => { setState(undefined); setRetry((n) => n + 1); }}>Retry</button>
+    </div>}
+    {children}
+  </>;
 
   return (
     <div className="cg">
