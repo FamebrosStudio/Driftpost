@@ -29,7 +29,7 @@ services:
       - key: META_REDIRECT_URI
         sync: false
       - key: META_FB_SCOPES
-        value: pages_show_list,pages_read_engagement,pages_manage_posts
+        value: pages_show_list,pages_read_engagement,pages_manage_posts,instagram_basic,instagram_content_publish
       - key: META_CONFIG_ID
         sync: false
       - key: X_CLIENT_ID

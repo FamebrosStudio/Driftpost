@@ -39,6 +39,7 @@ npm run dev   # http://localhost:10000
    - a Facebook **Page**
    - an Instagram **Business/Creator account linked to that Page** (Page Settings → Linked accounts), otherwise Instagram connection will not appear — this is a Meta requirement, not a bug.
    - Copy App ID/secret into `server/.env` as `META_*`.
+   - The login must grant `pages_manage_posts`, `instagram_basic`, and `instagram_content_publish`. After changing these scopes, disconnect and reconnect Meta accounts so the new Instagram publishing permission is included.
 7. **Secrets:** generate and put in `server/.env`:
    - `TOKEN_ENCRYPTION_KEY`: 32 random bytes, base64. PowerShell: `[Convert]::ToBase64String((1..32 | ForEach-Object { Get-Random -Max 256 }))`
    - `STATE_SIGNING_SECRET`: any long random string.
@@ -62,6 +63,8 @@ The API does resumable 2 GB uploads with local temp files, which Vercel serverle
    - `VITE_API_URL=https://driftpost-api.onrender.com` (Vite bakes this at build time —
      set it **before** deploying, or redeploy after changing it).
    Note your URL: `https://driftpost.vercel.app`.
+
+The schedule worker runs inside the API process and checks due posts every 15 seconds. It needs an always-on API host to publish at the scheduled time; a free host that sleeps while idle can delay a due post until the service wakes.
 
 ## After the URLs change (localhost → prod), update these 6 places
 

@@ -20,7 +20,7 @@ export default function CrosspostToggle({ on, onChange }) {
         <b>Cross-post to Facebook</b>
         <small>
           {on
-            ? 'On — Instagram auto-shares to Facebook. The Facebook card below is hidden.'
+            ? 'On — Instagram shares to Facebook. Facebook is removed from Stage 3 so it cannot post twice.'
             : 'Off — Instagram and Facebook stay separate.'}
         </small>
       </div>

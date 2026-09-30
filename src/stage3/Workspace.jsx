@@ -23,6 +23,7 @@ export default function Workspace({
   result, posting, regenning, regenBusy,
   onPost, onRegen, onSchedule,
   onPostPhotoAsVideo, encoding,
+  hideInstagramCrosspost = false,
 }) {
   const thumbRef = useRef(null);
   const thumbUrl = useMemo(() => {
@@ -121,9 +122,10 @@ export default function Workspace({
       ) : (
         <>
           {pid === 'instagram' && <>
+            <p className="s3-note">Instagram photos are prepared as 1080 × 1350 JPEGs. Facebook uses its own 1200 × 630 version; your original stays unchanged.</p>
             <Field label="Caption"><textarea value={values.caption || ''} onChange={(e) => set('caption', e.target.value)} placeholder="Write the caption…" /></Field>
             <Field label="Hashtags"><input value={values.hashtags || ''} onChange={(e) => set('hashtags', e.target.value)} placeholder="#brand #fashion" /></Field>
-            <label className="s3-check"><input type="checkbox" checked={!!cfg.shareFb} onChange={(e) => setCfg({ shareFb: e.target.checked })} /><span>Also post on Facebook<small>Single posts only — Post All always posts directly.</small></span></label>
+            {!hideInstagramCrosspost && <label className="s3-check"><input type="checkbox" checked={!!cfg.shareFb} onChange={(e) => setCfg({ shareFb: e.target.checked })} /><span>Also post on Facebook<small>Facebook is published once and removed from the Stage 3 platform list.</small></span></label>}
             <label className="s3-check"><input type="checkbox" checked={!!cfg.story} onChange={(e) => setCfg({ story: e.target.checked })} /><span>Also post as Story (24h)<small>Same media as a story, in one tap.</small></span></label>
             <details className="s3-adv">
               <summary>More options (tags, partners…)</summary>
@@ -139,7 +141,7 @@ export default function Workspace({
           {pid === 'facebook' && <>
             <Field label="Post text"><textarea value={values.message || ''} onChange={(e) => set('message', e.target.value)} placeholder="What should this post say?" /></Field>
             <Field label="Website link · optional"><input value={cfg.link || ''} onChange={(e) => setCfg({ link: e.target.value })} placeholder="https://your-website.com/offer" /></Field>
-            <label className="s3-check"><input type="checkbox" checked={!!cfg.syndIg} onChange={(e) => setCfg({ syndIg: e.target.checked })} /><span>Also post on Instagram<small>Single posts only — Post All always posts directly.</small></span></label>
+            <label className="s3-check"><input type="checkbox" checked={!!cfg.syndIg} onChange={(e) => setCfg({ syndIg: e.target.checked })} /><span>Also post on Instagram<small>Instagram is published once and removed from the Stage 3 platform list.</small></span></label>
             <details className="s3-adv">
               <summary>More options (button, audience…)</summary>
               <div className="s3-adv-in">

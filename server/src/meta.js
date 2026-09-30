@@ -1,7 +1,7 @@
 // Meta (Facebook + Instagram) via Graph API. No X/Twitter anywhere in Driftpost.
 const GRAPH = 'https://graph.facebook.com/v21.0';
 // Facebook connect uses regular Login with Page scopes (no review needed in dev).
-const FB_SCOPES = process.env.META_FB_SCOPES || 'pages_show_list,pages_read_engagement,pages_manage_posts,business_management';
+const FB_SCOPES = process.env.META_FB_SCOPES || 'pages_show_list,pages_read_engagement,pages_manage_posts,instagram_basic,instagram_content_publish,business_management';
 // Instagram connect uses Facebook Login for Business (config_id). Regular Login
 // rejects instagram_business_* scopes with "Invalid Scopes".
 const SCOPES = FB_SCOPES;

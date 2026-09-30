@@ -723,6 +723,8 @@ app.get('/api/oauth/x/callback', callbackLimit, async (req, res) => {
 // Accepts up to 10 `media` files (carousel). Single-file clients keep working.
 const publishUpload = upload.fields([
   { name: 'media', maxCount: 10 },
+  { name: 'instagram_media', maxCount: 10 },
+  { name: 'facebook_media', maxCount: 10 },
   { name: 'thumbnail', maxCount: 1 },
 ]);
 async function magicIsImage(filePath) {
@@ -743,9 +745,11 @@ app.post('/api/publish', requireUser, strictBurstLimit, publishLimit, publishUpl
   const platform = String(req.body.platform || '').slice(0, 32);
   const connectionId = String(req.body.connection_id || '').slice(0, 128);
   const files = [...(req.files?.media || []), ...(req.file ? [req.file] : [])];
+  const instagramFiles = req.files?.instagram_media || [];
+  const facebookFiles = req.files?.facebook_media || [];
   const thumbFile = req.files?.thumbnail?.[0] || null;
   const cleanup = async () => {
-    for (const f of [...files, ...(thumbFile ? [thumbFile] : [])]) await fs.unlink(f.path).catch(() => {});
+    for (const f of [...files, ...instagramFiles, ...facebookFiles, ...(thumbFile ? [thumbFile] : [])]) await fs.unlink(f.path).catch(() => {});
   };
   if (!['youtube', 'facebook', 'instagram', 'x'].includes(platform)) {
     await cleanup();
@@ -770,10 +774,36 @@ app.post('/api/publish', requireUser, strictBurstLimit, publishLimit, publishUpl
       await cleanup();
       return res.status(400).json({ error: 'That file is not a real image' });
     }
-    const cap = isVid ? 512 * 1024 * 1024 : 10 * 1024 * 1024;
+    const cap = isVid ? 512 * 1024 * 1024 : platform === 'instagram' ? 8 * 1024 * 1024 : 10 * 1024 * 1024;
     if (f.size > cap) {
       await cleanup();
-      return res.status(400).json({ error: isVid ? 'Video is larger than 512 MB' : 'Image is larger than 10 MB' });
+      return res.status(400).json({ error: isVid ? 'Video is larger than 512 MB' : platform === 'instagram' ? 'Instagram photos must be 8 MB or smaller' : 'Image is larger than 10 MB' });
+    }
+    if (platform === 'instagram' && isImg && mt !== 'image/jpeg') {
+      await cleanup();
+      return res.status(400).json({ error: 'Instagram photos must be JPEG. Reopen Stage 3 to prepare this photo.' });
+    }
+  }
+  const igVariantError = validateMedia('instagram', instagramFiles);
+  if (igVariantError || instagramFiles.some((f) => f.mimetype !== 'image/jpeg' || f.size > 8 * 1024 * 1024)) {
+    await cleanup();
+    return res.status(400).json({ error: igVariantError || 'Instagram photos must be JPEG and no larger than 8 MB. Reopen Stage 3 to prepare them.' });
+  }
+  for (const f of instagramFiles) {
+    if (!(await magicIsImage(f.path))) {
+      await cleanup();
+      return res.status(400).json({ error: 'An Instagram photo could not be verified as an image. Reopen Stage 3 and try again.' });
+    }
+  }
+  const fbVariantError = validateMedia('facebook', facebookFiles);
+  if (fbVariantError || facebookFiles.some((f) => f.mimetype !== 'image/jpeg' || f.size > 10 * 1024 * 1024)) {
+    await cleanup();
+    return res.status(400).json({ error: fbVariantError || 'Facebook photos must be valid JPEGs no larger than 10 MB.' });
+  }
+  for (const f of facebookFiles) {
+    if (!(await magicIsImage(f.path))) {
+      await cleanup();
+      return res.status(400).json({ error: 'A Facebook photo could not be verified as an image.' });
     }
   }
   // Carousel rules per platform (fail fast with a clear message).
@@ -801,7 +831,7 @@ app.post('/api/publish', requireUser, strictBurstLimit, publishLimit, publishUpl
   const job = { id, userId: req.user.id, platform, connectionId: conn.id, publishedPosts: [], state: 'queued', progress: 0, message: 'Queued', createdAt: Date.now() };
   jobs.set(id, job);
   res.status(202).json({ job });
-  void runPublish(job, conn, { files, thumbFile }, req.body, req.user.id);
+  void runPublish(job, conn, { files, instagramFiles, facebookFiles, thumbFile }, req.body, req.user.id);
 });
 
 function splitTags(raw) {
@@ -811,10 +841,13 @@ function splitTags(raw) {
 async function runPublish(job, conn, payload, body, userId) {
   const thumbFile = payload?.thumbFile || null;
   const files = payload?.files || (payload?.path ? [payload] : []);
+  const instagramFiles = payload?.instagramFiles || [];
+  const facebookFiles = payload?.facebookFiles || [];
   const file = files[0] || null;
   const allFiles = files;
+  const temporaryStoragePaths = [];
   const cleanupFiles = async () => {
-    for (const f of [...allFiles, ...(payload?.thumbFile ? [payload.thumbFile] : [])]) {
+    for (const f of [...allFiles, ...instagramFiles, ...facebookFiles, ...(payload?.thumbFile ? [payload.thumbFile] : [])]) {
       if (f?.path) await fs.unlink(f.path).catch(() => {});
     }
   };
@@ -914,11 +947,22 @@ async function runPublish(job, conn, payload, body, userId) {
       const tokens = dec(conn.encrypted_tokens);
       const pageToken = tokens.access_token;
       const pageId = tokens.page_id || conn.platform_account_id;
-      const otherConn = async (platform, id) => {
-        if (!id) return null;
+      const otherConn = async (platform, id, linkedPageId = null) => {
+        const matchesPage = (candidate) => {
+          if (!candidate || !linkedPageId) return !!candidate;
+          if (platform === 'facebook') return String(candidate.platform_account_id) === String(linkedPageId);
+          try { return String(dec(candidate.encrypted_tokens).page_id || '') === String(linkedPageId); }
+          catch { return false; }
+        };
+        if (id) {
+          const { data } = await supabase.from('platform_connections')
+            .select('*').eq('id', id).eq('user_id', userId).eq('platform', platform).maybeSingle();
+          if (matchesPage(data)) return data;
+        }
+        if (!linkedPageId) return null;
         const { data } = await supabase.from('platform_connections')
-          .select('*').eq('id', id).eq('user_id', userId).eq('platform', platform).maybeSingle();
-        return data || null;
+          .select('*').eq('user_id', userId).eq('platform', platform);
+        return (data || []).find(matchesPage) || null;
       };
        // Pre-upload technique: the client uploaded media to
        // Supabase while reviewing captions. Skip the re-upload
@@ -947,9 +991,19 @@ async function runPublish(job, conn, payload, body, userId) {
         const key = `${crypto.randomUUID()}${safeExt}`;
         const { error: upErr } = await supabase.storage.from(BUCKET).upload(key, bytes, { contentType: f.mimetype, upsert: true });
          if (upErr) throw new Error('Media upload failed (' + BUCKET + '): ' + (upErr.message || upErr) + '. Make sure the "' + BUCKET + '" bucket exists and is public.');
+        temporaryStoragePaths.push(key);
         const { data } = supabase.storage.from(BUCKET).getPublicUrl(key);
         return { url: data.publicUrl, bytes, file: f };
       };
+      const instagramPublicUrls = [];
+      for (const f of instagramFiles) {
+        const up = await uploadOnePublic(f);
+        instagramPublicUrls.push(up.url);
+      }
+      const facebookMediaList = [];
+      for (const f of facebookFiles) {
+        facebookMediaList.push({ ...f, bytes: await fs.readFile(f.path), originalname: f.originalname, mimetype: f.mimetype });
+      }
       if (allFiles.length) {
         // Upload every file once so carousel + mirrors share the same URLs.
         // Single-photo/video keeps the old `media`/`publicUrl` behaviour.
@@ -1009,7 +1063,7 @@ async function runPublish(job, conn, payload, body, userId) {
         // Optional mirror to Instagram (needs media; text-only cannot mirror).
         // Skipped automatically on "Post to all" (skip_crosspost=1) to avoid doubles.
         if (allowCrossPost && String(body.fb_synd_ig || '') === '1') {
-          const igConn = await otherConn('instagram', body.ig_connection_id);
+          const igConn = await otherConn('instagram', body.ig_connection_id, conn.platform_account_id);
           if (!igConn) {
             job.warning = 'Facebook published, but no Instagram account was chosen for the mirror.';
           } else if (!publicUrl) {
@@ -1017,18 +1071,19 @@ async function runPublish(job, conn, payload, body, userId) {
           } else {
             try {
               const igTokens = dec(igConn.encrypted_tokens);
+              const igUrls = instagramPublicUrls.length ? instagramPublicUrls : publicUrls;
               if (isCarousel) {
                 const mirror = await meta.publishInstagramCarousel({
                   igUserId: igConn.platform_account_id, pageToken: igTokens.access_token,
                   caption: String(body.fb_message ?? fallbackText),
-                  mediaUrls: publicUrls,
+                  mediaUrls: igUrls,
                 });
                 if (mirror.id) job.publishedPosts.push({ platform: 'instagram', connectionId: igConn.id, postId: String(mirror.id) });
               } else {
                  const mirror = await meta.publishInstagram({
                    igUserId: igConn.platform_account_id, pageToken: igTokens.access_token,
                    caption: String(body.fb_message ?? fallbackText),
-                   mediaUrl: publicUrl, isVideo: !!(file?.mimetype || mediaList[0]?.mimetype || '').startsWith('video/'),
+                   mediaUrl: igUrls[0] || publicUrl, isVideo: !!(file?.mimetype || mediaList[0]?.mimetype || '').startsWith('video/'),
                    onStage,
                  });
                  if (mirror.id) job.publishedPosts.push({ platform: 'instagram', connectionId: igConn.id, postId: String(mirror.id) });
@@ -1083,22 +1138,24 @@ async function runPublish(job, conn, payload, body, userId) {
         // Optional mirror to the linked Facebook Page.
         // Skipped automatically on "Post to all" to avoid double-posting.
         if (allowCrossPost && String(body.ig_share_fb || '') === '1') {
-          const fbConn = await otherConn('facebook', body.fb_connection_id);
+          const fbConn = await otherConn('facebook', body.fb_connection_id, tokens.page_id || conn.platform_account_id);
           if (!fbConn) {
             job.warning = 'Instagram published, but no Facebook Page was chosen for sharing.';
           } else {
             try {
               const fbTokens = dec(fbConn.encrypted_tokens);
+              const fbMedia = facebookMediaList[0] || media;
+              const fbMediaSet = facebookMediaList.length ? facebookMediaList : mediaList;
               if (isCarousel) {
                 const mirror = await meta.publishFacebookCarousel({
                   pageId: fbConn.platform_account_id, pageToken: fbTokens.access_token,
-                  text: caption, mediaList,
+                  text: caption, mediaList: fbMediaSet,
                 });
                 if (mirror.id) job.publishedPosts.push({ platform: 'facebook', connectionId: fbConn.id, postId: String(mirror.id) });
               } else {
                 const mirror = await publishFacebook({
                   pageId: fbConn.platform_account_id, pageToken: fbTokens.access_token,
-                  text: caption, media,
+                  text: caption, media: fbMedia,
                 });
                 if (mirror.id) job.publishedPosts.push({ platform: 'facebook', connectionId: fbConn.id, postId: String(mirror.id) });
               }
@@ -1116,6 +1173,7 @@ async function runPublish(job, conn, payload, body, userId) {
     job.state = 'failed'; job.message = e.message; job.completedAt = Date.now();
   } finally {
     await cleanupFiles();
+    await removeStored(temporaryStoragePaths);
   }
 }
 
@@ -1136,7 +1194,9 @@ function validateMedia(platform, files) {
   for (const f of files) {
     const mt = String(f.mimetype || '');
     if (!mt.startsWith('image/') && !mt.startsWith('video/')) return 'Only image and video files are accepted';
-    if (mt.startsWith('image/') && f.size > 10 * 1024 * 1024) return 'Image is larger than 10 MB';
+    if (mt.startsWith('image/') && platform === 'instagram' && f.size > 8 * 1024 * 1024) return 'Instagram photos must be 8 MB or smaller';
+    if (mt.startsWith('image/') && platform === 'instagram' && mt !== 'image/jpeg') return 'Instagram photos must be JPEG. Reopen Stage 3 to prepare this photo.';
+    if (mt.startsWith('image/') && platform !== 'instagram' && f.size > 10 * 1024 * 1024) return 'Image is larger than 10 MB';
     if (mt.startsWith('video/') && f.size > 512 * 1024 * 1024) return 'Video is larger than 512 MB';
   }
   const imgCount = files.filter((f) => String(f.mimetype || '').startsWith('image/')).length;
@@ -1173,9 +1233,11 @@ app.post('/api/schedule', requireUser, strictBurstLimit, publishLimit, publishUp
   const platform = String(req.body.platform || '').slice(0, 32);
   const connectionId = String(req.body.connection_id || '').slice(0, 128);
   const files = [...(req.files?.media || []), ...(req.file ? [req.file] : [])];
+  const instagramFiles = req.files?.instagram_media || [];
+  const facebookFiles = req.files?.facebook_media || [];
   const thumbFile = req.files?.thumbnail?.[0] || null;
   const cleanupTmp = async () => {
-    for (const f of [...files, ...(thumbFile ? [thumbFile] : [])]) await fs.unlink(f.path).catch(() => {});
+    for (const f of [...files, ...instagramFiles, ...facebookFiles, ...(thumbFile ? [thumbFile] : [])]) await fs.unlink(f.path).catch(() => {});
   };
   if (!['youtube', 'facebook', 'instagram', 'x'].includes(platform)) {
     await cleanupTmp();
@@ -1195,9 +1257,23 @@ app.post('/api/schedule', requireUser, strictBurstLimit, publishLimit, publishUp
     return res.status(400).json({ error: 'Schedule within the next year' });
   }
   const mediaErr = validateMedia(platform, files);
-  if (mediaErr) {
+  const igVariantError = validateMedia('instagram', instagramFiles);
+  const fbVariantError = validateMedia('facebook', facebookFiles);
+  if (mediaErr || igVariantError || fbVariantError) {
     await cleanupTmp();
-    return res.status(400).json({ error: mediaErr });
+    return res.status(400).json({ error: mediaErr || igVariantError || fbVariantError });
+  }
+  for (const f of instagramFiles) {
+    if (f.mimetype !== 'image/jpeg' || f.size > 8 * 1024 * 1024 || !(await magicIsImage(f.path))) {
+      await cleanupTmp();
+      return res.status(400).json({ error: 'Instagram media must be a valid JPEG no larger than 8 MB.' });
+    }
+  }
+  for (const f of facebookFiles) {
+    if (f.mimetype !== 'image/jpeg' || f.size > 10 * 1024 * 1024 || !(await magicIsImage(f.path))) {
+      await cleanupTmp();
+      return res.status(400).json({ error: 'Facebook mirror media must be a valid JPEG no larger than 10 MB.' });
+    }
   }
   const { data: conn, error: connErr } = await supabase.from('platform_connections')
     .select('*').eq('id', connectionId).eq('user_id', req.user.id).eq('platform', platform).maybeSingle();
@@ -1216,6 +1292,8 @@ app.post('/api/schedule', requireUser, strictBurstLimit, publishLimit, publishUp
   // Park the media so the worker can rebuild the upload later.
   const prefix = `scheduled/${req.user.id}/${crypto.randomUUID()}`;
   const stored = [];
+  const storedInstagram = [];
+  const storedFacebook = [];
   let thumbPath = null;
   try {
     for (const f of files) {
@@ -1227,6 +1305,22 @@ app.post('/api/schedule', requireUser, strictBurstLimit, publishLimit, publishUp
         .upload(key, bytes, { contentType: f.mimetype, upsert: false });
        if (upErr) throw new Error('Media upload failed (' + BUCKET + '): ' + (upErr.message || upErr) + '. Make sure the "' + BUCKET + '" bucket exists and is public.');
       stored.push({ path: key, mimetype: f.mimetype, name: f.originalname || key.split('/').pop() });
+    }
+    for (const f of instagramFiles) {
+      const bytes = await fs.readFile(f.path);
+      const key = `${prefix}/instagram-${crypto.randomUUID()}.jpg`;
+      const { error: upErr } = await supabase.storage.from(BUCKET)
+        .upload(key, bytes, { contentType: 'image/jpeg', upsert: false });
+      if (upErr) throw new Error('Instagram media upload failed (' + BUCKET + '): ' + (upErr.message || upErr));
+      storedInstagram.push({ path: key, mimetype: 'image/jpeg', name: f.originalname || key.split('/').pop() });
+    }
+    for (const f of facebookFiles) {
+      const bytes = await fs.readFile(f.path);
+      const key = `${prefix}/facebook-${crypto.randomUUID()}.jpg`;
+      const { error: upErr } = await supabase.storage.from(BUCKET)
+        .upload(key, bytes, { contentType: 'image/jpeg', upsert: false });
+      if (upErr) throw new Error('Facebook media upload failed (' + BUCKET + '): ' + (upErr.message || upErr));
+      storedFacebook.push({ path: key, mimetype: 'image/jpeg', name: f.originalname || key.split('/').pop() });
     }
     if (thumbFile) {
       const bytes = await fs.readFile(thumbFile.path);
@@ -1242,7 +1336,7 @@ app.post('/api/schedule', requireUser, strictBurstLimit, publishLimit, publishUp
       connection_id: connectionId,
       scheduled_at: new Date(when).toISOString(),
       status: 'scheduled',
-      body: { ...(req.body || {}), yt_thumbnail_mimetype: thumbFile?.mimetype || '' },
+      body: { ...(req.body || {}), yt_thumbnail_mimetype: thumbFile?.mimetype || '', driftpost_instagram_media: storedInstagram, driftpost_facebook_media: storedFacebook },
       media: stored,
       thumb_path: thumbPath,
     }).select().single();
@@ -1250,7 +1344,7 @@ app.post('/api/schedule', requireUser, strictBurstLimit, publishLimit, publishUp
     await cleanupTmp();
     res.status(201).json({ schedule: data });
   } catch (e) {
-    await removeStored([...stored.map((s) => s.path), thumbPath]);
+    await removeStored([...stored.map((s) => s.path), ...storedInstagram.map((s) => s.path), ...storedFacebook.map((s) => s.path), thumbPath]);
     await cleanupTmp();
     res.status(500).json({ error: e.message || 'Could not schedule the post' });
   }
@@ -1271,7 +1365,7 @@ app.delete('/api/schedules/:id', requireUser, jobsLimit, async (req, res) => {
   if (!cancelled || !cancelled.length) {
     return res.status(409).json({ error: 'This post just started publishing — too late to cancel' });
   }
-  await removeStored([...(row.media || []).map((m) => m.path), row.thumb_path]);
+  await removeStored([...(row.media || []).map((m) => m.path), ...(row.body?.driftpost_instagram_media || []).map((m) => m.path), ...(row.body?.driftpost_facebook_media || []).map((m) => m.path), row.thumb_path]);
   res.json({ ok: true });
 });
 
@@ -1282,14 +1376,28 @@ async function runDueSchedules() {
   if (scheduleTickRunning) return;
   scheduleTickRunning = true;
   try {
-    const { data: due } = await supabase.from('scheduled_posts')
+    // A process can be restarted after claiming a row. Recover old claims so
+    // schedules do not remain stuck forever; the 30 minute window is longer
+    // than the slowest supported media-processing path.
+    const staleBefore = new Date(Date.now() - 30 * 60 * 1000).toISOString();
+    const { data: staleRows, error: recoverError } = await supabase.from('scheduled_posts')
+      .update({ status: 'failed', error: 'The publishing worker stopped during this post. Please schedule it again.', updated_at: new Date().toISOString() })
+      .eq('status', 'publishing').lt('updated_at', staleBefore).select('media, body, thumb_path');
+    if (recoverError) throw recoverError;
+    for (const row of staleRows || []) {
+      await removeStored([...(row.media || []).map((m) => m.path), ...(row.body?.driftpost_instagram_media || []).map((m) => m.path), ...(row.body?.driftpost_facebook_media || []).map((m) => m.path), row.thumb_path]);
+    }
+
+    const { data: due, error: dueError } = await supabase.from('scheduled_posts')
       .select('*').eq('status', 'scheduled').lte('scheduled_at', new Date().toISOString())
       .order('scheduled_at', { ascending: true }).limit(SCHED_BATCH);
+    if (dueError) throw dueError;
     for (const row of due || []) {
       // Claim the row so a second instance/loop cannot double-post.
-      const { data: claimed } = await supabase.from('scheduled_posts')
+      const { data: claimed, error: claimError } = await supabase.from('scheduled_posts')
         .update({ status: 'publishing', updated_at: new Date().toISOString() })
         .eq('id', row.id).eq('status', 'scheduled').select();
+      if (claimError) throw claimError;
       if (!claimed || !claimed.length) continue;
       const { data: conn } = await supabase.from('platform_connections')
         .select('*').eq('id', row.connection_id).eq('user_id', row.user_id).maybeSingle();
@@ -1316,6 +1424,24 @@ async function runDueSchedules() {
           await fs.writeFile(tmp, buf);
           localFiles.push({ path: tmp, mimetype: m.mimetype || 'image/jpeg', originalname: m.name || 'media', size: buf.length });
         }
+        const localInstagramFiles = [];
+        for (const m of row.body?.driftpost_instagram_media || []) {
+          const { data, error: dlErr } = await supabase.storage.from(BUCKET).download(m.path);
+          if (dlErr || !data) throw new Error('Scheduled Instagram media is missing');
+          const tmp = path.join(os.tmpdir(), `driftpost-sched-ig-${crypto.randomUUID()}.jpg`);
+          const buf = Buffer.from(await data.arrayBuffer());
+          await fs.writeFile(tmp, buf);
+          localInstagramFiles.push({ path: tmp, mimetype: 'image/jpeg', originalname: m.name || 'instagram-photo.jpg', size: buf.length });
+        }
+        const localFacebookFiles = [];
+        for (const m of row.body?.driftpost_facebook_media || []) {
+          const { data, error: dlErr } = await supabase.storage.from(BUCKET).download(m.path);
+          if (dlErr || !data) throw new Error('Scheduled Facebook media is missing');
+          const tmp = path.join(os.tmpdir(), `driftpost-sched-fb-${crypto.randomUUID()}.jpg`);
+          const buf = Buffer.from(await data.arrayBuffer());
+          await fs.writeFile(tmp, buf);
+          localFacebookFiles.push({ path: tmp, mimetype: 'image/jpeg', originalname: m.name || 'facebook-photo.jpg', size: buf.length });
+        }
         let thumbFile = null;
         if (row.thumb_path) {
           const { data } = await supabase.storage.from(BUCKET).download(row.thumb_path);
@@ -1326,7 +1452,7 @@ async function runDueSchedules() {
             thumbFile = { path: tmp, mimetype: row.body?.yt_thumbnail_mimetype || 'image/jpeg', originalname: 'cover.jpg', size: buf.length };
           }
         }
-        await runPublish(job, conn, { files: localFiles, thumbFile }, row.body || {}, row.user_id);
+        await runPublish(job, conn, { files: localFiles, instagramFiles: localInstagramFiles, facebookFiles: localFacebookFiles, thumbFile }, row.body || {}, row.user_id);
         const done = jobs.get(job.id) || job;
         await supabase.from('scheduled_posts').update({
           status: done.state === 'completed' ? 'published' : 'failed',
@@ -1334,10 +1460,9 @@ async function runDueSchedules() {
           error: done.state === 'completed' ? null : (done.message || 'Publish failed'),
           updated_at: new Date().toISOString(),
         }).eq('id', row.id);
-        if (done.state === 'completed') {
-          await removeStored([...(row.media || []).map((m) => m.path), row.thumb_path]);
-        }
+        await removeStored([...(row.media || []).map((m) => m.path), ...(row.body?.driftpost_instagram_media || []).map((m) => m.path), ...(row.body?.driftpost_facebook_media || []).map((m) => m.path), row.thumb_path]);
       } catch (e) {
+        await removeStored([...(row.media || []).map((m) => m.path), ...(row.body?.driftpost_instagram_media || []).map((m) => m.path), ...(row.body?.driftpost_facebook_media || []).map((m) => m.path), row.thumb_path]);
         await supabase.from('scheduled_posts').update({
           status: 'failed',
           error: e.message || 'Publish failed',
@@ -1345,14 +1470,15 @@ async function runDueSchedules() {
         }).eq('id', row.id);
       }
     }
-  } catch {
-    // Never let a transient Supabase error kill the interval.
+  } catch (e) {
+    // Keep the interval alive while making the failure visible in Render logs.
+    console.error('[scheduler] Tick failed:', e?.message || e);
   } finally {
     scheduleTickRunning = false;
   }
 }
-setInterval(runDueSchedules, 60 * 1000).unref();
-setTimeout(runDueSchedules, 10 * 1000).unref();
+setInterval(runDueSchedules, 15 * 1000).unref();
+setTimeout(runDueSchedules, 3 * 1000).unref();
 
 app.use((_req, res) => res.status(404).json({ error: 'Not found' }));
 

@@ -4,6 +4,7 @@ import { readVault, writeVault, vaultFiles } from '../stage2/mediaVault.js';
 import { requestCaptions, mapResponse, approveCaption } from '../stage2/ai.js';
 import { composeOutput } from '../stage2/PlatformOutputCard.jsx';
 import { photoToVideo } from './photoVideo.js';
+import { instagramMediaFiles, facebookMediaFiles } from './instagramMedia.js';
 import { logCaptions, logPost } from '../history/log.js';
 import ProgressStepper from './ProgressStepper.jsx';
 import PlatformTabs from './PlatformTabs.jsx';
@@ -101,7 +102,17 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
    // Stored in localStorage so "Post" can skip the file transfer.
     useEffect(() => {
       (async () => {
-        if (!files.length || cloudDone) return;
+        if (!files.length) return;
+        // Photos now get smaller, platform-specific renditions at publish
+        // time, so pre-uploading the originals would waste storage and then
+        // send the same bytes again. Keep the fast pre-upload path for video.
+        if (files.some((f) => (f.type || f.raw?.type || '').startsWith('image/'))) {
+          try { localStorage.removeItem(cloudCacheKey); } catch {}
+          if (cloudDone) setCloudDone(false);
+          setCloudProgress(null);
+          return;
+        }
+        if (cloudDone) return;
         const prev = load(cloudCacheKey, null);
         const curKey = mediaSignature(files);
         if (prev?.filesKey === curKey && prev?.files?.length === files.length && prev.files.every((f) => f.publicUrl)) {
@@ -188,20 +199,22 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
   // Member account ids on one platform, in group order.
   const groupMemberIds = (pid) => [...new Set(groupIds)].filter((id) => connById[id]?.platform === pid);
 
-  // Stage 2 cross-post already routes Facebook through Instagram — except in
-  // group flows, where every member account gets its own direct post (a
-  // mirror would only reach one Facebook account and the rest would be
-  // missed, or double-post where direct posts also run).
-  const platforms = (s1.crosspost && !isGroupFlow && basePlatforms.includes('instagram') && basePlatforms.includes('facebook'))
-    ? basePlatforms.filter((pid) => pid !== 'facebook')
-    : basePlatforms;
+  const cfgFor = (pid) => ({ ...(DEFAULT_CFG[pid] || {}), ...(cfg[pid] || {}) });
+  // Mirroring covers its destination. Keep that destination out of the
+  // Stage 3 tabs so users cannot accidentally publish a second copy.
+  const mirrorTarget = (() => {
+    if (!basePlatforms.includes('instagram') || !basePlatforms.includes('facebook')) return '';
+    if (s1.crosspost || cfgFor('instagram').shareFb) return 'facebook';
+    if (cfgFor('facebook').syndIg) return 'instagram';
+    return '';
+  })();
+  const platforms = basePlatforms.filter((pid) => pid !== mirrorTarget);
   const brandLabel = s1.type === 'common_brand' ? brand?.label || '' : '';
 
   useEffect(() => {
     if (!platforms.includes(tab)) setTab(platforms[0] || '');
   }, [platforms, tab]);
 
-  const cfgFor = (pid) => ({ ...(DEFAULT_CFG[pid] || {}), ...(cfg[pid] || {}) });
   // Group flows only ever see group members: the dropdown/default can never
   // point at an unrelated account. Other flows behave exactly as before.
   const accountsFor = (pid) => isGroupFlow
@@ -225,26 +238,15 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
     return connections.find((c) => c.platform === pid)?.id || '';
   };
 
-  // Cross-post mutual exclusion: posting IG→FB and FB→IG together would
-  // double-post, so the other side greys out and leaves publish-all.
-  // In group flows the greyed tab is COVERED: group fan-out posts its
-  // member accounts directly (mirrors stripped), so nothing is skipped.
-  const greyed = (pid) => {
-    if (pid === 'facebook' && platforms.includes('instagram') && cfgFor('instagram').shareFb) return true;
-    if (pid === 'instagram' && platforms.includes('facebook') && cfgFor('facebook').syndIg) return true;
-    return false;
-  };
-  // Platforms one Post button covers: itself + a mirrored platform whose
-  // tab is greyed out. Only IG↔FB mirrors exist.
+  const greyed = () => false;
+  // Group fan-out still includes every selected account on the hidden side.
   const coveredPids = (pid) => {
     const list = [pid];
-    if (pid === 'instagram' && platforms.includes('facebook') && cfgFor('instagram').shareFb) list.push('facebook');
-    if (pid === 'facebook' && platforms.includes('instagram') && cfgFor('facebook').syndIg) list.push('instagram');
+    if (pid === 'instagram' && mirrorTarget === 'facebook') list.push('facebook');
+    if (pid === 'facebook' && mirrorTarget === 'instagram') list.push('instagram');
     return list;
   };
-  const greyReason = (pid) => (pid === 'facebook'
-    ? 'Skipped — Instagram auto-shares here. Turn that off to post Facebook directly.'
-    : 'Skipped — Facebook auto-shares here. Turn that off to post Instagram directly.');
+  const greyReason = () => '';
   const effective = platforms.filter((pid) => !greyed(pid));
 
   const statusOf = (pid) => {
@@ -266,6 +268,12 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
     const c = cfgFor(pid);
     if (!allowGreyed && greyed(pid)) return 'skipped by cross-post — turn the mirror off to post it directly';
     if (isGroupFlow ? !groupMemberIds(pid).length : !accountFor(pid)) return 'no account — pick one first';
+    const mirroredPlatform = pid === 'instagram' && mirrorTarget === 'facebook'
+      ? 'facebook'
+      : pid === 'facebook' && mirrorTarget === 'instagram' ? 'instagram' : '';
+    if (mirroredPlatform && (isGroupFlow ? !groupMemberIds(mirroredPlatform).length : !accountFor(mirroredPlatform))) {
+      return `connect or select a ${NAMES[mirroredPlatform]} account to receive the cross-post`;
+    }
     if (pid === 'x') {
       if (!v.text?.trim()) return 'write the post text first';
       if (Array.from(v.text || '').length > 280) return 'too long — shorten to 280 characters';
@@ -282,7 +290,23 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
     if (pid === 'youtube' && (v.title || '').length > 100) return 'YouTube titles must be 100 characters or less';
     return '';
   };
-  const onCfg = (pid, patch) => setCfg((c) => { const n = { ...c, [pid]: { ...cfgFor(pid), ...patch } }; save('driftpost-stage3-cfg', n); return n; });
+  const mirrorErrorFor = (pid) => {
+    const target = pid === 'instagram' && mirrorTarget === 'facebook'
+      ? 'facebook'
+      : pid === 'facebook' && mirrorTarget === 'instagram' ? 'instagram' : '';
+    if (!target) return '';
+    if (isGroupFlow ? !groupMemberIds(target).length : !accountFor(target)) return `no ${NAMES[target]} account is selected`;
+    if (target === 'instagram' && !files.some((f) => /^(image|video)\//.test(f.type))) return 'Instagram needs a photo or video';
+    if (target === 'instagram' && Array.from(mainText('facebook')).length > 2200) return 'the Instagram caption exceeds 2,200 characters';
+    return '';
+  };
+  const onCfg = (pid, patch) => setCfg((c) => {
+    const n = { ...c, [pid]: { ...cfgFor(pid), ...patch } };
+    if (pid === 'instagram' && patch.shareFb) n.facebook = { ...cfgFor('facebook'), syndIg: false };
+    if (pid === 'facebook' && patch.syndIg) n.instagram = { ...cfgFor('instagram'), shareFb: false };
+    save('driftpost-stage3-cfg', n);
+    return n;
+  });
   const onAccount = (pid, id) => setOverrides((o) => { const n = { ...o, [pid]: id }; save('driftpost-stage3-accounts', n); return n; });
   const onThumb = (t) => {
     setThumb(t);
@@ -344,16 +368,18 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
       yt_category: c.category || '',
       yt_kids: c.kids || '',
       ig_caption: composeOutput('instagram', v),
-      ig_share_fb: ((s1.crosspost || c.shareFb) && pid === 'instagram') ? '1' : '',
+      ig_share_fb: (mirrorTarget === 'facebook' && pid === 'instagram') ? '1' : '',
       ig_post_story: c.story ? '1' : '',
       ig_alt: c.alt || '',
       ig_topics: c.topics || '',
       ig_partner: c.partner || '',
       ig_collabs: c.collabs || '',
       fb_connection_id: accountFor('facebook'),
-      fb_message: (outputs.facebook || {}).message || '',
+      fb_message: mirrorTarget === 'facebook' && pid === 'instagram'
+        ? mainText('instagram')
+        : (outputs.facebook || {}).message || '',
       fb_link: c.link || '',
-      fb_synd_ig: (pid === 'facebook' && c.syndIg) ? '1' : '',
+      fb_synd_ig: (mirrorTarget === 'instagram' && pid === 'facebook') ? '1' : '',
       ig_connection_id: accountFor('instagram'),
       fb_cta: c.cta || '',
       fb_age: c.age || '',
@@ -366,16 +392,24 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
     return body;
   };
 
-   const buildForm = (pid, { connectionId = null, skipCrossPost = false, mediaOverride = null } = {}) => {
+   const buildForm = async (pid, { connectionId = null, skipCrossPost = false, mediaOverride = null } = {}) => {
      const body = bodyFor(pid, { skipCrossPost });
      if (connectionId) body.connection_id = connectionId;
      const uploaded = load(cloudCacheKey, null);
      const usePreuploaded = uploaded?.filesKey === mediaSignature(files)
        && uploaded?.files?.length === files.length
-       && uploaded.files.every((f) => f.publicUrl);
+       && uploaded.files.every((f) => f.publicUrl)
+       && !files.some((f) => (f.type || f.raw?.type || '').startsWith('image/'));
      const form = new FormData();
      for (const [k, v] of Object.entries(body)) form.append(k, v);
-     if (usePreuploaded && !mediaOverride && (pid === 'facebook' || pid === 'instagram')) {
+     const sourceMedia = mediaOverride || files;
+     const igMedia = (pid === 'instagram' || (pid === 'facebook' && mirrorTarget === 'instagram'))
+       ? await instagramMediaFiles(sourceMedia)
+       : null;
+     const fbMedia = (pid === 'facebook' || (pid === 'instagram' && mirrorTarget === 'facebook'))
+       ? await facebookMediaFiles(sourceMedia)
+       : null;
+     if (usePreuploaded && !mediaOverride && pid === 'facebook') {
        body.hasPreuploadedMedia = '1';
        form.append('hasPreuploadedMedia', '1');
        uploaded.files.forEach((f, i) => {
@@ -385,8 +419,18 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
        });
      } else {
        // mediaOverride replaces the selected files (used for photo -> video).
-       const media = mediaOverride || files;
+       const media = pid === 'instagram' ? (igMedia || sourceMedia) : pid === 'facebook' ? (fbMedia || sourceMedia) : sourceMedia;
        for (const f of media.slice(0, 10)) { if (f?.raw) form.append('media', f.raw); }
+     }
+     if (pid === 'facebook' && mirrorTarget === 'instagram' && igMedia) {
+       for (const f of igMedia.slice(0, 10)) {
+         if (f?.raw && f.type?.startsWith('image/')) form.append('instagram_media', f.raw, f.name);
+       }
+     }
+     if (pid === 'instagram' && mirrorTarget === 'facebook' && fbMedia) {
+       for (const f of fbMedia.slice(0, 10)) {
+         if (f?.raw && f.type?.startsWith('image/')) form.append('facebook_media', f.raw, f.name);
+       }
      }
      if (pid === 'youtube' && thumb?.raw) form.append('thumbnail', thumb.raw);
      return form;
@@ -398,7 +442,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
   const runToAccount = async (pid, connectionId, out, key, { skipCrossPost = false, mediaOverride = null } = {}) => {
     out[key] = { state: 'uploading', progress: 5 };
     setResults({ ...out });
-    const form = buildForm(pid, { connectionId, skipCrossPost, mediaOverride });
+    const form = await buildForm(pid, { connectionId, skipCrossPost, mediaOverride });
     if (connectionId) form.set('connection_id', connectionId);
      const hasPre = form.has('hasPreuploadedMedia');
      const { res, data, refreshedToken } = await fetchWithAuth(`${apiUrl}/api/publish`, session.access_token, {
@@ -495,13 +539,19 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
     if (busy[pid] || greyed(pid) || !claim(`post:${pid}`)) return;
     if (isGroupFlow && !groupMemberIds(pid).length) { release(`post:${pid}`); return; }
     if (!isGroupFlow && !accountFor(pid)) { release(`post:${pid}`); return; }
-    // A covered (greyed-out) platform rides along — refuse if ITS card is broken too.
-    if (isGroupFlow) {
-      const badCov = coveredPids(pid).filter((q) => q !== pid)
-        .map((q) => invalidReason(q, { allowGreyed: true })).find(Boolean);
-      if (badCov) {
+    const mirrorPid = pid === 'instagram' && mirrorTarget === 'facebook'
+      ? 'facebook'
+      : pid === 'facebook' && mirrorTarget === 'instagram' ? 'instagram' : '';
+    if (mirrorPid && (isGroupFlow ? !groupMemberIds(mirrorPid).length : !accountFor(mirrorPid))) {
+      release(`post:${pid}`);
+      setResults((r) => ({ ...r, [pid]: { state: 'failed', message: `Connect or select a ${NAMES[mirrorPid]} account to receive the cross-post.` } }));
+      return;
+    }
+    if (mirrorPid) {
+      const mirrorError = mirrorErrorFor(pid);
+      if (mirrorError) {
         release(`post:${pid}`);
-        setResults((r) => ({ ...r, [pid]: { state: 'failed', message: `Fix the covered card first: ${badCov}` } }));
+        setResults((r) => ({ ...r, [pid]: { state: 'failed', message: `Fix the ${NAMES[mirrorPid]} cross-post first: ${mirrorError}.` } }));
         return;
       }
     }
@@ -567,10 +617,6 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
     // Light every target card so the run is visible even before first progress.
     setBusy((b) => { const n = { ...b }; targets.forEach((p) => { n[p] = true; }); return n; });
     const out = { ...results };
-    // Direct posts only (mirrors stripped) — unless global cross-post routes
-    // Facebook through Instagram, which must keep its share flag. Group
-    // flows always strip: every member gets a direct post.
-    const strip = !(s1.crosspost && !isGroupFlow && targets.includes('instagram'));
     // YouTube takes video only: with photos attached, encode once and reuse
     // the clip for every YouTube account instead of failing each one.
     let clipWrapped = null;
@@ -597,8 +643,8 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
         // Invalid cards fail up front with the reason on the card — never a
         // silent mid-flight failure after siblings already posted. Covered
         // (greyed-out) platforms riding along are validated too.
-        const cov = isGroupFlow ? coveredPids(pid) : [pid];
-        const bad = cov.map((q) => (q === pid ? invalidReason(q) : invalidReason(q, { allowGreyed: true }))).find(Boolean);
+        const cov = coveredPids(pid);
+        const bad = cov.map((q) => (q === pid ? invalidReason(q) : mirrorErrorFor(pid))).find(Boolean);
         if (bad) {
           out[pid] = { state: 'failed', message: `Fix this card first: ${bad}` };
           setResults({ ...out });
@@ -608,7 +654,13 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
         const mo = (pid === 'youtube' && clipWrapped) ? clipWrapped : undefined;
         try {
           if (isGroupFlow) await runGroup(pid, out, { mediaOverride: mo });
-          else await runOne(pid, out, { skipCrossPost: strip, mediaOverride: mo });
+          else await runOne(pid, out, {
+            skipCrossPost: isGroupFlow || !(
+              (pid === 'instagram' && mirrorTarget === 'facebook') ||
+              (pid === 'facebook' && mirrorTarget === 'instagram')
+            ),
+            mediaOverride: mo,
+          });
         } catch (e) {
           if (out[pid]?.state !== 'failed') {
             out[pid] = { state: 'failed', message: e.message };
@@ -631,8 +683,8 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
     if (schedBusy || !claim(`sched:${pid}`)) return;
     // Same validity as instant Post — an unsendable payload must fail here,
     // not silently at fire time. Covered platforms ride along, validated too.
-    const cov = isGroupFlow ? coveredPids(pid) : [pid];
-    const bad = cov.map((q) => (q === pid ? invalidReason(q) : invalidReason(q, { allowGreyed: true }))).find(Boolean);
+    const cov = coveredPids(pid);
+    const bad = cov.map((q) => (q === pid ? invalidReason(q) : mirrorErrorFor(pid))).find(Boolean);
     if (bad) {
       release(`sched:${pid}`);
       setSchedMsg(`Fix the ${NAMES[pid]} card first: ${bad}`);
@@ -663,13 +715,27 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
       if (!pairs.length || pairs.some(({ id }) => !id)) throw new Error('Pick an account for that platform first.');
       const when = new Date(whenIso).toLocaleString();
       for (const { q, id } of pairs) {
-        const strip = isGroupFlow ? true : !(s1.crosspost && pid === 'instagram');
+        const skipCrossPost = isGroupFlow || !(
+          (pid === 'instagram' && mirrorTarget === 'facebook') ||
+          (pid === 'facebook' && mirrorTarget === 'instagram')
+        );
+        const instagramFiles = q === 'facebook' && mirrorTarget === 'instagram'
+          ? (await instagramMediaFiles(schedFiles)).filter((f) => f.type?.startsWith('image/'))
+          : [];
+        const facebookFiles = q === 'instagram' && mirrorTarget === 'facebook'
+          ? (await facebookMediaFiles(schedFiles)).filter((f) => f.type?.startsWith('image/'))
+          : [];
+        const platformFiles = q === 'instagram'
+          ? await instagramMediaFiles(schedFiles)
+          : q === 'facebook' ? await facebookMediaFiles(schedFiles) : schedFiles;
         await schedulePost(session.access_token, {
           platform: q,
           connectionId: id,
           when: whenIso,
-          body: { ...bodyFor(q, { skipCrossPost: strip }), connection_id: id },
-          files: schedFiles,
+          body: { ...bodyFor(q, { skipCrossPost }), connection_id: id },
+          files: platformFiles,
+          instagramFiles,
+          facebookFiles,
           thumb: q === 'youtube' ? thumb : null,
         });
       }
@@ -770,6 +836,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
                   onPost={publishOne}
                   onPostPhotoAsVideo={publishPhotoAsVideo}
                   encoding={encoding}
+                  hideInstagramCrosspost={!!s1.crosspost}
                   onRegen={regenOne}
                   onSchedule={(pid) => { setTab(pid); setSchedOpen(true); }}
                 />

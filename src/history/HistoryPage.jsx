@@ -124,13 +124,16 @@ export function PostedTab({ token }) {
 function ScheduledTab({ token }) {
   const [rows, setRows] = useState(null);
   const [busy, setBusy] = useState('');
+  const [error, setError] = useState('');
 
   const load = () => {
-    listSchedules(token).then(setRows).catch(() => setRows([]));
+    setError('');
+    listSchedules(token).then(setRows).catch((e) => { setError(e.message || 'Could not load scheduled posts.'); setRows([]); });
   };
   useEffect(load, [token]);
 
   if (rows === null) return <p className="hist-empty">Loading scheduled posts…</p>;
+  if (error) return <div><p className="hist-note" role="alert">{error}</p><button type="button" className="hist-mini" onClick={load}>Retry</button></div>;
   if (!rows.length) {
     return (
       <div>
@@ -163,9 +166,9 @@ function ScheduledTab({ token }) {
                 disabled={busy === r.id}
                 onClick={async () => {
                   setBusy(r.id);
-                  try { await cancelSchedule(token, r.id); } catch {}
-                  load();
-                  setBusy('');
+                  try { await cancelSchedule(token, r.id); load(); }
+                  catch (e) { setError(e.message || 'Could not cancel this schedule.'); }
+                  finally { setBusy(''); }
                 }}
               >
                 {busy === r.id ? '…' : 'Cancel'}
