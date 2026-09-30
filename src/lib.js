@@ -402,6 +402,9 @@ export async function api(path, token, options = {}) {
         },
       });
       const ct = res.headers.get('content-type') || '';
+      if ([502, 503, 504].includes(res.status)) {
+        throw new Error('Server is waking up — retrying shortly.');
+      }
       // A same-origin index.html fallback (wrong API URL) is HTML, not JSON
       // — say so plainly instead of dying downstream with no message.
       if (!ct.includes('json')) throw new Error('API unreachable — check your connection and try again.');
@@ -467,6 +470,31 @@ export async function fetchWithAuth(url, token, init = {}) {
     } catch { return 0; }
   })();
   const budget = Math.min(900000, 30000 + Math.round((bodyBytes / (512 * 1024)) * 1000));
+  // Render's free instance can sleep between visits. A cold-start 503 is
+  // served by Render before Express, so the browser reports it as a CORS
+  // failure and XHR cannot safely distinguish it from a failed POST. Wake and
+  // verify the API first; this keeps the upload itself from being ambiguous.
+  const warmApi = async () => {
+    for (let attempt = 0; attempt < 5; attempt++) {
+      const ctrl = new AbortController();
+      const timer = setTimeout(() => ctrl.abort(), 10000);
+      try {
+        const healthUrl = new URL('/health', url).toString();
+        const res = await fetch(healthUrl, { method: 'GET', cache: 'no-store', signal: ctrl.signal });
+        const contentType = res.headers.get('content-type') || '';
+        if (res.ok && contentType.includes('json')) {
+          const health = await res.json().catch(() => null);
+          if (health?.ok) return;
+        }
+      } catch {
+        // A sleeping Render instance may return a non-CORS 503 until it wakes.
+      } finally {
+        clearTimeout(timer);
+      }
+      if (attempt < 4) await new Promise((resolve) => setTimeout(resolve, 1000 * (attempt + 1)));
+    }
+    throw new Error('Publishing server is unavailable. Wait a moment and try again; your post was not sent.');
+  };
   // Upload phase progress needs XHR (fetch exposes download progress only).
   // The browser fires upload events as bytes leave — mapped to the first 15%.
   const xhrPost = (t) => new Promise((resolve, reject) => {
@@ -498,7 +526,10 @@ export async function fetchWithAuth(url, token, init = {}) {
     } catch (e) { reject(e); }
   });
   const doPost = async (t, timeoutMs) => {
-    if (onUploadProgress) return xhrPost(t);
+    if (onUploadProgress) {
+      await warmApi();
+      return xhrPost(t);
+    }
     const ctrl = new AbortController();
     // File uploads are never aborted — a big video takes what it takes.
     // Plain JSON posts keep the timeout so a dead server can't hang a button.
