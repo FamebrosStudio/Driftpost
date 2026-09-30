@@ -489,6 +489,16 @@ export async function fetchWithAuth(url, token, init = {}) {
     } catch { return 0; }
   })();
   const budget = Math.min(900000, 30000 + Math.round((bodyBytes / (512 * 1024)) * 1000));
+  // Keep small publish calls on the Vercel same-origin proxy so browser
+  // preflights cannot hide Render gateway errors as CORS failures. Large media
+  // stays direct because Vercel's external proxy has a shorter request limit.
+  const parsedUrl = new URL(url, window.location.href);
+  const throughVercel = useVercelApiProxy
+    && parsedUrl.pathname === '/api/publish'
+    && bodyBytes <= 32 * 1024 * 1024;
+  const requestUrl = throughVercel
+    ? `${window.location.origin}${parsedUrl.pathname}${parsedUrl.search}`
+    : url;
   // Render's free instance can sleep between visits. A cold-start 503 is
   // served by Render before Express, so the browser reports it as a CORS
   // failure and XHR cannot safely distinguish it from a failed POST. Wake and
@@ -522,7 +532,7 @@ export async function fetchWithAuth(url, token, init = {}) {
   const xhrPost = (t) => new Promise((resolve, reject) => {
     try {
       const xhr = new XMLHttpRequest();
-      xhr.open('POST', url);
+      xhr.open('POST', requestUrl);
       xhr.setRequestHeader('Authorization', `Bearer ${t}`);
       if (xhr.upload && onUploadProgress) {
         xhr.upload.onprogress = (e) => {
@@ -557,7 +567,7 @@ export async function fetchWithAuth(url, token, init = {}) {
     // Plain JSON posts keep the timeout so a dead server can't hang a button.
     const timer = bodyBytes > 0 ? null : setTimeout(() => ctrl.abort(), timeoutMs);
     try {
-      const res = await fetch(url, {
+      const res = await fetch(requestUrl, {
         ...rest,
         signal: ctrl.signal,
         headers: { ...(rest.headers || {}), Authorization: `Bearer ${t}` },
