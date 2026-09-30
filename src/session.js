@@ -8,8 +8,44 @@ export const authConfigured = !!(url && key);
 // Supabase is loaded lazily so the public landing page ships zero
 // Supabase JS. The client is created once and reused everywhere.
 let clientPromise = null;
+
+// Supabase's implicit callback tokens live in the URL fragment until the
+// callback is fully accepted. If that callback is resumed from an old tab,
+// Supabase warns after 120 seconds and may reject /auth/v1/user, leaving the
+// same token in the URL to fail again on every reload. Remove only stale
+// callback credentials; the client can then restore its saved session or ask
+// the user to sign in again.
+function removeStaleAuthCallback() {
+  if (typeof window === 'undefined') return;
+  try {
+    const url = new URL(window.location.href);
+    const search = url.searchParams;
+    const hashText = url.hash.startsWith('#') ? url.hash.slice(1) : '';
+    const hash = new URLSearchParams(hashText);
+    const authInHash = hash.has('access_token');
+    const params = authInHash ? hash : search;
+    if (!params.has('access_token') || !params.has('refresh_token')) return;
+
+    const expiresIn = Number(params.get('expires_in'));
+    const expiresAt = Number(params.get('expires_at'));
+    if (!expiresIn || !expiresAt) return;
+    const issuedAt = expiresAt - expiresIn;
+    const now = Math.floor(Date.now() / 1000);
+    if (now - issuedAt < 120 && expiresAt > now) return;
+
+    const authFields = ['access_token', 'refresh_token', 'expires_in', 'expires_at', 'token_type', 'provider_token', 'provider_refresh_token', 'type', 'error', 'error_code', 'error_description'];
+    for (const field of authFields) {
+      search.delete(field);
+    }
+    url.search = search.toString();
+    if (authInHash) url.hash = '';
+    window.history.replaceState(window.history.state, '', `${url.pathname}${url.search}${url.hash}`);
+  } catch {}
+}
+
 export function getSupabase() {
   if (!clientPromise) {
+    removeStaleAuthCallback();
     clientPromise = authConfigured
       ? import('@supabase/supabase-js').then(({ createClient }) => createClient(url, key))
       : Promise.resolve(null);
