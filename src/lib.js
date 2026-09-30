@@ -230,11 +230,13 @@ export function groupBrands(connections) {
 
 // Queue a post for the server to publish later. Media rides along as
 // multipart so the worker can rebuild the exact upload at fire time.
-export async function schedulePost(token, { platform, connectionId, when, body, files = [], instagramFiles = [], facebookFiles = [], thumb = null }) {
+export async function schedulePost(token, { platform, connectionId, when, body, files = [], instagramFiles = [], facebookFiles = [], thumb = null, repeatEveryDays = 0, repeatRemaining = 0 }) {
   const form = new FormData();
   form.append('platform', platform);
   form.append('connection_id', connectionId || '');
   form.append('scheduled_at', when);
+  form.append('repeat_every_days', String(repeatEveryDays || 0));
+  form.append('repeat_remaining', String(repeatRemaining || 0));
   for (const [k, v] of Object.entries(body || {})) form.append(k, v == null ? '' : String(v));
   for (const f of files) if (f?.raw) form.append('media', f.raw, f.name);
   for (const f of instagramFiles) if (f?.raw) form.append('instagram_media', f.raw, f.name);

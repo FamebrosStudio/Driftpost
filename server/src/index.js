@@ -46,7 +46,7 @@ const corsOptions = {
     }
   },
   credentials: true,
-  methods: ['GET', 'POST', 'DELETE', 'OPTIONS'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 };
 
@@ -134,6 +134,69 @@ app.post('/api/storage/upload', requireUser, parseStorageUpload, async (req, res
     if (tempPath) await fs.unlink(tempPath).catch(() => {});
   }
 });
+// Verified public webhook for Instagram comment and inbound-message events.
+app.get('/api/meta/webhook', (req, res) => {
+  if (process.env.META_WEBHOOK_VERIFY_TOKEN && req.query['hub.mode'] === 'subscribe' && req.query['hub.verify_token'] === process.env.META_WEBHOOK_VERIFY_TOKEN) return res.status(200).type('text/plain').send(req.query['hub.challenge'] || '');
+  res.sendStatus(403);
+});
+app.post('/api/meta/webhook', express.raw({ type: 'application/json', limit: '1mb' }), async (req, res) => {
+  const secret = process.env.META_APP_SECRET;
+  const signature = String(req.get('x-hub-signature-256') || '');
+  if (!secret || !Buffer.isBuffer(req.body) || !/^sha256=[a-f0-9]{64}$/i.test(signature)) return res.sendStatus(401);
+  const expected = Buffer.from(`sha256=${crypto.createHmac('sha256', secret).update(req.body).digest('hex')}`);
+  const received = Buffer.from(signature);
+  if (expected.length !== received.length || !crypto.timingSafeEqual(expected, received)) return res.sendStatus(401);
+  let payload;
+  try { payload = JSON.parse(req.body.toString('utf8')); } catch { return res.sendStatus(400); }
+  res.sendStatus(200);
+  setImmediate(async () => {
+    try {
+      for (const entry of payload.entry || []) {
+        const igId = String(entry.id || '');
+        const { data: connections } = await supabase.from('platform_connections').select('*').eq('platform', 'instagram').eq('platform_account_id', igId);
+        for (const connection of connections || []) {
+        const { data: automation } = await supabase.from('instagram_automations').select('rules, enabled').eq('connection_id', connection.id).eq('user_id', connection.user_id).maybeSingle();
+        if (!automation?.enabled) continue;
+        const token = decryptJson(connection.encrypted_tokens)?.access_token;
+        if (!token) continue;
+        const rules = automation.rules || {};
+        for (const change of entry.changes || []) {
+          if (change.field !== 'comments') continue;
+          const comment = change.value || {};
+          const commentId = String(comment.id || '');
+          const commentText = String(comment.text || '');
+          if (!commentId || String(comment.from?.id || '') === igId) continue;
+          const keyword = String(rules.comment_keyword || '').trim().toLowerCase();
+          if (!rules.comment_enabled || (keyword && !commentText.toLowerCase().includes(keyword))) continue;
+          const { data: first } = await supabase.from('instagram_automation_events').insert({ event_id: `comment:${connection.id}:${commentId}`, user_id: connection.user_id, connection_id: connection.id, event_type: 'comment' }).select('event_id');
+          if (!first?.length) continue;
+          for (const [field, edge] of [['public_reply', 'replies'], ['private_reply', 'private_replies']]) {
+            const message = String(rules[field] || '').trim();
+            if (!message) continue;
+            const response = await fetch(`https://graph.facebook.com/v21.0/${encodeURIComponent(commentId)}/${edge}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: message.slice(0, 1000), access_token: token }), signal: AbortSignal.timeout(12000) });
+            if (!response.ok) console.error(`[instagram automation] ${field} failed:`, (await response.json().catch(() => ({}))).error?.message || response.status);
+          }
+        }
+        for (const messaging of entry.messaging || []) {
+          const event = messaging.message;
+          const senderId = String(messaging.sender?.id || '');
+          const messageId = String(event?.mid || '');
+          const message = String(event?.text || '').trim();
+          if (!messageId || !senderId || !message || event?.is_echo || event?.is_deleted) continue;
+          const keyword = String(rules.dm_keyword || '').trim().toLowerCase();
+          const replyText = keyword && message.toLowerCase().includes(keyword) ? rules.dm_reply : rules.default_reply;
+          if (!replyText) continue;
+          const { data: first } = await supabase.from('instagram_automation_events').insert({ event_id: `message:${connection.id}:${messageId}`, user_id: connection.user_id, connection_id: connection.id, event_type: 'message' }).select('event_id');
+          if (!first?.length) continue;
+          const response = await fetch(`https://graph.facebook.com/v21.0/${encodeURIComponent(igId)}/messages`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ recipient: { id: senderId }, message: { text: String(replyText).slice(0, 1000) }, access_token: token }), signal: AbortSignal.timeout(12000) });
+          if (!response.ok) console.error('[instagram automation] DM reply failed:', (await response.json().catch(() => ({}))).error?.message || response.status);
+        }
+        }
+      }
+    } catch (error) { console.error('[instagram automation] webhook processing failed:', error?.message || error); }
+  });
+});
+
 // AI vision inputs are browser-resized preview copies only; this is a small
 // per-image analysis payload limit, not a posting/media-storage file limit.
 const aiImageUpload = multer({
@@ -247,6 +310,97 @@ app.get('/api/connections', requireUser, connectionsLimit, burstLimit, async (re
     res.json({ connections: data });
   } catch {
     res.status(500).json({ error: 'Unable to load accounts' });
+  }
+});
+
+app.get('/api/automations/instagram', requireUser, connectionsLimit, burstLimit, async (req, res) => {
+  const { data: connections, error: connectionError } = await supabase.from('platform_connections').select('id, account_name').eq('user_id', req.user.id).eq('platform', 'instagram');
+  if (connectionError) return res.status(500).json({ error: 'Could not load Instagram accounts' });
+  const { data: saved, error } = await supabase.from('instagram_automations').select('connection_id, enabled, rules').eq('user_id', req.user.id);
+  if (error) return res.status(500).json({ error: 'Automation storage is not ready. Apply the latest Supabase migrations.' });
+  const byId = new Map((saved || []).map((row) => [row.connection_id, row]));
+  res.json({ accounts: (connections || []).map((account) => ({ id: account.id, name: account.account_name, enabled: !!byId.get(account.id)?.enabled, rules: byId.get(account.id)?.rules || {} })), webhook_ready: !!(process.env.META_WEBHOOK_VERIFY_TOKEN && process.env.META_APP_SECRET) });
+});
+
+app.put('/api/automations/instagram/:connectionId', requireUser, strictBurstLimit, async (req, res) => {
+  const { data: connection } = await supabase.from('platform_connections').select('id').eq('id', req.params.connectionId).eq('user_id', req.user.id).eq('platform', 'instagram').maybeSingle();
+  if (!connection) return res.status(404).json({ error: 'Instagram account not found' });
+  const input = req.body || {};
+  const rules = {
+    comment_enabled: input.comment_enabled === true,
+    comment_keyword: String(input.comment_keyword || '').trim().slice(0, 80),
+    public_reply: String(input.public_reply || '').trim().slice(0, 1000),
+    private_reply: String(input.private_reply || '').trim().slice(0, 1000),
+    dm_keyword: String(input.dm_keyword || '').trim().slice(0, 80),
+    dm_reply: String(input.dm_reply || '').trim().slice(0, 1000),
+    default_reply: String(input.default_reply || '').trim().slice(0, 1000),
+  };
+  const enabled = input.enabled === true;
+  if (enabled && !rules.comment_enabled && !rules.dm_keyword && !rules.default_reply) return res.status(400).json({ error: 'Add a comment or incoming-message rule before enabling automation.' });
+  if (rules.comment_enabled && !rules.public_reply && !rules.private_reply) return res.status(400).json({ error: 'Add a public reply or private message for comment automation.' });
+  if (rules.dm_keyword && !rules.dm_reply) return res.status(400).json({ error: 'Add a reply for the incoming-message keyword.' });
+  const { error } = await supabase.from('instagram_automations').upsert({ connection_id: connection.id, user_id: req.user.id, enabled, rules, updated_at: new Date().toISOString() }, { onConflict: 'connection_id' });
+  if (error) return res.status(500).json({ error: 'Could not save Instagram automation. Apply the latest Supabase migrations.' });
+  res.json({ ok: true, enabled, rules });
+});
+
+// Read account-level metrics from the official platform APIs using the
+// already-connected account token. A platform may reject metrics if the
+// account type or granted scopes do not allow them; keep that error local to
+// the account instead of failing the complete dashboard response.
+app.get('/api/analytics/accounts', requireUser, connectionsLimit, burstLimit, async (req, res) => {
+  try {
+    const { data: connections, error } = await supabase.from('platform_connections')
+      .select('id, platform, platform_account_id, account_name, encrypted_tokens')
+      .eq('user_id', req.user.id);
+    if (error) return res.status(500).json({ error: 'Could not load connected accounts' });
+    const results = await Promise.all((connections || []).map(async (connection) => {
+      try {
+        const tokens = decryptJson(connection.encrypted_tokens);
+        const accessToken = tokens.access_token;
+        let metrics = {};
+        if (connection.platform === 'youtube') {
+          const params = new URLSearchParams({ part: 'statistics', id: connection.platform_account_id });
+          const response = await fetch(`https://www.googleapis.com/youtube/v3/channels?${params}`, {
+            headers: { Authorization: `Bearer ${accessToken}` }, signal: AbortSignal.timeout(15000),
+          });
+          const payload = await response.json().catch(() => ({}));
+          if (!response.ok) throw new Error(payload.error?.message || 'YouTube could not return channel analytics');
+          const stats = payload.items?.[0]?.statistics || {};
+          metrics = {
+            subscribers: stats.hiddenSubscriberCount ? null : (stats.subscriberCount == null ? null : Number(stats.subscriberCount)),
+            views: Number(stats.viewCount || 0), posts: Number(stats.videoCount || 0),
+          };
+        } else if (connection.platform === 'instagram') {
+          const params = new URLSearchParams({ fields: 'username,followers_count,follows_count,media_count', access_token: accessToken });
+          const response = await fetch(`https://graph.facebook.com/v21.0/${encodeURIComponent(connection.platform_account_id)}?${params}`, { signal: AbortSignal.timeout(15000) });
+          const payload = await response.json().catch(() => ({}));
+          if (!response.ok) throw new Error(payload.error?.message || 'Instagram could not return account analytics');
+          metrics = { followers: Number(payload.followers_count || 0), following: Number(payload.follows_count || 0), posts: Number(payload.media_count || 0) };
+        } else if (connection.platform === 'facebook') {
+          const params = new URLSearchParams({ fields: 'followers_count,fan_count', access_token: accessToken });
+          const response = await fetch(`https://graph.facebook.com/v21.0/${encodeURIComponent(connection.platform_account_id)}?${params}`, { signal: AbortSignal.timeout(15000) });
+          const payload = await response.json().catch(() => ({}));
+          if (!response.ok) throw new Error(payload.error?.message || 'Facebook could not return Page analytics');
+          metrics = { followers: Number(payload.followers_count ?? payload.fan_count ?? 0) };
+        } else if (connection.platform === 'x') {
+          const params = new URLSearchParams({ 'user.fields': 'public_metrics' });
+          const response = await fetch(`https://api.x.com/2/users/${encodeURIComponent(connection.platform_account_id)}?${params}`, {
+            headers: { Authorization: `Bearer ${accessToken}` }, signal: AbortSignal.timeout(15000),
+          });
+          const payload = await response.json().catch(() => ({}));
+          if (!response.ok) throw new Error(payload.detail || payload.errors?.[0]?.message || 'X could not return account analytics');
+          const stats = payload.data?.public_metrics || {};
+          metrics = { followers: Number(stats.followers_count || 0), following: Number(stats.following_count || 0), posts: Number(stats.tweet_count || 0) };
+        }
+        return { id: connection.id, platform: connection.platform, name: connection.account_name, metrics };
+      } catch (e) {
+        return { id: connection.id, platform: connection.platform, name: connection.account_name, metrics: null, error: e.message || 'Metrics unavailable' };
+      }
+    }));
+    res.json({ accounts: results, updated_at: new Date().toISOString() });
+  } catch {
+    res.status(500).json({ error: 'Could not load account analytics' });
   }
 });
 
@@ -1214,6 +1368,23 @@ async function removeStored(paths) {
   }
 }
 
+function scheduleMediaPaths(row) {
+  return [
+    ...(row.media || []).map((m) => m.path),
+    ...(row.body?.driftpost_instagram_media || []).map((m) => m.path),
+    ...(row.body?.driftpost_facebook_media || []).map((m) => m.path),
+    row.thumb_path,
+  ].filter(Boolean);
+}
+
+async function removeUnreferencedScheduleMedia(userId, rowId, paths) {
+  const { data } = await supabase.from('scheduled_posts')
+    .select('id, media, body, thumb_path').eq('user_id', userId)
+    .in('status', ['scheduled', 'publishing']).neq('id', rowId);
+  const referenced = new Set((data || []).flatMap(scheduleMediaPaths));
+  await removeStored([].concat(paths || []).filter((p) => !referenced.has(p)));
+}
+
 app.get('/api/schedules', requireUser, jobsLimit, async (req, res) => {
   let query = supabase.from('scheduled_posts')
     .select('*').eq('user_id', req.user.id)
@@ -1227,6 +1398,42 @@ app.get('/api/schedules', requireUser, jobsLimit, async (req, res) => {
   const { data, error } = await query;
   if (error) return res.status(500).json({ error: 'Could not load scheduled posts' });
   res.json({ schedules: data || [] });
+});
+
+// Shareable review links use the schedule UUID as a bearer token. Return only
+// the content needed to make an approval decision; never expose the owner or
+// their platform credentials to the reviewer.
+app.get('/api/approvals/:id', strictBurstLimit, async (req, res) => {
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(req.params.id)) return res.status(404).json({ error: 'Review link not found' });
+  const { data: row, error } = await supabase.from('scheduled_posts').select('id, platform, scheduled_at, status, body, media')
+    .eq('id', req.params.id).maybeSingle();
+  if (error || !row || row.body?.approval_status !== 'pending' || row.status !== 'scheduled') return res.status(404).json({ error: 'This review link is unavailable or already handled.' });
+  const text = row.body?.ig_caption || row.body?.fb_message || row.body?.yt_description || row.body?.x_text || row.body?.text || '';
+  const sourceMedia = row.platform === 'instagram' ? (row.body?.driftpost_instagram_media || row.media) : row.platform === 'facebook' ? (row.body?.driftpost_facebook_media || row.media) : row.media;
+  const media = [];
+  for (const item of sourceMedia || []) {
+    const { data: signed, error: signError } = await supabase.storage.from(BUCKET).createSignedUrl(item.path, 1800);
+    if (!signError && signed?.signedUrl) media.push({ url: signed.signedUrl, name: item.name || 'Post media', mimetype: item.mimetype || '' });
+  }
+  res.json({ review: { id: row.id, platform: row.platform, scheduled_at: row.scheduled_at, text, media } });
+});
+
+app.post('/api/approvals/:id', strictBurstLimit, async (req, res) => {
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(req.params.id)) return res.status(404).json({ error: 'Review link not found' });
+  const decision = req.body?.decision;
+  const comment = typeof req.body?.comment === 'string' ? req.body.comment.trim().slice(0, 500) : '';
+  if (!['approved', 'rejected'].includes(decision)) return res.status(400).json({ error: 'Choose approve or request changes.' });
+  const { data: row } = await supabase.from('scheduled_posts').select('*').eq('id', req.params.id).maybeSingle();
+  if (!row || row.status !== 'scheduled' || row.body?.approval_status !== 'pending') return res.status(409).json({ error: 'This post has already been reviewed or is no longer available.' });
+  if (decision === 'approved' && Date.parse(row.scheduled_at) < Date.now() + 60_000) return res.status(409).json({ error: 'The scheduled time has passed. Ask the owner to create a new review link.' });
+  const body = { ...(row.body || {}), approval_status: decision, reviewed_at: new Date().toISOString(), approval_comment: comment };
+  const update = supabase.from('scheduled_posts').update({ body, ...(decision === 'rejected' ? { status: 'cancelled' } : {}), updated_at: new Date().toISOString() })
+    .eq('id', row.id).eq('status', 'scheduled').select('id');
+  const { data: changed, error } = await update;
+  if (error) return res.status(500).json({ error: 'Could not save this review.' });
+  if (!changed?.length) return res.status(409).json({ error: 'The post changed while you were reviewing it. Refresh and try again.' });
+  if (decision === 'rejected') await removeUnreferencedScheduleMedia(row.user_id, row.id, scheduleMediaPaths(row));
+  res.json({ ok: true, decision });
 });
 
 app.post('/api/schedule', requireUser, strictBurstLimit, publishLimit, publishUpload, async (req, res) => {
@@ -1255,6 +1462,18 @@ app.post('/api/schedule', requireUser, strictBurstLimit, publishLimit, publishUp
   if (when > Date.now() + 365 * 24 * 3600 * 1000) {
     await cleanupTmp();
     return res.status(400).json({ error: 'Schedule within the next year' });
+  }
+  const repeatEveryDays = Number(req.body.repeat_every_days || 0);
+  const repeatRemaining = Number(req.body.repeat_remaining || 0);
+  const validRepeat = (repeatEveryDays === 0 && repeatRemaining === 0)
+    || ([7, 14, 30].includes(repeatEveryDays) && Number.isInteger(repeatRemaining) && repeatRemaining >= 1 && repeatRemaining <= 12);
+  if (!validRepeat || !Number.isInteger(repeatEveryDays) || !Number.isInteger(repeatRemaining)) {
+    await cleanupTmp();
+    return res.status(400).json({ error: 'Choose a supported repeat interval and between 1 and 12 additional posts.' });
+  }
+  if (repeatEveryDays && when + repeatEveryDays * repeatRemaining * 24 * 3600 * 1000 > Date.now() + 365 * 24 * 3600 * 1000) {
+    await cleanupTmp();
+    return res.status(400).json({ error: 'The final repeat must be within the next year.' });
   }
   const mediaErr = validateMedia(platform, files);
   const igVariantError = validateMedia('instagram', instagramFiles);
@@ -1336,7 +1555,7 @@ app.post('/api/schedule', requireUser, strictBurstLimit, publishLimit, publishUp
       connection_id: connectionId,
       scheduled_at: new Date(when).toISOString(),
       status: 'scheduled',
-      body: { ...(req.body || {}), yt_thumbnail_mimetype: thumbFile?.mimetype || '', driftpost_instagram_media: storedInstagram, driftpost_facebook_media: storedFacebook },
+      body: { ...(req.body || {}), repeat_every_days: repeatEveryDays, repeat_remaining: repeatRemaining, yt_thumbnail_mimetype: thumbFile?.mimetype || '', driftpost_instagram_media: storedInstagram, driftpost_facebook_media: storedFacebook },
       media: stored,
       thumb_path: thumbPath,
     }).select().single();
@@ -1365,7 +1584,7 @@ app.delete('/api/schedules/:id', requireUser, jobsLimit, async (req, res) => {
   if (!cancelled || !cancelled.length) {
     return res.status(409).json({ error: 'This post just started publishing — too late to cancel' });
   }
-  await removeStored([...(row.media || []).map((m) => m.path), ...(row.body?.driftpost_instagram_media || []).map((m) => m.path), ...(row.body?.driftpost_facebook_media || []).map((m) => m.path), row.thumb_path]);
+  await removeUnreferencedScheduleMedia(row.user_id, row.id, scheduleMediaPaths(row));
   res.json({ ok: true });
 });
 
@@ -1382,10 +1601,10 @@ async function runDueSchedules() {
     const staleBefore = new Date(Date.now() - 30 * 60 * 1000).toISOString();
     const { data: staleRows, error: recoverError } = await supabase.from('scheduled_posts')
       .update({ status: 'failed', error: 'The publishing worker stopped during this post. Please schedule it again.', updated_at: new Date().toISOString() })
-      .eq('status', 'publishing').lt('updated_at', staleBefore).select('media, body, thumb_path');
+      .eq('status', 'publishing').lt('updated_at', staleBefore).select('id, user_id, media, body, thumb_path');
     if (recoverError) throw recoverError;
     for (const row of staleRows || []) {
-      await removeStored([...(row.media || []).map((m) => m.path), ...(row.body?.driftpost_instagram_media || []).map((m) => m.path), ...(row.body?.driftpost_facebook_media || []).map((m) => m.path), row.thumb_path]);
+      await removeUnreferencedScheduleMedia(row.user_id, row.id, scheduleMediaPaths(row));
     }
 
     const { data: due, error: dueError } = await supabase.from('scheduled_posts')
@@ -1393,6 +1612,9 @@ async function runDueSchedules() {
       .order('scheduled_at', { ascending: true }).limit(SCHED_BATCH);
     if (dueError) throw dueError;
     for (const row of due || []) {
+      // Approval links pause the existing scheduled row until the reviewer
+      // approves it. It remains visible/cancellable from the owner's calendar.
+      if (row.body?.approval_status === 'pending') continue;
       // Claim the row so a second instance/loop cannot double-post.
       const { data: claimed, error: claimError } = await supabase.from('scheduled_posts')
         .update({ status: 'publishing', updated_at: new Date().toISOString() })
@@ -1454,20 +1676,49 @@ async function runDueSchedules() {
         }
         await runPublish(job, conn, { files: localFiles, instagramFiles: localInstagramFiles, facebookFiles: localFacebookFiles, thumbFile }, row.body || {}, row.user_id);
         const done = jobs.get(job.id) || job;
+        const published = done.state === 'completed';
         await supabase.from('scheduled_posts').update({
-          status: done.state === 'completed' ? 'published' : 'failed',
+          status: published ? 'published' : 'failed',
           result_url: done.url || null,
-          error: done.state === 'completed' ? null : (done.message || 'Publish failed'),
+          error: published ? null : (done.message || 'Publish failed'),
           updated_at: new Date().toISOString(),
         }).eq('id', row.id);
-        await removeStored([...(row.media || []).map((m) => m.path), ...(row.body?.driftpost_instagram_media || []).map((m) => m.path), ...(row.body?.driftpost_facebook_media || []).map((m) => m.path), row.thumb_path]);
+        let mediaRetained = false;
+        const everyDays = Number(row.body?.repeat_every_days || 0);
+        let remaining = Number(row.body?.repeat_remaining || 0);
+        if (published && [7, 14, 30].includes(everyDays) && remaining > 0) {
+          const interval = everyDays * 24 * 3600 * 1000;
+          let nextAt = Date.parse(row.scheduled_at) + interval;
+          remaining -= 1;
+          // If the worker was offline across one or more repeat slots, skip
+          // those missed occurrences instead of publishing a burst on restart.
+          while (remaining > 0 && nextAt < Date.now() + 60_000) {
+            nextAt += interval;
+            remaining -= 1;
+          }
+          if (remaining > 0 && nextAt <= Date.now() + 365 * 24 * 3600 * 1000) {
+            const { error: repeatError } = await supabase.from('scheduled_posts').insert({
+              user_id: row.user_id,
+              platform: row.platform,
+              connection_id: row.connection_id,
+              scheduled_at: new Date(nextAt).toISOString(),
+              status: 'scheduled',
+              body: { ...(row.body || {}), repeat_every_days: everyDays, repeat_remaining: remaining },
+              media: row.media || [],
+              thumb_path: row.thumb_path || null,
+            });
+            if (repeatError) console.error('[scheduler] Could not queue repeat:', repeatError.message);
+            else mediaRetained = true;
+          }
+        }
+        if (!mediaRetained) await removeUnreferencedScheduleMedia(row.user_id, row.id, scheduleMediaPaths(row));
       } catch (e) {
-        await removeStored([...(row.media || []).map((m) => m.path), ...(row.body?.driftpost_instagram_media || []).map((m) => m.path), ...(row.body?.driftpost_facebook_media || []).map((m) => m.path), row.thumb_path]);
         await supabase.from('scheduled_posts').update({
           status: 'failed',
           error: e.message || 'Publish failed',
           updated_at: new Date().toISOString(),
         }).eq('id', row.id);
+        await removeUnreferencedScheduleMedia(row.user_id, row.id, scheduleMediaPaths(row));
       }
     }
   } catch (e) {

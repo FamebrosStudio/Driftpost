@@ -26,10 +26,12 @@ services:
         sync: false
       - key: META_APP_SECRET
         sync: false
+      - key: META_WEBHOOK_VERIFY_TOKEN
+        sync: false
       - key: META_REDIRECT_URI
         sync: false
       - key: META_FB_SCOPES
-        value: pages_show_list,pages_read_engagement,pages_manage_posts,instagram_basic,instagram_content_publish
+        value: pages_show_list,pages_read_engagement,pages_manage_posts,instagram_basic,instagram_content_publish,business_management,instagram_manage_comments,instagram_manage_messages
       - key: META_CONFIG_ID
         sync: false
       - key: X_CLIENT_ID

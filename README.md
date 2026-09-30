@@ -32,7 +32,7 @@ npm run dev   # http://localhost:10000
 2. **Auth → Providers → enable Email + Google.**
    - Google: create OAuth client in Google Cloud Console, paste client ID/secret into Supabase Auth → Google provider.
    - Supabase → Auth → URL Configuration → add `http://localhost:5173` and your prod URL to Redirect URLs.
-3. **SQL Editor → run** `supabase/migrations/001_platform_connections.sql` then `002_post_history.sql`.
+3. **SQL Editor → run every migration** in `supabase/migrations/` in numeric order (`001` through `009`).
 4. **Storage → create public bucket** named `driftpost-media` (required for Instagram: API uploads the reel/photo there to get a public URL for Meta).
 5. **Google Cloud (YouTube):** APIs & Services → enable *YouTube Data API v3* → OAuth consent screen (External) → scopes `youtube.upload`, `youtube.readonly` → Credentials → Web app → redirect URI = `http://localhost:10000/api/oauth/youtube/callback` (add prod URL later). Copy ID/secret into `server/.env` as `GOOGLE_*`.
 6. **Meta (Facebook + Instagram):** developers.facebook.com → Create App (Business) → add *Facebook Login* → Valid OAuth redirect = `http://localhost:10000/api/oauth/meta/callback`. You need:
@@ -40,6 +40,7 @@ npm run dev   # http://localhost:10000
    - an Instagram **Business/Creator account linked to that Page** (Page Settings → Linked accounts), otherwise Instagram connection will not appear — this is a Meta requirement, not a bug.
    - Copy App ID/secret into `server/.env` as `META_*`.
    - The login must grant `pages_manage_posts`, `instagram_basic`, and `instagram_content_publish`. After changing these scopes, disconnect and reconnect Meta accounts so the new Instagram publishing permission is included.
+   - For Instagram Auto DM, configure the Meta app's Instagram webhook subscription for `comments` and `messages`, point it to `https://<your-api-host>/api/meta/webhook`, set the matching `META_WEBHOOK_VERIFY_TOKEN`, request Meta's comment and messaging permissions/review, and reconnect Instagram accounts. Meta must approve those permissions before real accounts can use the automation.
 7. **Secrets:** generate and put in `server/.env`:
    - `TOKEN_ENCRYPTION_KEY`: 32 random bytes, base64. PowerShell: `[Convert]::ToBase64String((1..32 | ForEach-Object { Get-Random -Max 256 }))`
    - `STATE_SIGNING_SECRET`: any long random string.

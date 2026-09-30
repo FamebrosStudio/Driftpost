@@ -5,6 +5,7 @@ import StageTwoPage from './stage2/StageTwoPage.jsx';
 import StageThreePage from './stage3/StageThreePage.jsx';
 import PageLoading from './PageLoading.jsx';
 import { WorkspaceNav, DashboardPage, CalendarPage, AnalyticsPage } from './workspace/Workspace.jsx';
+import AutomationsPage from './workspace/AutomationsPage.jsx';
 
 const HistoryPage = lazy(() => import('./history/HistoryPage.jsx'));
 
@@ -49,6 +50,7 @@ export default function Console({ session, onSwitchAccount, onSignOut }) {
     navigate('create');
   }} onSignOut={onSignOut} />;
   if (view === 'analytics') return <AnalyticsPage session={session} onNavigate={navigate} onSignOut={onSignOut} />;
+  if (view === 'automations') return <AutomationsPage session={session} onNavigate={navigate} onSignOut={onSignOut} />;
   if (view === 'history') {
     return (
       <Suspense fallback={<PageLoading label="Loading History…" />}>

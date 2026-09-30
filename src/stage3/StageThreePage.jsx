@@ -63,6 +63,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
   const [schedBusy, setSchedBusy] = useState(false);
   const [encoding, setEncoding] = useState(false);
   const [schedMsg, setSchedMsg] = useState('');
+  const [approvalLinks, setApprovalLinks] = useState([]);
   const [pubMsg, setPubMsg] = useState('');
   const [connsError, setConnsError] = useState('');
   const [connsTick, setConnsTick] = useState(0);
@@ -679,8 +680,10 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
     }
   };
 
-  const doSchedule = async (pid, whenIso) => {
+  const doSchedule = async (pid, whenIso, repeat = {}, bulkRows = [], requestApproval = false) => {
     if (schedBusy || !claim(`sched:${pid}`)) return;
+    let scheduledCount = 0;
+    let plannedCount = 0;
     // Same validity as instant Post — an unsendable payload must fail here,
     // not silently at fire time. Covered platforms ride along, validated too.
     const cov = coveredPids(pid);
@@ -691,6 +694,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
       return;
     }
     setSchedBusy(true);
+    setApprovalLinks([]);
     try {
       // YouTube takes video only: with photos attached, encode the still to
       // a 6s clip first (same as "post as a 6s Short") so scheduling works.
@@ -713,7 +717,12 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
         ? cov.flatMap((q) => groupMemberIds(q).map((id) => ({ q, id })))
         : [{ q: pid, id: accountFor(pid) }];
       if (!pairs.length || pairs.some(({ id }) => !id)) throw new Error('Pick an account for that platform first.');
-      const when = new Date(whenIso).toLocaleString();
+      const entries = bulkRows.length ? bulkRows : [{ when: whenIso, text: '' }];
+      if (entries.length * pairs.length > 10) throw new Error('This batch would create more than 10 schedules. Reduce the CSV rows or schedule fewer group accounts at a time.');
+      plannedCount = entries.length * pairs.length;
+      if (pid === 'x' && entries.some((entry) => String(entry.text || '').length > 280)) throw new Error('X captions must be 280 characters or fewer. Shorten the CSV text and import again.');
+      const prepared = [];
+      const reviewLinks = [];
       for (const { q, id } of pairs) {
         const skipCrossPost = isGroupFlow || !(
           (pid === 'instagram' && mirrorTarget === 'facebook') ||
@@ -728,24 +737,46 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
         const platformFiles = q === 'instagram'
           ? await instagramMediaFiles(schedFiles)
           : q === 'facebook' ? await facebookMediaFiles(schedFiles) : schedFiles;
-        await schedulePost(session.access_token, {
-          platform: q,
-          connectionId: id,
-          when: whenIso,
-          body: { ...bodyFor(q, { skipCrossPost }), connection_id: id },
-          files: platformFiles,
-          instagramFiles,
-          facebookFiles,
-          thumb: q === 'youtube' ? thumb : null,
-        });
+        prepared.push({ q, id, skipCrossPost, instagramFiles, facebookFiles, platformFiles });
+      }
+      for (const entry of entries) {
+        for (const item of prepared) {
+          const { q, id, skipCrossPost, instagramFiles, facebookFiles, platformFiles } = item;
+          const postBody = { ...bodyFor(q, { skipCrossPost }), connection_id: id };
+          if (requestApproval) postBody.approval_status = 'pending';
+          if (entry.text) {
+            const caption = String(entry.text).trim();
+            postBody.text = caption;
+            if (q === 'youtube') postBody.yt_description = caption;
+            else if (q === 'instagram') postBody.ig_caption = caption;
+            else if (q === 'facebook') postBody.fb_message = caption;
+            else if (q === 'x') postBody.x_text = caption;
+          }
+          const schedule = await schedulePost(session.access_token, {
+            platform: q,
+            connectionId: id,
+            when: entry.when || whenIso,
+            repeatEveryDays: repeat.repeatEveryDays || 0,
+            repeatRemaining: repeat.repeatRemaining || 0,
+            body: postBody,
+            files: platformFiles,
+            instagramFiles,
+            facebookFiles,
+            thumb: q === 'youtube' ? thumb : null,
+          });
+          if (requestApproval && schedule?.id) reviewLinks.push(`${window.location.origin}/approve/${schedule.id}`);
+          scheduledCount++;
+        }
       }
       setSchedOpen(false);
-      setResults((r) => ({ ...r, [pid]: { state: 'scheduled', message: pairs.length > 1 ? `Scheduled — ${pairs.length} accounts publish automatically.` : 'Scheduled — it will publish automatically.' } }));
-      setSchedMsg(pairs.length > 1
-        ? `${NAMES[pid]} ×${pairs.length} scheduled for ${when}. Manage or cancel in History.`
-        : `${NAMES[pid]} scheduled for ${when}. Manage or cancel it in History.`);
+      setApprovalLinks(reviewLinks);
+      const repeatLabel = repeat.repeatEveryDays ? `, repeating ${repeat.repeatRemaining} more times` : '';
+      const whenLabel = bulkRows.length ? `${bulkRows.length} posts` : new Date(whenIso).toLocaleString();
+      const batchLabel = bulkRows.length ? ` (${bulkRows.length} CSV posts)` : '';
+      setResults((r) => ({ ...r, [pid]: { state: 'scheduled', message: `${whenLabel} scheduled${repeatLabel}.` } }));
+      setSchedMsg(`${NAMES[pid]}${batchLabel} ${requestApproval ? 'queued for approval' : 'scheduled'}${bulkRows.length ? '' : ` for ${whenLabel}`}${repeatLabel}. Manage or cancel in History.`);
     } catch (e) {
-      setSchedMsg(e.message || 'Could not schedule the post');
+      setSchedMsg(scheduledCount ? `Scheduled ${scheduledCount} of ${plannedCount}. ${e.message || 'The batch stopped after this error.'}` : (e.message || 'Could not schedule the post'));
     } finally {
       release(`sched:${pid}`);
       setSchedBusy(false);
@@ -866,6 +897,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
                 Schedule instead
               </button>
               {schedMsg && <p className="s3-bar-msg">{schedMsg}</p>}
+              {!!approvalLinks.length && <div className="s3-review-links"><b>Share review link{approvalLinks.length === 1 ? '' : 's'}:</b>{approvalLinks.map((link, i) => <a key={link} href={link} target="_blank" rel="noreferrer">{approvalLinks.length === 1 ? link : `Review post ${i + 1}`}</a>)}</div>}
               {pubMsg && <p className="s3-bar-msg">{pubMsg}</p>}
               {!allReviewed && effective.length > 0 && !schedMsg && !pubMsg && (
                 <p className="s3-pub-hint">Open each tab and press Reviewed ✓ — posting unlocks when all are seen.</p>

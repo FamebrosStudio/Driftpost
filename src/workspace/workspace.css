@@ -98,6 +98,69 @@
 
 /* Analytics */
 .ws-analytics-stats { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.ws-analytics-actions { display: flex; gap: 8px; }
+.ws-live-panel { margin-bottom: 14px; }
+.ws-live-caption { color: var(--faint); font-size: 10px; }
+.ws-metric-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.ws-metric-card { min-width: 0; padding: 14px; border: 1px solid var(--line); background: var(--bg); }
+.ws-metric-heading { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.ws-metric-heading .ws-icon { width: 32px; height: 32px; }
+.ws-metric-heading > div { min-width: 0; }
+.ws-metric-heading b, .ws-metric-heading small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ws-metric-heading b { font-size: 11px; }
+.ws-metric-heading small { margin-top: 3px; color: var(--faint); font-size: 10px; }
+.ws-metric-values { display: flex; flex-wrap: wrap; gap: 10px 22px; padding: 14px 0 0 42px; }
+.ws-metric-values span { display: flex; flex-direction: column; gap: 3px; }
+.ws-metric-values b { font-size: 18px; line-height: 1; }
+.ws-metric-values small { color: var(--faint); font-size: 9px; }
+.ws-metric-error { margin: 12px 0 0; color: var(--danger, #e5484d); font-size: 10px; line-height: 1.5; overflow-wrap: anywhere; }
+.automation-setup { margin-bottom: 14px; border-color: color-mix(in srgb, var(--go) 48%, var(--line)); }
+.automation-setup b { font-size: 12px; }
+.automation-setup p { margin: 8px 0 0; color: var(--muted); font-size: 11px; line-height: 1.7; overflow-wrap: anywhere; }
+.automation-setup code { padding: 2px 4px; color: var(--ink); background: var(--panel2); font-size: 10px; }
+.automation-saved { padding: 10px 12px; border: 1px solid var(--line); color: var(--ok); background: var(--panel); font-size: 11px; }
+.automation-account { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin-bottom: 14px; }
+.automation-account > label:first-child { display: flex; flex-direction: column; gap: 7px; min-width: min(320px, 100%); color: var(--muted); font-size: 11px; }
+.automation-account select { min-height: 38px; border: 1px solid var(--line-hard); padding: 0 10px; color: var(--ink); background: var(--bg); font: inherit; }
+.automation-toggle { display: flex; align-items: flex-start; gap: 9px; margin: 13px 0; cursor: pointer; }
+.automation-toggle input { margin: 2px 0 0; accent-color: var(--go); }
+.automation-toggle b, .automation-toggle small { display: block; }
+.automation-toggle b { font-size: 11px; }
+.automation-toggle small { margin-top: 4px; color: var(--faint); font-size: 10px; line-height: 1.45; }
+.automation-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.automation-grid > .ws-panel { min-width: 0; }
+.automation-title { display: flex; align-items: flex-start; gap: 10px; padding-bottom: 12px; border-bottom: 1px solid var(--line); }
+.automation-title .ws-icon { width: 33px; height: 33px; }
+.automation-title h2 { margin: 1px 0 4px; font-size: 15px; }
+.automation-title p { margin: 0; color: var(--muted); font-size: 10px; line-height: 1.5; }
+.automation-field { display: block; margin-top: 13px; }
+.automation-field > span { display: block; margin-bottom: 6px; color: var(--muted); font-size: 10px; font-weight: 650; }
+.automation-field input, .automation-field textarea { display: block; width: 100%; border: 1px solid var(--line-hard); padding: 10px; color: var(--ink); background: var(--bg); font: inherit; font-size: 11px; }
+.automation-field textarea { resize: vertical; line-height: 1.5; }
+.automation-field small { display: block; margin-top: 5px; color: var(--faint); font-size: 9px; }
+.approval-page { min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 32px 16px 60px; color: var(--ink); background: var(--bg); }
+.approval-brand { display: inline-flex; align-items: center; margin-bottom: 28px; }
+.approval-brand img { width: 164px; height: auto; }
+.approval-card { width: min(720px, 100%); padding: clamp(22px, 5vw, 38px); border: 1px solid var(--line); background: var(--panel); box-shadow: 0 24px 70px #00000012; }
+.approval-card h1 { margin: 8px 0 22px; font-size: clamp(24px, 4vw, 32px); letter-spacing: -1px; }
+.approval-platform { display: flex; align-items: center; gap: 11px; padding: 13px; border: 1px solid var(--line); background: var(--bg); }
+.approval-platform b, .approval-platform small { display: block; }
+.approval-platform b { font-size: 12px; }
+.approval-platform small { margin-top: 4px; color: var(--faint); font-size: 11px; }
+.approval-content { margin-top: 14px; padding: 17px; border: 1px solid var(--line); background: var(--bg); font-size: 13px; line-height: 1.65; white-space: pre-wrap; overflow-wrap: anywhere; }
+.approval-media { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 9px; margin-top: 12px; }
+.approval-media img, .approval-media video { display: block; width: 100%; max-height: 410px; object-fit: contain; background: #090c10; }
+.approval-comment { display: block; margin-top: 17px; }
+.approval-comment span { display: block; margin-bottom: 7px; color: var(--muted); font-size: 11px; }
+.approval-comment textarea { display: block; width: 100%; resize: vertical; border: 1px solid var(--line-hard); padding: 11px; color: var(--ink); background: var(--bg); font: inherit; font-size: 12px; }
+.approval-actions { display: flex; justify-content: flex-end; gap: 9px; margin-top: 17px; }
+.approval-actions button { min-height: 42px; padding: 0 15px; border: 1px solid var(--line-hard); color: var(--ink); background: var(--bg); font-size: 11px; font-weight: 650; }
+.approval-actions button.approval-approve { border-color: #0d9674; color: white; background: #0d9674; }
+.approval-actions button:disabled { opacity: .55; }
+.approval-footnote { margin: 14px 0 0; color: var(--faint); font-size: 10px; }
+.approval-state, .approval-done, .approval-error { padding: 13px; border: 1px solid var(--line); color: var(--muted); font-size: 12px; line-height: 1.55; }
+.approval-done { color: var(--ok); }
+.approval-error { color: var(--danger, #e5484d); }
 .ws-analytics-stats .ws-stat { min-height: 131px; }
 .ws-analytics-grid { grid-template-columns: minmax(0, 1fr) minmax(280px, .8fr); }
 .ws-chart { height: 196px; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); align-items: end; gap: 12px; padding-top: 14px; }
@@ -142,6 +205,9 @@
   .ws-nav button { gap: 5px; padding: 0 9px; font-size: 11px; }
   .ws-nav button > span { font-size: 14px; }
   .ws-main { padding: 26px 14px 40px; }
+  .automation-grid { grid-template-columns: 1fr; }
+  .automation-account { align-items: stretch; flex-direction: column; }
+  .automation-account > label:first-child { min-width: 0; }
   .ws-heading { align-items: flex-start; flex-direction: column; gap: 14px; margin-bottom: 20px; }
   .ws-heading-action { width: 100%; }
   .ws-heading-action > button { width: 100%; }
@@ -174,6 +240,8 @@
   .ws-upcoming-row { gap: 8px; }
   .ws-upcoming-row > div small { max-width: 180px; }
   .ws-analytics-stats .ws-stat { min-height: 118px; }
+  .ws-analytics-actions { flex-wrap: wrap; }
+  .ws-metric-grid { grid-template-columns: minmax(0, 1fr); }
   .ws-insight { align-items: flex-start; flex-wrap: wrap; }
   .ws-insight .ws-text-button { margin-left: 45px; }
 }

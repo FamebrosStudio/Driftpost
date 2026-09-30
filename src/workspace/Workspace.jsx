@@ -6,7 +6,7 @@ import './workspace.css';
 
 const NAV = [
   ['home', 'Overview', 'home'], ['create', 'Create post', 'plus'], ['calendar', 'Calendar', 'calendar'],
-  ['analytics', 'Analytics', 'chart'], ['history', 'History', 'clock'], ['accounts', 'Accounts', 'users'],
+  ['analytics', 'Analytics', 'chart'], ['automations', 'Auto DM', 'sparkles'], ['history', 'History', 'clock'], ['accounts', 'Accounts', 'users'],
 ];
 const platformName = (id) => PLATFORMS.find((p) => p.id === id)?.name || id;
 const greetingName = (email) => (email || '').split('@')[0].split(/[._-]/)[0] || 'there';
@@ -116,7 +116,7 @@ export function CalendarPage({ session, onNavigate, onCreate, onSignOut }) {
       {loading && <div className="ws-inline-state">Loading schedule…</div>}{notice && <div className="ws-inline-state" role="status">{notice}</div>}
     </section>
     <section className="ws-panel ws-day-panel"><div className="ws-panel-head"><div><span className="ws-eyebrow">Selected day</span><h2>{new Date(`${selected}T12:00:00`).toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' })}</h2></div><button className="ws-secondary" onClick={() => onCreate(selected)}><Icon name="plus" size={14} /> Plan for this day</button></div>
-      {!dayRows.length ? <div className="ws-empty compact"><b>{loading ? 'Checking your schedule…' : 'Nothing planned for this day'}</b><small>Choose another date or create a post to get started.</small></div> : <div className="ws-upcoming">{dayRows.map((row) => <div className="ws-upcoming-row" key={row.id}><span className="ws-icon"><BrandIcon id={row.platform} size={17} /></span><div><b>{platformName(row.platform)} <em className={`ws-status ${row.status}`}>{row.status}</em></b><small>{row.body?.text || row.body?.caption || 'Scheduled post'}</small></div><time>{new Date(row.scheduled_at).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })}</time>{['scheduled', 'publishing'].includes(row.status) && <button className="ws-cancel" disabled={busy === row.id} onClick={() => cancel(row.id)}>{busy === row.id ? '…' : 'Cancel'}</button>}</div>)}</div>}
+      {!dayRows.length ? <div className="ws-empty compact"><b>{loading ? 'Checking your schedule…' : 'Nothing planned for this day'}</b><small>Choose another date or create a post to get started.</small></div> : <div className="ws-upcoming">{dayRows.map((row) => { const needsApproval = row.body?.approval_status === 'pending'; return <div className="ws-upcoming-row" key={row.id}><span className="ws-icon"><BrandIcon id={row.platform} size={17} /></span><div><b>{platformName(row.platform)} <em className={`ws-status ${needsApproval ? 'approval-needed' : row.status}`}>{needsApproval ? 'Needs approval' : row.status}</em></b><small>{row.body?.text || row.body?.caption || 'Scheduled post'}</small></div><time>{new Date(row.scheduled_at).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })}</time>{['scheduled', 'publishing'].includes(row.status) && <button className="ws-cancel" disabled={busy === row.id} onClick={() => cancel(row.id)}>{busy === row.id ? '…' : 'Cancel'}</button>}</div>; })}</div>}
     </section>
     <footer className="ws-footnote">Scheduled posts publish automatically at the selected time. Past, failed, and cancelled items remain available in History.</footer>
   </PageFrame>;
@@ -125,7 +125,20 @@ export function CalendarPage({ session, onNavigate, onCreate, onSignOut }) {
 export function AnalyticsPage({ session, onNavigate, onSignOut }) {
   const posts = useMemo(() => readPostLog().filter((p) => p && Number.isFinite(Number(p.at))).sort((a, b) => Number(b.at) - Number(a.at)), []);
   const [schedules, setSchedules] = useState([]);
+  const [accountMetrics, setAccountMetrics] = useState([]);
+  const [metricsBusy, setMetricsBusy] = useState(true);
+  const [metricsError, setMetricsError] = useState('');
+  const [metricsRefresh, setMetricsRefresh] = useState(0);
   useEffect(() => { let active = true; listSchedules(session.access_token, { from: new Date().toISOString() }).then((data) => { if (active) setSchedules(data); }).catch(() => {}); return () => { active = false; }; }, [session.access_token]);
+  useEffect(() => {
+    let active = true;
+    setMetricsBusy(true); setMetricsError('');
+    api('/api/analytics/accounts', session.access_token)
+      .then((data) => { if (active) setAccountMetrics(data.accounts || []); })
+      .catch((e) => { if (active) setMetricsError(e.message || 'Could not load live account metrics.'); })
+      .finally(() => { if (active) setMetricsBusy(false); });
+    return () => { active = false; };
+  }, [session.access_token, metricsRefresh]);
   const now = new Date(); const weekStart = new Date(now); weekStart.setDate(now.getDate() - 6); weekStart.setHours(0, 0, 0, 0);
   const thisWeek = posts.filter((p) => Number(p.at) >= weekStart.getTime()).length;
   const scheduled = schedules.filter((p) => p.status === 'scheduled').length;
@@ -134,12 +147,15 @@ export function AnalyticsPage({ session, onNavigate, onSignOut }) {
   const activeDays = new Set(monthPosts.map((p) => new Date(Number(p.at)).toDateString())).size;
   const chart = Array.from({ length: 7 }, (_, i) => { const d = new Date(weekStart); d.setDate(weekStart.getDate() + i); const next = new Date(d); next.setDate(d.getDate() + 1); return { date: d, count: posts.filter((p) => Number(p.at) >= d.getTime() && Number(p.at) < next.getTime()).length }; });
   const max = Math.max(1, ...chart.map((d) => d.count));
-  return <PageFrame page="analytics" onNavigate={onNavigate} email={session.user?.email} onSignOut={onSignOut} eyebrow="Understand your cadence" title="Analytics" intro="A simple snapshot of your publishing activity." action={<button className="ws-secondary" onClick={() => onNavigate('history')}>View post history <Icon name="arrowRight" size={13} /></button>}>
+  return <PageFrame page="analytics" onNavigate={onNavigate} email={session.user?.email} onSignOut={onSignOut} eyebrow="Understand your cadence" title="Analytics" intro="Live account totals alongside your publishing activity." action={<div className="ws-analytics-actions"><button className="ws-secondary" disabled={metricsBusy} onClick={() => setMetricsRefresh((n) => n + 1)}>{metricsBusy ? 'Refreshing…' : 'Refresh metrics'}</button><button className="ws-secondary" onClick={() => onNavigate('history')}>View history <Icon name="arrowRight" size={13} /></button></div>}>
+    <section className="ws-panel ws-live-panel"><div className="ws-panel-head"><div><span className="ws-eyebrow">Connected channels</span><h2>Account performance</h2></div><span className="ws-live-caption">Live from each platform</span></div>
+      {metricsBusy ? <div className="ws-inline-state">Loading account metrics…</div> : metricsError ? <div className="ws-inline-state" role="alert">{metricsError}</div> : !accountMetrics.length ? <div className="ws-empty compact"><b>No connected accounts yet</b><small>Connect a channel to see its available account metrics.</small></div> : <div className="ws-metric-grid">{accountMetrics.map((account) => <article className="ws-metric-card" key={account.id}><div className="ws-metric-heading"><span className="ws-icon"><BrandIcon id={account.platform} size={17} /></span><div><b>{platformName(account.platform)}</b><small>{account.name}</small></div></div>{account.error ? <p className="ws-metric-error" title={account.error}>Metrics unavailable: {account.error}</p> : <div className="ws-metric-values">{Object.entries(account.metrics || {}).filter(([, value]) => value != null).map(([key, value]) => <span key={key}><b>{Number(value).toLocaleString()}</b><small>{({ followers: 'Followers', following: 'Following', subscribers: 'Subscribers', views: 'Lifetime views', posts: account.platform === 'youtube' ? 'Videos' : 'Posts' })[key] || key}</small></span>)}</div>}</article>)}</div>}
+    </section>
     <div className="ws-stat-grid ws-analytics-stats"><article className="ws-stat"><span>Published this month</span><strong>{monthPosts.length}</strong><small>Posts recorded in this browser</small></article><article className="ws-stat"><span>Last 7 days</span><strong>{thisWeek}</strong><small>Published across your channels</small></article><article className="ws-stat"><span>Scheduled next</span><strong>{scheduled}</strong><small>Posts waiting to publish</small></article><article className="ws-stat"><span>Active publishing days</span><strong>{activeDays}</strong><small>Days with a saved post</small></article></div>
     <div className="ws-two-col ws-analytics-grid"><section className="ws-panel"><div className="ws-panel-head"><div><span className="ws-eyebrow">Recent activity</span><h2>Posts over the last 7 days</h2></div></div><div className="ws-chart" role="img" aria-label="Number of saved published posts per day for the last seven days">{chart.map((d) => <div className="ws-chart-day" key={d.date.toISOString()}><div className="ws-chart-track"><i style={{ height: `${Math.max(d.count ? 10 : 3, d.count / max * 100)}%` }} title={`${d.count} posts`} /></div><b>{d.count}</b><small>{d.date.toLocaleDateString(undefined, { weekday: 'short' })}</small></div>)}</div></section>
       <section className="ws-panel"><div className="ws-panel-head"><div><span className="ws-eyebrow">Channel mix</span><h2>Publishing by platform</h2></div></div><PlatformBars posts={posts} /></section>
     </div>
     <section className="ws-panel ws-insight"><span className="ws-insight-mark"><Icon name="sparkles" /></span><div><b>Activity, kept simple</b><p>These numbers summarize posts saved in this browser’s History. They show publishing cadence, not views, reach, or engagement from social networks.</p></div><button className="ws-text-button" onClick={() => onNavigate('history')}>Open history <Icon name="arrowRight" size={13} /></button></section>
-    <footer className="ws-footnote">For accurate account performance metrics, each platform must provide access to its insights API. Driftpost currently uses your saved publishing activity for this overview.</footer>
+    <footer className="ws-footnote">Account totals come from connected platform APIs when the account and granted permissions support them. Publishing cadence comes from this browser's saved post history.</footer>
   </PageFrame>;
 }

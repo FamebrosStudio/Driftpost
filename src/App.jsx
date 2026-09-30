@@ -3,6 +3,7 @@ import { useSession, getSupabase, pokeSession } from './session.js';
 import BrandIcon from './brand.jsx';
 import ConsentGate from './connect/ConsentGate.jsx';
 import PageLoading from './PageLoading.jsx';
+import ApprovalPage from './workspace/ApprovalPage.jsx';
 
 const Console = lazy(() => import('./console.jsx'));
 
@@ -494,6 +495,8 @@ function Auth({ mode, setMode, onBack, markFresh }) {
 
 export default function App() {
   const { session } = useSession();
+  const readApprovalId = () => window.location.pathname.match(/^\/approve\/([0-9a-f-]{36})\/?$/i)?.[1] || '';
+  const [approvalId, setApprovalId] = useState(() => typeof window !== 'undefined' ? readApprovalId() : '');
   const [mode, setMode] = useState('login');
   const [entry, setEntry] = useState('landing');
   const [pubPage, setPubPageState] = useState(() => (typeof window !== 'undefined' ? hashPage() : 'home'));
@@ -502,7 +505,7 @@ export default function App() {
     try { window.history.pushState({}, '', id === 'home' ? '/' : `/${id}`); } catch {}
   };
   useEffect(() => {
-    const onUrl = () => setPubPageState(pageFromUrl());
+    const onUrl = () => { setApprovalId(readApprovalId()); setPubPageState(pageFromUrl()); };
     window.addEventListener('popstate', onUrl);
     window.addEventListener('hashchange', onUrl);
     return () => { window.removeEventListener('popstate', onUrl); window.removeEventListener('hashchange', onUrl); };
@@ -519,14 +522,16 @@ export default function App() {
   useEffect(() => {
     // Landing page is always public and indexable.
     // Console/auth are private (noindex for logged-in users).
-    const isLanding = entry === 'landing';
-    document.title = isLanding
+    const isLanding = entry === 'landing' && !approvalId;
+    document.title = approvalId ? 'Review post · Driftpost' : isLanding
       ? (pubPage === 'home' ? 'Driftpost — Publish Everywhere' : `${PUB_PAGES.find((p) => p.id === pubPage)?.label} · Driftpost`)
       : (session ? 'Console · Driftpost' : 'Sign in · Driftpost');
     document.querySelector('meta[name="robots"]')?.setAttribute('content', isLanding ? 'index, follow, max-image-preview:large' : 'noindex, nofollow');
-  }, [session, entry, pubPage]);
+  }, [session, entry, pubPage, approvalId]);
 
   useEffect(() => { window.scrollTo(0, 0); }, [pubPage]);
+
+  if (approvalId) return <ApprovalPage id={approvalId} />;
 
   // Everyone lands on the landing page first; console is reached
   // by clicking "Enter console" from there.
