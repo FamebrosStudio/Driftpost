@@ -473,7 +473,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
     let pollFailures = 0;
     for (;;) {
       if (Date.now() - t0 > pollCap) throw new Error('Publish timed out — check History, it may still have posted.');
-      await new Promise((r) => setTimeout(r, 1500));
+      await new Promise((r) => setTimeout(r, 3000));
       let j;
       try {
         j = await api(`/api/jobs/${jobId}`, pollToken);
@@ -482,10 +482,11 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
         // The publish request has already been accepted. A transient Render
         // 503 can drop CORS headers from status polls, so reconnect to this job
         // instead of marking a post that may be live as failed or reposting it.
-        const temporary = /server is unreachable|server is waking up|retrying shortly|failed to fetch|network request failed|load failed/i.test(error?.message || '');
+        const temporary = [429, 502, 503, 504].includes(error?.status)
+          || /server is unreachable|server is waking up|retrying shortly|failed to fetch|network request failed|load failed/i.test(error?.message || '');
         if (!temporary) throw error;
         pollFailures += 1;
-        const pause = Math.min(10000, 1000 * (2 ** Math.min(pollFailures, 3)));
+        const pause = Math.max(3000, Math.min(60000, error?.retryAfterMs || 1500 * (2 ** Math.min(pollFailures, 5))));
         await new Promise((r) => setTimeout(r, pause));
         continue;
       }

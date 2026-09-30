@@ -8,8 +8,8 @@
       "destination": "https://driftpost.onrender.com/health"
     },
     {
-      "source": "/api/jobs/:id",
-      "destination": "https://driftpost.onrender.com/api/jobs/:id"
+      "source": "/api/:path*",
+      "destination": "https://driftpost.onrender.com/api/:path*"
     },
     {
       "source": "/(.*)",

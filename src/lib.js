@@ -4,6 +4,14 @@ import { AI_ACCESS_HEADER, readAiGrantForAccessToken } from './ai-access.js';
 const apiUrlRaw = import.meta.env.VITE_API_URL;
 export const apiUrl = apiUrlRaw?.replace(/\/$/, '') || '';
 const useVercelApiProxy = typeof window !== 'undefined' && /(^|\.)vercel\.app$/i.test(window.location.hostname);
+const DIRECT_UPLOAD_PATHS = ['/api/publish', '/api/schedule', '/api/storage/upload', '/api/ai/captions'];
+function apiRequestUrl(path, method = 'GET') {
+  const directUpload = String(method).toUpperCase() === 'POST'
+    && DIRECT_UPLOAD_PATHS.some((route) => path.split('?')[0] === route);
+  return useVercelApiProxy && !directUpload
+    ? `${window.location.origin}${path}`
+    : `${apiUrl}${path}`;
+}
 
 // Optional server-backed brand list with safe fallback.
 // Keeps current behaviour identical when the API is unreachable.
@@ -16,7 +24,7 @@ export async function fetchBrands(token) {
     const now = Date.now();
     if (brandsCache && (now - brandsCacheTime) < BRAND_CACHE_MS) return brandsCache;
     if (!apiUrl || !token) return ACTIVE_BRANDS;
-    const res = await fetch(`${apiUrl}/api/ai/brands`, {
+    const res = await fetch(apiRequestUrl('/api/ai/brands'), {
       headers: { Authorization: `Bearer ${token}` },
     });
     if (res.ok) {
@@ -390,9 +398,7 @@ export async function api(path, token, options = {}) {
     const ctrl = new AbortController();
     const timer = setTimeout(() => ctrl.abort(), timeoutMs);
     try {
-      const requestUrl = useVercelApiProxy && path.startsWith('/api/jobs/')
-        ? `${window.location.origin}${path}`
-        : `${apiUrl}${path}`;
+      const requestUrl = apiRequestUrl(path, method);
       const res = await fetch(requestUrl, {
         ...options,
         signal: ctrl.signal,
@@ -407,7 +413,9 @@ export async function api(path, token, options = {}) {
       });
       const ct = res.headers.get('content-type') || '';
       if ([502, 503, 504].includes(res.status)) {
-        throw new Error('Server is waking up — retrying shortly.');
+        const err = new Error('Server is waking up — retrying shortly.');
+        err.status = res.status;
+        throw err;
       }
       // A same-origin index.html fallback (wrong API URL) is HTML, not JSON
       // — say so plainly instead of dying downstream with no message.
@@ -418,7 +426,13 @@ export async function api(path, token, options = {}) {
         err.status = 401;
         throw err;
       }
-      if (!res.ok) throw new Error(data.error || 'Request failed');
+      if (!res.ok) {
+        const err = new Error(data.error || 'Request failed');
+        err.status = res.status;
+        const retryAfter = Number(res.headers.get('retry-after') || res.headers.get('ratelimit-reset'));
+        if (retryAfter > 0) err.retryAfterMs = Math.min(60000, retryAfter * 1000);
+        throw err;
+      }
       return data;
     } catch (e) {
       if (e?.status === 401) throw e;
@@ -434,7 +448,8 @@ export async function api(path, token, options = {}) {
       return await call(t, path === '/api/ai/captions' ? 30 * 60 * 1000 : 25000);
     } catch (e) {
       if (e?.status === 401) throw e;
-      const retryable = method === 'GET' && /waking up/i.test(e.message || '');
+      const isJobPoll = path.startsWith('/api/jobs/');
+      const retryable = method === 'GET' && !isJobPoll && /waking up/i.test(e.message || '');
       if (!retryable) throw e;
       await new Promise((r) => setTimeout(r, 1500));
       return call(t, 30000);

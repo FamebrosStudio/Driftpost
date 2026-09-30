@@ -81,6 +81,7 @@ app.use(cors(corsOptions));
 const globalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 1000,
+  skip: (req) => req.path === '/health',
   standardHeaders: true,
   legacyHeaders: false,
   message: { error: 'Too many requests. Please try again later.' },
@@ -258,7 +259,11 @@ function limit({ windowMs, max, key, ns }) {
     const id = `${ns || 'd'}:${raw}`;
     const now = Date.now();
     const arr = (buckets.get(id) || []).filter((t) => now - t < windowMs);
-    if (arr.length >= max) return res.status(429).json({ error: 'Too many requests. Slow down and retry.' });
+    if (arr.length >= max) {
+      const retryAfter = Math.max(1, Math.ceil((arr[0] + windowMs - now) / 1000));
+      res.set('Retry-After', String(retryAfter));
+      return res.status(429).json({ error: 'Too many requests. Slow down and retry.' });
+    }
     arr.push(now);
     buckets.set(id, arr);
     next();
@@ -279,7 +284,7 @@ const publishLimit = limit({ windowMs: 60 * 1000, max: 10, ns: 'pub', key: userK
 const aiLimit = limit({ windowMs: 60 * 60 * 1000, max: 30, ns: 'ai', key: userKey });
 const oauthLimit = limit({ windowMs: 60 * 1000, max: 20, ns: 'oauth', key: userKey });
 const connectionsLimit = limit({ windowMs: 60 * 1000, max: 60, ns: 'conn', key: userKey });
-const jobsLimit = limit({ windowMs: 60 * 1000, max: 60, ns: 'jobs', key: userKey });
+const jobsLimit = limit({ windowMs: 60 * 1000, max: 180, ns: 'jobs', key: userKey });
 const callbackLimit = limit({ windowMs: 60 * 1000, max: 30, ns: 'cb', key: (req) => `ip:${req.ip}` });
 const aiUnlockLimit = limit({ windowMs: 15 * 60 * 1000, max: 5, ns: 'ai-unlock', key: userKey });
 
