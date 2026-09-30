@@ -1,9 +1,13 @@
 name: Keep Render API warm
 
 on:
+  push:
+    branches:
+      - main
   schedule:
     # Render Free spins down after 15 minutes without inbound traffic.
-    - cron: '3,13,23,33,43,53 * * * *'
+    # Offset runs away from the busy top of each hour.
+    - cron: '2,7,12,17,22,27,32,37,42,47,52,57 * * * *'
   workflow_dispatch:
 
 permissions: {}
