@@ -56,6 +56,27 @@ const corsOptions = {
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Driftpost-AI-Grant'],
 };
 
+function parseInstagramCollaborators(raw) {
+  const entries = String(raw || '').split(/[\s,;]+/).map((name) => name.trim().replace(/^@+/, '')).filter(Boolean);
+  const seen = new Set();
+  const usernames = [];
+  for (const name of entries) {
+    if (!/^[A-Za-z0-9._]{1,30}$/.test(name) || name.startsWith('.') || name.endsWith('.') || name.includes('..')) {
+      return { usernames: [], error: `“${name}” is not a valid Instagram username. Use letters, numbers, periods or underscores.` };
+    }
+    const normalized = name.toLowerCase();
+    if (!seen.has(normalized)) { seen.add(normalized); usernames.push(name); }
+  }
+  if (usernames.length > 3) return { usernames: [], error: 'Instagram allows up to 3 co-authors.' };
+  return { usernames, error: '' };
+}
+
+function instagramCollaboratorError(platform, body = {}) {
+  const targetsInstagram = platform === 'instagram'
+    || (platform === 'facebook' && String(body.fb_synd_ig || '') === '1');
+  return targetsInstagram ? parseInstagramCollaborators(body.ig_collabs).error : '';
+}
+
 const upload = multer({
   dest: path.join(os.tmpdir(), 'driftpost-uploads'),
   limits: { fileSize: MAX_UPLOAD_BYTES, files: 60, fields: 60, fieldSize: 200 * 1024, fieldNameSize: 100 },
@@ -998,6 +1019,11 @@ app.post('/api/publish', requireUser, strictBurstLimit, publishLimit, publishUpl
     await cleanup();
     return res.status(400).json({ error: 'Pick YouTube, Instagram, Facebook or X' });
   }
+  const collaboratorError = instagramCollaboratorError(platform, req.body);
+  if (collaboratorError) {
+    await cleanup();
+    return res.status(400).json({ error: collaboratorError });
+  }
   if (files.length > 10) {
     await cleanup();
     return res.status(400).json({ error: 'Carousel allows up to 10 photos' });
@@ -1198,6 +1224,7 @@ async function runPublish(job, conn, payload, body, userId) {
       const tokens = dec(conn.encrypted_tokens);
       const pageToken = tokens.access_token;
       const pageId = tokens.page_id || conn.platform_account_id;
+      const igCollabs = parseInstagramCollaborators(body.ig_collabs).usernames;
       const otherConn = async (platform, id, linkedPageId = null) => {
         const matchesPage = (candidate) => {
           if (!candidate || !linkedPageId) return !!candidate;
@@ -1326,6 +1353,7 @@ async function runPublish(job, conn, payload, body, userId) {
                 const mirror = await meta.publishInstagramCarousel({
                   igUserId: igConn.platform_account_id, pageToken: igTokens.access_token,
                   caption: String(body.fb_message ?? fallbackText),
+                  collabs: igCollabs,
                   mediaUrls: igUrls,
                 });
                 if (mirror.id) job.publishedPosts.push({ platform: 'instagram', connectionId: igConn.id, postId: String(mirror.id) });
@@ -1333,12 +1361,15 @@ async function runPublish(job, conn, payload, body, userId) {
                  const mirror = await meta.publishInstagram({
                    igUserId: igConn.platform_account_id, pageToken: igTokens.access_token,
                    caption: String(body.fb_message ?? fallbackText),
+                   collabs: igCollabs,
                    mediaUrl: igUrls[0] || publicUrl, isVideo: !!(file?.mimetype || mediaList[0]?.mimetype || '').startsWith('video/'),
                    onStage,
                  });
                  if (mirror.id) job.publishedPosts.push({ platform: 'instagram', connectionId: igConn.id, postId: String(mirror.id) });
               }
-              job.warning = 'Also mirrored to Instagram.';
+              job.warning = igCollabs.length
+                ? `Also mirrored to Instagram with ${igCollabs.length === 1 ? 'a collaborator invite' : 'collaborator invites'}. Each person must accept in Instagram.`
+                : 'Also mirrored to Instagram.';
             } catch (e) {
               job.warning = `Facebook published, but the Instagram mirror failed: ${e.message}`;
             }
@@ -1352,7 +1383,7 @@ async function runPublish(job, conn, payload, body, userId) {
         if (topics.length) caption = `${caption}\n\n${topics.join(' ')}`.trim();
         const partner = String(body.ig_partner || '').trim().replace(/^@+/, '');
         if (partner) caption = `${caption}\n\nPaid partnership with @${partner}`.trim();
-        const collabs = String(body.ig_collabs || '').split(/[, ]+/).map((s) => s.trim().replace(/^@+/, '')).filter(Boolean).slice(0, 3);
+        const collabs = igCollabs;
         const locationId = String(body.ig_location || '').trim() || null;
         let out;
         if (isCarousel) {
@@ -1371,6 +1402,7 @@ async function runPublish(job, conn, payload, body, userId) {
         job.url = out.url;
         job.postId = out.id ? String(out.id) : null;
         if (job.postId) job.publishedPosts.push({ platform: job.platform, connectionId: conn.id, postId: job.postId });
+        if (collabs.length) job.warning = `Instagram post published with ${collabs.length === 1 ? 'a collaborator invite' : 'collaborator invites'}. Each person must accept in Instagram.`;
         // Optional auto story: same media re-published as a 24h IG story.
         // Runs after the feed post so one tap covers feed + story.
         if (String(body.ig_post_story || '') === '1' && publicUrl) {
@@ -1546,6 +1578,11 @@ app.post('/api/schedule', requireUser, strictBurstLimit, publishLimit, publishUp
   if (!['youtube', 'facebook', 'instagram', 'x'].includes(platform)) {
     await cleanupTmp();
     return res.status(400).json({ error: 'Pick YouTube, Instagram, Facebook or X' });
+  }
+  const collaboratorError = instagramCollaboratorError(platform, req.body);
+  if (collaboratorError) {
+    await cleanupTmp();
+    return res.status(400).json({ error: collaboratorError });
   }
   const when = Date.parse(req.body.scheduled_at || '');
   if (!Number.isFinite(when)) {

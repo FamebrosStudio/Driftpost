@@ -2,6 +2,7 @@ import React, { useMemo, useRef, useState } from 'react';
 import BrandIcon from '../brand.jsx';
 import { composeOutput } from '../stage2/PlatformOutputCard.jsx';
 import { assistCommunityPost, postsTabUrl } from './communityAssist.js';
+import { parseInstagramCollaborators } from './instagramCollaborators.js';
 
 const NAMES = { instagram: 'Instagram', facebook: 'Facebook', youtube: 'YouTube', x: 'X' };
 const FB_CTAS = ['', 'LEARN_MORE', 'SHOP_NOW', 'SIGN_UP', 'MESSAGE_PAGE'];
@@ -24,6 +25,9 @@ export default function Workspace({
   onPost, onRegen, onSchedule,
   onPostPhotoAsVideo, encoding,
   hideInstagramCrosspost = false,
+  showInstagramCollaborators = false,
+  instagramCollaborators = '',
+  onInstagramCollaborators,
 }) {
   const thumbRef = useRef(null);
   const thumbUrl = useMemo(() => {
@@ -132,7 +136,9 @@ export default function Workspace({
               <div className="s3-adv-in">
                 <Field label="Topics · up to 3"><input value={cfg.topics || ''} onChange={(e) => setCfg({ topics: e.target.value })} placeholder="bridal, mumbai" /></Field>
                 <Field label="Business partner"><input value={cfg.partner || ''} onChange={(e) => setCfg({ partner: e.target.value })} placeholder="brand handle, no @ needed" /></Field>
-                <Field label="Co-authors · up to 3"><input value={cfg.collabs || ''} onChange={(e) => setCfg({ collabs: e.target.value })} placeholder="makeup_artist, photographer" /></Field>
+                <Field label="Co-authors · up to 3"><input value={cfg.collabs || ''} onChange={(e) => setCfg({ collabs: e.target.value })} placeholder="@makeup_artist, @photographer" /></Field>
+                <p className="s3-subnote">Instagram sends invitations when the post publishes. Each account must accept the invite on Instagram. Use usernames, not display names.</p>
+                {!!cfg.collabs && !!parseInstagramCollaborators(cfg.collabs).error && <p className="s3-err">{parseInstagramCollaborators(cfg.collabs).error}</p>}
                 <Field label="Alt text (accessibility)"><input value={cfg.alt || ''} maxLength={500} onChange={(e) => setCfg({ alt: e.target.value })} placeholder="Describe the photo in one line" /></Field>
               </div>
             </details>
@@ -142,6 +148,11 @@ export default function Workspace({
             <Field label="Post text"><textarea value={values.message || ''} onChange={(e) => set('message', e.target.value)} placeholder="What should this post say?" /></Field>
             <Field label="Website link · optional"><input value={cfg.link || ''} onChange={(e) => setCfg({ link: e.target.value })} placeholder="https://your-website.com/offer" /></Field>
             <label className="s3-check"><input type="checkbox" checked={!!cfg.syndIg} onChange={(e) => setCfg({ syndIg: e.target.checked })} /><span>Also post on Instagram<small>Instagram is published once and removed from the Stage 3 platform list.</small></span></label>
+            {showInstagramCollaborators && <div className="s3-mirror-collabs">
+              <Field label="Instagram co-authors · up to 3"><input value={instagramCollaborators} onChange={(e) => onInstagramCollaborators?.(e.target.value)} placeholder="@makeup_artist, @photographer" /></Field>
+              <p className="s3-subnote">Instagram sends invitations when the cross-post publishes. Each account must accept the invite on Instagram.</p>
+              {!!instagramCollaborators && !!parseInstagramCollaborators(instagramCollaborators).error && <p className="s3-err">{parseInstagramCollaborators(instagramCollaborators).error}</p>}
+            </div>}
             <details className="s3-adv">
               <summary>More options (button, audience…)</summary>
               <div className="s3-adv-in">

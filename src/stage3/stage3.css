@@ -93,6 +93,8 @@
 .s3-xcount { font-size: 11.5px; color: var(--faint); margin-top: 4px; }
 .s3-xcount.over { color: var(--danger, #e5484d); font-weight: 700; }
 .s3-err { font-size: 12.5px; color: var(--danger, #e5484d); border: 1px solid var(--danger, #e5484d); border-left-width: 3px; border-radius: 10px; padding: 9px 12px; margin: 0 0 10px; line-height: 1.55; }
+.s3-subnote { margin: -2px 0 8px; color: var(--faint); font-size: 11px; line-height: 1.5; }
+.s3-mirror-collabs { margin: 4px 0 10px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel2); }
 .s3-link { color: var(--acc); font-size: 13px; font-weight: 700; text-decoration: underline; background: none; border: 0; cursor: pointer; padding: 0; }
 
 /* YouTube photo -> Short nudge: an action, not a dead end. */

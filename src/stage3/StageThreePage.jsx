@@ -5,6 +5,7 @@ import { requestCaptions, mapResponse, approveCaption } from '../stage2/ai.js';
 import { composeOutput } from '../stage2/PlatformOutputCard.jsx';
 import { photoToVideo } from './photoVideo.js';
 import { instagramMediaFiles, facebookMediaFiles } from './instagramMedia.js';
+import { parseInstagramCollaborators } from './instagramCollaborators.js';
 import { logCaptions, logPost } from '../history/log.js';
 import ProgressStepper from './ProgressStepper.jsx';
 import PlatformTabs from './PlatformTabs.jsx';
@@ -289,6 +290,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
     if (pid === 'facebook' && !v.message?.trim() && !c.link?.trim() && !files.length) return 'add post text, a website link, or media';
     if (pid === 'instagram' && !files.some((f) => /^(image|video)\//.test(f.type))) return 'Instagram needs a photo or video';
     if (pid === 'instagram' && Array.from(composeOutput(pid, v)).length > 2200) return 'caption plus hashtags exceeds Instagram’s 2,200 character limit';
+    if (pid === 'instagram' && parseInstagramCollaborators(c.collabs).error) return parseInstagramCollaborators(c.collabs).error;
     if (pid === 'youtube' && !files.some((f) => f.type.startsWith('video/')) && !files.length) return 'YouTube needs a video file, or a photo to convert into a Short';
     if (pid === 'youtube' && files.length > 1) return 'YouTube accepts one video per post';
     if (pid === 'youtube' && !v.title?.trim()) return 'add a title before posting to YouTube';
@@ -303,6 +305,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
     if (isGroupFlow ? !groupMemberIds(target).length : !accountFor(target)) return `no ${NAMES[target]} account is selected`;
     if (target === 'instagram' && !files.some((f) => /^(image|video)\//.test(f.type))) return 'Instagram needs a photo or video';
     if (target === 'instagram' && Array.from(mainText('facebook')).length > 2200) return 'the Instagram caption exceeds 2,200 characters';
+    if (target === 'instagram' && parseInstagramCollaborators(cfgFor('instagram').collabs).error) return parseInstagramCollaborators(cfgFor('instagram').collabs).error;
     return '';
   };
   const onCfg = (pid, patch) => setCfg((c) => {
@@ -378,7 +381,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
       ig_alt: c.alt || '',
       ig_topics: c.topics || '',
       ig_partner: c.partner || '',
-      ig_collabs: c.collabs || '',
+      ig_collabs: parseInstagramCollaborators(cfgFor('instagram').collabs).usernames.join(','),
       fb_connection_id: accountFor('facebook'),
       fb_message: mirrorTarget === 'facebook' && pid === 'instagram'
         ? mainText('instagram')
@@ -888,6 +891,9 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
                   onPostPhotoAsVideo={publishPhotoAsVideo}
                   encoding={encoding}
                   hideInstagramCrosspost={!!s1.crosspost}
+                  showInstagramCollaborators={tab === 'facebook' && mirrorTarget === 'instagram'}
+                  instagramCollaborators={cfgFor('instagram').collabs || ''}
+                  onInstagramCollaborators={(value) => onCfg('instagram', { collabs: value })}
                   onRegen={canUseAi ? regenOne : undefined}
                   onSchedule={(pid) => { setTab(pid); setSchedOpen(true); }}
                 />
