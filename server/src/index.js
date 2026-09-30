@@ -19,6 +19,7 @@ import { deleteFacebookPost, exchangeMetaCode, getMetaPages, longLivedToken, met
 import { createPkcePair, exchangeXCode, getXUser, xAuthorizationUrl } from './x.js';
 import { createXPost, deleteXPost, uploadXMedia, validXAccessToken } from './x-publish.js';
 import { generateCaptions } from './ai.js';
+import { uploadMediaFile, downloadMediaFile } from './media-io.js';
 
 const required = ['FRONTEND_URL', 'SUPABASE_URL', 'SUPABASE_SECRET_KEY', 'TOKEN_ENCRYPTION_KEY', 'STATE_SIGNING_SECRET'];
 const missing = required.filter((n) => !process.env[n]);
@@ -106,7 +107,7 @@ app.post('/api/storage/upload', requireUser, parseStorageUpload, async (req, res
       files = [{
         name: req.file.originalname,
         mimetype: req.file.mimetype,
-        bytes: await fs.readFile(req.file.path),
+        path: req.file.path,
       }];
     } else {
       const raw = req.body?.files;
@@ -123,12 +124,15 @@ app.post('/api/storage/upload', requireUser, parseStorageUpload, async (req, res
       return res.status(400).json({ error: 'No files to upload' });
     }
     const results = [];
-    for (const { name, mimetype, bytes } of files) {
-      if (!name || !bytes) { results.push({ name, error: 'missing name or file data' }); continue; }
+    for (const { name, mimetype, bytes, path: filePath } of files) {
+      if (!name || (!bytes && !filePath)) { results.push({ name, error: 'missing name or file data' }); continue; }
       const ext = path.extname(name).replace(/[^a-z0-9.]/gi, '').slice(1, 8)
         || (String(mimetype || '').startsWith('video/') ? 'mp4' : 'jpg');
       const key = `${crypto.randomUUID()}.${ext}`;
-      const { error: upErr } = await supabase.storage.from(BUCKET).upload(key, bytes, { contentType: mimetype || 'application/octet-stream', upsert: true });
+      const storage = supabase.storage.from(BUCKET);
+      const { error: upErr } = filePath
+        ? await uploadMediaFile(storage, key, { path: filePath, mimetype }, { upsert: true })
+        : await storage.upload(key, bytes, { contentType: mimetype || 'application/octet-stream', upsert: true });
       if (upErr) { results.push({ name, error: upErr.message }); continue; }
       const { data } = supabase.storage.from(BUCKET).getPublicUrl(key);
       results.push({ name, publicUrl: data.publicUrl });
@@ -359,7 +363,11 @@ setInterval(() => {
 }, 60 * 1000).unref();
 
 app.get('/', (_req, res) => res.json({ ok: true, service: 'driftpost-api', platforms: ['youtube', 'instagram', 'facebook', 'x'] }));
-app.get('/health', (_req, res) => res.json({ ok: true }));
+app.get('/health', (_req, res) => res.set('Cache-Control', 'no-store').json({
+  ok: true,
+  revision: process.env.RENDER_GIT_COMMIT?.slice(0, 12) || null,
+  uptimeSeconds: Math.floor(process.uptime()),
+}));
 
 app.post('/api/ai/unlock', requireUser, aiUnlockLimit, (req, res) => {
   if (!isAiAllowedUser(req.user)) return res.status(403).json({ error: 'AI access is unavailable for this account.' });
@@ -1066,7 +1074,12 @@ app.post('/api/publish', requireUser, strictBurstLimit, publishLimit, publishUpl
   const job = { id, userId: req.user.id, platform, connectionId: conn.id, publishedPosts: [], state: 'queued', progress: 0, message: 'Queued', createdAt: Date.now() };
   jobs.set(id, job);
   res.status(202).json({ job });
-  void runPublish(job, conn, { files, instagramFiles, facebookFiles, thumbFile }, req.body, req.user.id);
+  void runPublish(job, conn, { files, instagramFiles, facebookFiles, thumbFile }, req.body, req.user.id).catch((error) => {
+    console.error('[publish] unexpected job failure', job.id, error);
+    if (job.state !== 'completed') {
+      job.state = 'failed'; job.message = error.message || 'Publishing failed'; job.completedAt = Date.now();
+    }
+  });
 });
 
 function splitTags(raw) {
@@ -1074,6 +1087,7 @@ function splitTags(raw) {
 }
 
 async function runPublish(job, conn, payload, body, userId) {
+  console.log('[publish] started', job.id, job.platform, 'rssMiB', Math.round(process.memoryUsage().rss / 1024 / 1024));
   const thumbFile = payload?.thumbFile || null;
   const files = payload?.files || (payload?.path ? [payload] : []);
   const instagramFiles = payload?.instagramFiles || [];
@@ -1081,10 +1095,12 @@ async function runPublish(job, conn, payload, body, userId) {
   const file = files[0] || null;
   const allFiles = files;
   const temporaryStoragePaths = [];
+  const downloadedMediaPaths = [];
   const cleanupFiles = async () => {
     for (const f of [...allFiles, ...instagramFiles, ...facebookFiles, ...(payload?.thumbFile ? [payload.thumbFile] : [])]) {
       if (f?.path) await fs.unlink(f.path).catch(() => {});
     }
+    for (const downloadedPath of downloadedMediaPaths) await fs.unlink(downloadedPath).catch(() => {});
   };
   try {
       // onStage lets the long Meta video-processing wait update the
@@ -1201,7 +1217,7 @@ async function runPublish(job, conn, payload, body, userId) {
       };
        // Pre-upload technique: the client uploaded media to
        // Supabase while reviewing captions. Skip the re-upload
-       // here; download the file into memory only for Facebook,
+       // here; download to disk only when Facebook needs a file,
        // and hand the public URL straight to Instagram.
        // (Must be declared before isCarousel below — referencing it
        // earlier crashed every Facebook/Instagram publish.)
@@ -1219,16 +1235,15 @@ async function runPublish(job, conn, payload, body, userId) {
        let publicUrls = [];
        if (preUploaded) { for (const e of preUploaded) publicUrls.push(e.url); for (const e of preUploaded) mediaList.push({ originalname: e.name, mimetype: e.mimetype || '' }); publicUrl = publicUrls[0] || null; }
        const uploadOnePublic = async (f) => {
-        const bytes = await fs.readFile(f.path);
         const rawExt = path.extname(f.originalname || '');
         const safeExt = rawExt.replace(/[^a-z0-9.]/gi, '').slice(0, 8)
           || (String(f.mimetype || '').startsWith('video/') ? '.mp4' : '.jpg');
         const key = `${crypto.randomUUID()}${safeExt}`;
-        const { error: upErr } = await supabase.storage.from(BUCKET).upload(key, bytes, { contentType: f.mimetype, upsert: true });
+        const { error: upErr } = await uploadMediaFile(supabase.storage.from(BUCKET), key, f, { upsert: true });
          if (upErr) throw new Error('Media upload failed (' + BUCKET + '): ' + (upErr.message || upErr) + '. Make sure the "' + BUCKET + '" bucket exists and is public.');
         temporaryStoragePaths.push(key);
         const { data } = supabase.storage.from(BUCKET).getPublicUrl(key);
-        return { url: data.publicUrl, bytes, file: f };
+        return { url: data.publicUrl, file: f };
       };
       const instagramPublicUrls = [];
       for (const f of instagramFiles) {
@@ -1237,7 +1252,7 @@ async function runPublish(job, conn, payload, body, userId) {
       }
       const facebookMediaList = [];
       for (const f of facebookFiles) {
-        facebookMediaList.push({ ...f, bytes: await fs.readFile(f.path), originalname: f.originalname, mimetype: f.mimetype });
+        facebookMediaList.push({ ...f, originalname: f.originalname, mimetype: f.mimetype });
       }
       if (allFiles.length) {
         // Upload every file once so carousel + mirrors share the same URLs.
@@ -1245,23 +1260,23 @@ async function runPublish(job, conn, payload, body, userId) {
         for (const f of allFiles) {
           const up = await uploadOnePublic(f);
           publicUrls.push(up.url);
-          mediaList.push({ ...f, bytes: up.bytes, originalname: f.originalname, mimetype: f.mimetype });
+          mediaList.push({ ...f, originalname: f.originalname, mimetype: f.mimetype });
         }
          publicUrl = publicUrls[0] || null;
-         const firstBytes = mediaList[0]?.bytes;
-         if (firstBytes) media = { ...mediaList[0], bytes: firstBytes };
+         media = mediaList[0] || null;
        }
-       // For pre-uploaded media, the bytes are still needed
-       // only by Facebook (Instagram uses the public URL).
-       // Download from the Supabase public URL into memory.
-       if (preUploaded && !media && mediaList.length) {
-         for (const e of preUploaded) {
-           const res = await fetch(e.url);
-           if (!res.ok) throw new Error('Media download failed from Supabase');
-           e.bytes = Buffer.from(await res.arrayBuffer());
+       // Instagram consumes public URLs directly. Facebook multipart uploads
+       // use files on disk instead of retaining entire videos in memory.
+       const needsFacebookFile = job.platform === 'facebook'
+         || (allowCrossPost && String(body.ig_share_fb || '') === '1');
+       if (preUploaded && !media && mediaList.length && needsFacebookFile) {
+         for (let i = 0; i < preUploaded.length; i++) {
+           const downloadedPath = path.join(os.tmpdir(), `driftpost-media-${crypto.randomUUID()}`);
+           downloadedMediaPaths.push(downloadedPath);
+           await downloadMediaFile(preUploaded[i].url, downloadedPath);
+           mediaList[i].path = downloadedPath;
          }
-         for (let i = 0; i < mediaList.length; i++) mediaList[i].bytes = preUploaded[i].bytes;
-         media = { ...mediaList[0], bytes: preUploaded[0].bytes };
+         media = mediaList[0];
        }
       job.state = 'publishing'; job.progress = 60; job.message = `Publishing to ${job.platform}${isCarousel ? ' (carousel)' : ''}`;
       if (job.platform === 'facebook') {
@@ -1409,6 +1424,7 @@ async function runPublish(job, conn, payload, body, userId) {
   } finally {
     await cleanupFiles();
     await removeStored(temporaryStoragePaths);
+    console.log('[publish] finished', job.id, job.state, 'rssMiB', Math.round(process.memoryUsage().rss / 1024 / 1024));
   }
 }
 

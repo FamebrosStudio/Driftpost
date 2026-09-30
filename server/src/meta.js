@@ -1,3 +1,4 @@
+import { mediaBlob } from './media-io.js';
 // Meta (Facebook + Instagram) via Graph API. No X/Twitter anywhere in Driftpost.
 const GRAPH = 'https://graph.facebook.com/v21.0';
 // Facebook connect uses regular Login with Page scopes (no review needed in dev).
@@ -28,8 +29,8 @@ export function metaBusinessLoginUrl(state) {
   return `https://www.facebook.com/v21.0/dialog/oauth?${p}`;
 }
 
-async function graphError(res, fallback) {
-  const b = await res.json().catch(() => ({}));
+async function graphError(res, fallback, parsedBody) {
+  const b = parsedBody || await res.json().catch(() => ({}));
   return new Error(b.error?.message || fallback);
 }
 
@@ -108,19 +109,19 @@ export async function publishFacebook({ pageId, pageToken, text, link, linkMeta,
   if (media?.mimetype?.startsWith('video/')) {
     const form = new FormData();
     form.append('description', text || '');
-    form.append('source', new Blob([await media.bytes], { type: media.mimetype }), media.originalname);
+    form.append('source', await mediaBlob(media), media.originalname);
     const res = await fetch(`${GRAPH}/${pageId}/videos?access_token=${encodeURIComponent(pageToken)}`, { method: 'POST', body: form });
     const data = await res.json();
-    if (!res.ok) throw await graphError(res, 'Facebook video failed');
+    if (!res.ok) throw await graphError(res, 'Facebook video failed', data);
     return { id: data.id, url: `https://www.facebook.com/${pageId}/videos/${data.id}` };
   }
   if (media?.mimetype?.startsWith('image/')) {
     const form = new FormData();
     form.append('caption', text || '');
-    form.append('source', new Blob([await media.bytes], { type: media.mimetype }), media.originalname);
+    form.append('source', await mediaBlob(media), media.originalname);
     const res = await fetch(`${GRAPH}/${pageId}/photos?access_token=${encodeURIComponent(pageToken)}`, { method: 'POST', body: form });
     const data = await res.json();
-    if (!res.ok) throw await graphError(res, 'Facebook photo failed');
+    if (!res.ok) throw await graphError(res, 'Facebook photo failed', data);
     return { id: data.id, url: `https://www.facebook.com/photo.php?fbid=${data.id}` };
   }
   const feedBody = { message: text, access_token: pageToken };
@@ -281,14 +282,14 @@ export async function publishInstagramCarousel({ igUserId, pageToken, caption, c
 // --- Facebook multi-photo: upload each as unpublished, then one feed post ---
 // Prevents N separate timeline posts when a carousel is intended.
 export async function publishFacebookCarousel({ pageId, pageToken, text, mediaList }) {
-  const items = (mediaList || []).filter((m) => m?.bytes && String(m.mimetype || '').startsWith('image/'));
+  const items = (mediaList || []).filter((m) => (m?.path || m?.bytes) && String(m.mimetype || '').startsWith('image/'));
   if (items.length < 2) throw new Error('Carousel needs at least 2 photos');
   if (items.length > 10) throw new Error('Facebook carousel allows up to 10 photos');
   const attached = [];
   for (const m of items.slice(0, 10)) {
     const form = new FormData();
     form.append('published', 'false');
-    form.append('source', new Blob([m.bytes], { type: m.mimetype }), m.originalname || 'photo.jpg');
+    form.append('source', await mediaBlob(m), m.originalname || 'photo.jpg');
     const res = await fetch(`${GRAPH}/${pageId}/photos?access_token=${encodeURIComponent(pageToken)}`, { method: 'POST', body: form });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error?.message || 'Facebook photo upload failed');
