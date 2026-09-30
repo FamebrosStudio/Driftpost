@@ -4,16 +4,16 @@ import { AI_ACCESS_HEADER, readAiGrantForAccessToken } from './ai-access.js';
 const apiUrlRaw = import.meta.env.VITE_API_URL;
 export const apiUrl = apiUrlRaw?.replace(/\/$/, '') || '';
 const useVercelApiProxy = typeof window !== 'undefined' && /(^|\.)vercel\.app$/i.test(window.location.hostname);
-const DIRECT_UPLOAD_PATHS = ['/api/schedule', '/api/storage/upload', '/api/ai/captions'];
 let publishApiWarmPromise = null;
 let publishApiWarmUntil = 0;
 let publishApiWarmBlockedUntil = 0;
-export function apiRequestUrl(path, method = 'GET') {
-  const directUpload = String(method).toUpperCase() === 'POST'
-    && DIRECT_UPLOAD_PATHS.includes(path.split('?')[0]);
-  return useVercelApiProxy && !directUpload
-    ? `${window.location.origin}${path}`
-    : `${apiUrl}${path}`;
+export function apiRequestUrl(path) {
+  // The API has an explicit CORS allowlist for the deployed Vercel origin.
+  // Call it directly so Vercel's rewrite/gateway cannot add a second failure
+  // or rate-limit layer in front of Render. Keep same-origin fallback only
+  // when VITE_API_URL was not configured at build time.
+  if (apiUrl) return `${apiUrl}${path}`;
+  return useVercelApiProxy ? `${window.location.origin}${path}` : path;
 }
 
 // Optional server-backed brand list with safe fallback.
@@ -492,16 +492,11 @@ export async function fetchWithAuth(url, token, init = {}) {
     } catch { return 0; }
   })();
   const budget = Math.min(900000, 30000 + Math.round((bodyBytes / (512 * 1024)) * 1000));
-  // Proxy ordinary calls through Vercel to avoid browser CORS failures when
-  // Render's gateway is unavailable. Large media uploads stay direct because
-  // Vercel's external proxy can time out after 120 seconds.
+  // Use the configured API directly for all requests. This avoids Vercel's
+  // proxy limits and gives the browser the Render API's real status/headers.
   const parsedUrl = new URL(url, window.location.href);
   const requestPath = `${parsedUrl.pathname}${parsedUrl.search}`;
-  const requestUrl = useVercelApiProxy
-    && parsedUrl.pathname === '/api/publish'
-    && bodyBytes > 32 * 1024 * 1024
-    ? url
-    : apiRequestUrl(requestPath, 'POST');
+  const requestUrl = apiUrl ? url : apiRequestUrl(requestPath);
   // Only direct large uploads need a warm-up (proxy requests already avoid
   // browser CORS). Share the probe across grouped account posts, contact
   // Render directly, and stop immediately on 429 so a failed warm-up cannot
