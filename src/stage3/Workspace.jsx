@@ -31,6 +31,8 @@ export default function Workspace({
   instagramCollaborators = '',
   onInstagramCollaborators,
   instagramAccounts = [],
+  instagramLookupId = '',
+  token = '',
   mirrorPlatform = '',
   mirrorCover = null,
   onMirrorCover,
@@ -137,8 +139,8 @@ export default function Workspace({
               <div className="s3-adv-in">
                 <Field label="Topics · up to 3"><input value={cfg.topics || ''} onChange={(e) => setCfg({ topics: e.target.value })} placeholder="bridal, mumbai" /></Field>
                 <Field label="Business partner"><input value={cfg.partner || ''} onChange={(e) => setCfg({ partner: e.target.value })} placeholder="brand handle, no @ needed" /></Field>
-                <Field label="Collaborators · up to 3"><CollaboratorInput value={cfg.collabs} onChange={(value) => setCfg({ collabs: value })} accounts={instagramAccounts} /></Field>
-                <p className="s3-subnote">Type an account name or ID and choose a match, or enter the exact Instagram username. Instagram sends the invite when the post publishes; each person must accept it there.</p>
+                <Field label="Collaborators · up to 3"><CollaboratorInput value={cfg.collabs} onChange={(value) => setCfg({ collabs: value })} accounts={instagramAccounts} token={token} connectionId={instagramLookupId} /></Field>
+                <p className="s3-subnote">Start typing any Instagram username — connected accounts appear instantly, and Driftpost checks the rest with Instagram. Each person must accept the invite in Instagram.</p>
                 {!!cfg.collabs && !!parseInstagramCollaborators(cfg.collabs).error && <p className="s3-err">{parseInstagramCollaborators(cfg.collabs).error}</p>}
                 <Field label="Alt text (accessibility)"><input value={cfg.alt || ''} maxLength={500} onChange={(e) => setCfg({ alt: e.target.value })} placeholder="Describe the photo in one line" /></Field>
               </div>
@@ -152,8 +154,8 @@ export default function Workspace({
             <Field label="Website link · optional"><input value={cfg.link || ''} onChange={(e) => setCfg({ link: e.target.value })} placeholder="https://your-website.com/offer" /></Field>
             <label className="s3-check"><input type="checkbox" checked={!!cfg.syndIg} onChange={(e) => setCfg({ syndIg: e.target.checked })} /><span>Also post on Instagram<small>Instagram is published once and removed from the Stage 3 platform list.</small></span></label>
             {showInstagramCollaborators && <div className="s3-mirror-collabs">
-              <Field label="Instagram collaborators · up to 3"><CollaboratorInput value={instagramCollaborators} onChange={(value) => onInstagramCollaborators?.(value)} accounts={instagramAccounts} /></Field>
-              <p className="s3-subnote">Type an account name or ID and choose a match, or enter the exact Instagram username. Instagram sends the invite when the cross-post publishes.</p>
+              <Field label="Instagram collaborators · up to 3"><CollaboratorInput value={instagramCollaborators} onChange={(value) => onInstagramCollaborators?.(value)} accounts={instagramAccounts} token={token} connectionId={instagramLookupId} /></Field>
+              <p className="s3-subnote">Start typing any Instagram username — connected accounts appear instantly, and Driftpost checks the rest with Instagram.</p>
               {!!instagramCollaborators && !!parseInstagramCollaborators(instagramCollaborators).error && <p className="s3-err">{parseInstagramCollaborators(instagramCollaborators).error}</p>}
             </div>}
             <details className="s3-adv">

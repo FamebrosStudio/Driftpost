@@ -267,6 +267,18 @@ export async function schedulePost(token, { platform, connectionId, when, body, 
   return data.schedule;
 }
 
+// Resolve an Instagram account by username through Meta, so the collaborator
+// picker can offer accounts that are not connected to Driftpost. Meta matches
+// an exact handle only — `query` is the handle as typed, not a prefix. An
+// empty list is a normal answer (unknown, personal or age-gated account).
+export const searchInstagramCollaborators = (token, { connectionId = '', query = '' } = {}) => {
+  const handle = String(query || '').trim().replace(/^@+/, '');
+  if (!handle) return Promise.resolve([]);
+  const params = new URLSearchParams({ q: handle });
+  if (connectionId) params.set('connection_id', connectionId);
+  return api(`/api/instagram/collaborators?${params}`, token).then((d) => d.accounts || []);
+};
+
 export const listSchedules = (token, range = {}) => {
   const params = new URLSearchParams();
   if (range.from) params.set('from', range.from);

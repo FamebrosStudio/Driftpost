@@ -253,6 +253,14 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
     return connections.find((c) => c.platform === pid)?.id || '';
   };
 
+  // Instagram collaborator lookups run through one connected account. Use the
+  // one this post publishes from so the suggested accounts match that audience.
+  const instagramLookupId = (() => {
+    const list = connections.filter((c) => c.platform === 'instagram');
+    const chosen = accountFor('instagram');
+    return (chosen && list.find((c) => c.id === chosen)?.id) || list[0]?.id || '';
+  })();
+
   const greyed = () => false;
   // Group fan-out still includes every selected account on the hidden side.
   const coveredPids = (pid) => {
@@ -910,6 +918,8 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
                     ? onThumb
                     : (cover) => onPlatformCover(tab, cover)}
                   instagramAccounts={connections.filter((connection) => connection.platform === 'instagram')}
+                  instagramLookupId={instagramLookupId}
+                  token={session.access_token}
                   mirrorPlatform={tab === 'instagram' && mirrorTarget === 'facebook' ? 'facebook' : tab === 'facebook' && mirrorTarget === 'instagram' ? 'instagram' : ''}
                   mirrorCover={tab === 'instagram' && mirrorTarget === 'facebook' ? coverMap.facebook : tab === 'facebook' && mirrorTarget === 'instagram' ? coverMap.instagram : null}
                   onMirrorCover={(cover) => onPlatformCover(tab === 'instagram' ? 'facebook' : 'instagram', cover)}

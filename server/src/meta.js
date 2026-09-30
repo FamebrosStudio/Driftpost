@@ -280,6 +280,87 @@ export async function publishInstagramCarousel({ igUserId, pageToken, caption, c
   return { id: published.id, url: await instagramPostUrl(published.id, pageToken) };
 }
 
+// --- Instagram account lookup (collaborators) ---
+// Business Discovery is the only Meta API that resolves an Instagram account
+// the user has NOT connected: GET /<connected ig id>?fields=
+// business_discovery.username(<handle>){...} returns that account's public
+// profile and its Instagram user ID, which is what the publishing API's
+// `collaborators` parameter needs. Meta matches an EXACT handle — there is no
+// prefix search — so the caller resolves whatever the user actually typed.
+// Personal accounts, age-gated accounts and tokens without the extra
+// permission are reported as a reason, never thrown: typing a handle by hand
+// must keep working.
+const IG_DISCOVERY_FIELDS = 'id,username,name,biography,followers_count,media_count,profile_picture_url';
+const IG_HANDLE = /^[A-Za-z0-9._]{1,30}$/;
+const IG_PERMISSION_HINT = /permission|scope|oauth|not authorized|access token|#10\b/i;
+const discoveryCache = new Map();
+const DISCOVERY_TTL_MS = 30 * 60 * 1000;
+setInterval(() => {
+  const now = Date.now();
+  for (const [key, hit] of discoveryCache) {
+    if (now - hit.at >= DISCOVERY_TTL_MS) discoveryCache.delete(key);
+  }
+}, 10 * 60 * 1000).unref();
+
+export async function discoverInstagramAccount({ igUserId, pageToken, username }) {
+  const handle = String(username || '').trim().replace(/^@+/, '');
+  if (!handle || !IG_HANDLE.test(handle) || handle.startsWith('.') || handle.endsWith('.') || handle.includes('..')) {
+    return { ok: false, reason: 'invalid' };
+  }
+  const cacheKey = `${igUserId}:${handle.toLowerCase()}`;
+  const cached = discoveryCache.get(cacheKey);
+  if (cached && Date.now() - cached.at < DISCOVERY_TTL_MS) return cached.value;
+  const fields = `business_discovery.username(${handle}){${IG_DISCOVERY_FIELDS}}`;
+  const url = `${GRAPH}/${encodeURIComponent(igUserId)}?fields=${encodeURIComponent(fields)}&access_token=${encodeURIComponent(pageToken)}`;
+  let value;
+  try {
+    const res = await fetch(url, { signal: AbortSignal.timeout(15000) });
+    const body = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      const message = String(body?.error?.message || '');
+      value = { ok: false, reason: IG_PERMISSION_HINT.test(message) ? 'permission' : 'unavailable', message };
+    } else if (body?.business_discovery?.id) {
+      const found = body.business_discovery;
+      value = {
+        ok: true,
+        account: {
+          platform_account_id: String(found.id),
+          username: found.username || handle,
+          name: found.name || '',
+          biography: found.biography || '',
+          followers_count: Number(found.followers_count || 0),
+          media_count: Number(found.media_count || 0),
+          profile_picture_url: found.profile_picture_url || '',
+        },
+      };
+    } else {
+      value = { ok: false, reason: 'not-found' };
+    }
+  } catch (e) {
+    value = { ok: false, reason: 'unavailable', message: e?.message || '' };
+  }
+  discoveryCache.set(cacheKey, { at: Date.now(), value });
+  return value;
+}
+
+// The publishing API's `collaborators` wants Instagram user IDs, but people
+// think in usernames. Resolve them here. A value that is already numeric is
+// passed straight through, and a handle that cannot be resolved is returned
+// untouched so Meta — not this resolver — has the final say.
+export async function resolveInstagramCollaboratorIds({ igUserId, pageToken, handles }) {
+  const list = [...new Set((handles || []).map((h) => String(h || '').trim().replace(/^@+/, '')).filter(Boolean))];
+  const ids = [];
+  let needsPermission = false;
+  for (const handle of list) {
+    if (/^\d+$/.test(handle)) { ids.push(handle); continue; }
+    const found = await discoverInstagramAccount({ igUserId, pageToken, username: handle });
+    if (found.ok) { ids.push(found.account.platform_account_id); continue; }
+    if (found.reason === 'permission') needsPermission = true;
+    ids.push(handle);
+  }
+  return { ids, needsPermission };
+}
+
 // --- Facebook multi-photo: upload each as unpublished, then one feed post ---
 // Prevents N separate timeline posts when a carousel is intended.
 export async function publishFacebookCarousel({ pageId, pageToken, text, mediaList }) {

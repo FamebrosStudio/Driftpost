@@ -15,7 +15,7 @@ import { exchangeGoogleCode, getYouTubeChannel, youtubeAuthorizationUrl } from '
 import { learnedVoice, markLatestUsed, markUsed, recordGeneration } from './captionMemory.js';
 import { consentState, forgetUser, hasPersonalisationConsent, recordConsent, POLICY_VERSION, PURPOSES } from './consent.js';
 import { setVideoThumbnail, uploadVideoResumable, validAccessToken } from './youtube-upload.js';
-import { deleteFacebookPost, exchangeMetaCode, getMetaPages, longLivedToken, metaAuthorizationUrl, metaBusinessLoginUrl, publishFacebook, publishInstagram } from './meta.js';
+import { deleteFacebookPost, discoverInstagramAccount, exchangeMetaCode, getMetaPages, longLivedToken, metaAuthorizationUrl, metaBusinessLoginUrl, publishFacebook, publishInstagram } from './meta.js';
 import { createPkcePair, exchangeXCode, getXUser, xAuthorizationUrl } from './x.js';
 import { createXPost, deleteXPost, uploadXMedia, validXAccessToken } from './x-publish.js';
 import { generateCaptions } from './ai.js';
@@ -309,6 +309,9 @@ const publishLimit = limit({ windowMs: 60 * 1000, max: 10, ns: 'pub', key: userK
 const aiLimit = limit({ windowMs: 60 * 60 * 1000, max: 30, ns: 'ai', key: userKey });
 const oauthLimit = limit({ windowMs: 60 * 1000, max: 20, ns: 'oauth', key: userKey });
 const connectionsLimit = limit({ windowMs: 60 * 1000, max: 60, ns: 'conn', key: userKey });
+// The collaborator picker asks Meta on every settled keystroke, so it needs
+// more headroom than the other read endpoints — while still being bounded.
+const igLookupLimit = limit({ windowMs: 60 * 1000, max: 120, ns: 'iglookup', key: userKey });
 const jobsLimit = limit({ windowMs: 60 * 1000, max: 180, ns: 'jobs', key: userKey });
 const callbackLimit = limit({ windowMs: 60 * 1000, max: 30, ns: 'cb', key: (req) => `ip:${req.ip}` });
 const aiUnlockLimit = limit({ windowMs: 15 * 60 * 1000, max: 5, ns: 'ai-unlock', key: userKey });
@@ -421,6 +424,40 @@ app.get('/api/connections', requireUser, connectionsLimit, burstLimit, async (re
   } catch {
     res.status(500).json({ error: 'Unable to load accounts' });
   }
+});
+
+app.get('/api/instagram/collaborators', requireUser, connectionsLimit, igLookupLimit, async (req, res) => {
+  const username = String(req.query.q || '').trim().replace(/^@+/, '');
+  if (!username) return res.json({ accounts: [] });
+  const { data, error } = await supabase.from('platform_connections')
+    .select('id, platform_account_id, encrypted_tokens')
+    .eq('user_id', req.user.id)
+    .eq('platform', 'instagram');
+  if (error) return res.status(500).json({ error: 'Could not load your Instagram accounts' });
+  const list = data || [];
+  if (!list.length) return res.json({ accounts: [], reason: 'no-connection' });
+  // Business Discovery has to run on a connected account. Try the one the
+  // post will publish from first, then the rest as a fallback.
+  const wanted = String(req.query.connection_id || '');
+  const ordered = [wanted, ...list.map((c) => c.id)]
+    .filter(Boolean)
+    .map((id) => list.find((c) => c.id === id))
+    .filter(Boolean);
+  let reason = 'not-found';
+  for (const connection of ordered) {
+    let pageToken = '';
+    try { pageToken = decryptJson(connection.encrypted_tokens)?.access_token || ''; } catch { continue; }
+    if (!pageToken) continue;
+    const found = await discoverInstagramAccount({ igUserId: connection.platform_account_id, pageToken, username });
+    if (found.ok) return res.json({ accounts: [found.account], connection_id: connection.id });
+    reason = found.reason;
+    // A token that cannot read other accounts will not do better on the next
+    // account — stop instead of burning one Graph call per connection.
+    if (reason === 'permission') break;
+  }
+  // An empty list is a normal answer (unknown, personal or age-gated handle),
+  // not an error: the composer keeps the typed username either way.
+  res.json({ accounts: [], reason });
 });
 
 app.get('/api/automations/instagram', requireUser, connectionsLimit, burstLimit, async (req, res) => {
@@ -1361,24 +1398,29 @@ async function runPublish(job, conn, payload, body, userId) {
             try {
               const igTokens = dec(igConn.encrypted_tokens);
               const igUrls = instagramPublicUrls.length ? instagramPublicUrls : publicUrls;
+              // Same resolution as the direct Instagram path: Meta wants
+              // Instagram user IDs, the composer collects usernames.
+              const igCollabIds = igCollabs.length
+                ? (await meta.resolveInstagramCollaboratorIds({ igUserId: igConn.platform_account_id, pageToken: igTokens.access_token, handles: igCollabs })).ids
+                : [];
               if (isCarousel) {
                 const mirror = await meta.publishInstagramCarousel({
                   igUserId: igConn.platform_account_id, pageToken: igTokens.access_token,
                   caption: String(body.fb_message ?? fallbackText),
-                  collabs: igCollabs,
+                  collabs: igCollabIds,
                   mediaUrls: igUrls,
                 });
                 if (mirror.id) job.publishedPosts.push({ platform: 'instagram', connectionId: igConn.id, postId: String(mirror.id) });
               } else {
-                 const mirror = await meta.publishInstagram({
-                   igUserId: igConn.platform_account_id, pageToken: igTokens.access_token,
-                   caption: String(body.fb_message ?? fallbackText),
-                   collabs: igCollabs,
-                   mediaUrl: igUrls[0] || publicUrl, isVideo: !!(file?.mimetype || mediaList[0]?.mimetype || '').startsWith('video/'),
-                   coverUrl: instagramCoverUrl,
-                   onStage,
-                 });
-                 if (mirror.id) job.publishedPosts.push({ platform: 'instagram', connectionId: igConn.id, postId: String(mirror.id) });
+                const mirror = await meta.publishInstagram({
+                  igUserId: igConn.platform_account_id, pageToken: igTokens.access_token,
+                  caption: String(body.fb_message ?? fallbackText),
+                  collabs: igCollabIds,
+                  mediaUrl: igUrls[0] || publicUrl, isVideo: !!(file?.mimetype || mediaList[0]?.mimetype || '').startsWith('video/'),
+                  coverUrl: instagramCoverUrl,
+                  onStage,
+                });
+                if (mirror.id) job.publishedPosts.push({ platform: 'instagram', connectionId: igConn.id, postId: String(mirror.id) });
               }
               job.warning = igCollabs.length
                 ? `Also mirrored to Instagram with ${igCollabs.length === 1 ? 'a collaborator invite' : 'collaborator invites'}. Each person must accept in Instagram.`
@@ -1396,7 +1438,9 @@ async function runPublish(job, conn, payload, body, userId) {
         if (topics.length) caption = `${caption}\n\n${topics.join(' ')}`.trim();
         const partner = String(body.ig_partner || '').trim().replace(/^@+/, '');
         if (partner) caption = `${caption}\n\nPaid partnership with @${partner}`.trim();
-        const collabs = igCollabs;
+        const collabs = igCollabs.length
+          ? (await meta.resolveInstagramCollaboratorIds({ igUserId: igId, pageToken, handles: igCollabs })).ids
+          : [];
         const locationId = String(body.ig_location || '').trim() || null;
         let out;
         if (isCarousel) {
