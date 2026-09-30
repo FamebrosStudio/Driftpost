@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import BrandIcon from '../brand.jsx';
-import { apiUrl } from '../lib.js';
+import { apiRequestUrl } from '../lib.js';
 import './workspace.css';
 
 const platformName = (id) => ({ instagram: 'Instagram', facebook: 'Facebook', youtube: 'YouTube', x: 'X' })[id] || id;
@@ -16,7 +16,7 @@ export default function ApprovalPage({ id }) {
   useEffect(() => {
     let active = true;
     setLoading(true); setError(''); setDone('');
-    fetch(`${apiUrl}/api/approvals/${encodeURIComponent(id)}`)
+    fetch(apiRequestUrl(`/api/approvals/${encodeURIComponent(id)}`))
       .then(async (res) => { const data = await res.json().catch(() => ({})); if (!res.ok) throw new Error(data.error || 'This review link is unavailable.'); return data.review; })
       .then((data) => { if (active) setReview(data); })
       .catch((e) => { if (active) setError(e.message || 'Could not load this review.'); })
@@ -27,7 +27,7 @@ export default function ApprovalPage({ id }) {
   const decide = async (decision) => {
     setBusy(true); setError('');
     try {
-      const res = await fetch(`${apiUrl}/api/approvals/${encodeURIComponent(id)}`, {
+      const res = await fetch(apiRequestUrl(`/api/approvals/${encodeURIComponent(id)}`), {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ decision, comment }),
       });
