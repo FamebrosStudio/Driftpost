@@ -34,7 +34,7 @@ function SpotLine({ text }) {
     for (let i = 0; i < kids.length; i++) {
       const d = Math.abs(x - (cs[i] || 0));
       const glow = Math.max(0, 1 - d / 220);
-      kids[i].style.opacity = (0.3 + 0.7 * glow).toFixed(2);
+      kids[i].style.opacity = (0.72 + 0.28 * glow).toFixed(2);
     }
   };
   const onMove = (e) => {
@@ -101,11 +101,13 @@ const PUB_CONTENT = {
   about: {
     kicker: 'What is Drift Post',
     title: 'One screen for every audience you own.',
-    intro: 'Driftpost is a publishing console for people who run many brands — agencies, studios, creators. Instead of opening YouTube Studio, Meta Business Suite, and X in twelve tabs, you pick the brand once and post to all four platforms from four side-by-side cards.',
+    intro: 'Driftpost is a publishing workspace for people who run many brands — agencies, studios and creators. Pick a brand, tailor content for YouTube, Instagram, Facebook and X, then publish or plan it from one place.',
     sections: [
       { h: 'Brand-first, not platform-first', p: 'Agencies think in clients: Velvet Salon, SK Furniture, Sarang Hospital. Driftpost groups every connected account under its brand and auto-matches the same brand across YouTube, Instagram, Facebook and X.' },
-      { h: 'Every native option', p: 'Titles, tags, thumbnails and visibility for YouTube. Captions, alt text and collaborators for Instagram. Links, buttons and age limits for Facebook. Polls and reply controls for X. If the platform API allows it, the card has it.' },
-      { h: 'Publish now or plan ahead', p: 'Publish as soon as you are ready, or schedule a post for a future time from the calendar. Scheduled posts stay visible in your workspace, and you can cancel them before they run.' },
+      { h: 'Tools for the platforms you use', p: 'Set YouTube titles and thumbnails, Instagram captions and alt text, Facebook links and buttons, and X polls and reply controls. Each platform keeps its own content and media settings.' },
+      { h: 'Plan, approve and publish', p: 'Schedule once or import caption batches from CSV, set a finite repeat, or share a review link that holds a post until it is approved. Calendar and History show what is coming up.' },
+      { h: 'See connected account metrics', p: 'View available follower, subscriber, post and lifetime view totals from connected accounts. Which numbers appear depends on each platform and the permissions it grants.' },
+      { h: 'Automate Instagram replies', p: 'Set comment keyword replies, private comment messages and replies to inbound DM keywords. Live automation requires Meta webhook setup and approved permissions.' },
     ],
   },
   how: {
@@ -114,20 +116,20 @@ const PUB_CONTENT = {
     intro: 'Follow these once. After that, posting for any brand takes under a minute.',
     sections: [
       { h: '1 · Sign in', p: 'Open the site, press Get started, continue with Google or email. You land on the home page first every visit — press Enter console.' },
-      { h: '2 · Connect accounts', p: 'Go to Accounts and connect YouTube (Google login), Facebook + Instagram (one Meta login covers both), and X. Each brand owner connects once. Take the 30-second tour when offered.' },
+      { h: '2 · Connect accounts', p: 'Go to Accounts and connect YouTube (Google login), Facebook and a linked Instagram professional account through Meta, then connect X. Each owner connects the accounts they manage.' },
       { h: '3 · Pick your brand', p: 'Back on Platforms, choose the brand from the menu. Its accounts load into the four cards automatically. Star active clients with the ▾ menu; hide the rest.' },
       { h: '4 · Drop media, write once', p: 'Add one photo or video and one caption. Shared content fills every card; open a card to fine-tune that platform only.' },
-      { h: '5 · Publish', p: 'Press a card to publish one platform, or Publish all for everything. Done ✓ links appear under each card.' },
+      { h: '5 · Publish and plan', p: 'Publish a platform at a time, schedule it, import a CSV caption batch, or request approval with a private review link. Manage scheduled posts from Calendar and History.' },
     ],
   },
   platforms: {
     kicker: 'Platforms',
     title: 'Four platforms. Zero tabs.',
-    intro: 'Each card mirrors what the platform itself asks for — nothing missing, nothing invented.',
+    intro: 'Each card has platform-specific options, and publishing depends on the account, media type and permissions available.',
     sections: [
       { h: 'YouTube', p: 'Video + title, description, tags, visibility, thumbnail, category, made-for-kids, license, embedding, stats visibility, subscriber notifications. Private first, public when ready.' },
-      { h: 'Instagram', p: 'Photo or reel + caption, alt text, topics, paid-partner mentions, up-to-3 collaborators, location, one-tap mirror to the Facebook Page.' },
-      { h: 'Facebook', p: 'Message, link with custom preview title/caption/image, call-to-action buttons, 13/18/21/25+ age limits, unpublished dark posts, mirror to Instagram.' },
+      { h: 'Instagram', p: 'Photo or reel + caption, alt text, topics, paid-partner mentions, up-to-3 collaborators and location. Auto DM supports comment replies and incoming DM rules when Meta permissions and webhooks are configured.' },
+      { h: 'Facebook', p: 'Message, link with custom preview title/caption/image, call-to-action buttons, 13/18/21/25+ age limits, unpublished dark posts and mirror to Instagram. Schedule posts and request approval before publishing.' },
       { h: 'X', p: '280 characters with live counter, photos/GIF/video, 2—4 choice polls with durations, who-can-reply controls.' },
     ],
   },
@@ -137,10 +139,12 @@ const PUB_CONTENT = {
     intro: '',
     sections: [
       { h: 'Is it free?', p: 'Yes while in beta. YouTube, Meta and Supabase free tiers cover normal agency volume. X may need a paid tier if you post at high volume — that is X billing you, not us.' },
-      { h: 'Why is a page missing after connecting?', p: 'Meta only returns what the logged-in Facebook user manages and what was ticked in the grant dialog. Portfolio-owned pages need their portfolio selected during login. Reconnect with —œall current and future— and tick everything.' },
+      { h: 'Why is a page missing after connecting?', p: 'Meta only returns pages the logged-in person can manage and the accounts selected during connection. Reconnect with the right portfolio and grant access to the Pages and Instagram accounts you need.' },
       { h: 'Where are my tokens?', p: 'Encrypted in your Supabase project. The app servers never log them, and disconnecting deletes them.' },
       { h: 'Can clients share one login?', p: 'Yes — connect every portfolio under one login and switch brands from the menu. Or give each client their own login for strict isolation. Both work.' },
-      { h: 'Can I schedule posts?', p: 'Yes. Open the calendar, choose a day, create your post, and schedule it for a time in your local timezone. You can review or cancel scheduled posts from Calendar or History.' },
+      { h: 'Can I schedule posts in batches or repeat them?', p: 'Yes. Schedule from the composer, set a weekly, two-week or 30-day repeat, or import up to 10 caption rows from a CSV. Review scheduled posts in Calendar or History.' },
+      { h: 'Does Instagram Auto DM work after I save a rule?', p: 'The rule editor supports comment keyword replies and replies to incoming DMs. Live replies also require a configured Meta webhook, approved Meta permissions and a connected Instagram professional account.' },
+      { h: 'Can someone approve a post before it publishes?', p: 'Yes. Request approval while scheduling to create a private review link. The post waits in the schedule until the reviewer approves it.' },
     ],
   },
   contact: {
@@ -344,16 +348,16 @@ function Landing({ onEnter, session, pubPage, setPubPage }) {
     { id: 'x', tip: 'X — 280 chars, media', href: 'https://x.com' },
   ];
   const cards = [
-    { id: 'youtube', t: 'YouTube, handled', d: 'Titles, descriptions, tags, thumbnails, visibility — every upload setting, zero Studio tabs.' },
-    { id: 'instagram', t: 'Instagram, handled', d: 'Captions, alt text, collaborators, topics, location — reels and photos from one card.' },
-    { id: 'facebook', t: 'Facebook, handled', d: 'Messages, links with custom previews, action buttons, age limits, dark posts.' },
-    { id: 'x', t: 'X, handled', d: '280 characters, polls, reply controls, media — posted in one click.' },
+    { id: 'youtube', t: 'YouTube, handled', d: 'Titles, descriptions, tags, thumbnails and visibility, with channel totals where YouTube makes them available.' },
+    { id: 'instagram', t: 'Instagram, handled', d: 'Photos, reels, captions and alt text, plus comment-to-DM and incoming reply rules when Meta access is configured.' },
+    { id: 'facebook', t: 'Facebook, handled', d: 'Links, custom previews, action buttons and cross-posting, with scheduled publishing and review links.' },
+    { id: 'x', t: 'X, handled', d: '280 characters, polls, reply controls and media, with one tailored post for each connected platform.' },
   ];
   const steps = [
     { n: '01', t: 'Connect once', d: 'Each brand owner links YouTube, Facebook, Instagram and X one time. Tokens stay encrypted; reconnects are one click.' },
     { n: '02', t: 'Pick the brand', d: 'Choose Hair Match Salon, SK Furniture, Velvet Salon — Driftpost auto-loads that brand on all four platforms.' },
-    { n: '03', t: 'Drop and write', d: 'One photo or video, one caption. Shared everywhere instantly, then fine-tune per platform.' },
-    { n: '04', t: 'Publish or schedule', d: 'Publish to a platform now, send to all selected accounts, or pick a future date in the calendar. Track scheduled posts and cancel them from one place.' },
+    { n: '03', t: 'Drop and write', d: 'Add media and start with one caption, then fine-tune text and media for each platform before publishing.' },
+    { n: '04', t: 'Publish or plan ahead', d: 'Publish now, import caption batches, set a weekly or monthly repeat, or hold a post for review. Check the calendar and available account totals in your workspace.' },
   ];
   return (
     <div className="landing" ref={rootRef} onMouseMove={onGridMouse}>
@@ -369,9 +373,9 @@ function Landing({ onEnter, session, pubPage, setPubPage }) {
       </nav>
       {pubPage === 'home' ? <>
       <header className="landing-in">
-        <div className="landing-kicker">Driftpost — publish everywhere</div>
+        <div className="landing-kicker">One workspace. Four platforms.</div>
         <h1><SpotLine text="Post once." /><br /><SpotLine text="Everywhere." /></h1>
-        <p>Create, schedule and publish across four platforms from one brand-first workspace.</p>
+        <p>Create for four platforms from one workspace.</p>
         <div className="landing-cta">
           <button className="skew-btn grad" onClick={onEnter}><span>{session ? 'Enter console' : 'Get started free ’'}</span></button>
         </div>
@@ -385,10 +389,10 @@ function Landing({ onEnter, session, pubPage, setPubPage }) {
         </div>
         <div className="landing-stats">
           <span><b>4</b>platforms</span>
-          <span><b>40+</b>brands</span>
+          <span><b>39</b>brands</span>
           <span><b>1</b>screen</span>
         </div>
-        <div className="scroll-hint">Scroll for the tour “</div>
+        <div className="scroll-hint">Scroll to explore ↓</div>
       </header>
       <div className="hstrip-wrap">
         <div className="hstrip-label">Every platform, covered</div>
@@ -401,8 +405,8 @@ function Landing({ onEnter, session, pubPage, setPubPage }) {
             </div>
           ))}
           <div className="hcard hot">
-            <b>40+ brands, one menu</b>
-            <p>Salons, jewellers, clinics, resorts — switch clients faster than opening tabs.</p>
+            <b>One workspace, more control</b>
+            <p>CSV batches, finite repeats, shareable approvals and available account metrics, alongside your connected brands.</p>
           </div>
         </div>
       </div>

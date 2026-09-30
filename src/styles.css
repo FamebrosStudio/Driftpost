@@ -432,7 +432,7 @@ html, body { overflow-x: clip; max-width: 100%; }
 .auth-card img.logo-img { height: 56px; }
 .landing { background: #000; }
 .landing-in { min-height: 92vh; }
-.spot > span { opacity: 0.3; transition: opacity 0.15s linear; }
+.spot > span { opacity: 0.72; transition: opacity 0.15s linear; }
 .landing h1 { color: #fff; }
 .land-nav { position: relative; z-index: 2; display: flex; align-items: center; justify-content: space-between; padding: 18px 28px; }
 .land-nav img.logo-img { height: 40px; }
@@ -485,6 +485,8 @@ html, body { overflow-x: clip; max-width: 100%; }
   .hstrip { grid-template-columns: minmax(0, 1fr); padding-inline: 16px; }
   .hcard:last-child { grid-column: auto; width: 100%; }
   .hcard { min-height: 176px; }
+  .landing-kicker { width: fit-content; max-width: calc(100vw - 80px); box-sizing: border-box; font-size: 9px; letter-spacing: 1.25px; line-height: 1.55; }
+  .landing-in > p { max-width: calc(100vw - 48px); }
 }
 
 @media (max-width: 760px) {
@@ -492,6 +494,7 @@ html, body { overflow-x: clip; max-width: 100%; }
   .zig-row.flip .zig-copy { order: 1; }
   .zig-row.flip .zig-art { order: 2; }
   .land-nav { padding: 14px 16px; }
+  .landing-in { min-width: 0; width: 100%; box-sizing: border-box; }
   .brand img.logo-img { height: 32px; }
 }
 @media (prefers-reduced-motion: reduce) {
