@@ -470,10 +470,25 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
     const hasVideo = files.some((f) => f.type.startsWith('video/'));
     const pollCap = hasVideo ? 12 * 60 * 1000 : 5 * 60 * 1000;
     const t0 = Date.now();
+    let pollFailures = 0;
     for (;;) {
       if (Date.now() - t0 > pollCap) throw new Error('Publish timed out — check History, it may still have posted.');
       await new Promise((r) => setTimeout(r, 1500));
-      const j = await api(`/api/jobs/${jobId}`, pollToken);
+      let j;
+      try {
+        j = await api(`/api/jobs/${jobId}`, pollToken);
+        pollFailures = 0;
+      } catch (error) {
+        // The publish request has already been accepted. A transient Render
+        // 503 can drop CORS headers from status polls, so reconnect to this job
+        // instead of marking a post that may be live as failed or reposting it.
+        const temporary = /server is unreachable|server is waking up|retrying shortly|failed to fetch|network request failed|load failed/i.test(error?.message || '');
+        if (!temporary) throw error;
+        pollFailures += 1;
+        const pause = Math.min(10000, 1000 * (2 ** Math.min(pollFailures, 3)));
+        await new Promise((r) => setTimeout(r, pause));
+        continue;
+      }
       out[key] = { state: j.job.state, progress: j.job.progress || 50, url: j.job.url, message: j.job.message };
       setResults({ ...out });
       if (j.job.state === 'completed') {

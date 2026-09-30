@@ -3,6 +3,7 @@ import { AI_ACCESS_HEADER, readAiGrantForAccessToken } from './ai-access.js';
 
 const apiUrlRaw = import.meta.env.VITE_API_URL;
 export const apiUrl = apiUrlRaw?.replace(/\/$/, '') || '';
+const useVercelApiProxy = typeof window !== 'undefined' && /(^|\.)vercel\.app$/i.test(window.location.hostname);
 
 // Optional server-backed brand list with safe fallback.
 // Keeps current behaviour identical when the API is unreachable.
@@ -389,7 +390,10 @@ export async function api(path, token, options = {}) {
     const ctrl = new AbortController();
     const timer = setTimeout(() => ctrl.abort(), timeoutMs);
     try {
-      const res = await fetch(`${apiUrl}${path}`, {
+      const requestUrl = useVercelApiProxy && path.startsWith('/api/jobs/')
+        ? `${window.location.origin}${path}`
+        : `${apiUrl}${path}`;
+      const res = await fetch(requestUrl, {
         ...options,
         signal: ctrl.signal,
         headers: {
@@ -475,11 +479,14 @@ export async function fetchWithAuth(url, token, init = {}) {
   // failure and XHR cannot safely distinguish it from a failed POST. Wake and
   // verify the API first; this keeps the upload itself from being ambiguous.
   const warmApi = async () => {
-    for (let attempt = 0; attempt < 5; attempt++) {
+    const deadline = Date.now() + 70000;
+    while (Date.now() < deadline) {
       const ctrl = new AbortController();
-      const timer = setTimeout(() => ctrl.abort(), 10000);
+      const timer = setTimeout(() => ctrl.abort(), 12000);
       try {
-        const healthUrl = new URL('/health', url).toString();
+        const healthUrl = useVercelApiProxy
+          ? `${window.location.origin}/health`
+          : new URL('/health', url).toString();
         const res = await fetch(healthUrl, { method: 'GET', cache: 'no-store', signal: ctrl.signal });
         const contentType = res.headers.get('content-type') || '';
         if (res.ok && contentType.includes('json')) {
@@ -491,9 +498,9 @@ export async function fetchWithAuth(url, token, init = {}) {
       } finally {
         clearTimeout(timer);
       }
-      if (attempt < 4) await new Promise((resolve) => setTimeout(resolve, 1000 * (attempt + 1)));
+      await new Promise((resolve) => setTimeout(resolve, 5000));
     }
-    throw new Error('Publishing server is unavailable. Wait a moment and try again; your post was not sent.');
+    throw new Error('Publishing server is still waking up. Try again in a minute; your post was not sent.');
   };
   // Upload phase progress needs XHR (fetch exposes download progress only).
   // The browser fires upload events as bytes leave — mapped to the first 15%.
