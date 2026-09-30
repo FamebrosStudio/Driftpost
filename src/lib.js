@@ -4,8 +4,11 @@ import { AI_ACCESS_HEADER, readAiGrantForAccessToken } from './ai-access.js';
 const apiUrlRaw = import.meta.env.VITE_API_URL;
 export const apiUrl = apiUrlRaw?.replace(/\/$/, '') || '';
 const useVercelApiProxy = typeof window !== 'undefined' && /(^|\.)vercel\.app$/i.test(window.location.hostname);
-export function apiRequestUrl(path) {
-  return useVercelApiProxy
+const DIRECT_UPLOAD_PATHS = ['/api/schedule', '/api/storage/upload', '/api/ai/captions'];
+export function apiRequestUrl(path, method = 'GET') {
+  const directUpload = String(method).toUpperCase() === 'POST'
+    && DIRECT_UPLOAD_PATHS.includes(path.split('?')[0]);
+  return useVercelApiProxy && !directUpload
     ? `${window.location.origin}${path}`
     : `${apiUrl}${path}`;
 }
@@ -249,7 +252,7 @@ export async function schedulePost(token, { platform, connectionId, when, body, 
   for (const f of instagramFiles) if (f?.raw) form.append('instagram_media', f.raw, f.name);
   for (const f of facebookFiles) if (f?.raw) form.append('facebook_media', f.raw, f.name);
   if (thumb?.raw) form.append('thumbnail', thumb.raw, thumb.name);
-  const res = await fetch(apiRequestUrl('/api/schedule'), {
+  const res = await fetch(apiRequestUrl('/api/schedule', 'POST'), {
     method: 'POST',
     headers: { Authorization: `Bearer ${token}` },
     body: form,
@@ -395,7 +398,7 @@ export async function api(path, token, options = {}) {
     const ctrl = new AbortController();
     const timer = setTimeout(() => ctrl.abort(), timeoutMs);
     try {
-      const requestUrl = apiRequestUrl(path);
+      const requestUrl = apiRequestUrl(path, method);
       const res = await fetch(requestUrl, {
         ...options,
         signal: ctrl.signal,
@@ -486,11 +489,16 @@ export async function fetchWithAuth(url, token, init = {}) {
     } catch { return 0; }
   })();
   const budget = Math.min(900000, 30000 + Math.round((bodyBytes / (512 * 1024)) * 1000));
-  // Keep API calls on the Vercel same-origin proxy so browser preflights do
-  // not disguise Render gateway errors as CORS failures. The external rewrite
-  // streams directly to Render (not through a Vercel Function body parser).
+  // Proxy ordinary calls through Vercel to avoid browser CORS failures when
+  // Render's gateway is unavailable. Large media uploads stay direct because
+  // Vercel's external proxy can time out after 120 seconds.
   const parsedUrl = new URL(url, window.location.href);
-  const requestUrl = apiRequestUrl(`${parsedUrl.pathname}${parsedUrl.search}`);
+  const requestPath = `${parsedUrl.pathname}${parsedUrl.search}`;
+  const requestUrl = useVercelApiProxy
+    && parsedUrl.pathname === '/api/publish'
+    && bodyBytes > 32 * 1024 * 1024
+    ? url
+    : apiRequestUrl(requestPath, 'POST');
   // Render's free instance can sleep between visits. A cold-start 503 is
   // served by Render before Express, so the browser reports it as a CORS
   // failure and XHR cannot safely distinguish it from a failed POST. Wake and
