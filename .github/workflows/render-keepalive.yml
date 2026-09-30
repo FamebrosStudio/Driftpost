@@ -22,7 +22,8 @@ jobs:
       - name: Verify Render CORS preflight for large uploads
         shell: bash
         run: |
-          headers="$(curl --fail --silent --show-error --retry 2 --retry-delay 3 --max-time 30 -i -X OPTIONS https://driftpost.onrender.com/api/publish -H 'Origin: https://driftpostpage.vercel.app' -H 'Access-Control-Request-Method: POST' -H 'Access-Control-Request-Headers: authorization,content-type')"
-          printf '%s\n' "$headers" | grep -Eiq '^access-control-allow-origin: https://driftpostpage\.vercel\.app\r?$'
-          printf '%s\n' "$headers" | grep -Eiq '^access-control-allow-methods:.*POST'
-          printf '%s\n' "$headers" | grep -Eiq '^access-control-allow-headers:.*authorization.*content-type|^access-control-allow-headers:.*content-type.*authorization'
+          response="$(curl --silent --show-error --retry 2 --retry-delay 3 --max-time 30 -i -X OPTIONS https://driftpost.onrender.com/api/publish -H 'Origin: https://driftpostpage.vercel.app' -H 'Access-Control-Request-Method: POST' -H 'Access-Control-Request-Headers: authorization,content-type' -w '\nHTTP_STATUS:%{http_code}')"
+          printf '%s\n' "$response"
+          printf '%s\n' "$response" | grep -Eiq '^access-control-allow-origin: https://driftpostpage\.vercel\.app\r?$'
+          printf '%s\n' "$response" | grep -Eiq '^access-control-allow-methods:.*POST'
+          printf '%s\n' "$response" | grep -Eiq '^access-control-allow-headers:.*authorization.*content-type|^access-control-allow-headers:.*content-type.*authorization'
