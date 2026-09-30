@@ -3,7 +3,17 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 // Crop + resize only (per wireframe): aspect pills, rotate, flip,
 // fit-or-crop, done. Images export exact-size JPEG; videos re-encode
 // (full duration, capped 1280px, original audio kept) as WebM.
-const RATIOS = { Original: null, '4:5': 4 / 5, '1:1': 1, '16:9': 16 / 9, '9:16': 9 / 16 };
+const RATIOS = {
+  Original: null,
+  '4:5': 4 / 5,
+  '3:4': 3 / 4,
+  '2:3': 2 / 3,
+  '1:1': 1,
+  '3:2': 3 / 2,
+  '4:3': 4 / 3,
+  '16:9': 16 / 9,
+  '9:16': 9 / 16,
+};
 
 function fitBox(nw, nh, ratio) {
   if (!ratio) return { fx: 0.04, fy: 0.04, fw: 0.92, fh: 0.92 };
@@ -236,6 +246,14 @@ export default function MediaEditor({ entry, onClose, onApply }) {
     if (r >= 1) return { w: Math.round(long), h: Math.round(long / r) };
     return { w: Math.round(long * r), h: Math.round(long) };
   };
+  const outputDims = () => {
+    if (!normRef.current) return null;
+    if (!pad && !RATIOS[aspect]) {
+      const win = cropWindow(box, normRef.current.width, normRef.current.height, null);
+      return { w: win.w, h: win.h };
+    }
+    return targetDims();
+  };
 
   // Smart default per ratio: already-correct -> no change, otherwise CROP
   // (literal cut to the exact ratio — no blur, no padding). Fit stays one
@@ -387,25 +405,22 @@ export default function MediaEditor({ entry, onClose, onApply }) {
     const r = RATIOS[aspect];
     const out = document.createElement('canvas');
     const ctx = out.getContext('2d');
-    if (pad || !r) {
+    if (pad) {
       // Fit: exact target ratio, whole frame kept, blurred fill behind.
       const t = targetDims();
       out.width = t.w;
       out.height = t.h;
       if (!r) {
-        const scale = Math.max(1, 1080 / Math.max(c.width, c.height));
-        out.width = Math.round(c.width * scale);
-        out.height = Math.round(c.height * scale);
         ctx.drawImage(c, 0, 0, out.width, out.height);
       } else {
         drawFit(ctx, c, c.width, c.height, out.width, out.height);
       }
     } else {
       // Crop: the user's window, snapped to the exact ratio.
-      const t = targetDims();
+      const win = cropWindow(box, c.width, c.height, r);
+      const t = r ? targetDims() : { w: win.w, h: win.h };
       out.width = t.w;
       out.height = t.h;
-      const win = cropWindow(box, c.width, c.height, r);
       ctx.drawImage(c, win.x, win.y, win.w, win.h, 0, 0, out.width, out.height);
     }
     out.toBlob((blob) => {
@@ -442,7 +457,7 @@ export default function MediaEditor({ entry, onClose, onApply }) {
       let W;
       let H;
       let win = null;
-      if (pad || !r) {
+      if (pad) {
         const long = Math.max(2, Math.min(1280, Math.max(Nw, Nh)));
         if (!r) { W = Nw; H = Nh; }
         else if (r >= 1) { W = long; H = Math.max(2, Math.round(long / r)); }
@@ -452,6 +467,7 @@ export default function MediaEditor({ entry, onClose, onApply }) {
         W = r >= 1 ? long : Math.max(2, Math.round(long * r));
         H = r >= 1 ? Math.max(2, Math.round(long / r)) : long;
         win = cropWindow(box, Nw, Nh, r);
+        if (!r) { W = win.w; H = win.h; }
       }
       const norm = document.createElement('canvas');
       norm.width = Nw; norm.height = Nh;
@@ -558,22 +574,20 @@ export default function MediaEditor({ entry, onClose, onApply }) {
               ))}
             </div>
             {fitNote && <p className="s2-note">{fitNote}</p>}
-            {RATIOS[aspect] && (
-              <div className="s2-mode" role="group" aria-label="Fit or crop">
-                <button type="button" className={pad ? 'on' : ''} onClick={() => setMode(false)}>Fit · keep everything</button>
-                <button type="button" className={!pad ? 'on' : ''} onClick={() => setMode(true)}>Crop · fill the frame</button>
-              </div>
-            )}
+            <div className="s2-mode" role="group" aria-label="Fit or crop">
+              <button type="button" className={pad ? 'on' : ''} onClick={() => setMode(false)}>Fit · keep everything</button>
+              <button type="button" className={!pad ? 'on' : ''} onClick={() => setMode(true)}>Crop · customize frame</button>
+            </div>
             <div className="s2-ed-btns">
               <button type="button" onClick={() => rotateTo((rot + 3) % 4)}>Rotate left</button>
               <button type="button" onClick={() => rotateTo((rot + 1) % 4)}>Rotate right</button>
               <button type="button" className={flipV ? 'on' : ''} onClick={() => setFlipV((v) => !v)}>Flip vertical</button>
               <button type="button" className={flipH ? 'on' : ''} onClick={() => setFlipH((v) => !v)}>Flip horizontal</button>
             </div>
-            {targetDims() && (
+            {outputDims() && (
               <p className="s3-xcount" style={{ marginTop: 0, marginBottom: 10 }}>
-                Output: <b style={{ color: 'var(--ink)' }}>{targetDims().w} × {targetDims().h}px</b>
-                {RATIOS[aspect] ? ` · ${aspect}` : ' · original size'}
+                Output: <b style={{ color: 'var(--ink)' }}>{outputDims().w} × {outputDims().h}px</b>
+                {RATIOS[aspect] ? ` · ${aspect}` : pad ? ' · original size' : ' · custom crop'}
               </p>
             )}
             <button type="button" className="s2-done" disabled={busy || !ready} onClick={done}>
