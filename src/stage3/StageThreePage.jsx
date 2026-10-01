@@ -508,8 +508,12 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
   // Post to ONE connection and poll the job. Returns the post URL.
   // When connectionId is given, the form carries exactly that account.
   // The POST itself auto-refreshes a dead login token; polls inherit it.
-  const runToAccount = (pid, connectionId, out, key, { skipCrossPost = false, mediaOverride = null } = {}) => withPublishSlot(async () => {
-    commitPublishResult(out, key, { state: 'uploading', progress: 5, message: 'Preparing post…' });
+  const runToAccount = (pid, connectionId, out, key, { skipCrossPost = false, mediaOverride = null, onProgress = null } = {}) => withPublishSlot(async () => {
+    const report = (value) => {
+      commitPublishResult(out, key, value);
+      onProgress?.(value);
+    };
+    report({ state: 'uploading', progress: 5, message: 'Preparing post…' });
     const form = await buildForm(pid, { connectionId, skipCrossPost, mediaOverride });
     if (connectionId) form.set('connection_id', connectionId);
      const hasPre = form.has('hasPreuploadedMedia');
@@ -520,7 +524,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
        // to Supabase while reviewing captions.
        onUploadProgress: (f) => {
          const pct = Math.round(1 + f * 14);
-         commitPublishResult(out, key, { ...(out[key] || {}), state: 'uploading', progress: pct, message: hasPre ? `Preparing media… ${pct}%` : `Uploading ${pct}%…` });
+         report({ ...(out[key] || {}), state: 'uploading', progress: pct, message: hasPre ? `Preparing media… ${pct}%` : `Uploading ${pct}%…` });
        },
      });
     const pollToken = refreshedToken || session.access_token;
@@ -552,7 +556,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
         await new Promise((r) => setTimeout(r, pause));
         continue;
       }
-      commitPublishResult(out, key, { state: j.job.state, progress: j.job.progress || 50, url: j.job.url, message: j.job.message });
+      report({ state: j.job.state, progress: j.job.progress || 50, url: j.job.url, message: j.job.message });
       if (j.job.state === 'completed') {
         logPost({ platform: pid, text: mainText(pid), url: j.job.url, postId: j.job.postId, connectionId: j.job.connectionId || connectionId, publishedPosts: j.job.publishedPosts });
         return j.job.url;
@@ -578,16 +582,49 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
       .filter(({ q }) => q);
     const names = plan.map(({ q, id }) => connById[id]?.account_name || NAMES[q] || 'account');
     const accountResults = new Array(plan.length);
+    const accountProgress = new Array(plan.length);
     let nextAccount = 0;
     const publishNextAccount = async () => {
       while (nextAccount < plan.length) {
         const i = nextAccount++;
         const target = plan[i];
         try {
-          const url = await runToAccount(target.q, target.id, out, `${pid}:${target.id}`, { skipCrossPost: true, mediaOverride });
+          const url = await runToAccount(target.q, target.id, out, `${pid}:${target.id}`, {
+            skipCrossPost: true,
+            mediaOverride,
+            onProgress: (status) => {
+              accountProgress[i] = status;
+              const completed = accountResults.filter(Boolean).length;
+              const weightedProgress = accountProgress.reduce((sum, item, index) => {
+                if (accountResults[index]) return sum + 100;
+                return sum + Math.max(0, Number(item?.progress) || 0);
+              }, 0);
+              const current = accountProgress[i];
+              commitPublishResult(out, pid, {
+                state: current?.state === 'uploading' ? 'uploading' : 'publishing',
+                progress: Math.max(3, Math.min(95, Math.round(weightedProgress / plan.length))),
+                message: `${completed}/${plan.length} accounts complete · ${names[i]}: ${current?.message || 'Publishing…'}`,
+              });
+            },
+          });
           accountResults[i] = { account: names[i], url };
+          accountProgress[i] = { state: 'completed', progress: 100, message: 'Posted' };
+          const completed = accountResults.filter(Boolean).length;
+          const weightedProgress = accountProgress.reduce((sum, item) => sum + (Number(item?.progress) || 0), 0);
+          commitPublishResult(out, pid, {
+            state: completed === plan.length ? 'publishing' : 'publishing',
+            progress: Math.max(3, Math.min(99, Math.round(weightedProgress / plan.length))),
+            message: `${completed}/${plan.length} accounts posted · ${completed < plan.length ? 'continuing…' : 'finalizing…'}`,
+          });
         } catch (e) {
           accountResults[i] = { account: names[i], error: e.message || 'failed' };
+          accountProgress[i] = { state: 'failed', progress: 100, message: 'Failed' };
+          const completed = accountResults.filter(Boolean).length;
+          commitPublishResult(out, pid, {
+            state: 'publishing',
+            progress: Math.max(3, Math.min(99, Math.round(accountProgress.reduce((sum, item) => sum + (Number(item?.progress) || 0), 0) / plan.length))),
+            message: `${completed}/${plan.length} accounts finished · continuing…`,
+          });
         }
       }
     };
