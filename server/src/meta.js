@@ -205,7 +205,10 @@ export async function publishInstagram({ igUserId, pageToken, caption, alt, coll
   });
   const container = await cRes.json();
   if (!cRes.ok) throw new Error(container.error?.message || 'Instagram container failed');
-  if (isVideo) await waitForInstagramContainer({ id: container.id, pageToken, onStage });
+  // Instagram can accept container creation before the media is actually
+  // ready to publish. Publishing immediately can fail with "Media ID is not
+  // available" for photos as well as Reels, so wait for every container.
+  await waitForInstagramContainer({ id: container.id, pageToken, onStage, label: isVideo ? 'video' : 'photo' });
   const pRes = await fetch(`${GRAPH}/${igUserId}/media_publish`, {
     method: 'POST', headers: { 'Content-Type': 'application/json' }, signal: AbortSignal.timeout(30000),
     body: JSON.stringify({ creation_id: container.id, access_token: pageToken }),
@@ -231,7 +234,7 @@ export async function publishInstagramStory({ igUserId, pageToken, mediaUrl, isV
   });
   const container = await cRes.json();
   if (!cRes.ok) throw new Error(container.error?.message || 'Instagram story container failed');
-  if (isVideo) await waitForInstagramContainer({ id: container.id, pageToken, onStage, label: 'story video' });
+  await waitForInstagramContainer({ id: container.id, pageToken, onStage, label: isVideo ? 'story video' : 'story photo' });
   const pRes = await fetch(`${GRAPH}/${igUserId}/media_publish`, {
     method: 'POST', headers: { 'Content-Type': 'application/json' }, signal: AbortSignal.timeout(30000),
     body: JSON.stringify({ creation_id: container.id, access_token: pageToken }),
@@ -256,6 +259,7 @@ export async function publishInstagramCarousel({ igUserId, pageToken, caption, c
     });
     const c = await cRes.json();
     if (!cRes.ok) throw new Error(c.error?.message || 'Instagram carousel item failed');
+    await waitForInstagramContainer({ id: c.id, pageToken, label: 'carousel photo' });
     childIds.push(c.id);
   }
   const pRes = await fetch(`${GRAPH}/${igUserId}/media`, {
@@ -271,6 +275,7 @@ export async function publishInstagramCarousel({ igUserId, pageToken, caption, c
   });
   const parent = await pRes.json();
   if (!pRes.ok) throw new Error(parent.error?.message || 'Instagram carousel container failed');
+  await waitForInstagramContainer({ id: parent.id, pageToken, label: 'carousel' });
   const pub = await fetch(`${GRAPH}/${igUserId}/media_publish`, {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ creation_id: parent.id, access_token: pageToken }),
