@@ -61,6 +61,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
   const [tab, setTab] = useState('');
   const [results, setResults] = useState({});
   const [busy, setBusy] = useState({});
+  const publishSlots = useRef({ active: 0, waiters: [] });
   const [regen, setRegen] = useState('');
   const [brief] = useState(() => load(scopedKey('driftpost-stage2-brief', userId), ''));
   const [analysisMode] = useState(() => load(scopedKey('driftpost-stage2-analysis', userId), 'fast'));
@@ -69,6 +70,9 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
   const [schedBusy, setSchedBusy] = useState(false);
   const [encoding, setEncoding] = useState(false);
   const [schedMsg, setSchedMsg] = useState('');
+  // The modal stays open when a schedule is rejected, so the reason has to be
+  // shown inside it - not only on the bar behind it.
+  const [schedErr, setSchedErr] = useState('');
   const [approvalLinks, setApprovalLinks] = useState([]);
   const [pubMsg, setPubMsg] = useState('');
   const [connsError, setConnsError] = useState('');
@@ -478,10 +482,25 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
      return form;
    };
 
+  // Share two publishing slots across all cards and group accounts in this
+  // browser. A second account can publish immediately; further accounts wait
+  // their turn instead of being rejected by the API's per-user active-job cap.
+  const withPublishSlot = async (task) => {
+    const slots = publishSlots.current;
+    if (slots.active < 2 && slots.waiters.length === 0) slots.active++;
+    else await new Promise((resolve) => slots.waiters.push(resolve));
+    try { return await task(); }
+    finally {
+      const next = slots.waiters.shift();
+      if (next) next();
+      else slots.active--;
+    }
+  };
+
   // Post to ONE connection and poll the job. Returns the post URL.
   // When connectionId is given, the form carries exactly that account.
   // The POST itself auto-refreshes a dead login token; polls inherit it.
-  const runToAccount = async (pid, connectionId, out, key, { skipCrossPost = false, mediaOverride = null } = {}) => {
+  const runToAccount = (pid, connectionId, out, key, { skipCrossPost = false, mediaOverride = null } = {}) => withPublishSlot(async () => {
     out[key] = { state: 'uploading', progress: 5 };
     setResults({ ...out });
     const form = await buildForm(pid, { connectionId, skipCrossPost, mediaOverride });
@@ -535,7 +554,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
       }
       if (j.job.state === 'failed') throw new Error(j.job.message);
     }
-  };
+  });
 
   // Single-account path (brand / platform flows): unchanged behaviour.
   const runOne = async (pid, out, { key = null, skipCrossPost = false, mediaOverride = null } = {}) => {
@@ -553,20 +572,23 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
     const plan = [...new Set(cov.flatMap((q) => groupMemberIds(q)))].map((id) => ({ q: connById[id]?.platform, id }))
       .filter(({ q }) => q);
     const names = plan.map(({ q, id }) => connById[id]?.account_name || NAMES[q] || 'account');
-    const urls = [];
-    const failures = [];
-    for (let i = 0; i < plan.length; i++) {
-      if (plan.length > 1) {
-        out[pid] = { ...(out[pid] || {}), state: 'uploading', progress: 5, message: `Posting ${i + 1}/${plan.length}…` };
-        setResults({ ...out });
+    const accountResults = new Array(plan.length);
+    let nextAccount = 0;
+    const publishNextAccount = async () => {
+      while (nextAccount < plan.length) {
+        const i = nextAccount++;
+        const target = plan[i];
+        try {
+          const url = await runToAccount(target.q, target.id, out, `${pid}:${target.id}`, { skipCrossPost: true, mediaOverride });
+          accountResults[i] = { account: names[i], url };
+        } catch (e) {
+          accountResults[i] = { account: names[i], error: e.message || 'failed' };
+        }
       }
-      try {
-        const url = await runToAccount(plan[i].q, plan[i].id, out, pid, { skipCrossPost: true, mediaOverride });
-        urls.push({ account: names[i], url });
-      } catch (e) {
-        failures.push(`${names[i]}: ${e.message || 'failed'}`);
-      }
-    }
+    };
+    await Promise.all(Array.from({ length: Math.min(2, plan.length) }, publishNextAccount));
+    const urls = accountResults.filter((item) => item.url).map(({ account, url }) => ({ account, url }));
+    const failures = accountResults.filter((item) => item.error).map(({ account, error }) => `${account}: ${error}`);
     if (!plan.length) throw new Error('No accounts to post to.');
     if (!urls.length) {
       out[pid] = { state: 'failed', message: failures.join(' · ') || 'Publish failed' };
@@ -697,7 +719,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
       }
     }
     try {
-      for (const pid of targets) {
+      await Promise.all(targets.map(async (pid) => {
         // Invalid cards fail up front with the reason on the card — never a
         // silent mid-flight failure after siblings already posted. Covered
         // (greyed-out) platforms riding along are validated too.
@@ -706,9 +728,9 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
         if (bad) {
           out[pid] = { state: 'failed', message: `Fix this card first: ${bad}` };
           setResults({ ...out });
-          continue;
+          return;
         }
-        if (pid === 'youtube' && !clipWrapped && files.length && !files.some((f) => f.type.startsWith('video/'))) continue;
+        if (pid === 'youtube' && !clipWrapped && files.length && !files.some((f) => f.type.startsWith('video/'))) return;
         const mo = (pid === 'youtube' && clipWrapped) ? clipWrapped : undefined;
         try {
           if (isGroupFlow) await runGroup(pid, out, { mediaOverride: mo });
@@ -725,7 +747,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
             setResults({ ...out });
           }
         }
-      }
+      }));
       const posted = targets
         .filter((pid) => out[pid]?.state === 'completed')
         .map((pid) => ({ pid, urls: out[pid].urls || (out[pid].url ? [{ account: '', url: out[pid].url }] : []) }));
@@ -836,6 +858,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
       setSchedMsg(`${NAMES[pid]}${batchLabel} ${requestApproval ? 'queued for approval' : 'scheduled'}${bulkRows.length ? '' : ` for ${whenLabel}`}${repeatLabel}. Manage or cancel in History.`);
     } catch (e) {
       setSchedMsg(scheduledCount ? `Scheduled ${scheduledCount} of ${plannedCount}. ${e.message || 'The batch stopped after this error.'}` : (e.message || 'Could not schedule the post'));
+      if (!scheduledCount) setSchedErr(e.message || 'Could not schedule the post');
     } finally {
       release(`sched:${pid}`);
       setSchedBusy(false);

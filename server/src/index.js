@@ -52,7 +52,7 @@ const corsOptions = {
     }
   },
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Driftpost-AI-Grant'],
 };
 
@@ -373,6 +373,29 @@ function activeJobCount(userId) {
   return n;
 }
 
+// Bound simultaneous platform work across the whole Render instance. The
+// accepted jobs stay pollable in `queued` state while their disk-backed media
+// waits, avoiding both per-click serialization and an unbounded RAM spike.
+const MAX_ACTIVE_PUBLISHES = 2;
+let activePublishes = 0;
+const publishQueue = [];
+function pumpPublishQueue() {
+  while (activePublishes < MAX_ACTIVE_PUBLISHES && publishQueue.length) {
+    const task = publishQueue.shift();
+    activePublishes++;
+    Promise.resolve().then(task.run).then(task.resolve, task.reject).finally(() => {
+      activePublishes--;
+      pumpPublishQueue();
+    });
+  }
+}
+function queuePublish(run) {
+  return new Promise((resolve, reject) => {
+    publishQueue.push({ run, resolve, reject });
+    pumpPublishQueue();
+  });
+}
+
 // Watchdog: a provider call that never returns must not lock the user at
 // "3 publishes already running" forever — fail stuck jobs after 10 minutes.
 setInterval(() => {
@@ -427,15 +450,20 @@ app.get('/api/connections', requireUser, connectionsLimit, burstLimit, async (re
 });
 
 app.get('/api/instagram/collaborators', requireUser, connectionsLimit, igLookupLimit, async (req, res) => {
-  const username = String(req.query.q || '').trim().replace(/^@+/, '');
-  if (!username) return res.json({ accounts: [] });
+  // Accepts one handle or a whole list, so the composer can show the resolved
+  // account ID for every collaborator it is about to tag.
+  const handles = [...new Set(String(req.query.q || '')
+    .split(/[\s,;]+/)
+    .map((name) => name.trim().replace(/^@+/, ''))
+    .filter(Boolean))].slice(0, 5);
+  if (!handles.length) return res.json({ accounts: [], results: [] });
   const { data, error } = await supabase.from('platform_connections')
     .select('id, platform_account_id, encrypted_tokens')
     .eq('user_id', req.user.id)
     .eq('platform', 'instagram');
   if (error) return res.status(500).json({ error: 'Could not load your Instagram accounts' });
   const list = data || [];
-  if (!list.length) return res.json({ accounts: [], reason: 'no-connection' });
+  if (!list.length) return res.json({ accounts: [], results: handles.map((username) => ({ username, account: null, reason: 'no-connection' })), reason: 'no-connection' });
   // Business Discovery has to run on a connected account. Try the one the
   // post will publish from first, then the rest as a fallback.
   const wanted = String(req.query.connection_id || '');
@@ -443,21 +471,38 @@ app.get('/api/instagram/collaborators', requireUser, connectionsLimit, igLookupL
     .filter(Boolean)
     .map((id) => list.find((c) => c.id === id))
     .filter(Boolean);
-  let reason = 'not-found';
+  const tokens = [];
   for (const connection of ordered) {
     let pageToken = '';
     try { pageToken = decryptJson(connection.encrypted_tokens)?.access_token || ''; } catch { continue; }
-    if (!pageToken) continue;
-    const found = await discoverInstagramAccount({ igUserId: connection.platform_account_id, pageToken, username });
-    if (found.ok) return res.json({ accounts: [found.account], connection_id: connection.id });
-    reason = found.reason;
-    // A token that cannot read other accounts will not do better on the next
-    // account — stop instead of burning one Graph call per connection.
-    if (reason === 'permission') break;
+    if (pageToken) tokens.push({ connection, pageToken });
   }
-  // An empty list is a normal answer (unknown, personal or age-gated handle),
-  // not an error: the composer keeps the typed username either way.
-  res.json({ accounts: [], reason });
+  const results = [];
+  let usedConnection = '';
+  let lastReason = 'not-found';
+  for (const username of handles) {
+    let account = null;
+    let reason = 'not-found';
+    for (const { connection, pageToken } of tokens) {
+      const found = await discoverInstagramAccount({ igUserId: connection.platform_account_id, pageToken, username });
+      if (found.ok) { account = found.account; usedConnection = usedConnection || connection.id; break; }
+      reason = found.reason;
+      // A token that cannot read other accounts will not do better on the next
+      // account — stop instead of burning one Graph call per connection.
+      if (reason === 'permission') break;
+    }
+    if (!account) lastReason = reason;
+    results.push({ username, account, reason: account ? 'ok' : reason });
+  }
+  // A miss is a normal answer (unknown, personal or age-gated handle), not an
+  // error: the composer keeps the typed username either way.
+  const accounts = results.filter((r) => r.account).map((r) => r.account);
+  res.json({
+    accounts,
+    results,
+    ...(usedConnection ? { connection_id: usedConnection } : {}),
+    ...(accounts.length ? {} : { reason: lastReason }),
+  });
 });
 
 app.get('/api/automations/instagram', requireUser, connectionsLimit, burstLimit, async (req, res) => {
@@ -1146,12 +1191,143 @@ app.post('/api/publish', requireUser, strictBurstLimit, publishLimit, publishUpl
   const job = { id, userId: req.user.id, platform, connectionId: conn.id, publishedPosts: [], state: 'queued', progress: 0, message: 'Queued', createdAt: Date.now() };
   jobs.set(id, job);
   res.status(202).json({ job });
-  void runPublish(job, conn, { files, instagramFiles, facebookFiles, thumbFile, coverFiles }, req.body, req.user.id).catch((error) => {
+  void queuePublish(() => runPublish(job, conn, { files, instagramFiles, facebookFiles, thumbFile, coverFiles }, req.body, req.user.id)).catch((error) => {
     console.error('[publish] unexpected job failure', job.id, error);
     if (job.state !== 'completed') {
       job.state = 'failed'; job.message = error.message || 'Publishing failed'; job.completedAt = Date.now();
     }
   });
+});
+
+// Campaign publishing keeps one reviewed caption while allowing every
+// destination account to carry its own media. Each target becomes its own
+// ordinary publish job, run sequentially to avoid multiplying upload memory.
+const campaignUpload = upload.any();
+function readCampaignTargets(raw) {
+  let targets;
+  try { targets = JSON.parse(String(raw || '')); } catch { return null; }
+  if (!Array.isArray(targets) || targets.length < 1 || targets.length > 25) return null;
+  const ids = new Set();
+  for (let i = 0; i < targets.length; i++) {
+    const target = targets[i];
+    if (!target || !['youtube', 'facebook', 'instagram', 'x'].includes(target.platform)
+      || typeof target.connection_id !== 'string' || !target.connection_id
+      || target.media_field !== `media_${i}` || ids.has(target.connection_id)) return null;
+    ids.add(target.connection_id);
+  }
+  return targets;
+}
+function campaignBody(caption, title, name, campaignId) {
+  return {
+    text: caption,
+    title,
+    yt_title: title,
+    yt_description: caption,
+    fb_message: caption,
+    ig_caption: caption,
+    x_text: caption,
+    skip_crosspost: '1',
+    campaign_id: campaignId,
+    campaign_name: name,
+    campaign_size: '',
+  };
+}
+function cleanupCampaignFiles(files) {
+  return Promise.all((files || []).map((f) => fs.unlink(f.path).catch(() => {})));
+}
+async function validateCampaignInputs(req, res) {
+  const files = Array.isArray(req.files) ? req.files : [];
+  const reject = async (status, error) => { await cleanupCampaignFiles(files); res.status(status).json({ error }); return null; };
+  const targets = readCampaignTargets(req.body.targets);
+  const caption = String(req.body.caption || '').trim();
+  const title = String(req.body.title || '').trim().slice(0, 100);
+  const campaignName = String(req.body.campaign_name || '').trim().slice(0, 120);
+  const publishNow = req.body.mode === 'now';
+  const when = req.body.scheduled_at ? Date.parse(req.body.scheduled_at) : null;
+  if (!targets) return reject(400, 'Choose between 1 and 25 unique connected accounts.');
+  if (!caption) return reject(400, 'Write the shared caption before continuing.');
+  if (targets.some((t) => t.platform === 'youtube') && !title) return reject(400, 'Add a YouTube title for this campaign.');
+  if (targets.some((t) => t.platform === 'x') && Array.from(caption).length > 280) return reject(400, 'X captions must be 280 characters or fewer.');
+  if (targets.some((t) => t.platform === 'instagram') && caption.length > 2200) return reject(400, 'Instagram captions must be 2,200 characters or fewer.');
+  if (!publishNow && !req.body.scheduled_at) return reject(400, 'Choose Post now or set a scheduled date and time.');
+  if (!publishNow && (!Number.isFinite(when) || when < Date.now() + 60_000 || when > Date.now() + 365 * 24 * 3600_000)) {
+    return reject(400, 'Choose a time between 1 minute and 1 year from now.');
+  }
+  const byField = new Map();
+  for (const file of files) {
+    if (!/^media_(?:[0-9]|1[0-9]|2[0-4])$/.test(file.fieldname)) return reject(400, 'Campaign media did not match its selected account.');
+    const group = byField.get(file.fieldname) || [];
+    group.push(file); byField.set(file.fieldname, group);
+  }
+  for (let i = 0; i < targets.length; i++) {
+    const list = byField.get(`media_${i}`) || [];
+    const error = validateMedia(targets[i].platform, list);
+    if (error) return reject(400, `${targets[i].platform}: ${error}`);
+    if (targets[i].platform === 'instagram' && (!list.length || list.some((f) => f.mimetype.startsWith('image/') && f.mimetype !== 'image/jpeg'))) {
+      return reject(400, 'Instagram needs a video or JPEG media.');
+    }
+    if (targets[i].platform === 'youtube' && (list.length !== 1 || !list[0].mimetype.startsWith('video/'))) {
+      return reject(400, 'YouTube campaigns need one video for each selected channel.');
+    }
+    for (const file of list) {
+      if (file.mimetype.startsWith('image/') && !(await magicIsImage(file.path))) return reject(400, 'A campaign image could not be verified.');
+    }
+  }
+  const ids = targets.map((t) => t.connection_id);
+  const { data: connections, error } = await supabase.from('platform_connections').select('*')
+    .eq('user_id', req.user.id).in('id', ids);
+  if (error) return reject(500, 'Could not verify the selected accounts.');
+  const byId = new Map((connections || []).map((c) => [c.id, c]));
+  if (targets.some((t) => byId.get(t.connection_id)?.platform !== t.platform)) return reject(409, 'A selected account is no longer connected. Refresh the account list and try again.');
+  return { targets, caption, title, campaignName, when, publishNow, byField, files, byId };
+}
+
+app.post('/api/schedules/campaign', requireUser, strictBurstLimit, publishLimit, campaignUpload, async (req, res) => {
+  const campaign = await validateCampaignInputs(req, res);
+  if (!campaign) return;
+  const { targets, caption, title, campaignName, when, publishNow, files, byField, byId } = campaign;
+  const { count: liveCount, error: countError } = await supabase.from('scheduled_posts')
+    .select('id', { count: 'exact', head: true }).eq('user_id', req.user.id).in('status', ['scheduled', 'publishing']);
+  if (countError) { await cleanupCampaignFiles(files); return res.status(500).json({ error: 'Could not check your schedule capacity.' }); }
+  if ((liveCount || 0) + targets.length > 50) { await cleanupCampaignFiles(files); return res.status(429).json({ error: `This campaign needs ${targets.length} slots; your account has ${Math.max(0, 50 - (liveCount || 0))} available.` }); }
+  const campaignId = crypto.randomUUID();
+  const uploadedPaths = [];
+  const rows = [];
+  try {
+    for (let index = 0; index < targets.length; index++) {
+      const target = targets[index];
+      const media = [];
+      for (const file of byField.get(target.media_field) || []) {
+        const ext = (path.extname(file.originalname || '') || (file.mimetype.startsWith('video/') ? '.mp4' : '.jpg')).replace(/[^a-z0-9.]/gi, '').slice(0, 8);
+        const key = `scheduled/${req.user.id}/${campaignId}/${index}-${crypto.randomUUID()}${ext}`;
+        const { error: uploadError } = await uploadMediaFile(supabase.storage.from(BUCKET), key, file, { contentType: file.mimetype, upsert: false });
+        if (uploadError) throw new Error(`Could not store ${file.originalname || 'campaign media'}: ${uploadError.message || uploadError}`);
+        uploadedPaths.push(key);
+        media.push({ path: key, mimetype: file.mimetype, name: file.originalname || path.basename(key) });
+      }
+      const body = campaignBody(caption, title, campaignName, campaignId);
+      body.campaign_size = String(targets.length);
+      rows.push({ user_id: req.user.id, platform: target.platform, connection_id: byId.get(target.connection_id).id,
+        scheduled_at: new Date(publishNow ? Date.now() : when).toISOString(), status: 'scheduled', body, media, thumb_path: null });
+    }
+    const { data, error } = await supabase.from('scheduled_posts').insert(rows).select();
+    if (error || !data || data.length !== rows.length) throw new Error('Could not save every campaign post.');
+    await cleanupCampaignFiles(files);
+    if (publishNow) setImmediate(() => { void runDueSchedules(); });
+    return res.status(201).json({ campaign_id: campaignId, mode: publishNow ? 'now' : 'scheduled', schedules: data });
+  } catch (error) {
+    await removeStored(uploadedPaths);
+    await cleanupCampaignFiles(files);
+    return res.status(500).json({ error: error.message || 'Could not schedule campaign.' });
+  }
+});
+
+app.get('/api/schedules/campaign/:id', requireUser, jobsLimit, async (req, res) => {
+  const { data, error } = await supabase.from('scheduled_posts')
+    .select('id,platform,connection_id,scheduled_at,status,error,result_url,body')
+    .eq('user_id', req.user.id).contains('body', { campaign_id: req.params.id }).limit(25);
+  if (error) return res.status(500).json({ error: 'Could not load campaign progress.' });
+  res.json({ schedules: data || [] });
 });
 
 function splitTags(raw) {
@@ -1717,45 +1893,35 @@ app.post('/api/schedule', requireUser, strictBurstLimit, publishLimit, publishUp
   let thumbPath = null;
   try {
     for (const f of files) {
-      const bytes = await fs.readFile(f.path);
       const ext = (path.extname(f.originalname || '') || (String(f.mimetype).startsWith('video/') ? '.mp4' : '.jpg'))
         .replace(/[^a-z0-9.]/gi, '').slice(0, 8);
       const key = `${prefix}/${crypto.randomUUID()}${ext}`;
-      const { error: upErr } = await supabase.storage.from(BUCKET)
-        .upload(key, bytes, { contentType: f.mimetype, upsert: false });
+      const { error: upErr } = await uploadMediaFile(supabase.storage.from(BUCKET), key, f, { upsert: false });
        if (upErr) throw new Error('Media upload failed (' + BUCKET + '): ' + (upErr.message || upErr) + '. Make sure the "' + BUCKET + '" bucket exists and is public.');
       stored.push({ path: key, mimetype: f.mimetype, name: f.originalname || key.split('/').pop() });
     }
     for (const f of instagramFiles) {
-      const bytes = await fs.readFile(f.path);
       const key = `${prefix}/instagram-${crypto.randomUUID()}.jpg`;
-      const { error: upErr } = await supabase.storage.from(BUCKET)
-        .upload(key, bytes, { contentType: 'image/jpeg', upsert: false });
+      const { error: upErr } = await uploadMediaFile(supabase.storage.from(BUCKET), key, f, { contentType: 'image/jpeg', upsert: false });
       if (upErr) throw new Error('Instagram media upload failed (' + BUCKET + '): ' + (upErr.message || upErr));
       storedInstagram.push({ path: key, mimetype: 'image/jpeg', name: f.originalname || key.split('/').pop() });
     }
     for (const f of facebookFiles) {
-      const bytes = await fs.readFile(f.path);
       const key = `${prefix}/facebook-${crypto.randomUUID()}.jpg`;
-      const { error: upErr } = await supabase.storage.from(BUCKET)
-        .upload(key, bytes, { contentType: 'image/jpeg', upsert: false });
+      const { error: upErr } = await uploadMediaFile(supabase.storage.from(BUCKET), key, f, { contentType: 'image/jpeg', upsert: false });
       if (upErr) throw new Error('Facebook media upload failed (' + BUCKET + '): ' + (upErr.message || upErr));
       storedFacebook.push({ path: key, mimetype: 'image/jpeg', name: f.originalname || key.split('/').pop() });
     }
     for (const [platformName, f] of Object.entries(coverFiles)) {
       if (!f) continue;
-      const bytes = await fs.readFile(f.path);
       const key = `${prefix}/${platformName}-cover-${crypto.randomUUID()}.jpg`;
-      const { error: upErr } = await supabase.storage.from(BUCKET)
-        .upload(key, bytes, { contentType: 'image/jpeg', upsert: false });
+      const { error: upErr } = await uploadMediaFile(supabase.storage.from(BUCKET), key, f, { contentType: 'image/jpeg', upsert: false });
       if (upErr) throw new Error(`${platformName} cover upload failed (${BUCKET}): ${upErr.message || upErr}`);
       storedCovers[platformName] = { path: key, mimetype: 'image/jpeg', name: f.originalname || 'cover.jpg' };
     }
     if (thumbFile) {
-      const bytes = await fs.readFile(thumbFile.path);
       const key = `${prefix}/cover.jpg`;
-      const { error: upErr } = await supabase.storage.from(BUCKET)
-        .upload(key, bytes, { contentType: thumbFile.mimetype, upsert: false });
+      const { error: upErr } = await uploadMediaFile(supabase.storage.from(BUCKET), key, thumbFile, { upsert: false });
       if (upErr) throw new Error('Cover upload failed. Create public bucket "' + BUCKET + '" in Supabase Storage.');
       thumbPath = key;
     }
@@ -1796,6 +1962,23 @@ app.delete('/api/schedules/:id', requireUser, jobsLimit, async (req, res) => {
   }
   await removeUnreferencedScheduleMedia(row.user_id, row.id, scheduleMediaPaths(row));
   res.json({ ok: true });
+});
+
+app.patch('/api/schedules/:id', requireUser, jobsLimit, async (req, res) => {
+  const when = Date.parse(req.body?.scheduled_at || '');
+  if (!Number.isFinite(when) || when < Date.now() + 60_000 || when > Date.now() + 365 * 24 * 3600_000) {
+    return res.status(400).json({ error: 'Choose a new time at least 1 minute from now and within the next year.' });
+  }
+  const { data: row, error } = await supabase.from('scheduled_posts').select('id,status,body')
+    .eq('id', req.params.id).eq('user_id', req.user.id).maybeSingle();
+  if (error || !row) return res.status(404).json({ error: 'Scheduled post not found.' });
+  if (row.status !== 'scheduled') return res.status(409).json({ error: 'Only scheduled posts can be moved.' });
+  const { data: moved, error: updateError } = await supabase.from('scheduled_posts')
+    .update({ scheduled_at: new Date(when).toISOString(), updated_at: new Date().toISOString() })
+    .eq('id', row.id).eq('user_id', req.user.id).eq('status', 'scheduled').select().maybeSingle();
+  if (updateError) return res.status(500).json({ error: 'Could not move this scheduled post.' });
+  if (!moved) return res.status(409).json({ error: 'This post started publishing before it could be moved.' });
+  res.json({ schedule: moved });
 });
 
 // Worker: pull due rows, rebuild the upload from Storage, run the real
@@ -1845,56 +2028,43 @@ async function runDueSchedules() {
         createdAt: Date.now(),
       };
       jobs.set(job.id, job);
+      const downloadedPaths = [];
       try {
         if (!conn) throw new Error('The connected account is gone — reconnect it.');
+        const downloadScheduledFile = async (media, prefix, required = true) => {
+          const { data: signed, error: signError } = await supabase.storage.from(BUCKET).createSignedUrl(media.path, 900);
+          if (signError || !signed?.signedUrl) {
+            if (!required) return null;
+            throw new Error('Scheduled media is missing from storage');
+          }
+          const tmp = path.join(os.tmpdir(), `${prefix}-${crypto.randomUUID()}${path.extname(media.path) || '.jpg'}`);
+          downloadedPaths.push(tmp);
+          try {
+            await downloadMediaFile(signed.signedUrl, tmp);
+            const stat = await fs.stat(tmp);
+            return { path: tmp, mimetype: media.mimetype || 'image/jpeg', originalname: media.name || 'media', size: stat.size };
+          } catch (error) {
+            await fs.unlink(tmp).catch(() => {});
+            if (!required) return null;
+            throw error;
+          }
+        };
         const localFiles = [];
-        for (const m of row.media || []) {
-          const { data, error: dlErr } = await supabase.storage.from(BUCKET).download(m.path);
-          if (dlErr || !data) throw new Error('Scheduled media is missing');
-          const tmp = path.join(os.tmpdir(), `driftpost-sched-${crypto.randomUUID()}${path.extname(m.path) || '.jpg'}`);
-          const buf = Buffer.from(await data.arrayBuffer());
-          await fs.writeFile(tmp, buf);
-          localFiles.push({ path: tmp, mimetype: m.mimetype || 'image/jpeg', originalname: m.name || 'media', size: buf.length });
-        }
+        for (const media of row.media || []) localFiles.push(await downloadScheduledFile(media, 'driftpost-sched'));
         const localInstagramFiles = [];
-        for (const m of row.body?.driftpost_instagram_media || []) {
-          const { data, error: dlErr } = await supabase.storage.from(BUCKET).download(m.path);
-          if (dlErr || !data) throw new Error('Scheduled Instagram media is missing');
-          const tmp = path.join(os.tmpdir(), `driftpost-sched-ig-${crypto.randomUUID()}.jpg`);
-          const buf = Buffer.from(await data.arrayBuffer());
-          await fs.writeFile(tmp, buf);
-          localInstagramFiles.push({ path: tmp, mimetype: 'image/jpeg', originalname: m.name || 'instagram-photo.jpg', size: buf.length });
-        }
+        for (const media of row.body?.driftpost_instagram_media || []) localInstagramFiles.push(await downloadScheduledFile(media, 'driftpost-sched-ig'));
         const localFacebookFiles = [];
-        for (const m of row.body?.driftpost_facebook_media || []) {
-          const { data, error: dlErr } = await supabase.storage.from(BUCKET).download(m.path);
-          if (dlErr || !data) throw new Error('Scheduled Facebook media is missing');
-          const tmp = path.join(os.tmpdir(), `driftpost-sched-fb-${crypto.randomUUID()}.jpg`);
-          const buf = Buffer.from(await data.arrayBuffer());
-          await fs.writeFile(tmp, buf);
-          localFacebookFiles.push({ path: tmp, mimetype: 'image/jpeg', originalname: m.name || 'facebook-photo.jpg', size: buf.length });
-        }
+        for (const media of row.body?.driftpost_facebook_media || []) localFacebookFiles.push(await downloadScheduledFile(media, 'driftpost-sched-fb'));
         let thumbFile = null;
         if (row.thumb_path) {
-          const { data } = await supabase.storage.from(BUCKET).download(row.thumb_path);
-          if (data) {
-            const tmp = path.join(os.tmpdir(), `driftpost-sched-cover-${crypto.randomUUID()}.jpg`);
-            const buf = Buffer.from(await data.arrayBuffer());
-            await fs.writeFile(tmp, buf);
-            thumbFile = { path: tmp, mimetype: row.body?.yt_thumbnail_mimetype || 'image/jpeg', originalname: 'cover.jpg', size: buf.length };
-          }
+          thumbFile = await downloadScheduledFile({ path: row.thumb_path, mimetype: row.body?.yt_thumbnail_mimetype || 'image/jpeg', name: 'cover.jpg' }, 'driftpost-sched-cover', false);
         }
         const localCovers = {};
         for (const [platformName, cover] of Object.entries(row.body?.driftpost_covers || {})) {
           if (!cover?.path) continue;
-          const { data, error: coverError } = await supabase.storage.from(BUCKET).download(cover.path);
-          if (coverError || !data) throw new Error(`Scheduled ${platformName} cover is missing`);
-          const tmp = path.join(os.tmpdir(), `driftpost-sched-${platformName}-cover-${crypto.randomUUID()}.jpg`);
-          const buf = Buffer.from(await data.arrayBuffer());
-          await fs.writeFile(tmp, buf);
-          localCovers[platformName] = { path: tmp, mimetype: 'image/jpeg', originalname: cover.name || 'cover.jpg', size: buf.length };
+          localCovers[platformName] = await downloadScheduledFile({ ...cover, mimetype: 'image/jpeg', name: cover.name || 'cover.jpg' }, `driftpost-sched-${platformName}-cover`);
         }
-        await runPublish(job, conn, { files: localFiles, instagramFiles: localInstagramFiles, facebookFiles: localFacebookFiles, thumbFile, coverFiles: localCovers }, row.body || {}, row.user_id);
+        await queuePublish(() => runPublish(job, conn, { files: localFiles, instagramFiles: localInstagramFiles, facebookFiles: localFacebookFiles, thumbFile, coverFiles: localCovers }, row.body || {}, row.user_id));
         const done = jobs.get(job.id) || job;
         const published = done.state === 'completed';
         await supabase.from('scheduled_posts').update({
@@ -1933,6 +2103,7 @@ async function runDueSchedules() {
         }
         if (!mediaRetained) await removeUnreferencedScheduleMedia(row.user_id, row.id, scheduleMediaPaths(row));
       } catch (e) {
+        await Promise.all(downloadedPaths.map((file) => fs.unlink(file).catch(() => {})));
         await supabase.from('scheduled_posts').update({
           status: 'failed',
           error: e.message || 'Publish failed',

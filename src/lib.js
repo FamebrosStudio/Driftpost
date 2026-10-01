@@ -267,16 +267,38 @@ export async function schedulePost(token, { platform, connectionId, when, body, 
   return data.schedule;
 }
 
+export async function submitCampaign(token, { targets, caption, title = '', name = '', when = '', publishNow = false }) {
+  const form = new FormData();
+  const shapedTargets = targets.map(({ connection, files }, index) => {
+    const mediaField = `media_${index}`;
+    for (const file of files || []) form.append(mediaField, file, file.name);
+    return { connection_id: connection.id, platform: connection.platform, media_field: mediaField };
+  });
+  form.append('targets', JSON.stringify(shapedTargets));
+  form.append('caption', caption);
+  form.append('title', title);
+  form.append('campaign_name', name);
+  if (publishNow) form.append('mode', 'now');
+  else if (when) form.append('scheduled_at', new Date(when).toISOString());
+  const path = '/api/schedules/campaign';
+  const { res, data } = await fetchWithAuth(apiRequestUrl(path, 'POST'), token, { method: 'POST', body: form });
+  if (!res.ok) throw new Error(data.error || 'Could not submit campaign');
+  return data;
+}
+
 // Resolve an Instagram account by username through Meta, so the collaborator
 // picker can offer accounts that are not connected to Driftpost. Meta matches
 // an exact handle only — `query` is the handle as typed, not a prefix. An
 // empty list is a normal answer (unknown, personal or age-gated account).
 export const searchInstagramCollaborators = (token, { connectionId = '', query = '' } = {}) => {
-  const handle = String(query || '').trim().replace(/^@+/, '');
-  if (!handle) return Promise.resolve([]);
-  const params = new URLSearchParams({ q: handle });
+  const handles = [...new Set(String(query || '')
+    .split(/[\s,;]+/)
+    .map((name) => name.trim().replace(/^@+/, ''))
+    .filter(Boolean))].slice(0, 5);
+  if (!handles.length) return Promise.resolve([]);
+  const params = new URLSearchParams({ q: handles.join(',') });
   if (connectionId) params.set('connection_id', connectionId);
-  return api(`/api/instagram/collaborators?${params}`, token).then((d) => d.accounts || []);
+  return api(`/api/instagram/collaborators?${params}`, token).then((d) => d.results || (d.accounts || []).map((account) => ({ username: account.username, account, reason: 'ok' })));
 };
 
 export const listSchedules = (token, range = {}) => {
@@ -287,6 +309,7 @@ export const listSchedules = (token, range = {}) => {
   return api(`/api/schedules${query ? `?${query}` : ''}`, token).then((d) => d.schedules || []);
 };
 export const cancelSchedule = (token, id) => api(`/api/schedules/${id}`, token, { method: 'DELETE' });
+export const moveSchedule = (token, id, when) => api(`/api/schedules/${id}`, token, { method: 'PATCH', body: JSON.stringify({ scheduled_at: when }) });
 
 // Fresh start after posting: wipes the finished post's content (media,
 // prompt, outputs, per-card review/account choices, done flags) and returns

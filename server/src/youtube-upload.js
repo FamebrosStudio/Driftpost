@@ -1,4 +1,5 @@
 import fs from 'node:fs/promises';
+import { createReadStream } from 'node:fs';
 import { decryptJson, encryptJson } from './crypto.js';
 
 const TOKEN_URL = 'https://oauth2.googleapis.com/token';
@@ -91,13 +92,17 @@ export async function setVideoThumbnail({ accessToken, videoId, file }) {
     throw new Error('YouTube covers must be JPEG or PNG images');
   }
   if (file.size > 50 * 1024 * 1024) throw new Error('YouTube cover image exceeds 50 MB');
-  const bytes = await fs.readFile(file.path);
   const url = `https://www.googleapis.com/upload/youtube/v3/thumbnails/set?videoId=${encodeURIComponent(videoId)}&uploadType=media`;
-  const res = await fetch(url, {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': file.mimetype },
-    body: bytes,
-  });
+  const stream = createReadStream(file.path);
+  let res;
+  try {
+    res = await fetch(url, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': file.mimetype, 'Content-Length': String(file.size) },
+      body: stream,
+      duplex: 'half',
+    });
+  } finally { stream.destroy(); }
   if (!res.ok) throw await gerr(res, 'YouTube could not set this video cover');
   return res.json().catch(() => ({}));
 }

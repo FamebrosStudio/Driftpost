@@ -1,4 +1,31 @@
 .ws { min-height: 100vh; color: var(--ink); background: var(--bg); }
+.ws-calendar-heading-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.ws-campaign { margin-bottom: 16px; }
+.ws-campaign-intro { color: var(--muted); font-size: 13px; line-height: 1.6; margin: -4px 0 18px; }
+.ws-campaign-accounts { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 8px; max-height: 260px; overflow: auto; }
+.ws-campaign-account { min-width: 0; display: flex; align-items: center; gap: 10px; padding: 11px 12px; border: 1px solid var(--line); border-radius: 9px; background: var(--panel, color-mix(in srgb, var(--bg) 82%, white)); cursor: pointer; }
+.ws-campaign-account.selected { border-color: var(--go); background: color-mix(in srgb, var(--go) 9%, var(--bg)); }
+.ws-campaign-account input { accent-color: var(--go); }
+.ws-campaign-account span, .ws-campaign-drop span { display: grid; min-width: 0; gap: 3px; }
+.ws-campaign-account b, .ws-campaign-drop b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; }
+.ws-campaign-account small, .ws-campaign-drop small { color: var(--muted); font-size: 11px; overflow-wrap: anywhere; }
+.ws-campaign-media { display: grid; gap: 8px; margin: 20px 0; }
+.ws-campaign-media h3 { display: flex; align-items: baseline; flex-wrap: wrap; gap: 8px; font-size: 13px; margin: 0 0 2px; }
+.ws-campaign-media h3 small, .ws-campaign-field small { color: var(--muted); font-weight: 400; }
+.ws-campaign-drop { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px; border: 1px dashed var(--line); border-radius: 9px; cursor: pointer; }
+.ws-campaign-drop:hover { border-color: var(--go); }
+.ws-campaign-drop input { max-width: min(48%, 290px); font-size: 11px; }
+.ws-campaign-field { display: grid; gap: 7px; margin-top: 14px; font-size: 12px; font-weight: 650; }
+.ws-campaign-field > span { display: flex; flex-wrap: wrap; gap: 6px; }
+.ws-campaign-field input, .ws-campaign-field textarea { width: 100%; box-sizing: border-box; border: 1px solid var(--line); border-radius: 8px; padding: 11px 12px; color: var(--ink); background: var(--bg); font: inherit; font-weight: 400; }
+.ws-campaign-field textarea { resize: vertical; line-height: 1.5; }
+.ws-campaign-actions { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+.ws-campaign-error { color: #ff716f; }
+.ws-campaign-progress { display: grid; gap: 6px; max-height: 220px; overflow: auto; margin-top: 12px; }
+.ws-campaign-progress > div { display: flex; gap: 10px; align-items: baseline; justify-content: space-between; padding: 7px 9px; border-radius: 7px; background: color-mix(in srgb, var(--bg) 70%, transparent); font-size: 11px; }
+.ws-campaign-progress span { color: var(--muted); text-align: right; }
+.ws-event.draggable { cursor: grab; }
+.ws-event.draggable:active { cursor: grabbing; }
 .ws-topbar { min-height: 70px; padding: 0 clamp(18px, 4vw, 64px); display: flex; align-items: center; gap: clamp(24px, 5vw, 76px); border-bottom: 1px solid var(--line); background: color-mix(in srgb, var(--bg) 90%, transparent); position: sticky; top: 0; z-index: 20; backdrop-filter: blur(16px); }
 .ws-wordmark { display: inline-flex; align-items: center; flex: 0 0 auto; border: 0; padding: 0; background: transparent; white-space: nowrap; }
 .ws-wordmark img.logo-img { width: 168px; height: auto; max-height: 44px; object-fit: contain; }
@@ -211,6 +238,8 @@
   .ws-heading { align-items: flex-start; flex-direction: column; gap: 14px; margin-bottom: 20px; }
   .ws-heading-action { width: 100%; }
   .ws-heading-action > button { width: 100%; }
+  .ws-calendar-heading-actions { width: 100%; flex-direction: column; }
+  .ws-calendar-heading-actions > button { width: 100%; }
   .ws-heading p { font-size: 12px; }
   .ws-welcome { min-height: 230px; padding: 23px 19px; align-items: flex-start; }
   .ws-welcome-art { width: 65%; opacity: .4; }
@@ -225,6 +254,8 @@
   .ws-stat > button { font-size: 10px; }
   .ws-two-col, .ws-analytics-grid { grid-template-columns: 1fr; gap: 10px; }
   .ws-panel { padding: 16px; }
+  .ws-campaign-drop { align-items: flex-start; flex-direction: column; }
+  .ws-campaign-drop input { max-width: 100%; }
   .ws-panel h2 { font-size: 15px; }
   .ws-calendar-panel { padding: 12px 8px; }
   .ws-calendar-toolbar { padding: 0 5px; }

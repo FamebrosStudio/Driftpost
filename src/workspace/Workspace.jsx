@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import BrandIcon from '../brand.jsx';
-import { api, listSchedules, cancelSchedule, PLATFORMS } from '../lib.js';
+import { api, listSchedules, cancelSchedule, moveSchedule, PLATFORMS } from '../lib.js';
+import CampaignComposer from './CampaignComposer.jsx';
 import { readPostLog } from '../history/log.js';
 import './workspace.css';
 
@@ -92,6 +93,10 @@ export function CalendarPage({ session, onNavigate, onCreate, onSignOut }) {
   const [loading, setLoading] = useState(true);
   const [notice, setNotice] = useState('');
   const [busy, setBusy] = useState('');
+  const [connections, setConnections] = useState([]);
+  const [connectionsError, setConnectionsError] = useState('');
+  const [campaignOpen, setCampaignOpen] = useState(false);
+  const [reloadTick, setReloadTick] = useState(0);
   const [selected, setSelected] = useState(() => localIso(new Date()));
   const startDay = new Date(month.getFullYear(), month.getMonth(), 1);
   const gridStart = new Date(startDay); gridStart.setDate(1 - startDay.getDay());
@@ -103,16 +108,46 @@ export function CalendarPage({ session, onNavigate, onCreate, onSignOut }) {
       .catch((err) => { if (active) setNotice(err.message || 'Could not load your calendar.'); })
       .finally(() => { if (active) setLoading(false); });
     return () => { active = false; };
-  }, [session.access_token, month.getFullYear(), month.getMonth()]);
+  }, [session.access_token, month.getFullYear(), month.getMonth(), reloadTick]);
+  useEffect(() => {
+    let active = true;
+    api('/api/connections', session.access_token)
+      .then((data) => { if (active) { setConnections(data.connections || []); setConnectionsError(''); } })
+      .catch((error) => { if (active) setConnectionsError(error.message || 'Could not load connected accounts.'); });
+    return () => { active = false; };
+  }, [session.access_token]);
   const byDate = useMemo(() => rows.reduce((map, row) => { const key = localIso(new Date(row.scheduled_at)); (map[key] ||= []).push(row); return map; }, {}), [rows]);
   const dates = Array.from({ length: 42 }, (_, i) => { const d = new Date(gridStart); d.setDate(gridStart.getDate() + i); return d; });
   const dayRows = byDate[selected] || [];
   const changeMonth = (delta) => { const next = new Date(month.getFullYear(), month.getMonth() + delta, 1); setMonth(next); setSelected(localIso(next)); };
   const cancel = async (id) => { setBusy(id); try { await cancelSchedule(session.access_token, id); setRows((old) => old.filter((r) => r.id !== id)); setNotice('Scheduled post cancelled.'); } catch (e) { setNotice(e.message || 'Could not cancel this post.'); } finally { setBusy(''); } };
-  return <PageFrame page="calendar" onNavigate={onNavigate} email={session.user?.email} onSignOut={onSignOut} eyebrow="Plan ahead" title="Calendar" intro="See what’s scheduled and keep your publishing rhythm in view." action={<button className="ws-primary" onClick={() => onCreate(selected)}><Icon name="plus" size={15} /> Create for selected day</button>}>
+  const move = async (event, day) => {
+    event.preventDefault();
+    const id = event.dataTransfer?.getData('text/plain');
+    if (!id) {
+      if (event.dataTransfer?.files?.length) setNotice('Open Multi-account campaign, then drop each design onto its account card and choose the festival date.');
+      return;
+    }
+    const row = rows.find((item) => item.id === id);
+    if (!row || row.status !== 'scheduled') return;
+    const original = new Date(row.scheduled_at);
+    const time = `${String(original.getHours()).padStart(2, '0')}:${String(original.getMinutes()).padStart(2, '0')}:00`;
+    const next = new Date(`${day}T${time}`);
+    if (!Number.isFinite(next.getTime())) return;
+    setBusy(id);
+    try {
+      const data = await moveSchedule(session.access_token, id, next.toISOString());
+      setRows((old) => old.map((item) => item.id === id ? data.schedule : item));
+      setNotice(`Moved post to ${next.toLocaleString()}.`);
+    } catch (e) { setNotice(e.message || 'Could not move scheduled post.'); }
+    finally { setBusy(''); }
+  };
+  return <PageFrame page="calendar" onNavigate={onNavigate} email={session.user?.email} onSignOut={onSignOut} eyebrow="Plan ahead" title="Calendar" intro="Plan individual posts or build one campaign with a shared caption and separate media for every account." action={<div className="ws-calendar-heading-actions"><button className="ws-secondary" onClick={() => onCreate(selected)}><Icon name="plus" size={15} /> Single post</button><button className="ws-primary" onClick={() => setCampaignOpen((open) => !open)}><Icon name="plus" size={15} /> Multi-account campaign</button></div>}>
+    {connectionsError && <div className="ws-inline-state" role="status">{connectionsError}</div>}
+    {campaignOpen && <CampaignComposer session={session} accounts={connections} day={selected} onClose={() => setCampaignOpen(false)} onSaved={() => setReloadTick((n) => n + 1)} />}
     <section className="ws-panel ws-calendar-panel"><div className="ws-calendar-toolbar"><div><h2>{month.toLocaleDateString(undefined, { month: 'long', year: 'numeric' })}</h2><span className="ws-legend"><i /> Scheduled</span></div><div className="ws-month-actions"><button aria-label="Previous month" onClick={() => changeMonth(-1)}><Icon name="arrowLeft" size={15} /></button><button onClick={() => { const now = new Date(); setMonth(new Date(now.getFullYear(), now.getMonth(), 1)); setSelected(localIso(now)); }}>Today</button><button aria-label="Next month" onClick={() => changeMonth(1)}><Icon name="arrowRight" size={15} /></button></div></div>
       <div className="ws-calendar-grid ws-weekdays">{['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((d) => <span key={d}>{d}</span>)}</div>
-      <div className="ws-calendar-grid ws-days">{dates.map((date) => { const key = localIso(date); const items = byDate[key] || []; const today = key === localIso(new Date()); return <button key={key} className={`ws-day ${date.getMonth() === month.getMonth() ? '' : 'outside'} ${selected === key ? 'selected' : ''} ${today ? 'today' : ''}`} onClick={() => setSelected(key)}><span className="ws-day-number">{date.getDate()}</span>{items.slice(0, 2).map((item) => <span className={`ws-event ${item.status}`} key={item.id}><BrandIcon id={item.platform} size={12} /><b>{platformName(item.platform)}</b></span>)}{items.length > 2 && <small className="ws-more">+{items.length - 2} more</small>}</button>; })}</div>
+      <div className="ws-calendar-grid ws-days">{dates.map((date) => { const key = localIso(date); const items = byDate[key] || []; const today = key === localIso(new Date()); return <button key={key} className={`ws-day ${date.getMonth() === month.getMonth() ? '' : 'outside'} ${selected === key ? 'selected' : ''} ${today ? 'today' : ''}`} onClick={() => setSelected(key)} onDragOver={(event) => event.preventDefault()} onDrop={(event) => move(event, key)} title="Drop a scheduled post here to move it to this date"><span className="ws-day-number">{date.getDate()}</span>{items.slice(0, 2).map((item) => <span className={`ws-event ${item.status} ${item.status === 'scheduled' ? 'draggable' : ''}`} key={item.id} draggable={item.status === 'scheduled'} onDragStart={(event) => { event.dataTransfer.setData('text/plain', item.id); event.dataTransfer.effectAllowed = 'move'; }} title={`${platformName(item.platform)} · Drag to another date to reschedule`}><BrandIcon id={item.platform} size={12} /><b>{platformName(item.platform)}</b></span>)}{items.length > 2 && <small className="ws-more">+{items.length - 2} more</small>}</button>; })}</div>
       {loading && <div className="ws-inline-state">Loading schedule…</div>}{notice && <div className="ws-inline-state" role="status">{notice}</div>}
     </section>
     <section className="ws-panel ws-day-panel"><div className="ws-panel-head"><div><span className="ws-eyebrow">Selected day</span><h2>{new Date(`${selected}T12:00:00`).toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' })}</h2></div><button className="ws-secondary" onClick={() => onCreate(selected)}><Icon name="plus" size={14} /> Plan for this day</button></div>
