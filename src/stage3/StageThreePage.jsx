@@ -497,12 +497,19 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
     }
   };
 
+  // Publishing different platforms is intentionally concurrent. Always merge
+  // a result by key so a slower callback cannot overwrite another platform's
+  // newer result with the stale `results` snapshot captured when it started.
+  const commitPublishResult = (out, key, value) => {
+    out[key] = value;
+    setResults((current) => ({ ...current, [key]: value }));
+  };
+
   // Post to ONE connection and poll the job. Returns the post URL.
   // When connectionId is given, the form carries exactly that account.
   // The POST itself auto-refreshes a dead login token; polls inherit it.
   const runToAccount = (pid, connectionId, out, key, { skipCrossPost = false, mediaOverride = null } = {}) => withPublishSlot(async () => {
-    out[key] = { state: 'uploading', progress: 5 };
-    setResults({ ...out });
+    commitPublishResult(out, key, { state: 'uploading', progress: 5, message: 'Preparing post…' });
     const form = await buildForm(pid, { connectionId, skipCrossPost, mediaOverride });
     if (connectionId) form.set('connection_id', connectionId);
      const hasPre = form.has('hasPreuploadedMedia');
@@ -513,8 +520,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
        // to Supabase while reviewing captions.
        onUploadProgress: (f) => {
          const pct = Math.round(1 + f * 14);
-         out[key] = { ...(out[key] || {}), state: 'uploading', progress: pct, message: hasPre ? `Preparing media… ${pct}%` : `Uploading ${pct}%…` };
-         setResults({ ...out });
+         commitPublishResult(out, key, { ...(out[key] || {}), state: 'uploading', progress: pct, message: hasPre ? `Preparing media… ${pct}%` : `Uploading ${pct}%…` });
        },
      });
     const pollToken = refreshedToken || session.access_token;
@@ -546,8 +552,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
         await new Promise((r) => setTimeout(r, pause));
         continue;
       }
-      out[key] = { state: j.job.state, progress: j.job.progress || 50, url: j.job.url, message: j.job.message };
-      setResults({ ...out });
+      commitPublishResult(out, key, { state: j.job.state, progress: j.job.progress || 50, url: j.job.url, message: j.job.message });
       if (j.job.state === 'completed') {
         logPost({ platform: pid, text: mainText(pid), url: j.job.url, postId: j.job.postId, connectionId: j.job.connectionId || connectionId, publishedPosts: j.job.publishedPosts });
         return j.job.url;
@@ -591,8 +596,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
     const failures = accountResults.filter((item) => item.error).map(({ account, error }) => `${account}: ${error}`);
     if (!plan.length) throw new Error('No accounts to post to.');
     if (!urls.length) {
-      out[pid] = { state: 'failed', message: failures.join(' · ') || 'Publish failed' };
-      setResults({ ...out });
+      commitPublishResult(out, pid, { state: 'failed', message: failures.join(' · ') || 'Publish failed' });
       throw new Error(out[pid].message);
     }
     // Partial success is NOT completed: Publish All and the success banner
@@ -600,7 +604,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
     // retried instead of silently celebrated.
     const partial = failures.length > 0;
     const total = plan.length;
-    out[pid] = {
+    commitPublishResult(out, pid, {
       state: partial ? 'failed' : 'completed',
       urls,
       url: urls[0]?.url,
@@ -609,8 +613,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
       message: partial
         ? `Posted to ${urls.length}/${total} — failed: ${failures.join(' · ')}`
         : (total > 1 ? `Posted to ${total} accounts ✓` : ''),
-    };
-    setResults({ ...out });
+    });
     if (!partial) onReviewed(pid);
     return urls;
   };
@@ -642,8 +645,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
       else await runOne(pid, out);
     } catch (e) {
       if (out[pid]?.state !== 'failed') {
-        out[pid] = { state: 'failed', message: e.message };
-        setResults({ ...out });
+        commitPublishResult(out, pid, { state: 'failed', message: e.message });
       }
     } finally {
       release(`post:${pid}`);
@@ -670,8 +672,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
       else await runOne(pid, out, { mediaOverride: wrapped });
     } catch (e) {
       if (out[pid]?.state !== 'failed') {
-        out[pid] = { state: 'failed', message: e.message };
-        setResults({ ...out });
+        commitPublishResult(out, pid, { state: 'failed', message: e.message });
       }
     } finally {
       release(`photo:${pid}`);
@@ -703,16 +704,14 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
     if (targets.includes('youtube') && files.length && !files.some((f) => f.type.startsWith('video/'))) {
       const photo = files.find((f) => f?.raw && f.type.startsWith('image/'))?.raw;
       if (!photo) {
-        out.youtube = { state: 'failed', message: 'No photo selected — pick one in Stage 2.' };
-        setResults({ ...out });
+        commitPublishResult(out, 'youtube', { state: 'failed', message: 'No photo selected — pick one in Stage 2.' });
       } else {
         setEncoding(true);
         try {
           const clip = await photoToVideo(photo);
           clipWrapped = [{ raw: clip, name: clip.name, type: clip.type }];
         } catch (e) {
-          out.youtube = { state: 'failed', message: e.message };
-          setResults({ ...out });
+          commitPublishResult(out, 'youtube', { state: 'failed', message: e.message });
         } finally {
           setEncoding(false);
         }
@@ -726,8 +725,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
         const cov = coveredPids(pid);
         const bad = cov.map((q) => (q === pid ? invalidReason(q) : mirrorErrorFor(pid))).find(Boolean);
         if (bad) {
-          out[pid] = { state: 'failed', message: `Fix this card first: ${bad}` };
-          setResults({ ...out });
+          commitPublishResult(out, pid, { state: 'failed', message: `Fix this card first: ${bad}` });
           return;
         }
         if (pid === 'youtube' && !clipWrapped && files.length && !files.some((f) => f.type.startsWith('video/'))) return;
@@ -743,8 +741,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
           });
         } catch (e) {
           if (out[pid]?.state !== 'failed') {
-            out[pid] = { state: 'failed', message: e.message };
-            setResults({ ...out });
+            commitPublishResult(out, pid, { state: 'failed', message: e.message });
           }
         }
       }));
