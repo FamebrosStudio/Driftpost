@@ -9,6 +9,7 @@ import { transcribeVideo } from './video-analysis.js';
 import os from 'node:os';
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import { Readable } from 'node:stream';
 import { createClient } from '@supabase/supabase-js';
 import { decryptJson, encryptJson, signState, verifyState } from './crypto.js';
 import { exchangeGoogleCode, getYouTubeChannel, youtubeAuthorizationUrl } from './google.js';
@@ -315,6 +316,7 @@ const publishQueueLimit = limit({ windowMs: 15 * 60 * 1000, max: 100, ns: 'publi
 const aiLimit = limit({ windowMs: 60 * 60 * 1000, max: 30, ns: 'ai', key: userKey });
 const oauthLimit = limit({ windowMs: 60 * 1000, max: 20, ns: 'oauth', key: userKey });
 const connectionsLimit = limit({ windowMs: 60 * 1000, max: 60, ns: 'conn', key: userKey });
+const musicLimit = limit({ windowMs: 60 * 1000, max: 30, ns: 'music', key: userKey });
 // The collaborator picker asks Meta on every settled keystroke, so it needs
 // more headroom than the other read endpoints — while still being bounded.
 const igLookupLimit = limit({ windowMs: 60 * 1000, max: 120, ns: 'iglookup', key: userKey });
@@ -429,6 +431,93 @@ app.get('/health', (_req, res) => res.set('Cache-Control', 'no-store').json({
   revision: process.env.RENDER_GIT_COMMIT?.slice(0, 12) || null,
   uptimeSeconds: Math.floor(process.uptime()),
 }));
+
+// Epidemic Sound catalog access stays on the server so the provider key is
+// never sent to the browser. Configure EPIDEMIC_SOUND_API_KEY in Render.
+app.get('/api/music/search', requireUser, musicLimit, async (req, res) => {
+  const apiKey = String(process.env.EPIDEMIC_SOUND_API_KEY || '').trim();
+  if (!apiKey) return res.status(503).json({ error: 'Epidemic Sound is not configured. Add EPIDEMIC_SOUND_API_KEY to the server environment.' });
+  const term = String(req.query.term || '').trim().slice(0, 160);
+  if (!term) return res.status(400).json({ error: 'Enter a search term.' });
+  const limit = Math.max(1, Math.min(60, Number.parseInt(req.query.limit, 10) || 20));
+  const offset = Math.max(0, Math.min(10000, Number.parseInt(req.query.offset, 10) || 0));
+  const upstream = new URL('https://partner-content-api.epidemicsound.com/v0/tracks/search');
+  upstream.searchParams.set('term', term);
+  upstream.searchParams.set('limit', String(limit));
+  upstream.searchParams.set('offset', String(offset));
+  try {
+    const response = await fetch(upstream, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: `Bearer ${apiKey}`,
+        'x-partner-user-id': crypto.createHash('sha256').update(String(req.user.id)).digest('hex'),
+      },
+      signal: AbortSignal.timeout(12000),
+    });
+    const payload = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      const status = response.status === 401 ? 502 : response.status === 403 ? 403 : response.status === 429 ? 429 : 502;
+      const message = response.status === 401
+        ? 'Epidemic Sound rejected the API key. Check the server secret.'
+        : response.status === 403
+          ? 'This Epidemic Sound API key does not have catalog search access.'
+          : response.status === 429
+            ? 'Epidemic Sound rate limit reached. Try again shortly.'
+            : 'Epidemic Sound catalog search failed. Try again shortly.';
+      return res.status(status).json({ error: message });
+    }
+    res.set('Cache-Control', 'private, max-age=30').json({
+      tracks: Array.isArray(payload.tracks) ? payload.tracks : [],
+      pagination: payload.pagination || null,
+      aggregations: payload.aggregations || null,
+    });
+  } catch (error) {
+    const timedOut = error?.name === 'TimeoutError' || error?.name === 'AbortError';
+    return res.status(502).json({ error: timedOut ? 'Epidemic Sound took too long to respond.' : 'Could not reach Epidemic Sound. Try again shortly.' });
+  }
+});
+
+app.get('/api/music/tracks/:trackId/audio', requireUser, musicLimit, async (req, res) => {
+  const apiKey = String(process.env.EPIDEMIC_SOUND_API_KEY || '').trim();
+  const trackId = String(req.params.trackId || '');
+  if (!apiKey) return res.status(503).json({ error: 'Epidemic Sound is not configured on the server.' });
+  if (!/^[A-Za-z0-9_-]{1,100}$/.test(trackId)) return res.status(400).json({ error: 'Invalid music track.' });
+  const headers = {
+    Accept: 'application/json',
+    Authorization: `Bearer ${apiKey}`,
+    'x-partner-user-id': crypto.createHash('sha256').update(String(req.user.id)).digest('hex'),
+  };
+  try {
+    const grantResponse = await fetch(`https://partner-content-api.epidemicsound.com/v0/tracks/${encodeURIComponent(trackId)}/download?format=mp3&quality=normal`, {
+      headers, signal: AbortSignal.timeout(12000),
+    });
+    const grant = await grantResponse.json().catch(() => ({}));
+    if (!grantResponse.ok || !grant.url) {
+      const status = grantResponse.status === 403 ? 403 : grantResponse.status === 404 ? 404 : grantResponse.status === 429 ? 429 : grantResponse.status === 401 ? 502 : 502;
+      const message = grantResponse.status === 403
+        ? 'This track is preview only or your Epidemic Sound plan does not include downloads.'
+        : grantResponse.status === 404 ? 'This music track is no longer available.'
+          : grantResponse.status === 429 ? 'Epidemic Sound rate limit reached. Try again shortly.'
+            : 'Epidemic Sound could not authorize this track download.';
+      return res.status(status).json({ error: message });
+    }
+    const audioUrl = new URL(grant.url);
+    if (audioUrl.protocol !== 'https:' || !audioUrl.hostname.endsWith('.epidemicsound.com')) {
+      return res.status(502).json({ error: 'Epidemic Sound returned an invalid audio link.' });
+    }
+    const audio = await fetch(audioUrl, { signal: AbortSignal.timeout(60000) });
+    if (!audio.ok || !audio.body) return res.status(502).json({ error: 'Could not retrieve this music track.' });
+    res.status(200).set({
+      'Content-Type': 'audio/mpeg',
+      'Content-Disposition': 'inline; filename="licensed-music.mp3"',
+      'Cache-Control': 'private, no-store',
+      'X-Content-Type-Options': 'nosniff',
+    });
+    Readable.fromWeb(audio.body).pipe(res);
+  } catch (error) {
+    return res.status(502).json({ error: error?.name === 'TimeoutError' ? 'Epidemic Sound took too long to deliver the track.' : 'Could not retrieve music from Epidemic Sound.' });
+  }
+});
 
 app.post('/api/ai/unlock', requireUser, aiUnlockLimit, (req, res) => {
   if (!isAiAllowedUser(req.user)) return res.status(403).json({ error: 'AI access is unavailable for this account.' });
