@@ -62,6 +62,8 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
   const [results, setResults] = useState({});
   const [busy, setBusy] = useState({});
   const publishSlots = useRef({ active: 0, waiters: [] });
+  const detachedPublish = useRef(false);
+  const [batchQueue, setBatchQueue] = useState(null);
   const [regen, setRegen] = useState('');
   const [brief] = useState(() => load(scopedKey('driftpost-stage2-brief', userId), ''));
   const [analysisMode] = useState(() => load(scopedKey('driftpost-stage2-analysis', userId), 'fast'));
@@ -360,6 +362,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
   // Reviewing a card is the approval signal: the server keeps this caption as a
   // reference so the next generation for the same brand writes closer to it.
   const onReviewed = (pid) => {
+    if (detachedPublish.current) return;
     if (canUseAi) approveCaption(session.access_token, { brand: brandLabel, platform: pid, caption: composeOutput(pid, outputs[pid] || {}) }).catch(() => {});
     setReviewed((r) => { const n = { ...r, [pid]: true }; save(scopedKey('driftpost-stage3-reviewed', userId), n); return n; });
   };
@@ -482,9 +485,10 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
      return form;
    };
 
-  // Share two publishing slots across all cards and group accounts in this
-  // browser. A second account can publish immediately; further accounts wait
-  // their turn instead of being rejected by the API's per-user active-job cap.
+  // Limit simultaneous browser-side transformations and file uploads. The
+  // slot is released as soon as the server accepts a job; polling never holds
+  // it, so every account can enter the server queue without waiting for a
+  // previous platform to finish.
   const withPublishSlot = async (task) => {
     const slots = publishSlots.current;
     if (slots.active < 2 && slots.waiters.length === 0) slots.active++;
@@ -508,38 +512,61 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
   // Post to ONE connection and poll the job. Returns the post URL.
   // When connectionId is given, the form carries exactly that account.
   // The POST itself auto-refreshes a dead login token; polls inherit it.
-  const runToAccount = (pid, connectionId, out, key, { skipCrossPost = false, mediaOverride = null, onProgress = null } = {}) => withPublishSlot(async () => {
+  const runToAccount = async (pid, connectionId, out, key, { skipCrossPost = false, mediaOverride = null, onProgress = null, onSubmitted = null } = {}) => {
     const report = (value) => {
       commitPublishResult(out, key, value);
       onProgress?.(value);
     };
     report({ state: 'uploading', progress: 5, message: 'Preparing post…' });
-    const form = await buildForm(pid, { connectionId, skipCrossPost, mediaOverride });
-    if (connectionId) form.set('connection_id', connectionId);
-     const hasPre = form.has('hasPreuploadedMedia');
-     const { res, data, refreshedToken } = await fetchWithAuth(`${apiUrl}/api/publish`, session.access_token, {
-       method: 'POST',
-       body: form,
-       // The file transfer is skipped when media was pre-uploaded
-       // to Supabase while reviewing captions.
-       onUploadProgress: (f) => {
-         const pct = Math.round(1 + f * 14);
-         report({ ...(out[key] || {}), state: 'uploading', progress: pct, message: hasPre ? `Preparing media… ${pct}%` : `Uploading ${pct}%…` });
-       },
-     });
+    let submissionSettled = false;
+    const markSubmitted = (accepted) => {
+      if (submissionSettled) return;
+      submissionSettled = true;
+      onSubmitted?.({ accepted, platform: pid, connectionId });
+    };
+    let res; let data; let refreshedToken;
+    try {
+      ({ res, data, refreshedToken } = await withPublishSlot(async () => {
+        const form = await buildForm(pid, { connectionId, skipCrossPost, mediaOverride });
+        if (connectionId) form.set('connection_id', connectionId);
+        const hasPre = form.has('hasPreuploadedMedia');
+        return fetchWithAuth(`${apiUrl}/api/publish`, session.access_token, {
+          method: 'POST',
+          body: form,
+          // Limit simultaneous browser uploads, then let every accepted job
+          // poll independently while the server's bounded worker queue runs.
+          onUploadProgress: (f) => {
+            const pct = Math.round(1 + f * 14);
+            report({ ...(out[key] || {}), state: 'uploading', progress: pct, message: hasPre ? `Preparing media… ${pct}%` : `Uploading ${pct}%…` });
+          },
+        });
+      }));
+      if (!res.ok) {
+        markSubmitted(false);
+        throw new Error(data.error || 'Publish failed');
+      }
+      if (!data?.job?.id) {
+        markSubmitted(false);
+        throw new Error('The server accepted the upload but did not return a publish job ID. Check History before retrying.');
+      }
+      markSubmitted(true);
+    } catch (error) {
+      markSubmitted(false);
+      throw error;
+    }
     const pollToken = refreshedToken || session.access_token;
-    if (!res.ok) throw new Error(data.error || 'Publish failed');
     const jobId = data.job.id;
     // A stuck job must never lock the card forever — but big videos need
     // real time (upload + platform processing), so video posts get 12
     // minutes instead of 5 before failing visibly.
-    const hasVideo = files.some((f) => f.type.startsWith('video/'));
-    const pollCap = hasVideo ? 12 * 60 * 1000 : 5 * 60 * 1000;
+    // Match the server's four-hour watchdog because a large batch can queue.
+    const pollCap = 4 * 60 * 60 * 1000;
     const t0 = Date.now();
     let pollFailures = 0;
+    let pollDelay = 3000;
     for (;;) {
       if (Date.now() - t0 > pollCap) throw new Error('Publish timed out — check History, it may still have posted.');
-      await new Promise((r) => setTimeout(r, 3000));
+      await new Promise((r) => setTimeout(r, pollDelay));
       let j;
       try {
         j = await api(`/api/jobs/${jobId}`, pollToken);
@@ -557,17 +584,20 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
         continue;
       }
       report({ state: j.job.state, progress: j.job.progress || 50, url: j.job.url, message: j.job.message });
+      // Queued jobs share the API polling budget; check them less often until
+      // a worker starts, then return to responsive three-second progress.
+      pollDelay = j.job.state === 'queued' ? 20000 : 3000;
       if (j.job.state === 'completed') {
         logPost({ platform: pid, text: mainText(pid), url: j.job.url, postId: j.job.postId, connectionId: j.job.connectionId || connectionId, publishedPosts: j.job.publishedPosts });
         return j.job.url;
       }
       if (j.job.state === 'failed') throw new Error(j.job.message);
     }
-  });
+  };
 
   // Single-account path (brand / platform flows): unchanged behaviour.
-  const runOne = async (pid, out, { key = null, skipCrossPost = false, mediaOverride = null } = {}) => {
-    const url = await runToAccount(pid, accountFor(pid), out, key || pid, { skipCrossPost, mediaOverride });
+  const runOne = async (pid, out, { key = null, skipCrossPost = false, mediaOverride = null, onSubmitted = null } = {}) => {
+    const url = await runToAccount(pid, accountFor(pid), out, key || pid, { skipCrossPost, mediaOverride, onSubmitted });
     onReviewed(pid);
     return url;
   };
@@ -576,22 +606,19 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
   // platform — plus every mirrored (greyed-out) platform's members, each a
   // direct post with mirrors stripped so nothing double-posts. Per-account
   // links land in results[pid].urls.
-  const runGroup = async (pid, out, { mediaOverride = null } = {}) => {
+  const runGroup = async (pid, out, { mediaOverride = null, onSubmitted = null } = {}) => {
     const cov = coveredPids(pid);
     const plan = [...new Set(cov.flatMap((q) => groupMemberIds(q)))].map((id) => ({ q: connById[id]?.platform, id }))
       .filter(({ q }) => q);
     const names = plan.map(({ q, id }) => connById[id]?.account_name || NAMES[q] || 'account');
     const accountResults = new Array(plan.length);
     const accountProgress = new Array(plan.length);
-    let nextAccount = 0;
-    const publishNextAccount = async () => {
-      while (nextAccount < plan.length) {
-        const i = nextAccount++;
-        const target = plan[i];
+    const publishAccount = async (target, i) => {
         try {
           const url = await runToAccount(target.q, target.id, out, `${pid}:${target.id}`, {
             skipCrossPost: true,
             mediaOverride,
+            onSubmitted,
             onProgress: (status) => {
               accountProgress[i] = status;
               const completed = accountResults.filter(Boolean).length;
@@ -626,9 +653,11 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
             message: `${completed}/${plan.length} accounts finished · continuing…`,
           });
         }
-      }
     };
-    await Promise.all(Array.from({ length: Math.min(2, plan.length) }, publishNextAccount));
+    // Submit every account immediately. The per-request upload semaphore above
+    // bounds browser work, while all accepted jobs poll independently; the
+    // server's own worker queue limits actual provider publishing concurrency.
+    await Promise.all(plan.map((target, i) => publishAccount(target, i)));
     const urls = accountResults.filter((item) => item.url).map(({ account, url }) => ({ account, url }));
     const failures = accountResults.filter((item) => item.error).map(({ account, error }) => `${account}: ${error}`);
     if (!plan.length) throw new Error('No accounts to post to.');
@@ -732,6 +761,20 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
       setPubMsg('Already posting — wait for it to finish.');
       return;
     }
+    const requestCount = (pid) => isGroupFlow
+      ? new Set(coveredPids(pid).flatMap((q) => groupMemberIds(q))).size
+      : 1;
+    const totalRequests = targets.reduce((sum, pid) => sum + requestCount(pid), 0);
+    setBatchQueue({ accepted: 0, settled: 0, total: totalRequests });
+    const onSubmitted = ({ accepted }) => setBatchQueue((current) => current ? ({
+      ...current,
+      accepted: current.accepted + (accepted ? 1 : 0),
+      settled: current.settled + 1,
+    }) : current);
+    const settleWithoutRequest = (count) => setBatchQueue((current) => current ? ({
+      ...current,
+      settled: current.settled + count,
+    }) : current);
     // Light every target card so the run is visible even before first progress.
     setBusy((b) => { const n = { ...b }; targets.forEach((p) => { n[p] = true; }); return n; });
     const out = { ...results };
@@ -763,18 +806,23 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
         const bad = cov.map((q) => (q === pid ? invalidReason(q) : mirrorErrorFor(pid))).find(Boolean);
         if (bad) {
           commitPublishResult(out, pid, { state: 'failed', message: `Fix this card first: ${bad}` });
+          settleWithoutRequest(requestCount(pid));
           return;
         }
-        if (pid === 'youtube' && !clipWrapped && files.length && !files.some((f) => f.type.startsWith('video/'))) return;
+        if (pid === 'youtube' && !clipWrapped && files.length && !files.some((f) => f.type.startsWith('video/'))) {
+          settleWithoutRequest(requestCount(pid));
+          return;
+        }
         const mo = (pid === 'youtube' && clipWrapped) ? clipWrapped : undefined;
         try {
-          if (isGroupFlow) await runGroup(pid, out, { mediaOverride: mo });
+          if (isGroupFlow) await runGroup(pid, out, { mediaOverride: mo, onSubmitted });
           else await runOne(pid, out, {
             skipCrossPost: isGroupFlow || !(
               (pid === 'instagram' && mirrorTarget === 'facebook') ||
               (pid === 'facebook' && mirrorTarget === 'instagram')
             ),
             mediaOverride: mo,
+            onSubmitted,
           });
         } catch (e) {
           if (out[pid]?.state !== 'failed') {
@@ -904,6 +952,15 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
     onDone();
   };
 
+  const continueInBackground = async () => {
+    if (!batchQueue || batchQueue.settled < batchQueue.total || batchQueue.accepted < 1) return;
+    // All accepted jobs now own their uploaded files server-side. Unmounting
+    // this draft only drops its local monitor; it does not cancel the jobs.
+    detachedPublish.current = true;
+    await resetPostState(session.user.id);
+    onDone();
+  };
+
   const allReviewed = effective.length > 0 && reviewedCount === effective.length;
 
   return (
@@ -1026,6 +1083,12 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
               {schedMsg && <p className="s3-bar-msg">{schedMsg}</p>}
               {!!approvalLinks.length && <div className="s3-review-links"><b>Share review link{approvalLinks.length === 1 ? '' : 's'}:</b>{approvalLinks.map((link, i) => <a key={link} href={link} target="_blank" rel="noreferrer">{approvalLinks.length === 1 ? link : `Review post ${i + 1}`}</a>)}</div>}
               {pubMsg && <p className="s3-bar-msg">{pubMsg}</p>}
+              {batchQueue && <p className="s3-bar-msg" role="status">{batchQueue.accepted} of {batchQueue.total} account posts accepted into the background queue.</p>}
+              {batchQueue && batchQueue.settled >= batchQueue.total && batchQueue.accepted > 0 && (
+                <button type="button" className="s3-continue-bg" onClick={continueInBackground}>
+                  Continue in background · start a new post →
+                </button>
+              )}
               {!allReviewed && effective.length > 0 && !schedMsg && !pubMsg && (
                 <p className="s3-pub-hint">Open each tab and press Reviewed ✓ — posting unlocks when all are seen.</p>
               )}

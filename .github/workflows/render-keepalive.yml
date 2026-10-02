@@ -27,5 +27,9 @@ jobs:
           normalized="$(printf '%s' "$response" | tr '[:upper:]' '[:lower:]' | tr -d '\r')"
           printf '%s' "$normalized" | grep -Fq 'http_status:204'
           printf '%s' "$normalized" | grep -Fq 'access-control-allow-origin: https://driftpostpage.vercel.app'
-          printf '%s' "$normalized" | grep -Fq 'access-control-allow-methods: get,post,put,delete,options'
-          printf '%s' "$normalized" | grep -Fq 'access-control-allow-headers: content-type,authorization,x-driftpost-ai-grant'
+          # Match required capabilities without relying on optional methods,
+          # header ordering, or spaces after commas.
+          printf '%s' "$normalized" | grep -Eq 'access-control-allow-methods:.*(^|[, ])post([, ]|$)'
+          printf '%s' "$normalized" | grep -Fq 'access-control-allow-headers:'
+          printf '%s' "$normalized" | grep -Eq 'access-control-allow-headers:.*(^|[:, ])authorization([, ]|$)'
+          printf '%s' "$normalized" | grep -Eq 'access-control-allow-headers:.*(^|[, ])content-type([, ]|$)'

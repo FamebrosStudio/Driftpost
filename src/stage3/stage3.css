@@ -161,6 +161,8 @@
 .s3-urls { display: grid; gap: 2px; }
 .s3-note { font-size: 12.5px; color: var(--ok); background: #3ddc9714; border: 1px solid var(--ok); border-radius: 10px; padding: 9px 12px; margin: 0 0 10px; line-height: 1.55; }
 .s3-bar-msg { font-size: 12.5px; color: var(--muted); text-align: center; margin: 2px 0 0; line-height: 1.5; max-width: 680px; }
+.s3-continue-bg { display: block; margin: 8px auto 0; border: 1px solid var(--acc); border-radius: 10px; padding: 10px 16px; background: color-mix(in srgb, var(--acc) 12%, var(--panel)); color: var(--acc); font-weight: 750; cursor: pointer; }
+.s3-continue-bg:hover { background: color-mix(in srgb, var(--acc) 20%, var(--panel)); }
 
 /* schedule modal */
 .s3-overlay { position: fixed; inset: 0; z-index: 200; background: rgba(0, 0, 0, 0.74); display: flex; align-items: center; justify-content: center; padding: 18px; animation: s3Fade 0.2s ease both; }

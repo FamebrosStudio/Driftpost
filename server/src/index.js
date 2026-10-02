@@ -306,6 +306,11 @@ const userKey = (req) => `u:${req.user?.id || req.ip}`;
 const burstLimit = limit({ windowMs: 60 * 1000, max: 180, ns: 'burst', key: (req) => `ip:${req.ip}` });
 const strictBurstLimit = limit({ windowMs: 60 * 1000, max: 30, ns: 'strict', key: (req) => `ip:${req.ip}` });
 const publishLimit = limit({ windowMs: 60 * 1000, max: 10, ns: 'pub', key: userKey });
+// A Post All fan-out may legitimately submit dozens of independent account
+// jobs in one minute. Keep a firm per-IP/user bound without treating one
+// reviewed batch like an abusive request burst.
+const publishRequestBurstLimit = limit({ windowMs: 60 * 1000, max: 100, ns: 'publish-burst', key: (req) => `ip:${req.ip}` });
+const publishQueueLimit = limit({ windowMs: 15 * 60 * 1000, max: 100, ns: 'publish-queue', key: userKey });
 const aiLimit = limit({ windowMs: 60 * 60 * 1000, max: 30, ns: 'ai', key: userKey });
 const oauthLimit = limit({ windowMs: 60 * 1000, max: 20, ns: 'oauth', key: userKey });
 const connectionsLimit = limit({ windowMs: 60 * 1000, max: 60, ns: 'conn', key: userKey });
@@ -377,31 +382,39 @@ function activeJobCount(userId) {
 // accepted jobs stay pollable in `queued` state while their disk-backed media
 // waits, avoiding both per-click serialization and an unbounded RAM spike.
 const MAX_ACTIVE_PUBLISHES = 2;
+const MAX_PENDING_PUBLISHES = 100;
+const MAX_USER_PENDING_PUBLISHES = 50;
 let activePublishes = 0;
 const publishQueue = [];
 function pumpPublishQueue() {
   while (activePublishes < MAX_ACTIVE_PUBLISHES && publishQueue.length) {
     const task = publishQueue.shift();
     activePublishes++;
+    if (task.job) {
+      task.job.startedAt = Date.now();
+      task.job.message = 'Publishing…';
+    }
     Promise.resolve().then(task.run).then(task.resolve, task.reject).finally(() => {
       activePublishes--;
       pumpPublishQueue();
     });
   }
 }
-function queuePublish(run) {
+function queuePublish(run, job = null) {
   return new Promise((resolve, reject) => {
-    publishQueue.push({ run, resolve, reject });
+    publishQueue.push({ run, resolve, reject, job });
     pumpPublishQueue();
   });
 }
 
-// Watchdog: a provider call that never returns must not lock the user at
-// "3 publishes already running" forever — fail stuck jobs after 10 minutes.
+// Watchdog: a provider call that never returns must not lock a queue slot
+// forever. Allow long queues, but expire jobs stuck in a provider call.
 setInterval(() => {
   const now = Date.now();
   for (const j of jobs.values()) {
-    if (!['completed', 'failed'].includes(j.state) && now - (j.createdAt || now) > 10 * 60 * 1000) {
+    const queuedTooLong = j.state === 'queued' && now - (j.createdAt || now) > 4 * 60 * 60 * 1000;
+    const runningTooLong = j.startedAt && !['completed', 'failed'].includes(j.state) && now - j.startedAt > 20 * 60 * 1000;
+    if (queuedTooLong || runningTooLong) {
       j.state = 'failed';
       j.message = 'Publish timed out — check the platform, it may still have posted.';
       j.completedAt = now;
@@ -1089,7 +1102,7 @@ async function magicIsImage(filePath) {
     (head[0] === 0x42 && head[1] === 0x4d) // BMP
   );
 }
-app.post('/api/publish', requireUser, strictBurstLimit, publishLimit, publishUpload, async (req, res) => {
+app.post('/api/publish', requireUser, publishRequestBurstLimit, publishQueueLimit, publishUpload, async (req, res) => {
   const platform = String(req.body.platform || '').slice(0, 32);
   const connectionId = String(req.body.connection_id || '').slice(0, 128);
   const files = [...(req.files?.media || []), ...(req.file ? [req.file] : [])];
@@ -1177,9 +1190,13 @@ app.post('/api/publish', requireUser, strictBurstLimit, publishLimit, publishUpl
     await cleanup();
     return res.status(400).json({ error: 'X allows up to 4 photos per post' });
   }
-  if (activeJobCount(req.user.id) >= 3) {
+  if (activeJobCount(req.user.id) >= MAX_USER_PENDING_PUBLISHES) {
     await cleanup();
-    return res.status(429).json({ error: '3 publishes already running. Wait for one to finish.' });
+    return res.status(429).json({ error: 'You have 50 posts queued or publishing. Wait for some to finish before starting another batch.' });
+  }
+  if (activePublishes + publishQueue.length >= MAX_PENDING_PUBLISHES) {
+    await cleanup();
+    return res.status(503).json({ error: 'The publish queue is full right now. Wait a few minutes and retry.' });
   }
   const { data: conn, error } = await supabase.from('platform_connections')
     .select('*').eq('id', connectionId).eq('user_id', req.user.id).eq('platform', platform).maybeSingle();
@@ -1191,7 +1208,7 @@ app.post('/api/publish', requireUser, strictBurstLimit, publishLimit, publishUpl
   const job = { id, userId: req.user.id, platform, connectionId: conn.id, publishedPosts: [], state: 'queued', progress: 0, message: 'Queued', createdAt: Date.now() };
   jobs.set(id, job);
   res.status(202).json({ job });
-  void queuePublish(() => runPublish(job, conn, { files, instagramFiles, facebookFiles, thumbFile, coverFiles }, req.body, req.user.id)).catch((error) => {
+  void queuePublish(() => runPublish(job, conn, { files, instagramFiles, facebookFiles, thumbFile, coverFiles }, req.body, req.user.id), job).catch((error) => {
     console.error('[publish] unexpected job failure', job.id, error);
     if (job.state !== 'completed') {
       job.state = 'failed'; job.message = error.message || 'Publishing failed'; job.completedAt = Date.now();
@@ -2064,7 +2081,7 @@ async function runDueSchedules() {
           if (!cover?.path) continue;
           localCovers[platformName] = await downloadScheduledFile({ ...cover, mimetype: 'image/jpeg', name: cover.name || 'cover.jpg' }, `driftpost-sched-${platformName}-cover`);
         }
-        await queuePublish(() => runPublish(job, conn, { files: localFiles, instagramFiles: localInstagramFiles, facebookFiles: localFacebookFiles, thumbFile, coverFiles: localCovers }, row.body || {}, row.user_id));
+        await queuePublish(() => runPublish(job, conn, { files: localFiles, instagramFiles: localInstagramFiles, facebookFiles: localFacebookFiles, thumbFile, coverFiles: localCovers }, row.body || {}, row.user_id), job);
         const done = jobs.get(job.id) || job;
         const published = done.state === 'completed';
         await supabase.from('scheduled_posts').update({
