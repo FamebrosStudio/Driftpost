@@ -1405,7 +1405,11 @@
     {
       "id": "seven_cube_footwear",
       "name": "Seven Cube Footwear",
-      "aliases": ["Seven Cube", "Seven cube footwear"],
+      "aliases": [
+        "Seven Cube",
+        "Seven cube footwear",
+        "@sevencubes.footwear"
+      ],
       "cat": "Footwear",
       "loc": "",
       "genres": [
@@ -1434,7 +1438,7 @@
       ],
       "mandatory": [],
       "ex": "A closer look at your next outfit detail. 👟\nExplore the pair featured by Seven Cube Footwear.\nDM us to enquire.",
-      "ig": null,
+      "ig": "sevencubes.footwear",
       "ready": "ready_with_post_brief",
       "web": null,
       "email": null

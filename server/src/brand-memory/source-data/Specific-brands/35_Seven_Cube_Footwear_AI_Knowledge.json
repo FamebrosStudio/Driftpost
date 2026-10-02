@@ -5,7 +5,8 @@
   "brand_name": "Seven Cube Footwear",
   "aliases": [
     "Seven Cube",
-    "Seven cube footwear"
+    "Seven cube footwear",
+    "@sevencubes.footwear"
   ],
   "knowledge_scope": "One brand only. This file covers Seven Cube Footwear based on the confirmed footwear category and informational and edit-led content genres. Official social, location, contact, audience segment, catalogue and commercial terms remain unresolved, so the system emphasizes real-product fidelity and strict anti-invention controls.",
   "business": {
@@ -37,16 +38,23 @@
     "contact_rule": "Do not use details from a similarly named footwear seller."
   },
   "social_media": {
-    "instagram_handle": null,
-    "instagram_url": null,
-    "instagram_status": "Not resolved after exact-name public searches.",
+    "instagram_handle": "sevencubes.footwear",
+    "instagram_url": "https://www.instagram.com/sevencubes.footwear/",
+    "instagram_status": "User-supplied connected-account handle; not independently matched in public search.",
     "facebook_url": null,
     "website_url": null,
     "managing_agency": "Famebros Studio",
     "agency_instagram_handle": "@famebrosstudio",
     "agency_instagram_url": "https://www.instagram.com/famebrosstudio/",
     "agency_credit_default": "💫 Managed by: @famebrosstudio",
-    "reference_rule": "Obtain the official page directly. Do not tag a guessed account."
+    "reference_rule": "Obtain the official page directly. Do not tag a guessed account.",
+    "evidence": [
+      {
+        "source": "User-supplied screenshot header",
+        "detail": "The active caption screen identifies the selected account as @sevencubes.footwear.",
+        "observed_date": "2026-10-02"
+      }
+    ]
   },
   "established_content_knowledge": {
     "confirmed_content_pillars": [
@@ -219,10 +227,9 @@
   },
   "fixed_footer": {
     "standard_lines": [
-      "DM Seven Cube Footwear for current details.",
       "💫 Managed by: @famebrosstudio"
     ],
-    "status": "Temporary wording. Replace with the official handle and contact after confirmation.",
+    "status": "Agency credit only. Keep the caption CTA in the caption body; no verified public address or phone is available.",
     "usage": "Use only when the publication is going through the confirmed brand account.",
     "exceptions": [
       "Story overlays",
@@ -394,7 +401,7 @@
     ],
     "input_rule": "Ask for the product sheet and official account before sales-ready copy."
   },
-  "master_brand_instruction": "Create content only for Seven Cube Footwear. The confirmed facts are the footwear category and informational and edit-led content genres. The official Instagram, location, contact, audience segment, catalogue and commerce rules are not established. Write crisp, contemporary English or Hinglish focused on the actual pair and visible details. Never assume gender, leather, branded authenticity, orthopaedic value, comfort, fit, size, price or stock. Preserve the uploaded footwear exactly. Use only a generic enquiry CTA until the official account is supplied. Standard captions use exactly three hashtags and one SEO bracket with five to eight phrases. Remove all em dashes.",
+  "master_brand_instruction": "Create content only for Seven Cube Footwear. The confirmed facts are the footwear category and informational and edit-led content genres. The connected account handle is supplied as @sevencubes.footwear; the official location, phone, audience segment, catalogue and commerce rules are not independently confirmed. No public enquiry phone, exact store address, branch or general size range is confirmed. Never add one unless the current post brief or approved product data explicitly supplies it. Write crisp, contemporary English or Hinglish focused on the actual pair and visible details. Never assume gender, leather, branded authenticity, orthopaedic value, comfort, fit, size, price or stock. Preserve the uploaded footwear exactly. Use only a generic enquiry CTA until the official account is supplied. Standard captions use exactly three hashtags and one SEO bracket with five to eight phrases. Remove all em dashes.",
   "missing_information": {
     "identity": [
       "Official Instagram",
@@ -441,8 +448,12 @@
       "17 September operational note."
     ],
     "public_sources": [],
-    "public_search_note": "Exact-name searches for Seven Cube Footwear, Seven Cube Footwear Mumbai and SevenCubeFootwear on 2026-10-02 did not reliably identify this business or its official social accounts. Unrelated namesakes and generic footwear results were excluded; do not infer location, contact, audience segment, catalogue or commerce terms.",
+    "public_search_note": "Exact-name searches for Seven Cube Footwear, Seven Cube Footwear Mumbai and SevenCubeFootwear on 2026-10-02 did not reliably identify this business or its official social accounts. Unrelated namesakes and generic footwear results were excluded; do not infer location, contact, audience segment, catalogue or commerce terms. Exact search for the screenshot address and phone did not produce a reliable matching public source.",
     "internal_dataset": "Famebros_Brand_Caption_Dataset.json record seven_cube_footwear.",
     "source_rule": "Direct owner confirmation is required before adding public identity and commerce data."
-  }
+  },
+  "missing_details": [
+    "Public enquiry phone number",
+    "Exact public store address and applicable branch"
+  ]
 }

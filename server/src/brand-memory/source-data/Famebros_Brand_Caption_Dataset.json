@@ -3673,7 +3673,8 @@
       "name": "Seven Cube Footwear",
       "aliases": [
         "Seven Cube",
-        "Seven cube footwear"
+        "Seven cube footwear",
+        "@sevencubes.footwear"
       ],
       "category": "Footwear",
       "location": null,
@@ -3720,11 +3721,11 @@
         "💫 Managed by: @famebrosstudio"
       ],
       "instagram": {
-        "url": null,
-        "handle": null,
-        "status": "not_resolved",
+        "url": "https://www.instagram.com/sevencubes.footwear/",
+        "handle": "sevencubes.footwear",
+        "status": "user_supplied_connected_account",
         "evidence": [],
-        "note": "Exact page not established. Do not invent a handle or learn from a similarly named business."
+        "note": "Selected-account header shown in user screenshot; not independently matched in public search."
       },
       "example": {
         "status": "new_illustrative_example_not_a_historical_caption",
@@ -3745,13 +3746,13 @@
         "full_caption": "A closer look at your next outfit detail. 👟\nExplore the pair featured by Seven Cube Footwear.\nDM us to enquire.\n\n💫 Managed by: @famebrosstudio\n\n#SevenCubeFootwear #FootwearStyle #StyleInspiration\n\n[Seven Cube Footwear, footwear collection, shoe styling, footwear showcase, shoe details]"
       },
       "missing_details": [
-        "Confirmed official Instagram page",
-        "Public enquiry phone, if the brand wants it in captions",
-        "Exact public address and applicable branch, if required"
+        "Public enquiry phone number",
+        "Exact public store address and applicable branch"
       ],
       "sources": [
         "Specific-brands/35_Seven_Cube_Footwear_AI_Knowledge.json: supplied category, genre and product accuracy rules.",
-        "Public exact-name searches on 2026-10-02 did not reliably identify this business; unrelated namesakes were excluded."
+        "Public exact-name searches on 2026-10-02 did not reliably identify this business; unrelated namesakes were excluded.",
+        "User-supplied caption-screen screenshot, 2026-10-02: selected account header shows @sevencubes.footwear."
       ],
       "footer_policy": "Use these known lines for feed/reel captions. This is the proposed standard except the two source-file footers and the explicit Smietz rules. Omit footer for story/comment/repost modes unless requested. Do not add missing contact fields.",
       "readiness": "ready_with_post_brief",

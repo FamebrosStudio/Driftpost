@@ -3646,7 +3646,9 @@
     {
       "brand_id": "seven_cube_footwear",
       "name": "Seven Cube Footwear",
-      "aliases": [],
+      "aliases": [
+        "@sevencubes.footwear"
+      ],
       "category": "Footwear",
       "location": null,
       "content_genres": [
@@ -3692,11 +3694,11 @@
         "💫 Managed by: @famebrosstudio"
       ],
       "instagram": {
-        "url": null,
-        "handle": null,
-        "status": "not_resolved",
+        "url": "https://www.instagram.com/sevencubes.footwear/",
+        "handle": "sevencubes.footwear",
+        "status": "user_supplied_connected_account",
         "evidence": [],
-        "note": "Exact page not established. Do not invent a handle or learn from a similarly named business."
+        "note": "Selected-account header shown in user screenshot; not independently matched in public search."
       },
       "example": {
         "status": "new_illustrative_example_not_a_historical_caption",
@@ -3717,9 +3719,8 @@
         "full_caption": "A closer look at your next outfit detail. 👟\nExplore the pair featured by Seven Cube Footwear.\nDM us to enquire.\n\n💫 Managed by: @famebrosstudio\n\n#SevenCubeFootwear #FootwearStyle #StyleInspiration\n\n[Seven Cube Footwear, footwear collection, shoe styling, footwear showcase, shoe details]"
       },
       "missing_details": [
-        "Confirmed official Instagram page",
-        "Public enquiry phone, if the brand wants it in captions",
-        "Exact public address and applicable branch, if required"
+        "Public enquiry phone number",
+        "Exact public store address and applicable branch"
       ],
       "sources": [
         "data.txt: brand name and listed genres"

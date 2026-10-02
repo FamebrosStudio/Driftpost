@@ -1953,14 +1953,14 @@ Source notes: data.txt: brand name and listed genres; https://gsinternationalsch
 ================================================================
 37. Seven Cube Footwear
 Brand ID: seven_cube_footwear
-Aliases: Seven Cube, Seven cube footwear
+Aliases: Seven Cube, Seven cube footwear, @sevencubes.footwear (user supplied)
 Category: Footwear
 Location: Not established
 Source genres: informational, edits
 Readiness: ready_with_post_brief
-Instagram: NOT RESOLVED
-Instagram status: not resolved after exact-name public searches on 2026-10-02
-Instagram note: Do not invent a handle or learn from a similarly named business.
+Instagram: @sevencubes.footwear (user-supplied connected-account screenshot)
+Instagram status: user supplied connected-account handle; public profile not independently matched
+Instagram note: The selected account header shows this handle. Public phone and exact store address remain unverified.
 
 Caption direction (editorial defaults)
 Tone: Contemporary, crisp and product focused
@@ -1973,7 +1973,7 @@ Keyword bank: Seven Cube Footwear, footwear collection, shoe styling, footwear s
 
 Established additional facts
 - Category and informational/edit-led content genres are established in the supplied brand profile.
-- No reliable public source established its official social account, location, contacts, target segment, products or sales terms.
+- The handle above is user supplied. No reliable public source established the exact store location, phone, target segment, catalogue or sales terms.
 
 Mandatory recurring wording: No extra mandatory line established.
 Known contacts: {"phone": [], "address": null, "email": null, "website": null}
@@ -1992,7 +1992,7 @@ Explore the actual pair and its visible finish. DM the confirmed brand account t
 [Seven Cube Footwear, footwear collection, shoe styling ideas, footwear product details, shoe size information]
 
 Complete these fields when available: Confirmed official account and contact, location, target segment, current catalogue and size chart, price and stock, ordering, shipping, returns and warranty.
-Source notes: Specific-brands/35_Seven_Cube_Footwear_AI_Knowledge.json; public exact-name searches on 2026-10-02 did not reliably identify this business.
+Source notes: Specific-brands/35_Seven_Cube_Footwear_AI_Knowledge.json; exact-name and screenshot-address/phone searches did not establish a reliable public location or number.
 Source notes: data.txt: brand name and listed genres
 
 ================================================================
