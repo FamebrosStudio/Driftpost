@@ -71,7 +71,7 @@ function parseCsv(text) {
   return data;
 }
 
-export default function ScheduleModal({ platforms, accountFor, invalidFor, busy, onClose, onSchedule, platform }) {
+export default function ScheduleModal({ platforms, accountFor, invalidFor, busy, onClose, onSchedule, platform, serverError = '' }) {
   const [when, setWhen] = useState(calendarWhen);
   // Preselect the tab the user scheduled from — not just platforms[0].
   const [sel, setSel] = useState(platform && platforms.includes(platform) ? platform : (platforms[0] || ''));
@@ -186,6 +186,7 @@ export default function ScheduleModal({ platforms, accountFor, invalidFor, busy,
         </details>
 
         {err && <p className="s3-err">{err}</p>}
+        {serverError && <p className="s3-err" role="alert">{serverError}</p>}
 
         <div className="s3-acts">
           <button type="button" onClick={onClose}>Cancel</button>

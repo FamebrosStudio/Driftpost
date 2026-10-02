@@ -20,6 +20,7 @@ import { createPkcePair, exchangeXCode, getXUser, xAuthorizationUrl } from './x.
 import { createXPost, deleteXPost, uploadXMedia, validXAccessToken } from './x-publish.js';
 import { generateCaptions } from './ai.js';
 import { uploadMediaFile, downloadMediaFile } from './media-io.js';
+import { scheduleIdentity } from './schedule-fields.js';
 
 const required = ['FRONTEND_URL', 'SUPABASE_URL', 'SUPABASE_SECRET_KEY', 'TOKEN_ENCRYPTION_KEY', 'STATE_SIGNING_SECRET'];
 const missing = required.filter((n) => !process.env[n]);
@@ -1817,9 +1818,16 @@ app.post('/api/approvals/:id', strictBurstLimit, async (req, res) => {
   res.json({ ok: true, decision });
 });
 
-app.post('/api/schedule', requireUser, strictBurstLimit, publishLimit, publishUpload, async (req, res) => {
-  const platform = String(req.body.platform || '').slice(0, 32);
-  const connectionId = String(req.body.connection_id || '').slice(0, 128);
+// Record when the client started sending the scheduling request, before
+// multer receives potentially large media files. Validate the requested
+// time against this point, not after the full upload has completed; otherwise
+// a valid near-future schedule can become a false 400 for large videos.
+const markScheduleRequestStart = (req, _res, next) => {
+  req.scheduleRequestStartedAt = Date.now();
+  next();
+};
+
+app.post('/api/schedule', requireUser, strictBurstLimit, publishLimit, markScheduleRequestStart, publishUpload, async (req, res) => {
   const files = [...(req.files?.media || []), ...(req.file ? [req.file] : [])];
   const instagramFiles = req.files?.instagram_media || [];
   const facebookFiles = req.files?.facebook_media || [];
@@ -1828,6 +1836,14 @@ app.post('/api/schedule', requireUser, strictBurstLimit, publishLimit, publishUp
   const cleanupTmp = async () => {
     for (const f of [...files, ...instagramFiles, ...facebookFiles, ...(thumbFile ? [thumbFile] : []), ...Object.values(coverFiles).filter(Boolean)]) await fs.unlink(f.path).catch(() => {});
   };
+  try {
+    Object.assign(req.body, scheduleIdentity(req.body));
+  } catch (error) {
+    await cleanupTmp();
+    return res.status(400).json({ error: error.message });
+  }
+  const platform = req.body.platform;
+  const connectionId = req.body.connection_id;
   if (!['youtube', 'facebook', 'instagram', 'x'].includes(platform)) {
     await cleanupTmp();
     return res.status(400).json({ error: 'Pick YouTube, Instagram, Facebook or X' });
@@ -1842,7 +1858,8 @@ app.post('/api/schedule', requireUser, strictBurstLimit, publishLimit, publishUp
     await cleanupTmp();
     return res.status(400).json({ error: 'Pick a valid date and time' });
   }
-  if (when < Date.now() + 60 * 1000) {
+  const requestStartedAt = Number(req.scheduleRequestStartedAt) || Date.now();
+  if (when < requestStartedAt + 60 * 1000) {
     await cleanupTmp();
     return res.status(400).json({ error: 'Schedule at least 1 minute from now' });
   }

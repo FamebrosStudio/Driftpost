@@ -1,4 +1,5 @@
 import { getSupabase, pokeSession } from './session.js';
+import { buildScheduleForm } from './scheduleForm.js';
 import { AI_ACCESS_HEADER, readAiGrantForAccessToken } from './ai-access.js';
 
 const apiUrlRaw = import.meta.env.VITE_API_URL;
@@ -243,20 +244,8 @@ export function groupBrands(connections) {
 
 // Queue a post for the server to publish later. Media rides along as
 // multipart so the worker can rebuild the exact upload at fire time.
-export async function schedulePost(token, { platform, connectionId, when, body, files = [], instagramFiles = [], facebookFiles = [], thumb = null, instagramCover = null, facebookCover = null, repeatEveryDays = 0, repeatRemaining = 0 }) {
-  const form = new FormData();
-  form.append('platform', platform);
-  form.append('connection_id', connectionId || '');
-  form.append('scheduled_at', when);
-  form.append('repeat_every_days', String(repeatEveryDays || 0));
-  form.append('repeat_remaining', String(repeatRemaining || 0));
-  for (const [k, v] of Object.entries(body || {})) form.append(k, v == null ? '' : String(v));
-  for (const f of files) if (f?.raw) form.append('media', f.raw, f.name);
-  for (const f of instagramFiles) if (f?.raw) form.append('instagram_media', f.raw, f.name);
-  for (const f of facebookFiles) if (f?.raw) form.append('facebook_media', f.raw, f.name);
-  if (thumb?.raw) form.append('thumbnail', thumb.raw, thumb.name);
-  if (instagramCover?.raw) form.append('cover_instagram', instagramCover.raw, instagramCover.name);
-  if (facebookCover?.raw) form.append('cover_facebook', facebookCover.raw, facebookCover.name);
+export async function schedulePost(token, options) {
+  const form = buildScheduleForm(options);
   const res = await fetch(apiRequestUrl('/api/schedule', 'POST'), {
     method: 'POST',
     headers: { Authorization: `Bearer ${token}` },

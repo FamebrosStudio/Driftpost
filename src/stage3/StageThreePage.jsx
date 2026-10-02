@@ -929,6 +929,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
 
   const doSchedule = async (pid, whenIso, repeat = {}, bulkRows = [], requestApproval = false) => {
     if (schedBusy || !claim(`sched:${pid}`)) return;
+    setSchedErr('');
     let scheduledCount = 0;
     let plannedCount = 0;
     // Same validity as instant Post — an unsendable payload must fail here,
@@ -938,6 +939,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
     if (bad) {
       release(`sched:${pid}`);
       setSchedMsg(`Fix the ${NAMES[pid]} card first: ${bad}`);
+      setSchedErr(`Fix the ${NAMES[pid]} card first: ${bad}`);
       return;
     }
     setSchedBusy(true);
@@ -1026,7 +1028,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
       setSchedMsg(`${NAMES[pid]}${batchLabel} ${requestApproval ? 'queued for approval' : 'scheduled'}${bulkRows.length ? '' : ` for ${whenLabel}`}${repeatLabel}. Manage or cancel in History.`);
     } catch (e) {
       setSchedMsg(scheduledCount ? `Scheduled ${scheduledCount} of ${plannedCount}. ${e.message || 'The batch stopped after this error.'}` : (e.message || 'Could not schedule the post'));
-      if (!scheduledCount) setSchedErr(e.message || 'Could not schedule the post');
+      setSchedErr(scheduledCount ? `Scheduled ${scheduledCount} of ${plannedCount}. ${e.message || 'The batch stopped.'} Do not resubmit the whole batch; check History first.` : (e.message || 'Could not schedule the post'));
     } finally {
       release(`sched:${pid}`);
       setSchedBusy(false);
@@ -1189,6 +1191,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
           accountFor={accountFor}
           invalidFor={invalidReason}
           busy={schedBusy}
+          serverError={schedErr}
           onClose={() => setSchedOpen(false)}
           onSchedule={doSchedule}
         />
