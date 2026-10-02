@@ -32,6 +32,23 @@ minutes and verifies browser CORS preflight. This backup is already enabled.
 GitHub schedules can be delayed, so it does not replace a dedicated monitor.
 Use GitHub's Actions notification settings to receive failed-run alerts.
 
+## If the Vercel frontend was paused
+
+Resuming and redeploying are separate actions. In Vercel, open the correct
+team and Driftpost project, choose **Resume Service**, and confirm. A paused
+production deployment returns `503 DEPLOYMENT_PAUSED`; a new Git deployment
+does not itself unpause the project. If Vercel says the current deployment
+cannot be redeployed and asks for a fresh commit, make a small legitimate
+change on `main` (a docs correction is fine) to trigger a new Git deployment,
+then confirm the production domain is assigned to the successful deployment.
+Check Vercel's notification email and Spend Management settings if it pauses
+again.
+
+Vercel references:
+
+- https://vercel.com/docs/errors/deployment_paused
+- https://vercel.com/docs/projects/managing-projects#resuming-a-project
+
 ## What this does and does not cover
 
 Render Free normally sleeps after 15 minutes without inbound traffic. Regular
