@@ -24,6 +24,24 @@
 .stage1-head h1 { font-size: clamp(26px, 4.6vw, 38px); letter-spacing: -0.5px; margin: 16px 0 8px; line-height: 1.15; }
 .stage1-head p { color: var(--muted); font-size: 14.5px; margin: 0 auto; max-width: 520px; line-height: 1.6; }
 
+.bg-publish-notice { position: fixed; z-index: 1000; right: 20px; bottom: 20px; display: grid; grid-template-columns: 34px minmax(0, 1fr) 28px; align-items: start; gap: 10px; width: min(430px, calc(100vw - 24px)); max-height: min(70vh, 520px); overflow: auto; padding: 15px; border: 1px solid var(--line-hard); border-radius: 15px; background: var(--panel); color: var(--ink); box-shadow: 0 18px 55px #0009; }
+.bg-publish-notice__icon { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: var(--acc-soft); color: var(--acc); font-size: 18px; font-weight: 800; }
+.bg-publish-notice__heading { display: flex; align-items: center; gap: 9px; min-height: 30px; }
+.bg-publish-notice__heading strong { font-size: 14px; }
+.bg-publish-live { color: var(--ok); font-size: 9px; font-weight: 800; letter-spacing: 1px; }
+.bg-publish-live::before { content: ""; display: inline-block; width: 6px; height: 6px; margin: 0 5px 1px 0; border-radius: 50%; background: var(--ok); animation: bgPublishPulse 1.3s ease-in-out infinite; }
+.bg-publish-notice p { margin: 5px 0 10px; color: var(--muted); font-size: 12px; line-height: 1.5; }
+.bg-publish-notice > button { border: 0; border-radius: 7px; background: transparent; color: var(--faint); font-size: 22px; line-height: 1; cursor: pointer; }
+.bg-publish-notice > button:hover { background: var(--hover); color: var(--ink); }
+.bg-publish-notice__accounts { display: grid; gap: 8px; max-height: 210px; overflow: auto; padding-right: 3px; }
+.bg-publish-notice__account > div:first-child { display: flex; justify-content: space-between; gap: 8px; font-size: 11px; }
+.bg-publish-notice__account > div:first-child span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bg-publish-notice__account small, .bg-publish-notice__accounts > small { flex: none; color: var(--muted); font-size: 10px; }
+.bg-publish-notice__track { height: 3px; margin-top: 4px; overflow: hidden; border-radius: 99px; background: var(--line); }
+.bg-publish-notice__track i { display: block; height: 100%; border-radius: inherit; background: var(--ok); transition: width .35s ease; }
+@keyframes bgPublishPulse { 50% { opacity: .35; } }
+@media (max-width: 520px) { .bg-publish-notice { right: 12px; bottom: 12px; grid-template-columns: 28px minmax(0, 1fr) 24px; gap: 8px; padding: 12px; } .bg-publish-notice__icon { width: 26px; height: 26px; } }
+
 /* progress */
 .s1-progress { margin: 26px auto 6px; max-width: 560px; animation: s1Up 0.5s 0.08s ease both; }
 .s1-progress ol { list-style: none; display: flex; margin: 0; padding: 0; }

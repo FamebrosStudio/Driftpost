@@ -41,7 +41,7 @@ const DEFAULT_CFG = {
 };
 const NAMES = { instagram: 'Instagram', facebook: 'Facebook', youtube: 'YouTube', x: 'X' };
 
-export default function StageThreePage({ session, onBack, onSignOut, onNavigate, onDone }) {
+export default function StageThreePage({ session, onBack, onSignOut, onNavigate, onDone, onBackgroundProgress }) {
   const userId = session.user.id;
   const canUseAi = hasAiAccess(session);
   const [connections, setConnections] = useState([]);
@@ -63,6 +63,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
   const [busy, setBusy] = useState({});
   const publishSlots = useRef({ active: 0, waiters: [] });
   const detachedPublish = useRef(false);
+  const batchProgressRef = useRef(null);
   const [batchQueue, setBatchQueue] = useState(null);
   const [regen, setRegen] = useState('');
   const [brief] = useState(() => load(scopedKey('driftpost-stage2-brief', userId), ''));
@@ -512,16 +513,25 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
   // Post to ONE connection and poll the job. Returns the post URL.
   // When connectionId is given, the form carries exactly that account.
   // The POST itself auto-refreshes a dead login token; polls inherit it.
-  const runToAccount = async (pid, connectionId, out, key, { skipCrossPost = false, mediaOverride = null, onProgress = null, onSubmitted = null } = {}) => {
+  const runToAccount = async (pid, connectionId, out, key, { skipCrossPost = false, mediaOverride = null, onProgress = null, onSubmitted = null, onPublishProgress = null, onPublishFinished = null } = {}) => {
     const report = (value) => {
       commitPublishResult(out, key, value);
       onProgress?.(value);
+      onPublishProgress?.({ key, platform: pid, connectionId, account: connById[connectionId]?.account_name || NAMES[pid] || 'account', ...value });
     };
     report({ state: 'uploading', progress: 5, message: 'Preparing post…' });
     let submissionSettled = false;
+    let acceptedJob = false;
+    let completionReported = false;
+    const finishAcceptedJob = (succeeded) => {
+      if (!acceptedJob || completionReported) return;
+      completionReported = true;
+      onPublishFinished?.({ accepted: true, succeeded, platform: pid, connectionId });
+    };
     const markSubmitted = (accepted) => {
       if (submissionSettled) return;
       submissionSettled = true;
+      acceptedJob = accepted;
       onSubmitted?.({ accepted, platform: pid, connectionId });
     };
     let res; let data; let refreshedToken;
@@ -565,7 +575,10 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
     let pollFailures = 0;
     let pollDelay = 3000;
     for (;;) {
-      if (Date.now() - t0 > pollCap) throw new Error('Publish timed out — check History, it may still have posted.');
+      if (Date.now() - t0 > pollCap) {
+        finishAcceptedJob(false);
+        throw new Error('Publish timed out — check History, it may still have posted.');
+      }
       await new Promise((r) => setTimeout(r, pollDelay));
       let j;
       try {
@@ -577,27 +590,35 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
         // instead of marking a post that may be live as failed or reposting it.
         const temporary = [429, 502, 503, 504].includes(error?.status)
           || /server is unreachable|server is waking up|retrying shortly|failed to fetch|network request failed|load failed/i.test(error?.message || '');
-        if (!temporary) throw error;
+        if (!temporary) {
+          finishAcceptedJob(false);
+          throw error;
+        }
         pollFailures += 1;
         const pause = Math.max(3000, Math.min(60000, error?.retryAfterMs || 1500 * (2 ** Math.min(pollFailures, 5))));
         await new Promise((r) => setTimeout(r, pause));
         continue;
       }
-      report({ state: j.job.state, progress: j.job.progress || 50, url: j.job.url, message: j.job.message });
+      const jobProgress = Number(j.job.progress);
+      report({ state: j.job.state, progress: Number.isFinite(jobProgress) ? jobProgress : 50, url: j.job.url, message: j.job.message });
       // Queued jobs share the API polling budget; check them less often until
       // a worker starts, then return to responsive three-second progress.
       pollDelay = j.job.state === 'queued' ? 20000 : 3000;
       if (j.job.state === 'completed') {
+        finishAcceptedJob(true);
         logPost({ platform: pid, text: mainText(pid), url: j.job.url, postId: j.job.postId, connectionId: j.job.connectionId || connectionId, publishedPosts: j.job.publishedPosts });
         return j.job.url;
       }
-      if (j.job.state === 'failed') throw new Error(j.job.message);
+      if (j.job.state === 'failed') {
+        finishAcceptedJob(false);
+        throw new Error(j.job.message);
+      }
     }
   };
 
   // Single-account path (brand / platform flows): unchanged behaviour.
-  const runOne = async (pid, out, { key = null, skipCrossPost = false, mediaOverride = null, onSubmitted = null } = {}) => {
-    const url = await runToAccount(pid, accountFor(pid), out, key || pid, { skipCrossPost, mediaOverride, onSubmitted });
+  const runOne = async (pid, out, { key = null, skipCrossPost = false, mediaOverride = null, onSubmitted = null, onPublishProgress = null, onPublishFinished = null } = {}) => {
+    const url = await runToAccount(pid, accountFor(pid), out, key || pid, { skipCrossPost, mediaOverride, onSubmitted, onPublishProgress, onPublishFinished });
     onReviewed(pid);
     return url;
   };
@@ -606,7 +627,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
   // platform — plus every mirrored (greyed-out) platform's members, each a
   // direct post with mirrors stripped so nothing double-posts. Per-account
   // links land in results[pid].urls.
-  const runGroup = async (pid, out, { mediaOverride = null, onSubmitted = null } = {}) => {
+  const runGroup = async (pid, out, { mediaOverride = null, onSubmitted = null, onPublishProgress = null, onPublishFinished = null } = {}) => {
     const cov = coveredPids(pid);
     const plan = [...new Set(cov.flatMap((q) => groupMemberIds(q)))].map((id) => ({ q: connById[id]?.platform, id }))
       .filter(({ q }) => q);
@@ -619,6 +640,8 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
             skipCrossPost: true,
             mediaOverride,
             onSubmitted,
+            onPublishProgress,
+            onPublishFinished,
             onProgress: (status) => {
               accountProgress[i] = status;
               const completed = accountResults.filter(Boolean).length;
@@ -765,16 +788,77 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
       ? new Set(coveredPids(pid).flatMap((q) => groupMemberIds(q))).size
       : 1;
     const totalRequests = targets.reduce((sum, pid) => sum + requestCount(pid), 0);
-    setBatchQueue({ accepted: 0, settled: 0, total: totalRequests });
-    const onSubmitted = ({ accepted }) => setBatchQueue((current) => current ? ({
+    const batchId = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+    const initialBatch = { id: batchId, accepted: 0, settled: 0, total: totalRequests, inProgress: 0, published: 0, failed: 0, accounts: {} };
+    batchProgressRef.current = initialBatch;
+    setBatchQueue(initialBatch);
+    const updateBatch = (change) => {
+      const current = batchProgressRef.current;
+      if (!current || current.id !== batchId) return;
+      const next = typeof change === 'function' ? change(current) : { ...current, ...change };
+      batchProgressRef.current = next;
+      if (!detachedPublish.current) setBatchQueue(next);
+      else onBackgroundProgress?.(next);
+    };
+    const onSubmitted = ({ accepted, platform, connectionId }) => updateBatch((current) => ({
       ...current,
       accepted: current.accepted + (accepted ? 1 : 0),
       settled: current.settled + 1,
-    }) : current);
-    const settleWithoutRequest = (count) => setBatchQueue((current) => current ? ({
+      inProgress: current.inProgress + (accepted ? 1 : 0),
+      failed: current.failed + (accepted ? 0 : 1),
+      accounts: {
+        ...current.accounts,
+        [`${platform}:${connectionId || platform}`]: {
+          ...(current.accounts[`${platform}:${connectionId || platform}`] || {}),
+          platform,
+          connectionId,
+          account: connById[connectionId]?.account_name || NAMES[platform] || 'account',
+          state: accepted ? 'queued' : 'failed',
+          progress: accepted ? 0 : 100,
+          message: accepted ? 'Accepted by Driftpost' : 'Could not queue this post',
+        },
+      },
+    }));
+    const onPublishProgress = (progress) => updateBatch((current) => {
+      const accountKey = `${progress.platform}:${progress.connectionId || progress.platform}`;
+      return {
+        ...current,
+        accounts: {
+          ...current.accounts,
+          [accountKey]: { ...(current.accounts[accountKey] || {}), ...progress },
+        },
+      };
+    });
+    const onPublishFinished = ({ accepted, succeeded, platform, connectionId }) => {
+      if (!accepted) return;
+      updateBatch((current) => {
+        const accountKey = `${platform}:${connectionId || platform}`;
+        return {
+          ...current,
+          inProgress: Math.max(0, current.inProgress - 1),
+          published: current.published + (succeeded ? 1 : 0),
+          failed: current.failed + (succeeded ? 0 : 1),
+          accounts: {
+            ...current.accounts,
+            [accountKey]: {
+              ...(current.accounts[accountKey] || {}),
+              state: succeeded ? 'completed' : 'failed',
+              progress: 100,
+              message: succeeded ? 'Published' : 'Publishing failed; check History',
+            },
+          },
+        };
+      });
+    };
+    const settleWithoutRequest = (count) => updateBatch((current) => ({
       ...current,
       settled: current.settled + count,
-    }) : current);
+      failed: current.failed + count,
+      accounts: {
+        ...current.accounts,
+        [`validation:${current.settled}`]: { account: 'Post validation', state: 'failed', progress: 100, message: 'Fix the indicated card before retrying' },
+      },
+    }));
     // Light every target card so the run is visible even before first progress.
     setBusy((b) => { const n = { ...b }; targets.forEach((p) => { n[p] = true; }); return n; });
     const out = { ...results };
@@ -815,7 +899,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
         }
         const mo = (pid === 'youtube' && clipWrapped) ? clipWrapped : undefined;
         try {
-          if (isGroupFlow) await runGroup(pid, out, { mediaOverride: mo, onSubmitted });
+          if (isGroupFlow) await runGroup(pid, out, { mediaOverride: mo, onSubmitted, onPublishProgress, onPublishFinished });
           else await runOne(pid, out, {
             skipCrossPost: isGroupFlow || !(
               (pid === 'instagram' && mirrorTarget === 'facebook') ||
@@ -823,6 +907,8 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
             ),
             mediaOverride: mo,
             onSubmitted,
+            onPublishProgress,
+            onPublishFinished,
           });
         } catch (e) {
           if (out[pid]?.state !== 'failed') {
@@ -958,7 +1044,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
     // this draft only drops its local monitor; it does not cancel the jobs.
     detachedPublish.current = true;
     await resetPostState(session.user.id);
-    onDone();
+    onDone({ backgroundPublish: batchProgressRef.current || batchQueue });
   };
 
   const allReviewed = effective.length > 0 && reviewedCount === effective.length;
