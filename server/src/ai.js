@@ -351,10 +351,6 @@ export async function generateCaptions(summary, opts = {}) {
   }
   // FULL record: every phone/address/footer/fact/keyword/example for this brand.
   const pack = brand ? mem.fullPack(brand) : '';
-  const datasetRecord = brand ? mem.getPortableDatasetBrand?.(brand.id) : null;
-  const portableDataBlock = datasetRecord
-    ? `\n\nPORTABLE DATASET RECORD (exact brand_id match: ${brand.id}). This is the supplied source summary for the selected business. The detailed brand profile above wins if any field conflicts. Use confirmed facts and writing rules only; sample captions are illustrative, and source notes or missing-data notes are internal. Never copy internal notes into public copy.\n${JSON.stringify(datasetRecord)}`
-    : '';
   const rules = brand ? mem.globalBrandRules() : '';
 
   // Offer/opening posts earn energy: bold hook, emojis, urgency, tag-a-friend.
@@ -367,7 +363,7 @@ export async function generateCaptions(summary, opts = {}) {
   const brandBlock = autoNew
     ? `\n\nNEW BRAND FILED: "${brand.name}" was unknown — a new record was created and will keep learning.\n${pack}\n${rules}\nContacts for a new brand are UNCONFIRMED: agency footer only, never print any phone/address at all — not from the brief, not invented. A number the user typed is not a verified brand number.`
     : brand
-      ? `\n\nBRAND LOCK: the selected brand is exactly "${brand.name}" (ID: ${brand.id}). Write only for this business. Similar names and shared categories are different businesses; never transfer their voice, products, facts, contacts or examples. Use only this selected brand's verified phone/address/footer.\n${pack}${portableDataBlock}\n${rules}`
+      ? `\n\nBRAND LOCK: the selected brand is exactly "${brand.name}" (ID: ${brand.id}). Write only for this business. Similar names and shared categories are different businesses; never transfer their voice, products, facts, contacts or examples. Use only this selected brand's verified phone/address/footer.\n${pack}\n${rules}`
       : `\n\nNo brand in the database matches — write generically from the user brief only. No footer, 3 plain hashtags, no keyword bracket.`;
 
   // What this user has already approved for this brand. Placed after the
@@ -659,14 +655,9 @@ function xaiError(data, res) {
 async function callChat({ model, systemText, userMsg, images = [], maxTokens }) {
   // Image + transcript analysis can take longer than text-only requests.
   // response_format json_object forces valid JSON out of the model.
-  const ctrl = new AbortController();
-  const timer = setTimeout(() => ctrl.abort(), 120000);
-  let res;
-  try {
-    res = await fetch(CHAT_URL, {
+  const res = await fetchXai(CHAT_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${process.env.XAI_API_KEY}` },
-      signal: ctrl.signal,
       body: JSON.stringify({
         model,
         temperature: 0.7,
@@ -681,11 +672,7 @@ async function callChat({ model, systemText, userMsg, images = [], maxTokens }) 
           ] : userMsg },
         ],
       }),
-    });
-  } catch (e) {
-    if (e?.name === 'AbortError') throw new Error('AI timed out after 2 minutes. Retry once; the next call may be faster.');
-    throw e;
-  } finally { clearTimeout(timer); }
+    }, 120000);
   const data = await res.json().catch(() => ({}));
   if (!res.ok) xaiError(data, res);
   const rawContent = data.choices?.[0]?.message?.content;
@@ -716,14 +703,9 @@ function extractResponsesText(data) {
 }
 
 async function callResponsesWithSearch({ model, systemText, userMsg, maxTokens = 950 }) {
-  const ctrl = new AbortController();
-  const timer = setTimeout(() => ctrl.abort(), 45000);
-  let res;
-  try {
-    res = await fetch('https://api.x.ai/v1/responses', {
+  const res = await fetchXai('https://api.x.ai/v1/responses', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${process.env.XAI_API_KEY}` },
-      signal: ctrl.signal,
       body: JSON.stringify({
         model,
         temperature: 0.7,
@@ -734,15 +716,38 @@ async function callResponsesWithSearch({ model, systemText, userMsg, maxTokens =
           { role: 'user', content: userMsg },
         ],
       }),
-    });
-  } catch (e) {
-    if (e?.name === 'AbortError') throw new Error('Live SEO search timed out. Retry without Live SEO for instant results.');
-    throw e;
-  } finally { clearTimeout(timer); }
+    }, 45000);
   const data = await res.json().catch(() => ({}));
   if (!res.ok) xaiError(data, res);
   const text = extractResponsesText(data);
   if (!text.trim()) throw new Error('AI returned an empty answer with live search. Retry without Live SEO.');
   return { text, usage: data.usage };
+}
+
+// xAI occasionally returns a transient edge 520/5xx. Retry once on those
+// responses; normal successful requests incur no extra wait or model call.
+async function fetchXai(url, init, timeoutMs) {
+  for (let attempt = 0; attempt < 2; attempt++) {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), timeoutMs);
+    try {
+      const res = await fetch(url, { ...init, signal: ctrl.signal });
+      if (attempt === 0 && [500, 502, 503, 504, 520, 521, 522, 523, 524].includes(res.status)) {
+        await res.body?.cancel();
+        await new Promise((resolve) => setTimeout(resolve, 300));
+        continue;
+      }
+      return res;
+    } catch (e) {
+      if (e?.name === 'AbortError') {
+        throw new Error(url.includes('/responses')
+          ? 'Live SEO search timed out. Retry without Live SEO for instant results.'
+          : 'AI timed out after 2 minutes. Retry once; the next call may be faster.');
+      }
+      throw e;
+    } finally {
+      clearTimeout(timer);
+    }
+  }
 }
 
