@@ -1,0 +1,1261 @@
+{
+  "schema_version": "3.0",
+  "brand_number": 24,
+  "brand_id": "rajlaxmi_sangli",
+  "brand_name": "Rajlaxmi Jewellers",
+  "aliases": [
+    "Rajlaxmi Jewellers Sangli",
+    "Rajlaxmi Jewellers Kavathe Mahankal",
+    "RajlaxmiJewellers",
+    "राजलक्ष्मी ज्वेलर्स",
+    "राजलक्ष्मी ज्वेलर्स कवठेमहांकाळ",
+    "@rajlaxmijewellers2012"
+  ],
+  "knowledge_scope": "One brand only. This file combines user-provided facts, the matched Rajlaxmi Jewellers identity in Kavathe Mahankal, Sangli district, current public social and directory evidence, established Marathi content direction, jewellery-specific caption guidance and strict accuracy controls. It must never be mixed with similarly named Rajlaxmi businesses in Kalyan, Kolkata, Coorg, Chennai, Patna, Vita or other locations. Publicly visible product and campaign references are separated from permanent catalogue facts, prices, purity claims, hallmark claims and financial terms.",
+  "business": {
+    "category": "Jewellery retail showroom",
+    "industry": "Gold, silver and traditional jewellery retail",
+    "business_model": "Physical jewellery showroom serving local and regional shoppers",
+    "business_model_status": "Supported by the established brand record and matched public business listings. Online ordering and nationwide delivery are not established.",
+    "locality": "Kavathe Mahankal",
+    "district": "Sangli",
+    "state": "Maharashtra",
+    "country": "India",
+    "postal_code": "416405",
+    "location_status": "Kavathe Mahankal, Sangli is matched across the brand's public social content and business listings.",
+    "primary_audience": [
+      "Jewellery shoppers in Kavathe Mahankal",
+      "Customers across Sangli district",
+      "Marathi-speaking jewellery buyers",
+      "Bridal jewellery shoppers",
+      "Wedding and family occasion buyers",
+      "Customers exploring traditional jewellery",
+      "Customers exploring everyday jewellery",
+      "Customers seeking budget or EMI information when an approved scheme is active"
+    ],
+    "core_positioning": "A locally rooted jewellery showroom in Kavathe Mahankal serving Sangli-area customers with traditional and occasion-led jewellery communication in Marathi.",
+    "approved_positioning_short": "आपल्या खास क्षणांसाठी सांगलीतील विश्वासाने निवडलेली दागिन्यांची डिझाइन्स.",
+    "positioning_status": "Editorial wording based on location, category and public content. It is not a verified longevity, market-leadership or trust-ranking claim.",
+    "primary_customer_needs": [
+      "Wedding jewellery discovery",
+      "Mangalsutra selection",
+      "Gold necklace discovery",
+      "Silver jewellery discovery",
+      "Traditional design inspiration",
+      "Daily-wear jewellery discovery",
+      "Festival and gifting inspiration",
+      "Budget and payment-option enquiry",
+      "Store visit planning",
+      "Product availability enquiry"
+    ],
+    "publicly_supported_product_groups": [
+      {
+        "group": "Gold jewellery",
+        "evidence": "Current public social captions and business listings.",
+        "status": "Category association confirmed. Individual products, karat, purity, weight and availability require current confirmation."
+      },
+      {
+        "group": "Silver jewellery",
+        "evidence": "Current public social content includes a silver ring, and matched business listings mention silver jewellery.",
+        "status": "Category association confirmed. Exact silver purity and current range require confirmation."
+      },
+      {
+        "group": "Mangalsutra",
+        "evidence": "Recent public posts reference traditional and bridal mangalsutra designs.",
+        "status": "Content-supported product category. Confirm every design, weight, metal and price before publication."
+      },
+      {
+        "group": "Necklaces",
+        "evidence": "Recent public posts reference gold necklaces and a natural-stone neckpiece.",
+        "status": "Content-supported category. Confirm material, weight, stones and availability."
+      },
+      {
+        "group": "Rings",
+        "evidence": "Recent public content includes a silver Maheshmati ring.",
+        "status": "Content-supported category. Confirm the exact product name and material for each post."
+      }
+    ],
+    "conditionally_supported_product_groups": [
+      {
+        "group": "Diamond jewellery",
+        "status": "A public company-description result mentions diamond jewellery, but the current official catalogue is not available. Confirm before using."
+      },
+      {
+        "group": "Bridal jewellery",
+        "status": "Supported as a public search and content theme, but the exact current bridal range is not established."
+      },
+      {
+        "group": "Daily-wear jewellery",
+        "status": "Appears in public search language. Use only with a matching product asset."
+      }
+    ],
+    "owner_or_founder": null,
+    "owner_status": "No owner, founder or authorized spokesperson name is established.",
+    "year_established": null,
+    "year_established_status": "Not established. The number 2012 appears in the Instagram username and must not be presented as the founding year without confirmation.",
+    "onboarding_or_billing_date": "10 August",
+    "onboarding_or_billing_status": "User-provided internal active-brand note. The year and whether this is onboarding, billing or another operational date are not confirmed. Never use publicly.",
+    "currency": "INR",
+    "dataset_date": "2026-09-25",
+    "commercial_accuracy_rule": "Gold rate, silver rate, making charge, wastage, weight, purity, hallmark, stone specification, price, EMI, offer, exchange, buyback and availability must be confirmed for the exact publication date. Never infer them from an old post or generic jewellery knowledge."
+  },
+  "contact": {
+    "phone_display": "+91 95619 43310",
+    "phone_e164": "+919561943310",
+    "phone_status": "Matched across a historical jewellery registration record and a current verified business-directory listing for Rajlaxmi Jewellers in Kavathe Mahankal.",
+    "phone_publication_rule": "The number has a strong location match, but it was not present in the original internal dataset. Reconfirm with the brand before printing it in permanent artwork, paid ads or a large campaign.",
+    "whatsapp_number": null,
+    "whatsapp_status": "Do not label +91 95619 43310 as WhatsApp and do not create a wa.me link unless the brand confirms WhatsApp service.",
+    "address_preferred_public": "Rajlaxmi Jewellers, Shivaji Chowk, Kavathe Mahankal, Sangli, Maharashtra 416405, India",
+    "address_preferred_status": "Safe consolidated location from multiple public sources. Confirm shop number and lane before printing a full permanent address.",
+    "address_directory_variant": "Shop No. 10, Shivaji Chowk, Patil Gali, Kavathe Mahankal, Maharashtra 416405, India",
+    "address_directory_variant_status": "A current verified business-directory listing. Treat the exact shop number and Patil Gali wording as externally sourced until the brand confirms it.",
+    "address_registration_variant": "Main Road, Shivaji Chowk, At/Post Kavathe Mahakal, Taluka Kavathe Mahakal, District Sangli, Maharashtra 416405, India",
+    "address_registration_variant_status": "Historical 2019 jewellery registration record. Useful identity evidence, but not proof that the current entrance or postal wording is unchanged.",
+    "location_short": "Kavathe Mahankal, Sangli",
+    "email": null,
+    "email_status": "No official email matched to the Sangli brand is established.",
+    "website": null,
+    "website_status": "No official website matched to the Sangli brand is established.",
+    "google_maps_url": null,
+    "google_maps_status": "No official map link has been confirmed.",
+    "public_enquiry_methods": [
+      "Instagram DM at @rajlaxmijewellers2012",
+      "Facebook message at @rajlaxmijewels",
+      "Call +91 95619 43310 after brand reconfirmation",
+      "Visit the Kavathe Mahankal showroom"
+    ],
+    "contact_rule": "Never copy a phone, website, email or address from Rajlaxmi Jewellers in Kalyan, Kolkata, Coorg, Chennai, Patna, Vita or another city."
+  },
+  "social_media": {
+    "instagram_handle": "@rajlaxmijewellers2012",
+    "instagram_url": "https://www.instagram.com/rajlaxmijewellers2012/",
+    "instagram_status": "Matched through recent indexed Instagram content associated with Rajlaxmi Jewellers Sangli and consistent hashtag use across the matched Facebook page.",
+    "instagram_identity_markers": [
+      "Rajlaxmi Jewellers name",
+      "Kavathe Mahankal location",
+      "Sangli jewellery keywords",
+      "Marathi content",
+      "Gold, mangalsutra, necklace and EMI-related content",
+      "#rajlaxmijewellers2012"
+    ],
+    "facebook_handle": "@rajlaxmijewels",
+    "facebook_url": "https://www.facebook.com/rajlaxmijewels/",
+    "facebook_status": "Matched public page with Sangli, Kavathe Mahankal and Rajlaxmi product content.",
+    "instagram_reference_rule": "Use the exact page as a current visual and language reference. Recheck dates before learning from offers, EMI wording, prices or stock announcements.",
+    "youtube_url": null,
+    "linkedin_url": null,
+    "threads_url": null,
+    "other_social_status": "No official YouTube, LinkedIn or Threads page has been established.",
+    "website_exclusion": [
+      "https://therajlaxmijewellers.in/ belongs to a different Rajlaxmi jewellery business and must not be used.",
+      "https://rajlaxmijewels.com/ describes a Kalyan business and must not be used.",
+      "https://rajlaxmijeweller.in/ describes a Patna business and must not be used.",
+      "https://rajlaxmijewellerschennai.com/ describes a Chennai business and must not be used."
+    ],
+    "managing_agency": "Famebros Studio",
+    "agency_instagram_handle": "@famebrosstudio",
+    "agency_instagram_url": "https://www.instagram.com/famebrosstudio/",
+    "agency_credit_default": "💫 Managed by: @famebrosstudio",
+    "agency_credit_rule": "Use the agency credit in standard feed and reel captions. Omit it for story copy, comments, replies and repost text unless requested."
+  },
+  "established_content_knowledge": {
+    "confirmed_content_genres": [
+      "Informational"
+    ],
+    "expanded_content_pillars": [
+      "Jewellery design showcase",
+      "Product detail education",
+      "Mangalsutra design education",
+      "Necklace design showcase",
+      "Ring and small-jewellery showcase",
+      "Gold jewellery awareness",
+      "Silver jewellery awareness",
+      "Traditional jewellery and cultural context",
+      "Bridal jewellery inspiration",
+      "Occasion-based jewellery selection",
+      "Daily-wear jewellery inspiration",
+      "Jewellery styling in Marathi",
+      "How to inspect supplied product details",
+      "Purity and hallmark education only with verified current information",
+      "Weight and price explanation only from the exact tag or bill",
+      "Gold-rate education with same-day verified rate",
+      "EMI or payment-option education only with approved terms",
+      "Store-visit reminders",
+      "Customer testimonial only with authentic approval",
+      "Festival and wedding-season communication",
+      "New-arrival announcements",
+      "Save-worthy design inspiration"
+    ],
+    "language_requirement": "Use Marathi in Devanagari for this brand unless the current brief requests English or bilingual copy.",
+    "tone": [
+      "Respectful",
+      "Warm",
+      "Clear",
+      "Locally rooted",
+      "Elegant",
+      "Trust-conscious",
+      "Informative"
+    ],
+    "focus": [
+      "Design information",
+      "Occasion and cultural relevance",
+      "Simple explanation of supplied product details",
+      "Clear visit or enquiry action",
+      "Accurate jewellery terminology"
+    ],
+    "recent_public_content_signals": [
+      {
+        "theme": "Gold purchase through EMI",
+        "status": "Appears in multiple 2026 public posts and a recent indexed reel. Exact lender, tenure, interest, down payment, eligibility and dates are unknown."
+      },
+      {
+        "theme": "Traditional and bridal mangalsutra",
+        "status": "Appears in recent public posts. Confirm the displayed product and current availability."
+      },
+      {
+        "theme": "Gold necklace",
+        "status": "Appears in recent public posts. Do not infer karat, weight or price."
+      },
+      {
+        "theme": "Silver Maheshmati ring",
+        "status": "Appears in a recent public post. Treat Maheshmati as a product-content label requiring confirmation for reuse."
+      },
+      {
+        "theme": "Natural-stone neckpiece",
+        "status": "Appears in historical public content. Confirm material and availability before reuse."
+      }
+    ],
+    "content_priority": "Lead with the actual jewellery design, cultural use, styling relevance or a useful verified fact. Use Marathi that feels natural to Sangli-area customers and keep commercial claims exact.",
+    "prohibited_confusions": [
+      "Rajlaxmi Jewellers Kalyan",
+      "The Rajlaxmi Jewellers Kolkata",
+      "Rajlaxmi Jewellers Coorg or Somwarpet",
+      "Raj Laxmi Jewellers Patna",
+      "Rajlaxmi Jewellers Chennai",
+      "Shri Rajlaxmi Jewellers Vita",
+      "Rajlaxmi Jewellers Yavatmal"
+    ]
+  },
+  "writing_direction": {
+    "status": "Operational voice based on the user's explicit Marathi rule, the informational source genre and matched local public content.",
+    "primary_language": "Marathi in Devanagari",
+    "secondary_language": "English only for unavoidable technical or platform terms, or when requested",
+    "language_rules": [
+      "Write natural Marathi, not literal machine translation",
+      "Keep jewellery names familiar to local customers",
+      "Use English product terminology only when the brand uses it or it improves clarity",
+      "Do not mix Hindi grammar into Marathi copy",
+      "Use respectful forms such as तुम्ही, आपल्यासाठी and भेट द्या",
+      "Keep numerals and units readable"
+    ],
+    "brand_voice": [
+      "Elegant",
+      "Respectful",
+      "Warm",
+      "Informative",
+      "Culturally aware",
+      "Clear",
+      "Reassuring without exaggeration"
+    ],
+    "preferred_copy_traits": [
+      "Short, clear opening line",
+      "One main product or education point",
+      "Simple Marathi sentences",
+      "Specific visible design observations",
+      "One clear visit, DM or save CTA",
+      "Minimal emojis",
+      "Accurate jewellery vocabulary"
+    ],
+    "avoid": [
+      "Invented purity or hallmark claims",
+      "Unverified gold or silver rates",
+      "Unverified weight, stone or price",
+      "Guaranteed investment returns",
+      "Claims that gold prices will rise",
+      "Guaranteed resale or buyback value",
+      "Unverified making-charge or wastage offers",
+      "EMI claims without full terms",
+      "Best, number one or most trusted claims without evidence",
+      "Fake scarcity",
+      "Invented customer testimonials",
+      "Overly poetic copy that hides the product",
+      "Excessive English",
+      "Competitor comparisons",
+      "Confusion with another Rajlaxmi business",
+      "Too many emojis"
+    ],
+    "emoji_style": "Minimal and elegant. Use zero to three relevant emojis, such as ✨, 💍 or ❤️, plus footer icons when applicable.",
+    "punctuation_style": "Clean punctuation, short paragraphs and no em dashes.",
+    "financial_copy_rule": "Jewellery is not to be described as a guaranteed investment. Rate movement, returns, appreciation and finance eligibility must never be predicted.",
+    "trust_copy_rule": "Build trust through clarity, accurate specifications and transparent calls to action. Do not invent years of legacy, certifications, awards, customer counts or community leadership."
+  },
+  "content_playbook": {
+    "product_showcase": {
+      "objective": "Present one real jewellery design clearly and generate a qualified enquiry or showroom visit.",
+      "structure": [
+        "Open with the occasion, design or visual appeal",
+        "Name the jewellery type",
+        "Describe one or two visible design details",
+        "Add verified material, purity, weight or stone data only when supplied",
+        "Close with a DM, call, visit or save CTA"
+      ],
+      "required_proof": [
+        "Actual product image or video",
+        "Confirmed product category",
+        "Confirmed metal and purity if mentioned",
+        "Confirmed gross and net weight if mentioned",
+        "Confirmed stone description if mentioned",
+        "Current availability"
+      ]
+    },
+    "informational_post": {
+      "objective": "Explain a jewellery topic simply in Marathi.",
+      "safe_topics": [
+        "Visible design differences",
+        "Occasion-based styling",
+        "How to save jewellery inspiration",
+        "Questions to ask before purchase",
+        "How to read a product tag when the exact example is supplied",
+        "How to care for a specific product when approved care guidance is supplied"
+      ],
+      "regulated_topics": [
+        "Purity",
+        "Hallmarking",
+        "HUID",
+        "Gold rate",
+        "Silver rate",
+        "EMI",
+        "Loan or finance",
+        "Exchange",
+        "Buyback",
+        "Tax",
+        "Making charges"
+      ],
+      "rule": "Use current official or brand-approved information for regulated topics. Do not rely on memory or old posts."
+    },
+    "bridal_post": {
+      "objective": "Connect a real jewellery design to bridal styling without inventing a full set or custom service.",
+      "safe_angles": [
+        "Bridal look inspiration",
+        "Traditional styling",
+        "Wedding occasion relevance",
+        "Design close-up",
+        "How the piece complements the supplied outfit"
+      ],
+      "rule": "Do not call a piece bridal, custom-made, lightweight or heirloom unless confirmed."
+    },
+    "mangalsutra_post": {
+      "objective": "Show the exact mangalsutra and explain its visible style in clear Marathi.",
+      "details_to_confirm": [
+        "Metal",
+        "Purity",
+        "Weight",
+        "Black-bead pattern",
+        "Pendant design",
+        "Stone details",
+        "Chain length",
+        "Price",
+        "Availability"
+      ],
+      "rule": "Never infer religious, regional or marital symbolism beyond what the design and approved brief support."
+    },
+    "emi_or_payment_post": {
+      "objective": "Explain an approved purchase or payment facility accurately.",
+      "required_fields": [
+        "Scheme provider",
+        "Eligible products",
+        "Minimum purchase",
+        "Down payment",
+        "Tenure",
+        "Interest or processing fee",
+        "Eligibility",
+        "Documents",
+        "Start date",
+        "End date",
+        "Store applicability",
+        "Terms and conditions"
+      ],
+      "rule": "The phrase Gold on EMI appears in public content, but no numerical term is approved in this file. Never claim zero interest, no-cost EMI, instant approval or no documents unless confirmed."
+    },
+    "rate_post": {
+      "objective": "Publish a same-day gold or silver rate only when supplied by the authorized brand source.",
+      "required_fields": [
+        "Date",
+        "Time if relevant",
+        "Metal",
+        "Purity",
+        "Unit",
+        "Rate",
+        "Tax inclusion",
+        "Price disclaimer"
+      ],
+      "rule": "Do not carry forward yesterday's rate and do not calculate a selling price without all required components."
+    },
+    "offer_post": {
+      "objective": "Communicate a current jewellery offer without ambiguity.",
+      "required_fields": [
+        "Eligible products",
+        "Offer benefit",
+        "Original and offer condition",
+        "Minimum purchase",
+        "Start date",
+        "End date",
+        "Making-charge or wastage scope",
+        "Stone-value treatment",
+        "Tax treatment",
+        "Exclusions",
+        "Redemption terms"
+      ],
+      "rule": "Do not describe a generic discount as applying to gold value, making charges or all jewellery unless the approved terms say so."
+    },
+    "festival_post": {
+      "objective": "Connect the festival to jewellery, family and tradition in a refined local style.",
+      "safe_structure": [
+        "Short Marathi greeting",
+        "One emotionally relevant line",
+        "Subtle jewellery or brand connection",
+        "No sales CTA unless an approved campaign exists"
+      ]
+    },
+    "testimonial_post": {
+      "objective": "Show authentic customer trust.",
+      "rule": "Use an exact approved review with consent. Do not invent name, location, purchase, rating, date or emotional reaction."
+    },
+    "platform_adaptation": {
+      "instagram_feed": "Marathi caption, one CTA, approved footer, exactly three hashtags and one SEO bracket.",
+      "instagram_reel": "Short Marathi hook, product reveal, clear detail shots, minimal text and enquiry CTA.",
+      "instagram_story": "One idea per frame, strong Marathi headline and DM or visit action. Omit the standard feed metadata unless requested.",
+      "facebook": "Marathi-first copy with slightly more explanatory context when needed.",
+      "whatsapp": "Short factual message with exact product, price or offer details and one response action."
+    }
+  },
+  "jewellery_product_and_offer_description_framework": {
+    "purpose": "Give the AI a disciplined way to describe Rajlaxmi jewellery products, rates, EMI content and offers without inventing regulated or commercial details.",
+    "product_identity_fields": [
+      "Product category",
+      "Collection name",
+      "SKU or tag number",
+      "Design name",
+      "Current stock status",
+      "Store location"
+    ],
+    "metal_fields": [
+      "Metal type",
+      "Purity or fineness",
+      "Hallmark status",
+      "HUID when publication is appropriate",
+      "Gross weight",
+      "Net metal weight",
+      "Stone weight",
+      "Other component weight"
+    ],
+    "design_fields": [
+      "Jewellery type",
+      "Traditional or contemporary style",
+      "Motif",
+      "Finish",
+      "Chain or band style",
+      "Pendant or centerpiece",
+      "Closure",
+      "Length or size",
+      "Visible craftsmanship",
+      "Occasion relevance"
+    ],
+    "stone_fields": [
+      "Stone type",
+      "Natural, lab-grown, synthetic or imitation status",
+      "Certification",
+      "Stone count",
+      "Cut",
+      "Colour",
+      "Clarity",
+      "Setting",
+      "Stone value"
+    ],
+    "price_fields": [
+      "Same-day metal rate",
+      "Rate unit",
+      "Metal value",
+      "Making charge",
+      "Wastage if applicable",
+      "Stone value",
+      "Tax",
+      "Other charges",
+      "Final price",
+      "Price-validity timestamp"
+    ],
+    "offer_fields": [
+      "Offer name",
+      "Eligible categories",
+      "Benefit",
+      "Minimum purchase",
+      "Validity",
+      "Making-charge treatment",
+      "Gold-value treatment",
+      "Stone-value treatment",
+      "Tax treatment",
+      "Store applicability",
+      "Exclusions",
+      "Terms and conditions"
+    ],
+    "finance_fields": [
+      "Scheme provider",
+      "Purchase threshold",
+      "Down payment",
+      "Financed amount",
+      "Tenure",
+      "Interest rate",
+      "Processing fee",
+      "Eligibility",
+      "Documents",
+      "Late-payment treatment",
+      "Cancellation treatment",
+      "Valid dates"
+    ],
+    "safe_description_order": [
+      "Name the exact jewellery category",
+      "Describe visible design elements",
+      "Add verified metal, purity, weight and stone facts",
+      "Explain the occasion or styling relevance",
+      "Add exact current price or scheme terms only when supplied",
+      "Close with a visit, DM, call or save CTA"
+    ],
+    "allowed_visual_observations": [
+      "The design has a visible central pendant",
+      "The piece combines traditional and contemporary visual cues",
+      "The necklace has a layered or single-line appearance when visible",
+      "The ring has an ornate, minimal or statement profile when visible",
+      "The design includes visible beads, motifs or stone-like elements"
+    ],
+    "visual_observation_rule": "Appearance does not prove metal, purity, weight, gemstone identity, craftsmanship method or price. Use a qualified visual description until the product data confirms the specification.",
+    "claim_confirmation_matrix": {
+      "gold_or_silver": "Requires product tag, bill, approved catalogue or brand confirmation.",
+      "purity": "Requires current product data. Do not infer 22K, 18K, 925 or another purity.",
+      "hallmark": "Requires product-specific confirmation and current compliance information.",
+      "weight": "Requires the exact product tag or approved product sheet.",
+      "diamond_or_stone": "Requires gem identification and disclosure from the brand.",
+      "price": "Requires a same-day approved price or pricing formula.",
+      "emi": "Requires full current scheme terms.",
+      "exchange_or_buyback": "Requires written policy and valuation rules.",
+      "customisation": "Not established. Do not offer it.",
+      "same_day_delivery": "A directory mentions this service, but the brand has not approved it. Confirm before use."
+    },
+    "missing_data_behavior": "Omit unknown specifications from public copy. Mark them internally as confirmation required. Never replace them with jewellery-industry assumptions."
+  },
+  "caption_format": {
+    "default_use": "Instagram and Facebook feed or reel captions",
+    "body_length": "Usually 25 to 55 words, excluding footer, hashtags and SEO bracket. Informational Marathi captions may be longer when verified explanation is needed.",
+    "body_structure": [
+      "Short Marathi hook",
+      "One or two factual design or education lines",
+      "One clear CTA"
+    ],
+    "format_order": [
+      "Caption body",
+      "Blank line",
+      "Approved location and optional confirmed contact footer",
+      "Agency credit",
+      "Blank line",
+      "Exactly three hashtags",
+      "Blank line",
+      "Exactly one square-bracket SEO block"
+    ],
+    "hashtag_rule": "Use exactly three relevant hashtags in a standard final caption unless the user requests another count.",
+    "seo_rule": "Use exactly one square-bracket block containing five to eight comma-separated search phrases. Marathi and English phrases may be mixed naturally.",
+    "cta_rule": "Use one primary CTA. Prefer DM, save or showroom-visit language unless the phone has been approved for that campaign.",
+    "story_rule": "For stories, omit the full feed footer, hashtags and SEO bracket unless specifically requested.",
+    "comment_rule": "For comments and replies, answer naturally without the feed footer, hashtags or SEO block.",
+    "accuracy_gate": [
+      "Is this the Kavathe Mahankal, Sangli brand?",
+      "Is the exact product shown?",
+      "Are metal, purity, weight and stone facts supplied?",
+      "Is the price current for the publication date?",
+      "Are offer or EMI terms complete?",
+      "Is the Marathi natural and correct?",
+      "Are there exactly three hashtags?",
+      "Is there one SEO bracket containing five to eight phrases?",
+      "Are all em dashes removed?"
+    ]
+  },
+  "fixed_footer": {
+    "standard_feed_and_reel_lines": [
+      "📍 Kavathe Mahankal, Sangli",
+      "💫 Managed by: @famebrosstudio"
+    ],
+    "phone_enabled_option": [
+      "📍 Kavathe Mahankal, Sangli",
+      "📞 +91 95619 43310",
+      "💫 Managed by: @famebrosstudio"
+    ],
+    "footer_status": "The locality is strongly matched. The phone is externally matched and should be brand-reconfirmed before permanent use.",
+    "footer_rule": "Use the two-line standard footer by default. Use the phone-enabled option only after campaign-level confirmation. Do not add an email, website, WhatsApp label or exact shop number without approval.",
+    "mode_exceptions": [
+      "Omit for story copy unless requested",
+      "Omit for comments and replies",
+      "Omit for repost text unless requested",
+      "A rate or offer card may use a dedicated verified contact panel"
+    ]
+  },
+  "suggested_hashtag_bank": {
+    "brand": [
+      "#RajlaxmiJewellers",
+      "#RajlaxmiJewellers2012",
+      "#राजलक्ष्मीज्वेलर्स"
+    ],
+    "location": [
+      "#SangliJewellers",
+      "#KavatheMahankal",
+      "#SangliJewellery",
+      "#सांगलीज्वेलर्स"
+    ],
+    "category": [
+      "#GoldJewellery",
+      "#SilverJewellery",
+      "#JewelleryDesign",
+      "#TraditionalJewellery",
+      "#MarathiJewellery"
+    ],
+    "occasion": [
+      "#BridalJewellery",
+      "#WeddingJewellery",
+      "#MangalsutraDesign",
+      "#FestiveJewellery",
+      "#DailyWearJewellery"
+    ],
+    "selection_rule": "Use exactly three relevant hashtags in the standard format, usually one brand tag, one location tag and one product or occasion tag. Do not use a product tag that the post does not show."
+  },
+  "seo_keyword_bank": {
+    "confirmed_core": [
+      "Rajlaxmi Jewellers Sangli",
+      "Rajlaxmi Jewellers Kavathe Mahankal",
+      "राजलक्ष्मी ज्वेलर्स",
+      "सांगली ज्वेलर्स",
+      "कवठे महांकाळ ज्वेलर्स",
+      "jewellery shop Sangli",
+      "gold jewellery Sangli",
+      "silver jewellery Sangli"
+    ],
+    "design_and_occasion": [
+      "दागिन्यांची डिझाइन",
+      "पारंपरिक दागिने",
+      "लग्नाचे दागिने",
+      "ब्राइडल ज्वेलरी सांगली",
+      "मंगळसूत्र डिझाइन",
+      "gold necklace Maharashtra",
+      "traditional mangalsutra",
+      "daily wear gold jewellery"
+    ],
+    "conditional": [
+      "gold jewellery on EMI",
+      "EMI jewellery purchase",
+      "silver Maheshmati ring",
+      "diamond jewellery Sangli",
+      "bridal mangalsutra designs",
+      "natural stone neckpiece"
+    ],
+    "conditional_rule": "Use conditional terms only when the current product or approved campaign confirms them. Do not use EMI keywords for a normal product post.",
+    "selection_rule": "Choose five to eight phrases aligned with the actual post. Avoid stuffing, unrelated city names and unverified purity or price phrases."
+  },
+  "cta_bank": {
+    "approved_general": [
+      "अधिक माहितीसाठी आम्हाला संदेश पाठवा.",
+      "आवडलेली डिझाइन सेव्ह करा."
+    ],
+    "store_visit": [
+      "ही डिझाइन जवळून पाहण्यासाठी आमच्या कवठे महांकाळ शोरूमला भेट द्या.",
+      "तुमच्या खास प्रसंगासाठी योग्य डिझाइन निवडण्यासाठी शोरूमला भेट द्या.",
+      "कलेक्शन पाहण्यासाठी राजलक्ष्मी ज्वेलर्सला भेट द्या."
+    ],
+    "enquiry": [
+      "उपलब्धतेसाठी DM करा.",
+      "या डिझाइनची माहिती जाणून घेण्यासाठी संदेश पाठवा.",
+      "किंमत आणि उपलब्धता जाणून घेण्यासाठी आमच्याशी संपर्क साधा.",
+      "अधिक माहितीसाठी +91 95619 43310 वर कॉल करा."
+    ],
+    "engagement": [
+      "ही डिझाइन आवडली तर सेव्ह करा.",
+      "तुमच्या आवडत्या डिझाइनसाठी कमेंट करा.",
+      "ही डिझाइन कोणासोबत शेअर कराल?",
+      "लग्नाच्या खरेदीसाठी हा रेफरन्स सेव्ह करा."
+    ],
+    "conditional": [
+      "आजचा दर विचारण्यासाठी संपर्क करा, पण दराची पोस्ट फक्त अधिकृत माहितीवर तयार करा.",
+      "EMI तपशीलासाठी संपर्क करा, पण सक्रिय योजना ब्रँडकडून निश्चित झाल्यावरच.",
+      "ऑफरचा लाभ घ्या, पण अचूक कालावधी आणि अटी दिल्यावरच."
+    ],
+    "cta_rule": "Use one main CTA. The phone CTA requires campaign-level confirmation. Never imply a product reservation, price lock, EMI approval or delivery promise."
+  },
+  "suggested_hooks": {
+    "product_showcase": [
+      "खास क्षणांसाठी खास डिझाइन. ✨",
+      "परंपरेची सुंदरता, आधुनिक डिझाइनमध्ये.",
+      "तुमच्या प्रत्येक खास प्रसंगाला साजेसा दागिना.",
+      "नजरेत भरणारी डिझाइन, मनात राहणारी निवड.",
+      "दागिना जो तुमच्या लूकला देईल खास ओळख."
+    ],
+    "mangalsutra": [
+      "तुमच्या नात्याइतकीच खास मंगळसूत्र डिझाइन.",
+      "परंपरा आणि सुंदरतेची मोहक सांगड.",
+      "प्रत्येक दिवसासाठी देखणी मंगळसूत्र निवड.",
+      "तुमच्या शैलीला साजेसं मंगळसूत्र शोधत आहात?"
+    ],
+    "necklace": [
+      "तुमच्या खास लूकचा सुंदर केंद्रबिंदू.",
+      "समारंभासाठी नजरेत भरणारी नेकलेस डिझाइन.",
+      "पारंपरिक लूकला खुलवणारी सुंदर निवड."
+    ],
+    "educational": [
+      "दागिना निवडताना ही माहिती नक्की तपासा.",
+      "फक्त डिझाइन नाही, माहितीही महत्त्वाची.",
+      "खरेदीपूर्वी योग्य प्रश्न विचारणे का गरजेचे आहे?",
+      "दागिन्याची किंमत समजून घेताना काय पाहाल?"
+    ],
+    "emi": [
+      "बजेटमुळे तुमची आवडती डिझाइन थांबवू नका.",
+      "EMI पर्याय समजून घ्या, मगच निर्णय घ्या.",
+      "दागिन्यांच्या खरेदीसाठी उपलब्ध पर्यायांची माहिती घ्या."
+    ],
+    "festival": [
+      "सणाचा आनंद, दागिन्यांच्या सुंदर झळाळीसोबत.",
+      "परंपरेचा साज आणि आनंदाचा उत्सव.",
+      "या सणाला तुमच्या लूकमध्ये जोडा खास चमक."
+    ],
+    "hook_rule": "Hooks are editorial starting points. Adapt them to the real product or campaign. Do not let an emotional hook create an unsupported product or finance claim."
+  },
+  "visual_and_asset_guidance": {
+    "default_dimensions": {
+      "instagram_feed": "1080x1440 pixels, 3:4",
+      "instagram_story": "1080x1920 pixels, 9:16",
+      "instagram_reel": "1080x1920 pixels, 9:16",
+      "square_ad": "1080x1080 pixels, 1:1 when specifically required",
+      "safe_zone_rule": "Keep essential jewellery, price, rate, logo and contact information away from crop and interface zones."
+    },
+    "visual_direction": [
+      "Premium Indian jewellery retail",
+      "Warm and culturally rooted",
+      "Elegant rather than crowded",
+      "Jewellery as the hero",
+      "Clean close-ups",
+      "Controlled gold and neutral tones",
+      "Rich festive accents only when relevant",
+      "Marathi typography with high readability",
+      "Minimal text and clear hierarchy"
+    ],
+    "brand_kit_status": "No definitive logo files, colour codes, font names, safe area or permanent template system are stored in this record. Supplied approved brand assets remain the authority.",
+    "logo_rules": [
+      "Use the supplied official Rajlaxmi Jewellers Sangli logo only",
+      "Do not substitute a logo from another Rajlaxmi business",
+      "Do not redraw, stretch, recolour or add effects unless the brand kit permits it",
+      "Keep the logo readable and separate from product details",
+      "Verify Devanagari spelling when the name appears in Marathi"
+    ],
+    "product_fidelity_rules": [
+      "Keep the uploaded jewellery 100% unchanged",
+      "Do not redraw or regenerate the jewellery",
+      "Do not change metal colour",
+      "Do not add or remove stones",
+      "Do not change chain length, pendant, clasp or motif",
+      "Do not improve the piece by inventing details",
+      "Do not mirror asymmetrical designs unless approved",
+      "Do not alter the product to match a trend",
+      "Do not create a full set from one supplied item",
+      "Do not place a generic AI product under the Rajlaxmi name"
+    ],
+    "photography_shot_list": [
+      "Clean hero close-up",
+      "Front view",
+      "Three-quarter view",
+      "Clasp or closure detail",
+      "Pendant or centerpiece detail",
+      "Stone or motif close-up",
+      "Scale reference on approved model",
+      "Movement shot when relevant",
+      "Product tag for internal fact verification",
+      "Packaging shot only when authentic"
+    ],
+    "model_integrity_rules": [
+      "Preserve the model's face, identity, skin tone and body proportions",
+      "Do not alter neck, ears, wrists, hands or fingers to fit jewellery",
+      "Keep jewellery placement anatomically realistic",
+      "Do not add cultural marks or bridal styling without approval",
+      "Do not claim the model is a customer or bride unless true"
+    ],
+    "rate_and_offer_design": [
+      "Make the date highly visible",
+      "Separate rate, purity and unit",
+      "Show terms near the offer",
+      "Do not hide exclusions in unreadable text",
+      "Use one main offer hierarchy",
+      "Avoid decorative clutter around numerical facts",
+      "Check Marathi numerals and punctuation"
+    ],
+    "festival_design": "Use premium jewellery-led festive cues, controlled Indian motifs, warm lighting and minimal Marathi text. Do not let deity or festival art overpower the jewellery or create religious claims.",
+    "ai_image_rules": [
+      "Use AI backgrounds only when they do not change the real jewellery",
+      "Do not generate a new jewellery design and present it as stock",
+      "Do not add hallmark stamps, product tags or certificates",
+      "Do not fabricate a showroom, customer, staff member or award",
+      "Label conceptual imagery internally until approved"
+    ],
+    "accessibility": [
+      "Use strong text contrast",
+      "Keep Marathi text large enough for mobile screens",
+      "Avoid thin decorative fonts for terms and prices",
+      "Do not place text over high-detail jewellery",
+      "Write factual alt text without hidden specifications"
+    ]
+  },
+  "carousel_and_reel_system": {
+    "carousel_templates": {
+      "design_showcase": [
+        "Slide 1: Hero jewellery image and short Marathi hook",
+        "Slide 2: Full design view",
+        "Slide 3: Visible motif or centerpiece",
+        "Slide 4: Verified material and specification details",
+        "Slide 5: Occasion or styling relevance",
+        "Slide 6: DM, call or showroom visit CTA"
+      ],
+      "purchase_education": [
+        "Slide 1: One clear customer question",
+        "Slide 2: First verified point",
+        "Slide 3: Second verified point",
+        "Slide 4: What to check on tag or bill",
+        "Slide 5: Common mistake to avoid",
+        "Slide 6: Contact or store-visit CTA"
+      ],
+      "emi_explainer": [
+        "Slide 1: EMI availability hook",
+        "Slide 2: Eligible purchase and provider",
+        "Slide 3: Down payment and tenure",
+        "Slide 4: Interest, fee and documents",
+        "Slide 5: Validity and exclusions",
+        "Slide 6: Visit or enquiry CTA with terms reference"
+      ],
+      "bridal_selection": [
+        "Slide 1: Bridal jewellery inspiration",
+        "Slide 2: Main design",
+        "Slide 3: Close-up details",
+        "Slide 4: Styling with the supplied outfit",
+        "Slide 5: Verified product information",
+        "Slide 6: Save and showroom visit CTA"
+      ]
+    },
+    "reel_templates": {
+      "product_reveal_10_to_15_seconds": [
+        "0 to 2 seconds: Marathi hook and partial reveal",
+        "2 to 6 seconds: Full product reveal",
+        "6 to 10 seconds: Detail close-ups",
+        "10 to 13 seconds: Occasion or design point",
+        "13 to 15 seconds: Brand and enquiry CTA"
+      ],
+      "informational_20_to_30_seconds": [
+        "0 to 3 seconds: Customer question",
+        "3 to 10 seconds: First verified explanation",
+        "10 to 18 seconds: Product or tag example",
+        "18 to 25 seconds: Practical takeaway",
+        "25 to 30 seconds: DM or showroom visit CTA"
+      ],
+      "emi_20_to_30_seconds": [
+        "0 to 3 seconds: Budget concern hook",
+        "3 to 8 seconds: State that an approved option is available",
+        "8 to 20 seconds: Explain exact terms on screen",
+        "20 to 25 seconds: Eligibility and date disclaimer",
+        "25 to 30 seconds: Enquiry CTA"
+      ],
+      "festival_10_to_15_seconds": [
+        "Opening festive detail",
+        "Jewellery hero reveal",
+        "Short Marathi greeting",
+        "Subtle brand sign-off",
+        "Offer CTA only when approved"
+      ]
+    },
+    "on_screen_text_rules": [
+      "Use one short Marathi idea per frame",
+      "Keep specifications readable",
+      "Do not put unverified purity, weight or price on screen",
+      "Use a disclaimer whenever finance or rate context requires one",
+      "Do not cover the main jewellery details",
+      "Leave the final contact frame visible long enough to read"
+    ],
+    "editing_style": [
+      "Slow premium reveals",
+      "Clean cuts",
+      "Macro detail shots",
+      "Natural metal colour",
+      "Subtle Marathi typography",
+      "Controlled festive transitions",
+      "No exaggerated sparkle that changes the product",
+      "No gimmicky or noisy effects"
+    ],
+    "music_direction": "Use elegant Indian instrumental, refined festive or soft premium audio when licensed. Keep voice-over clear and never let trending audio make regulated information hard to understand.",
+    "thumbnail_rule": "Use the real jewellery hero image, a short Marathi headline and the correct Rajlaxmi Sangli logo."
+  },
+  "other_output_modes": {
+    "story_copy": {
+      "format": "One Marathi message per frame, usually 4 to 12 words. Use a product sticker, poll or DM action only when relevant.",
+      "footer_policy": "Do not repeat the full feed footer on every frame.",
+      "sample_sequence": [
+        "खास डिझाइनची सुंदर झलक ✨",
+        "तुमच्या खास प्रसंगासाठी",
+        "डिझाइन आवडली?",
+        "अधिक माहितीसाठी DM करा"
+      ]
+    },
+    "whatsapp_message": {
+      "format": "Respectful greeting, exact product or campaign detail, verified price or terms, location and one response action.",
+      "rule": "Never send a rate, price, EMI or offer message using stale data."
+    },
+    "youtube_title": {
+      "style": "Short Marathi-first title with product and location relevance.",
+      "examples": [
+        "सांगलीतील सुंदर मंगळसूत्र डिझाइन्स | Rajlaxmi Jewellers",
+        "खास प्रसंगासाठी आकर्षक दागिन्यांची डिझाइन",
+        "दागिना खरेदीपूर्वी ही माहिती नक्की तपासा"
+      ]
+    },
+    "product_alt_text": {
+      "format": "Describe the visible jewellery type, apparent design, model or display context and setting in one or two factual sentences.",
+      "rule": "Do not identify metal, purity, gemstone or weight from appearance alone."
+    },
+    "google_business_copy": {
+      "safe_short_description": "Rajlaxmi Jewellers is a jewellery showroom near Shivaji Chowk in Kavathe Mahankal, Sangli district. Visit or contact the showroom to enquire about current jewellery designs and availability.",
+      "rule": "Confirm business hours, category list, phone, exact address and ownership before updating any official listing."
+    },
+    "ad_copy": {
+      "rule": "Use the exact location, product and current offer details. Financial, purity, price and hallmark claims require documented approval.",
+      "safe_headline_examples": [
+        "कवठे महांकाळमध्ये खास दागिन्यांची डिझाइन्स",
+        "तुमच्या खास प्रसंगासाठी राजलक्ष्मी ज्वेलर्स",
+        "मंगळसूत्र आणि पारंपरिक दागिन्यांची सुंदर निवड"
+      ]
+    },
+    "comment_replies": {
+      "price_enquiry": "किंमत ही वजन, धातूचा दर आणि डिझाइननुसार बदलू शकते. कृपया या डिझाइनचा फोटो DM करा.",
+      "availability_enquiry": "उपलब्धता तपासण्यासाठी कृपया डिझाइनचा स्क्रीनशॉट DM करा.",
+      "location_enquiry": "आम्ही कवठे महांकाळ, सांगली येथे आहोत. अचूक लोकेशनसाठी कृपया DM करा.",
+      "emi_enquiry": "सध्याच्या EMI पर्यायांची माहिती जाणून घेण्यासाठी कृपया DM करा किंवा ब्रँडकडून निश्चित केलेल्या क्रमांकावर संपर्क साधा."
+    }
+  },
+  "sample_caption": {
+    "status": "New illustrative example based on established Marathi informational direction. It does not confirm metal, purity, hallmark, weight, price, stock or offer.",
+    "scenario": "Jewellery design showcase",
+    "caption_body": "खास क्षणांसाठी खास डिझाइन. ✨ राजलक्ष्मी ज्वेलर्समधील या सुंदर दागिन्याची झलक पाहा. तुमच्या आवडत्या प्रसंगासाठी अशी डिझाइन निवडताना तिचे तपशील आणि उपलब्धता नक्की जाणून घ्या. अधिक माहितीसाठी आम्हाला DM करा.",
+    "footer": [
+      "📍 Kavathe Mahankal, Sangli",
+      "💫 Managed by: @famebrosstudio"
+    ],
+    "hashtags": [
+      "#RajlaxmiJewellers",
+      "#SangliJewellers",
+      "#JewelleryDesign"
+    ],
+    "seo_keywords": [
+      "Rajlaxmi Jewellers Sangli",
+      "राजलक्ष्मी ज्वेलर्स",
+      "सांगली ज्वेलर्स",
+      "दागिन्यांची डिझाइन",
+      "पारंपरिक दागिने",
+      "jewellery Sangli"
+    ],
+    "full_caption": "खास क्षणांसाठी खास डिझाइन. ✨ राजलक्ष्मी ज्वेलर्समधील या सुंदर दागिन्याची झलक पाहा. तुमच्या आवडत्या प्रसंगासाठी अशी डिझाइन निवडताना तिचे तपशील आणि उपलब्धता नक्की जाणून घ्या. अधिक माहितीसाठी आम्हाला DM करा.\n\n📍 Kavathe Mahankal, Sangli\n💫 Managed by: @famebrosstudio\n\n#RajlaxmiJewellers #SangliJewellers #JewelleryDesign\n\n[Rajlaxmi Jewellers Sangli, राजलक्ष्मी ज्वेलर्स, सांगली ज्वेलर्स, दागिन्यांची डिझाइन, पारंपरिक दागिने, jewellery Sangli]",
+    "validation": {
+      "hashtags_count": 3,
+      "seo_phrase_count": 6,
+      "square_bracket_blocks": 1,
+      "unverified_commercial_claims": 0,
+      "language": "Marathi in Devanagari",
+      "tone": "Respectful, warm and informative"
+    }
+  },
+  "accuracy_rules": {
+    "source_priority": [
+      "Current written instructions from the user or authorized Rajlaxmi Jewellers Sangli representative",
+      "Current approved Rajlaxmi product tag, bill, catalogue, rate sheet, offer sheet or finance terms",
+      "Current official @rajlaxmijewellers2012 content",
+      "Current matched @rajlaxmijewels Facebook content",
+      "Actual supplied photo, video or transcript",
+      "This knowledge file",
+      "Public directories only for identity cross-checking, not commercial claims"
+    ],
+    "hard_rules": [
+      "Never mix this brand with another Rajlaxmi business",
+      "Never invent purity, hallmark, HUID, weight, stone, certification, rate or price",
+      "Never guarantee gold appreciation, returns, resale or buyback",
+      "Never publish EMI terms without the complete current scheme",
+      "Never invent an offer, making-charge waiver or exchange benefit",
+      "Never claim customization, online ordering or delivery unless approved",
+      "Never copy a phone, website, email or address from another city",
+      "Never fabricate reviews, customer names or purchase stories",
+      "Never alter the supplied jewellery in a visual",
+      "Never publish internal onboarding or billing information",
+      "Never use an em dash"
+    ],
+    "identity_lock": {
+      "instagram": "@rajlaxmijewellers2012",
+      "instagram_url": "https://www.instagram.com/rajlaxmijewellers2012/",
+      "facebook": "@rajlaxmijewels",
+      "facebook_url": "https://www.facebook.com/rajlaxmijewels/",
+      "location": "Kavathe Mahankal, Sangli, Maharashtra 416405",
+      "phone": "+91 95619 43310",
+      "phone_rule": "Reconfirm before permanent publication."
+    },
+    "jewellery_claim_rules": {
+      "purity": "Product-specific written proof required.",
+      "hallmark": "Product-specific proof and current approved compliance wording required.",
+      "weight": "Exact tag or approved product sheet required.",
+      "stone": "Exact gem disclosure required.",
+      "price": "Same-day approved calculation or price required.",
+      "gold_rate": "Same-day authorized rate required.",
+      "emi": "Full approved provider and scheme terms required.",
+      "offer": "Current written offer terms and dates required."
+    },
+    "uncertainty_behavior": [
+      "Omit the unknown detail from public copy",
+      "Ask internally for the exact missing field",
+      "Use design and occasion language when specifications are absent",
+      "Label externally sourced contact details by confidence",
+      "Prefer a DM or showroom-visit CTA over guessing a price"
+    ],
+    "pre_publish_checklist": [
+      "Correct Sangli and Kavathe Mahankal identity",
+      "Correct Instagram and Facebook page",
+      "Correct product asset",
+      "Product category confirmed",
+      "Metal and purity confirmed if stated",
+      "Weight and stone data confirmed if stated",
+      "Rate and price current",
+      "EMI or offer terms complete",
+      "Natural Marathi",
+      "One clear CTA",
+      "Footer mode correct",
+      "Exactly three hashtags in standard format",
+      "One SEO bracket with five to eight phrases",
+      "No em dash",
+      "No internal notes in final copy"
+    ]
+  },
+  "per_post_input": {
+    "required_core": [
+      "Output mode",
+      "Post objective",
+      "Actual product asset or transcript",
+      "Target audience",
+      "Desired CTA",
+      "Publication date"
+    ],
+    "product_inputs": [
+      "Product category",
+      "Collection name",
+      "SKU or tag number",
+      "Metal",
+      "Purity",
+      "Hallmark and HUID status",
+      "Gross weight",
+      "Net metal weight",
+      "Stone details",
+      "Length or size",
+      "Design features",
+      "Stock status",
+      "Store location"
+    ],
+    "price_inputs": [
+      "Metal rate",
+      "Rate date and time",
+      "Rate unit",
+      "Metal value",
+      "Making charge",
+      "Wastage",
+      "Stone value",
+      "Tax",
+      "Final price",
+      "Price-validity rule"
+    ],
+    "offer_inputs": [
+      "Offer name",
+      "Eligible products",
+      "Benefit",
+      "Minimum purchase",
+      "Start date",
+      "End date",
+      "Making-charge treatment",
+      "Gold-value treatment",
+      "Stone-value treatment",
+      "Tax treatment",
+      "Exclusions",
+      "Terms and conditions"
+    ],
+    "emi_inputs": [
+      "Finance provider",
+      "Eligible products",
+      "Minimum purchase",
+      "Down payment",
+      "Tenure",
+      "Interest",
+      "Processing fee",
+      "Eligibility",
+      "Documents",
+      "Validity",
+      "Cancellation and late-payment terms"
+    ],
+    "creative_inputs": [
+      "Approved logo",
+      "Brand colours and fonts",
+      "Format dimensions",
+      "Headline",
+      "Mandatory Marathi copy",
+      "Reference style",
+      "Product-fidelity instruction",
+      "Contact and address version",
+      "Required disclaimer"
+    ],
+    "input_handling_rule": "Use only supplied, visible and current facts. When a missing field affects financial, purity, hallmark, weight or price accuracy, omit the claim or request confirmation before final publication.",
+    "minimum_safe_caption_input": [
+      "Confirmed Rajlaxmi Sangli product asset",
+      "Product category",
+      "Post objective",
+      "One visible design detail",
+      "Preferred CTA"
+    ]
+  },
+  "master_brand_instruction": "You are creating content for Rajlaxmi Jewellers in Kavathe Mahankal, Sangli district, Maharashtra. The official matched social identities are @rajlaxmijewellers2012 on Instagram and @rajlaxmijewels on Facebook. Use Marathi in Devanagari by default. Write in a respectful, warm, clear, elegant and locally rooted voice. Make the actual jewellery design, occasion or verified educational point the center of the content. Do not confuse this brand with similarly named businesses in Kalyan, Kolkata, Coorg, Chennai, Patna, Vita, Yavatmal or elsewhere. Never invent or infer metal, purity, hallmark, HUID, weight, gemstone, certification, gold rate, silver rate, price, making charge, wastage, EMI, exchange, buyback, offer, stock, delivery, customization or investment return. Gold, silver, mangalsutra, necklaces and rings are publicly supported content areas, but each product specification still requires current confirmation. The number +91 95619 43310 and the Shivaji Chowk, Kavathe Mahankal location are strongly matched through public records, but reconfirm the phone and exact shop address before permanent publication. For a standard feed or reel caption, write a concise Marathi hook, factual support and one CTA, then add the approved location footer, Famebros Studio credit, exactly three relevant hashtags and exactly one square-bracket SEO block with five to eight phrases. For stories, comments and replies, omit feed metadata unless requested. Preserve uploaded jewellery and model assets exactly. Remove all em dashes before delivery.",
+  "missing_information": {
+    "business_identity": [
+      "Legal entity name",
+      "Owner or founder",
+      "Authorized spokesperson",
+      "Confirmed founding year",
+      "GST details",
+      "Current hallmark registration details",
+      "Exact current showroom address approved by the brand",
+      "Business hours"
+    ],
+    "contact_and_channels": [
+      "Brand-confirmed primary phone",
+      "Confirmed WhatsApp number",
+      "Official email",
+      "Official website",
+      "Google Maps link",
+      "YouTube channel",
+      "LinkedIn page"
+    ],
+    "product_catalogue": [
+      "Current product categories",
+      "Collection names",
+      "SKU list",
+      "Metal and purity map",
+      "Hallmark and HUID process",
+      "Weight ranges",
+      "Stone disclosures",
+      "Size and length options",
+      "Current stock",
+      "Customization availability",
+      "Care guidance"
+    ],
+    "commercial_policies": [
+      "Current gold and silver rate process",
+      "Making charges",
+      "Wastage policy",
+      "Tax treatment",
+      "Pricing validity",
+      "Exchange policy",
+      "Buyback policy",
+      "Repair policy",
+      "Order and advance policy",
+      "Cancellation policy",
+      "Delivery policy",
+      "EMI provider and complete terms",
+      "Current offers"
+    ],
+    "brand_system": [
+      "Official logo files",
+      "Colour codes",
+      "Fonts",
+      "Marathi typography guide",
+      "Photography guide",
+      "Graphic templates",
+      "Approved tagline"
+    ],
+    "agency_scope": [
+      "Exact Famebros package",
+      "Monthly deliverable count",
+      "Posting responsibility",
+      "Shoot frequency",
+      "Approval workflow",
+      "Ad-management scope",
+      "Meaning and year of the 10 August internal date"
+    ],
+    "priority_update_request": "Obtain brand-confirmed phone and address, current logo kit, complete catalogue, purity and hallmark process, price structure, exchange and buyback policy, current EMI terms, business hours and exact Famebros package."
+  },
+  "sources": {
+    "user_provided_and_internal": [
+      {
+        "fact_set": "Brand number, name and locality",
+        "details": "Brand 24, Rajlaxmi Jewellers Sangli, jewellery category, Sangli location.",
+        "confidence": "high"
+      },
+      {
+        "fact_set": "Language and content genre",
+        "details": "Marathi in Devanagari; informational content; respectful, warm, clear and locally rooted direction.",
+        "confidence": "high"
+      },
+      {
+        "fact_set": "Internal operational date",
+        "details": "10 August, with year and exact operational meaning not confirmed.",
+        "confidence": "high as an internal note, not for public use"
+      }
+    ],
+    "internal_dataset": [
+      {
+        "file": "Famebros_Brand_Caption_Dataset.json",
+        "record": "rajlaxmi_sangli",
+        "used_for": "Brand ID, aliases, category, location, informational genre, Marathi rule, baseline CTAs, SEO keywords and accuracy restrictions."
+      },
+      {
+        "file": "Famebros_Brand_Caption_Dataset.txt",
+        "record": "Rajlaxmi Jewellers",
+        "used_for": "Human-readable cross-check of the brand record."
+      }
+    ],
+    "public_sources": [
+      {
+        "checked_on": "2026-09-25",
+        "url": "https://www.instagram.com/rajlaxmijewellers2012/",
+        "used_for": "Matched Instagram identity and recent product, Sangli and EMI-related content signals.",
+        "confidence": "high identity match; commercial terms still require current confirmation"
+      },
+      {
+        "checked_on": "2026-09-25",
+        "url": "https://www.facebook.com/rajlaxmijewels/",
+        "used_for": "Matched Facebook identity, Kavathe Mahankal location and recent product-content cross-check.",
+        "confidence": "high identity match"
+      },
+      {
+        "checked_on": "2026-09-25",
+        "url": "https://www.justdial.com/Sangli/Rajlaxmi-Jewellers-Near-Shivaji-Chowk-Kavathe-Mahankal/9999PX233-X233-181030194607-X3V5_BZDET",
+        "used_for": "Current directory cross-check for Kavathe Mahankal, Shivaji Chowk, gold and silver jewellery association.",
+        "confidence": "medium; directory data should be brand-confirmed"
+      },
+      {
+        "checked_on": "2026-09-25",
+        "url": "https://magicpin.in/Kavathe-Mahakal/Kavathe-Mahankal/Fashion/%E2%9C%85Rajlaxmi-Jewellers/store/3873467",
+        "used_for": "Current directory cross-check for +91 95619 43310 and Shop No. 10, Shivaji Chowk, Patil Gali.",
+        "confidence": "medium to high for identity; exact address still requires brand confirmation"
+      },
+      {
+        "checked_on": "2026-09-25",
+        "url": "https://www.ibja.co/Upload/GovtCircular/Gold%20jewellers.pdf",
+        "used_for": "Historical 2019 cross-check for Rajlaxmi Jewellers, Main Road, Shivaji Chowk, Kavathe Mahakal, Sangli 416405 and mobile 9561943310.",
+        "confidence": "high historical record, not proof of current registration validity"
+      }
+    ],
+    "source_usage_rules": [
+      "Current brand-approved information overrides this file.",
+      "Public social posts support content association, not permanent product availability or commercial terms.",
+      "Directory records support identity cross-checking but must not override current brand instructions.",
+      "Historical registration information does not prove current hallmark registration or validity.",
+      "Never use similarly named Rajlaxmi businesses as sources."
+    ]
+  }
+}

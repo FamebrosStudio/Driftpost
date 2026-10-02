@@ -1,0 +1,432 @@
+{
+  "schema_version": "3.0",
+  "brand_number": 39,
+  "brand_id": "uva_fashions",
+  "brand_name": "Uvafashions Mumbai",
+  "aliases": [
+    "UVA Fashions Mumbai",
+    "Uva Fashions",
+    "Uvafashions"
+  ],
+  "knowledge_scope": "One brand only. This file covers the user's Uvafashions Mumbai record. Mumbai and the fashion category are confirmed, but the exact garment segment, audience, retail or wholesale model, official Instagram, contact details and catalogue remain unresolved.",
+  "business": {
+    "category": "Fashion and clothing, exact segment unconfirmed",
+    "industry": "Apparel and fashion",
+    "business_model": null,
+    "city": "Mumbai",
+    "state": "Maharashtra",
+    "country": "India",
+    "currency": "INR",
+    "core_positioning": "A Mumbai fashion brand requiring product-led communication built around the actual garment and confirmed audience.",
+    "primary_audience": null,
+    "gender_scope": null,
+    "operational_status": "Not started yet in the source record.",
+    "dataset_date": "2026-09-26",
+    "commercial_accuracy_rule": "Do not assume men, women, children, retail, wholesale, manufacturing, fabric, price, stock or shipping."
+  },
+  "contact": {
+    "phone": null,
+    "whatsapp": null,
+    "email": null,
+    "website": null,
+    "address": null,
+    "city": "Mumbai",
+    "google_maps_url": null,
+    "contact_status": "Only Mumbai is established.",
+    "contact_rule": "Use Mumbai at city level only. Do not invent a locality or contact."
+  },
+  "social_media": {
+    "instagram_handle": null,
+    "instagram_url": null,
+    "instagram_status": "Not resolved after exact-name searches.",
+    "facebook_url": null,
+    "website_url": null,
+    "managing_agency": "Famebros Studio",
+    "agency_instagram_handle": "@famebrosstudio",
+    "agency_instagram_url": "https://www.instagram.com/famebrosstudio/",
+    "agency_credit_default": "💫 Managed by: @famebrosstudio",
+    "reference_rule": "Do not tag or study a similarly named UVA fashion business without direct confirmation."
+  },
+  "established_content_knowledge": {
+    "confirmed_facts": [
+      "Working name Uvafashions Mumbai",
+      "Fashion category",
+      "Mumbai location at city level",
+      "Project not started yet"
+    ],
+    "confirmed_content_genres": [],
+    "safe_content_pillars": [
+      "Actual garment reveal",
+      "Silhouette and movement",
+      "Visible details",
+      "Confirmed fabric and construction",
+      "Styling for the approved audience",
+      "Current price and stock after confirmation",
+      "Mumbai discovery after official address confirmation"
+    ],
+    "category_gate": [
+      "Confirm men, women, children or unisex",
+      "Confirm ethnic, western, occasion, casual, uniforms or manufacturing",
+      "Confirm retail, wholesale or direct-to-consumer"
+    ],
+    "content_priority": "Identify the actual product and audience before defining voice, hashtags, styling or commerce copy.",
+    "data_confidence": {
+      "name": "Confirmed",
+      "city": "Confirmed",
+      "category": "Broad only",
+      "audience": "Unknown",
+      "social": "Unknown",
+      "catalogue": "Unknown"
+    }
+  },
+  "writing_direction": {
+    "brand_voice": [
+      "Neutral fashion voice until the segment is confirmed",
+      "Product-led",
+      "Clean"
+    ],
+    "primary_language": "Match the supplied brief.",
+    "focus": [
+      "Actual garment",
+      "Confirmed audience",
+      "Visible design",
+      "Supplied product details",
+      "Mumbai only when relevant"
+    ],
+    "avoid": [
+      "Assuming women's wear",
+      "Assuming men's wear",
+      "Assuming children's wear",
+      "Assuming ethnic or western",
+      "Invented fabric, size, price or stock",
+      "Unconfirmed wholesale language",
+      "Fake Mumbai address"
+    ],
+    "punctuation_style": "Short polished lines and no em dashes."
+  },
+  "content_playbook": {
+    "garment_reveal": {
+      "required_inputs": [
+        "Audience",
+        "Category",
+        "Product name",
+        "Actual assets",
+        "Product facts",
+        "CTA"
+      ],
+      "rule": "Do not publish category language until the segment is confirmed."
+    },
+    "detail_carousel": {
+      "sequence": [
+        "Full garment",
+        "Front detail",
+        "Side or movement",
+        "Back detail",
+        "Verified facts",
+        "CTA"
+      ]
+    },
+    "model_showcase": {
+      "rule": "Preserve the model and garment, and confirm the target audience."
+    },
+    "wholesale_post": {
+      "rule": "Blocked unless manufacturing, MOQ, sizes, pricing, dispatch and buyer type are confirmed."
+    },
+    "retail_post": {
+      "rule": "Blocked unless price, sizes, stock, order route, shipping and returns are confirmed."
+    }
+  },
+  "fashion_segment_and_product_description_framework": {
+    "identity_fields": [
+      "Official account",
+      "Gender or age segment",
+      "Product categories",
+      "Retail or wholesale",
+      "Address",
+      "Contact"
+    ],
+    "product_fields": [
+      "Product name",
+      "Code",
+      "Garment type",
+      "Colour",
+      "Fabric",
+      "Work",
+      "Fit",
+      "Sizes",
+      "Price",
+      "Stock",
+      "Care",
+      "Shipping",
+      "Returns"
+    ],
+    "safe_order": [
+      "Style hook",
+      "Exact garment",
+      "Verified detail",
+      "Audience or occasion",
+      "Approved CTA"
+    ],
+    "fidelity_rule": "Preserve garment colour, shape, pattern and design.",
+    "unknown_rule": "Omit or request every missing field."
+  },
+  "caption_format": {
+    "default_use": "Instagram and Facebook feed posts and reels.",
+    "body_length": "Usually 25 to 70 words excluding footer, hashtags and SEO block.",
+    "body_structure": [
+      "One specific hook connected to the real asset or topic.",
+      "One to three useful lines using verified information.",
+      "One visit, enquiry, admissions, booking, save, share or shop CTA."
+    ],
+    "format_order": [
+      "Caption body",
+      "Blank line",
+      "Exactly three hashtags",
+      "Blank line",
+      "Approved CTA, location and contact lines",
+      "Agency credit when required",
+      "Blank line",
+      "Exactly one square-bracket SEO block"
+    ],
+    "hashtag_rule": "Exactly three hashtags unless the user requests another count.",
+    "seo_rule": "Use five to eight natural search phrases inside one pair of square brackets.",
+    "story_rule": "For story copy, use a short headline, one support line and one CTA. Omit feed hashtags and SEO unless requested.",
+    "reel_overlay_rule": "Keep each overlay short, readable and supported by the footage.",
+    "final_checks": [
+      "Use only verified facts from the current brief and this knowledge file.",
+      "Use exactly three relevant hashtags.",
+      "Use one square-bracket SEO block with five to eight comma-separated phrases.",
+      "Use one clear CTA.",
+      "Remove every em dash before delivery.",
+      "Audience and garment category confirmed.",
+      "Official account confirmed.",
+      "Do not use gendered or wholesale SEO without evidence."
+    ]
+  },
+  "fixed_footer": {
+    "standard_lines": [
+      "📍 Mumbai",
+      "💫 Managed by: @famebrosstudio"
+    ],
+    "status": "City-level footer only. No locality or contact is established.",
+    "usage": "Use Mumbai only after confirming the post is for this exact brand.",
+    "exceptions": [
+      "Story overlays",
+      "Comments",
+      "Unpublished concepts"
+    ]
+  },
+  "suggested_hashtag_bank": [
+    "#Uvafashions",
+    "#MumbaiFashion",
+    "#ClothingShowcase",
+    "#FashionMumbai",
+    "#OutfitDetails",
+    "#StyleInspiration",
+    "#MumbaiClothing"
+  ],
+  "seo_keyword_bank": [
+    "Uvafashions Mumbai",
+    "UVA Fashions Mumbai",
+    "fashion brand Mumbai",
+    "clothing showcase Mumbai",
+    "outfit details Mumbai",
+    "Mumbai fashion collection",
+    "clothing brand in Mumbai"
+  ],
+  "cta_bank": [
+    "DM the official brand page once confirmed.",
+    "Ask for the current product details.",
+    "Save this look for your style reference.",
+    "Which detail would you choose?",
+    "Use the action specified in the approved brief."
+  ],
+  "suggested_hooks": [
+    "Mumbai style starts with the right details.",
+    "Let the garment do the talking.",
+    "A closer look at the silhouette and finish.",
+    "One outfit, every angle considered.",
+    "The next look begins with the real product.",
+    "Details first, assumptions never."
+  ],
+  "visual_and_asset_guidance": {
+    "feed_size": "1080 x 1440 pixels",
+    "story_and_reel_size": "1080 x 1920 pixels",
+    "style": [
+      "Clean",
+      "Fashion-led",
+      "Product-first",
+      "Flexible until brand kit is supplied"
+    ],
+    "asset_priority": [
+      "Actual garment",
+      "Accurate colour",
+      "Full silhouette",
+      "Visible details",
+      "Movement",
+      "Multiple angles"
+    ],
+    "fidelity_rules": [
+      "Do not change garment colour, shape, pattern or design.",
+      "Do not invent audience through the model.",
+      "Do not add accessories and imply inclusion.",
+      "Use the official logo only after it is supplied."
+    ],
+    "thumbnail_rule": "One real garment and one neutral fashion hook."
+  },
+  "carousel_and_reel_system": {
+    "product_carousel": [
+      "Slide 1: Full garment",
+      "Slide 2: Front detail",
+      "Slide 3: Movement",
+      "Slide 4: Back or side",
+      "Slide 5: Verified facts",
+      "Slide 6: CTA"
+    ],
+    "fashion_reel": [
+      "0 to 2 seconds: Movement hook",
+      "2 to 6 seconds: Full reveal",
+      "6 to 11 seconds: Details",
+      "11 to 14 seconds: Alternate angle",
+      "14 to 16 seconds: CTA"
+    ],
+    "editing_style": [
+      "Accurate colour",
+      "Natural movement",
+      "Minimal text",
+      "No product redesign"
+    ]
+  },
+  "other_output_modes": {
+    "story_sequence": [
+      "Garment reveal",
+      "Detail poll",
+      "CTA"
+    ],
+    "catalogue_copy": "Blocked until the segment and product fields are supplied.",
+    "wholesale_copy": "Blocked until business model and trade terms are confirmed.",
+    "comment_reply": "Do not answer size, price, stock or shipping from assumptions.",
+    "voiceover": "Neutral fashion narration using confirmed details only."
+  },
+  "sample_caption": {
+    "status": "Illustrative neutral fashion caption. Official account, audience and product facts are still required.",
+    "scenario": "Garment showcase",
+    "caption_body": "Let the garment do the talking. A closer look at the silhouette, movement and visible details featured by Uvafashions Mumbai. Ask the official brand for the confirmed product information once its page is supplied.",
+    "footer": [
+      "📍 Mumbai",
+      "💫 Managed by: @famebrosstudio"
+    ],
+    "hashtags": [
+      "#Uvafashions",
+      "#MumbaiFashion",
+      "#ClothingShowcase"
+    ],
+    "seo_keywords": [
+      "Uvafashions Mumbai",
+      "UVA Fashions Mumbai",
+      "fashion brand Mumbai",
+      "clothing showcase Mumbai",
+      "outfit details Mumbai",
+      "Mumbai fashion collection"
+    ],
+    "full_caption": "Let the garment do the talking. A closer look at the silhouette, movement and visible details featured by Uvafashions Mumbai. Ask the official brand for the confirmed product information once its page is supplied.\n\n📍 Mumbai\n💫 Managed by: @famebrosstudio\n\n#Uvafashions #MumbaiFashion #ClothingShowcase\n\n[Uvafashions Mumbai, UVA Fashions Mumbai, fashion brand Mumbai, clothing showcase Mumbai, outfit details Mumbai, Mumbai fashion collection]",
+    "validation": {
+      "hashtags": 3,
+      "seo_phrases": 6,
+      "verified_fields_only": true,
+      "official_account_confirmed": false
+    }
+  },
+  "accuracy_rules": [
+    "Use Mumbai only at city level.",
+    "Do not invent an Instagram account, locality, phone, website or address.",
+    "Do not assume men, women, children or unisex.",
+    "Do not assume retail, wholesale or manufacturing.",
+    "Never invent fabric, work, fit, size, price, stock, shipping or returns.",
+    "Preserve the actual garment.",
+    "Keep proposed fashion voice separate from confirmed history.",
+    "Remove every em dash."
+  ],
+  "per_post_input": {
+    "required_identity": [
+      "Official Instagram",
+      "Website",
+      "Audience segment",
+      "Product categories",
+      "Retail or wholesale",
+      "Address",
+      "Contact"
+    ],
+    "required_product": [
+      "Name",
+      "Code",
+      "Category",
+      "Colour",
+      "Fabric",
+      "Work",
+      "Fit",
+      "Sizes",
+      "Price",
+      "Stock",
+      "Care"
+    ],
+    "commerce_inputs": [
+      "Order method",
+      "MOQ if wholesale",
+      "Shipping",
+      "Returns",
+      "Payment"
+    ],
+    "input_rule": "Do not create targeted sales copy before the segment and business model are confirmed."
+  },
+  "master_brand_instruction": "Create content only for Uvafashions Mumbai. The confirmed facts are the working name, broad fashion category, Mumbai city-level location and not-started status. The exact product segment, audience, retail or wholesale model, official Instagram, contacts and catalogue are unknown. Do not assume men, women, children, ethnic wear, western wear, manufacturing or retail. Use only the actual garment and supplied facts. Preserve its colour, shape, pattern and design. Never invent fabric, sizes, price, stock, shipping or returns. Use Mumbai only at city level and do not tag a guessed account. Standard neutral concept captions use exactly three hashtags and one SEO bracket with five to eight phrases. Remove all em dashes.",
+  "missing_information": {
+    "identity": [
+      "Official Instagram",
+      "Website",
+      "Owner",
+      "Exact display name",
+      "Audience segment"
+    ],
+    "business": [
+      "Product categories",
+      "Retail or wholesale",
+      "Manufacturing status",
+      "Mumbai address"
+    ],
+    "contact": [
+      "Phone",
+      "WhatsApp",
+      "Email",
+      "Google Maps URL"
+    ],
+    "commerce": [
+      "Prices",
+      "Sizes",
+      "MOQ",
+      "Stock",
+      "Shipping",
+      "Returns",
+      "Payment"
+    ],
+    "brand_system": [
+      "Logo",
+      "Colours",
+      "Fonts",
+      "Photography guide"
+    ],
+    "priority": "Confirm the official Instagram and exact product segment before public content begins."
+  },
+  "sources": {
+    "user_facts": [
+      "Uvafashions Mumbai name.",
+      "Broad fashion category.",
+      "Mumbai location at city level.",
+      "Not started yet status."
+    ],
+    "public_sources": [],
+    "public_search_note": "Exact-name searches on 2026-09-26 did not safely resolve the official business.",
+    "internal_dataset": "Famebros_Brand_Caption_Dataset.json record uva_fashions.",
+    "source_rule": "Direct owner confirmation is required before adding audience, business model, social, contact or catalogue facts."
+  }
+}

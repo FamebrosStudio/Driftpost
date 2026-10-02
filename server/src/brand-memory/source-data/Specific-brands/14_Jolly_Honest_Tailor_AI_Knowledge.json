@@ -1,0 +1,536 @@
+{
+  "schema_version": "1.0",
+  "brand_number": 14,
+  "brand_id": "jolly_honest_tailor",
+  "brand_name": "Jolly Honest Tailor",
+  "aliases": [
+    "Jolly Tailor",
+    "Jolly Honest Tailors"
+  ],
+  "knowledge_scope": "One brand only. Confirmed and third-party business details, historical evidence and AI writing guidance are separated.",
+  "business": {
+    "category": "Custom men's tailoring",
+    "industry": "Bespoke and made-to-measure menswear",
+    "customer_focus": "Men only for the user's active content system",
+    "customer_focus_note": "A third-party profile mentions children, but the user has specified men-only content. Do not market women's clothing or broaden the audience without approval.",
+    "location_area": "Mulund West",
+    "city": "Mumbai",
+    "state": "Maharashtra",
+    "country": "India",
+    "public_face": "Jignesh Kennie Gohel",
+    "public_nicknames": [
+      "Kennie",
+      "Kenny Sir"
+    ],
+    "owner_name": "Jignesh",
+    "owner_status": "Third-party business listing identifies Jignesh as owner, and brand-profile content identifies Jignesh Kennie Gohel as the public tailor.",
+    "published_since_year": 1973,
+    "since_year_status": "Repeated on the current third-party brand profile. Another directory lists 1989, so legal establishment-year use requires confirmation.",
+    "opening_hours_third_party": {
+      "monday": "10:30 AM to 9:00 PM",
+      "tuesday": "10:30 AM to 9:00 PM",
+      "wednesday": "10:30 AM to 9:00 PM",
+      "thursday": "Closed",
+      "friday": "10:30 AM to 9:00 PM",
+      "saturday": "10:30 AM to 9:00 PM",
+      "sunday": "10:30 AM to 9:00 PM",
+      "status": "Recent business-directory listing. Confirm before time-sensitive captions."
+    }
+  },
+  "contact": {
+    "primary_phone_display": "022 2560 3747",
+    "primary_phone_e164": "+912225603747",
+    "secondary_phone_display": "022 2592 9714",
+    "secondary_phone_e164": "+912225929714",
+    "mobile_number": null,
+    "whatsapp_number": null,
+    "full_address_preferred": "1, Surya Prakash Building, Ganesh Gawade Road, Near Dena Bank, Mulund West, Mumbai 400080",
+    "address_variants": [
+      "M.G. Road, Mulund West, near Dena Bank, Mumbai 400080",
+      "1, Surya Prakash Building, Ganesh Gawade Road, Near Dena Bank, Mulund West, Mumbai 400080"
+    ],
+    "address_note": "Public listings use M.G. Road and Ganesh Gawade Road wording. Confirm the preferred official format before maps or print material.",
+    "email": "jhtkenny@yahoo.in",
+    "website": null,
+    "profile_or_booking_page": "https://mytribe.in/jollyhonesttailor/",
+    "google_maps_url": null
+  },
+  "social_media": {
+    "instagram_handle": null,
+    "instagram_url": null,
+    "instagram_status": "No official Instagram handle has been confidently verified. Do not invent @jhtkenny as an Instagram handle from the email or Facebook URL.",
+    "facebook_handle": "@jhtkenny",
+    "facebook_url": "https://www.facebook.com/jhtkenny/",
+    "facebook_status": "Indexed Facebook page matches Jolly Honest Tailor in Mulund West.",
+    "youtube_url": null,
+    "managing_agency": "Famebros Studio",
+    "agency_instagram_handle": "@famebrosstudio",
+    "agency_instagram_url": "https://www.instagram.com/famebrosstudio/"
+  },
+  "established_content_knowledge": {
+    "confirmed_content_genres": [
+      "Men's tailoring transformations"
+    ],
+    "confirmed_audience": "Men only",
+    "observed_products_and_services": [
+      "Custom shirts",
+      "Custom trousers",
+      "Co-ord sets",
+      "Suits",
+      "Blazers",
+      "Pathani suits",
+      "Formal and business wear",
+      "Casual and party wear",
+      "Designer kurta sets",
+      "Indo-Western jackets"
+    ],
+    "observed_processes": [
+      "Personal measurements",
+      "Fabric selection",
+      "Fit discussion",
+      "Garment structure planning",
+      "Canvas and padding discussion",
+      "Posture-aware tailoring",
+      "Custom styling"
+    ],
+    "published_positioning": [
+      "Personal style rather than mass-produced standard sizes",
+      "Made-to-measure fit",
+      "Experience across generations in Mulund",
+      "Direct consultation with Kennie"
+    ],
+    "service_scope_rule": "Observed categories come from brand-profile content. Confirm current availability, pricing and delivery time for each order.",
+    "third_party_starting_prices": [
+      {
+        "amount_inr": 2200,
+        "unit": "per shirt",
+        "context": "Casual or party-wear profile pages",
+        "status": "Third-party live profile, confirm before publishing"
+      },
+      {
+        "amount_inr": 1800,
+        "unit": "per shirt",
+        "context": "Formal or business-wear profile page",
+        "status": "Third-party live profile, conflicting context, confirm before publishing"
+      }
+    ],
+    "confirmed_current_price_list": [],
+    "confirmed_current_offers": [],
+    "confirmed_fabric_brands": [],
+    "confirmed_delivery_timelines": [],
+    "confirmed_alteration_policy": null,
+    "confirmed_customer_testimonials": []
+  },
+  "writing_direction": {
+    "status": "Recommended defaults based on the brand's transformation genre and published bespoke-tailoring positioning.",
+    "brand_voice": [
+      "Experienced",
+      "Personal",
+      "Confident",
+      "Straightforward",
+      "Craft-focused",
+      "Warm"
+    ],
+    "positioning_for_copy": "A Mulund tailoring institution helping men move beyond standard sizes through personal measurements, fabric choice and a fit built around the individual.",
+    "primary_language": "English",
+    "alternate_language": "Natural Hinglish for Kennie-led explanations, customer conversations and transformation reels.",
+    "target_audience": [
+      "Men in Mumbai seeking custom shirts and trousers",
+      "Professionals seeking formal or business wear",
+      "Grooms and wedding guests seeking suits, kurtas or Indo-Western looks",
+      "Men who struggle with standard ready-made sizing",
+      "Customers who value personal tailoring and fit guidance"
+    ],
+    "emotional_angles": [
+      "A fit created for the individual",
+      "Confidence in a well-tailored garment",
+      "Personal style beyond mass production",
+      "Craft passed through generations",
+      "Dressing with purpose for work or celebration",
+      "The transformation from fabric to finished look"
+    ],
+    "avoid_style": [
+      "Body shaming",
+      "Mocking ready-made clothing customers",
+      "Guaranteeing a perfect fit without fittings",
+      "Invented fabric names",
+      "Invented handwork or construction claims",
+      "Unconfirmed same-day delivery",
+      "Using women's fashion language",
+      "Calling every garment bespoke when service level is unknown",
+      "Long generic luxury copy",
+      "Em dashes"
+    ]
+  },
+  "content_playbook": {
+    "tailoring_transformation": {
+      "focus": "The real change from fabric, measurement or fitting stage to the finished men's look.",
+      "structure": "Fit or style problem, tailoring decision, finished result, consultation CTA.",
+      "rules": [
+        "Use the actual garment and client-approved footage.",
+        "Do not digitally reshape the client's body.",
+        "Do not claim weight loss, height increase or body correction.",
+        "Mention fit changes only when documented.",
+        "Do not promise the same transformation for every client."
+      ]
+    },
+    "finished_look": {
+      "focus": "The confirmed garment, occasion and visible fit details.",
+      "rules": [
+        "Name suit, blazer, shirt, Pathani, kurta or jacket only when confirmed.",
+        "Describe visible lapel, collar, cuff, pocket, silhouette or embroidery accurately.",
+        "Do not identify fabric composition from appearance.",
+        "Use men-only audience language."
+      ]
+    },
+    "behind_the_stitch": {
+      "focus": "One authentic tailoring step such as measurement, cutting, structure, fitting or finishing.",
+      "rules": [
+        "Use the tailor's actual explanation.",
+        "Do not claim hand stitching, full canvas, half canvas or bespoke construction unless confirmed.",
+        "Do not reveal customer measurements without permission."
+      ]
+    },
+    "fit_education": {
+      "focus": "One practical menswear or fit lesson from Kennie.",
+      "structure": "Common problem, tailoring explanation, useful takeaway, consultation CTA.",
+      "rules": [
+        "Avoid universal body-type rules.",
+        "Do not shame body proportions.",
+        "Separate style preference from technical fit.",
+        "Use exact terms in simple language."
+      ]
+    },
+    "occasion_wear": {
+      "focus": "A confirmed wedding, business, festive or party requirement and the chosen garment.",
+      "rules": [
+        "Do not promise completion before an event without an accepted order timeline.",
+        "Do not invent dress codes or accessory inclusions.",
+        "Use the client's approved occasion details."
+      ]
+    },
+    "fabric_story": {
+      "focus": "Confirmed fabric, weave, colour and why it suits the garment or occasion.",
+      "rules": [
+        "Use fabric composition and brand only from the label or brief.",
+        "Do not promise wrinkle resistance, breathability, stretch or durability without specifications.",
+        "Do not call a fabric imported or premium without confirmation."
+      ]
+    },
+    "offer": {
+      "status": "Requires a current tailoring brief.",
+      "required_details": [
+        "Garment",
+        "Stitching or fabric-included scope",
+        "Starting price or fixed price",
+        "Fittings",
+        "Delivery timeline",
+        "Validity",
+        "Alteration terms"
+      ],
+      "rules": [
+        "Do not publish ₹1,800 or ₹2,200 as current without confirmation.",
+        "Do not invent combos or free accessories.",
+        "Clarify whether fabric is included."
+      ]
+    },
+    "customer_story": {
+      "status": "Use only with customer permission.",
+      "rules": [
+        "Do not reveal measurements, event details or price without approval.",
+        "Keep testimonials faithful.",
+        "Do not invent repeat-customer or generational stories."
+      ]
+    }
+  },
+  "tailoring_description_framework": {
+    "client_and_occasion": [
+      "Men's garment type",
+      "Occasion",
+      "Dress code",
+      "Client preference",
+      "Required date"
+    ],
+    "measurement_and_fit": [
+      "Measurement method",
+      "Fit preference",
+      "Posture considerations",
+      "Fitting count",
+      "Alteration notes"
+    ],
+    "garment_details": [
+      "Fabric",
+      "Colour",
+      "Pattern",
+      "Collar",
+      "Cuffs",
+      "Lapel",
+      "Vent",
+      "Pockets",
+      "Buttons",
+      "Lining",
+      "Canvas or structure",
+      "Embroidery",
+      "Monogram"
+    ],
+    "commercial_details": [
+      "Stitching price",
+      "Fabric price",
+      "Total price",
+      "Deposit",
+      "Delivery date",
+      "Alteration policy"
+    ],
+    "requires_explicit_confirmation": [
+      "Bespoke status",
+      "Handmade percentage",
+      "Full or half canvas",
+      "Imported fabric",
+      "Fabric mill or brand",
+      "Guaranteed perfect fit",
+      "Rush delivery",
+      "Lifetime alteration"
+    ],
+    "rule": "Describe the visible fit and confirmed construction separately. Never infer technical tailoring construction from the finished photo alone."
+  },
+  "caption_format": {
+    "default_platforms": [
+      "Instagram",
+      "Facebook"
+    ],
+    "default_number_of_options": 1,
+    "body_word_target": "25 to 60 words, excluding footer, hashtags and keyword bracket.",
+    "short_transformation_word_target": "12 to 40 words.",
+    "educational_word_target": "35 to 80 words.",
+    "sequence": [
+      "Specific fit, garment or occasion hook",
+      "One tailoring detail or transformation point",
+      "One consultation or visit CTA",
+      "Confirmed tailor footer",
+      "Exactly three relevant hashtags",
+      "Exactly one square bracket containing comma-separated SEO phrases"
+    ],
+    "line_breaks": "Use short paragraphs and a blank line before the footer and hashtag block.",
+    "body_emojis": "Usually zero to two. Keep the tone classic and confident.",
+    "hashtag_count": 3,
+    "hashtag_selection": "Normally one brand tag, one tailoring or garment tag and one Mulund or Mumbai tag.",
+    "seo_keyword_count": "5 to 8 relevant phrases",
+    "seo_format": "[keyword one, keyword two, keyword three, keyword four, keyword five]",
+    "punctuation": "No em dashes.",
+    "output_rule": "Return only ready-to-copy public text unless another format is requested."
+  },
+  "fixed_footer": {
+    "lines": [
+      "📍 Jolly Honest Tailor, 1, Surya Prakash Building, Ganesh Gawade Road, Near Dena Bank, Mulund West, Mumbai 400080",
+      "📞 022 2560 3747 | 022 2592 9714",
+      "📧 jhtkenny@yahoo.in",
+      "🎥 Managed by: @famebrosstudio ✨"
+    ],
+    "source": "Recent business directory, historical company listing and agency credit.",
+    "usage": "Use after the user confirms this preferred address format. Until then, a shorter Mulund West footer is safer for high-stakes print material.",
+    "rules": [
+      "Preserve the landline numbers and email.",
+      "Do not invent a mobile or WhatsApp number.",
+      "Do not claim an Instagram handle.",
+      "Do not confuse this with unrelated Jolly Tailor listings in Bhiwandi.",
+      "Confirm M.G. Road versus Ganesh Gawade Road wording for maps and print."
+    ]
+  },
+  "suggested_hashtag_bank": {
+    "brand": [
+      "#JollyHonestTailor",
+      "#JollyTailor"
+    ],
+    "category": [
+      "#MensTailoring",
+      "#CustomMenswear",
+      "#MadeToMeasure"
+    ],
+    "garment": [
+      "#CustomShirts",
+      "#TailoredSuit",
+      "#MensFormalWear",
+      "#DesignerKurta",
+      "#IndoWesternMenswear"
+    ],
+    "location": [
+      "#MulundTailor",
+      "#MumbaiTailor"
+    ],
+    "rule": "Select exactly three relevant hashtags. Use only the garment type shown or confirmed."
+  },
+  "seo_keyword_bank": [
+    "Jolly Honest Tailor",
+    "Jolly Tailor Mulund",
+    "men's tailor in Mulund West",
+    "custom men's tailoring Mumbai",
+    "made-to-measure shirts Mulund",
+    "custom suits Mumbai",
+    "men's formal wear tailoring",
+    "designer kurta tailoring Mulund",
+    "Jignesh Kennie Gohel tailor"
+  ],
+  "cta_bank": {
+    "visit": [
+      "Visit Jolly Honest Tailor in Mulund West after confirming store hours."
+    ],
+    "call": [
+      "Call 022 2560 3747 or 022 2592 9714 to discuss your tailoring requirement."
+    ],
+    "consultation": [
+      "Start with your occasion, measurements and preferred fit."
+    ],
+    "save": [
+      "Save this fit reference for your next tailored look."
+    ],
+    "share": [
+      "Send this to someone planning a custom outfit."
+    ],
+    "selection_rule": "Choose one CTA. Do not promise a delivery slot or price without confirmation."
+  },
+  "suggested_hooks": {
+    "transformation": [
+      "From fabric to a look made for you.",
+      "The right fit changes the entire look.",
+      "Not a standard size. Your size."
+    ],
+    "craft": [
+      "Every stitch begins with the right measurement.",
+      "Good tailoring starts before the first cut.",
+      "Structure, drape and fit make the difference."
+    ],
+    "occasion": [
+      "Your important day deserves a fit planned for you.",
+      "Boardroom, wedding or celebration, the fit comes first.",
+      "A signature look begins with a personal conversation."
+    ],
+    "hinglish": [
+      "Ready-made size nahi, aapke measurement ka fit.",
+      "Kapda select karna start hai, fit banana craft hai.",
+      "Har body alag hai, tailoring bhi personal honi chahiye."
+    ],
+    "hook_note": "Suggestions only. Match the actual garment, client and occasion."
+  },
+  "visual_and_asset_guidance": {
+    "default_feed_size_px": {
+      "width": 1080,
+      "height": 1440
+    },
+    "default_story_size_px": {
+      "width": 1080,
+      "height": 1920
+    },
+    "reel_aspect_ratio": "9:16",
+    "layout": "Classic, masculine and craft-focused with the actual garment fit clearly visible.",
+    "fixed_brand_colours": null,
+    "fixed_brand_fonts": null,
+    "logo_asset": null,
+    "rules": [
+      "Preserve the client's identity and body proportions.",
+      "Do not digitally slim, broaden or heighten the client.",
+      "Preserve garment colour, pattern, structure and fit.",
+      "Do not add embroidery, accessories or construction details.",
+      "Use the supplied logo without redesigning it.",
+      "Keep fabric, price and delivery information readable when confirmed."
+    ]
+  },
+  "other_output_modes": {
+    "story": "One short fit or craft line with call or visit CTA. Omit full footer, hashtags and SEO bracket unless requested.",
+    "comment": "One short tailoring observation or appreciation. Do not impersonate a client.",
+    "review_reply": "Thank the customer and avoid revealing measurements, garment price or event details.",
+    "repost": "One or two lines crediting the client or photographer only with permission.",
+    "text_overlay": "One confident fit hook, normally 3 to 8 words.",
+    "reel_script": "Use the requested duration, a fit problem or garment hook, the real tailoring process and one consultation CTA.",
+    "product_description": "Use garment, fabric, design, construction, fit, fittings, price and delivery fields only when confirmed."
+  },
+  "sample_caption": {
+    "status": "Illustrative transformation caption for a confirmed men's tailored look. It avoids unconfirmed fabric, price and delivery claims.",
+    "text": "Not a standard size. Your size. ✂️\nA tailored look begins with personal measurements, the right silhouette and details chosen for the man wearing it.\nSave this fit reference for your next custom outfit.\n\n📍 Jolly Honest Tailor, 1, Surya Prakash Building, Ganesh Gawade Road, Near Dena Bank, Mulund West, Mumbai 400080\n📞 022 2560 3747 | 022 2592 9714\n📧 jhtkenny@yahoo.in\n🎥 Managed by: @famebrosstudio ✨\n\n#JollyHonestTailor #MensTailoring #MulundTailor\n\n[Jolly Honest Tailor, men's tailor in Mulund West, custom men's tailoring Mumbai, made-to-measure menswear, tailored fit for men, Mumbai tailor]"
+  },
+  "accuracy_rules": [
+    "Use only Jolly Honest Tailor facts and the current brief.",
+    "Write for men only unless the user explicitly changes the active audience rule.",
+    "Do not publish an Instagram handle until verified.",
+    "Do not invent a mobile or WhatsApp number.",
+    "Confirm the preferred M.G. Road or Ganesh Gawade Road address wording for maps and print.",
+    "Do not invent fabrics, measurements, construction, price, fittings, delivery or alteration terms.",
+    "Do not publish the ₹1,800 or ₹2,200 starting prices without current approval.",
+    "Do not state a legal founding year without resolving the 1973 and 1989 conflict.",
+    "Do not digitally reshape clients or garments.",
+    "If an optional detail is missing, omit it.",
+    "If an essential order detail is missing, ask one short question.",
+    "Do not print null values or internal notes in public copy."
+  ],
+  "per_post_input": {
+    "brand_id": "jolly_honest_tailor",
+    "mode": "caption",
+    "post_format": null,
+    "content_genre": "tailoring transformation",
+    "asset_description": null,
+    "client_permission_confirmed": null,
+    "garment_type": null,
+    "occasion": null,
+    "fabric": null,
+    "colour_or_pattern": null,
+    "design_details": [],
+    "fit_preference": null,
+    "construction_details": [],
+    "fitting_count": null,
+    "stitching_price": null,
+    "fabric_price": null,
+    "delivery_date": null,
+    "alteration_terms": null,
+    "goal": null,
+    "language_override": null,
+    "recent_captions": [],
+    "additional_instructions": []
+  },
+  "master_brand_instruction": "Write as Jolly Honest Tailor in Mulund West, Mumbai. The active audience is men only, and the primary content genre is tailoring transformation. Use an experienced, personal, confident, craft-focused and warm voice. Use English by default and natural Hinglish for Kennie-led explanations or customer conversations. Focus on the real change from fabric, measurement or fitting to a finished men's garment. Mention shirts, trousers, suits, blazers, Pathani suits, kurta sets, co-ords or Indo-Western jackets only when confirmed. Never invent fabric, measurement, construction, price, fitting count, delivery, alteration terms or customer details. Do not digitally reshape a client's body or garment. Treat since 1973 and starting prices as third-party published details requiring confirmation for transactional or legal copy. Do not invent an Instagram handle, mobile number or WhatsApp number. For normal feed and reel captions, append the approved Jolly Honest Tailor footer, exactly three relevant hashtags and one bracket containing 5 to 8 comma-separated SEO phrases. Preserve the known landlines and email. Avoid em dashes and return ready-to-copy public text without null fields or internal notes.",
+  "missing_information": [
+    "Verified official Instagram handle and URL",
+    "Confirmed preferred street-address format",
+    "Mobile and WhatsApp number",
+    "Official website and direct booking link",
+    "Confirmed current opening hours",
+    "Legal founding year",
+    "Complete current service menu",
+    "Current stitching and fabric prices",
+    "Current fabric brands and catalogue",
+    "Fitting process and order timelines",
+    "Alteration and cancellation policy",
+    "Service area outside Mulund",
+    "Approved logo, fonts and colour palette",
+    "Current offers",
+    "Approved client testimonials and permissions"
+  ],
+  "sources": [
+    {
+      "type": "user_supplied_brand_roster",
+      "supports": "Tailoring-transformation genre and men-only audience rule."
+    },
+    {
+      "type": "indexed_facebook_page",
+      "url": "https://www.facebook.com/jhtkenny/",
+      "supports": "Jolly Honest Tailor identity and Mulund West association."
+    },
+    {
+      "type": "recent_business_directory",
+      "url": "https://www.bharatibiz.com/en/jolly-honest-tailor-022-2560-3747",
+      "supports": "Landlines, email, Mulund West address variant, owner name and listed hours."
+    },
+    {
+      "type": "current_third_party_brand_profile",
+      "url": "https://mytribe.in/jollyhonesttailor/",
+      "supports": "Jignesh Kennie Gohel identity, since-1973 statement, men-focused custom tailoring, products, process and published starting-price observations."
+    },
+    {
+      "type": "historical_company_listing",
+      "url": "https://www.tradeindia.com/jolly-honest-tailor-28397284/",
+      "supports": "Surya Prakash Building address variant and men's garment categories. Its 1989 establishment year conflicts with current profile copy."
+    },
+    {
+      "type": "user_writing_preferences",
+      "supports": "Short hooks, contextual English or Hinglish, one CTA, three hashtags, one SEO bracket and no em dashes."
+    }
+  ]
+}

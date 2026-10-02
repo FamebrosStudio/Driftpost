@@ -1,0 +1,657 @@
+{
+  "schema_version": "1.0",
+  "brand_number": 7,
+  "brand_id": "cocos_inn_resort",
+  "brand_name": "Coco's Inn Resort",
+  "short_names": [
+    "Coco's Inn",
+    "Cocos Inn Resort"
+  ],
+  "knowledge_scope": "One brand only. Confirmed property facts, current or historical campaign data and AI writing guidance are separated.",
+  "business": {
+    "category": "Coastal resort",
+    "industry": "Hospitality, leisure travel, dining and events",
+    "location_area": "Barshive, near Kashid Beach",
+    "destination_region": "Kashid, Murud and Alibaug coastal region",
+    "taluka": "Murud",
+    "district": "Raigad",
+    "state": "Maharashtra",
+    "country": "India",
+    "official_positioning": "Coastal comfort near Kashid Beach",
+    "distance_from_kashid_beach_km": 2.6,
+    "distance_status": "Approximate road distance published by the official website.",
+    "published_google_review_count": "950+",
+    "review_count_status": "Published on the official website and time-sensitive. Recheck before future milestone posts.",
+    "owner_name": null,
+    "founding_year": null,
+    "check_in_time": null,
+    "check_out_time": null
+  },
+  "contact": {
+    "primary_phone_display": "+91 91675 62668",
+    "primary_phone_e164": "+919167562668",
+    "primary_whatsapp": "+919167562668",
+    "primary_usage": "Calls, WhatsApp and reservation enquiries",
+    "secondary_phone_display": "+91 91675 62468",
+    "secondary_phone_e164": "+919167562468",
+    "secondary_usage": "Additional reservation number published by the official website",
+    "user_supplied_address": "Revdanda, Murud Road, near Kashid Beach, Alibaug",
+    "official_address": "Barshive, Near Kashid Beach, Taluka Murud, District Raigad 402202, Maharashtra, India",
+    "address_usage": "Use the official address for complete contact blocks. The user-supplied wording may be used for shorter local captions.",
+    "postal_code": "402202",
+    "email": "admin@cocosinn.com",
+    "website": "https://www.cocosinn.com/",
+    "booking_url": "https://www.cocosinn.com/",
+    "google_maps_url": null
+  },
+  "social_media": {
+    "instagram_handle": "@cocos.inn.resort",
+    "instagram_url": "https://www.instagram.com/cocos.inn.resort/",
+    "instagram_identity_status": "Confirmed in the user's connected-account list. Indexed content matches the resort name, Kashid location and primary phone.",
+    "facebook_url": null,
+    "youtube_url": null,
+    "managing_agency": "Famebros Studio",
+    "agency_instagram_handle": "@famebrosstudio",
+    "agency_instagram_url": "https://www.instagram.com/famebrosstudio/"
+  },
+  "confirmed_positioning": {
+    "primary": "A comfortable coastal resort 2.6 km from Kashid Beach with rooms, dining, pools, lawns and event options.",
+    "key_proof_points": [
+      "Approximately 2.6 km from Kashid Beach",
+      "950+ Google reviews as published on the official website",
+      "Three sea-view room categories",
+      "Swimming pool and kids pool",
+      "In-house restaurant",
+      "Garden and lawn",
+      "Dining and event services"
+    ],
+    "approved_experience_themes": [
+      "Sea views",
+      "Pool time",
+      "Comfortable rooms",
+      "Kokani and multicuisine dining",
+      "Quiet coastal escape",
+      "Family stays",
+      "Couple getaways",
+      "Group trips",
+      "Celebrations and events",
+      "Corporate offsites"
+    ],
+    "content_genres": [
+      "Property review content",
+      "Room showcases",
+      "Food and dining",
+      "Guest experience",
+      "Kashid travel information",
+      "Events and celebrations",
+      "Offers and booking content"
+    ],
+    "source_roster_note": "The original brand roster lists page review without named genres. These additional modes come from the official property website and user-approved themes."
+  },
+  "confirmed_room_categories": {
+    "source": "Official website",
+    "rooms": [
+      {
+        "name": "Sea View Premium Room, First Floor",
+        "confirmed_features": [
+          "King bed",
+          "First floor",
+          "Air conditioning",
+          "Television",
+          "Mini cooler",
+          "Electric kettle",
+          "Hair dryer",
+          "Intercom",
+          "Free Wi-Fi"
+        ]
+      },
+      {
+        "name": "Sea View Premium Room",
+        "confirmed_features": [
+          "King bed",
+          "Air conditioning",
+          "Television",
+          "Mini cooler",
+          "Electric kettle",
+          "Hair dryer",
+          "Intercom",
+          "Free Wi-Fi"
+        ]
+      },
+      {
+        "name": "Duplex Family Sea View Room",
+        "confirmed_features": [
+          "King bed plus loft",
+          "Sleeps 4",
+          "Air conditioning",
+          "Television",
+          "Mini cooler",
+          "Electric kettle",
+          "Hair dryer",
+          "Intercom",
+          "Free Wi-Fi"
+        ]
+      }
+    ],
+    "room_rule": "Recheck live availability, rates, occupancy policies and room specifications before price or booking campaigns."
+  },
+  "confirmed_facilities": {
+    "source": "Official website",
+    "items": [
+      "Swimming pool",
+      "Kids pool",
+      "In-house restaurant",
+      "In-room service in select rooms",
+      "Mini cooler",
+      "Garden and lawn",
+      "Electric kettle",
+      "Hair dryer",
+      "Intercom",
+      "Indoor games",
+      "Free Wi-Fi",
+      "Air conditioning",
+      "Television"
+    ],
+    "facility_rule": "Match each amenity to the correct room or common area. Do not imply that every room includes every facility."
+  },
+  "confirmed_dining": {
+    "positioning": "Kokani coastal cuisine and multicuisine vegetarian and non-vegetarian options",
+    "published_items": [
+      "Kokani fish curry",
+      "Chicken sukka",
+      "Sol kadhi",
+      "Bombil fry"
+    ],
+    "dining_rule": "Use current menu, price and availability information for transactional posts. Do not promise that meals are included in a room package unless confirmed."
+  },
+  "confirmed_events": {
+    "published_categories": [
+      "Weddings",
+      "Birthday parties",
+      "Kitty parties",
+      "Anniversaries",
+      "Naming ceremonies",
+      "Family reunions",
+      "Group day-outs",
+      "Farewells",
+      "Baby showers",
+      "Festive gatherings",
+      "Corporate meetings",
+      "Conferences",
+      "Team-building and offsites"
+    ],
+    "event_rule": "Confirm capacity, venue, menu, decor, activities, rates and date availability for every campaign."
+  },
+  "nearby_places": {
+    "source": "Official website",
+    "distances_are_approximate": true,
+    "places": [
+      {
+        "name": "Kashid Beach",
+        "distance_km": 2.6
+      },
+      {
+        "name": "Phansad Wildlife Sanctuary",
+        "distance_km": 10
+      },
+      {
+        "name": "Murud-Janjira Fort",
+        "distance_km": 15
+      },
+      {
+        "name": "Korlai Fort and Lighthouse",
+        "distance_km": 15
+      },
+      {
+        "name": "Revdanda Fort and Beach",
+        "distance_km": 20
+      },
+      {
+        "name": "Birla Mandir, Salav",
+        "distance_km": 22
+      },
+      {
+        "name": "Nagaon Beach",
+        "distance_km": 28
+      },
+      {
+        "name": "Alibaug Town and Kolaba Fort",
+        "distance_km": 32
+      },
+      {
+        "name": "Mandwa Jetty",
+        "distance_km": 50
+      }
+    ],
+    "rule": "State that road distances are approximate and may vary by route. Verify timings, closures, tickets and ferry schedules before detailed itinerary posts."
+  },
+  "travel_information": {
+    "from_mumbai_by_road": "Approximately 130 to 140 km and 3.5 to 4 hours according to the official website.",
+    "from_pune_by_road": "Approximately 170 to 180 km and 4 to 4.5 hours according to the official website.",
+    "via_mandwa": "Ferry around 1 hour plus approximately 1.5 to 2 hours by road, subject to service and seasonal conditions.",
+    "travel_rule": "All travel times are approximate. Ask guests to confirm live road and ferry conditions, especially during monsoon."
+  },
+  "active_or_recent_campaign": {
+    "code": "WEB5",
+    "discount_percent": 5,
+    "valid_until": "2026-09-30",
+    "status_on_dataset_date": "User-supplied campaign says active through 30 September 2026. Current dataset date is 23 September 2026.",
+    "source": "User brand knowledge",
+    "conditions": null,
+    "booking_channel": null,
+    "publishing_rule": "Confirm that WEB5 still applies, its booking channel, eligible room dates and exclusions before each publication. Remove it after 30 September 2026 unless renewed."
+  },
+  "writing_direction": {
+    "status": "Recommended defaults based on official property positioning and user preferences.",
+    "brand_voice": [
+      "Warm",
+      "Relaxing",
+      "Welcoming",
+      "Experience-led",
+      "Comfort-focused",
+      "Concise"
+    ],
+    "positioning_for_copy": "A comfortable coastal stay near Kashid Beach where rooms, pool, food, green spaces and warm hospitality support relaxed trips and celebrations.",
+    "primary_language": "English",
+    "alternate_language": "Natural Hinglish for local travel reels, group-trip content and conversational owner-led videos.",
+    "target_audience": [
+      "Families planning a Kashid stay",
+      "Couples looking for a coastal getaway",
+      "Friends planning a group trip",
+      "Guests interested in pool and dining experiences",
+      "People planning private celebrations",
+      "Corporate groups considering an offsite"
+    ],
+    "emotional_angles": [
+      "A calmer break near the beach",
+      "Comfort after a day at Kashid",
+      "Quality time with family or friends",
+      "A coastal celebration",
+      "Food, pool and stay in one trip",
+      "Choosing a property with substantial guest feedback"
+    ],
+    "avoid_style": [
+      "Invented beachfront or private-beach claims",
+      "Calling every room sea-facing without the room name",
+      "Invented food inclusions",
+      "Guaranteed weather or views",
+      "Outdated offer codes",
+      "Unverified review milestones",
+      "Fake room scarcity",
+      "Changing property photos",
+      "Long generic travel intros",
+      "Em dashes"
+    ]
+  },
+  "content_playbook": {
+    "property_showcase": {
+      "focus": "Visible resort spaces and confirmed facilities.",
+      "structure": "Specific getaway hook, two visible features, booking CTA.",
+      "rules": [
+        "Describe only what the supplied footage shows or the current brief confirms.",
+        "Do not add or exaggerate property features.",
+        "Use the 2.6 km Kashid distance accurately.",
+        "Do not call the property directly on the beach unless a current official source confirms that exact wording."
+      ]
+    },
+    "room_showcase": {
+      "focus": "Exact official room category and its confirmed features.",
+      "rules": [
+        "Use the full official room name.",
+        "Do not mix features between room categories.",
+        "Use live rates and availability only.",
+        "Do not promise a specific view from an unconfirmed room."
+      ]
+    },
+    "food_and_dining": {
+      "focus": "Actual dish, dining space and confirmed cuisine.",
+      "rules": [
+        "Use the exact dish shown.",
+        "Do not claim meals are included in the stay.",
+        "Do not claim every dish is available daily.",
+        "Use vegetarian or non-vegetarian labels accurately."
+      ]
+    },
+    "review_content": {
+      "focus": "Authentic guest feedback and verified review count.",
+      "rules": [
+        "Use actual review text or faithful paraphrase.",
+        "Recheck the review count before milestone claims.",
+        "Do not invent guest names, stay dates or ratings.",
+        "Do not promise identical experiences."
+      ]
+    },
+    "event_content": {
+      "focus": "The confirmed event type, space and planning support.",
+      "required_details": [
+        "Event type",
+        "Date",
+        "Expected guests",
+        "Space",
+        "Food package",
+        "Decor and activity inclusions",
+        "Price",
+        "Booking contact"
+      ],
+      "rules": [
+        "Do not promise custom decor, cake, bonfire, music or activities unless included.",
+        "Do not invent capacity.",
+        "Do not call a date available without confirmation."
+      ]
+    },
+    "local_travel": {
+      "focus": "Kashid and nearby places with approximate road distances.",
+      "rules": [
+        "Use the official approximate distance table.",
+        "Verify operational details separately.",
+        "Do not promise resort transport or tickets unless confirmed."
+      ]
+    },
+    "offer": {
+      "focus": "Exact code, saving, validity, applicable stay and booking action.",
+      "required_details": [
+        "Promo code",
+        "Discount",
+        "Booking channel",
+        "Stay dates",
+        "Booking dates",
+        "Eligible rooms",
+        "Exclusions",
+        "Taxes",
+        "Cancellation policy"
+      ],
+      "rules": [
+        "WEB5 expires after 30 September 2026 unless renewed.",
+        "Do not imply every stay receives 5% off without confirmed terms.",
+        "Show the code and deadline clearly."
+      ]
+    }
+  },
+  "photo_and_video_integrity": {
+    "priority": "Critical",
+    "rule": "All Coco's Inn property photos must remain 100% unchanged unless the user explicitly authorises a specific edit.",
+    "do_not_modify": [
+      "Architecture",
+      "Room size or layout",
+      "Furniture",
+      "Pool and kids pool",
+      "Garden and lawn",
+      "Sea or beach position",
+      "Views",
+      "Weather",
+      "Permanent structures",
+      "Food items",
+      "Guests' identity",
+      "Brand signs"
+    ],
+    "allowed_by_default": [
+      "Place the unchanged photo into a design",
+      "Crop carefully without misrepresenting the space",
+      "Add text, logo and graphics without covering essential features",
+      "Use framing and colour blocks outside the photograph"
+    ],
+    "prohibited_generation": [
+      "Adding sea views",
+      "Adding a private beach",
+      "Expanding the pool",
+      "Making rooms larger",
+      "Adding furniture or amenities",
+      "Removing neighbouring structures",
+      "Creating event setups that were not photographed",
+      "Replacing food",
+      "Changing people"
+    ],
+    "caption_alignment_rule": "Copy must describe the real photo or video, not imagined design additions."
+  },
+  "caption_format": {
+    "default_platforms": [
+      "Instagram",
+      "Facebook"
+    ],
+    "default_number_of_options": 1,
+    "body_word_target": "30 to 70 words, excluding footer, hashtags and keyword bracket.",
+    "short_scenic_reel_word_target": "12 to 40 words.",
+    "offer_word_target": "40 to 90 words so terms remain clear.",
+    "sequence": [
+      "Specific stay or experience hook",
+      "One or two confirmed details",
+      "One booking CTA",
+      "Confirmed resort footer",
+      "Exactly three relevant hashtags",
+      "Exactly one square bracket containing comma-separated SEO phrases"
+    ],
+    "line_breaks": "Use short paragraphs and a blank line before footer and hashtag block.",
+    "body_emojis": "Usually one to three with a calm travel tone.",
+    "hashtag_count": 3,
+    "hashtag_selection": "Normally one brand tag, one destination tag and one experience tag.",
+    "seo_keyword_count": "5 to 8 relevant phrases",
+    "seo_format": "[keyword one, keyword two, keyword three, keyword four, keyword five]",
+    "punctuation": "No em dashes.",
+    "output_rule": "Return only ready-to-copy public text unless another output format is requested."
+  },
+  "fixed_footer": {
+    "full_lines": [
+      "📍 Coco's Inn Resort, Barshive, Near Kashid Beach, Taluka Murud, District Raigad 402202, Maharashtra",
+      "📞 Call or WhatsApp: +91 91675 62668",
+      "📞 Alternate reservation: +91 91675 62468",
+      "🌐 https://www.cocosinn.com/",
+      "🎥 Managed by: @famebrosstudio ✨"
+    ],
+    "short_lines": [
+      "📍 Revdanda, Murud Road, near Kashid Beach, Alibaug",
+      "📞 Call or WhatsApp: +91 91675 62668",
+      "🎥 Managed by: @famebrosstudio ✨"
+    ],
+    "usage": "Use the full footer for booking and informational posts. Use the short footer when the user asks for compact copy.",
+    "rules": [
+      "Keep +91 91675 62668 as the main call and WhatsApp number.",
+      "Use the secondary number only when space permits or the brief requests all contacts.",
+      "Do not copy Vivid Sands contact details.",
+      "Do not claim the WEB5 offer in the footer after expiry."
+    ]
+  },
+  "suggested_hashtag_bank": {
+    "brand": [
+      "#CocosInn",
+      "#CocosInnResort"
+    ],
+    "destination": [
+      "#KashidBeach",
+      "#KashidResort",
+      "#Murud",
+      "#AlibaugGetaway"
+    ],
+    "experience": [
+      "#CoastalEscape",
+      "#WeekendGetaway",
+      "#FamilyStay",
+      "#BeachHoliday",
+      "#ResortNearKashid"
+    ],
+    "facility": [
+      "#PoolsideStay",
+      "#KokaniFood"
+    ],
+    "events": [
+      "#DestinationCelebration",
+      "#CorporateOffsite"
+    ],
+    "rule": "Select exactly three relevant hashtags. Use facility or event tags only when that feature is in the post."
+  },
+  "seo_keyword_bank": [
+    "Coco's Inn Resort",
+    "resort near Kashid Beach",
+    "Kashid resort booking",
+    "coastal resort near Alibaug",
+    "family resort near Kashid",
+    "resort with pool near Kashid",
+    "sea view rooms near Kashid",
+    "Kokani food resort",
+    "weekend getaway from Mumbai",
+    "corporate offsite near Kashid"
+  ],
+  "cta_bank": {
+    "booking": [
+      "Call or WhatsApp +91 91675 62668 for live availability and rates.",
+      "Check your dates and plan your stay at Coco's Inn."
+    ],
+    "offer": [
+      "Use code WEB5 only after confirming eligibility and current validity."
+    ],
+    "save": [
+      "Save this for your next Kashid getaway.",
+      "Add this stay to your coastal trip plan."
+    ],
+    "share": [
+      "Send this to your weekend travel group.",
+      "Share this with someone planning a Kashid trip."
+    ],
+    "events": [
+      "Call or WhatsApp to discuss your event date and guest count."
+    ],
+    "selection_rule": "Use one primary CTA. For booking posts, prioritise current availability and rates."
+  },
+  "suggested_hooks": {
+    "stay": [
+      "Stay close to Kashid, away from the rush.",
+      "Your coastal break has a comfortable address.",
+      "Kashid is calling, and your stay is sorted."
+    ],
+    "family": [
+      "Pool time, good food and family moments.",
+      "A family getaway made for slower days.",
+      "Bring the family closer to the coast."
+    ],
+    "food": [
+      "A coastal stay deserves coastal flavours.",
+      "From the Konkan coast to your table.",
+      "Come for Kashid. Stay for the flavours."
+    ],
+    "events": [
+      "Celebrate closer to the coast.",
+      "Your special day deserves a scenic setting.",
+      "Bring everyone together near Kashid."
+    ],
+    "hinglish": [
+      "Kashid trip ka stay ab sorted hai.",
+      "Pool, food aur coastal break, sab ek jagah.",
+      "Weekend group ko bas yeh bhej do."
+    ],
+    "hook_note": "Suggestions only. Match the actual visual and avoid repeating the same line."
+  },
+  "visual_and_asset_guidance": {
+    "default_feed_size_px": {
+      "width": 1080,
+      "height": 1440
+    },
+    "default_story_size_px": {
+      "width": 1080,
+      "height": 1920
+    },
+    "reel_aspect_ratio": "9:16",
+    "layout": "Warm, scenic, comfortable and premium with the unchanged property visual as the hero.",
+    "fixed_brand_colours": null,
+    "fixed_brand_fonts": null,
+    "logo_asset": null,
+    "rules": [
+      "Follow the 100% unchanged-photo rule.",
+      "Use minimal readable text over property images.",
+      "Keep promo code, validity and conditions visible.",
+      "Use the supplied logo without redesigning it.",
+      "Do not claim a fixed palette or font without an approved brand reference."
+    ]
+  },
+  "other_output_modes": {
+    "story": "One or two short lines plus call or WhatsApp CTA. Omit full address, hashtags and SEO bracket unless requested.",
+    "comment": "One short warm response. Move booking details to WhatsApp or a private channel.",
+    "review_reply": "Thank the guest, acknowledge the specific feedback and avoid exposing reservation details.",
+    "repost": "One or two experience-led lines. No full footer by default.",
+    "text_overlay": "One travel or experience hook, normally 3 to 8 words.",
+    "reel_script": "Use the requested duration, experience-led opening, only filmed features and one booking CTA.",
+    "offer_copy": "State WEB5, 5%, deadline and all confirmed restrictions clearly.",
+    "itinerary": "Use official approximate road distances and remind readers that routes and operating conditions can change."
+  },
+  "sample_caption": {
+    "status": "Illustrative evergreen caption using confirmed resort positioning and facilities. It does not include the time-limited WEB5 offer.",
+    "text": "Stay close to Kashid, away from the rush. 🌊\nWith comfortable sea-view stays, pool time, green spaces and coastal dining, Coco's Inn brings the full getaway together just 2.6 km from Kashid Beach.\nCall or WhatsApp for live availability and rates.\n\n📍 Coco's Inn Resort, Barshive, Near Kashid Beach, Taluka Murud, District Raigad 402202, Maharashtra\n📞 Call or WhatsApp: +91 91675 62668\n🎥 Managed by: @famebrosstudio ✨\n\n#CocosInnResort #KashidBeach #CoastalEscape\n\n[Coco's Inn Resort, resort near Kashid Beach, Kashid resort booking, coastal resort near Alibaug, family resort near Kashid, resort with pool near Kashid]"
+  },
+  "accuracy_rules": [
+    "Use only Coco's Inn facts and the current brief.",
+    "Keep all supplied property photos unchanged.",
+    "Do not invent room types, amenities, meal inclusions, prices, availability or event capacity.",
+    "Use 2.6 km as an approximate distance from Kashid Beach.",
+    "Recheck the 950+ review count before milestone content.",
+    "Remove or reconfirm WEB5 after 30 September 2026.",
+    "Do not claim meals are included unless the package says so.",
+    "Do not call every room sea-facing without the official category.",
+    "Do not copy Vivid Sands details.",
+    "If an optional detail is missing, omit it.",
+    "If an essential offer, room or event detail is missing, ask one short question.",
+    "Do not print null values or internal notes in public copy.",
+    "An Instagram or website URL is a reference pointer. Use live availability for transactional claims."
+  ],
+  "per_post_input": {
+    "brand_id": "cocos_inn_resort",
+    "mode": "caption",
+    "post_format": null,
+    "content_genre": null,
+    "asset_description": null,
+    "photo_unchanged_confirmed": null,
+    "room_category": null,
+    "visible_property_features": [],
+    "confirmed_amenities": [],
+    "occupancy": null,
+    "meal_plan": null,
+    "current_rate": null,
+    "taxes": null,
+    "promo_code": null,
+    "discount": null,
+    "offer_validity": null,
+    "offer_conditions": [],
+    "event_type": null,
+    "event_guest_count": null,
+    "availability_status": null,
+    "review_text": null,
+    "goal": null,
+    "language_override": null,
+    "recent_captions": [],
+    "additional_instructions": []
+  },
+  "master_brand_instruction": "Write as Coco's Inn Resort in Barshive near Kashid Beach, Taluka Murud, District Raigad. Keep the voice warm, relaxing, welcoming, comfort-focused and concise. Use confirmed strengths such as the 2.6 km approximate distance from Kashid Beach, sea-view room categories, swimming pool, kids pool, restaurant, garden and lawn, dining, events and 950+ published Google reviews. Recheck the review count for milestone claims. Describe only the exact room, dish, amenity, event or experience shown or supplied. Keep every property photo 100% unchanged and never add, remove or alter architecture, rooms, pools, views, food, landscape, guests or amenities. Use WEB5 for 5% off only after confirming its conditions and active validity through 30 September 2026, then remove it unless renewed. Never invent rates, availability, meal inclusions, occupancy, event capacity or cancellation terms. For normal feed and reel captions, append the confirmed Coco's Inn footer, exactly three relevant hashtags and one bracket containing 5 to 8 comma-separated SEO phrases. Keep +91 91675 62668 as the main call and WhatsApp number. Avoid em dashes and return ready-to-copy public text without null fields or internal notes.",
+  "missing_information": [
+    "Confirmed WEB5 booking channel and eligibility",
+    "WEB5 stay-date restrictions and exclusions",
+    "Current live room rates",
+    "Current meal-plan inclusions",
+    "Check-in and check-out times directly confirmed by the property",
+    "Cancellation and refund policy",
+    "Detailed event capacity and packages",
+    "Pet policy",
+    "Parking details",
+    "Pickup or transport pricing",
+    "Google Maps URL",
+    "Approved logo, fonts and colour palette",
+    "Current photo and video library",
+    "Current seasonal packages"
+  ],
+  "sources": [
+    {
+      "type": "official_website",
+      "url": "https://www.cocosinn.com/",
+      "supports": "Address, phone numbers, email, positioning, distance, review count, rooms, amenities, dining, events, travel information and nearby places."
+    },
+    {
+      "type": "official_instagram_profile",
+      "url": "https://www.instagram.com/cocos.inn.resort/",
+      "supports": "Instagram identity, Kashid positioning and main booking number."
+    },
+    {
+      "type": "user_supplied_brand_knowledge",
+      "supports": "Short address wording, primary call and WhatsApp number, approved themes, unchanged-photo rule and WEB5 campaign details."
+    },
+    {
+      "type": "user_writing_preferences",
+      "supports": "Short hooks, contextual English or Hinglish, one CTA, three hashtags, one SEO bracket and no em dashes."
+    }
+  ]
+}

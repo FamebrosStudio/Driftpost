@@ -1,0 +1,475 @@
+{
+  "schema_version": "1.0",
+  "brand_number": 5,
+  "brand_id": "ak_factor",
+  "brand_name": "AK Factor",
+  "public_name": "AK Factor by Arsh",
+  "knowledge_scope": "One brand only. Confirmed business information, indexed product evidence and recommended AI writing guidance are separated.",
+  "business": {
+    "category": "Men's clothing manufacturer and wholesaler",
+    "industry": "Men's fashion and garment wholesale",
+    "business_model": "B2B wholesale",
+    "retail_status": null,
+    "customer_focus": "Men's clothing buyers, retailers and resellers",
+    "location_area": "Wadala",
+    "city": "Mumbai",
+    "state": "Maharashtra",
+    "country": "India",
+    "owner_or_public_face": "Arsh",
+    "owner_status": "The public name uses 'by Arsh'. Legal ownership has not been separately verified.",
+    "founding_year": null,
+    "opening_hours": null
+  },
+  "contact": {
+    "phone_display": "+91 91377 85394",
+    "phone_e164": "+919137785394",
+    "whatsapp_number": null,
+    "whatsapp_note": "The number is consistently published for enquiries. WhatsApp availability has not been separately confirmed.",
+    "address_display": "Old Nation Market, Wadala, Mumbai",
+    "address_status": "Recent indexed brand captions repeatedly use Old Nation Market, Wadala. One older indexed caption uses New National Market and a nearby mosque landmark, so the exact official street-format address needs confirmation before maps or legal use.",
+    "possible_landmark_from_older_post": "Opposite Sunni Hilal Masjid",
+    "shop_number": null,
+    "market_name_needs_confirmation": true,
+    "city": "Mumbai",
+    "postal_code": null,
+    "email": null,
+    "website": null,
+    "catalogue_url": null,
+    "ordering_url": null,
+    "google_maps_url": null
+  },
+  "social_media": {
+    "instagram_handle": "@ak.factor_byarsh",
+    "instagram_url": "https://www.instagram.com/ak.factor_byarsh/",
+    "instagram_identity_status": "Indexed posts match the brand name, Wadala location, wholesale positioning and confirmed phone number.",
+    "facebook_name": "AK Factor by Arsh",
+    "facebook_url": null,
+    "youtube_url": null,
+    "managing_agency": "Famebros Studio",
+    "agency_instagram_handle": "@famebrosstudio",
+    "agency_instagram_url": "https://www.instagram.com/famebrosstudio/"
+  },
+  "established_content_knowledge": {
+    "confirmed_content_genres": [
+      "Men's clothing transformations",
+      "Wholesale product showcases"
+    ],
+    "confirmed_positioning": [
+      "Men's clothing wholesale",
+      "Manufacturer and wholesaler for shirts",
+      "Collections intended for retail stores and business buyers"
+    ],
+    "indexed_product_topics": [
+      "Men's shirts",
+      "Imported shirts",
+      "Imported bottoms",
+      "Wholesale articles",
+      "Embroidered shirts",
+      "Waterproof shirts"
+    ],
+    "product_scope_rule": "These are topics found in indexed brand posts. Do not treat them as permanent stock or a complete catalogue.",
+    "indexed_marketing_angles": [
+      "Fresh designs",
+      "Trendy collections",
+      "Clean fits",
+      "Sharp looks",
+      "Retailer collection upgrade",
+      "Festival shirts"
+    ],
+    "confirmed_current_prices": [],
+    "confirmed_minimum_order_quantity": null,
+    "confirmed_pack_sizes": null,
+    "confirmed_sizes": [],
+    "confirmed_fabrics": [],
+    "confirmed_shipping_coverage": null,
+    "confirmed_customisation": null,
+    "confirmed_current_offers": [],
+    "confirmed_customer_testimonials": []
+  },
+  "writing_direction": {
+    "status": "Recommended defaults based on B2B menswear positioning and indexed brand captions.",
+    "brand_voice": [
+      "Confident",
+      "Business-focused",
+      "Energetic",
+      "Trend-aware",
+      "Direct",
+      "Concise"
+    ],
+    "positioning_for_copy": "A Wadala-based men's garment wholesaler helping retailers source fresh, sale-ready shirt and menswear collections.",
+    "positioning_rule": "Do not claim manufacturing, importing or specific stock for an item unless the current product brief confirms it, even when older posts used that positioning.",
+    "primary_language": "English",
+    "alternate_language": "Natural Hinglish for market reels, owner-led videos and retailer-focused dialogue.",
+    "target_audience": [
+      "Menswear retailers",
+      "Garment resellers",
+      "Multi-brand clothing stores",
+      "Business buyers sourcing men's shirts",
+      "Wholesale buyers visiting Mumbai garment markets"
+    ],
+    "audience_rule": "Write as B2B wholesale unless the current brief explicitly targets end consumers or confirms retail sales.",
+    "emotional_angles": [
+      "Fresh stock for the store",
+      "Designs customers will notice",
+      "Improving collection variety",
+      "Fast visual impact",
+      "Confidence in business sourcing"
+    ],
+    "avoid_style": [
+      "Consumer-only language when the post is B2B",
+      "Invented profit margins",
+      "Guaranteed sales",
+      "Unconfirmed lowest-price claims",
+      "Unconfirmed factory or imported-product claims",
+      "Invented MOQ or pack sizes",
+      "Generic luxury wording",
+      "Long introductions",
+      "Repeated hooks",
+      "Em dashes"
+    ]
+  },
+  "content_playbook": {
+    "wholesale_product_showcase": {
+      "focus": "Exact product, visible design details and relevance for retailers.",
+      "structure": "Retailer hook, product detail, sourcing CTA.",
+      "rules": [
+        "Name the exact garment only when confirmed.",
+        "Describe visible colour, pattern and design accurately.",
+        "State fabric, size range, rate, MOQ, pack ratio and stock only from the current brief.",
+        "Do not guarantee resale speed or margin."
+      ]
+    },
+    "transformation_reel": {
+      "focus": "The change from a basic look, unstyled display or closed garment to a complete men's fashion look.",
+      "structure": "Before-to-after hook, visible styling change, enquiry CTA.",
+      "rules": [
+        "Describe only the transformation shown.",
+        "Do not claim tailoring or alteration unless performed by the brand.",
+        "Do not invent the model's name, size or measurements.",
+        "Keep copy short when the edit carries the transformation."
+      ]
+    },
+    "new_arrival": {
+      "focus": "Confirmed fresh stock or new collection for wholesale buyers.",
+      "required_details": [
+        "Exact product type",
+        "Current availability",
+        "Sizes or pack information when relevant",
+        "Wholesale rate when approved",
+        "MOQ",
+        "Ordering or visit method"
+      ],
+      "rule": "Do not call an older item a new arrival without current confirmation."
+    },
+    "retailer_information": {
+      "focus": "One clear sourcing, product or ordering detail useful to business buyers.",
+      "rules": [
+        "Use current operational information.",
+        "Do not give business or earnings guarantees.",
+        "Separate facts from suggestions.",
+        "Use clear quantities and units when supplied."
+      ]
+    },
+    "festival_collection": {
+      "focus": "Confirmed festive shirts or menswear intended for retailer sourcing.",
+      "rules": [
+        "Name the festival only when relevant.",
+        "Do not claim delivery before a festival without a confirmed timeline.",
+        "Avoid generic festive copy that omits the product and B2B purpose."
+      ]
+    },
+    "promotional_offer": {
+      "focus": "Exact wholesale product, rate or benefit, conditions and enquiry action.",
+      "required_details": [
+        "Applicable product",
+        "Wholesale price or discount",
+        "MOQ or pack quantity",
+        "Validity",
+        "Stock limitation",
+        "Taxes or shipping when relevant"
+      ],
+      "rule": "Do not invent wholesale rates, combo deals or limited stock."
+    },
+    "customer_or_retailer_review": {
+      "status": "Use only when an actual review is supplied.",
+      "rules": [
+        "Do not invent retailer names, sales results or repeat-order claims.",
+        "Keep quotes faithful.",
+        "Do not reveal private order details without permission."
+      ]
+    }
+  },
+  "b2b_product_description_framework": {
+    "use_when_confirmed": [
+      "Product category",
+      "Design or pattern",
+      "Colour options",
+      "Fabric",
+      "Fit",
+      "Sleeve type",
+      "Size range",
+      "Pack ratio",
+      "MOQ",
+      "Wholesale rate",
+      "Stock status",
+      "Dispatch timeline",
+      "Shipping coverage"
+    ],
+    "safe_visual_descriptors": [
+      "Visible colour",
+      "Visible print",
+      "Visible embroidery",
+      "Visible silhouette",
+      "Visible collar",
+      "Visible sleeve length",
+      "Visible styling"
+    ],
+    "requires_explicit_confirmation": [
+      "Imported status",
+      "Manufacturer status for the specific item",
+      "Fabric composition",
+      "Waterproof performance",
+      "Colourfastness",
+      "Size accuracy",
+      "MOQ",
+      "Wholesale rate",
+      "Profit potential",
+      "Dispatch date",
+      "Return policy"
+    ],
+    "rule": "Lead with the product detail that matters most to a retailer, then give the confirmed commercial information."
+  },
+  "caption_format": {
+    "default_platforms": [
+      "Instagram",
+      "Facebook"
+    ],
+    "default_number_of_options": 1,
+    "body_word_target": "25 to 60 words, excluding footer, hashtags and keyword bracket.",
+    "short_product_reel_word_target": "10 to 35 words when the reel clearly shows the collection.",
+    "offer_word_target": "30 to 75 words depending on commercial conditions.",
+    "sequence": [
+      "Retailer-focused hook",
+      "One or two product details",
+      "One wholesale enquiry CTA",
+      "Confirmed contact footer",
+      "Exactly three relevant hashtags",
+      "Exactly one square bracket containing comma-separated SEO phrases"
+    ],
+    "line_breaks": "Use short paragraphs and a blank line before the footer and hashtag block.",
+    "body_emojis": "Usually zero to three. Use energetic fashion emojis sparingly.",
+    "hashtag_count": 3,
+    "hashtag_selection": "Normally one brand tag, one product or wholesale tag and one location tag.",
+    "seo_keyword_count": "5 to 8 relevant phrases",
+    "seo_format": "[keyword one, keyword two, keyword three, keyword four, keyword five]",
+    "punctuation": "No em dashes.",
+    "output_rule": "Return only ready-to-copy public text unless another format is requested."
+  },
+  "fixed_footer": {
+    "lines": [
+      "📍 Old Nation Market, Wadala, Mumbai",
+      "📞 +91 91377 85394",
+      "🎥 Managed by: @famebrosstudio ✨"
+    ],
+    "source": "Recent indexed AK Factor captions.",
+    "usage": "Default caption footer until a more precise official address is confirmed.",
+    "rules": [
+      "Preserve the phone number.",
+      "Use Old Nation Market as the current caption wording.",
+      "Do not add a shop number or postal code.",
+      "Do not label the number as WhatsApp without confirmation.",
+      "For formal maps or documents, first resolve the Old Nation Market versus New National Market wording."
+    ]
+  },
+  "suggested_hashtag_bank": {
+    "brand": [
+      "#AKFactor",
+      "#AKFactorByArsh"
+    ],
+    "wholesale": [
+      "#MenswearWholesale",
+      "#ShirtWholesale",
+      "#WholesaleGarments"
+    ],
+    "product": [
+      "#MensShirts",
+      "#MensFashion",
+      "#EmbroideredShirts"
+    ],
+    "location": [
+      "#WadalaMarket",
+      "#MumbaiWholesaleMarket"
+    ],
+    "conditional": {
+      "#WaterproofShirts": "Use only when waterproof performance is confirmed for the item.",
+      "#ImportedShirts": "Use only when imported status is confirmed."
+    },
+    "rule": "Select exactly three relevant tags. Do not use the entire bank."
+  },
+  "seo_keyword_bank": [
+    "AK Factor by Arsh",
+    "men's clothing wholesale",
+    "shirt wholesaler in Wadala",
+    "men's shirts wholesale Mumbai",
+    "wholesale garment market Wadala",
+    "menswear supplier Mumbai",
+    "shirt manufacturer and wholesaler",
+    "retailer menswear collection"
+  ],
+  "cta_bank": {
+    "enquiry": [
+      "Call +91 91377 85394 for wholesale enquiries.",
+      "Contact AK Factor for current designs, rates and availability."
+    ],
+    "retailer": [
+      "Retailers, enquire for the current wholesale collection.",
+      "Upgrade your store collection with the latest confirmed arrivals."
+    ],
+    "visit": [
+      "Visit Old Nation Market, Wadala, after confirming business hours."
+    ],
+    "save": [
+      "Save this design for your next stock update."
+    ],
+    "share": [
+      "Send this to a menswear retailer looking for fresh stock."
+    ],
+    "selection_rule": "Choose one main CTA. Do not promise stock, rate or dispatch unless current details are supplied."
+  },
+  "suggested_hooks": {
+    "wholesale": [
+      "Retailers, your next collection starts here.",
+      "Fresh designs for your next stock update.",
+      "Stock that deserves the front rack."
+    ],
+    "product": [
+      "Sharp designs. Strong shelf appeal.",
+      "A shirt collection made to stand out.",
+      "Fresh menswear, ready for your store."
+    ],
+    "transformation": [
+      "From simple to standout.",
+      "One shirt can change the whole look.",
+      "The final look says it all."
+    ],
+    "hinglish": [
+      "Retailers, fresh collection check kar lo.",
+      "Naya stock, sharper style.",
+      "Aapke store ke liye fresh designs ready hain."
+    ],
+    "hook_note": "Suggestions only. Adapt to actual stock and avoid repeated use."
+  },
+  "visual_and_asset_guidance": {
+    "status": "Agency-wide defaults unless an approved AK Factor brand kit is supplied.",
+    "default_feed_size_px": {
+      "width": 1080,
+      "height": 1440
+    },
+    "default_story_size_px": {
+      "width": 1080,
+      "height": 1920
+    },
+    "reel_aspect_ratio": "9:16",
+    "layout": "Bold, clean and product-led with strong visibility for garment details and wholesale information.",
+    "fixed_brand_colours": null,
+    "fixed_brand_fonts": null,
+    "logo_asset": null,
+    "rules": [
+      "Preserve the actual product colour, print, embroidery and proportions.",
+      "Do not invent hidden garment details.",
+      "Keep wholesale rate, MOQ and contact information readable when supplied.",
+      "Preserve model identity and body proportions.",
+      "Use the supplied logo without redesigning it.",
+      "Do not claim a fixed palette or font without a brand reference."
+    ]
+  },
+  "other_output_modes": {
+    "story": "One or two short B2B lines with an enquiry action. Omit the full footer, hashtags and SEO bracket unless requested.",
+    "comment": "One short brand comment about the actual product. Do not impersonate a retailer.",
+    "repost": "One or two collection-led lines. No full footer by default.",
+    "text_overlay": "One strong B2B or product hook, normally 3 to 8 words.",
+    "reel_script": "Use the requested duration, retailer hook, visible product features, confirmed wholesale details and one enquiry CTA.",
+    "catalogue_description": "Use structured fields for product, fabric, sizes, colours, pack, rate, MOQ and availability. Omit fields that are not confirmed."
+  },
+  "sample_caption": {
+    "status": "Illustrative caption for a confirmed new men's shirt collection. Replace or remove any product detail not supported by the current asset.",
+    "text": "Retailers, your next collection starts here. 🔥\nExplore fresh men's shirt designs created to bring sharper style and stronger variety to your store.\nCall for current wholesale designs, rates and availability.\n\n📍 Old Nation Market, Wadala, Mumbai\n📞 +91 91377 85394\n🎥 Managed by: @famebrosstudio ✨\n\n#AKFactor #ShirtWholesale #WadalaMarket\n\n[AK Factor by Arsh, men's shirts wholesale Mumbai, shirt wholesaler in Wadala, menswear supplier Mumbai, wholesale garment market Wadala, retailer menswear collection]"
+  },
+  "accuracy_rules": [
+    "Use only AK Factor facts and the current brief.",
+    "Write primarily for retailers and wholesale buyers.",
+    "Do not invent product prices, MOQ, pack ratios, sizes, fabrics, stock or dispatch dates.",
+    "Do not guarantee retailer profit, sales or customer demand.",
+    "Do not call a current item imported, waterproof, embroidered or manufactured by AK Factor unless confirmed.",
+    "Do not claim retail availability without confirmation.",
+    "Use Old Nation Market for captions but flag the exact formal address for confirmation when necessary.",
+    "Do not copy contact details from MAP Clothing, Carrara, Paak Pehnawa or another menswear brand.",
+    "If an optional detail is missing, omit it.",
+    "If an essential commercial detail is missing, ask one short question.",
+    "Do not print null values or internal notes in public copy.",
+    "An Instagram link is a reference pointer. Do not claim to have reviewed new content unless retrieved or supplied."
+  ],
+  "per_post_input": {
+    "brand_id": "ak_factor",
+    "mode": "caption",
+    "post_format": null,
+    "content_genre": null,
+    "asset_description": null,
+    "transcript": null,
+    "confirmed_product": null,
+    "visible_design_details": [],
+    "confirmed_fabric": null,
+    "confirmed_sizes": [],
+    "confirmed_colours": [],
+    "wholesale_rate": null,
+    "minimum_order_quantity": null,
+    "pack_ratio": null,
+    "stock_status": null,
+    "dispatch_timeline": null,
+    "shipping_coverage": null,
+    "current_offer": null,
+    "goal": null,
+    "language_override": null,
+    "recent_captions": [],
+    "additional_instructions": []
+  },
+  "master_brand_instruction": "Write as AK Factor by Arsh, a men's clothing manufacturer and wholesaler associated with Old Nation Market, Wadala, Mumbai. Write primarily for menswear retailers, resellers and wholesale buyers. Keep the voice confident, energetic, trend-aware, business-focused and concise. Use English by default and natural Hinglish for owner-led or market-style reels when suitable. Lead with one retailer-focused hook, describe only confirmed or visible product details and use one wholesale enquiry CTA. Never invent rates, MOQ, pack ratios, sizes, fabric, stock, dispatch, profit margins or sales guarantees. Treat imported, waterproof, embroidered and manufacturing claims as item-specific facts requiring confirmation. For normal feed and reel captions, append the AK Factor footer, exactly three relevant hashtags and one bracket containing 5 to 8 comma-separated SEO phrases. Preserve +91 91377 85394. Use Old Nation Market in captions while noting that the formal market wording needs confirmation. Avoid em dashes and return ready-to-copy public text without null fields or internal notes.",
+  "missing_information": [
+    "Exact formal street address and confirmed market name",
+    "Shop number and postal code",
+    "Opening hours and weekly closing day",
+    "WhatsApp confirmation",
+    "Official email and website",
+    "Catalogue and ordering link",
+    "Retail availability",
+    "Complete product categories",
+    "Current wholesale rates",
+    "MOQ and pack ratios",
+    "Size and fabric details",
+    "Shipping and dispatch coverage",
+    "Payment terms",
+    "Return or exchange policy",
+    "Approved logo, fonts and colour palette",
+    "Current offers and conditions",
+    "Approved retailer reviews"
+  ],
+  "sources": [
+    {
+      "type": "user_supplied_brand_roster",
+      "supports": "Men's wholesale positioning, transformation genre and Wadala association."
+    },
+    {
+      "type": "official_instagram_profile_and_indexed_posts",
+      "url": "https://www.instagram.com/ak.factor_byarsh/",
+      "supports": "Public name, phone, Old Nation Market/Wadala caption wording, B2B audience and indexed product topics."
+    },
+    {
+      "type": "indexed_social_posts",
+      "supports": "Shirts, imported bottoms, embroidered shirts, waterproof shirts, retailer messaging and manufacturer/wholesaler positioning. These remain post-specific rather than permanent stock claims."
+    },
+    {
+      "type": "user_writing_preferences",
+      "supports": "Short hooks, contextual English or Hinglish, one CTA, three hashtags, one SEO bracket and no em dashes."
+    }
+  ]
+}

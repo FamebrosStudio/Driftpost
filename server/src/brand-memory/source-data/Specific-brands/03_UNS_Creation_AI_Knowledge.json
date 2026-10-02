@@ -1,0 +1,432 @@
+{
+  "schema_version": "1.0",
+  "brand_number": 3,
+  "brand_id": "uns_creation",
+  "brand_name": "UNS Creation",
+  "knowledge_scope": "One brand only. Confirmed business details are separated from recommended writing guidance.",
+  "business": {
+    "category": "Women's clothing brand",
+    "industry": "Fashion and apparel",
+    "customer_focus": "Women only",
+    "customer_focus_status": "Confirmed in the user-supplied active-brand roster.",
+    "business_model": null,
+    "retail_or_wholesale": null,
+    "city": null,
+    "state": null,
+    "country": "India",
+    "owner_name": null,
+    "founding_year": null,
+    "opening_hours": null
+  },
+  "contact": {
+    "phone_display": null,
+    "phone_e164": null,
+    "whatsapp_number": null,
+    "full_address": null,
+    "city": null,
+    "postal_code": null,
+    "email": null,
+    "website": null,
+    "catalogue_url": null,
+    "ordering_url": null,
+    "google_maps_url": null,
+    "contact_status": "No phone number, address, website or ordering channel has been confirmed for this dataset."
+  },
+  "social_media": {
+    "instagram_handle": "@uns_creation2112",
+    "instagram_url": "https://www.instagram.com/uns_creation2112/",
+    "instagram_identity_status": "Previously matched to UNS Creation during public-profile research for the user-supplied brand roster.",
+    "instagram_content_access": "Use the page as a reference when access is available. Do not claim knowledge of a new post, collection, price or availability unless it is retrieved or supplied.",
+    "facebook_url": null,
+    "youtube_url": null,
+    "managing_agency": "Famebros Studio",
+    "agency_instagram_handle": "@famebrosstudio",
+    "agency_instagram_url": "https://www.instagram.com/famebrosstudio/"
+  },
+  "established_content_knowledge": {
+    "confirmed_business_genre": "Women's clothing",
+    "confirmed_content_genres": [],
+    "content_genre_note": "The source confirms the business category and women-only focus but does not name specific recurring content genres.",
+    "confirmed_product_categories": [],
+    "product_scope_note": "Do not assume sarees, kurtis, suits, dresses, co-ord sets, western wear, ethnic wear or other garment types until the current asset or brief confirms them.",
+    "confirmed_current_collections": [],
+    "confirmed_current_offers": [],
+    "confirmed_price_list": [],
+    "confirmed_sizes": [],
+    "confirmed_fabrics": [],
+    "confirmed_colours": [],
+    "confirmed_customisation": null,
+    "confirmed_shipping_coverage": null,
+    "confirmed_return_or_exchange_policy": null,
+    "confirmed_customer_testimonials": []
+  },
+  "writing_direction": {
+    "status": "Recommended defaults for a women's fashion brand. Adapt them to the actual garment, campaign and supplied creative.",
+    "brand_voice": [
+      "Stylish",
+      "Feminine",
+      "Confident",
+      "Modern",
+      "Warm",
+      "Concise"
+    ],
+    "positioning_for_copy": "A women's clothing brand presented through the design, silhouette, styling and occasion shown in each supplied asset.",
+    "positioning_status": "Editorial direction, not a claim about pricing, manufacturing, fabric quality or product range.",
+    "primary_language": "English",
+    "alternate_language": "Natural Hinglish when requested or when the reel is dialogue-led and locally targeted.",
+    "language_note": "No permanent language restriction has been supplied.",
+    "target_audience": [
+      "Women exploring clothing and styling inspiration",
+      "Women considering the exact garment shown in the current post",
+      "Fashion viewers saving outfit ideas for a confirmed occasion"
+    ],
+    "audience_restriction": "Write product and styling content for women. Do not market UNS Creation as menswear or unisex unless the user changes this rule.",
+    "emotional_angles": [
+      "Confidence in personal style",
+      "Excitement about a new look",
+      "Finding an outfit worth saving",
+      "Dressing for a specific occasion",
+      "Appreciating visible design details"
+    ],
+    "avoid_style": [
+      "Generic fashion clichés without product details",
+      "Body shaming or appearance insecurity",
+      "Claims that one size suits everyone",
+      "Invented fabric, embroidery or craftsmanship details",
+      "Invented prices, discounts or stock",
+      "False urgency",
+      "Calling every design luxurious or premium",
+      "Long introductions",
+      "Repeated hooks",
+      "Em dashes"
+    ]
+  },
+  "recommended_content_playbook": {
+    "status": "These are AI writing modes for future briefs. They are not proof that UNS Creation currently publishes every format.",
+    "product_showcase": {
+      "focus": "The exact garment shown, its visible design and the reason it suits the confirmed occasion.",
+      "structure": "Specific fashion hook, two or three visible details, one CTA.",
+      "rules": [
+        "Name the garment type only when supplied or clearly established.",
+        "Describe only visible colours, patterns, cuts and details.",
+        "Do not guess fabric, lining, work type, fit, size or price.",
+        "Do not call an item handmade, designer, premium or exclusive without confirmation."
+      ]
+    },
+    "model_reel": {
+      "focus": "Movement, silhouette and styling visible in the reel.",
+      "structure": "Short mood-led hook, one styling observation, one save or enquiry CTA.",
+      "rules": [
+        "Do not invent the model's name.",
+        "Do not describe unseen angles or garment features.",
+        "Keep the caption short when the reel communicates the full look."
+      ]
+    },
+    "styling_information": {
+      "focus": "One practical styling idea supported by the supplied outfit.",
+      "structure": "Situation, styling suggestion, save CTA.",
+      "rules": [
+        "Base advice on the actual outfit and approved brand guidance.",
+        "Do not prescribe body-type rules that shame or exclude customers.",
+        "Label multiple styling options as suggestions, not guaranteed rules."
+      ]
+    },
+    "collection_launch": {
+      "focus": "Confirmed collection name, design direction and purchase action.",
+      "required_details": [
+        "Collection name",
+        "Confirmed garment categories",
+        "Launch date when relevant",
+        "Availability",
+        "How to order"
+      ],
+      "rule": "Do not announce a collection without a current launch brief."
+    },
+    "promotional_offer": {
+      "focus": "Exact item or collection, exact benefit and clear buying action.",
+      "required_details": [
+        "Applicable products",
+        "Exact price or discount",
+        "Start and end date when limited",
+        "Minimum order or eligibility",
+        "Stock or quantity condition when relevant",
+        "Ordering method"
+      ],
+      "rules": [
+        "Do not invent a sale.",
+        "Do not reuse an expired offer.",
+        "Use urgency only when the deadline or stock limit is confirmed."
+      ]
+    },
+    "customer_review": {
+      "status": "Use only when an actual customer review is supplied.",
+      "rules": [
+        "Keep the review faithful to the customer's words.",
+        "Do not invent names, ratings, fit feedback or delivery experiences.",
+        "Do not claim the garment is shown on a customer unless confirmed."
+      ]
+    },
+    "festival_post": {
+      "focus": "A short professional greeting or a confirmed festive outfit showcase.",
+      "rule": "Keep greetings respectful and avoid forcing a sales message into solemn occasions."
+    }
+  },
+  "garment_description_framework": {
+    "use_when_visible_or_supplied": [
+      "Garment type",
+      "Primary colour",
+      "Visible pattern or motif",
+      "Silhouette",
+      "Sleeve and neckline details",
+      "Length",
+      "Visible embellishment",
+      "Styling pieces shown",
+      "Confirmed occasion"
+    ],
+    "requires_explicit_confirmation": [
+      "Fabric composition",
+      "Embroidery or work technique",
+      "Handmade status",
+      "Fit terminology",
+      "Available sizes",
+      "Colour variants",
+      "Price",
+      "Stock",
+      "Care instructions",
+      "Customisation",
+      "Shipping time",
+      "Return or exchange terms"
+    ],
+    "writing_rule": "Prefer two precise, visible details over several generic adjectives."
+  },
+  "caption_format": {
+    "default_platforms": [
+      "Instagram",
+      "Facebook"
+    ],
+    "default_number_of_options": 1,
+    "body_word_target": "25 to 55 words, excluding the footer, hashtags and keyword bracket.",
+    "short_model_reel_word_target": "8 to 30 words when the visuals carry the fashion story.",
+    "offer_word_target": "25 to 70 words depending on required conditions.",
+    "word_count_note": "Editorial targets, not platform limits.",
+    "sequence": [
+      "Specific fashion hook",
+      "One short description based on the actual garment",
+      "One main CTA",
+      "Confirmed contact or agency footer when available",
+      "Exactly three relevant hashtags",
+      "Exactly one square bracket containing comma-separated SEO phrases"
+    ],
+    "line_breaks": "Use short paragraphs and a blank line before the footer and hashtag block.",
+    "body_emojis": "Usually zero to three. Match the outfit and campaign mood.",
+    "hashtag_count": 3,
+    "hashtag_selection": "Normally one brand hashtag, one garment or fashion hashtag and one location or occasion hashtag when confirmed.",
+    "seo_keyword_count": "5 to 8 relevant phrases",
+    "seo_format": "[keyword one, keyword two, keyword three, keyword four, keyword five]",
+    "punctuation": "No em dashes.",
+    "output_rule": "Return only the ready-to-copy caption unless another output format is requested."
+  },
+  "footer_policy": {
+    "fixed_brand_footer_available": false,
+    "confirmed_footer_lines": [
+      "🎥 Managed by: @famebrosstudio ✨"
+    ],
+    "default_usage": "Use the agency credit only when the user wants the standard Famebros footer. Do not invent an address, phone number or WhatsApp line.",
+    "contact_cta_rule": "Until a contact method is confirmed, use neutral CTAs such as 'DM to enquire' only if Instagram direct messages are the intended ordering route for the current campaign.",
+    "rules": [
+      "Never copy another clothing brand's address or phone number.",
+      "Do not claim WhatsApp ordering without a confirmed number.",
+      "Do not add the full Instagram URL to every public caption."
+    ]
+  },
+  "suggested_hashtag_bank": {
+    "brand": [
+      "#UNSCreation"
+    ],
+    "category": [
+      "#WomensFashion",
+      "#WomensClothing",
+      "#FashionForWomen"
+    ],
+    "content": [
+      "#OutfitInspiration",
+      "#StyleInspiration",
+      "#NewLook"
+    ],
+    "conditional": {
+      "#EthnicWear": "Use only when the garment is confirmed as ethnic wear.",
+      "#WesternWear": "Use only when the garment is confirmed as western wear.",
+      "#FestiveWear": "Use only for a confirmed festive look.",
+      "#SareeStyle": "Use only for a confirmed saree.",
+      "#KurtiStyle": "Use only for a confirmed kurti."
+    },
+    "rule": "Select exactly three relevant tags. Do not use all tags or an unconfirmed garment category."
+  },
+  "seo_keyword_bank": {
+    "always_safe": [
+      "UNS Creation",
+      "women's clothing",
+      "women's fashion",
+      "outfit inspiration",
+      "fashion for women"
+    ],
+    "add_only_when_confirmed": [
+      "Exact garment type",
+      "Exact colour",
+      "Exact collection name",
+      "Exact city or service area",
+      "Exact occasion",
+      "Exact fabric",
+      "Online ordering or shipping coverage"
+    ]
+  },
+  "cta_bank": {
+    "save": [
+      "Save this look for your next outfit inspiration.",
+      "Add this look to your style folder."
+    ],
+    "share": [
+      "Send this to someone who would love this look.",
+      "Share this with your fashion partner."
+    ],
+    "comments": [
+      "Where would you wear this look?",
+      "Which detail caught your eye first?"
+    ],
+    "enquiry": [
+      "DM to enquire, only when Instagram enquiries are confirmed for the campaign."
+    ],
+    "selection_rule": "Choose one main CTA that matches the goal. Do not stack save, share, comment and enquiry actions in one short caption."
+  },
+  "suggested_hooks": {
+    "product": [
+      "A look made to be noticed.",
+      "Your next outfit inspiration is here.",
+      "The detail that completes the look."
+    ],
+    "model_reel": [
+      "One look. Every angle.",
+      "Let the outfit do the talking.",
+      "A little movement, a lot of style."
+    ],
+    "styling": [
+      "One outfit, your kind of styling.",
+      "Save this styling idea.",
+      "The easiest way to elevate this look."
+    ],
+    "hook_note": "Writing suggestions only. Adapt them to the actual garment and avoid repeated use."
+  },
+  "visual_and_asset_guidance": {
+    "status": "Agency-wide creative defaults. A complete approved UNS Creation brand book has not been supplied.",
+    "default_feed_size_px": {
+      "width": 1080,
+      "height": 1440
+    },
+    "default_story_size_px": {
+      "width": 1080,
+      "height": 1920
+    },
+    "reel_aspect_ratio": "9:16",
+    "layout": "Clean, fashion-led and uncluttered, with the actual garment as the main visual.",
+    "fixed_brand_colours": null,
+    "fixed_brand_fonts": null,
+    "logo_asset": null,
+    "rules": [
+      "Preserve the supplied garment's actual colour, shape, pattern and design.",
+      "Preserve the model's identity and body proportions.",
+      "Do not generate or reveal garment details hidden in the source image.",
+      "Use the supplied logo without redesigning it.",
+      "Do not claim a fixed palette or font without an approved brand reference.",
+      "Keep price, offer and ordering details readable when supplied."
+    ]
+  },
+  "other_output_modes": {
+    "story": "One or two short fashion-led lines. Omit hashtags, SEO bracket and full footer unless requested.",
+    "comment": "One short brand comment related to the actual garment or styling. Do not impersonate a customer.",
+    "repost": "One or two shareable lines. No full footer by default.",
+    "text_overlay": "One short fashion hook, normally 3 to 8 words.",
+    "reel_script": "Use the requested duration, a visual hook, actual garment details and one CTA. Do not invent scenes, fabric movement or outfit changes that were not filmed.",
+    "product_description": "State the confirmed garment name, visible details and supplied specifications. Clearly omit unknown fabric, size, price and care details."
+  },
+  "sample_caption": {
+    "status": "Illustrative template. It must be completed with the current garment's confirmed facts.",
+    "required_input": "Replace every bracketed placeholder before publishing.",
+    "text": "A look made to be noticed. ✨\nThe [confirmed garment type] stands out with its [visible detail] and [confirmed colour], creating a look made for [confirmed occasion].\nSave this for your next outfit inspiration.\n\n🎥 Managed by: @famebrosstudio ✨\n\n#UNSCreation #[ConfirmedGarmentTag] #WomensFashion\n\n[UNS Creation, confirmed garment type, confirmed colour outfit, women's fashion, confirmed occasion outfit, outfit inspiration]"
+  },
+  "accuracy_rules": [
+    "Use only UNS Creation facts and the current post brief.",
+    "Write for women's clothing unless the user explicitly changes the audience rule.",
+    "Never invent garment type, fabric, embroidery, sizes, colours, prices, discounts, stock or delivery details.",
+    "Never claim a product is handmade, sustainable, premium, imported or exclusive without confirmation.",
+    "Never promise fit, comfort, colour accuracy or delivery time without approved information.",
+    "Do not add an address, phone number or WhatsApp CTA until confirmed.",
+    "Do not copy information from Roopali Saree, Devi and Company, Asma Women Clothing or another fashion brand.",
+    "If an optional detail is missing, omit it.",
+    "If a missing detail is essential to the requested caption, ask one short question.",
+    "Do not print null values or internal notes in public copy.",
+    "An Instagram URL is a reference pointer. Do not claim to have reviewed new posts unless their content was retrieved or supplied."
+  ],
+  "per_post_input": {
+    "brand_id": "uns_creation",
+    "mode": "caption",
+    "post_format": null,
+    "asset_description": null,
+    "transcript": null,
+    "confirmed_garment_type": null,
+    "confirmed_collection_name": null,
+    "confirmed_colour": null,
+    "confirmed_fabric": null,
+    "visible_design_details": [],
+    "confirmed_sizes": [],
+    "confirmed_price": null,
+    "current_offer": null,
+    "stock_or_availability": null,
+    "confirmed_occasion": null,
+    "ordering_method": null,
+    "shipping_area": null,
+    "goal": null,
+    "language_override": null,
+    "recent_captions": [],
+    "additional_instructions": []
+  },
+  "master_brand_instruction": "Write as UNS Creation, a women's clothing brand. Keep the voice stylish, feminine, confident, modern and concise. Use English by default and natural Hinglish when the reel or user request calls for it. Base every caption on the actual supplied garment and brief. Mention garment type, colour, fabric, work, size, price, occasion, stock and availability only when confirmed. Begin with one specific fashion hook, describe one or two real visual details and choose one relevant CTA. For normal feed and reel captions, use exactly three relevant hashtags and one square bracket containing 5 to 8 comma-separated SEO phrases. Add only confirmed contact information. The only currently approved footer line is the optional agency credit: 🎥 Managed by: @famebrosstudio ✨. Avoid em dashes, body shaming, generic filler, invented product claims, fake urgency and information from other brands. Return ready-to-copy public text without null fields or internal notes.",
+  "missing_information": [
+    "Phone and WhatsApp number",
+    "Full address, city and service area",
+    "Official website, catalogue and ordering link",
+    "Complete product categories",
+    "Retail, wholesale or mixed business model",
+    "Current product catalogue and collection names",
+    "Prices, available sizes and colour variants",
+    "Fabric and care specifications",
+    "Customisation availability",
+    "Shipping coverage and delivery time",
+    "Return and exchange policy",
+    "Opening hours if a physical store exists",
+    "Approved logo, fonts and colour palette",
+    "Confirmed recurring content genres",
+    "Current offers and conditions",
+    "Approved customer reviews"
+  ],
+  "sources": [
+    {
+      "type": "user_supplied_file",
+      "name": "data.txt",
+      "supports": "Brand name, women's clothing category and women-only customer focus."
+    },
+    {
+      "type": "previous_public_profile_research",
+      "url": "https://www.instagram.com/uns_creation2112/",
+      "supports": "Instagram identity matched to the roster."
+    },
+    {
+      "type": "current_web_search",
+      "status": "No useful indexed official profile details were returned beyond the previously matched Instagram identity.",
+      "usage": "No new phone, address, products or claims were added from the search."
+    },
+    {
+      "type": "user_writing_preferences",
+      "supports": "Short hooks, English or Hinglish by context, one CTA, three hashtags, one comma-separated SEO bracket and no em dashes."
+    }
+  ]
+}

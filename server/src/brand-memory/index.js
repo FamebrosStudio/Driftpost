@@ -13,6 +13,7 @@ import { fileURLToPath } from 'node:url';
 const here = path.dirname(fileURLToPath(import.meta.url));
 const COMPACT_PATH = path.join(here, 'brands.compact.json');
 const FULL_PATH = path.join(here, 'brands.full.json');
+const PORTABLE_DATASET_PATH = path.join(here, 'source-data', 'Famebros_Brand_Caption_Dataset.json');
 const MEMORY_PATH = path.join(here, 'memory.json');
 const CUSTOM_PATH = path.join(here, 'brands.custom.json');
 const MAX_AUTO = 50;
@@ -45,6 +46,25 @@ export function loadBrands() {
 
 let fullCache = null;
 let fullCacheMtime = 0;
+let portableDatasetCache = null;
+let portableDatasetMtime = 0;
+
+// The source archive is committed with the server. Read the portable dataset
+// once, then reload it after an owner updates the file without requiring a
+// process restart. Callers receive only the exact selected brand record.
+export function getPortableDatasetBrand(brandId) {
+  try {
+    const mtime = fs.statSync(PORTABLE_DATASET_PATH).mtimeMs;
+    if (!portableDatasetCache || portableDatasetMtime < mtime) {
+      portableDatasetCache = JSON.parse(fs.readFileSync(PORTABLE_DATASET_PATH, 'utf8'));
+      portableDatasetMtime = mtime;
+    }
+    return portableDatasetCache.brands?.find((b) => b.brand_id === brandId) || null;
+  } catch {
+    return null;
+  }
+}
+
 function loadFull() {
   // Owner edits to brands.full.json show up without a restart (mtime check).
   try {
@@ -149,6 +169,14 @@ function loadDeepAll() {
       // Alias keys: file brand_ids don't always match the compact index
       // (reshine_skin_clinic vs reshine_clinic), so also file by name slug.
       if (d.brand_name) deepCache[`name:${slugify(d.brand_name)}`] = d;
+      // Explicit aliases are safe lookup keys too. Keep these separate from
+      // the fuzzy fallback so an abbreviated compact name can point at its
+      // one confirmed detailed profile (for example SK Furniture -> SK
+      // Furniture Market) without matching another business by category.
+      for (const alias of d.aliases || []) {
+        const key = `name:${slugify(alias)}`;
+        if (!deepCache[key]) deepCache[key] = d;
+      }
     } catch {}
   }
   return deepCache;
@@ -192,7 +220,11 @@ export function getDeepForCompact(compactBrand) {
   )];
 
   const mine = words([compactBrand.name, ...(compactBrand.aliases || [])]);
-  if (!mine.length) return null;
+  // One surviving word is almost always a category (Furniture, Salon,
+  // Hospital) or an abbreviation dropped by the >=3-character filter. It
+  // cannot uniquely identify a business, so never use it for fuzzy profile
+  // selection.
+  if (mine.length < 2) return null;
   let best = null;
   let bestScore = 0;
   for (const k of allDeep) {
@@ -538,15 +570,21 @@ export function resolveBrand(query, minScore = 20) {
   if (q.length < 2) return null;
   let best = null;
   let bestScore = 0;
+  let tied = false;
   for (const b of loadBrands()) {
     const s = scoreBrand(b, q);
     if (s > bestScore) {
       bestScore = s;
       best = b;
+      tied = false;
+    } else if (s > 0 && s === bestScore) {
+      tied = true;
     }
   }
   // threshold 20 avoids false positives on generic words like "salon"
-  if (!best || bestScore < minScore) return null;
+  // A generic category can score equally for several businesses. Returning
+  // the first one would silently attach the wrong voice and contact details.
+  if (!best || bestScore < minScore || tied) return null;
   return { brand: best, score: bestScore };
 }
 

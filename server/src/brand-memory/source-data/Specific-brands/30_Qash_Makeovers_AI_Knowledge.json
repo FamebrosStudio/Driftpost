@@ -1,0 +1,535 @@
+{
+  "schema_version": "3.0",
+  "brand_number": 30,
+  "brand_id": "qash_makeovers",
+  "brand_name": "Qash Makeovers",
+  "aliases": [
+    "Qash Makeover",
+    "Qash Makeovers Studio and Academy and Freelancing",
+    "@qash_makeovers"
+  ],
+  "knowledge_scope": "One brand only. This file covers Qash Makeovers in Kurla West, its bridal and party makeup, hairstyling, academy and location-dependent freelance services, confirmed contact and address, transformation and educational content, booking copy and strict result and course-claim controls.",
+  "business": {
+    "category": "Makeup studio, academy and freelance makeup service",
+    "industry": "Beauty, bridal services and makeup education",
+    "business_model": [
+      "Studio makeup appointments",
+      "Bridal makeup bookings",
+      "Party makeup",
+      "Hairstyling",
+      "Makeup education and courses",
+      "Doorstep or venue services subject to confirmation"
+    ],
+    "city": "Mumbai",
+    "locality": "Kurla West",
+    "state": "Maharashtra",
+    "country": "India",
+    "primary_audience": [
+      "Brides and bridal families",
+      "Party and event clients",
+      "Clients seeking hairstyling",
+      "Aspiring makeup learners",
+      "Mumbai clients seeking venue service when available"
+    ],
+    "core_positioning": "A Kurla West makeup studio and academy creating detail-focused bridal and occasion looks while sharing practical beauty education.",
+    "active_since_or_billing_note": "25 August appeared in the user-provided working record. It is not a founding date.",
+    "dataset_date": "2026-09-25",
+    "currency": "INR",
+    "commercial_accuracy_rule": "Never invent package prices, products, inclusions, travel charges, dates, course certification, duration or seat availability."
+  },
+  "contact": {
+    "phone_display": "+91 70457 76977",
+    "phone_e164": "+917045776977",
+    "phone_status": "Confirmed in the user-provided brand and event record.",
+    "address_full": "Shop No. 2, Rajal Godavari Apartment, Teachers Colony, P.T. Marg, Vinoba Bhave Nagar, near LIG Colony and ZRS Hospital, Kurla West, Mumbai, India",
+    "address_short": "Shop No. 2, Rajal Godavari Apartment, Teachers Colony, Kurla West",
+    "address_status": "Confirmed in the user-provided brand and seminar record.",
+    "whatsapp": null,
+    "email": null,
+    "website": null,
+    "google_maps_url": "https://www.google.com/maps/search/?api=1&query=Qash+Makeovers+Shop+No.+2+Rajal+Godavari+Apartment+Teachers+Colony+Kurla+West+Mumbai",
+    "google_maps_status": "Search link derived from the confirmed address; replace with the brand's exact Maps pin when supplied.",
+    "business_hours": null,
+    "contact_rule": "Use the confirmed phone and address. Do not label the phone WhatsApp until confirmed."
+  },
+  "social_media": {
+    "instagram_handle": "@qash_makeovers",
+    "instagram_url": "https://www.instagram.com/qash_makeovers/",
+    "instagram_status": "Official handle in the user-provided brand record.",
+    "facebook_name": "Qash Makeovers Studio and Academy and Freelancing",
+    "facebook_url": null,
+    "facebook_status": "Exact user-provided page name; verified direct URL not established.",
+    "managing_agency": "Famebros Studio",
+    "agency_instagram_handle": "@famebrosstudio",
+    "agency_instagram_url": "https://www.instagram.com/famebrosstudio/",
+    "agency_credit_default": "💫 Managed by: @famebrosstudio",
+    "reference_rule": "Use official portfolio content only with client consent and current service details. Do not reuse another artist's look or course claim."
+  },
+  "established_content_knowledge": {
+    "confirmed_services": [
+      "Bridal makeup",
+      "Party makeup",
+      "Hairstyling",
+      "Makeup academy and courses",
+      "Doorstep, home or venue service subject to location and date availability"
+    ],
+    "confirmed_content_genres": [
+      "Transformation",
+      "Informational",
+      "Makeup tips and tricks",
+      "Bridal booking",
+      "Academy and course promotion",
+      "Seminar coverage"
+    ],
+    "content_pillars": [
+      "Bridal look reveals",
+      "Party makeup",
+      "Hairstyle close-ups",
+      "Before and after with consent",
+      "Skin-prep education within beauty scope",
+      "Makeup tips",
+      "Product-use education without medical claims",
+      "Bridal booking timeline",
+      "Academy learning moments",
+      "Course enquiries",
+      "Student work with permission",
+      "Venue-service availability"
+    ],
+    "historical_event": {
+      "name": "One Day FREE Makeover Seminar",
+      "date": "2026-09-03",
+      "status": "Completed historical event. Never promote it as upcoming or currently open unless a new date is provided.",
+      "phone": "+91 70457 76977",
+      "location": "Qash Makeovers, Kurla West"
+    },
+    "content_priority": "Show technique, finish and personal style without changing the client's identity or skin tone. Make booking and course information precise."
+  },
+  "writing_direction": {
+    "brand_voice": [
+      "Elegant",
+      "Encouraging",
+      "Detail-focused",
+      "Warm",
+      "Confident",
+      "Celebratory"
+    ],
+    "primary_language": "Hinglish",
+    "alternate_language": "English",
+    "focus": [
+      "Client's features",
+      "Look details",
+      "Occasion relevance",
+      "Artist process",
+      "Booking clarity",
+      "Learning support"
+    ],
+    "avoid": [
+      "Flawless guarantee",
+      "Skin whitening or tone-change language",
+      "Hiding or fixing natural identity",
+      "Unverified professional credentials",
+      "Unverified certification",
+      "Guaranteed career outcomes",
+      "Fake before and after",
+      "Unconfirmed doorstep availability",
+      "Expired event promotion"
+    ],
+    "beauty_language_rule": "Use enhance, define, create and complement. Avoid language that presents natural skin or features as defects.",
+    "punctuation_style": "Elegant readable sentences and no em dashes."
+  },
+  "content_playbook": {
+    "bridal_reveal": {
+      "sequence": [
+        "Detail hook",
+        "Eyes or jewellery transition",
+        "Full bridal reveal",
+        "Hair and finish close-up",
+        "Booking CTA"
+      ],
+      "required_inputs": [
+        "Client consent",
+        "Look name",
+        "Event",
+        "Products if mentioned",
+        "Artist credit",
+        "Booking period"
+      ]
+    },
+    "transformation_reel": {
+      "rule": "Use honest lighting and editing. Preserve the client's skin tone, facial structure and texture. Before footage requires permission."
+    },
+    "tip_reel": {
+      "sequence": [
+        "One beauty problem",
+        "One practical tip",
+        "Short demonstration",
+        "Limitation or skin-sensitivity note if needed",
+        "Save CTA"
+      ],
+      "rule": "Do not diagnose skin conditions or guarantee product suitability."
+    },
+    "academy_post": {
+      "required_inputs": [
+        "Course title",
+        "Level",
+        "Syllabus",
+        "Duration",
+        "Dates",
+        "Fees",
+        "Kit",
+        "Trainer",
+        "Certification status",
+        "Seat count",
+        "Refund terms"
+      ],
+      "rule": "Do not imply recognized certification, job placement or income without proof."
+    },
+    "doorstep_service_post": {
+      "rule": "State that venue service is subject to location, travel terms, date and artist availability."
+    },
+    "event_post": {
+      "rule": "Use the exact event date, venue, fee, registration method, inclusions and seat status. Past events must be labelled as highlights."
+    }
+  },
+  "makeover_service_and_course_description_framework": {
+    "service_fields": [
+      "Service name",
+      "Occasion",
+      "Date",
+      "Time",
+      "Location",
+      "Look preference",
+      "Skin sensitivities disclosed by client",
+      "Hair requirement",
+      "Draping",
+      "Lashes",
+      "Trial",
+      "Travel",
+      "Price",
+      "Advance",
+      "Cancellation"
+    ],
+    "course_fields": [
+      "Course name",
+      "Audience",
+      "Skill level",
+      "Syllabus",
+      "Dates",
+      "Duration",
+      "Trainer credentials",
+      "Kit",
+      "Practice model",
+      "Certification wording",
+      "Fee",
+      "Seats",
+      "Refund terms"
+    ],
+    "safe_service_order": [
+      "Look or occasion hook",
+      "Exact service",
+      "Visible technique or finish",
+      "Availability condition",
+      "Call CTA"
+    ],
+    "identity_rule": "Makeup content should celebrate the client and preserve their identity. Do not promise another person's exact result.",
+    "booking_rule": "A social-media enquiry is not a confirmed booking until the studio confirms the date, service, price and advance."
+  },
+  "caption_format": {
+    "default_use": "Instagram and Facebook feed posts and reels.",
+    "body_length": "Usually 25 to 70 words excluding footer, hashtags and SEO bracket. Longer educational captions are allowed when requested.",
+    "body_structure": [
+      "One strong, brand-relevant hook.",
+      "One to three clear lines using only verified details.",
+      "One direct enquiry, visit, booking, save, share or link-in-bio CTA."
+    ],
+    "format_order": [
+      "Caption body",
+      "Blank line",
+      "Approved location and contact footer when available",
+      "Agency credit when required",
+      "Blank line",
+      "Exactly three hashtags",
+      "Blank line",
+      "Exactly one square-bracket SEO block"
+    ],
+    "hashtag_rule": "Exactly three hashtags unless the user explicitly requests another count.",
+    "seo_rule": "Use five to eight natural search phrases inside one and only one pair of square brackets.",
+    "story_rule": "For story copy, use a short headline, one support line and one CTA. Omit the feed footer, hashtags and SEO unless requested.",
+    "reel_overlay_rule": "Keep each text card short enough to read comfortably on a phone. Do not repeat the whole caption on screen.",
+    "final_checks": [
+      "Use only facts approved for the selected post.",
+      "Use exactly three relevant hashtags.",
+      "Use one square-bracket SEO block containing five to eight comma-separated phrases.",
+      "Use one clear CTA.",
+      "Remove every em dash before delivery.",
+      "Confirm client consent.",
+      "Check that the date, service and booking status are current.",
+      "Check beauty, skin and course claims."
+    ]
+  },
+  "fixed_footer": {
+    "standard_lines": [
+      "📍 Shop No. 2, Rajal Godavari Apartment, Teachers Colony, Kurla West, Mumbai",
+      "📞 +91 70457 76977",
+      "💫 Managed by: @famebrosstudio"
+    ],
+    "compact_lines": [
+      "📍 Kurla West | 📞 +91 70457 76977",
+      "💫 Managed by: @famebrosstudio"
+    ],
+    "usage": "Use the standard footer for booking, bridal and academy posts. Use the compact footer when the caption is long.",
+    "exceptions": [
+      "Story overlays",
+      "Comments",
+      "Private booking replies",
+      "When agency credit is not requested"
+    ]
+  },
+  "suggested_hashtag_bank": [
+    "#QashMakeovers",
+    "#MakeupArtistMumbai",
+    "#BridalMakeupMumbai",
+    "#KurlaMakeupArtist",
+    "#PartyMakeupMumbai",
+    "#MakeupAcademyMumbai",
+    "#BridalLook",
+    "#HairstylingMumbai"
+  ],
+  "seo_keyword_bank": [
+    "Qash Makeovers Kurla",
+    "makeup artist in Kurla West",
+    "bridal makeup Mumbai",
+    "party makeup Kurla",
+    "makeup academy Mumbai",
+    "hairstyling Kurla West",
+    "freelance makeup artist Mumbai",
+    "bridal booking Mumbai"
+  ],
+  "cta_bank": [
+    "Call +91 70457 76977 to check the date and service availability.",
+    "Save this look for your bridal reference.",
+    "DM your event date and preferred look.",
+    "Share this tip with someone planning an occasion look.",
+    "Ask for the current course details before registering."
+  ],
+  "suggested_hooks": [
+    "Your bridal look should still feel like you.",
+    "Soft details, defined features and a finish made for the occasion.",
+    "One makeup tip that can change the final finish.",
+    "A closer look at the details behind the transformation.",
+    "Planning your event look in Mumbai? Start with the date.",
+    "Learn the technique, not just the trend."
+  ],
+  "visual_and_asset_guidance": {
+    "feed_size": "1080 x 1440 pixels",
+    "story_and_reel_size": "1080 x 1920 pixels",
+    "style": [
+      "Elegant",
+      "Beauty editorial",
+      "Warm",
+      "Detail-led",
+      "Clean",
+      "Celebratory"
+    ],
+    "asset_priority": [
+      "Real client with consent",
+      "Accurate skin tone",
+      "Eye and lip details",
+      "Hair close-up",
+      "Full look",
+      "Real class or studio environment"
+    ],
+    "fidelity_rules": [
+      "Preserve facial structure and skin tone.",
+      "Avoid smoothing away all natural texture.",
+      "Use consistent before-and-after lighting.",
+      "Do not alter makeup colours beyond a faithful grade.",
+      "Do not expose private client or student information."
+    ],
+    "thumbnail_rule": "Use one approved face or detail, a short service or tip headline and uncluttered typography."
+  },
+  "carousel_and_reel_system": {
+    "bridal_carousel": [
+      "Slide 1: Full bridal reveal",
+      "Slide 2: Eye detail",
+      "Slide 3: Base and finish",
+      "Slide 4: Hair detail",
+      "Slide 5: Look notes",
+      "Slide 6: Booking CTA"
+    ],
+    "tip_carousel": [
+      "Slide 1: Question or mistake",
+      "Slide 2: Why it matters",
+      "Slide 3: Demonstration",
+      "Slide 4: Sensitivity or suitability note",
+      "Slide 5: Save CTA"
+    ],
+    "transformation_reel": [
+      "0 to 2 seconds: Final-look hook",
+      "2 to 5 seconds: Approved before",
+      "5 to 12 seconds: Process details",
+      "12 to 16 seconds: Full reveal",
+      "16 to 18 seconds: Booking CTA"
+    ],
+    "editing_style": [
+      "Accurate skin colour",
+      "Smooth but honest transitions",
+      "Readable minimal text",
+      "No excessive beauty filters",
+      "Detail close-ups"
+    ],
+    "music_direction": "Elegant, celebratory or trend-aware audio with usage rights."
+  },
+  "other_output_modes": {
+    "story_sequence": [
+      "Look reveal",
+      "Detail or booking question",
+      "Call or DM CTA"
+    ],
+    "bridal_enquiry_reply": "Ask for event date, location, functions, services, preferred look and contact. Do not confirm until availability and advance are settled.",
+    "course_enquiry_reply": "Provide the current syllabus, dates, trainer, certification status, fees and terms.",
+    "voiceover": "Conversational Hinglish, one technique or one transformation story, 20 to 40 seconds.",
+    "past_event_recap": "Clearly label the 3 September seminar or any completed event as a recap."
+  },
+  "sample_caption": {
+    "status": "Illustrative evergreen booking caption. Use only with an approved matching client asset.",
+    "scenario": "Bridal makeup reveal",
+    "caption_body": "A bridal look should enhance your features and still feel completely like you. From the eye detail to the final hairstyle, every element is planned around the occasion. Call us with your event date to check the current bridal booking availability.",
+    "footer": [
+      "📍 Shop No. 2, Rajal Godavari Apartment, Teachers Colony, Kurla West, Mumbai",
+      "📞 +91 70457 76977",
+      "💫 Managed by: @famebrosstudio"
+    ],
+    "hashtags": [
+      "#QashMakeovers",
+      "#BridalMakeupMumbai",
+      "#KurlaMakeupArtist"
+    ],
+    "seo_keywords": [
+      "Qash Makeovers Kurla",
+      "bridal makeup Mumbai",
+      "makeup artist in Kurla West",
+      "bridal hairstyling Mumbai",
+      "bridal booking Mumbai",
+      "occasion makeup Kurla"
+    ],
+    "full_caption": "A bridal look should enhance your features and still feel completely like you. From the eye detail to the final hairstyle, every element is planned around the occasion. Call us with your event date to check the current bridal booking availability.\n\n📍 Shop No. 2, Rajal Godavari Apartment, Teachers Colony, Kurla West, Mumbai\n📞 +91 70457 76977\n💫 Managed by: @famebrosstudio\n\n#QashMakeovers #BridalMakeupMumbai #KurlaMakeupArtist\n\n[Qash Makeovers Kurla, bridal makeup Mumbai, makeup artist in Kurla West, bridal hairstyling Mumbai, bridal booking Mumbai, occasion makeup Kurla]",
+    "validation": {
+      "hashtags": 3,
+      "seo_phrases": 6,
+      "guaranteed_result_claim": false,
+      "client_consent_required": true
+    }
+  },
+  "accuracy_rules": [
+    "Use +91 70457 76977 and the confirmed Kurla West address exactly.",
+    "Do not promise a flawless result or skin-tone change.",
+    "Do not publish a client transformation without consent.",
+    "Do not invent product use, artist credentials, course certification or placement outcomes.",
+    "Doorstep service depends on location, date, travel terms and availability.",
+    "The 3 September free seminar is historical and must not be promoted as current.",
+    "A booking is confirmed only through the studio's approved process.",
+    "Remove every em dash."
+  ],
+  "per_post_input": {
+    "required_core": [
+      "Output mode",
+      "Service or course",
+      "Objective",
+      "Actual asset",
+      "Consent",
+      "Audience",
+      "CTA",
+      "Publication date"
+    ],
+    "booking_inputs": [
+      "Event date",
+      "Location",
+      "Functions",
+      "Services",
+      "Price",
+      "Advance",
+      "Travel",
+      "Availability",
+      "Cancellation"
+    ],
+    "course_inputs": [
+      "Title",
+      "Level",
+      "Syllabus",
+      "Dates",
+      "Duration",
+      "Trainer",
+      "Certification",
+      "Kit",
+      "Fees",
+      "Seats",
+      "Terms"
+    ],
+    "creative_inputs": [
+      "Logo",
+      "Format",
+      "Headline",
+      "Look name",
+      "Artist credit",
+      "Music"
+    ],
+    "input_rule": "Do not create service, booking or academy claims from incomplete details."
+  },
+  "master_brand_instruction": "Create content only for Qash Makeovers in Kurla West, Mumbai. The official Instagram is @qash_makeovers, the confirmed phone is +91 70457 76977, and the confirmed studio is at Shop No. 2, Rajal Godavari Apartment, Teachers Colony, P.T. Marg, Vinoba Bhave Nagar, near LIG Colony and ZRS Hospital, Kurla West. Write elegant, encouraging and detail-focused Hinglish or English for bridal makeup, party makeup, hairstyling, academy content and availability-dependent venue services. Preserve the client's identity and skin tone. Never guarantee flawless results, invent credentials or certification, promise career outcomes, or promote the completed 3 September seminar as current. Confirm date, service, price, travel and availability before booking copy. Use exactly three hashtags and one SEO bracket with five to eight phrases. Remove all em dashes.",
+  "missing_information": {
+    "business": [
+      "Legal entity",
+      "Owner or lead artist name",
+      "Founding year",
+      "Business hours"
+    ],
+    "digital": [
+      "Facebook URL",
+      "Website",
+      "Email",
+      "Google Maps URL",
+      "WhatsApp confirmation",
+      "Booking link"
+    ],
+    "services": [
+      "Current packages",
+      "Prices",
+      "Inclusions",
+      "Travel zones and fees",
+      "Advance and cancellation policy",
+      "Product policy",
+      "Trial terms"
+    ],
+    "academy": [
+      "Current courses",
+      "Syllabus",
+      "Duration",
+      "Trainer credentials",
+      "Certification status",
+      "Fees",
+      "Kit",
+      "Refund policy"
+    ],
+    "brand_system": [
+      "Logo files",
+      "Colour codes",
+      "Fonts",
+      "Photography and retouching guide"
+    ],
+    "priority": "Obtain current service packages, booking rules, course documentation, owner or artist identity and verified digital links."
+  },
+  "sources": {
+    "user_facts": [
+      "Official Instagram handle and Facebook page name.",
+      "Confirmed phone and full Kurla West address.",
+      "Bridal, party, hairstyling, academy and venue-service categories.",
+      "Transformation, informational, tips, booking, academy and seminar genres.",
+      "Historical 3 September free seminar."
+    ],
+    "public_sources": [],
+    "public_search_note": "Web/phone searches on 2026-09-25 for Qash Makeovers Kurla + 70457 76977 returned no verifiable listing (only unrelated Qash fintech results). Phone, address and handle stay user-provided.",
+    "internal_dataset": "Famebros_Brand_Caption_Dataset.json record qash_makeovers.",
+    "source_rule": "Current studio-approved booking, course and service information overrides any historical event or portfolio caption."
+  }
+}

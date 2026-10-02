@@ -1,0 +1,523 @@
+{
+  "schema_version": "3.0",
+  "brand_number": 28,
+  "brand_id": "avnikk_collection",
+  "brand_name": "Avnikk Collection",
+  "aliases": [
+    "AVNIKK",
+    "Avnikk",
+    "Avnikk Collection",
+    "@avnikk_collection"
+  ],
+  "knowledge_scope": "One brand only. This file covers Avnikk Collection, its men's kurta and ethnic-wear positioning, official website and Instagram, established campaign language, content package, mixed-grid strategy, garment-fidelity rules and product-copy accuracy controls.",
+  "business": {
+    "category": "Men's kurtas and ethnic wear",
+    "industry": "Men's fashion and apparel",
+    "business_model": [
+      "Direct-to-consumer apparel",
+      "Online product discovery",
+      "Website-directed shopping",
+      "Social commerce enquiries"
+    ],
+    "gender_scope": "Men only",
+    "city": "Bhiwandi",
+    "state": "Maharashtra",
+    "country": "India",
+    "currency": "INR",
+    "core_positioning": "A men's kurta and ethnic-wear label combining tradition, personal style and polished modern presentation.",
+    "approved_brand_phrases": [
+      "Tales of tradition, crafted for you",
+      "Wear your story with #PehnoKuchAvnikk",
+      "The only kurta your wardrobe needs"
+    ],
+    "primary_audience": [
+      "Men shopping for kurtas",
+      "Festive-wear shoppers",
+      "Wedding and celebration shoppers",
+      "Men seeking styled ethnic looks",
+      "Gift buyers when product and sizing are confirmed"
+    ],
+    "dataset_date": "2026-09-25",
+    "billing_or_start_note": "29 August appeared in the user-provided working record. It is not a founding date.",
+    "commercial_accuracy_rule": "Never invent fabric, weave, embroidery technique, handwork, fit, sizes, price, stock, discount, shipping, exchange or delivery time."
+  },
+  "contact": {
+    "website": "https://avnikk.com/",
+    "website_status": "Official website confirmed live 2026-09-25. Current product details should still be rechecked at content time.",
+    "phone": "+917620326479",
+    "phone_status": "Official customer-support number from avnikk.com footer (call/WhatsApp), confirmed 2026-09-25.",
+    "email": "avnikk001@gmail.com",
+    "email_status": "Official support email from avnikk.com footer, confirmed 2026-09-25.",
+    "address": "Shree Ashapura Textiles, Anand Building, 2nd Floor, Ajanta Compound, Near Kohinoor Dyeing, Behind Supreme Hotel, Dhamankar Naka, Bhiwandi 421302, Maharashtra, India",
+    "address_status": "Official REACH US address from avnikk.com footer, confirmed 2026-09-25.",
+    "whatsapp": "+917620326479",
+    "whatsapp_status": "avnikk.com lists this number as call/whatsapp for customer support.",
+    "google_maps_url": null,
+    "contact_rule": "Use the website, official phone/email, or Instagram DM as the CTA. Do not invent any additional store location or number."
+  },
+  "social_media": {
+    "instagram_handle": "@avnikk_collection",
+    "instagram_url": "https://www.instagram.com/avnikk_collection/",
+    "instagram_status": "Matched official public identity and supported by the user-provided record.",
+    "facebook_url": "https://www.facebook.com/avnikkcollection1",
+    "facebook_status": "Official Facebook linked in avnikk.com footer, confirmed 2026-09-25.",
+    "managing_agency": "Famebros Studio",
+    "agency_instagram_handle": "@famebrosstudio",
+    "agency_instagram_url": "https://www.instagram.com/famebrosstudio/",
+    "agency_credit_default": "💫 Managed by: @famebrosstudio",
+    "preferred_primary_cta": "Use the link in bio to explore or shop the collection.",
+    "reference_rule": "Use official website and Instagram content to understand current styling and public wording, but verify every product field before writing."
+  },
+  "established_content_knowledge": {
+    "confirmed_content_genres": [
+      "Men's fashion",
+      "Model showcase",
+      "Product detail",
+      "Cinematic",
+      "Informational",
+      "Festive styling"
+    ],
+    "content_mix_requirement": "Do not run a reels-only feed. Use reels, static posts and carousels to create a coherent product-led grid.",
+    "content_pillars": [
+      "Full kurta look",
+      "Faceless detail close-up",
+      "Garment movement",
+      "Collar, cuff, placket and surface details",
+      "Occasion styling",
+      "Festive hooks",
+      "Colour stories",
+      "One outfit from multiple angles",
+      "Product education using confirmed facts",
+      "Website and link-in-bio conversion"
+    ],
+    "historical_navratri_hook": "Garba plans? Outfit sorted.",
+    "monthly_service_scope": {
+      "monthly_fee": "₹35,000 plus GST",
+      "platforms": [
+        "Instagram",
+        "Facebook"
+      ],
+      "content_shoots_per_month": 2,
+      "reels_per_month": "18 to 20",
+      "photo_requirement": "Different-angle photographs for every outfit covered in the shoot.",
+      "model_or_influencer_cost": "Separate and shared for approval.",
+      "paid_ad_management": "Not included.",
+      "content_usage": "The owner may use the created reels for paid ads.",
+      "scope_status": "Historical user-approved working scope. Reconfirm before billing or promising deliverables."
+    },
+    "accounts_note": "An August record showed Avnikk Collection ₹35,000 with ₹17,500 current, and an adjacent Ovais ₹22,000 note. Treat this as internal historical accounting and reconfirm.",
+    "content_priority": "Let the real kurta, exact colour, construction details and styling carry the story. Keep the presentation premium and uncluttered."
+  },
+  "writing_direction": {
+    "brand_voice": [
+      "Refined",
+      "Elegant",
+      "Masculine",
+      "Cultural",
+      "Modern",
+      "Warm",
+      "Confident"
+    ],
+    "primary_language": "English or Hinglish",
+    "focus": [
+      "Men's kurta",
+      "Tradition with modern styling",
+      "Craft visibility",
+      "Occasion relevance",
+      "Personal expression",
+      "Link-in-bio action"
+    ],
+    "avoid": [
+      "Women's-wear positioning",
+      "Invented fabric or craft",
+      "Royal or luxury claims without approval",
+      "Unconfirmed price or size",
+      "Fake scarcity",
+      "Too much text on the design",
+      "Changing the garment or model face",
+      "Calling machine work handwork without proof"
+    ],
+    "emoji_style": "Zero to two tasteful fashion or celebration emojis.",
+    "punctuation_style": "Clean short sentences and no em dashes."
+  },
+  "content_playbook": {
+    "model_showcase_reel": {
+      "sequence": [
+        "Strong full-look hook",
+        "Walking or turn movement",
+        "Detail close-ups",
+        "Elegant folded-hands or composed pose",
+        "Logo and link-in-bio CTA"
+      ],
+      "rule": "Preserve the model's face, body proportions and garment exactly."
+    },
+    "faceless_product_reel": {
+      "sequence": [
+        "Collar or placket detail",
+        "Sleeve or cuff",
+        "Fabric movement",
+        "Full garment view",
+        "Product name and CTA"
+      ],
+      "rule": "Describe only confirmed fabric, work and fit."
+    },
+    "static_post": {
+      "style": "Premium cream or ivory composition with one strong photograph, official logo, serif headline and minimal gold or burgundy accent.",
+      "copy_rule": "Use one short headline and one product identifier."
+    },
+    "carousel": {
+      "sequence": [
+        "Hero look",
+        "Front detail",
+        "Side or movement",
+        "Collar or cuff",
+        "Confirmed product facts",
+        "Link-in-bio CTA"
+      ],
+      "rule": "Use actual photos from different angles of the same outfit."
+    },
+    "festival_post": {
+      "objective": "Connect one genuine outfit to a current celebration without overwhelming the garment.",
+      "rule": "Use only current festival dates, current product availability and culturally appropriate visual cues."
+    },
+    "product_education": {
+      "topics": [
+        "How to style this exact kurta",
+        "Occasion ideas",
+        "Visible design details",
+        "Care instructions only when supplied",
+        "Sizing only from the current size chart"
+      ]
+    }
+  },
+  "menswear_product_description_framework": {
+    "required_fields": [
+      "Official product name",
+      "Product code or URL",
+      "Exact colour",
+      "Garment type",
+      "Fabric",
+      "Visible work or print",
+      "Fit",
+      "Length",
+      "Sleeve",
+      "Sizes",
+      "Price",
+      "Stock",
+      "Care",
+      "Shipping",
+      "Exchange terms"
+    ],
+    "safe_order": [
+      "Style hook",
+      "Exact product identity",
+      "Verified material or detail",
+      "Occasion or styling idea",
+      "Current shop CTA"
+    ],
+    "unknown_field_rule": "Omit any unknown product field. Appearance alone is not evidence of fabric, handwork, comfort, breathability or fit.",
+    "gender_rule": "Keep all default product copy within men's wear.",
+    "fidelity_rule": "The description and creative must match the photographed garment's colour, pattern, collar, sleeve, buttons and embellishment."
+  },
+  "caption_format": {
+    "default_use": "Instagram and Facebook feed posts and reels.",
+    "body_length": "Usually 25 to 70 words excluding footer, hashtags and SEO bracket. Longer educational captions are allowed when requested.",
+    "body_structure": [
+      "One strong, brand-relevant hook.",
+      "One to three clear lines using only verified details.",
+      "One direct enquiry, visit, booking, save, share or link-in-bio CTA."
+    ],
+    "format_order": [
+      "Caption body",
+      "Blank line",
+      "Approved location and contact footer when available",
+      "Agency credit when required",
+      "Blank line",
+      "Exactly three hashtags",
+      "Blank line",
+      "Exactly one square-bracket SEO block"
+    ],
+    "hashtag_rule": "Exactly three hashtags unless the user explicitly requests another count.",
+    "seo_rule": "Use five to eight natural search phrases inside one and only one pair of square brackets.",
+    "story_rule": "For story copy, use a short headline, one support line and one CTA. Omit the feed footer, hashtags and SEO unless requested.",
+    "reel_overlay_rule": "Keep each text card short enough to read comfortably on a phone. Do not repeat the whole caption on screen.",
+    "final_checks": [
+      "Use only facts approved for the selected post.",
+      "Use exactly three relevant hashtags.",
+      "Use one square-bracket SEO block containing five to eight comma-separated phrases.",
+      "Use one clear CTA.",
+      "Remove every em dash before delivery.",
+      "Confirm the product URL, price, size and stock if mentioned.",
+      "Use a link-in-bio CTA by default."
+    ]
+  },
+  "fixed_footer": {
+    "standard_lines": [
+      "🌐 Shop: https://avnikk.com/",
+      "📲 Instagram: @avnikk_collection",
+      "💫 Managed by: @famebrosstudio"
+    ],
+    "compact_lines": [
+      "Explore via the link in bio.",
+      "💫 Managed by: @famebrosstudio"
+    ],
+    "usage": "Prefer the compact link-in-bio version on Instagram. Use the website line where clickable links are supported.",
+    "exceptions": [
+      "Story overlays",
+      "Comments",
+      "Product-page descriptions",
+      "When agency credit is not requested"
+    ]
+  },
+  "suggested_hashtag_bank": [
+    "#Avnikk",
+    "#PehnoKuchAvnikk",
+    "#MensKurta",
+    "#MensEthnicWear",
+    "#KurtaStyle",
+    "#IndianMenswear",
+    "#FestiveMenswear",
+    "#MensFashionIndia"
+  ],
+  "seo_keyword_bank": [
+    "Avnikk men's kurta",
+    "men's ethnic wear India",
+    "kurta for men online",
+    "festive kurta for men",
+    "Indian menswear brand",
+    "men's kurta styling",
+    "wedding kurta for men",
+    "Avnikk Collection"
+  ],
+  "cta_bank": [
+    "Explore the collection through the link in bio.",
+    "Save this look for your next celebration.",
+    "DM us for the confirmed product details.",
+    "Which colour would you style first?",
+    "Visit avnikk.com to check current sizes and availability."
+  ],
+  "suggested_hooks": [
+    "Tales of tradition, crafted for you.",
+    "Wear your story with Avnikk.",
+    "The kurta that makes the occasion feel complete.",
+    "Garba plans? Outfit sorted.",
+    "Details worth a closer look.",
+    "One silhouette, every angle considered.",
+    "A refined way to show up for the celebration."
+  ],
+  "visual_and_asset_guidance": {
+    "feed_size": "1080 x 1440 pixels",
+    "story_and_reel_size": "1080 x 1920 pixels",
+    "palette": [
+      "Ivory",
+      "Cream",
+      "Maroon",
+      "Burgundy",
+      "Gold accents"
+    ],
+    "typography": "Elegant serif-led hierarchy with minimal supporting type.",
+    "style": [
+      "Premium",
+      "Minimal",
+      "Warm",
+      "Traditional-modern",
+      "Editorial menswear"
+    ],
+    "approved_pose_direction": [
+      "Composed standing pose",
+      "Elegant folded-hands gesture",
+      "Natural walking movement",
+      "Faceless product close-up"
+    ],
+    "fidelity_rules": [
+      "Use the supplied kurta image.",
+      "Do not change the kurta's colour, pattern, shape, buttons, collar, sleeves or embellishment.",
+      "Do not modify the model's face or body.",
+      "Do not place a new brand mark on the kurta.",
+      "Use only the official AVNIKK logo as a design element."
+    ],
+    "grid_rule": "Alternate full-look reels, detail carousels and clean static posts so the feed is not visually repetitive."
+  },
+  "carousel_and_reel_system": {
+    "product_carousel": [
+      "Slide 1: Full look and short hook",
+      "Slide 2: Collar or placket",
+      "Slide 3: Sleeve or cuff",
+      "Slide 4: Fabric movement",
+      "Slide 5: Verified product facts",
+      "Slide 6: Link-in-bio CTA"
+    ],
+    "model_reel": [
+      "0 to 2 seconds: Full-look reveal",
+      "2 to 6 seconds: Walk or turn",
+      "6 to 10 seconds: Detail shots",
+      "10 to 13 seconds: Occasion line",
+      "13 to 15 seconds: Logo and CTA"
+    ],
+    "static_system": [
+      "One outfit",
+      "One headline",
+      "One logo",
+      "Minimal cream or ivory setting",
+      "Gold or burgundy accent"
+    ],
+    "editing_style": [
+      "Slow refined movement",
+      "Clean match cuts",
+      "Natural skin tone",
+      "Accurate garment colour",
+      "Minimal text"
+    ],
+    "music_direction": "Modern Indian, elegant festive or understated cinematic audio with usage rights."
+  },
+  "other_output_modes": {
+    "website_product_copy": "Structured, factual copy using only current catalogue fields.",
+    "story_sequence": [
+      "Full look",
+      "Detail poll or choice",
+      "Link-in-bio CTA"
+    ],
+    "whatsapp_launch_copy": "Short launch message with official product link, current price and sizes only when supplied.",
+    "ad_copy": "The brand may use created reels as ads, but ad claims, targeting and offer terms require separate approval.",
+    "comment_reply": "Give confirmed product guidance and move sizing, order or exchange questions to official channels."
+  },
+  "sample_caption": {
+    "status": "Illustrative brand caption. Attach it only to a matching current men's kurta asset.",
+    "scenario": "Premium kurta detail reel",
+    "caption_body": "Tales of tradition, crafted for you. A refined kurta look that lets the silhouette, movement and considered details speak for themselves. Save it for your next celebration, then explore the current collection through the link in bio.",
+    "footer": [
+      "🌐 https://avnikk.com/",
+      "📲 @avnikk_collection",
+      "💫 Managed by: @famebrosstudio"
+    ],
+    "hashtags": [
+      "#Avnikk",
+      "#PehnoKuchAvnikk",
+      "#MensKurta"
+    ],
+    "seo_keywords": [
+      "Avnikk men's kurta",
+      "men's ethnic wear India",
+      "kurta for men online",
+      "festive kurta for men",
+      "Indian menswear brand",
+      "men's kurta styling"
+    ],
+    "full_caption": "Tales of tradition, crafted for you. A refined kurta look that lets the silhouette, movement and considered details speak for themselves. Save it for your next celebration, then explore the current collection through the link in bio.\n\n🌐 https://avnikk.com/\n📲 @avnikk_collection\n💫 Managed by: @famebrosstudio\n\n#Avnikk #PehnoKuchAvnikk #MensKurta\n\n[Avnikk men's kurta, men's ethnic wear India, kurta for men online, festive kurta for men, Indian menswear brand, men's kurta styling]",
+    "validation": {
+      "hashtags": 3,
+      "seo_phrases": 6,
+      "unverified_product_claims": 0
+    }
+  },
+  "accuracy_rules": [
+    "Keep the brand within men's kurtas and men's ethnic wear.",
+    "Never invent fabric, craft, handwork, fit, comfort, sizes, price, stock or shipping.",
+    "Use the official website and Instagram link exactly.",
+    "Preserve the real garment and model face.",
+    "Do not put extra branding on the kurta.",
+    "Treat package and payment notes as internal and historical.",
+    "Recheck current product pages before conversion copy.",
+    "Remove every em dash."
+  ],
+  "per_post_input": {
+    "required_core": [
+      "Output mode",
+      "Objective",
+      "Actual garment assets",
+      "Official product name",
+      "Product URL or code",
+      "Audience",
+      "CTA",
+      "Publication date"
+    ],
+    "product_inputs": [
+      "Colour",
+      "Fabric",
+      "Work or print",
+      "Fit",
+      "Length",
+      "Sleeve",
+      "Sizes",
+      "Price",
+      "Stock",
+      "Care",
+      "Shipping",
+      "Exchange"
+    ],
+    "creative_inputs": [
+      "Official logo",
+      "Format",
+      "Headline",
+      "Reference",
+      "Mandatory copy",
+      "Selected photos or video",
+      "Music"
+    ],
+    "input_rule": "Ask for missing product details or omit them. Never infer material or construction from a photo."
+  },
+  "master_brand_instruction": "Create content only for Avnikk Collection, a men's kurta and ethnic-wear brand. The official Instagram is @avnikk_collection and the website is https://avnikk.com/. Use refined, elegant and modern cultural language in English or Hinglish. Keep the content men-only, garment-led and uncluttered. Use a healthy mix of reels, static posts and carousels. Preserve every uploaded kurta and model face exactly, use only the official AVNIKK logo, and never add branding to the garment. Never invent fabric, craft, fit, sizes, price, stock, shipping, exchange or delivery. Prefer a link-in-bio CTA. For standard captions, use the approved footer, exactly three hashtags and one SEO bracket with five to eight phrases. Remove all em dashes.",
+  "missing_information": {
+    "business": [
+      "Legal entity (operating entity seen as Khushmeet Enterprises / Shree Ashapura Textiles address; needs brand sign-off)",
+      "Founder (site names Smeet Deepak Shah / Smeet Shah on contact pages; needs brand sign-off)",
+      "Founding year",
+      "Operating location beyond the Bhiwandi REACH US address"
+    ],
+    "contact": [
+      "Customer-service hours"
+    ],
+    "catalogue": [
+      "Current product export",
+      "Product codes",
+      "Fabric and craft fields",
+      "Size chart",
+      "Prices",
+      "Stock",
+      "Care",
+      "Shipping and exchange terms"
+    ],
+    "brand_system": [
+      "Master logo files",
+      "Exact colour codes",
+      "Fonts",
+      "Photography guide",
+      "Packaging guide"
+    ],
+    "agency": [
+      "Current package confirmation",
+      "Approval workflow",
+      "Current billing status",
+      "Model and influencer process"
+    ],
+    "priority": "Obtain the current catalogue and product rules, then lock the logo, colours, typography and grid system."
+  },
+  "sources": {
+    "user_facts": [
+      "Official handle and website.",
+      "Men's kurta and ethnic-wear focus.",
+      "Monthly package, shoots, reels, photo angles and ad-use terms.",
+      "Need for mixed reels, statics, carousels and a proper grid.",
+      "Visual and garment-fidelity preferences."
+    ],
+    "public_sources": [
+      {
+        "url": "https://www.instagram.com/avnikk_collection/",
+        "checked_on": "2026-09-25",
+        "used_for": "Matched official identity and public brand wording."
+      },
+      {
+        "url": "https://avnikk.com/",
+        "checked_on": "2026-09-25",
+        "used_for": "Official shop destination and current catalogue reference."
+      },
+      {
+        "url": "https://avnikk.com/pages/mens",
+        "checked_on": "2026-09-25",
+        "used_for": "Official REACH US address, customer-support phone/email, Khushmeet Enterprises + GST, Facebook link, collections and policies."
+      }
+    ],
+    "internal_dataset": "Famebros_Brand_Caption_Dataset.json record avnikk_collection.",
+    "source_rule": "Current official catalogue data and brand approval override older posts and historical campaign language."
+  }
+}

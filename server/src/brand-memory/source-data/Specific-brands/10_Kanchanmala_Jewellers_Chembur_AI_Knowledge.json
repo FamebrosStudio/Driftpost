@@ -1,0 +1,614 @@
+{
+  "schema_version": "1.0",
+  "brand_number": 10,
+  "brand_id": "kanchanmala_jewellers_chembur",
+  "brand_name": "Kanchanmala Jewellers",
+  "branch_name": "Chembur",
+  "alternate_public_name": "Kanchanmala Jewellers Chembur",
+  "knowledge_scope": "One branch only. Confirmed branch facts, shared jewellery-group information, current or historical campaign themes and AI writing guidance are separated.",
+  "business": {
+    "category": "Jewellery store",
+    "industry": "Gold, silver and custom-made jewellery retail",
+    "branch": "Chembur East",
+    "city": "Mumbai",
+    "state": "Maharashtra",
+    "country": "India",
+    "published_product_positioning": [
+      "Pure gold jewellery",
+      "Silver jewellery",
+      "Custom-made jewellery"
+    ],
+    "published_quality_positioning": [
+      "Purity-focused communication",
+      "Trust-focused jewellery retail"
+    ],
+    "published_since_year": 1992,
+    "since_year_note": "The official Instagram profile states 'Since 1992'. Recheck before anniversary calculations.",
+    "service_features": [
+      "In-store pickup"
+    ],
+    "group_relationship": "Part of the three-store jewellery group promoted together with Shree Mahalaxmi Jewellers, Kurla, and Mahalaxmi Jewellers, Ghatla.",
+    "owner_name": null,
+    "opening_hours": null
+  },
+  "contact": {
+    "primary_phone_display": "+91 96190 96762",
+    "primary_phone_e164": "+919619096762",
+    "secondary_phone_display": "+91 80974 96670",
+    "secondary_phone_e164": "+918097496670",
+    "whatsapp_numbers": [],
+    "whatsapp_note": "Both numbers are confirmed business contacts. Label them as WhatsApp only when the current branch confirms it.",
+    "full_address": "Shop 1/1, Plot 93, N.G. Acharya Marg, Chembur, Mumbai 400071",
+    "shop_number": "1/1",
+    "plot_number": "93",
+    "road": "N.G. Acharya Marg",
+    "area": "Chembur",
+    "city": "Mumbai",
+    "postal_code": "400071",
+    "email": null,
+    "website": null,
+    "catalogue_url": null,
+    "ordering_url": null,
+    "google_maps_url": null
+  },
+  "social_media": {
+    "instagram_handle": "@kanchanmala.jewellers.chembur",
+    "instagram_url": "https://www.instagram.com/kanchanmala.jewellers.chembur/",
+    "instagram_identity_status": "Indexed profile matches the Chembur branch, address, gold-on-EMI positioning and since-1992 statement.",
+    "facebook_name": "Kanchanmala Jewellers",
+    "facebook_url": "https://www.facebook.com/KanchanMalaJewellers/",
+    "facebook_status": "Indexed official page matches the Chembur address, phone numbers and jewellery campaigns.",
+    "youtube_url": null,
+    "managing_agency": "Famebros Studio",
+    "agency_instagram_handle": "@famebrosstudio",
+    "agency_instagram_url": "https://www.instagram.com/famebrosstudio/"
+  },
+  "shared_group_locations": {
+    "usage": "Use this full block only for posts representing all three jewellery stores.",
+    "branches": [
+      {
+        "brand": "Shree Mahalaxmi Jewellers",
+        "branch": "Kurla",
+        "address": "Shop 15, Building 8, C-Wing, Sharad Co-Op Housing Society, Kapus Kamgar Nagar, Near Tilak Nagar Station, Kurla East, Mumbai 400024"
+      },
+      {
+        "brand": "Kanchanmala Jewellers",
+        "branch": "Chembur",
+        "address": "Shop 1/1, Plot 93, N.G. Acharya Marg, Chembur, Mumbai 400071"
+      },
+      {
+        "brand": "Mahalaxmi Jewellers",
+        "branch": "Ghatla",
+        "address": "Shop 1, Khardev Nagar Road, Ghatla, Chembur, Mumbai 400071"
+      }
+    ],
+    "shared_phones": [
+      "+91 96190 96762",
+      "+91 80974 96670"
+    ],
+    "rule": "For Kanchanmala-only content, lead with the Chembur branch address. Do not confuse the three brand names or addresses."
+  },
+  "established_content_knowledge": {
+    "confirmed_content_genres": [
+      "Informational jewellery content",
+      "Promotional offers"
+    ],
+    "confirmed_product_categories": [
+      "Gold jewellery",
+      "Silver jewellery",
+      "Custom-made jewellery"
+    ],
+    "indexed_or_historical_topics": [
+      "Gold on EMI",
+      "Purity and trust",
+      "Men's jewellery",
+      "Gold chains",
+      "Customer experiences",
+      "Customer and weekly winners",
+      "Gold savings plan starting from ₹500 per month",
+      "Wedding-season jewellery"
+    ],
+    "additional_user_supplied_topics": [
+      "BIS hallmark education",
+      "Old gold exchange"
+    ],
+    "topic_usage_rule": "Older post topics establish content history, not current stock, offer validity or complete programme terms.",
+    "confirmed_current_gold_rate": null,
+    "confirmed_current_silver_rate": null,
+    "confirmed_making_charges": null,
+    "confirmed_emi_terms": null,
+    "confirmed_exchange_terms": null,
+    "confirmed_customer_testimonials": [],
+    "savings_plan_known_facts": {
+      "advertised_starting_monthly_amount_inr": 500,
+      "advertised_duration_months": 12,
+      "status": "Recently indexed campaign topic. Full branch terms, redemption benefit, missed-payment rules and validity are not established.",
+      "publishing_rule": "Confirm the official scheme name and all current terms before creating transactional copy."
+    }
+  },
+  "writing_direction": {
+    "status": "Recommended defaults based on the branch's jewellery positioning and user preferences.",
+    "brand_voice": [
+      "Trustworthy",
+      "Elegant",
+      "Warm",
+      "Family-oriented",
+      "Clear",
+      "Concise"
+    ],
+    "positioning_for_copy": "A Chembur jewellery destination with pure gold, silver and custom-made jewellery, presented through trust, purity, meaningful occasions and accessible buying plans.",
+    "primary_language": "English",
+    "alternate_languages": [
+      "Natural Hinglish",
+      "Hindi",
+      "Marathi when specifically requested"
+    ],
+    "language_note": "Use simple Hinglish for owner-led or local educational reels. Preserve precise jewellery terms, weights, purity and offer conditions.",
+    "target_audience": [
+      "Families buying jewellery for milestones",
+      "Brides and wedding shoppers",
+      "Men and women exploring gold or silver jewellery",
+      "Chembur and nearby Mumbai customers",
+      "Customers considering EMI or a verified monthly jewellery plan",
+      "Gift buyers"
+    ],
+    "emotional_angles": [
+      "Trust built since 1992",
+      "Purity in an important purchase",
+      "Jewellery connected to family moments",
+      "A custom-made piece with personal meaning",
+      "Planning a jewellery purchase through verified payment options",
+      "Celebrating weddings and festivals"
+    ],
+    "avoid_style": [
+      "Guaranteed investment-return claims",
+      "Pressure based on fear of gold-price rises",
+      "Unverified purity claims",
+      "Unconfirmed BIS details",
+      "Invented weights or prices",
+      "Hidden making charges or scheme conditions",
+      "Calling imitation stones precious",
+      "Using another branch address",
+      "Overused royal or luxury clichés",
+      "Em dashes"
+    ]
+  },
+  "content_playbook": {
+    "product_showcase": {
+      "focus": "The exact jewellery piece, visible design and confirmed material or purity.",
+      "structure": "Occasion or design hook, two specific details, visit or enquiry CTA.",
+      "rules": [
+        "Use the exact jewellery type.",
+        "Mention gold, silver, diamond, gemstone, plating, karat and weight only when confirmed.",
+        "Do not infer purity from colour or appearance.",
+        "Do not invent availability, price, making charge or certification."
+      ]
+    },
+    "informational": {
+      "focus": "One clear jewellery-buying concept using branch-approved facts.",
+      "topics": [
+        "BIS hallmark basics",
+        "Purity and karat information",
+        "Jewellery care",
+        "Birthstone information",
+        "Exchange process",
+        "EMI or savings programme explanation"
+      ],
+      "rules": [
+        "Use current official terminology and branch policy.",
+        "Do not give investment advice or promise price appreciation.",
+        "Separate education from promotional terms.",
+        "Do not claim a gemstone has medical or guaranteed spiritual effects."
+      ]
+    },
+    "offer": {
+      "focus": "Exact jewellery category, customer benefit, dates and conditions.",
+      "required_details": [
+        "Applicable branch",
+        "Eligible jewellery",
+        "Discount or benefit",
+        "Making-charge treatment",
+        "Minimum purchase",
+        "Purity and weight basis",
+        "Start and end date",
+        "Stock or quantity limit",
+        "Payment restrictions",
+        "GST or other charges"
+      ],
+      "rules": [
+        "Do not invent an offer.",
+        "Do not move an offer between branches.",
+        "Do not hide exclusions.",
+        "Use clear dates and units."
+      ]
+    },
+    "gold_emi": {
+      "status": "Indexed branch positioning. Current finance terms are not stored.",
+      "required_details": [
+        "Finance or programme provider",
+        "Down payment",
+        "Tenure",
+        "Interest or no-cost status",
+        "Eligibility",
+        "Processing fee",
+        "Applicable jewellery",
+        "Gold-rate basis",
+        "Making charges",
+        "Cancellation terms"
+      ],
+      "rule": "Do not say gold on EMI is currently available until all key terms are confirmed."
+    },
+    "old_gold_exchange": {
+      "status": "User-supplied content theme requiring the current Kanchanmala exchange policy.",
+      "required_details": [
+        "Accepted purity",
+        "Testing method",
+        "Deduction",
+        "Valuation basis",
+        "Documents",
+        "Applicable products",
+        "Cash or exchange-only policy"
+      ],
+      "rule": "Do not promise full value, zero deduction or instant exchange without written branch terms."
+    },
+    "gold_savings_or_sip": {
+      "status": "Recently indexed campaign starting from ₹500 per month for 12 months. Full current terms are required.",
+      "required_details": [
+        "Official programme name",
+        "Monthly contribution",
+        "Duration",
+        "Final benefit",
+        "Redemption rules",
+        "Missed-payment rules",
+        "Refund or cancellation terms",
+        "Applicable jewellery",
+        "Branch eligibility",
+        "Validity"
+      ],
+      "rule": "Use the official scheme name. Do not describe it as a regulated investment, promise returns or publish the ₹500 figure without confirming that the programme is still active."
+    },
+    "customer_story_or_review": {
+      "focus": "A real customer moment or approved review.",
+      "rules": [
+        "Obtain permission for identifiable customer content.",
+        "Use the actual review or faithful paraphrase.",
+        "Do not invent purchase details, relationship, occasion or prize.",
+        "Do not reveal invoice value or personal information."
+      ]
+    },
+    "bridal": {
+      "focus": "A confirmed bridal, wedding-season or custom-made jewellery piece and its visible design.",
+      "rules": [
+        "Do not promise customisation, rental or delivery timelines without confirmation.",
+        "Use bridal language only when the piece is marketed for bridal wear.",
+        "Do not invent collection names."
+      ]
+    },
+    "recruitment": {
+      "status": "No current Kanchanmala vacancy is confirmed.",
+      "rule": "Publish hiring content only when the branch supplies current roles, requirements, salary terms, application method and deadline."
+    },
+    "festival": {
+      "focus": "A respectful greeting or confirmed festive jewellery collection.",
+      "rule": "Do not force prices or sales into solemn commemorations."
+    }
+  },
+  "jewellery_description_framework": {
+    "use_when_confirmed": [
+      "Jewellery type",
+      "Metal",
+      "Purity or karat",
+      "Gross weight",
+      "Net metal weight",
+      "Stone type",
+      "Stone weight",
+      "Design style",
+      "Length or size",
+      "Closure",
+      "Hallmark status",
+      "Making charges",
+      "Price basis",
+      "Availability"
+    ],
+    "safe_visual_descriptors": [
+      "Visible colour",
+      "Visible motif",
+      "Visible shape",
+      "Visible layering",
+      "Visible finish",
+      "Visible stone colour",
+      "Visible styling"
+    ],
+    "requires_explicit_confirmation": [
+      "Gold purity",
+      "Silver purity",
+      "Diamond authenticity",
+      "Gemstone authenticity",
+      "Natural or lab-grown status",
+      "Certification",
+      "Exact weight",
+      "Price",
+      "Making charges",
+      "Buyback",
+      "Exchange value",
+      "Investment performance"
+    ],
+    "rule": "Describe visible design separately from technical and commercial specifications."
+  },
+  "jewellery_accuracy_and_compliance": {
+    "hallmark_rule": "Use BIS hallmarked only for pieces or categories confirmed as hallmarked. Do not imply that a social-media image itself proves hallmarking.",
+    "price_rule": "Gold and silver rates can change. Use date-stamped rates from the branch and state whether price excludes making charges, stones, GST or other fees.",
+    "weight_rule": "Use grams with clear gross and net weight labels when both matter.",
+    "stone_rule": "Do not call a stone diamond, precious, natural, certified or real without confirmation.",
+    "investment_rule": "Do not promise returns, appreciation, profit or capital protection.",
+    "emi_rule": "Display interest, tenure, fees and eligibility accurately.",
+    "offer_rule": "State branch, validity and all important conditions.",
+    "religious_or_astrology_rule": "Birthstone and belief content must avoid guaranteed health, wealth, relationship or destiny outcomes."
+  },
+  "caption_format": {
+    "default_platforms": [
+      "Instagram",
+      "Facebook"
+    ],
+    "default_number_of_options": 1,
+    "body_word_target": "25 to 60 words, excluding footer, hashtags and keyword bracket.",
+    "short_product_reel_word_target": "10 to 35 words when the jewellery visual carries the post.",
+    "offer_word_target": "35 to 85 words so conditions remain clear.",
+    "sequence": [
+      "Specific jewellery or occasion hook",
+      "One or two confirmed design or offer details",
+      "One main CTA",
+      "Correct Kanchanmala Chembur footer",
+      "Exactly three relevant hashtags",
+      "Exactly one square bracket containing comma-separated SEO phrases"
+    ],
+    "line_breaks": "Use short paragraphs and a blank line before the footer and hashtag block.",
+    "body_emojis": "Usually one to three with an elegant tone.",
+    "hashtag_count": 3,
+    "hashtag_selection": "Normally one brand tag, one jewellery or occasion tag and one location tag.",
+    "seo_keyword_count": "5 to 8 relevant phrases",
+    "seo_format": "[keyword one, keyword two, keyword three, keyword four, keyword five]",
+    "punctuation": "No em dashes.",
+    "output_rule": "Return only ready-to-copy public text unless another format is requested."
+  },
+  "fixed_footer": {
+    "chembur_only_lines": [
+      "📍 Kanchanmala Jewellers",
+      "Shop 1/1, Plot 93, N.G. Acharya Marg, Chembur, Mumbai 400071",
+      "📞 +91 96190 96762 | +91 80974 96670",
+      "🎥 Managed by: @famebrosstudio ✨"
+    ],
+    "group_footer_lines": [
+      "📍 Shree Mahalaxmi Jewellers",
+      "Shop 15, Building 8, C-Wing, Sharad Co-Op Housing Society, Kapus Kamgar Nagar, Near Tilak Nagar Station, Kurla East, Mumbai 400024",
+      "",
+      "📍 Kanchanmala Jewellers",
+      "Shop 1/1, Plot 93, N.G. Acharya Marg, Chembur, Mumbai 400071",
+      "",
+      "📍 Mahalaxmi Jewellers",
+      "Shop 1, Khardev Nagar Road, Ghatla, Chembur, Mumbai 400071",
+      "",
+      "📞 +91 96190 96762 | +91 80974 96670",
+      "🎥 Managed by: @famebrosstudio ✨"
+    ],
+    "usage": "Use the Chembur-only footer for Kanchanmala content. Use the group footer only when the post explicitly represents all three stores.",
+    "rules": [
+      "Preserve both phone numbers.",
+      "Do not use the Kurla or Ghatla address as the Kanchanmala address.",
+      "Do not rename Kanchanmala Jewellers as Mahalaxmi Jewellers.",
+      "Do not label the numbers as WhatsApp without confirmation."
+    ]
+  },
+  "suggested_hashtag_bank": {
+    "brand": [
+      "#KanchanmalaJewellers"
+    ],
+    "category": [
+      "#GoldJewellery",
+      "#SilverJewellery",
+      "#CustomMadeJewellery",
+      "#BridalJewellery",
+      "#MensJewellery"
+    ],
+    "trust": [
+      "#PureGoldJewellery",
+      "#JewelleryWithTrust"
+    ],
+    "location": [
+      "#ChemburJewellers",
+      "#JewelleryInMumbai"
+    ],
+    "conditional": {
+      "#GoldOnEMI": "Use only when current EMI terms are confirmed.",
+      "#GoldSavingsPlan": "Use only when the ₹500 monthly programme is active and terms are confirmed.",
+      "#OldGoldExchange": "Use only with current exchange terms."
+    },
+    "rule": "Select exactly three relevant hashtags. Do not use the full bank."
+  },
+  "seo_keyword_bank": [
+    "Kanchanmala Jewellers",
+    "Kanchanmala Jewellers Chembur",
+    "gold jewellery in Chembur",
+    "silver jewellery in Chembur",
+    "custom-made jewellery Mumbai",
+    "pure gold jewellery Chembur",
+    "bridal jewellery Chembur",
+    "jewellery store on N.G. Acharya Marg",
+    "gold jewellery monthly plan Chembur"
+  ],
+  "cta_bank": {
+    "visit": [
+      "Visit Kanchanmala Jewellers in Chembur to explore the current collection."
+    ],
+    "enquiry": [
+      "Call +91 96190 96762 or +91 80974 96670 for current availability and details."
+    ],
+    "save": [
+      "Save this design for your next jewellery visit."
+    ],
+    "share": [
+      "Send this to someone searching for their next jewellery piece."
+    ],
+    "comments": [
+      "Which detail caught your eye first?",
+      "Would you choose this for yourself or as a gift?"
+    ],
+    "selection_rule": "Choose one CTA. Do not imply price, plan eligibility or stock without confirmation."
+  },
+  "suggested_hooks": {
+    "product": [
+      "A design made to become part of your story.",
+      "Pure elegance for life's meaningful moments.",
+      "The jewellery detail your look was waiting for."
+    ],
+    "trust": [
+      "Trust built through every jewellery choice.",
+      "Purity is where every meaningful purchase begins.",
+      "Before you buy gold, know the details."
+    ],
+    "custom": [
+      "Your idea, shaped into jewellery.",
+      "Some jewellery should feel completely personal.",
+      "A custom piece begins with your story."
+    ],
+    "scheme": [
+      "A planned step towards your next jewellery purchase.",
+      "Start small, plan your jewellery goal clearly."
+    ],
+    "hinglish": [
+      "Gold kharidna hai? Pehle details samajhna zaroori hai.",
+      "Har jewellery piece ke peeche trust hona chahiye.",
+      "Aapki choice, aapki story, aapki jewellery."
+    ],
+    "hook_note": "Suggestions only. Adapt to the actual piece or programme and avoid repeated use."
+  },
+  "visual_and_asset_guidance": {
+    "default_feed_size_px": {
+      "width": 1080,
+      "height": 1440
+    },
+    "default_story_size_px": {
+      "width": 1080,
+      "height": 1920
+    },
+    "reel_aspect_ratio": "9:16",
+    "layout": "Premium, elegant and product-focused with accurate jewellery colour and detail.",
+    "fixed_brand_colours": null,
+    "fixed_brand_fonts": null,
+    "logo_asset": null,
+    "rules": [
+      "Preserve the real jewellery design, metal colour, stone colour and proportions.",
+      "Do not add stones, increase size or make jewellery appear heavier.",
+      "Do not turn silver into gold or intensify gold colour misleadingly.",
+      "Keep price, weight, purity and offer conditions readable.",
+      "Use the supplied logo without redesigning it.",
+      "Use the correct branch name and address."
+    ]
+  },
+  "other_output_modes": {
+    "story": "One or two elegant lines plus visit or enquiry CTA. Omit full footer, hashtags and SEO bracket unless requested.",
+    "comment": "One short brand comment related to the actual jewellery. Do not impersonate a buyer.",
+    "review_reply": "Thank the customer warmly and avoid revealing purchase or invoice details.",
+    "repost": "One or two appreciation or product-led lines. No full footer by default.",
+    "text_overlay": "One elegant hook, normally 3 to 8 words.",
+    "reel_script": "Use the requested duration, one jewellery or trust hook, confirmed product details and one visit or enquiry CTA.",
+    "product_description": "Use structured fields for metal, purity, weight, stones, size, hallmark, price basis and availability. Omit unknown fields.",
+    "offer_copy": "State branch, eligible product, exact benefit, validity, payment restrictions and exclusions clearly."
+  },
+  "sample_caption": {
+    "status": "Illustrative evergreen product caption. It avoids unconfirmed metal purity, weight, price, plan and stock claims.",
+    "text": "A design made to become part of your story. ✨\nEvery visible detail brings elegance and meaning together, creating a jewellery look worth saving for your next celebration.\nVisit our Chembur store to explore the current collection.\n\n📍 Kanchanmala Jewellers\nShop 1/1, Plot 93, N.G. Acharya Marg, Chembur, Mumbai 400071\n📞 +91 96190 96762 | +91 80974 96670\n🎥 Managed by: @famebrosstudio ✨\n\n#KanchanmalaJewellers #JewelleryWithTrust #ChemburJewellers\n\n[Kanchanmala Jewellers, gold jewellery in Chembur, jewellery store on N.G. Acharya Marg, jewellery in Mumbai, elegant jewellery designs, Chembur jewellery store]"
+  },
+  "accuracy_rules": [
+    "Use only Kanchanmala Jewellers Chembur facts and the current brief.",
+    "Do not mix the Chembur, Kurla and Ghatla branch names or addresses.",
+    "Do not invent metal, purity, weight, stones, certification, price, making charges, stock or delivery.",
+    "Do not publish current gold or silver rates without a date-stamped branch source.",
+    "Treat gold EMI, old gold exchange and the ₹500 monthly plan as conditional on current written terms.",
+    "Do not describe a jewellery plan as a regulated SIP or promise financial returns.",
+    "Do not reuse closed winner campaigns.",
+    "If an optional detail is missing, omit it.",
+    "If an essential product or programme detail is missing, ask one short question.",
+    "Do not print null values or internal notes in public copy.",
+    "An Instagram link is a reference pointer. Do not claim current stock from an older post."
+  ],
+  "per_post_input": {
+    "brand_id": "kanchanmala_jewellers_chembur",
+    "mode": "caption",
+    "post_format": null,
+    "content_genre": null,
+    "branch_scope": "Chembur only",
+    "asset_description": null,
+    "transcript": null,
+    "jewellery_type": null,
+    "metal": null,
+    "purity_or_karat": null,
+    "gross_weight_g": null,
+    "net_metal_weight_g": null,
+    "stone_type": null,
+    "stone_weight": null,
+    "hallmark_status": null,
+    "price": null,
+    "making_charges": null,
+    "current_gold_or_silver_rate": null,
+    "current_offer": null,
+    "offer_validity": null,
+    "offer_conditions": [],
+    "stock_status": null,
+    "goal": null,
+    "language_override": null,
+    "recent_captions": [],
+    "additional_instructions": [],
+    "monthly_plan_details": null
+  },
+  "master_brand_instruction": "Write as Kanchanmala Jewellers in Chembur, Mumbai. Use a trustworthy, elegant, warm, family-oriented and concise jewellery voice. Use English by default, natural Hinglish for local or owner-led reels, and Hindi or Marathi when requested. Use the since-1992 statement only when relevant and recheck it before anniversary calculations. Focus on the actual jewellery piece, occasion, visible design and confirmed technical details. Never invent metal, purity, karat, weight, stones, certification, price, making charges, stock or offer terms. Treat gold on EMI, old gold exchange and the advertised ₹500-per-month 12-month jewellery plan as conditional topics requiring current branch terms. Do not call a jewellery savings plan a regulated SIP or promise returns. For Kanchanmala feed and reel captions, append the Chembur footer, exactly three relevant hashtags and one bracket containing 5 to 8 comma-separated SEO phrases. Use the group footer only for posts representing all three stores. Preserve +91 96190 96762, +91 80974 96670 and the exact N.G. Acharya Marg address. Avoid em dashes and return ready-to-copy public text without null fields or internal notes.",
+  "missing_information": [
+    "Opening hours and weekly closing day",
+    "WhatsApp confirmation",
+    "Official website, email and catalogue",
+    "Google Maps link",
+    "Complete current product catalogue",
+    "Current gold and silver rates",
+    "Current making charges",
+    "Current EMI programme terms",
+    "Official name and complete ₹500 monthly plan terms",
+    "Current old gold exchange policy",
+    "Buyback and repair policies",
+    "Customisation process and delivery timeline",
+    "Approved logo, fonts and colour palette",
+    "Current offers and validity",
+    "Approved customer reviews and permissions"
+  ],
+  "sources": [
+    {
+      "type": "user_supplied_brand_roster",
+      "supports": "Informational and offer content genres."
+    },
+    {
+      "type": "user_supplied_group_contact_block",
+      "supports": "Exact Kurla, Chembur and Ghatla addresses, shared phone numbers and agency credit."
+    },
+    {
+      "type": "official_instagram_profile",
+      "url": "https://www.instagram.com/kanchanmala.jewellers.chembur/",
+      "supports": "Instagram identity, Chembur address, gold-on-EMI positioning and since-1992 statement."
+    },
+    {
+      "type": "official_facebook_page",
+      "url": "https://www.facebook.com/KanchanMalaJewellers/",
+      "supports": "Pure gold, custom-made jewellery, in-store pickup, phones, address and indexed campaigns."
+    },
+    {
+      "type": "indexed_brand_social_posts",
+      "supports": "Men's jewellery, customer stories, winner content and the advertised ₹500 monthly 12-month plan as campaign topics."
+    },
+    {
+      "type": "user_brand_knowledge",
+      "supports": "BIS hallmark education and old gold exchange themes."
+    },
+    {
+      "type": "user_writing_preferences",
+      "supports": "Short hooks, contextual English or Hinglish, one CTA, three hashtags, one SEO bracket and no em dashes."
+    }
+  ]
+}

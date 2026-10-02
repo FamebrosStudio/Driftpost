@@ -1,0 +1,494 @@
+{
+  "schema_version": "1.0",
+  "brand_number": 6,
+  "brand_id": "vivid_sands_beach_resort",
+  "brand_name": "Vivid Sands Beach Resort",
+  "short_names": [
+    "Vivid Sands Resort",
+    "Vivid Resort"
+  ],
+  "knowledge_scope": "One brand only. Confirmed property facts, historical campaign data and recommended AI writing guidance are separated.",
+  "business": {
+    "category": "Beach resort",
+    "industry": "Hospitality and leisure travel",
+    "location_area": "Revdanda, Alibaug",
+    "city_or_destination": "Alibaug",
+    "district": "Raigad",
+    "state": "Maharashtra",
+    "country": "India",
+    "property_positioning": "Beachside resort and coastal getaway in Revdanda near Alibaug",
+    "distance_positioning_from_mumbai": "Approximately 3 hours from Mumbai",
+    "distance_note": "Travel time is a user-supplied marketing reference and varies by starting point, route, traffic and transport mode.",
+    "owner_name": null,
+    "founding_year": null,
+    "check_in_time": null,
+    "check_out_time": null,
+    "opening_hours": "Hospitality property; booking and reception hours have not been confirmed."
+  },
+  "contact": {
+    "phone_display": "+91 98331 85566",
+    "phone_e164": "+919833185566",
+    "whatsapp_number": "+919833185566",
+    "whatsapp_status": "The official social profile advertises this number for calls or WhatsApp.",
+    "full_address": "Vivid Sands, Sr. No. 5/2, Revdanda, Alibaug, Maharashtra 402202",
+    "survey_number": "5/2",
+    "locality": "Revdanda",
+    "city_or_destination": "Alibaug",
+    "postal_code": "402202",
+    "email": "vividsands@gmail.com",
+    "website": "https://vividsands.com/",
+    "contact_page": "https://vividsands.com/contact-us/",
+    "booking_url": null,
+    "google_maps_url": null,
+    "secondary_numbers": [],
+    "secondary_number_rule": "Do not use other numbers appearing in isolated posts or third-party listings unless the user confirms them."
+  },
+  "social_media": {
+    "instagram_handle": "@vividsandsresort",
+    "instagram_url": "https://www.instagram.com/vividsandsresort/",
+    "instagram_identity_status": "Previously matched to Vivid Sands Resort. Indexed posts confirm the booking number and Revdanda beach positioning.",
+    "facebook_name": "Vivid Sands Resort",
+    "facebook_url": "https://www.facebook.com/people/Vivid-Sands-Resort/61583952140622/",
+    "youtube_url": null,
+    "managing_agency": "Famebros Studio",
+    "agency_instagram_handle": "@famebrosstudio",
+    "agency_instagram_url": "https://www.instagram.com/famebrosstudio/"
+  },
+  "confirmed_positioning": {
+    "primary": "A beachside stay in Revdanda for coastal breaks near Alibaug.",
+    "confirmed_location_statements": [
+      "Located in Revdanda",
+      "Associated with Alibaug as the destination",
+      "Official social copy describes the property as touching or close to Revdanda Beach",
+      "User positioning describes it as near Kashid and approximately three hours from Mumbai"
+    ],
+    "nearby_places_from_user_briefs": [
+      "Korlai Fort",
+      "Kashid Beach",
+      "Nagaon Beach",
+      "Birla Mandir",
+      "Phansad Wildlife Sanctuary"
+    ],
+    "nearby_places_rule": "Use these as nearby travel ideas without inventing distance, travel time, opening hours or guaranteed itinerary suitability.",
+    "confirmed_content_genres": [
+      "Property review content",
+      "Resort experience content",
+      "Beach getaway content",
+      "Room or stay showcase when supplied",
+      "Local travel information"
+    ],
+    "genre_note": "The original roster specifically lists page review without named genres. Additional genres are safe editorial modes based on confirmed resort positioning and supplied briefs.",
+    "confirmed_amenities": [],
+    "amenities_note": "Do not assume pool, restaurant, meals, parking, Wi-Fi, private beach access, pet policy or room amenities unless confirmed for the current post or booking source.",
+    "confirmed_room_types": [],
+    "confirmed_meal_plans": [],
+    "confirmed_current_rates": [],
+    "confirmed_current_offers": []
+  },
+  "historical_campaigns": {
+    "archived_offer": {
+      "amount_inr": 8900,
+      "taxes": "Extra",
+      "exclusion": "31 December excluded",
+      "status": "Historical offer only. Validity dates, inclusions, occupancy, room type and current availability are not established.",
+      "publishing_rule": "Never reuse this price as a current offer without a fresh booking brief."
+    }
+  },
+  "writing_direction": {
+    "status": "Recommended defaults based on the property's beachside positioning and the user's hospitality-content preferences.",
+    "brand_voice": [
+      "Relaxing",
+      "Inviting",
+      "Scenic",
+      "Warm",
+      "Experience-led",
+      "Concise"
+    ],
+    "positioning_for_copy": "A Revdanda beach getaway for guests seeking a relaxed coastal break near Alibaug.",
+    "primary_language": "English",
+    "alternate_language": "Natural Hinglish for local reels, owner-led videos or conversational travel content when requested.",
+    "target_audience": [
+      "Couples planning a coastal break",
+      "Families considering an Alibaug-area stay",
+      "Friends planning a weekend trip",
+      "Mumbai travellers looking for a nearby getaway",
+      "Guests interested in Revdanda and nearby coastal attractions"
+    ],
+    "audience_note": "Do not claim that every group type, local ID, pet, event or party booking is accepted without current property confirmation.",
+    "emotional_angles": [
+      "A break from city routine",
+      "Slow coastal mornings",
+      "Time with family or friends",
+      "A short road-trip escape",
+      "Being close to the sea",
+      "Discovering Revdanda and nearby attractions"
+    ],
+    "avoid_style": [
+      "Invented luxury claims",
+      "Calling every room sea-facing",
+      "Guaranteed sunset or weather claims",
+      "Unconfirmed amenity lists",
+      "Unconfirmed distance claims",
+      "Fake scarcity",
+      "Outdated rates",
+      "Overly poetic copy that hides booking information",
+      "Long introductions",
+      "Em dashes"
+    ]
+  },
+  "content_playbook": {
+    "property_showcase": {
+      "focus": "What the supplied property footage actually shows and how that supports a stay experience.",
+      "structure": "Escape-led hook, two visible features, booking CTA.",
+      "rules": [
+        "Describe only visible or confirmed spaces.",
+        "Do not label a pool, room type, restaurant or beach access inaccurately.",
+        "Do not claim the whole property looks identical to one selected angle.",
+        "Preserve the actual property in all visuals."
+      ]
+    },
+    "room_showcase": {
+      "focus": "Confirmed room type, view, occupancy and visible features.",
+      "required_details": [
+        "Official room name",
+        "Maximum occupancy",
+        "Bed configuration",
+        "View",
+        "Included amenities",
+        "Current rate or rate-on-request",
+        "Meal plan",
+        "Cancellation terms when advertised"
+      ],
+      "rules": [
+        "Do not invent square footage or amenities.",
+        "Do not call a room sea-view, garden-view or private-pool unless confirmed.",
+        "Avoid claiming availability without live booking information."
+      ]
+    },
+    "guest_experience": {
+      "focus": "The actual experience shown, such as arrival, relaxation, dining, beach time or family moments.",
+      "rules": [
+        "Do not claim activities are included in the room rate.",
+        "Do not identify guests or relationships unless supplied.",
+        "Do not promise weather, privacy or silence."
+      ]
+    },
+    "review_content": {
+      "focus": "An actual guest's approved experience.",
+      "rules": [
+        "Use the real review text or a faithful paraphrase.",
+        "Do not invent ratings, names, stay dates or amenities.",
+        "Do not present one guest experience as guaranteed for everyone.",
+        "Reply professionally without revealing booking details."
+      ]
+    },
+    "local_travel_information": {
+      "focus": "Revdanda and nearby places that can support trip planning.",
+      "rules": [
+        "Use verified distances and operating information when providing logistics.",
+        "When only the attraction name is known, describe it as a nearby place to explore.",
+        "Do not promise transport or tour arrangements unless confirmed."
+      ]
+    },
+    "offer": {
+      "focus": "Exact stay package, inclusions, price and conditions.",
+      "required_details": [
+        "Room type",
+        "Occupancy",
+        "Night count",
+        "Meal plan",
+        "Package price",
+        "Taxes",
+        "Validity",
+        "Blackout dates",
+        "Booking and cancellation terms"
+      ],
+      "rules": [
+        "Do not reuse the historical ₹8,900 offer.",
+        "State taxes clearly.",
+        "Do not advertise breakfast, meals or activities unless included.",
+        "Use urgency only with a confirmed deadline or room limit."
+      ]
+    },
+    "festival_or_holiday": {
+      "focus": "A confirmed holiday package or a short greeting connected gently to a coastal stay.",
+      "rule": "Do not invent event programming, live music, gala dinners or festive inclusions."
+    }
+  },
+  "photo_and_video_integrity": {
+    "priority": "Critical",
+    "rule": "Property photos supplied by the user must remain 100% unchanged unless the user explicitly authorises a particular edit.",
+    "do_not_modify": [
+      "Architecture",
+      "Room layout",
+      "Furniture",
+      "Pool shape or water",
+      "Beach or sea position",
+      "Landscape",
+      "View from the property",
+      "Lighting that changes the real condition",
+      "Weather",
+      "People's identity",
+      "Logos or signs",
+      "Existing amenities"
+    ],
+    "allowed_by_default": [
+      "Place the unchanged photo into a layout",
+      "Crop only when the important property details remain accurate",
+      "Add text, logo and graphic elements outside critical visual areas",
+      "Apply layout framing that does not alter the property"
+    ],
+    "prohibited_generation": [
+      "Adding a pool",
+      "Adding direct beach access",
+      "Replacing the sky to imply different weather",
+      "Making rooms larger",
+      "Adding ocean views",
+      "Removing nearby buildings or permanent structures",
+      "Creating amenities that do not exist",
+      "Changing daytime into a fake sunset"
+    ],
+    "caption_alignment_rule": "Never describe a visual feature that was added by design or that the source photo does not contain."
+  },
+  "caption_format": {
+    "default_platforms": [
+      "Instagram",
+      "Facebook"
+    ],
+    "default_number_of_options": 1,
+    "body_word_target": "30 to 65 words, excluding footer, hashtags and keyword bracket.",
+    "short_scenic_reel_word_target": "12 to 35 words when the visuals carry the experience.",
+    "offer_word_target": "40 to 90 words so inclusions and conditions stay clear.",
+    "sequence": [
+      "Specific escape or experience hook",
+      "One short stay detail",
+      "One booking CTA",
+      "Confirmed property footer",
+      "Exactly three relevant hashtags",
+      "Exactly one square bracket containing comma-separated SEO phrases"
+    ],
+    "line_breaks": "Use short paragraphs and a blank line before the footer and hashtag block.",
+    "body_emojis": "Usually one to three with a calm travel tone.",
+    "hashtag_count": 3,
+    "hashtag_selection": "Normally one brand tag, one destination tag and one experience tag.",
+    "seo_keyword_count": "5 to 8 relevant phrases",
+    "seo_format": "[keyword one, keyword two, keyword three, keyword four, keyword five]",
+    "punctuation": "No em dashes.",
+    "output_rule": "Return only ready-to-copy public text unless another format is requested."
+  },
+  "fixed_footer": {
+    "lines": [
+      "📍 Vivid Sands, Sr. No. 5/2, Revdanda, Alibaug, Maharashtra 402202",
+      "📞 Call or WhatsApp: +91 98331 85566",
+      "🌐 https://vividsands.com/",
+      "🎥 Managed by: @famebrosstudio ✨"
+    ],
+    "source": "Official website, official social copy and user-supplied agency credit.",
+    "usage": "Default feed and reel footer. The website line may be omitted when a shorter caption is requested.",
+    "rules": [
+      "Preserve the booking number and address.",
+      "Use Alibaug in public destination copy while retaining the official website's address wording.",
+      "Do not add a second phone number without confirmation.",
+      "Do not substitute Coco's Inn details."
+    ]
+  },
+  "suggested_hashtag_bank": {
+    "brand": [
+      "#VividSands",
+      "#VividSandsResort"
+    ],
+    "destination": [
+      "#AlibaugResort",
+      "#Revdanda",
+      "#RevdandaBeach"
+    ],
+    "experience": [
+      "#BeachResort",
+      "#WeekendGetaway",
+      "#CoastalEscape",
+      "#BeachStay"
+    ],
+    "nearby_conditional": {
+      "#KashidBeach": "Use for a post actually discussing Kashid.",
+      "#NagaonBeach": "Use for a post actually discussing Nagaon.",
+      "#KorlaiFort": "Use for a relevant local itinerary post."
+    },
+    "rule": "Select exactly three relevant hashtags. Do not use the complete bank."
+  },
+  "seo_keyword_bank": [
+    "Vivid Sands Beach Resort",
+    "resort in Revdanda",
+    "beach resort near Alibaug",
+    "Revdanda beach stay",
+    "Alibaug weekend getaway",
+    "coastal resort Maharashtra",
+    "resort near Kashid Beach",
+    "weekend trip from Mumbai",
+    "Revdanda resort booking"
+  ],
+  "cta_bank": {
+    "booking": [
+      "Call or WhatsApp +91 98331 85566 for current availability and rates.",
+      "Plan your Revdanda escape with Vivid Sands."
+    ],
+    "save": [
+      "Save this for your next coastal getaway.",
+      "Add Revdanda to your weekend plan."
+    ],
+    "share": [
+      "Send this to your weekend travel group.",
+      "Share this with someone who needs a beach break."
+    ],
+    "comments": [
+      "Who would you bring on this coastal escape?",
+      "What would your perfect slow morning here look like?"
+    ],
+    "selection_rule": "Use one main CTA. For pricing posts, prioritise booking and current-availability enquiries."
+  },
+  "suggested_hooks": {
+    "escape": [
+      "Your coastal break begins in Revdanda.",
+      "Leave the city pace behind.",
+      "A slower weekend is calling."
+    ],
+    "scenic": [
+      "Wake up closer to the coast.",
+      "This is your sign to choose the sea.",
+      "A Revdanda escape worth saving."
+    ],
+    "group_trip": [
+      "The group trip finally has a destination.",
+      "Pack the bags. Revdanda is calling.",
+      "Your next weekend plan looks like this."
+    ],
+    "hinglish": [
+      "City se break chahiye? Revdanda chalo.",
+      "Weekend plan ab sorted hai.",
+      "Bas bags pack karo aur coast ki taraf nikal jao."
+    ],
+    "hook_note": "Suggestions only. Match the actual footage and avoid repeating the same opening."
+  },
+  "visual_and_asset_guidance": {
+    "default_feed_size_px": {
+      "width": 1080,
+      "height": 1440
+    },
+    "default_story_size_px": {
+      "width": 1080,
+      "height": 1920
+    },
+    "reel_aspect_ratio": "9:16",
+    "layout": "Scenic, clean and premium with enough open space for the real property visual.",
+    "fixed_brand_colours": null,
+    "fixed_brand_fonts": null,
+    "logo_asset": null,
+    "rules": [
+      "Follow the 100% unchanged-property-photo rule.",
+      "Keep the resort or room as the visual hero.",
+      "Use minimal text over property images.",
+      "Keep prices, taxes, occupancy and blackout dates readable.",
+      "Use the supplied logo without redesigning it.",
+      "Do not claim a fixed palette or font without an approved brand reference."
+    ]
+  },
+  "other_output_modes": {
+    "story": "One or two short lines plus call or WhatsApp CTA when relevant. Omit full address, hashtags and SEO bracket unless requested.",
+    "comment": "One short, warm resort response. Move booking-specific questions to call or WhatsApp.",
+    "review_reply": "Thank the guest, refer to the specific feedback without exposing booking details, and invite them back without offering unapproved compensation.",
+    "repost": "One or two scenic or appreciative lines. No full footer by default.",
+    "text_overlay": "One calm travel hook, usually 3 to 8 words.",
+    "reel_script": "Use the requested duration, escape-led opening, only filmed property features, destination context and a current-availability CTA.",
+    "itinerary": "Use only verified attraction logistics. When distances are unknown, list nearby ideas without numbers."
+  },
+  "sample_caption": {
+    "status": "Illustrative destination caption using confirmed location and contact details. It does not claim specific room amenities.",
+    "text": "Leave the city pace behind and wake up closer to the coast. 🌊\nVivid Sands brings your next relaxed Revdanda escape within reach, with Alibaug's coastal side ready to explore.\nCall or WhatsApp for current availability and rates.\n\n📍 Vivid Sands, Sr. No. 5/2, Revdanda, Alibaug, Maharashtra 402202\n📞 Call or WhatsApp: +91 98331 85566\n🌐 https://vividsands.com/\n🎥 Managed by: @famebrosstudio ✨\n\n#VividSandsResort #Revdanda #CoastalEscape\n\n[Vivid Sands Beach Resort, resort in Revdanda, beach resort near Alibaug, Revdanda beach stay, Alibaug weekend getaway, weekend trip from Mumbai]"
+  },
+  "accuracy_rules": [
+    "Use only Vivid Sands facts and the current brief.",
+    "Keep supplied property photos unchanged.",
+    "Do not invent room types, amenities, meal plans, views, prices, occupancy or availability.",
+    "Do not reuse the historical ₹8,900 offer without confirmation.",
+    "Do not promise a three-hour journey as exact.",
+    "Do not invent distances to Korlai Fort, Kashid Beach, Nagaon Beach, Birla Mandir or Phansad Wildlife Sanctuary.",
+    "Do not claim private beach access unless confirmed for the current campaign.",
+    "Do not copy Coco's Inn Resort details.",
+    "If an optional detail is missing, omit it.",
+    "If an essential booking or offer detail is missing, ask one short question.",
+    "Do not print null values or internal notes in public copy.",
+    "An Instagram link is a reference pointer. Do not claim to have reviewed new posts unless retrieved or supplied."
+  ],
+  "per_post_input": {
+    "brand_id": "vivid_sands_beach_resort",
+    "mode": "caption",
+    "post_format": null,
+    "content_genre": null,
+    "asset_description": null,
+    "photo_unchanged_confirmed": null,
+    "room_type": null,
+    "visible_property_features": [],
+    "confirmed_amenities": [],
+    "occupancy": null,
+    "meal_plan": null,
+    "current_rate": null,
+    "taxes": null,
+    "current_offer": null,
+    "offer_validity": null,
+    "blackout_dates": [],
+    "availability_status": null,
+    "nearby_place": null,
+    "goal": null,
+    "language_override": null,
+    "recent_captions": [],
+    "additional_instructions": []
+  },
+  "master_brand_instruction": "Write as Vivid Sands Beach Resort in Revdanda, Alibaug. Use a relaxing, inviting, scenic, warm and concise hospitality voice. Position the property as a Revdanda coastal getaway near Alibaug and approximately three hours from Mumbai, while treating travel time as variable. Describe only the property, room, view and amenities actually shown or confirmed. Preserve every supplied property photo exactly and never add, remove or modify architecture, rooms, pool, beach, landscape, people, weather or amenities. Never invent rates, room types, meal plans, occupancy, availability, private beach access or current offers. Treat the ₹8,900 plus taxes offer excluding 31 December as historical and inactive until reconfirmed. Mention Korlai Fort, Kashid Beach, Nagaon Beach, Birla Mandir and Phansad Wildlife Sanctuary only as nearby exploration ideas unless verified distance data is supplied. For normal feed and reel captions, append the Vivid Sands footer, exactly three relevant hashtags and one bracket containing 5 to 8 comma-separated SEO phrases. Preserve +91 98331 85566, the official address and website. Avoid em dashes and return ready-to-copy public text without null fields or internal notes.",
+  "missing_information": [
+    "Current room categories and official room specifications",
+    "Current rates, packages and taxes",
+    "Current meal plans",
+    "Confirmed amenities list",
+    "Check-in and check-out times from the property",
+    "Booking and cancellation policy",
+    "Maximum occupancy by room",
+    "Event, group and day-use policies",
+    "Pet policy",
+    "Parking and transport arrangements",
+    "Direct booking-engine URL",
+    "Google Maps link",
+    "Approved logo, fonts and colour palette",
+    "Current photo and video library",
+    "Verified distances to nearby attractions",
+    "Current offers and blackout dates"
+  ],
+  "sources": [
+    {
+      "type": "official_website",
+      "url": "https://vividsands.com/",
+      "supports": "Official phone, email, address, website identity and Revdanda location."
+    },
+    {
+      "type": "official_contact_page",
+      "url": "https://vividsands.com/contact-us/",
+      "supports": "Phone, email and address."
+    },
+    {
+      "type": "official_instagram_profile_and_indexed_posts",
+      "url": "https://www.instagram.com/vividsandsresort/",
+      "supports": "Call or WhatsApp wording, phone number and Revdanda beach positioning."
+    },
+    {
+      "type": "official_facebook_profile",
+      "url": "https://www.facebook.com/people/Vivid-Sands-Resort/61583952140622/",
+      "supports": "Beach-resort positioning, phone and Revdanda association."
+    },
+    {
+      "type": "user_supplied_brand_knowledge",
+      "supports": "Three-hour Mumbai positioning, nearby places, historical offer and 100% unchanged-photo rule."
+    },
+    {
+      "type": "user_writing_preferences",
+      "supports": "Short hooks, contextual English or Hinglish, one CTA, three hashtags, one SEO bracket and no em dashes."
+    }
+  ]
+}

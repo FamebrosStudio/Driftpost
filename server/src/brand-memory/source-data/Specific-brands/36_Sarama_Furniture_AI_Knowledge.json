@@ -1,0 +1,523 @@
+{
+  "schema_version": "3.0",
+  "brand_number": 36,
+  "brand_id": "sarama_furniture",
+  "brand_name": "Sarama Steel Furniture",
+  "aliases": [
+    "Sarama Furniture",
+    "Sarama steel furniture",
+    "Sarma Steel Furniture"
+  ],
+  "knowledge_scope": "One brand only. This file covers Sarama Steel Furniture in West Bengal, its official website and Facebook identity, seven-showroom public claim, steel, wooden and modular furniture catalogue, home, office, educational and healthcare segments, online shopping signals, product-copy system and strict price, material and delivery controls.",
+  "business": {
+    "category": "Steel, wooden and modular furniture manufacturer and retailer",
+    "industry": "Furniture manufacturing, retail and ecommerce",
+    "business_model": [
+      "Furniture manufacturing",
+      "Showroom retail",
+      "Online product sales",
+      "Home and institutional furniture",
+      "B2B and project enquiries when confirmed"
+    ],
+    "state": "West Bengal",
+    "country": "India",
+    "currency": "INR",
+    "public_establishment_claim": "Since 1997",
+    "establishment_note": "The official About page says 1997, while one homepage title says 1995. Use 1997 until the brand resolves the conflict.",
+    "public_network_claim": "Seven showrooms across West Bengal",
+    "core_positioning": "A long-established West Bengal furniture business offering steel, wooden and modular solutions for homes, offices, schools and healthcare spaces through showrooms and online shopping.",
+    "primary_audience": [
+      "Home furniture shoppers",
+      "Office buyers",
+      "Schools and institutions",
+      "Healthcare facilities",
+      "West Bengal customers",
+      "Online furniture shoppers"
+    ],
+    "onboarding_or_billing_note": "19 September appeared in the user-provided working record. It is not a founding date.",
+    "dataset_date": "2026-09-26",
+    "commercial_accuracy_rule": "Use the current product page for price, material, dimensions, warranty, assembly, delivery and stock. Never generalize one product's terms to the full catalogue."
+  },
+  "contact": {
+    "current_social_phone_display": "+91 96352 25262",
+    "current_social_phone_status": "Shown on recent public Facebook posts.",
+    "legacy_or_directory_phones": [
+      "+91 94341 92908",
+      "+91 84888 91352",
+      "+91 90077 18191"
+    ],
+    "legacy_phone_rule": "Numbers are associated with website history or branch listings. Confirm the correct campaign and branch number before publication.",
+    "website": "https://saramasteelfurniture.com/",
+    "head_location": "Midnapore, West Bengal",
+    "address_public_signal": "Near Kali Mandir, Abash, Paschim Medinipur, West Bengal 721102",
+    "showroom_cities_publicly_named": [
+      "Midnapore, Abash",
+      "Midnapore, Zilla Parishad",
+      "Kharagpur",
+      "Jhargram",
+      "Contai",
+      "Tamluk",
+      "Bishnupur"
+    ],
+    "email": null,
+    "whatsapp": null,
+    "google_maps_url": null,
+    "contact_rule": "Use +91 96352 25262 for general social CTA only after current brand approval. Confirm the selected branch address and phone for local campaigns."
+  },
+  "social_media": {
+    "instagram_handle": null,
+    "instagram_url": null,
+    "instagram_status": "An official Instagram handle was not safely resolved.",
+    "facebook_name": "Sarama steel furniture",
+    "facebook_url": "https://www.facebook.com/saramasteelfurniture95/",
+    "facebook_status": "Matched public page with current product and contact posts.",
+    "website_url": "https://saramasteelfurniture.com/",
+    "managing_agency": "Famebros Studio",
+    "agency_instagram_handle": "@famebrosstudio",
+    "agency_instagram_url": "https://www.instagram.com/famebrosstudio/",
+    "agency_credit_default": "💫 Managed by: @famebrosstudio",
+    "reference_rule": "Use the official website for live catalogue fields and the Facebook page for current campaigns. Do not reuse an old price or branch number without checking."
+  },
+  "established_content_knowledge": {
+    "confirmed_content_genres": [
+      "Informational",
+      "Product showcase",
+      "Furniture education",
+      "Showroom and ecommerce"
+    ],
+    "public_product_categories": [
+      "Beds",
+      "Wardrobes and steel almirahs",
+      "Dressing tables",
+      "Sofas and sofa-cum-beds",
+      "Coffee tables",
+      "Dining tables",
+      "TV units",
+      "Study tables",
+      "Book shelves",
+      "Office furniture",
+      "Recliners",
+      "Modular kitchens",
+      "Educational furniture",
+      "Healthcare and hospital furniture",
+      "Home accessories and kitchenware"
+    ],
+    "public_business_claims": [
+      "Seven full-service showrooms",
+      "Two-time National Award winner",
+      "Four-time FOSMI Award winner",
+      "Steel, wooden and modular furniture",
+      "Online catalogue and checkout"
+    ],
+    "claim_rule": "Award and network claims are supported by the official About page but should retain exact wording and current brand approval.",
+    "showroom_history": "A public page announced a Tamluk, Maniktala showroom opening on 15 August 2025. Treat it as historical, not a current opening campaign.",
+    "price_rule": "Prices change. Retrieve current product URL, list price, sale price and stock at publication time.",
+    "content_priority": "Show the exact product, real function, verified measurements and current buying path with a branch or website CTA."
+  },
+  "writing_direction": {
+    "brand_voice": [
+      "Helpful",
+      "Practical",
+      "Trustworthy",
+      "Value-aware",
+      "Family-friendly",
+      "Regional"
+    ],
+    "primary_language": "Bengali or English",
+    "alternate_language": "Hinglish when requested",
+    "focus": [
+      "Real furniture",
+      "Function",
+      "Space use",
+      "Verified material and dimensions",
+      "West Bengal showroom access",
+      "Current online product"
+    ],
+    "avoid": [
+      "Universal durability guarantee",
+      "Waterproof or termite-proof without proof",
+      "Wrong material",
+      "Stale price",
+      "Unconfirmed free delivery",
+      "Unconfirmed assembly",
+      "Mixing branch contacts",
+      "Using the 1995 and 1997 claims together"
+    ],
+    "punctuation_style": "Clear practical lines and no em dashes."
+  },
+  "content_playbook": {
+    "product_reel": {
+      "sequence": [
+        "Room problem",
+        "Full product",
+        "Mechanism or storage",
+        "Verified material and dimensions",
+        "Current price or enquiry",
+        "Branch or website CTA"
+      ],
+      "rule": "Use the exact product page and real footage."
+    },
+    "room_solution_carousel": {
+      "sequence": [
+        "Room need",
+        "Product solution",
+        "Dimensions",
+        "Storage or function",
+        "Material and finish",
+        "Current order CTA"
+      ]
+    },
+    "showroom_post": {
+      "required_inputs": [
+        "Branch",
+        "Exact address",
+        "Phone",
+        "Hours",
+        "Products",
+        "Dates",
+        "Offer"
+      ],
+      "rule": "Do not treat all directory listings as current branches."
+    },
+    "institutional_post": {
+      "required_inputs": [
+        "Sector",
+        "Product",
+        "Specification",
+        "Capacity",
+        "Compliance",
+        "MOQ",
+        "Lead time",
+        "Installation"
+      ],
+      "rule": "Do not infer government or institutional client approval from a logo list."
+    },
+    "offer_post": {
+      "required_inputs": [
+        "Product SKUs",
+        "Discount",
+        "Price",
+        "Start",
+        "End",
+        "Stock",
+        "Delivery",
+        "Terms"
+      ]
+    }
+  },
+  "furniture_product_showroom_and_ecommerce_framework": {
+    "required_fields": [
+      "Product name",
+      "SKU",
+      "Category",
+      "Material",
+      "Finish",
+      "Dimensions",
+      "Features",
+      "Capacity",
+      "Price",
+      "Stock",
+      "Warranty",
+      "Assembly",
+      "Delivery",
+      "Returns",
+      "Product URL"
+    ],
+    "safe_order": [
+      "Room or use-case hook",
+      "Exact product",
+      "Verified function",
+      "Measurements and material",
+      "Current price",
+      "Shop or branch CTA"
+    ],
+    "branch_rule": "Pair every local caption with the correct showroom address and phone.",
+    "warranty_rule": "Use only the warranty on the selected product page.",
+    "price_rule": "Recheck on the publication date and label starting prices accurately."
+  },
+  "caption_format": {
+    "default_use": "Instagram and Facebook feed posts and reels.",
+    "body_length": "Usually 25 to 70 words excluding footer, hashtags and SEO block.",
+    "body_structure": [
+      "One specific hook connected to the real asset or topic.",
+      "One to three useful lines using verified information.",
+      "One visit, enquiry, admissions, booking, save, share or shop CTA."
+    ],
+    "format_order": [
+      "Caption body",
+      "Blank line",
+      "Exactly three hashtags",
+      "Blank line",
+      "Approved CTA, location and contact lines",
+      "Agency credit when required",
+      "Blank line",
+      "Exactly one square-bracket SEO block"
+    ],
+    "hashtag_rule": "Exactly three hashtags unless the user requests another count.",
+    "seo_rule": "Use five to eight natural search phrases inside one pair of square brackets.",
+    "story_rule": "For story copy, use a short headline, one support line and one CTA. Omit feed hashtags and SEO unless requested.",
+    "reel_overlay_rule": "Keep each overlay short, readable and supported by the footage.",
+    "final_checks": [
+      "Use only verified facts from the current brief and this knowledge file.",
+      "Use exactly three relevant hashtags.",
+      "Use one square-bracket SEO block with five to eight comma-separated phrases.",
+      "Use one clear CTA.",
+      "Remove every em dash before delivery.",
+      "Product URL and current price checked.",
+      "Correct branch and phone selected.",
+      "Material, dimensions, warranty, delivery and assembly match the product."
+    ]
+  },
+  "fixed_footer": {
+    "standard_lines": [
+      "🌐 saramasteelfurniture.com",
+      "📞 +91 96352 25262",
+      "💫 Managed by: @famebrosstudio"
+    ],
+    "branch_rule": "Insert the confirmed branch address above the phone for local campaigns.",
+    "usage": "Use website and current approved general phone. Confirm branch-specific details.",
+    "exceptions": [
+      "Story overlays",
+      "Comments",
+      "Product pages",
+      "When agency credit is not requested"
+    ]
+  },
+  "suggested_hashtag_bank": [
+    "#SaramaSteelFurniture",
+    "#WestBengalFurniture",
+    "#FurnitureShopping",
+    "#HomeFurniture",
+    "#SteelFurniture",
+    "#WoodenFurniture",
+    "#ModularFurniture",
+    "#FurnitureDesign"
+  ],
+  "seo_keyword_bank": [
+    "Sarama Steel Furniture",
+    "furniture store West Bengal",
+    "furniture shop Midnapore",
+    "steel furniture West Bengal",
+    "wooden furniture online India",
+    "modular furniture West Bengal",
+    "beds and wardrobes online",
+    "office furniture West Bengal"
+  ],
+  "cta_bank": [
+    "Visit saramasteelfurniture.com for current product details.",
+    "Call +91 96352 25262 to confirm the nearest showroom.",
+    "Save this piece for your room plan.",
+    "Ask for the current price, dimensions and delivery terms.",
+    "Share this with someone furnishing a new space."
+  ],
+  "suggested_hooks": [
+    "A better room starts with the right measurements.",
+    "Storage, style and everyday function in one frame.",
+    "Before you buy furniture, check how it works in your space.",
+    "From West Bengal showrooms to your room plan.",
+    "One practical piece can change the way a room works.",
+    "Furniture choices become easier when the details are clear."
+  ],
+  "visual_and_asset_guidance": {
+    "feed_size": "1080 x 1440 pixels",
+    "story_and_reel_size": "1080 x 1920 pixels",
+    "style": [
+      "Practical",
+      "Bright",
+      "Home-focused",
+      "Product-led",
+      "Regional retail"
+    ],
+    "asset_priority": [
+      "Actual product",
+      "Room context",
+      "Mechanism",
+      "Storage",
+      "Measurements",
+      "Finish",
+      "Branch or ecommerce end frame"
+    ],
+    "fidelity_rules": [
+      "Do not change product colour, material, proportions or mechanism.",
+      "Do not enlarge a product unrealistically in a room.",
+      "Do not show accessories as included unless confirmed.",
+      "Do not copy price from an old screenshot."
+    ],
+    "thumbnail_rule": "One real product, one function hook, current price only when verified."
+  },
+  "carousel_and_reel_system": {
+    "product_carousel": [
+      "Slide 1: Product and room hook",
+      "Slide 2: Full view",
+      "Slide 3: Storage or function",
+      "Slide 4: Material and finish",
+      "Slide 5: Dimensions and terms",
+      "Slide 6: Current price and CTA"
+    ],
+    "product_reel": [
+      "0 to 3 seconds: Room problem",
+      "3 to 8 seconds: Reveal",
+      "8 to 15 seconds: Function",
+      "15 to 22 seconds: Verified details",
+      "22 to 26 seconds: Website or branch CTA"
+    ],
+    "editing_style": [
+      "Natural scale",
+      "Readable measurements",
+      "Accurate finishes",
+      "Demonstration-led cuts",
+      "Minimal overlays"
+    ]
+  },
+  "other_output_modes": {
+    "website_product_copy": "Use current catalogue fields and product-specific terms.",
+    "branch_ad": "Name one branch with exact address, phone, dates and offer.",
+    "whatsapp_catalogue": "One product, current price, dimensions, delivery and link.",
+    "institutional_brochure": "Use verified capabilities, specifications and procurement contact.",
+    "comment_reply": "Confirm stock, price and delivery from the current system."
+  },
+  "sample_caption": {
+    "status": "Illustrative evergreen brand caption without a product-specific price.",
+    "scenario": "Furniture product information reel",
+    "caption_body": "A furniture choice works better when the details are clear. Explore the exact design, function and measurements of the featured piece, then check the current product information before planning your space.",
+    "footer": [
+      "🌐 saramasteelfurniture.com",
+      "📞 +91 96352 25262",
+      "💫 Managed by: @famebrosstudio"
+    ],
+    "hashtags": [
+      "#SaramaSteelFurniture",
+      "#WestBengalFurniture",
+      "#HomeFurniture"
+    ],
+    "seo_keywords": [
+      "Sarama Steel Furniture",
+      "furniture store West Bengal",
+      "furniture shop Midnapore",
+      "steel and wooden furniture",
+      "modular furniture West Bengal",
+      "home furniture online India"
+    ],
+    "full_caption": "A furniture choice works better when the details are clear. Explore the exact design, function and measurements of the featured piece, then check the current product information before planning your space.\n\n🌐 saramasteelfurniture.com\n📞 +91 96352 25262\n💫 Managed by: @famebrosstudio\n\n#SaramaSteelFurniture #WestBengalFurniture #HomeFurniture\n\n[Sarama Steel Furniture, furniture store West Bengal, furniture shop Midnapore, steel and wooden furniture, modular furniture West Bengal, home furniture online India]",
+    "validation": {
+      "hashtags": 3,
+      "seo_phrases": 6,
+      "verified_fields_only": true,
+      "product_price_used": false
+    }
+  },
+  "accuracy_rules": [
+    "Use Sarama Steel Furniture as the matched public identity.",
+    "Use 1997 as the About-page establishment claim and note the conflicting 1995 homepage signal internally.",
+    "Do not reuse a product price, warranty, delivery or assembly term without checking the current product page.",
+    "Use the correct branch phone and address for local campaigns.",
+    "Do not infer client endorsement from institutional logos.",
+    "Do not guarantee durability, water resistance or termite resistance.",
+    "Do not invent an Instagram handle.",
+    "Remove every em dash."
+  ],
+  "per_post_input": {
+    "required_core": [
+      "Output mode",
+      "Objective",
+      "Product URL or branch",
+      "Actual assets",
+      "Audience",
+      "CTA",
+      "Publication date"
+    ],
+    "product_inputs": [
+      "SKU",
+      "Material",
+      "Finish",
+      "Dimensions",
+      "Features",
+      "Capacity",
+      "Price",
+      "Stock",
+      "Warranty",
+      "Assembly",
+      "Delivery",
+      "Returns"
+    ],
+    "branch_inputs": [
+      "Branch name",
+      "Address",
+      "Phone",
+      "Hours",
+      "Offer",
+      "Dates"
+    ],
+    "creative_inputs": [
+      "Logo",
+      "Format",
+      "Headline",
+      "Language",
+      "Mandatory terms"
+    ],
+    "input_rule": "Every commercial field must come from the current product or branch brief."
+  },
+  "master_brand_instruction": "Create content only for Sarama Steel Furniture in West Bengal. The official website is saramasteelfurniture.com and the matched Facebook page is facebook.com/saramasteelfurniture95. Public positioning covers steel, wooden and modular furniture for homes, offices, schools and healthcare spaces, with seven showrooms claimed on the official About page. Use 1997 as the approved public establishment year unless the brand resolves the conflicting 1995 homepage wording. Write helpful Bengali, English or requested Hinglish focused on the real product, verified function, measurements and current buying path. Recheck every price, stock, material, warranty, assembly, delivery and return term. Confirm the branch and phone before local posts. Use exactly three hashtags and one SEO bracket with five to eight phrases. Remove all em dashes.",
+  "missing_information": {
+    "social": [
+      "Official Instagram",
+      "YouTube",
+      "Google Business links"
+    ],
+    "contact": [
+      "Official email",
+      "WhatsApp status",
+      "Primary head-office address",
+      "Branch contact sheet"
+    ],
+    "catalogue": [
+      "Approved product export",
+      "Stock feed",
+      "Brand versus marketplace products",
+      "Standard warranty matrix"
+    ],
+    "brand_system": [
+      "Logo files",
+      "Colour codes",
+      "Fonts",
+      "Photography guide"
+    ],
+    "clarifications": [
+      "Resolve 1995 versus 1997",
+      "Confirm seven current branch addresses",
+      "Confirm general campaign phone"
+    ],
+    "priority": "Obtain the current branch directory and official Instagram, then resolve establishment-year and contact conflicts."
+  },
+  "sources": {
+    "user_facts": [
+      "Sarama Furniture name.",
+      "Furniture category and informational genre.",
+      "19 September operational note."
+    ],
+    "public_sources": [
+      {
+        "url": "https://saramasteelfurniture.com/",
+        "checked_on": "2026-09-26",
+        "used_for": "Official website, catalogue, ecommerce and public positioning."
+      },
+      {
+        "url": "https://saramasteelfurniture.com/about-us-3/",
+        "checked_on": "2026-09-26",
+        "used_for": "Since 1997, seven showrooms, categories, awards and showroom cities."
+      },
+      {
+        "url": "https://www.facebook.com/saramasteelfurniture95/",
+        "checked_on": "2026-09-26",
+        "used_for": "Matched public page, current phone and campaigns."
+      },
+      {
+        "url": "https://www.dcmsme.gov.in/national_awards_2006.htm",
+        "checked_on": "2026-09-26",
+        "used_for": "Historical national-award identity signal."
+      }
+    ],
+    "internal_dataset": "Famebros_Brand_Caption_Dataset.json record sarama_furniture.",
+    "source_rule": "Current official product pages, branch records and written brand approval override older directories and social posts."
+  }
+}

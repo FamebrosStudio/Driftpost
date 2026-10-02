@@ -1,0 +1,796 @@
+{
+  "schema_version": "3.0",
+  "brand_number": 26,
+  "brand_id": "hazel_dryfruits",
+  "brand_name": "Hazel Dryfruits",
+  "aliases": [
+    "Hazel Dryfruits Rajkot",
+    "Hazel Sweets",
+    "Hazel Dry Fruits",
+    "@hazeldryfruits"
+  ],
+  "knowledge_scope": "One brand only. This file covers Hazel Dryfruits in Rajkot, its matched public identity, dry-fruit, namkeen, snacks, sweets and gifting communication, monthly content scope, campaign history, food-content rules and strict claim controls. The word mithai must not be used in copy, hashtags or SEO unless the user explicitly reverses that rule.",
+  "business": {
+    "category": "Premium dry fruits, namkeen, snacks, sweets and gifting",
+    "industry": "Food retail and festive gifting",
+    "business_model": [
+      "Retail food store",
+      "Product enquiries and orders",
+      "Festive gifting",
+      "Wedding gifting and return gifts"
+    ],
+    "city": "Rajkot",
+    "state": "Gujarat",
+    "country": "India",
+    "public_establishment_claim": "Since 2018",
+    "establishment_claim_status": "Displayed on the matched official Instagram profile as of 25 September 2026.",
+    "core_positioning": "A Rajkot food and gifting destination for premium dry fruits, namkeen, snacks, sweets, festive hampers and celebration gifting.",
+    "approved_positioning_short": "Premium dry fruits, sweets and gifting in Rajkot.",
+    "primary_audience": [
+      "Dry-fruit buyers",
+      "Sweet and snack customers",
+      "Festival shoppers",
+      "Wedding gift buyers",
+      "Return-gift buyers",
+      "Corporate and bulk-gifting customers when approved",
+      "Families in Rajkot",
+      "Local food-discovery audiences"
+    ],
+    "publicly_supported_categories": [
+      "Dry fruits",
+      "Namkeen",
+      "Snacks",
+      "Sweets",
+      "Gift hampers",
+      "Festive gifting",
+      "Wedding dry-fruit hampers",
+      "Return gifts",
+      "Campaign-specific modaks"
+    ],
+    "category_rule": "A broad category is established, but every ingredient, flavour, weight, price, dietary claim and stock status requires current confirmation.",
+    "currency": "INR",
+    "dataset_date": "2026-09-25",
+    "commercial_accuracy_rule": "Never invent a price, weight, box count, ingredient, allergen, shelf life, delivery promise, freshness period, dietary claim, discount or bulk-order term."
+  },
+  "contact": {
+    "order_phone_display": "+91 75675 97755",
+    "order_phone_e164": "+917567597755",
+    "order_phone_status": "Displayed as Order Now on the matched official Instagram profile.",
+    "whatsapp_number": null,
+    "whatsapp_status": "The order number is confirmed, but do not label it WhatsApp or create a wa.me link without direct confirmation.",
+    "address_full": "Silver Classic, Ground Floor, Amin Marg, opposite Ganga Hall, near Khodal Bharat Petrol Pump, Rajkot, Gujarat 360001, India",
+    "address_status": "Silver Classic, Amin Marg and opposite Ganga Hall are supported by the official profile and current public campaign content. Ground Floor, nearby landmark wording and PIN are matched through public listings and should be confirmed before permanent signage.",
+    "address_short": "Silver Classic, Amin Marg, opposite Ganga Hall, Rajkot",
+    "email": null,
+    "email_status": "No official email established.",
+    "website": null,
+    "website_status": "No official website established.",
+    "google_maps_url": null,
+    "google_maps_status": "No official map link established.",
+    "contact_rule": "Use +91 75675 97755 as the official order number. Do not replace it with numbers from a similarly named Hazel Enterprise directory listing."
+  },
+  "social_media": {
+    "instagram_handle": "@hazeldryfruits",
+    "instagram_url": "https://www.instagram.com/hazeldryfruits/",
+    "instagram_status": "Matched official public profile with Rajkot location, product categories, establishment claim and order number.",
+    "facebook_handle": "@hazeldryfruits",
+    "facebook_url": "https://www.facebook.com/hazeldryfruits/",
+    "facebook_status": "Matched public Facebook page for Hazel Dryfruits, Rajkot.",
+    "youtube_url": null,
+    "youtube_status": "YouTube is included in the user-provided service package, but an official public channel URL is not established.",
+    "managing_agency": "Famebros Studio",
+    "agency_instagram_handle": "@famebrosstudio",
+    "agency_instagram_url": "https://www.instagram.com/famebrosstudio/",
+    "agency_credit_default": "💫 Managed by: @famebrosstudio",
+    "reference_rule": "Use current official social content to understand product names and presentation. Do not copy an expired price, flavour, offer or availability claim."
+  },
+  "established_content_knowledge": {
+    "confirmed_content_genres": [
+      "Cinematic",
+      "Informational"
+    ],
+    "expanded_content_pillars": [
+      "Dry-fruit product close-ups",
+      "Namkeen and snack showcases",
+      "Sweet product showcases",
+      "Texture, filling and garnish reveals",
+      "Festive gift hampers",
+      "Wedding dry-fruit hampers",
+      "Return-gift collections",
+      "Gift-box packing",
+      "Celebration tables",
+      "Ingredient education using supplied facts",
+      "Product-name education",
+      "Festival-specific products",
+      "Local food discovery",
+      "Store visit and ordering information",
+      "Influencer and UGC content",
+      "Customer review content with permission",
+      "Corporate or bulk gifting only when confirmed"
+    ],
+    "recent_public_campaign_signals": [
+      {
+        "campaign": "Ganesh Chaturthi Modak Mela",
+        "products_seen": [
+          "Ferrero modak",
+          "Blueberry modak",
+          "Other modak flavours"
+        ],
+        "status": "September 2026 public content. Product names and stock must be reconfirmed after the festival period."
+      },
+      {
+        "campaign": "Wedding dry-fruit hampers and return gifts",
+        "status": "Publicly supported product direction. Exact boxes, quantities, prices and lead times require confirmation."
+      }
+    ],
+    "prohibited_word_rule": "Avoid the word mithai in every spelling, transliteration, hashtag and SEO phrase. Use sweets, treats, desserts or the exact approved product name.",
+    "monthly_service_scope": {
+      "monthly_fee": "₹60,000 plus GST",
+      "platforms": [
+        "Instagram",
+        "Facebook",
+        "YouTube"
+      ],
+      "reels_per_month": 26,
+      "static_or_carousel_creatives_per_month": 12,
+      "shoots": "Famebros-managed shoots",
+      "content_support": [
+        "Reel editing",
+        "Posting",
+        "Captions",
+        "Hashtags",
+        "YouTube Shorts",
+        "Viral-content planning",
+        "Regular local-influencer connection"
+      ],
+      "optional_services": [
+        "Ads management with separate commission and media budget",
+        "Influencer marketing at 20% commission with creator costs separate"
+      ],
+      "scope_status": "Compiled from user-provided July and September 2026 package instructions. Reconfirm before billing or promising deliverables."
+    },
+    "historical_scale_notes": "Earlier working notes referenced UGC, reviews and a high-volume barter-influencer plan. Treat all influencer counts as internal planning until the current monthly approval confirms them.",
+    "content_priority": "Make the real food product the hero. Show appetite appeal, texture, packaging and gifting relevance while using only the supplied product and ingredient facts."
+  },
+  "writing_direction": {
+    "status": "Operational editorial voice based on established genres, public identity and user preferences.",
+    "brand_voice": [
+      "Appetising",
+      "Polished",
+      "Warm",
+      "Premium",
+      "Gift oriented",
+      "Celebratory",
+      "Family friendly"
+    ],
+    "primary_language": "English or Hinglish",
+    "alternate_language": "Gujarati when requested",
+    "language_rule": "Keep product names exact. Use natural Gujarati only when reviewed or supplied. Never use the prohibited word in any language or transliteration.",
+    "focus": [
+      "Real product close-up",
+      "Texture and presentation",
+      "Thoughtful gifting",
+      "Festival and family relevance",
+      "Rajkot discovery",
+      "Clear enquiry or visit action"
+    ],
+    "avoid": [
+      "The word mithai in copy, hashtags or SEO",
+      "Sugar-free, healthy, immunity, pure ghee or preservative-free claims without proof",
+      "Fresh today or made today without confirmation",
+      "Ingredient guessing",
+      "Shelf-life guessing",
+      "Guaranteed delivery",
+      "Unverified weight, box count or price",
+      "Medical or nutritional promises",
+      "Excessive food styling that hides the product",
+      "Generic festival clutter",
+      "Too many emojis"
+    ],
+    "emoji_style": "Use zero to three tasteful food, gift or celebration emojis.",
+    "punctuation_style": "Short readable lines and no em dashes."
+  },
+  "content_playbook": {
+    "cinematic_product_reel": {
+      "objective": "Create desire through real close-ups and controlled movement.",
+      "sequence": [
+        "Hero reveal",
+        "Texture close-up",
+        "Break or serving shot when genuine",
+        "Packaging or gifting context",
+        "Order or visit CTA"
+      ],
+      "required_inputs": [
+        "Exact product name",
+        "Ingredients if mentioned",
+        "Weight",
+        "Price",
+        "Availability",
+        "Storage or serving guidance if mentioned"
+      ]
+    },
+    "dry_fruit_post": {
+      "objective": "Show the exact dry fruit or mix and explain only supplied sourcing, grade, pack or usage facts.",
+      "rule": "Do not infer origin, grade, roast, salt, purity or health benefit from appearance."
+    },
+    "sweet_or_treat_post": {
+      "objective": "Make the exact sweet product look premium and craveable.",
+      "rule": "Use sweets, treats or the exact product name. Do not use the prohibited word."
+    },
+    "gift_hamper_post": {
+      "objective": "Explain the real hamper and its gifting use.",
+      "required_fields": [
+        "Box name",
+        "Exact contents",
+        "Net quantity",
+        "Price",
+        "Customization options",
+        "Lead time",
+        "Minimum order",
+        "Delivery or pickup",
+        "Valid dates"
+      ]
+    },
+    "festival_post": {
+      "objective": "Combine one approved festive symbol with one real hero product.",
+      "style": "Minimal, rich, elegant and gift oriented.",
+      "rule": "Do not reuse a past festival menu, flavour or offer as current stock."
+    },
+    "influencer_reel": {
+      "objective": "Create local discovery using authentic tasting, store and gifting footage.",
+      "must_confirm": [
+        "Creator",
+        "Barter or paid status",
+        "Deliverables",
+        "Products",
+        "Talking points",
+        "Posting date",
+        "Usage rights",
+        "Disclosure",
+        "Approval"
+      ]
+    },
+    "informational_post": {
+      "objective": "Explain an ingredient, product or gifting decision clearly.",
+      "rule": "Food and nutrition claims require packaging, recipe or authorized product information."
+    },
+    "platform_adaptation": {
+      "feed": "Appetising caption, approved footer, exactly three hashtags and one SEO bracket.",
+      "reel": "Fast product hook, real texture, product name and one CTA.",
+      "story": "One product or action per frame. No standard metadata unless requested.",
+      "youtube_short": "Clear product-led title and local-discovery description."
+    }
+  },
+  "food_product_and_gifting_description_framework": {
+    "purpose": "Describe Hazel products and hampers accurately without inventing ingredients, dietary status or commercial terms.",
+    "product_identity_fields": [
+      "Product name",
+      "Category",
+      "SKU",
+      "Variant",
+      "Current availability"
+    ],
+    "food_fields": [
+      "Ingredient list",
+      "Allergens",
+      "Net weight",
+      "Piece count",
+      "Flavour",
+      "Filling",
+      "Garnish",
+      "Preparation date",
+      "Best-before date",
+      "Storage",
+      "Serving guidance"
+    ],
+    "dry_fruit_fields": [
+      "Dry-fruit type",
+      "Origin if supplied",
+      "Grade if supplied",
+      "Roasted or raw",
+      "Salted or unsalted",
+      "Coating",
+      "Pack size"
+    ],
+    "hamper_fields": [
+      "Box type",
+      "Exact products",
+      "Quantity of each",
+      "Personalization",
+      "Price",
+      "MOQ",
+      "Lead time",
+      "Pickup or delivery",
+      "Valid dates"
+    ],
+    "claim_confirmation_matrix": {
+      "sugar_free": "Requires exact recipe, packaging and approved wording.",
+      "pure_ghee": "Requires recipe or brand confirmation.",
+      "healthy": "Avoid broad health claims. Use specific verified nutrition facts only.",
+      "fresh": "Use only with a defined production or best-before context.",
+      "premium": "Allowed as positioning, but never substitute it for grade or sourcing facts.",
+      "price": "Requires the current approved price.",
+      "delivery": "Requires current area, fee and timing confirmation."
+    },
+    "description_order": [
+      "Exact product name",
+      "Visible texture and presentation",
+      "Verified ingredients or format",
+      "Gifting or serving context",
+      "Current price and order details",
+      "One CTA"
+    ],
+    "rule": "If a product fact is missing, omit it or request confirmation. Never fill it with a common recipe assumption."
+  },
+  "caption_format": {
+    "default_use": "Instagram and Facebook feed or reel captions",
+    "body_length": "Usually 25 to 55 words excluding footer, hashtags and SEO bracket.",
+    "body_structure": [
+      "Short craveable or gifting hook",
+      "One or two factual product lines",
+      "One order, visit, save or share CTA"
+    ],
+    "format_order": [
+      "Caption body",
+      "Blank line",
+      "Location and approved contact",
+      "Agency credit",
+      "Blank line",
+      "Exactly three hashtags",
+      "Blank line",
+      "Exactly one square-bracket SEO block"
+    ],
+    "hashtag_rule": "Exactly three relevant hashtags unless another count is requested.",
+    "seo_rule": "One square-bracket block with five to eight comma-separated search phrases.",
+    "story_rule": "Omit feed footer, hashtags and SEO for story copy unless requested.",
+    "word_filter": "Run a case-insensitive check for the prohibited word and common transliterations before delivery.",
+    "final_checks": [
+      "Correct product",
+      "Current price",
+      "Ingredients verified",
+      "No prohibited word",
+      "Exactly three hashtags",
+      "One SEO bracket",
+      "No em dash"
+    ]
+  },
+  "fixed_footer": {
+    "standard_lines": [
+      "📍 Silver Classic, Amin Marg, opposite Ganga Hall, Rajkot",
+      "📞 +91 75675 97755",
+      "💫 Managed by: @famebrosstudio"
+    ],
+    "compact_lines": [
+      "📍 Rajkot | 📞 +91 75675 97755",
+      "💫 Managed by: @famebrosstudio"
+    ],
+    "usage": "Use the standard footer for feed and reel captions. Use the compact option when the caption is already long.",
+    "exceptions": [
+      "Omit for story text",
+      "Omit for comments and replies",
+      "Omit for repost text unless requested"
+    ]
+  },
+  "suggested_hashtag_bank": {
+    "brand": [
+      "#HazelDryfruits",
+      "#HazelRajkot"
+    ],
+    "category": [
+      "#PremiumDryFruits",
+      "#SweetTreats",
+      "#NamkeenLovers",
+      "#FestiveGifting"
+    ],
+    "location": [
+      "#RajkotFood",
+      "#RajkotGifting",
+      "#RajkotFoodies"
+    ],
+    "occasion": [
+      "#WeddingGifts",
+      "#ReturnGifts",
+      "#FestivalHampers",
+      "#CelebrationGifts"
+    ],
+    "rule": "Use exactly three relevant hashtags. Never use the prohibited word in a hashtag."
+  },
+  "seo_keyword_bank": {
+    "core": [
+      "Hazel Dryfruits",
+      "Hazel Dryfruits Rajkot",
+      "dry fruits Rajkot",
+      "sweets Rajkot",
+      "namkeen Rajkot",
+      "premium dry fruits",
+      "sweet gifts",
+      "dry fruit gifting"
+    ],
+    "gifting": [
+      "festive gift hampers Rajkot",
+      "wedding dry fruit hampers",
+      "return gifts Rajkot",
+      "celebration treats",
+      "premium gifting Rajkot"
+    ],
+    "conditional": [
+      "modak Rajkot",
+      "Ganesh Chaturthi treats",
+      "Ferrero modak",
+      "Blueberry modak",
+      "bulk gifting Rajkot"
+    ],
+    "rule": "Choose five to eight phrases matching the actual product. Never include the prohibited word or unverified diet claims."
+  },
+  "cta_bank": {
+    "order": [
+      "Call +91 75675 97755 to enquire about this product.",
+      "DM @hazeldryfruits for current availability.",
+      "Visit Hazel Dryfruits at Amin Marg, Rajkot."
+    ],
+    "gifting": [
+      "DM us to enquire about gifting options.",
+      "Planning a celebration? Ask us about the current hamper collection.",
+      "Share your gifting requirement with us."
+    ],
+    "engagement": [
+      "Send this to someone with a sweet tooth.",
+      "Save this gifting idea.",
+      "Which treat would you pick first?"
+    ],
+    "rule": "Use one CTA. Never promise delivery, customization or bulk pricing unless confirmed."
+  },
+  "suggested_hooks": {
+    "product": [
+      "A closer look at the treat stealing the spotlight.",
+      "Rich texture, beautiful presentation, one irresistible reveal.",
+      "The kind of box everyone opens first."
+    ],
+    "gifting": [
+      "A little sweetness for the people who mean a lot.",
+      "Gifting that looks as special as the occasion.",
+      "Make the celebration feel thoughtfully packed."
+    ],
+    "festival": [
+      "Festive moments deserve a richer touch.",
+      "Tradition, gifting and a beautiful celebration table.",
+      "A festive box made for sharing."
+    ],
+    "informational": [
+      "Before you choose a gift box, check these details.",
+      "What makes this product different? Look closer.",
+      "Know the product before you order."
+    ],
+    "rule": "Adapt every hook to the exact product and remove unsupported adjectives."
+  },
+  "visual_and_asset_guidance": {
+    "default_dimensions": {
+      "feed": "1080x1440 pixels",
+      "story": "1080x1920 pixels",
+      "reel": "1080x1920 pixels",
+      "square": "1080x1080 pixels when requested"
+    },
+    "visual_identity_direction": [
+      "Premium food photography",
+      "Single hero product",
+      "Minimal festive composition",
+      "Warm ivory and cream",
+      "Deep burgundy or maroon",
+      "Muted antique gold",
+      "Almond beige",
+      "Controlled peacock blue when relevant",
+      "Luxury Indian packaging",
+      "Negative space",
+      "Elegant serif typography"
+    ],
+    "product_integrity_rules": [
+      "Use uploaded product 100% unchanged",
+      "Do not invent filling, garnish or packaging",
+      "Do not recolour food",
+      "Do not duplicate pieces to suggest a larger quantity",
+      "Do not create false steam, melt or texture",
+      "Keep labels readable and unchanged"
+    ],
+    "festival_history": {
+      "janmashtami": "Minimal premium hero product, devotional cues, peacock feather, rich maroon, gold and blue palette.",
+      "ganesh_chaturthi": "1080x1440, rich and gift-oriented, logo at top, cream, brown, burgundy and gold, refined Ganpati plus real gifting products.",
+      "gandhi_jayanti": "Warm ivory, burgundy and antique gold, sunlight and architectural shadows, symbolic minimalism, no political clutter."
+    },
+    "carousel_rule": "Create each slide separately at 1080x1440 when requested. Use different family characters only when the brief and assets support them.",
+    "ai_rules": [
+      "Do not generate a substitute product and sell it as real",
+      "Do not fabricate packaging claims",
+      "Use AI only for background or clearly conceptual styling",
+      "Keep the real logo and product exact"
+    ],
+    "accessibility": [
+      "High contrast",
+      "Large price and product name",
+      "Minimal text",
+      "Avoid text over detailed food",
+      "Factual alt text"
+    ]
+  },
+  "carousel_and_reel_system": {
+    "product_carousel": [
+      "Slide 1: Hero product and hook",
+      "Slide 2: Texture close-up",
+      "Slide 3: Verified ingredients or format",
+      "Slide 4: Packaging or gifting use",
+      "Slide 5: Current price or order details",
+      "Slide 6: Location and CTA"
+    ],
+    "gifting_carousel": [
+      "Slide 1: Occasion hook",
+      "Slide 2: Hamper reveal",
+      "Slide 3: Exact contents",
+      "Slide 4: Personalization if confirmed",
+      "Slide 5: Order timeline and price",
+      "Slide 6: Enquiry CTA"
+    ],
+    "cinematic_reel": [
+      "0 to 2 seconds: Hero reveal",
+      "2 to 6 seconds: Texture",
+      "6 to 10 seconds: Serving or unboxing",
+      "10 to 13 seconds: Product name",
+      "13 to 15 seconds: Order CTA"
+    ],
+    "influencer_reel": [
+      "Local discovery hook",
+      "Store arrival",
+      "Real product selection",
+      "Authentic tasting or gifting reaction",
+      "Exact contact CTA"
+    ],
+    "editing_style": [
+      "Macro close-ups",
+      "Slow controlled movement",
+      "Clean cuts",
+      "Warm natural colour",
+      "Subtle text",
+      "No fake quantity or texture"
+    ],
+    "music_direction": "Warm, celebratory or premium audio with appropriate usage rights.",
+    "thumbnail_rule": "One real hero product, short headline, logo and no clutter."
+  },
+  "other_output_modes": {
+    "story": {
+      "format": "One message per frame with product sticker or DM action.",
+      "footer_rule": "Do not paste the full footer on every frame."
+    },
+    "youtube_title": {
+      "examples": [
+        "Premium Dry Fruit Gifting in Rajkot | Hazel Dryfruits",
+        "A Closer Look at Hazel's Festive Treats",
+        "Wedding Dry Fruit Hampers and Return Gifts"
+      ]
+    },
+    "whatsapp_message": {
+      "format": "Product name, exact quantity, price, availability, pickup or delivery details and one response action.",
+      "rule": "Use current data only."
+    },
+    "product_alt_text": {
+      "format": "Name the visible product, package, colours and setting without guessing ingredients."
+    },
+    "comment_reply": {
+      "price": "Please DM the product screenshot or call +91 75675 97755 for the current price.",
+      "availability": "Please share the product screenshot by DM so current availability can be checked.",
+      "location": "We are at Silver Classic, Amin Marg, opposite Ganga Hall, Rajkot."
+    },
+    "ad_copy": {
+      "rule": "Use current product, price, area, order route and validity. Do not make health claims."
+    }
+  },
+  "sample_caption": {
+    "status": "New illustrative caption, not a historical post and not proof of product stock.",
+    "scenario": "Premium gifting showcase",
+    "body": "A little sweetness for the people who mean a lot. ✨ Discover beautifully presented treats and dry-fruit gifting options from Hazel Dryfruits. DM @hazeldryfruits or call +91 75675 97755 for the current collection.",
+    "footer": [
+      "📍 Silver Classic, Amin Marg, opposite Ganga Hall, Rajkot",
+      "📞 +91 75675 97755",
+      "💫 Managed by: @famebrosstudio"
+    ],
+    "hashtags": [
+      "#HazelDryfruits",
+      "#RajkotGifting",
+      "#PremiumDryFruits"
+    ],
+    "seo_keywords": [
+      "Hazel Dryfruits",
+      "Hazel Dryfruits Rajkot",
+      "dry fruits Rajkot",
+      "sweets Rajkot",
+      "dry fruit gifting",
+      "festive gift hampers Rajkot"
+    ],
+    "full_caption": "A little sweetness for the people who mean a lot. ✨ Discover beautifully presented treats and dry-fruit gifting options from Hazel Dryfruits. DM @hazeldryfruits or call +91 75675 97755 for the current collection.\n\n📍 Silver Classic, Amin Marg, opposite Ganga Hall, Rajkot\n📞 +91 75675 97755\n💫 Managed by: @famebrosstudio\n\n#HazelDryfruits #RajkotGifting #PremiumDryFruits\n\n[Hazel Dryfruits, Hazel Dryfruits Rajkot, dry fruits Rajkot, sweets Rajkot, dry fruit gifting, festive gift hampers Rajkot]",
+    "validation": {
+      "hashtags": 3,
+      "seo_phrases": 6,
+      "prohibited_word_count": 0,
+      "unverified_product_claims": 0
+    }
+  },
+  "accuracy_rules": {
+    "source_priority": [
+      "Current user or authorized brand instruction",
+      "Current product label, menu or rate sheet",
+      "Current official @hazeldryfruits content",
+      "Actual supplied product asset",
+      "This knowledge file",
+      "Public directories only for cross-checking"
+    ],
+    "hard_rules": [
+      "Never use the prohibited word",
+      "Never invent ingredients, allergens, diet status, weight, count, price, stock, shelf life or delivery",
+      "Never make medical claims",
+      "Never present an old festival product as current",
+      "Never alter the real product",
+      "Never publish internal package or billing notes",
+      "Never use an em dash"
+    ],
+    "known_identity_lock": {
+      "instagram": "@hazeldryfruits",
+      "phone": "+91 75675 97755",
+      "location": "Silver Classic, Amin Marg, opposite Ganga Hall, Rajkot"
+    },
+    "uncertainty_behavior": [
+      "Omit unknown claims",
+      "Ask for product label or menu",
+      "Use a general enquiry CTA",
+      "Mark historical campaigns as past"
+    ],
+    "pre_publish_checklist": [
+      "Correct product",
+      "Current price",
+      "Ingredients and allergens checked",
+      "Diet claim verified",
+      "No prohibited word",
+      "Correct phone and address",
+      "Exactly three hashtags",
+      "One SEO bracket with five to eight phrases",
+      "No em dash"
+    ]
+  },
+  "per_post_input": {
+    "required_core": [
+      "Output mode",
+      "Objective",
+      "Actual asset or transcript",
+      "Product name",
+      "Audience",
+      "CTA",
+      "Publication date"
+    ],
+    "product_inputs": [
+      "Category",
+      "Variant",
+      "Ingredients",
+      "Allergens",
+      "Weight",
+      "Piece count",
+      "Flavour",
+      "Dietary status",
+      "Best before",
+      "Storage",
+      "Price",
+      "Availability"
+    ],
+    "gifting_inputs": [
+      "Occasion",
+      "Exact contents",
+      "Box type",
+      "Personalization",
+      "MOQ",
+      "Lead time",
+      "Price",
+      "Pickup or delivery",
+      "Valid dates"
+    ],
+    "influencer_inputs": [
+      "Creator",
+      "Paid or barter",
+      "Deliverables",
+      "Products",
+      "Script",
+      "Disclosure",
+      "Usage rights",
+      "Approval deadline"
+    ],
+    "creative_inputs": [
+      "Logo",
+      "Brand colours",
+      "Format",
+      "Headline",
+      "Reference",
+      "Mandatory copy",
+      "Product-fidelity rule"
+    ],
+    "input_rule": "Never fill a missing food or commercial field with an assumption."
+  },
+  "master_brand_instruction": "Create content only for Hazel Dryfruits in Rajkot. The official Instagram is @hazeldryfruits, the public order number is +91 75675 97755, and the store is at Silver Classic, Amin Marg, opposite Ganga Hall, Rajkot. Write in an appetising, polished, warm, premium and gift-oriented voice using English or Hinglish, with Gujarati only when requested and reviewed. Never use the word mithai in any spelling, hashtag or SEO phrase. Use sweets, treats or the exact product name. Make the real product the hero and preserve uploaded food and packaging exactly. Never invent ingredients, allergens, sugar-free status, health benefits, pure-ghee claims, freshness, shelf life, weight, count, price, offer, stock, delivery or customization. Treat festival products as date-specific. For standard feed or reel captions, use a concise hook, verified product detail and one CTA, then the approved footer, exactly three hashtags and one square-bracket SEO block with five to eight phrases. Remove all em dashes.",
+  "missing_information": {
+    "business": [
+      "Legal entity name",
+      "Owner or founder",
+      "GST details",
+      "Confirmed business hours"
+    ],
+    "contact": [
+      "Official WhatsApp confirmation",
+      "Email",
+      "Website",
+      "Google Maps link",
+      "YouTube channel"
+    ],
+    "catalogue": [
+      "Current product list",
+      "Ingredients",
+      "Allergens",
+      "Weights",
+      "Counts",
+      "Prices",
+      "Shelf life",
+      "Storage",
+      "Dietary certifications",
+      "Packaging options"
+    ],
+    "commercial": [
+      "Delivery areas",
+      "Delivery fees",
+      "Bulk-order MOQ",
+      "Lead times",
+      "Customization",
+      "Return or replacement policy",
+      "Current offers"
+    ],
+    "brand_system": [
+      "Logo files",
+      "Colour codes",
+      "Fonts",
+      "Photography guide",
+      "Packaging guide"
+    ],
+    "agency": [
+      "Current approved monthly package",
+      "Current influencer count",
+      "Ad commission rate",
+      "Approval workflow",
+      "Billing date"
+    ],
+    "priority": "Obtain the current menu, product labels, price list, gifting catalogue, order workflow, delivery terms, brand kit and confirmed current agency scope."
+  },
+  "sources": {
+    "user_facts": [
+      "Hazel Dryfruits Rajkot is a dry-fruits brand.",
+      "Use premium, minimal, festive and gift-oriented visual direction.",
+      "Avoid the prohibited word and use sweets, treats or the exact product name.",
+      "Instagram, Facebook and YouTube package with 26 reels, Famebros shoots, local influencer connection and ₹60,000 plus GST.",
+      "Twelve static or carousel creatives monthly were specified in September 2026."
+    ],
+    "public_sources": [
+      {
+        "url": "https://www.instagram.com/hazeldryfruits/",
+        "checked_on": "2026-09-25",
+        "used_for": "Official handle, Rajkot, categories, since 2018, phone and address summary."
+      },
+      {
+        "url": "https://www.facebook.com/hazeldryfruits/",
+        "checked_on": "2026-09-25",
+        "used_for": "Matched Rajkot page and gifting categories."
+      },
+      {
+        "url": "https://www.instagram.com/reel/DdOkkPLIZMH/",
+        "checked_on": "2026-09-25",
+        "used_for": "September 2026 Modak Mela campaign signals."
+      },
+      {
+        "url": "https://www.facebook.com/foodwokate/videos/hazel-dryfruits-silver-classic-ground-floor-amin-marg-rajkot-modak-mela-ganesh-c/1626304965530910/",
+        "checked_on": "2026-09-25",
+        "used_for": "Ground Floor, Silver Classic, Amin Marg campaign location cross-check."
+      }
+    ],
+    "internal_dataset": "Famebros_Brand_Caption_Dataset.json record hazel_dryfruits.",
+    "source_rule": "Current brand-approved product and commercial information overrides older social posts and this file."
+  }
+}

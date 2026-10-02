@@ -1,0 +1,505 @@
+{
+  "schema_version": "3.0",
+  "brand_number": 29,
+  "brand_id": "lel_fitness",
+  "brand_name": "LEL Fitness",
+  "aliases": [
+    "Laxya LEL Fitness",
+    "Laxya lel Fitness",
+    "@lelfitness.comm",
+    "Lifestyle Engineer Laxya"
+  ],
+  "knowledge_scope": "One brand only. This file covers LEL Fitness in Mumbai, its personalised coaching-studio positioning, known client journey, coach tracking and nutrition-accountability process, official brand and coach Instagram pages, fitness-content rules and strict health-claim protections.",
+  "business": {
+    "category": "Personalised fitness coaching studio",
+    "industry": "Fitness and wellness",
+    "business_model": [
+      "In-studio personalised coaching",
+      "Coach-led training",
+      "Habit and activity accountability",
+      "Nutrition guidance within professional scope"
+    ],
+    "city": "Mumbai",
+    "locality": "Mulund West",
+    "address_full": "325, G-Wing, Marathon Monte Plaza, Madan Mohan Malviya Rd, Asha Nagar, Mulund West, Mumbai, Maharashtra 400080, India",
+    "address_status": "Official address from lelfitness.com footer/contact, confirmed 2026-09-25.",
+    "state": "Maharashtra",
+    "country": "India",
+    "core_positioning": "More Than a Gym, A Personalised Fitness Coaching Studio.",
+    "owner_or_coach_public_name": "Laxya Dutt Sharma",
+    "co_founder_public_name": "Pallavi Sharma (Co-Founder and Certified Nutritionist, per lelfitness.com)",
+    "owner_legal_name": null,
+    "primary_audience": [
+      "Mumbai adults seeking guided training",
+      "People who prefer coach accountability",
+      "Beginners who need a structured start",
+      "Clients returning to fitness after appropriate clearance",
+      "Busy adults working on sustainable habits"
+    ],
+    "dataset_date": "2026-09-25",
+    "currency": "INR",
+    "commercial_accuracy_rule": "Never invent membership fees, programme length, results, calories, diet plans, medical suitability, trainer credentials or location details."
+  },
+  "contact": {
+    "phone": "+919625691857",
+    "phone_status": "Official phone from lelfitness.com footer (tel:+91-9625691857) and @lelfitness.comm bio, confirmed 2026-09-25.",
+    "email": "info@lelfitness.com",
+    "email_status": "Official email from lelfitness.com footer, confirmed 2026-09-25.",
+    "website": "https://www.lelfitness.com/",
+    "website_status": "Official website confirmed live 2026-09-25.",
+    "address": "325, G-Wing, Marathon Monte Plaza, Madan Mohan Malviya Rd, Asha Nagar, Mulund West, Mumbai, Maharashtra 400080, India",
+    "locality": "Mulund West",
+    "google_maps_url": "https://www.google.com/maps/search/?api=1&query=LEL+Fitness+325+G-Wing+Marathon+Monte+Plaza+Mulund+West+Mumbai+400080",
+    "google_maps_status": "Search link derived from the official address; replace with the brand's exact Maps pin when supplied.",
+    "whatsapp": "+919625691857",
+    "whatsapp_status": "lelfitness.com uses api.whatsapp.com/send/?phone=919625691857 for trial/enrol CTAs.",
+    "contact_rule": "Use the official phone, WhatsApp, website or Instagram DM. Do not create any additional contact details."
+  },
+  "social_media": {
+    "instagram_handle": "@lelfitness.comm",
+    "instagram_url": "https://www.instagram.com/lelfitness.comm/",
+    "instagram_status": "Official handle confirmed via lelfitness.com footer links and bio (1:1 training, custom nutrition, +91 96256 91857), 2026-09-25.",
+    "coach_instagram_handle": "@lifestyle_engineer_laxya",
+    "coach_instagram_url": "https://www.instagram.com/lifestyle_engineer_laxya/",
+    "coach_instagram_status": "Coach page linked in lelfitness.com footer as Laxya Dutt Sharma, Founder, confirmed 2026-09-25.",
+    "managing_agency": "Famebros Studio",
+    "agency_instagram_handle": "@famebrosstudio",
+    "agency_instagram_url": "https://www.instagram.com/famebrosstudio/",
+    "agency_credit_default": "💫 Managed by: @famebrosstudio",
+    "reference_rule": "Keep the studio brand account and the coach's personal account distinct. Use each identity only for approved collaborations, credits or reposts."
+  },
+  "established_content_knowledge": {
+    "confirmed_content_genres": [
+      "Fitness",
+      "Educational",
+      "Personalised coaching",
+      "Motivational",
+      "Studio process"
+    ],
+    "established_client_journey": [
+      "First-day body assessment",
+      "Discussion of surgery and pain history",
+      "Coach assignment",
+      "Three-day training start",
+      "Personal WhatsApp group",
+      "Client shares food pictures",
+      "Personalized nutrition plan within appropriate professional scope",
+      "Coach tracking",
+      "Weight checks",
+      "Daily reminders",
+      "Step and activity accountability"
+    ],
+    "process_accuracy_note": "The above process came from the user. Reconfirm the exact current assessment, trial duration, group structure and nutrition scope before publishing as a fixed programme promise.",
+    "content_pillars": [
+      "How personalised coaching works",
+      "Assessment and onboarding",
+      "Coach accountability",
+      "Exercise technique using qualified guidance",
+      "Training consistency",
+      "Daily movement and step habits",
+      "Food-awareness routines without medical claims",
+      "Studio culture",
+      "Beginner confidence",
+      "Client stories with written consent",
+      "Festival fitness messages",
+      "Myth clarification with evidence"
+    ],
+    "reel_preferences": {
+      "historical_length": "25 to 30 seconds with one CTA",
+      "latest_preference": "30 to 40 seconds",
+      "direction": "Build a stronger public connection, use premium wording, and do not force every script to be directly about LEL."
+    },
+    "accounts_note": "A September working record listed Laxya LEL Fitness plus one extra shoot, ₹31,000 cash, with 25 appearing as a billing or date field. Reconfirm before reporting or invoicing.",
+    "content_priority": "Make coaching feel structured, human and achievable. Educate first, then connect the topic to LEL only when natural."
+  },
+  "writing_direction": {
+    "brand_voice": [
+      "Supportive",
+      "Structured",
+      "Premium",
+      "Practical",
+      "Motivating",
+      "Non-judgmental",
+      "Coach-led"
+    ],
+    "primary_language": "English or Hinglish",
+    "focus": [
+      "Personalised support",
+      "Clear process",
+      "Consistency",
+      "Safe technique",
+      "Accountability",
+      "Sustainable habits"
+    ],
+    "avoid": [
+      "Body shaming",
+      "Fear-based fitness",
+      "Guaranteed transformation",
+      "Guaranteed weight loss",
+      "Medical cure claims",
+      "Pain treatment promises",
+      "Extreme dieting",
+      "Before-and-after without consent",
+      "Presenting nutrition guidance as medical treatment",
+      "One-size-fits-all advice"
+    ],
+    "cta_style": "One low-pressure action such as DM, save, share, book an assessment or ask a question.",
+    "punctuation_style": "Natural sentences and no em dashes."
+  },
+  "content_playbook": {
+    "process_reel": {
+      "sequence": [
+        "Relatable problem",
+        "One part of the LEL process",
+        "Why it helps accountability",
+        "Who it may suit",
+        "DM CTA"
+      ],
+      "rule": "Do not promise a result or present the process as medical care."
+    },
+    "exercise_education": {
+      "sequence": [
+        "Common mistake",
+        "Coach cue",
+        "Safer execution",
+        "Who should seek individual guidance",
+        "Save CTA"
+      ],
+      "rule": "Use a qualified coach and include modification or clearance language when appropriate."
+    },
+    "habit_reel": {
+      "topics": [
+        "Daily steps",
+        "Training consistency",
+        "Meal awareness",
+        "Sleep routine",
+        "Planning",
+        "Check-ins"
+      ],
+      "rule": "Keep it general and avoid prescriptions for medical conditions."
+    },
+    "client_story": {
+      "required": [
+        "Written consent",
+        "Truthful timeline",
+        "Actual programme",
+        "No retouching",
+        "Results-not-typical context when needed"
+      ],
+      "rule": "Never imply that one result is guaranteed for everyone."
+    },
+    "festival_content": {
+      "history": [
+        "Raksha Bandhan",
+        "Janmashtami"
+      ],
+      "direction": "Connect strength, care, protection, discipline or balance to the occasion without trivialising faith or promising health outcomes."
+    },
+    "community_post": {
+      "objective": "Make the audience feel seen even when the post does not mention the studio until the final CTA."
+    }
+  },
+  "personalised_fitness_coaching_framework": {
+    "discovery_fields": [
+      "Goal",
+      "Training history",
+      "Age range",
+      "Pain or surgery history",
+      "Medical clearance where needed",
+      "Schedule",
+      "Current activity",
+      "Food preferences",
+      "Studio access"
+    ],
+    "content_safe_sequence": [
+      "Acknowledge the real challenge",
+      "Offer one practical non-medical idea",
+      "Explain why personalization matters",
+      "Invite assessment or conversation"
+    ],
+    "scope_rule": "Fitness content is educational and does not diagnose, treat or replace medical advice. Pain, surgery, pregnancy, chronic disease and eating-disorder topics require qualified professional review.",
+    "result_rule": "Use may help, can support and depends on the individual. Never use guaranteed, permanent or fixed-time result language.",
+    "nutrition_rule": "Describe food tracking and nutrition guidance as individualized support within the coach's verified qualifications. Do not prescribe medical diets."
+  },
+  "caption_format": {
+    "default_use": "Instagram and Facebook feed posts and reels.",
+    "body_length": "Usually 25 to 70 words excluding footer, hashtags and SEO bracket. Longer educational captions are allowed when requested.",
+    "body_structure": [
+      "One strong, brand-relevant hook.",
+      "One to three clear lines using only verified details.",
+      "One direct enquiry, visit, booking, save, share or link-in-bio CTA."
+    ],
+    "format_order": [
+      "Caption body",
+      "Blank line",
+      "Approved location and contact footer when available",
+      "Agency credit when required",
+      "Blank line",
+      "Exactly three hashtags",
+      "Blank line",
+      "Exactly one square-bracket SEO block"
+    ],
+    "hashtag_rule": "Exactly three hashtags unless the user explicitly requests another count.",
+    "seo_rule": "Use five to eight natural search phrases inside one and only one pair of square brackets.",
+    "story_rule": "For story copy, use a short headline, one support line and one CTA. Omit the feed footer, hashtags and SEO unless requested.",
+    "reel_overlay_rule": "Keep each text card short enough to read comfortably on a phone. Do not repeat the whole caption on screen.",
+    "final_checks": [
+      "Use only facts approved for the selected post.",
+      "Use exactly three relevant hashtags.",
+      "Use one square-bracket SEO block containing five to eight comma-separated phrases.",
+      "Use one clear CTA.",
+      "Remove every em dash before delivery.",
+      "Check for medical, pain, injury, nutrition and result claims.",
+      "Use only one CTA."
+    ]
+  },
+  "fixed_footer": {
+    "standard_lines": [
+      "📍 325, G-Wing, Marathon Monte Plaza, Asha Nagar, Mulund West, Mumbai 400080",
+      "📞 +91 96256 91857 | 🌐 lelfitness.com",
+      "💫 Managed by: @famebrosstudio"
+    ],
+    "coach_credit_optional": [
+      "Coach: @lifestyle_engineer_laxya"
+    ],
+    "usage": "Use the address + phone footer now that official contact is confirmed. Add coach credit only for approved coach-led content.",
+    "exceptions": [
+      "Story overlays",
+      "Educational carousels where the final slide already contains the CTA",
+      "Comments"
+    ]
+  },
+  "suggested_hashtag_bank": [
+    "#LELFitness",
+    "#PersonalisedFitness",
+    "#FitnessCoaching",
+    "#MumbaiFitness",
+    "#StrengthTraining",
+    "#HealthyHabits",
+    "#FitnessAccountability",
+    "#LifestyleEngineerLaxya"
+  ],
+  "seo_keyword_bank": [
+    "LEL Fitness Mumbai",
+    "personalised fitness coaching Mumbai",
+    "fitness coaching studio Mumbai",
+    "beginner fitness coach Mumbai",
+    "strength training guidance Mumbai",
+    "fitness accountability coaching",
+    "personalized training studio",
+    "Lifestyle Engineer Laxya"
+  ],
+  "cta_bank": [
+    "DM @lelfitness.comm to ask about the current assessment process.",
+    "Save this cue for your next session.",
+    "Share this with someone rebuilding consistency.",
+    "What makes consistency difficult for you?",
+    "Speak with a qualified professional before training through pain."
+  ],
+  "suggested_hooks": [
+    "You may not need more motivation. You may need a better system.",
+    "More than a gym means more than a workout plan.",
+    "Consistency gets easier when someone notices the details.",
+    "Your first session should begin with understanding, not assumptions.",
+    "Training harder is not always the same as training better.",
+    "A plan works best when it fits the person living it."
+  ],
+  "visual_and_asset_guidance": {
+    "feed_size": "1080 x 1440 pixels",
+    "story_and_reel_size": "1080 x 1920 pixels",
+    "palette": [
+      "Dark grey",
+      "Charcoal",
+      "Black",
+      "Yellow",
+      "White",
+      "Subtle gold"
+    ],
+    "style": [
+      "Premium studio",
+      "Strong",
+      "Protective",
+      "Human",
+      "Disciplined",
+      "Clean"
+    ],
+    "asset_priority": [
+      "Real coach and client environment",
+      "Correct exercise form",
+      "Assessment moments with consent",
+      "Training details",
+      "Supportive coach interaction"
+    ],
+    "fidelity_rules": [
+      "Do not exaggerate body shape.",
+      "Do not retouch transformation results.",
+      "Do not stage unsafe exercise form.",
+      "Obtain permission before showing client messages, food photos, assessment data or body measurements."
+    ],
+    "thumbnail_rule": "One human moment, one clear promise of topic, and high-contrast readable type."
+  },
+  "carousel_and_reel_system": {
+    "educational_carousel": [
+      "Slide 1: Relatable fitness problem",
+      "Slide 2: Why it happens",
+      "Slide 3: One practical cue",
+      "Slide 4: When personal guidance matters",
+      "Slide 5: Save or DM CTA"
+    ],
+    "process_reel": [
+      "0 to 4 seconds: Hook",
+      "4 to 12 seconds: Assessment or problem",
+      "12 to 25 seconds: Coaching process",
+      "25 to 34 seconds: Practical takeaway",
+      "34 to 40 seconds: One CTA"
+    ],
+    "editing_style": [
+      "Real studio sound where useful",
+      "Confident pacing",
+      "Readable yellow and white text",
+      "Natural bodies",
+      "No sensational transformation effects"
+    ],
+    "music_direction": "Focused, energetic or emotionally grounded audio with appropriate usage rights."
+  },
+  "other_output_modes": {
+    "story_sequence": [
+      "Question sticker or relatable problem",
+      "One useful coach insight",
+      "DM CTA"
+    ],
+    "assessment_explainer": "A clear step-by-step description that avoids medical diagnosis and confirms the current process.",
+    "voiceover": "30 to 40 seconds, conversational Hinglish or English, one idea, one CTA.",
+    "comment_reply": "Offer general support, avoid diagnosing, and move personal health details to an appropriate private and professional channel.",
+    "client_testimonial": "Use the client's own approved words, truthful context and consent."
+  },
+  "sample_caption": {
+    "status": "Illustrative educational caption based on the established personalized-coaching process.",
+    "scenario": "Assessment and accountability reel",
+    "caption_body": "A good fitness plan should begin by understanding the person, not by copying a routine. At LEL Fitness, the established process starts with an assessment and continues with coach-led training and accountability. DM us to confirm the current coaching journey and find out whether it suits you.",
+    "footer": [
+      "📲 DM @lelfitness.comm",
+      "💫 Managed by: @famebrosstudio"
+    ],
+    "hashtags": [
+      "#LELFitness",
+      "#PersonalisedFitness",
+      "#MumbaiFitness"
+    ],
+    "seo_keywords": [
+      "LEL Fitness Mumbai",
+      "personalised fitness coaching Mumbai",
+      "fitness coaching studio Mumbai",
+      "beginner fitness guidance",
+      "fitness accountability coaching",
+      "coach led training Mumbai"
+    ],
+    "full_caption": "A good fitness plan should begin by understanding the person, not by copying a routine. At LEL Fitness, the established process starts with an assessment and continues with coach-led training and accountability. DM us to confirm the current coaching journey and find out whether it suits you.\n\n📲 DM @lelfitness.comm\n💫 Managed by: @famebrosstudio\n\n#LELFitness #PersonalisedFitness #MumbaiFitness\n\n[LEL Fitness Mumbai, personalised fitness coaching Mumbai, fitness coaching studio Mumbai, beginner fitness guidance, fitness accountability coaching, coach led training Mumbai]",
+    "validation": {
+      "hashtags": 3,
+      "seo_phrases": 6,
+      "guaranteed_result_claim": false,
+      "medical_claim": false
+    }
+  },
+  "accuracy_rules": [
+    "Do not guarantee weight loss, muscle gain, pain relief or transformation.",
+    "Do not diagnose, treat or cure a medical condition.",
+    "Do not body shame or use fear to sell.",
+    "Do not share client data or images without permission.",
+    "Do not invent trainer qualifications, package prices, address or phone.",
+    "Reconfirm the current onboarding and three-day training description before publishing it as a fixed offer.",
+    "Separate the studio account from the coach's personal page.",
+    "Remove every em dash."
+  ],
+  "per_post_input": {
+    "required_core": [
+      "Output mode",
+      "Topic",
+      "Objective",
+      "Audience",
+      "Qualified reviewer if needed",
+      "Actual footage",
+      "CTA",
+      "Publication date"
+    ],
+    "health_inputs": [
+      "Claim source",
+      "Contraindications",
+      "Modification",
+      "Medical-clearance note",
+      "Nutrition-scope approval"
+    ],
+    "client_inputs": [
+      "Written consent",
+      "Approved name",
+      "Actual timeline",
+      "Actual process",
+      "Result context",
+      "Image permissions"
+    ],
+    "creative_inputs": [
+      "Logo",
+      "Format",
+      "Headline",
+      "Brand palette",
+      "Coach credit",
+      "Music"
+    ],
+    "input_rule": "Escalate medical, injury, nutrition-treatment and guaranteed-result wording for qualified review."
+  },
+  "master_brand_instruction": "Create content only for LEL Fitness in Mumbai, positioned as More Than a Gym, A Personalised Fitness Coaching Studio. The official brand Instagram in the user dataset is @lelfitness.comm and the coach page is @lifestyle_engineer_laxya. Write supportive, structured, practical and premium English or Hinglish. Focus on assessment, personalised coaching, safe training, accountability and sustainable habits. Not every post must sell LEL directly. Never shame bodies, guarantee results, prescribe extreme diets, diagnose pain or disease, promise a cure, or present nutrition guidance as medical treatment. Use only approved client data and imagery. Until official contact details are supplied, use Instagram DM. For standard captions, use exactly three hashtags and one SEO bracket with five to eight phrases. Remove all em dashes.",
+  "missing_information": {
+    "business": [
+      "Legal entity",
+      "Founding year (site says fixing lifestyles since last 8 years; needs exact year sign-off)",
+      "Business hours"
+    ],
+    "contact": [
+      "Booking link beyond the Google-form enrol link on lelfitness.com",
+      "Business hours"
+    ],
+    "services": [
+      "Current packages",
+      "Prices",
+      "Session length",
+      "Coach credentials",
+      "Assessment protocol",
+      "Trial terms",
+      "Nutrition scope",
+      "Cancellation policy"
+    ],
+    "brand_system": [
+      "Logo files",
+      "Exact colour codes",
+      "Fonts",
+      "Photography and consent guide"
+    ],
+    "agency": [
+      "Current package",
+      "Meaning of extra shoot",
+      "Current payment status",
+      "Approval workflow"
+    ],
+    "priority": "Confirm the address, contact, current coaching packages, professional credentials, consent process and exact onboarding journey."
+  },
+  "sources": {
+    "user_facts": [
+      "Positioning and personalised studio process.",
+      "Official brand and coach Instagram links.",
+      "Mumbai location at city level.",
+      "Reel length and public-connection preferences.",
+      "Palette, festival concepts and internal account note."
+    ],
+    "public_sources": [
+      {
+        "url": "https://www.lelfitness.com/",
+        "checked_on": "2026-09-25",
+        "used_for": "Official address, phone, email, founders, 700+/1500+ transformations messaging, 1on1 plans, WhatsApp enrol links."
+      }
+    ],
+    "public_search_note": "Official site confirms phone, address, website, founders and both Instagrams. No independent third-party directory beyond the official site was needed.",
+    "internal_dataset": "Famebros_Brand_Caption_Dataset.json record lel_fitness.",
+    "source_rule": "Current studio-approved service information and qualified professional review override general guidance in this file."
+  }
+}

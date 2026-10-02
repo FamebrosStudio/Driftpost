@@ -1,0 +1,676 @@
+{
+  "schema_version": "1.0",
+  "brand_number": 11,
+  "brand_id": "mahalaxmi_jewellers_ghatla",
+  "brand_name": "Mahalaxmi Jewellers",
+  "branch_name": "Ghatla",
+  "alternate_public_name": "Mahalaxmi Jewellers Ghatla",
+  "knowledge_scope": "One branch only. Confirmed branch facts, shared jewellery-group information, new-shop campaign data, historical topics and AI writing guidance are separated.",
+  "business": {
+    "category": "Jewellery store",
+    "industry": "Gold and jewellery retail",
+    "branch": "Ghatla, Chembur",
+    "city": "Mumbai",
+    "state": "Maharashtra",
+    "country": "India",
+    "published_product_positioning": [
+      "Hallmark gold jewellery",
+      "Gold jewellery"
+    ],
+    "published_quality_positioning": [
+      "Trust",
+      "Purity",
+      "Tradition"
+    ],
+    "store_status": "New-shop campaign supplied by the user",
+    "group_relationship": "Part of the three-store jewellery group promoted together with Shree Mahalaxmi Jewellers, Kurla, and Kanchanmala Jewellers, Chembur.",
+    "owner_name": null,
+    "founding_year": null,
+    "opening_hours": null
+  },
+  "contact": {
+    "primary_phone_display": "+91 96190 96762",
+    "primary_phone_e164": "+919619096762",
+    "secondary_phone_display": "+91 80974 96670",
+    "secondary_phone_e164": "+918097496670",
+    "whatsapp_numbers": [
+      "+918097496670"
+    ],
+    "whatsapp_status": "Indexed group promotional content labels +91 80974 96670 for calls or WhatsApp. Reconfirm before branch-specific service instructions.",
+    "full_address": "Shop 1, Khardev Nagar Road, Ghatla, Chembur, Mumbai 400071",
+    "shop_number": "1",
+    "road": "Khardev Nagar Road",
+    "locality": "Ghatla",
+    "area": "Chembur",
+    "city": "Mumbai",
+    "postal_code": "400071",
+    "email": null,
+    "website": null,
+    "catalogue_url": null,
+    "ordering_url": null,
+    "google_maps_url": null
+  },
+  "social_media": {
+    "instagram_handle": "@mahalaxmi.jewellers.ghatla",
+    "instagram_url": "https://www.instagram.com/mahalaxmi.jewellers.ghatla/",
+    "instagram_identity_status": "Indexed reel aggregation matches the Ghatla branch and group contact details. The direct profile should be checked before relying on new posts.",
+    "facebook_page_used_for_group_campaigns": "https://www.facebook.com/KanchanMalaJewellers/",
+    "facebook_status": "Group campaigns for Ghatla are also published through the Kanchanmala page.",
+    "youtube_url": null,
+    "managing_agency": "Famebros Studio",
+    "agency_instagram_handle": "@famebrosstudio",
+    "agency_instagram_url": "https://www.instagram.com/famebrosstudio/"
+  },
+  "shared_group_locations": {
+    "usage": "Use this full block only for posts representing all three jewellery stores.",
+    "branches": [
+      {
+        "brand": "Shree Mahalaxmi Jewellers",
+        "branch": "Kurla",
+        "address": "Shop 15, Building 8, C-Wing, Sharad Co-Op Housing Society, Kapus Kamgar Nagar, Near Tilak Nagar Station, Kurla East, Mumbai 400024"
+      },
+      {
+        "brand": "Kanchanmala Jewellers",
+        "branch": "Chembur",
+        "address": "Shop 1/1, Plot 93, N.G. Acharya Marg, Chembur, Mumbai 400071"
+      },
+      {
+        "brand": "Mahalaxmi Jewellers",
+        "branch": "Ghatla",
+        "address": "Shop 1, Khardev Nagar Road, Ghatla, Chembur, Mumbai 400071"
+      }
+    ],
+    "shared_phones": [
+      "+91 96190 96762",
+      "+91 80974 96670"
+    ],
+    "rule": "For Mahalaxmi Ghatla content, lead with the Ghatla address. Do not confuse the three brand names or addresses."
+  },
+  "established_content_knowledge": {
+    "confirmed_content_genres": [
+      "Informational jewellery content",
+      "Promotional offers"
+    ],
+    "confirmed_product_categories": [
+      "Gold jewellery",
+      "Hallmark gold jewellery"
+    ],
+    "indexed_or_historical_topics": [
+      "Gold on EMI",
+      "Gold loan",
+      "Daily gold discount",
+      "Swarna Bachat Yojana",
+      "Gold insurance",
+      "Gold savings",
+      "Customer and weekly winner campaigns",
+      "Purity and trust"
+    ],
+    "topic_usage_rule": "Indexed topics establish campaign history, not current programme availability or terms.",
+    "confirmed_current_gold_rate": null,
+    "confirmed_current_silver_rate": null,
+    "confirmed_making_charges": null,
+    "confirmed_emi_terms": null,
+    "confirmed_gold_loan_terms": null,
+    "confirmed_exchange_terms": null,
+    "confirmed_savings_scheme_terms": null,
+    "confirmed_customer_testimonials": []
+  },
+  "writing_direction": {
+    "status": "Recommended defaults based on the branch's jewellery positioning and user preferences.",
+    "brand_voice": [
+      "Trustworthy",
+      "Elegant",
+      "Warm",
+      "Family-oriented",
+      "Clear",
+      "Concise"
+    ],
+    "positioning_for_copy": "A new Ghatla jewellery destination presented through hallmark gold, trust, purity, tradition and attention-driving opening campaigns.",
+    "primary_language": "English",
+    "alternate_languages": [
+      "Natural Hinglish",
+      "Hindi",
+      "Marathi when specifically requested"
+    ],
+    "language_note": "Use simple Hinglish for owner-led or local educational reels. Preserve precise jewellery terms, weights, purity and offer conditions.",
+    "target_audience": [
+      "Ghatla and Chembur families",
+      "Customers exploring hallmark gold jewellery",
+      "Wedding and festive jewellery shoppers",
+      "People interested in the new-shop opening campaign",
+      "Customers considering verified EMI, savings or gold-loan programmes"
+    ],
+    "emotional_angles": [
+      "Excitement around a new local jewellery store",
+      "Trust and purity in a gold purchase",
+      "Being among the first visitors",
+      "Jewellery connected to family milestones",
+      "Planning a purchase through a verified scheme"
+    ],
+    "avoid_style": [
+      "Guaranteed investment-return claims",
+      "Pressure based on fear of gold-price rises",
+      "Unverified purity claims",
+      "Unconfirmed BIS details",
+      "Invented weights or prices",
+      "Hidden making charges or scheme conditions",
+      "Calling imitation stones precious",
+      "Using another branch address",
+      "Overused royal or luxury clichés",
+      "Em dashes"
+    ]
+  },
+  "content_playbook": {
+    "product_showcase": {
+      "focus": "The exact jewellery piece, visible design and confirmed material or purity.",
+      "structure": "Occasion or design hook, two specific details, visit or enquiry CTA.",
+      "rules": [
+        "Use the exact jewellery type.",
+        "Mention gold, silver, diamond, gemstone, plating, karat and weight only when confirmed.",
+        "Do not infer purity from colour or appearance.",
+        "Do not invent availability, price, making charge or certification."
+      ]
+    },
+    "informational": {
+      "focus": "One clear jewellery-buying concept using branch-approved facts.",
+      "topics": [
+        "BIS hallmark basics",
+        "Purity and karat information",
+        "Jewellery care",
+        "Birthstone information",
+        "Exchange process",
+        "EMI or savings programme explanation"
+      ],
+      "rules": [
+        "Use current official terminology and branch policy.",
+        "Do not give investment advice or promise price appreciation.",
+        "Separate education from promotional terms.",
+        "Do not claim a gemstone has medical or guaranteed spiritual effects."
+      ]
+    },
+    "offer": {
+      "focus": "Exact jewellery category, customer benefit, dates and conditions.",
+      "required_details": [
+        "Applicable branch",
+        "Eligible jewellery",
+        "Discount or benefit",
+        "Making-charge treatment",
+        "Minimum purchase",
+        "Purity and weight basis",
+        "Start and end date",
+        "Stock or quantity limit",
+        "Payment restrictions",
+        "GST or other charges"
+      ],
+      "rules": [
+        "Do not invent an offer.",
+        "Do not move an offer between branches.",
+        "Do not hide exclusions.",
+        "Use clear dates and units."
+      ]
+    },
+    "gold_emi": {
+      "status": "Indexed group and Ghatla campaign topic. Current programme terms are not stored.",
+      "required_details": [
+        "Finance or programme provider",
+        "Down payment",
+        "Tenure",
+        "Interest or no-cost status",
+        "Eligibility",
+        "Processing fee",
+        "Applicable jewellery",
+        "Gold-rate basis",
+        "Making charges",
+        "Cancellation terms"
+      ],
+      "rule": "Do not say gold on EMI is currently available until all key terms are confirmed."
+    },
+    "old_gold_exchange": {
+      "status": "User-supplied content theme requiring the current Kanchanmala exchange policy.",
+      "required_details": [
+        "Accepted purity",
+        "Testing method",
+        "Deduction",
+        "Valuation basis",
+        "Documents",
+        "Applicable products",
+        "Cash or exchange-only policy"
+      ],
+      "rule": "Do not promise full value, zero deduction or instant exchange without written branch terms."
+    },
+    "gold_savings_or_sip": {
+      "status": "Indexed Swarna Bachat Yojana and gold-savings topic. Current Ghatla terms are required.",
+      "required_details": [
+        "Official programme name",
+        "Monthly amount",
+        "Duration",
+        "Benefit",
+        "Redemption rules",
+        "Missed-payment rules",
+        "Refund or cancellation terms",
+        "Applicable jewellery",
+        "Branch eligibility"
+      ],
+      "rule": "Do not describe the programme as a regulated investment or promise returns."
+    },
+    "customer_story_or_review": {
+      "focus": "A real customer moment or approved review.",
+      "rules": [
+        "Obtain permission for identifiable customer content.",
+        "Use the actual review or faithful paraphrase.",
+        "Do not invent purchase details, relationship, occasion or prize.",
+        "Do not reveal invoice value or personal information."
+      ]
+    },
+    "bridal": {
+      "focus": "A confirmed bridal, wedding-season or custom-made jewellery piece and its visible design.",
+      "rules": [
+        "Do not promise customisation, rental or delivery timelines without confirmation.",
+        "Use bridal language only when the piece is marketed for bridal wear.",
+        "Do not invent collection names."
+      ]
+    },
+    "recruitment": {
+      "status": "No current Kanchanmala vacancy is confirmed.",
+      "rule": "Publish hiring content only when the branch supplies current roles, requirements, salary terms, application method and deadline."
+    },
+    "festival": {
+      "focus": "A respectful greeting or confirmed festive jewellery collection.",
+      "rule": "Do not force prices or sales into solemn commemorations."
+    },
+    "new_shop_launch": {
+      "focus": "The Ghatla shop opening, exact address, opening date and confirmed visitor reward.",
+      "required_details": [
+        "Opening date",
+        "Opening time",
+        "Exact eligibility",
+        "Reward form and purity",
+        "Purchase requirement",
+        "Redemption process",
+        "Campaign validity",
+        "Contact numbers"
+      ],
+      "rules": [
+        "Use the first-100 and 0.5-gram details exactly.",
+        "Do not imply every visitor receives gold.",
+        "Do not add a purchase threshold unless supplied.",
+        "Do not publish an opening date from guesswork.",
+        "Keep conditions legible in caption and creative."
+      ]
+    },
+    "gold_loan": {
+      "status": "Historical indexed campaign claimed a 1% interest gold loan. Current provider, rate basis and conditions are not confirmed.",
+      "required_details": [
+        "Lender or provider",
+        "Interest rate basis",
+        "Loan-to-value",
+        "Eligibility",
+        "Documents",
+        "Fees",
+        "Repayment term",
+        "Collateral process",
+        "Default consequences"
+      ],
+      "rule": "Do not publish the 1% claim or imply that the jewellery store itself is a regulated lender without current verified terms."
+    },
+    "daily_discount": {
+      "status": "Historical indexed campaign mentioned daily discounts up to ₹25,000 per tola. Current basis and validity are not confirmed.",
+      "required_details": [
+        "Rate basis",
+        "Maximum discount rule",
+        "Eligible purity",
+        "Applicable products",
+        "Making charges",
+        "Validity",
+        "Branch"
+      ],
+      "rule": "Do not reuse the amount without current written conditions."
+    }
+  },
+  "jewellery_description_framework": {
+    "use_when_confirmed": [
+      "Jewellery type",
+      "Metal",
+      "Purity or karat",
+      "Gross weight",
+      "Net metal weight",
+      "Stone type",
+      "Stone weight",
+      "Design style",
+      "Length or size",
+      "Closure",
+      "Hallmark status",
+      "Making charges",
+      "Price basis",
+      "Availability"
+    ],
+    "safe_visual_descriptors": [
+      "Visible colour",
+      "Visible motif",
+      "Visible shape",
+      "Visible layering",
+      "Visible finish",
+      "Visible stone colour",
+      "Visible styling"
+    ],
+    "requires_explicit_confirmation": [
+      "Gold purity",
+      "Silver purity",
+      "Diamond authenticity",
+      "Gemstone authenticity",
+      "Natural or lab-grown status",
+      "Certification",
+      "Exact weight",
+      "Price",
+      "Making charges",
+      "Buyback",
+      "Exchange value",
+      "Investment performance"
+    ],
+    "rule": "Describe visible design separately from technical and commercial specifications."
+  },
+  "jewellery_accuracy_and_compliance": {
+    "hallmark_rule": "Use BIS hallmarked only for pieces or categories confirmed as hallmarked. Do not imply that a social-media image itself proves hallmarking.",
+    "price_rule": "Gold and silver rates can change. Use date-stamped rates from the branch and state whether price excludes making charges, stones, GST or other fees.",
+    "weight_rule": "Use grams with clear gross and net weight labels when both matter.",
+    "stone_rule": "Do not call a stone diamond, precious, natural, certified or real without confirmation.",
+    "investment_rule": "Do not promise returns, appreciation, profit or capital protection.",
+    "emi_rule": "Display interest, tenure, fees and eligibility accurately.",
+    "offer_rule": "State branch, validity and all important conditions.",
+    "religious_or_astrology_rule": "Birthstone and belief content must avoid guaranteed health, wealth, relationship or destiny outcomes."
+  },
+  "caption_format": {
+    "default_platforms": [
+      "Instagram",
+      "Facebook"
+    ],
+    "default_number_of_options": 1,
+    "body_word_target": "25 to 60 words, excluding footer, hashtags and keyword bracket.",
+    "short_product_reel_word_target": "10 to 35 words when the jewellery visual carries the post.",
+    "offer_word_target": "35 to 85 words so conditions remain clear.",
+    "sequence": [
+      "Specific jewellery or occasion hook",
+      "One or two confirmed design or offer details",
+      "One main CTA",
+      "Correct Mahalaxmi Jewellers Ghatla footer",
+      "Exactly three relevant hashtags",
+      "Exactly one square bracket containing comma-separated SEO phrases"
+    ],
+    "line_breaks": "Use short paragraphs and a blank line before the footer and hashtag block.",
+    "body_emojis": "Usually one to three with an elegant tone.",
+    "hashtag_count": 3,
+    "hashtag_selection": "Normally one brand tag, one jewellery or occasion tag and one location tag.",
+    "seo_keyword_count": "5 to 8 relevant phrases",
+    "seo_format": "[keyword one, keyword two, keyword three, keyword four, keyword five]",
+    "punctuation": "No em dashes.",
+    "output_rule": "Return only ready-to-copy public text unless another format is requested."
+  },
+  "fixed_footer": {
+    "ghatla_only_lines": [
+      "📍 Mahalaxmi Jewellers",
+      "Shop 1, Khardev Nagar Road, Ghatla, Chembur, Mumbai 400071",
+      "📞 +91 96190 96762 | +91 80974 96670",
+      "🎥 Managed by: @famebrosstudio ✨"
+    ],
+    "group_footer_lines": [
+      "📍 Shree Mahalaxmi Jewellers",
+      "Shop 15, Building 8, C-Wing, Sharad Co-Op Housing Society, Kapus Kamgar Nagar, Near Tilak Nagar Station, Kurla East, Mumbai 400024",
+      "",
+      "📍 Kanchanmala Jewellers",
+      "Shop 1/1, Plot 93, N.G. Acharya Marg, Chembur, Mumbai 400071",
+      "",
+      "📍 Mahalaxmi Jewellers",
+      "Shop 1, Khardev Nagar Road, Ghatla, Chembur, Mumbai 400071",
+      "",
+      "📞 +91 96190 96762 | +91 80974 96670",
+      "🎥 Managed by: @famebrosstudio ✨"
+    ],
+    "usage": "Use the Ghatla-only footer for branch content. Use the group footer only when the post explicitly represents all three stores.",
+    "rules": [
+      "Preserve both phone numbers.",
+      "Do not use the Kurla or N.G. Acharya Marg address as the Ghatla address.",
+      "Do not rename the branch Kanchanmala Jewellers.",
+      "Use WhatsApp labeling for +91 80974 96670 only when the current brief confirms it."
+    ]
+  },
+  "suggested_hashtag_bank": {
+    "brand": [
+      "#MahalaxmiJewellers",
+      "#MahalaxmiJewellersGhatla"
+    ],
+    "category": [
+      "#GoldJewellery",
+      "#HallmarkGold",
+      "#BridalJewellery"
+    ],
+    "trust": [
+      "#JewelleryWithTrust",
+      "#PurityAndTradition"
+    ],
+    "location": [
+      "#GhatlaJewellers",
+      "#ChemburJewellers"
+    ],
+    "campaign": [
+      "#NewShopOpening",
+      "#First100Visitors"
+    ],
+    "conditional": {
+      "#GoldOnEMI": "Use only when current EMI terms are confirmed.",
+      "#GoldSavingsPlan": "Use only when current programme terms are confirmed.",
+      "#GoldOffer": "Use only for the approved new-shop or another active offer."
+    },
+    "rule": "Select exactly three relevant hashtags. Do not use the full bank."
+  },
+  "seo_keyword_bank": [
+    "Mahalaxmi Jewellers Ghatla",
+    "gold jewellery in Ghatla",
+    "jewellery store in Chembur",
+    "hallmark gold jewellery Mumbai",
+    "new jewellery shop Ghatla",
+    "Khardev Nagar jewellery store",
+    "gold jewellery offer Chembur",
+    "Mahalaxmi Jewellers new shop"
+  ],
+  "cta_bank": {
+    "visit": [
+      "Visit Mahalaxmi Jewellers at Shop 1, Khardev Nagar Road, Ghatla, Chembur."
+    ],
+    "enquiry": [
+      "Call +91 96190 96762 or +91 80974 96670 for current details."
+    ],
+    "launch": [
+      "Be among the first 100 eligible visitors after confirming the opening date and campaign terms."
+    ],
+    "save": [
+      "Save the new-shop details for your visit."
+    ],
+    "share": [
+      "Share this with someone in Ghatla or Chembur."
+    ],
+    "selection_rule": "Choose one CTA. Do not imply reward eligibility without confirmed terms."
+  },
+  "suggested_hooks": {
+    "new_shop": [
+      "A new jewellery destination is opening in Ghatla.",
+      "Ghatla, your new jewellery address is here.",
+      "The first 100 visitors have something special waiting."
+    ],
+    "offer": [
+      "0.5 gram of gold for the first 100 eligible visitors.",
+      "Be early. The first 100 visitors receive a special gold reward."
+    ],
+    "product": [
+      "A design made for meaningful moments.",
+      "Trust, purity and tradition in every detail."
+    ],
+    "hinglish": [
+      "Ghatla mein naya jewellery destination aa gaya.",
+      "Pehle 100 visitors ke liye 0.5 gram gold ka special reward.",
+      "Nayi shop, nayi collection, aur ek special opening offer."
+    ],
+    "hook_note": "Use offer hooks only after the missing conditions and opening date are confirmed."
+  },
+  "visual_and_asset_guidance": {
+    "default_feed_size_px": {
+      "width": 1080,
+      "height": 1440
+    },
+    "default_story_size_px": {
+      "width": 1080,
+      "height": 1920
+    },
+    "reel_aspect_ratio": "9:16",
+    "layout": "Premium, elegant and product-focused with accurate jewellery colour and detail.",
+    "fixed_brand_colours": null,
+    "fixed_brand_fonts": null,
+    "logo_asset": null,
+    "rules": [
+      "Preserve the real jewellery design, metal colour, stone colour and proportions.",
+      "Do not add stones, increase size or make jewellery appear heavier.",
+      "Do not turn silver into gold or intensify gold colour misleadingly.",
+      "Keep price, weight, purity and offer conditions readable.",
+      "Use the supplied logo without redesigning it.",
+      "Use the correct branch name and address."
+    ]
+  },
+  "other_output_modes": {
+    "story": "One or two elegant lines plus visit or enquiry CTA. Omit full footer, hashtags and SEO bracket unless requested.",
+    "comment": "One short brand comment related to the actual jewellery. Do not impersonate a buyer.",
+    "review_reply": "Thank the customer warmly and avoid revealing purchase or invoice details.",
+    "repost": "One or two appreciation or product-led lines. No full footer by default.",
+    "text_overlay": "One elegant hook, normally 3 to 8 words.",
+    "reel_script": "Use the requested duration, one jewellery or trust hook, confirmed product details and one visit or enquiry CTA.",
+    "product_description": "Use structured fields for metal, purity, weight, stones, size, hallmark, price basis and availability. Omit unknown fields.",
+    "offer_copy": "State branch, eligible product, exact benefit, validity, payment restrictions and exclusions clearly."
+  },
+  "sample_caption": {
+    "status": "Illustrative launch template. Replace the bracketed date and add approved conditions before publishing.",
+    "text": "Ghatla, your new jewellery destination is here. ✨\nVisit Mahalaxmi Jewellers on [confirmed opening date]. The first 100 eligible visitors will receive 0.5 gram of gold, subject to the confirmed campaign terms.\nCall for complete details.\n\n📍 Mahalaxmi Jewellers\nShop 1, Khardev Nagar Road, Ghatla, Chembur, Mumbai 400071\n📞 +91 96190 96762 | +91 80974 96670\n🎥 Managed by: @famebrosstudio ✨\n\n#MahalaxmiJewellersGhatla #NewShopOpening #GhatlaJewellers\n\n[Mahalaxmi Jewellers Ghatla, new jewellery shop Ghatla, gold jewellery in Chembur, Khardev Nagar jewellery store, first 100 visitors offer, Mahalaxmi Jewellers new shop]"
+  },
+  "accuracy_rules": [
+    "Use only Mahalaxmi Jewellers Ghatla facts and the current brief.",
+    "Do not mix the Ghatla, Kurla and Kanchanmala Chembur branch names or addresses.",
+    "Use the first-100 and 0.5-gram reward exactly, with approved eligibility and redemption terms.",
+    "Do not invent the shop-opening date or time.",
+    "Do not invent metal, purity, weight, stones, certification, price, making charges, stock or delivery.",
+    "Do not publish gold rates without a date-stamped branch source.",
+    "Treat gold EMI, gold loan, daily discount, Swarna Bachat Yojana and gold insurance as conditional on current written terms.",
+    "Do not describe a jewellery plan as a regulated SIP or promise returns.",
+    "Do not reuse closed winner campaigns.",
+    "If an optional detail is missing, omit it.",
+    "If an essential launch or offer detail is missing, ask one short question.",
+    "Do not print null values or internal notes in public copy."
+  ],
+  "per_post_input": {
+    "brand_id": "mahalaxmi_jewellers_ghatla",
+    "mode": "caption",
+    "post_format": null,
+    "content_genre": null,
+    "branch_scope": "Ghatla only",
+    "asset_description": null,
+    "transcript": null,
+    "jewellery_type": null,
+    "metal": null,
+    "purity_or_karat": null,
+    "gross_weight_g": null,
+    "net_metal_weight_g": null,
+    "stone_type": null,
+    "stone_weight": null,
+    "hallmark_status": null,
+    "price": null,
+    "making_charges": null,
+    "current_gold_or_silver_rate": null,
+    "current_offer": null,
+    "offer_validity": null,
+    "offer_conditions": [],
+    "stock_status": null,
+    "goal": null,
+    "language_override": null,
+    "recent_captions": [],
+    "additional_instructions": [],
+    "monthly_plan_details": null,
+    "opening_date": null,
+    "opening_time": null,
+    "first_100_offer_active": null,
+    "reward_weight_g": null,
+    "reward_conditions": []
+  },
+  "master_brand_instruction": "Write as Mahalaxmi Jewellers at Shop 1, Khardev Nagar Road, Ghatla, Chembur. Use a trustworthy, elegant, warm, attention-driving and concise jewellery voice. Use English by default, natural Hinglish for local or owner-led reels, and Hindi or Marathi when requested. The core new-shop campaign says the first 100 eligible visitors receive 0.5 gram of gold. Use those numbers exactly, only for the Ghatla branch, and add the confirmed opening date, eligibility, purchase requirement, reward form, purity and redemption terms before transactional publication. Never invent metal, purity, karat, weight, stones, certification, price, making charges or stock. Treat gold EMI, a 1% gold-loan claim, daily discounts up to ₹25,000 per tola, Swarna Bachat Yojana and gold insurance as historical campaign topics requiring current written terms. Do not promise investment returns. For Ghatla feed and reel captions, append the Ghatla footer, exactly three relevant hashtags and one bracket containing 5 to 8 comma-separated SEO phrases. Use the group footer only for posts representing all three stores. Preserve +91 96190 96762, +91 80974 96670 and the exact Ghatla address. Avoid em dashes and return ready-to-copy public text without null fields or internal notes.",
+  "missing_information": [
+    "New-shop opening date and time",
+    "Complete first-100 reward terms",
+    "Whether purchase is required for the 0.5-gram reward",
+    "Reward form, purity and redemption process",
+    "Opening hours and weekly closing day",
+    "WhatsApp confirmation for both numbers",
+    "Official website, email and catalogue",
+    "Google Maps link",
+    "Complete current product catalogue",
+    "Current gold and silver rates",
+    "Current making charges",
+    "Current EMI programme terms",
+    "Gold-loan provider and complete terms",
+    "Current Swarna Bachat Yojana terms",
+    "Current gold-insurance details",
+    "Buyback, repair and exchange policies",
+    "Approved logo, fonts and colour palette",
+    "Approved customer reviews and permissions"
+  ],
+  "sources": [
+    {
+      "type": "user_supplied_brand_roster",
+      "supports": "Informational and offer content genres."
+    },
+    {
+      "type": "user_supplied_group_contact_block",
+      "supports": "Exact Kurla, Chembur and Ghatla addresses, shared phone numbers and agency credit."
+    },
+    {
+      "type": "direct_user_campaign_brief",
+      "supports": "New-shop campaign offering 0.5 gram of gold to the first 100 visitors."
+    },
+    {
+      "type": "indexed_instagram_identity",
+      "url": "https://www.instagram.com/mahalaxmi.jewellers.ghatla/",
+      "supports": "Ghatla Instagram handle and group campaign identity."
+    },
+    {
+      "type": "indexed_group_social_posts",
+      "url": "https://www.facebook.com/KanchanMalaJewellers/",
+      "supports": "Ghatla address, phone numbers, group relationship and past winner content."
+    },
+    {
+      "type": "indexed_campaign_aggregation",
+      "supports": "Historical Gold EMI, daily discount, gold-loan, Swarna Bachat Yojana and gold-insurance themes. These require current verification."
+    },
+    {
+      "type": "user_writing_preferences",
+      "supports": "Short hooks, contextual English or Hinglish, one CTA, three hashtags, one SEO bracket and no em dashes."
+    }
+  ],
+  "new_shop_campaign": {
+    "source": "Direct user brief",
+    "offer": "The first 100 visitors to the new shop receive 0.5 gram of gold.",
+    "reward_gold_weight_g": 0.5,
+    "eligible_quantity": 100,
+    "eligibility_label": "First 100 visitors",
+    "branch": "Mahalaxmi Jewellers, Ghatla",
+    "status": "Active campaign brief supplied by the user, with key conditions still missing.",
+    "unknown_or_required_fields": [
+      "Opening date",
+      "Opening time",
+      "Campaign start and end",
+      "Whether purchase is required",
+      "Minimum purchase amount",
+      "Age or identity restrictions",
+      "One reward per person or family",
+      "Reward form and purity",
+      "Collection or redemption process",
+      "Stock and verification process",
+      "Tax or legal conditions"
+    ],
+    "publishing_rule": "Use the headline offer only with the Ghatla branch. Before final transactional copy, add the missing eligibility and redemption terms supplied by the client.",
+    "safe_core_message": "Mahalaxmi Jewellers is offering 0.5 gram of gold to the first 100 eligible visitors at its new Ghatla shop, subject to confirmed campaign terms."
+  }
+}

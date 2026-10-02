@@ -1,0 +1,726 @@
+{
+  "schema_version": "1.0",
+  "brand_number": 15,
+  "brand_id": "pardesi_sneakers",
+  "brand_name": "Pardesi Sneakers",
+  "aliases": [
+    "Pardesi",
+    "Pardesi Designer Sneakers",
+    "Pardesi | Bridal Sneakers | Clutches & Punjabi Jutti"
+  ],
+  "knowledge_scope": "One brand only. User-confirmed brand knowledge, current public website details, third-party location evidence, historical campaign information and AI writing guidance are separated.",
+  "business": {
+    "category": "Women's bridal footwear and occasion accessories",
+    "industry": "Bridal fashion, designer footwear and handcrafted accessories",
+    "customer_focus": "Women only for the user's active content system",
+    "customer_focus_note": "Write for brides and women shopping for bridal, wedding, festive and occasion footwear or accessories. Do not use men's footwear language or broaden the audience unless the user explicitly changes the active rule.",
+    "location_area": "Bhyandarpada, Thane West",
+    "city": "Thane",
+    "state": "Maharashtra",
+    "country": "India",
+    "brand_creator_or_public_name": "Mihika Puthran",
+    "brand_creator_status": "The public website identifies the brand as designer sneakers by Mihika Puthran.",
+    "core_positioning": "Indian bridal craftsmanship combined with sneaker comfort for women who want statement wedding footwear without giving up ease of movement.",
+    "brand_descriptor": "Bridal Sneakers | Clutches & Punjabi Jutti",
+    "shipping_message_user_approved": "Ships worldwide",
+    "shipping_message_current_public_support": "The current website states delivery within India and international delivery. Use 'Ships worldwide' as the user's approved brand message, but avoid guaranteeing delivery to a specific country until checkout or customer care confirms availability."
+  },
+  "contact": {
+    "primary_phone_display": "+91 88283 37331",
+    "primary_phone_e164": "+918828337331",
+    "whatsapp_number_display": "+91 88283 37331",
+    "whatsapp_number_e164": "+918828337331",
+    "whatsapp_status": "Used by the brand for order/customer-care communication in active content and referenced by the current website.",
+    "full_address_preferred": "Shop No. 11, Patil Complex, Opposite Lodha Splendora Gate No. 2, Bhyandarpada, Thane West, Maharashtra 400615, India",
+    "address_variants": [
+      "Shop 11, Patil Complex, Opposite Lodha Splendora Gate 2, Bhyandarpada, Thane West, Maharashtra 400615",
+      "Shop No. 11, Patil Complex, Opposite to Lodha Splendora Gate No. 2, Bhyandarpada, Thane West, Thane, Maharashtra 400615"
+    ],
+    "address_note": "A current third-party business listing supports Shop No. 11, Patil Complex, opposite Lodha Splendora Gate No. 2, Bhyandarpada, Thane West, Maharashtra 400615. Use the preferred normalized format in captions.",
+    "email_primary": "customercare@pardesi.in",
+    "email_secondary_historical": "pardesisneakers@gmail.com",
+    "email_note": "Use customercare@pardesi.in as the current customer-care email when needed. The Gmail address appeared in older brand information and should not be preferred without reconfirmation.",
+    "website": "https://pardesisneakers.com/",
+    "google_maps_url": null
+  },
+  "social_media": {
+    "instagram_handle": "@pardesisneakers",
+    "instagram_url": "https://www.instagram.com/pardesisneakers/",
+    "facebook_url": null,
+    "youtube_url": null,
+    "managing_agency": "Famebros Studio",
+    "agency_instagram_handle": "@famebrosstudio",
+    "agency_instagram_url": "https://www.instagram.com/famebrosstudio/"
+  },
+  "established_content_knowledge": {
+    "confirmed_content_genres": [
+      "Bridal sneakers",
+      "Bridal footwear styling",
+      "Wedding-season fashion",
+      "Comfort versus heels",
+      "Handcrafted product storytelling",
+      "Customised bridal footwear",
+      "Festive footwear",
+      "Punjabi jutti",
+      "Designer clutches",
+      "Bride dancing and movement-led content",
+      "Product close-ups",
+      "Bridal outfit matching",
+      "Reviews and customer reactions"
+    ],
+    "confirmed_audience": "Women only",
+    "primary_audience": [
+      "Brides",
+      "Brides-to-be",
+      "Women attending weddings",
+      "Bridesmaids",
+      "Women shopping for festive or occasion footwear",
+      "Women who want fashion-forward alternatives to heels",
+      "Destination-wedding and NRI shoppers when international delivery is relevant"
+    ],
+    "observed_products_and_services": [
+      "Designer bridal sneakers",
+      "Wedding sneakers",
+      "Embroidered sneakers",
+      "Handcrafted sneakers",
+      "Customised bridal sneakers",
+      "Punjabi jutti",
+      "Designer clutches",
+      "Bridal sneaker and clutch combinations",
+      "Festive and occasion sneakers"
+    ],
+    "wedding_use_cases": [
+      "Wedding ceremony",
+      "Reception",
+      "Sangeet",
+      "Mehendi",
+      "Haldi",
+      "After-party",
+      "Destination wedding",
+      "Bridal photoshoot"
+    ],
+    "styling_pairings": [
+      "Lehenga",
+      "Saree",
+      "Sharara",
+      "Fusion bridal wear",
+      "Festive Indian wear"
+    ],
+    "published_positioning": [
+      "Heritage-inspired bridal detailing with contemporary sneaker comfort",
+      "Handcrafted designer wedding footwear",
+      "Bridal and festive occasion use",
+      "Comfort-led fashion for long celebrations",
+      "Designed and handcrafted in India"
+    ],
+    "craftsmanship_claims_current_website": [
+      "Handcrafted by skilled artisans",
+      "Hand-finished detailing",
+      "Hand embroidery on relevant designs",
+      "Slight handmade variations may occur"
+    ],
+    "shipping_current_website": {
+      "india_prepaid_shipping": "Free shipping across India on prepaid orders",
+      "india_typical_delivery": "5 to 7 working days according to the current shipping section",
+      "international_typical_delivery": "10 to 12 working days according to the current shipping section",
+      "cash_on_delivery": "Available across India for an additional charge according to the current shipping section",
+      "international_exchange": "Current website states international orders are not eligible for exchange",
+      "rule": "Shipping, delivery, COD and exchange terms can change. For transactional copy, confirm against the live product or policy page."
+    },
+    "current_return_exchange_observation": {
+      "returns": "Current website states returns are not accepted.",
+      "exchange": "Current website states size or style exchange is available within 14 days of delivery for eligible unused and unworn footwear in original packaging with invoice.",
+      "sale_items": "Current website states sale items are not eligible for exchange.",
+      "international_orders": "Current website states international orders are not eligible for exchange.",
+      "status": "Current public website observation. Recheck before publishing policy-sensitive content."
+    },
+    "current_price_list": [],
+    "current_offers": [],
+    "price_rule": "Do not copy a price from one product page into generic brand captions. Product pricing and sale pricing must come from the live SKU or current brief.",
+    "historical_campaign_information": [
+      {
+        "campaign": "Flat 50% OFF bridal sneaker promotion",
+        "status": "Historical campaign content. Do not revive automatically.",
+        "usage_rule": "Use only if the user confirms the offer is currently active."
+      },
+      {
+        "campaign": "Matching combinations from ₹6,999",
+        "status": "Historical campaign content. Do not revive automatically.",
+        "usage_rule": "Use only with current confirmation."
+      },
+      {
+        "campaign": "Starting ₹3,999",
+        "status": "Historical campaign content. Do not publish as a current starting price without confirmation."
+      }
+    ]
+  },
+  "writing_direction": {
+    "status": "Recommended defaults based on the user's established brand system, historical Pardesi content and current public positioning.",
+    "brand_voice": [
+      "Premium",
+      "Feminine",
+      "Celebratory",
+      "Stylish",
+      "Confident",
+      "Youthful",
+      "Playful",
+      "Culturally rooted",
+      "Modern",
+      "Slightly rebellious when the concept is about ditching heels"
+    ],
+    "positioning_for_copy": "A bridal fashion brand for women who want handcrafted Indian detailing, statement style and sneaker comfort through wedding celebrations.",
+    "primary_language": "English",
+    "alternate_language": "Natural light Hinglish for relatable bridal reels, humour and conversational hooks.",
+    "language_rule": "Keep premium product captions polished. Use Hinglish mainly for reels, relatable wedding situations, bride reactions and playful hooks.",
+    "target_audience": [
+      "Modern Indian brides",
+      "Brides who want to dance comfortably at wedding functions",
+      "Women styling lehengas, sarees, shararas or fusion looks",
+      "Bridesmaids and wedding guests",
+      "Women looking for handcrafted festive footwear",
+      "Customers seeking customised bridal footwear",
+      "International bridal shoppers where shipping is serviceable"
+    ],
+    "emotional_angles": [
+      "Look beautiful and still enjoy every dance",
+      "Bridal style without sacrificing movement",
+      "A pair made to feel special for a special day",
+      "Traditional craftsmanship with a modern twist",
+      "Confidence from pheras to the dance floor",
+      "Footwear that becomes part of the bridal memory",
+      "Comfort and couture together",
+      "Personalisation for the bride's own look"
+    ],
+    "signature_copy_territories": [
+      "Brides, ditch the heels",
+      "Dance all night",
+      "Comfort meets couture",
+      "Street meets shaadi",
+      "Your design, our karigari",
+      "From pheras to the after-party",
+      "Made for brides who dance",
+      "Bridal sneakers that match the outfit and the energy"
+    ],
+    "avoid_style": [
+      "Men's footwear language",
+      "Gender-neutral audience wording when writing normal brand captions",
+      "Medical or orthopedic claims",
+      "Guaranteed pain-free claims",
+      "Claims that heels are harmful",
+      "Cheap or mass-market sale language",
+      "Sports-shoe language unless the creative specifically needs it",
+      "Invented materials or embellishments",
+      "Invented customisation options",
+      "Invented delivery promises",
+      "Invented stock urgency",
+      "Automatically reviving old discounts",
+      "Overloading captions with wedding clichés",
+      "Long generic luxury copy",
+      "Em dashes"
+    ]
+  },
+  "content_playbook": {
+    "bridal_product_showcase": {
+      "focus": "Show the real Pardesi pair as the hero and connect its visible craftsmanship to bridal styling and comfort.",
+      "structure": "Bridal hook, one visible design detail, style + comfort benefit, order CTA.",
+      "rules": [
+        "Use the actual supplied product or current website SKU.",
+        "Keep the footwear design unchanged.",
+        "Do not change embroidery, colour, laces, sole, embellishments or proportions.",
+        "Describe only visible or confirmed design details.",
+        "Do not invent material composition."
+      ]
+    },
+    "comfort_vs_heels": {
+      "focus": "A relatable bride choosing movement, dancing and sneaker comfort instead of depending on heels for the full event.",
+      "structure": "Wedding pain-point or dilemma, Pardesi reveal, movement/dance payoff, CTA.",
+      "rules": [
+        "Do not make medical claims.",
+        "Do not guarantee zero pain or all-day comfort for every wearer.",
+        "Frame comfort as product positioning and experience, not a health promise.",
+        "Keep the tone playful rather than anti-women or anti-heels."
+      ]
+    },
+    "wedding_function_styling": {
+      "focus": "Show how a confirmed Pardesi pair can work with a wedding function such as Haldi, Mehendi, Sangeet, wedding or reception.",
+      "rules": [
+        "Match product colour and visible detailing accurately.",
+        "Do not claim a product is made for a specific function unless confirmed or framed as a styling suggestion.",
+        "Mention lehenga, saree, sharara or fusion styling only when relevant."
+      ]
+    },
+    "customisation": {
+      "focus": "Personalised bridal design discussions and custom-made or customised pair storytelling.",
+      "rules": [
+        "Use customisation only when offered for the specific order or product.",
+        "Do not promise exact replication of an outfit.",
+        "Do not invent embroidery, names, dates, colours or motifs.",
+        "For order-led copy, direct customers to DM or WhatsApp for confirmation."
+      ]
+    },
+    "craftsmanship": {
+      "focus": "Artisan work, hand-finishing, embroidery and detailed making process.",
+      "rules": [
+        "Use the actual making footage or confirmed website detail.",
+        "Do not assign exact hours of work unless the specific live product page states it.",
+        "Do not call materials genuine, freshwater, premium or imported unless confirmed for that product.",
+        "Handmade variations should be described as part of the handcrafted nature only when relevant."
+      ]
+    },
+    "bride_dancing": {
+      "focus": "A bride enjoying her event, especially dancing, walking and moving freely in her wedding look.",
+      "structure": "Relatable bridal setup, footwear reveal, dance or movement moment, memorable CTA.",
+      "rules": [
+        "Do not guarantee unlimited comfort.",
+        "Do not imply every bride has the same experience.",
+        "Use energetic, feminine and celebratory copy."
+      ]
+    },
+    "clutch_and_jutti": {
+      "focus": "Accessories and non-sneaker categories such as designer clutches and Punjabi jutti.",
+      "rules": [
+        "Do not force sneaker terminology onto clutch or jutti posts.",
+        "Use the exact category shown.",
+        "Keep the same premium bridal and occasion-fashion voice."
+      ]
+    },
+    "review": {
+      "focus": "Real customer feedback about the product, styling, wedding use or experience.",
+      "rules": [
+        "Use the customer's actual approved words or faithfully paraphrase them.",
+        "Do not invent bride names, wedding details or testimonials.",
+        "Do not turn one customer's comfort experience into a universal guarantee."
+      ]
+    },
+    "offer": {
+      "status": "Requires a current campaign brief or live website confirmation.",
+      "required_details": [
+        "Exact product or category",
+        "Original price if used",
+        "Sale price or discount",
+        "Validity",
+        "Coupon code if any",
+        "Stock limitations if real",
+        "Shipping eligibility",
+        "Exchange eligibility"
+      ],
+      "rules": [
+        "Do not automatically publish Flat 50% OFF.",
+        "Do not automatically publish ₹3,999 starting price.",
+        "Do not automatically publish ₹6,999 combo pricing.",
+        "Use live product pricing only for the exact SKU.",
+        "Sale-item exchange rules must match the current policy."
+      ]
+    }
+  },
+  "bridal_product_description_framework": {
+    "product_identity": [
+      "Product name",
+      "Category",
+      "Colour",
+      "Wedding function or occasion",
+      "Available sizes"
+    ],
+    "visible_design": [
+      "Embroidery",
+      "Pearls",
+      "Zari",
+      "Gota",
+      "Sequins",
+      "Motifs",
+      "Laces",
+      "Platform or sole shape",
+      "Colour palette"
+    ],
+    "comfort_and_construction": [
+      "Insole",
+      "Lining",
+      "Sole",
+      "Closure",
+      "Platform height",
+      "Grip",
+      "Cushioning"
+    ],
+    "customisation": [
+      "Custom colour",
+      "Name or initials",
+      "Outfit matching",
+      "Motif choice",
+      "Size",
+      "Design changes"
+    ],
+    "commercial_details": [
+      "MRP",
+      "Sale price",
+      "Discount",
+      "Delivery estimate",
+      "India shipping",
+      "International shipping",
+      "COD",
+      "Exchange eligibility"
+    ],
+    "requires_explicit_confirmation": [
+      "Exact material",
+      "Exact handcrafted hours",
+      "Freshwater pearls",
+      "Memory foam",
+      "Arch support",
+      "Non-slip performance",
+      "Customisation scope",
+      "Exact dispatch date",
+      "Country-level international shipping",
+      "Current sale percentage",
+      "Stock quantity"
+    ],
+    "rule": "Describe visible craftsmanship separately from technical construction. Never infer materials or performance features from the product photo alone."
+  },
+  "caption_format": {
+    "default_platforms": [
+      "Instagram",
+      "Facebook"
+    ],
+    "default_number_of_options": 1,
+    "body_word_target": "25 to 60 words, excluding footer, hashtags and SEO keyword bracket.",
+    "short_reel_word_target": "12 to 40 words.",
+    "educational_or_craft_word_target": "35 to 80 words.",
+    "audience_rule": "Women only. Address brides, brides-to-be, women, bridesmaids or female wedding shoppers as appropriate.",
+    "sequence": [
+      "Specific bridal, product, comfort or wedding hook",
+      "One product, craftsmanship, styling or comfort point",
+      "One order, DM, WhatsApp, save or share CTA",
+      "Confirmed Pardesi footer",
+      "Exactly three relevant hashtags",
+      "Exactly one square bracket containing comma-separated SEO phrases"
+    ],
+    "line_breaks": "Use short mobile-friendly paragraphs and a blank line before the footer and hashtag block.",
+    "body_emojis": "Usually one to three. Prefer bridal, sparkle, heart, shoe or celebration emojis where natural.",
+    "hashtag_count": 3,
+    "hashtag_selection": "Normally one brand hashtag, one bridal-footwear hashtag and one context or wedding-fashion hashtag.",
+    "seo_keyword_count": "5 to 8 relevant phrases",
+    "seo_format": "[keyword one, keyword two, keyword three, keyword four, keyword five]",
+    "punctuation": "No em dashes.",
+    "output_rule": "Return only ready-to-copy public text unless another format is requested."
+  },
+  "fixed_footer": {
+    "lines": [
+      "📍 Pardesi Sneakers, Shop No. 11, Patil Complex, Opposite Lodha Splendora Gate No. 2, Bhyandarpada, Thane West, Maharashtra 400615",
+      "📞 WhatsApp / Call: +91 88283 37331",
+      "🌐 pardesisneakers.com",
+      "🌍 Ships worldwide",
+      "💫 Managed by: @famebrosstudio"
+    ],
+    "usage": "Use for normal feed and reel captions when a full sales footer is appropriate. For product launches or transactional posts, verify the live shipping/offer details first.",
+    "rules": [
+      "Preserve the phone number exactly.",
+      "Use the normalized Thane address.",
+      "Do not invent a second order number.",
+      "Do not replace the official website.",
+      "Use 'Ships worldwide' as the approved brand message, but do not guarantee service to a named country without confirmation.",
+      "For stories, comments and reposts, omit the full footer unless requested."
+    ]
+  },
+  "suggested_hashtag_bank": {
+    "brand": [
+      "#PardesiSneakers",
+      "#PardesiBride"
+    ],
+    "category": [
+      "#BridalSneakers",
+      "#WeddingSneakers",
+      "#DesignerSneakers",
+      "#BridalFootwear",
+      "#PunjabiJutti",
+      "#DesignerClutch"
+    ],
+    "occasion": [
+      "#WeddingSeason",
+      "#BrideToBe",
+      "#IndianBride",
+      "#BridalStyle",
+      "#SangeetLook",
+      "#MehendiLook"
+    ],
+    "benefit": [
+      "#ComfortMeetsStyle",
+      "#DanceInComfort"
+    ],
+    "location": [
+      "#Thane",
+      "#MumbaiBrides"
+    ],
+    "rule": "Select exactly three relevant hashtags. Do not add a product or occasion hashtag that is not shown or confirmed."
+  },
+  "seo_keyword_bank": [
+    "Pardesi Sneakers",
+    "bridal sneakers India",
+    "designer bridal sneakers",
+    "handcrafted bridal sneakers",
+    "customised bridal sneakers",
+    "wedding sneakers for brides",
+    "comfortable bridal footwear",
+    "bridal sneakers Thane",
+    "bridal sneakers Mumbai",
+    "Punjabi jutti for women",
+    "designer bridal clutches",
+    "wedding footwear for women",
+    "sangeet sneakers for bride",
+    "mehendi footwear for bride",
+    "reception sneakers for bride",
+    "international bridal footwear shipping"
+  ],
+  "cta_bank": {
+    "whatsapp": [
+      "DM us or WhatsApp +91 88283 37331 to discuss your bridal pair.",
+      "Planning your wedding look? WhatsApp +91 88283 37331."
+    ],
+    "shop": [
+      "Explore the collection at pardesisneakers.com.",
+      "Find your wedding pair at pardesisneakers.com."
+    ],
+    "visit": [
+      "Visit Pardesi Sneakers in Bhyandarpada, Thane West."
+    ],
+    "bride_share": [
+      "Send this to a bride who plans to dance.",
+      "Tag a bride who would swap heels for this pair."
+    ],
+    "save": [
+      "Save this for your bridal footwear moodboard.",
+      "Save this pair for your wedding look."
+    ],
+    "customisation": [
+      "DM or WhatsApp us to discuss your customised bridal pair."
+    ],
+    "international": [
+      "Shopping from outside India? Message us to confirm delivery for your location."
+    ],
+    "selection_rule": "Choose one CTA. For country-specific international orders, ask the customer to confirm serviceability before promising delivery."
+  },
+  "suggested_hooks": {
+    "bridal": [
+      "Brides, your dance-floor shoes just arrived.",
+      "Your bridal look deserves comfort too.",
+      "Made for the bride who plans to dance.",
+      "Wedding sneakers, but make them bridal couture."
+    ],
+    "comfort": [
+      "Looks matter. Comfort matters too.",
+      "Why choose between the look and the comfort?",
+      "From pheras to the dance floor.",
+      "Because the bride should enjoy the party too."
+    ],
+    "anti_heel_playful": [
+      "Brides, ditch the heels when the dancing starts.",
+      "Heels for the photo. Pardesi for the party.",
+      "When the lehenga stays, but the heels have to go."
+    ],
+    "craft": [
+      "Karigari you can wear down the aisle.",
+      "Every detail made to feel bridal.",
+      "Tradition on top. Sneaker energy underneath."
+    ],
+    "hinglish": [
+      "Shaadi ka look bhi, dance ka comfort bhi.",
+      "Lehenga ready? Ab bridal sneakers bhi ready karo.",
+      "Bride ho, poori shaadi enjoy karna banta hai.",
+      "Aapka design, hamari karigari."
+    ],
+    "hook_note": "Suggestions only. Match the actual product, function, footage and active campaign."
+  },
+  "visual_and_asset_guidance": {
+    "default_feed_size_px": {
+      "width": 1080,
+      "height": 1440
+    },
+    "default_story_size_px": {
+      "width": 1080,
+      "height": 1920
+    },
+    "reel_aspect_ratio": "9:16",
+    "layout": "Premium Indian bridal-fashion editorial with the supplied Pardesi product as the hero.",
+    "preferred_visual_mood": [
+      "Luxury bridal",
+      "Warm",
+      "Elegant",
+      "Feminine",
+      "Fashion editorial",
+      "Handcrafted",
+      "Celebratory",
+      "Modern Indian"
+    ],
+    "preferred_palette_direction": [
+      "Champagne",
+      "Gold",
+      "Cream",
+      "Ivory",
+      "Warm beige",
+      "Burgundy or wine when conceptually relevant",
+      "Black, red, green or multicolour accents based on the actual product"
+    ],
+    "typography_direction": [
+      "Elegant editorial serif",
+      "Premium fashion typography",
+      "Bold modern type for disruptive bridal hooks"
+    ],
+    "product_integrity_rule": "Uploaded Pardesi product photos must remain visually faithful to the real product.",
+    "rules": [
+      "Do not redesign the footwear.",
+      "Do not recolour the product.",
+      "Do not alter embroidery.",
+      "Do not add or remove embellishments.",
+      "Do not change laces.",
+      "Do not change the sole.",
+      "Do not change product proportions.",
+      "Do not invent motifs or handwork.",
+      "Keep the real product visually recognisable.",
+      "Use premium bridal styling rather than a generic sports-shoe aesthetic.",
+      "If a bride/model is generated around the product, do not let the generated scene distort the shoe design.",
+      "Use supplied logo without redesigning it."
+    ]
+  },
+  "carousel_and_reel_system": {
+    "problem_solution_reel": {
+      "preferred_structure": [
+        "Slide or scene 1: bridal footwear problem without showing Pardesi product",
+        "Slide or scene 2: continue the relatable problem or missed-dance moment",
+        "Slide or scene 3: Pardesi product solution reveal",
+        "Slide or scene 4: bride enjoying or dancing in the resolved scenario"
+      ],
+      "rule": "When following the user's established Pardesi problem-solution format, do not reveal the Pardesi shoe in slides 1 or 2."
+    },
+    "retro_80s_campaign": {
+      "concept": "If Pardesi existed in the 80s",
+      "mood": "1980s Indian wedding nostalgia with modern bridal footwear positioning",
+      "visual_notes": [
+        "Warm analogue tones",
+        "Soft flash",
+        "Film grain",
+        "Faded print feel",
+        "Marigold and brass wedding decor",
+        "Retro cream or butter-yellow typography",
+        "Maroon shadow accents where suitable"
+      ],
+      "rule": "Retro treatment may affect the surrounding scene, not the actual footwear design."
+    },
+    "wedding_season_plan": {
+      "focus": "Bridal sneakers and wedding-season use cases",
+      "photo_source_priority": [
+        "Official website",
+        "Approved Google Drive assets",
+        "User-uploaded product images"
+      ],
+      "product_rule": "Keep all footwear designs unchanged."
+    }
+  },
+  "other_output_modes": {
+    "story": "One short bridal, product or comfort line with DM, WhatsApp or shop CTA. Omit the full footer, hashtags and SEO bracket unless requested.",
+    "comment": "One short relevant appreciation or bridal-fashion observation. Do not impersonate a customer.",
+    "review_reply": "Thank the customer warmly and avoid inventing wedding details, fit outcomes or future promises.",
+    "repost": "One or two lines celebrating the bride/customer, with credit only when permission and handle are available.",
+    "text_overlay": "One strong bridal or comfort hook, normally 3 to 8 words.",
+    "reel_script": "Use the requested duration, a relatable bridal hook, real product reveal, one style/comfort point and one CTA.",
+    "product_description": "Use product name, visible design, confirmed materials, construction, sizes, current price, delivery and exchange fields only when confirmed.",
+    "ad_copy": "Lead with bridal use case, style + comfort positioning, current verified offer if any, and one clear WhatsApp or website CTA."
+  },
+  "sample_caption": {
+    "status": "Illustrative women-only bridal caption using stable brand positioning and approved footer. It avoids unconfirmed price and offer claims.",
+    "text": "Your bridal look deserves comfort too. ✨\nStep into handcrafted Pardesi bridal sneakers made for statement style, wedding energy and every dance you do not want to miss.\n\nDM us or WhatsApp +91 88283 37331 to discuss your bridal pair.\n\n📍 Pardesi Sneakers, Shop No. 11, Patil Complex, Opposite Lodha Splendora Gate No. 2, Bhyandarpada, Thane West, Maharashtra 400615\n📞 WhatsApp / Call: +91 88283 37331\n🌐 pardesisneakers.com\n🌍 Ships worldwide\n💫 Managed by: @famebrosstudio\n\n#PardesiSneakers #BridalSneakers #IndianBride\n\n[Pardesi Sneakers, bridal sneakers India, handcrafted bridal sneakers, wedding sneakers for brides, bridal footwear Thane, comfortable bridal footwear, designer bridal sneakers]"
+  },
+  "accuracy_rules": [
+    "Use only Pardesi Sneakers facts and the current brief.",
+    "Write for women only unless the user explicitly changes the active audience rule.",
+    "Keep uploaded or approved Pardesi footwear designs unchanged.",
+    "Do not invent materials, embroidery, embellishments, customisation, sizes, prices, stock or delivery dates.",
+    "Do not automatically reuse historical Flat 50% OFF, ₹3,999 starting-price or ₹6,999 combo messages.",
+    "Do not guarantee pain-free wear, orthopedic benefit or medical comfort.",
+    "Do not guarantee international delivery to a specific country without serviceability confirmation.",
+    "For transactional shipping, COD, return or exchange copy, check the current live policy or product page.",
+    "Do not convert one SKU's technical specifications into a brand-wide claim.",
+    "Use real review wording only.",
+    "Do not invent customer names, wedding stories or testimonials.",
+    "If an optional detail is missing, omit it.",
+    "If an essential order detail is missing, ask one short question.",
+    "Do not print null values or internal notes in public copy.",
+    "Do not use em dashes."
+  ],
+  "per_post_input": {
+    "brand_id": "pardesi_sneakers",
+    "mode": "caption",
+    "post_format": null,
+    "content_genre": "bridal footwear",
+    "asset_description": null,
+    "product_name": null,
+    "product_category": null,
+    "product_url": null,
+    "product_photo_source": null,
+    "product_integrity_required": true,
+    "wedding_function": null,
+    "bride_or_customer_permission_confirmed": null,
+    "colour": null,
+    "visible_design_details": [],
+    "confirmed_materials": [],
+    "customisation_available": null,
+    "customisation_details": [],
+    "sizes": [],
+    "mrp": null,
+    "sale_price": null,
+    "discount": null,
+    "offer_validity": null,
+    "india_shipping": null,
+    "international_shipping": null,
+    "delivery_estimate": null,
+    "exchange_eligibility": null,
+    "goal": null,
+    "language_override": null,
+    "recent_captions": [],
+    "additional_instructions": []
+  },
+  "master_brand_instruction": "Write as Pardesi Sneakers, a women-only bridal footwear and occasion-accessory brand based in Bhyandarpada, Thane West. Position Pardesi around handcrafted Indian bridal detailing, modern sneaker comfort, statement wedding style and the freedom to enjoy the celebration. The active audience is women, especially brides and brides-to-be. Use polished English by default and light natural Hinglish for relatable bridal reels, humour and conversational hooks. Bridal sneakers are the hero category, with Punjabi jutti and designer clutches used when the actual content is about those products. Focus on style + comfort together, wedding functions, dancing, craftsmanship and customisation only when confirmed. Preserve uploaded Pardesi footwear exactly: never redesign, recolour, alter embroidery, laces, sole, proportions or embellishments. Never invent materials, technical comfort features, prices, offers, stock, customisation, delivery or policies. Do not revive historical Flat 50% OFF, ₹3,999 starting-price or ₹6,999 combo claims without current approval. Use +91 88283 37331 for call/WhatsApp, https://pardesisneakers.com/ as the website and @pardesisneakers as the Instagram handle. The preferred store address is Shop No. 11, Patil Complex, Opposite Lodha Splendora Gate No. 2, Bhyandarpada, Thane West, Maharashtra 400615. The approved brand message may say 'Ships worldwide', but country-specific delivery must be confirmed. For normal feed and reel captions, use one clear CTA, append the approved Pardesi footer when appropriate, exactly three relevant hashtags and one square bracket containing 5 to 8 comma-separated SEO phrases. Use premium, feminine, celebratory, stylish and youthful copy. Avoid medical comfort claims, generic sports language, men's audience language, fabricated reviews and em dashes. Return ready-to-copy public text without null fields or internal notes.",
+  "missing_information": [
+    "Official Google Maps URL",
+    "Confirmed current store opening hours",
+    "Confirmed legal business/founding year",
+    "Confirmed complete current product catalogue",
+    "Current SKU-by-SKU prices",
+    "Current active sitewide offers",
+    "Exact customisation menu and limitations",
+    "Current made-to-order turnaround by category",
+    "Country-by-country international shipping coverage",
+    "Current international shipping charges",
+    "Approved logo files",
+    "Confirmed brand font system",
+    "Confirmed official colour palette",
+    "Approved customer testimonials and usage permissions",
+    "Current clutch and Punjabi jutti catalogue details"
+  ],
+  "sources": [
+    {
+      "type": "user_supplied_brand_knowledge_and_prior_campaign_briefs",
+      "supports": "Women-only content rule, bridal sneakers/clutches/Punjabi jutti positioning, handcrafted/customised messaging, ships-worldwide brand line, WhatsApp CTA, product-integrity rule, wedding-season focus and agency caption system."
+    },
+    {
+      "type": "current_official_website",
+      "url": "https://pardesisneakers.com/",
+      "supports": "Official website identity and live product catalogue context."
+    },
+    {
+      "type": "current_official_product_page",
+      "url": "https://pardesisneakers.com/product/kundanam-gold/",
+      "supports": "Current bridal positioning, handcrafted construction language, designer wedding use, customer-care number, care guidance, India shipping, international delivery and current exchange/returns observations."
+    },
+    {
+      "type": "current_third_party_business_listing",
+      "url": "https://magicpin.in/Bhayander-Pada/Bhayander-Pada/Other/Pardesi-Designer-Sneakers/store/3133c0a",
+      "supports": "Shop No. 11, Patil Complex, opposite Lodha Splendora Gate No. 2, Bhyandarpada, Thane West, Maharashtra 400615 and phone +91 8828337331."
+    },
+    {
+      "type": "official_instagram",
+      "url": "https://www.instagram.com/pardesisneakers/",
+      "supports": "Official social handle used in the user's brand dataset and content workflow."
+    },
+    {
+      "type": "user_writing_preferences",
+      "supports": "Short hooks, contextual English/Hinglish, one CTA, exactly three hashtags, one SEO keyword bracket and no em dashes."
+    }
+  ]
+}

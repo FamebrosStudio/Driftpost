@@ -1,0 +1,455 @@
+{
+  "schema_version": "3.0",
+  "brand_number": 33,
+  "brand_id": "sarang_hospital",
+  "brand_name": "Sarang Hospital",
+  "aliases": [
+    "Sarang Hospital Rajkot",
+    "Sarang Hospital and Research Institute LLP",
+    "@saranghospital"
+  ],
+  "knowledge_scope": "One brand only. This file covers Sarang Hospital in Rajkot, its matched official Instagram, public legal and address identity, hospital communication, patient education, laparoscopic-surgery content signal, appointment messaging and strict medical-claim controls.",
+  "business": {
+    "category": "Hospital and healthcare services",
+    "industry": "Healthcare",
+    "legal_name": "Sarang Hospital and Research Institute LLP",
+    "legal_name_status": "Matched public corporate-directory identity in Rajkot.",
+    "incorporation_date": "2025-11-12",
+    "incorporation_status": "Public corporate-directory record. Do not describe it as the hospital opening date without confirmation.",
+    "city": "Rajkot",
+    "state": "Gujarat",
+    "country": "India",
+    "core_positioning": "A Rajkot hospital requiring calm, factual and patient-friendly communication about verified services, doctors, procedures and access to care.",
+    "primary_audience": [
+      "Patients in Rajkot",
+      "Caregivers and families",
+      "People seeking verified hospital-service information",
+      "Local healthcare-awareness audiences"
+    ],
+    "public_service_signal": "Laparoscopic surgery appears in indexed official Instagram language. Exact departments, procedures and doctors require current hospital confirmation.",
+    "onboarding_or_billing_note": "The first day of an unspecified month appeared in the user-provided working record. It is not a founding date.",
+    "dataset_date": "2026-09-26",
+    "commercial_accuracy_rule": "Never invent fees, insurance acceptance, bed availability, appointment availability, package rates or emergency capability."
+  },
+  "contact": {
+    "phone": null,
+    "whatsapp": null,
+    "email": null,
+    "website": null,
+    "address_full": "Plot 29, opposite Hari Om Dairy, opposite Paradise Hall, Raiya Road, Rajkot, Gujarat 360007, India",
+    "address_short": "Paradise Hall Road, Raiya Road, near Bapa Sitaram Chowk, Rajkot",
+    "address_status": "Matched between official Instagram indexing and public corporate-directory records.",
+    "google_maps_url": null,
+    "contact_rule": "Use the confirmed address. Do not add a phone, email, appointment link or 24-hour claim until supplied by the hospital."
+  },
+  "social_media": {
+    "instagram_handle": "@saranghospital",
+    "instagram_url": "https://www.instagram.com/saranghospital/",
+    "instagram_status": "Matched public profile for Sarang Hospital in Rajkot.",
+    "facebook_url": null,
+    "youtube_url": null,
+    "managing_agency": "Famebros Studio",
+    "agency_instagram_handle": "@famebrosstudio",
+    "agency_instagram_url": "https://www.instagram.com/famebrosstudio/",
+    "agency_credit_default": "💫 Managed by: @famebrosstudio",
+    "reference_rule": "Use the official page for current services and doctors, then verify each medical claim with the hospital before publication."
+  },
+  "established_content_knowledge": {
+    "confirmed_content_genres": [
+      "Hospital information",
+      "Patient education",
+      "Health awareness"
+    ],
+    "content_pillars": [
+      "Verified department introduction",
+      "Doctor introduction with credentials",
+      "Procedure education",
+      "Laparoscopic-surgery awareness after clinical review",
+      "Symptoms that warrant professional evaluation without diagnosis",
+      "Appointment preparation",
+      "Patient-safety information",
+      "Hospital access and location",
+      "Health-day awareness",
+      "Community education",
+      "Facility introduction using real footage",
+      "Patient stories with consent"
+    ],
+    "legal_identity": {
+      "entity": "Sarang Hospital and Research Institute LLP",
+      "status": "Active in public corporate directory",
+      "registered_address": "Plot 29, opposite Hari Om Dairy and Paradise Hall, Raiya Road, Rajkot 360007"
+    },
+    "public_partner_signals": [
+      "Vandan Jayesh Kanabar",
+      "Rahul Vashrambhai Laiya",
+      "Abhishek Arunbhai Mistry",
+      "Aakash Rajesh Doshi",
+      "Priyal Gopalbhai Ghoniya"
+    ],
+    "partner_rule": "Names came from corporate-directory records and are not approved spokespersons. Do not publish them without hospital confirmation.",
+    "content_priority": "Help patients understand the verified topic and next safe action without diagnosing, promising outcomes or creating fear."
+  },
+  "writing_direction": {
+    "brand_voice": [
+      "Professional",
+      "Calm",
+      "Compassionate",
+      "Clear",
+      "Factual",
+      "Accessible"
+    ],
+    "primary_language": "Plain English, Hindi or Gujarati as approved.",
+    "focus": [
+      "Patient understanding",
+      "Verified doctor and service facts",
+      "Safety",
+      "Clear next step",
+      "Rajkot access"
+    ],
+    "avoid": [
+      "Diagnosis through social media",
+      "Guaranteed cure",
+      "Guaranteed pain relief",
+      "Best doctor claims",
+      "Success rates without audited evidence",
+      "Graphic fear-based visuals",
+      "Unsupported emergency claims",
+      "Invented doctor credentials",
+      "Patient details without consent"
+    ],
+    "medical_language_rule": "Use may, can, often and seek professional evaluation where appropriate. Avoid certainty beyond the approved clinical source.",
+    "punctuation_style": "Plain readable sentences and no em dashes."
+  },
+  "content_playbook": {
+    "service_explainer": {
+      "required_inputs": [
+        "Department",
+        "Service",
+        "Doctor reviewer",
+        "Who it is for",
+        "Limits",
+        "Appointment route"
+      ],
+      "rule": "Explain, do not diagnose or guarantee."
+    },
+    "doctor_profile": {
+      "required_inputs": [
+        "Full name",
+        "Verified degrees",
+        "Registration",
+        "Specialty",
+        "Role",
+        "Experience wording",
+        "Approved photo"
+      ],
+      "rule": "Credentials must match hospital records."
+    },
+    "procedure_awareness": {
+      "sequence": [
+        "Patient question",
+        "What the procedure generally is",
+        "Why a doctor may discuss it",
+        "Individual suitability",
+        "Consultation CTA"
+      ],
+      "rule": "No outcome or recovery-time promise without clinical approval."
+    },
+    "health_awareness": {
+      "rule": "Use recognized clinical guidance and a hospital reviewer. Do not turn general symptoms into a diagnosis."
+    },
+    "patient_story": {
+      "required": [
+        "Written consent",
+        "Approved wording",
+        "No unnecessary identifiers",
+        "Truthful timeline",
+        "No guaranteed-result framing"
+      ]
+    },
+    "emergency_post": {
+      "rule": "Publish emergency services, hours and phone only after written confirmation."
+    }
+  },
+  "healthcare_service_and_patient_education_framework": {
+    "required_fields": [
+      "Topic",
+      "Clinical reviewer",
+      "Target audience",
+      "Source",
+      "Scope",
+      "Red flags",
+      "Next action",
+      "Contact"
+    ],
+    "safe_structure": [
+      "Clear question",
+      "Simple verified explanation",
+      "Limits or individual variation",
+      "When to contact a professional",
+      "Hospital CTA"
+    ],
+    "diagnosis_rule": "Do not diagnose a viewer or recommend personalized treatment in a caption.",
+    "evidence_rule": "Service, doctor, procedure and outcome claims require current hospital approval.",
+    "privacy_rule": "Use minimum necessary patient information and documented consent."
+  },
+  "caption_format": {
+    "default_use": "Instagram and Facebook feed posts and reels.",
+    "body_length": "Usually 25 to 70 words excluding footer, hashtags and SEO block.",
+    "body_structure": [
+      "One specific hook connected to the real asset or topic.",
+      "One to three useful lines using verified information.",
+      "One visit, enquiry, admissions, booking, save, share or shop CTA."
+    ],
+    "format_order": [
+      "Caption body",
+      "Blank line",
+      "Exactly three hashtags",
+      "Blank line",
+      "Approved CTA, location and contact lines",
+      "Agency credit when required",
+      "Blank line",
+      "Exactly one square-bracket SEO block"
+    ],
+    "hashtag_rule": "Exactly three hashtags unless the user requests another count.",
+    "seo_rule": "Use five to eight natural search phrases inside one pair of square brackets.",
+    "story_rule": "For story copy, use a short headline, one support line and one CTA. Omit feed hashtags and SEO unless requested.",
+    "reel_overlay_rule": "Keep each overlay short, readable and supported by the footage.",
+    "final_checks": [
+      "Use only verified facts from the current brief and this knowledge file.",
+      "Use exactly three relevant hashtags.",
+      "Use one square-bracket SEO block with five to eight comma-separated phrases.",
+      "Use one clear CTA.",
+      "Remove every em dash before delivery.",
+      "Clinical review completed.",
+      "No diagnosis, cure, guarantee or unsupported emergency claim.",
+      "Doctor credentials and patient consent verified."
+    ]
+  },
+  "fixed_footer": {
+    "standard_lines": [
+      "📍 Paradise Hall Road, Raiya Road, near Bapa Sitaram Chowk, Rajkot",
+      "💫 Managed by: @famebrosstudio"
+    ],
+    "status": "Phone is intentionally omitted because it is not confirmed.",
+    "usage": "Use the location footer for general posts. Add appointment contact only after confirmation.",
+    "exceptions": [
+      "Story overlays",
+      "Comments",
+      "Posts where the hospital supplies a campaign-specific contact"
+    ]
+  },
+  "suggested_hashtag_bank": [
+    "#SarangHospital",
+    "#RajkotHealthcare",
+    "#PatientEducation",
+    "#HealthAwareness",
+    "#HospitalRajkot",
+    "#LaparoscopicSurgery",
+    "#PatientCare"
+  ],
+  "seo_keyword_bank": [
+    "Sarang Hospital Rajkot",
+    "hospital on Raiya Road Rajkot",
+    "hospital near Paradise Hall Rajkot",
+    "patient education Rajkot",
+    "health awareness Rajkot",
+    "laparoscopic surgery information Rajkot",
+    "Sarang Hospital and Research Institute"
+  ],
+  "cta_bank": [
+    "Contact the hospital through its current official channel for an appointment.",
+    "Save this information and discuss your symptoms with a qualified doctor.",
+    "Visit the official page for current hospital updates.",
+    "Seek urgent medical help when symptoms are severe or worsening."
+  ],
+  "suggested_hooks": [
+    "Clear health information helps you ask better questions.",
+    "A procedure name should never be the end of the explanation.",
+    "Your symptoms deserve individual medical evaluation.",
+    "Know the facts before your consultation.",
+    "Care begins with listening and accurate information."
+  ],
+  "visual_and_asset_guidance": {
+    "feed_size": "1080 x 1440 pixels",
+    "story_and_reel_size": "1080 x 1920 pixels",
+    "style": [
+      "Clean clinical",
+      "Calm",
+      "Human",
+      "Readable",
+      "Trust-led"
+    ],
+    "asset_priority": [
+      "Real approved hospital footage",
+      "Verified doctor",
+      "Simple educational diagrams",
+      "Location guidance",
+      "Consent-cleared patient imagery"
+    ],
+    "fidelity_rules": [
+      "Do not create fake doctors or patients.",
+      "Do not show graphic procedures without need and warning.",
+      "Do not alter medical records or before-and-after outcomes.",
+      "Protect names, faces and health information."
+    ],
+    "accessibility": "Use large text, high contrast, plain language and captions for spoken content."
+  },
+  "carousel_and_reel_system": {
+    "education_carousel": [
+      "Slide 1: Patient question",
+      "Slide 2: Simple definition",
+      "Slide 3: Verified considerations",
+      "Slide 4: Individual variation",
+      "Slide 5: When to seek care",
+      "Slide 6: Hospital CTA"
+    ],
+    "doctor_reel": [
+      "0 to 4 seconds: Topic hook",
+      "4 to 15 seconds: Doctor explanation",
+      "15 to 28 seconds: Practical guidance",
+      "28 to 35 seconds: Safety limit",
+      "35 to 40 seconds: CTA"
+    ],
+    "editing_style": [
+      "Calm pace",
+      "Readable subtitles",
+      "No sensational effects",
+      "Real hospital identity"
+    ]
+  },
+  "other_output_modes": {
+    "appointment_reply": "Provide only the confirmed appointment route and avoid collecting detailed medical history publicly.",
+    "health_day_post": "Connect the observance to one verified practical action.",
+    "doctor_bio": "Use verified credentials only.",
+    "patient_faq": "General education with a professional-evaluation reminder.",
+    "crisis_reply": "Direct urgent symptoms to emergency services and the hospital's confirmed emergency route."
+  },
+  "sample_caption": {
+    "status": "Illustrative general awareness caption. It does not diagnose or advertise an unconfirmed department.",
+    "scenario": "Patient-information post",
+    "caption_body": "Clear information helps you ask better questions about your care. If a health concern is new, severe or getting worse, seek an individual evaluation from a qualified medical professional. Visit Sarang Hospital's official page for current service and appointment information.",
+    "footer": [
+      "📍 Paradise Hall Road, Raiya Road, near Bapa Sitaram Chowk, Rajkot",
+      "💫 Managed by: @famebrosstudio"
+    ],
+    "hashtags": [
+      "#SarangHospital",
+      "#RajkotHealthcare",
+      "#PatientEducation"
+    ],
+    "seo_keywords": [
+      "Sarang Hospital Rajkot",
+      "hospital on Raiya Road Rajkot",
+      "hospital near Paradise Hall Rajkot",
+      "patient education Rajkot",
+      "health awareness Rajkot",
+      "qualified medical consultation Rajkot"
+    ],
+    "full_caption": "Clear information helps you ask better questions about your care. If a health concern is new, severe or getting worse, seek an individual evaluation from a qualified medical professional. Visit Sarang Hospital's official page for current service and appointment information.\n\n📍 Paradise Hall Road, Raiya Road, near Bapa Sitaram Chowk, Rajkot\n💫 Managed by: @famebrosstudio\n\n#SarangHospital #RajkotHealthcare #PatientEducation\n\n[Sarang Hospital Rajkot, hospital on Raiya Road Rajkot, hospital near Paradise Hall Rajkot, patient education Rajkot, health awareness Rajkot, qualified medical consultation Rajkot]",
+    "validation": {
+      "hashtags": 3,
+      "seo_phrases": 6,
+      "verified_fields_only": true,
+      "medical_claim": false
+    }
+  },
+  "accuracy_rules": [
+    "Use only the Rajkot identity matched to @saranghospital.",
+    "Do not mix it with Sarang Hospital in Unnao or hospitals in South Korea.",
+    "Do not diagnose, prescribe or guarantee a cure or outcome.",
+    "Verify every doctor, credential, department, procedure and availability.",
+    "Use the address as supported, but add phone and appointment links only when confirmed.",
+    "Do not publish partner names as medical staff or spokespeople without approval.",
+    "Obtain consent for patient stories and protect health information.",
+    "Remove every em dash."
+  ],
+  "per_post_input": {
+    "required_core": [
+      "Output mode",
+      "Medical topic",
+      "Objective",
+      "Audience",
+      "Clinical reviewer",
+      "Source",
+      "CTA",
+      "Publication date"
+    ],
+    "doctor_inputs": [
+      "Name",
+      "Degrees",
+      "Registration",
+      "Specialty",
+      "Role",
+      "Approved photo"
+    ],
+    "patient_inputs": [
+      "Written consent",
+      "Approved story",
+      "Privacy limits",
+      "Actual timeline"
+    ],
+    "campaign_inputs": [
+      "Service",
+      "Doctor",
+      "Dates",
+      "Fees",
+      "Eligibility",
+      "Contact",
+      "Terms"
+    ],
+    "input_rule": "No medical service claim should be generated from an incomplete brief."
+  },
+  "master_brand_instruction": "Create content only for Sarang Hospital in Rajkot, matched to @saranghospital and Sarang Hospital and Research Institute LLP at Plot 29, opposite Hari Om Dairy and Paradise Hall, Raiya Road, Rajkot 360007. Write professional, calm, compassionate and factual content. Explain verified health topics in plain language without diagnosing viewers, prescribing personalized treatment or guaranteeing outcomes. Laparoscopic surgery is a public content signal, but its exact services, doctors and procedures require hospital confirmation. Do not use contact details from Sarang Hospital in Unnao or any Korean hospital. Use the approved Rajkot location, exactly three hashtags and one SEO bracket with five to eight phrases. Remove all em dashes.",
+  "missing_information": {
+    "contact": [
+      "Official phone",
+      "WhatsApp",
+      "Email",
+      "Website",
+      "Appointment link",
+      "Google Maps URL"
+    ],
+    "clinical": [
+      "Current departments",
+      "Doctors and credentials",
+      "Emergency services",
+      "Hours",
+      "Accreditations",
+      "Insurance and TPA list"
+    ],
+    "commercial": [
+      "Consultation fees",
+      "Packages",
+      "Payment options",
+      "Refund or cancellation rules"
+    ],
+    "brand_system": [
+      "Logo",
+      "Colours",
+      "Fonts",
+      "Photography and patient-consent guide"
+    ],
+    "priority": "Confirm the official phone and appointment route, then collect the current department and doctor directory for clinical review."
+  },
+  "sources": {
+    "user_facts": [
+      "Brand name Sarang Hospital.",
+      "Hospital category.",
+      "Onboarding or billing note listed as the first day of an unspecified month."
+    ],
+    "public_sources": [
+      {
+        "url": "https://www.instagram.com/saranghospital/",
+        "checked_on": "2026-09-26",
+        "used_for": "Matched official Rajkot identity, locality and laparoscopic-surgery content signal."
+      },
+      {
+        "url": "https://www.planetexim.net/indian-company/sarang-hospital-and-research-institute-llp/llpin/ACS-6035.html",
+        "checked_on": "2026-09-26",
+        "used_for": "Legal name, active status, incorporation date and registered address."
+      }
+    ],
+    "internal_dataset": "Famebros_Brand_Caption_Dataset.json record sarang_hospital.",
+    "source_rule": "Hospital-approved clinical and contact information overrides public indexing and directory data."
+  }
+}

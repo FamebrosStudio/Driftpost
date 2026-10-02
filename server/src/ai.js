@@ -55,13 +55,13 @@ HOUSE RULES (follow brand-specific requirements and user style choices):
 - CTA must be concrete (Call us to book / DM to book / Save this look) — never a bare question. Never include a phone number in the CTA or anywhere in the body.
 - CONTACT PLACEMENT (strict): never start any caption, hook, title or first sentence with a phone number, address, or digits. All phone numbers, addresses and contact lines go ONLY in the footer at the very END of the caption. The opening hook must be words only — no numbers, no +91, no Call prefix.
 - PHONE RULE (strict, overrides everything above including CTA examples): NEVER print any phone number in any hook, title, body or first line — not even the brand's real one. Phone numbers live ONLY in the footer, and ONLY the dataset's numbers. Body CTAs must say "Call us to book" / "DM to book" with zero digits.
-- Hashtags exactly 3: brand + service + location.
+- Hashtags exactly 3: brand + service + a location only when the selected brand record confirms one; otherwise use a second relevant service or product tag. Never invent a city or branch.
 - ONE BRAND ONLY: never mention, tag, or hashtag any other brand, shop, or handle. Only this brand, its own handle, and @famebrosstudio may appear.`;
 
 const PLATFORM_SPECS = `
 PLATFORM SPECS (texts must differ):
 - YOUTUBE (search SEO): title = keyword-first, <=100 chars, include brand + service + location. Description = 2-3 SEO sentences with keywords woven naturally + 1 CTA + brand footer lines. Tags = 8 lowercase search tags (service, location, brand).
-- INSTAGRAM (discovery SEO): full Famebros format — bold hook line with emojis + supporting detail + concrete CTA. Body MUST be at least 2 full sentences before the footer — never a 2-liner. NEVER open with a phone number, address or digits — hook is words only; all contact details live in the footer at the very END. CTA must tell them HOW (Call us to book / DM to book / Save this look) — never end on a bare question. For transformations, use sensory words (shine, movement, warmth, glow, dimension). Then footer lines, then exactly 3 hashtags (1 brand + 1 service + 1 location), then [5-8 SEO phrases]. Emojis natural, no em dash.
+- INSTAGRAM (discovery SEO): full Famebros format — specific hook + supporting detail + concrete CTA. Use only details supported by the brief, supplied media or selected brand record. Keep the body concise and complete before the footer. Never open with a phone number or address. Put contact details only in the selected brand's footer. Then exactly 3 hashtags (brand + service + confirmed location when known; otherwise a second relevant topic), then [5-8 SEO phrases]. Emojis should fit the brand, no em dash.
   Exact shape:
   <hook line>
   <detail + CTA>
@@ -86,7 +86,7 @@ const SINGLE_SPECS = {
   youtube: `
 PLATFORM: YOUTUBE only (search SEO) — title = keyword-first, <=100 chars, include brand + service + location. Description = 2-3 SEO sentences with keywords woven naturally + 1 CTA + brand footer lines. Tags = 8 lowercase search tags (service, location, brand).`,
   instagram: `
-PLATFORM: INSTAGRAM only (discovery SEO) — full Famebros format: bold hook line with emojis + supporting detail + concrete CTA. Body MUST be at least 2 full sentences before the footer — never a 2-liner. NEVER open with a phone number, address or digits — hook is words only; all contact details live in the footer at the very END. CTA must tell them HOW (Call us to book / DM to book / Save this look) — never end on a bare question. For transformations, use sensory words (shine, movement, warmth, glow, dimension). Then footer lines, then exactly 3 hashtags (1 brand + 1 service + 1 location), then [5-8 SEO phrases]. Emojis natural, no em dash.`,
+PLATFORM: INSTAGRAM only (discovery SEO) — write a specific hook, one useful supported detail and one concrete CTA. Keep the body concise and complete. Never open with a phone number or address. Contact details belong only in the selected brand's footer. Add exactly 3 hashtags (brand + service + confirmed location when known; otherwise a second relevant topic), then [5-8 SEO phrases]. Emojis should fit the brand; no em dash.`,
   facebook: `
 PLATFORM: FACEBOOK only (social/conversational, NO bracket) — 1-2 friendly sentences + CTA with address if known (never a phone number — phones live only in the footer). Max 2 hashtags inline or at end. Footer = address/phone lines only. Never include the [keyword bracket].`,
   x: `
@@ -126,6 +126,41 @@ function visibleBodyLen(text, brandName) {
     .replace(/[ \t]{2,}/g, ' ')
     .trim();
   return body.length;
+}
+
+// Reject empty platform cards and cross-brand contamination before canonical
+// footer assembly. One retry is allowed with direct feedback;
+// if the second answer is still defective, do not return a broken caption.
+function captionQualityIssue(parsed, { only, brand, mem }) {
+  const platforms = only ? [only] : ['youtube', 'instagram', 'facebook', 'x'];
+  const minLength = { youtube: 24, instagram: 28, facebook: 20, x: 12 };
+  const ownNames = new Set([brand?.name, ...(brand?.aliases || [])]
+    .map((s) => String(s || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim()));
+  const otherNames = [];
+  if (brand) {
+    try {
+      for (const other of mem.loadBrands()) {
+        if (other.id === brand.id) continue;
+        for (const name of [other.name, ...(other.aliases || [])]) {
+          const value = String(name || '').trim();
+          const normalized = value.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+          if (value.length >= 6 && !ownNames.has(normalized) && !otherNames.includes(value)) otherNames.push(value);
+        }
+      }
+    } catch {}
+  }
+  const escapeRe = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  for (const platform of platforms) {
+    const key = MAIN_KEY[platform];
+    const text = String(parsed?.[platform]?.[key] || '').trim();
+    if (visibleBodyLen(text, brand?.name) < minLength[platform]) return `${platform} has no useful caption body`;
+    for (const name of otherNames) {
+      if (new RegExp(`(^|[^A-Za-z0-9])${escapeRe(name)}($|[^A-Za-z0-9])`, 'i').test(text)) {
+        return `${platform} mentions another brand (${name})`;
+      }
+    }
+  }
+  return '';
 }
 
 function tryParseObject(candidate) {  try {    return JSON.parse(candidate);
@@ -316,6 +351,10 @@ export async function generateCaptions(summary, opts = {}) {
   }
   // FULL record: every phone/address/footer/fact/keyword/example for this brand.
   const pack = brand ? mem.fullPack(brand) : '';
+  const datasetRecord = brand ? mem.getPortableDatasetBrand?.(brand.id) : null;
+  const portableDataBlock = datasetRecord
+    ? `\n\nPORTABLE DATASET RECORD (exact brand_id match: ${brand.id}). This is the supplied source summary for the selected business. The detailed brand profile above wins if any field conflicts. Use confirmed facts and writing rules only; sample captions are illustrative, and source notes or missing-data notes are internal. Never copy internal notes into public copy.\n${JSON.stringify(datasetRecord)}`
+    : '';
   const rules = brand ? mem.globalBrandRules() : '';
 
   // Offer/opening posts earn energy: bold hook, emojis, urgency, tag-a-friend.
@@ -328,7 +367,7 @@ export async function generateCaptions(summary, opts = {}) {
   const brandBlock = autoNew
     ? `\n\nNEW BRAND FILED: "${brand.name}" was unknown — a new record was created and will keep learning.\n${pack}\n${rules}\nContacts for a new brand are UNCONFIRMED: agency footer only, never print any phone/address at all — not from the brief, not invented. A number the user typed is not a verified brand number.`
     : brand
-      ? `\n\nMEMORY HIT: "${brand.name}" is in the brand database below — write IN that brand's voice with its real phone/address/footer.\n${pack}\n${rules}`
+      ? `\n\nBRAND LOCK: the selected brand is exactly "${brand.name}" (ID: ${brand.id}). Write only for this business. Similar names and shared categories are different businesses; never transfer their voice, products, facts, contacts or examples. Use only this selected brand's verified phone/address/footer.\n${pack}${portableDataBlock}\n${rules}`
       : `\n\nNo brand in the database matches — write generically from the user brief only. No footer, 3 plain hashtags, no keyword bracket.`;
 
   // What this user has already approved for this brand. Placed after the
@@ -366,6 +405,7 @@ export async function generateCaptions(summary, opts = {}) {
   let text;
   let usage;
   let lastErr = null;
+  let retryFeedback = '';
   // One automatic retry: a truncated or malformed first reply is usually
   // followed by a clean one — the user never sees the hiccup.
   // Single-card output caps are small (one card, not four).
@@ -376,12 +416,12 @@ export async function generateCaptions(summary, opts = {}) {
       if (trends) {
         // Live SEO via the current Agent Tools API (Responses endpoint).
         // Old chat-completions `search_parameters` is deprecated and errors out.
-        const r = await callResponsesWithSearch({ model, systemText, userMsg, maxTokens: only ? 500 : 950 });
+        const r = await callResponsesWithSearch({ model, systemText, userMsg: `${userMsg}${retryFeedback}`, maxTokens: only ? 500 : 950 });
         text = r.text;
         usage = r.usage;
       } else {
         // Keep a four-platform reply compact; retry with more room if truncated.
-        const r = await callChat({ model, systemText, userMsg, images, maxTokens: attempt ? outTokensRetry : outTokens });
+        const r = await callChat({ model, systemText, userMsg: `${userMsg}${retryFeedback}`, images, maxTokens: attempt ? outTokensRetry : outTokens });
         text = r.text;
         usage = r.usage;
       }
@@ -396,13 +436,18 @@ export async function generateCaptions(summary, opts = {}) {
           throw new Error('AI returned an empty answer. Tap Write again — retry usually works.');
         }
       }
+      const qualityIssue = captionQualityIssue(parsed, { only, brand, mem });
+      if (qualityIssue) throw new Error(`caption quality check: ${qualityIssue}`);
       text = parsed;
       lastErr = null;
       break;
     } catch (e) {
       lastErr = e;
       // Only unreadable/empty payloads retry — config/credit errors fail fast.
-      if (!/unreadable|empty answer/i.test(e.message)) throw e;
+      if (!/unreadable|empty answer|caption quality check/i.test(e.message)) throw e;
+      if (/caption quality check/i.test(e.message)) {
+        retryFeedback = `\n\nFINAL QUALITY REPAIR: Your previous draft failed because ${e.message.replace(/^caption quality check:\s*/i, '')}. Rewrite every required platform card with a complete, useful body, and use only the selected brand. Do not repeat that defect.`;
+      }
       if (attempt === 0) await new Promise((r) => setTimeout(r, 800));
     }
   }
@@ -492,8 +537,11 @@ export async function generateCaptions(summary, opts = {}) {
       .replace(/[ \t]{2,}/g, ' ')
       .replace(/\n{3,}/g, '\n\n')
       .trim();
-    // hashtags: prefer model's, but drop other brands' tags and force our own first
-    igTags = igTags.filter((t) => !otherTokens.has(String(t).toLowerCase()));
+    // Hashtags are rebuilt from the selected brand's facts and topic bank.
+    // Sanitize model output, drop other brands, and force the selected brand first.
+    igTags = igTags
+      .map((t) => String(t).replace(/^#+/, '').replace(/[^A-Za-z0-9_]/g, ''))
+      .filter((t) => t && !otherTokens.has(t.toLowerCase()));
     if (!igTags.some((t) => String(t).toLowerCase() === ownTag.toLowerCase())) {
       igTags.unshift(ownTag);
     }
@@ -506,8 +554,21 @@ export async function generateCaptions(summary, opts = {}) {
       if (!extra || igTags.includes(extra)) break;
       igTags.push(extra);
     }
-    // Location hashtag guarantee: one of the 3 tags must carry the brand's
-    // area (ThaneSalon > generic third tag) for local discovery.
+    if (igTags.length < 3) {
+      const suggested = Array.isArray(deep?.suggested_hashtag_bank) ? deep.suggested_hashtag_bank : [];
+      const categoryTag = String(deep?.business?.category || brand.cat || '').split(/\s+/).filter(Boolean).pop() || '';
+      const fallbackTags = [...suggested, ...kwBank, categoryTag, 'ProductDetails']
+        .map((value) => String(value || '').replace(/^#+/, '').replace(/[^A-Za-z0-9]/g, ''))
+        .filter(Boolean);
+      for (const candidate of fallbackTags) {
+        if (igTags.length >= 3) break;
+        if (!igTags.some((t) => t.toLowerCase() === candidate.toLowerCase()) && !otherTokens.has(candidate.toLowerCase())) {
+          igTags.push(candidate);
+        }
+      }
+    }
+    // Add a location hashtag only when the selected brand record establishes
+    // one. Unknown branches never get a guessed city tag.
     const locTag = (() => {
       const fromBank = deep?.suggested_hashtag_bank?.location?.[0]?.replace(/^#+/, '').trim();
       if (fromBank) return fromBank;

@@ -1,0 +1,495 @@
+{
+  "schema_version": "3.0",
+  "brand_number": 31,
+  "brand_id": "asma_women_clothing",
+  "brand_name": "Asma Women Clothing",
+  "aliases": [
+    "Asma Women's Clothing",
+    "Asma Women Clothing",
+    "Her Choice by Asma",
+    "@herchoice_byasma",
+    "herchoice_byasma"
+  ],
+  "knowledge_scope": "One brand only. This file covers Asma Women Clothing, trading publicly as Her Choice by Asma (@herchoice_byasma, user-supplied official Instagram). The women's-clothing category and editorial system are established and the official Instagram handle is now confirmed by the brand owner; location, phone, website, product catalogue and commercial policies remain unresolved, so strict anti-invention rules still apply.",
+  "business": {
+    "category": "Women's clothing",
+    "industry": "Women's fashion and apparel",
+    "business_model": null,
+    "gender_scope": "Women only",
+    "city": null,
+    "state": null,
+    "country": null,
+    "currency": null,
+    "core_positioning": "A women's clothing brand requiring graceful, stylish and uncluttered presentation focused on the real outfit, its drape, movement and visible details.",
+    "approved_positioning_short": "Women's clothing presented with graceful product-led storytelling.",
+    "primary_audience": [
+      "Women shopping for clothing",
+      "Fashion-discovery audiences",
+      "Customers comparing outfit details",
+      "Occasion shoppers only when the actual product supports the occasion"
+    ],
+    "confirmed_content_genres": [
+      "Women's clothing",
+      "Informational",
+      "Cinematic"
+    ],
+    "dataset_date": "2026-09-25",
+    "commercial_accuracy_rule": "Never invent fabric, sizes, price, stock, city, contact details, shipping, returns, occasion, category or brand story."
+  },
+  "contact": {
+    "phone": null,
+    "whatsapp": null,
+    "email": null,
+    "website": null,
+    "address": null,
+    "city": null,
+    "google_maps_url": null,
+    "contact_status": "No phone, address or website established. Instagram DM is the only approved contact route.",
+    "contact_rule": "Use DM @herchoice_byasma as the CTA now that the official handle is confirmed by the owner. Until phone/address/website are supplied, leave those fields blank."
+  },
+  "social_media": {
+    "instagram_handle": "@herchoice_byasma",
+    "instagram_url": "https://www.instagram.com/herchoice_byasma/",
+    "instagram_status": "Official handle supplied directly by the brand owner, confirmed 2026-09-25. Bio/posts not scrapable (Instagram login wall, zero web-indexed data); recheck bio, follower count and shop links before quoting them.",
+    "public_name": "Her Choice by Asma",
+    "facebook_url": null,
+    "website_url": null,
+    "managing_agency": "Famebros Studio",
+    "agency_instagram_handle": "@famebrosstudio",
+    "agency_instagram_url": "https://www.instagram.com/famebrosstudio/",
+    "agency_credit_default": "💫 Managed by: @famebrosstudio",
+    "excluded_candidates": [
+      "Aasme Asma and other similarly named fashion brands found in search are not treated as this brand. Only @herchoice_byasma is approved."
+    ],
+    "reference_rule": "Use only @herchoice_byasma content for styling and wording cues, and verify every product field before writing. Never tag or imitate a similarly named account."
+  },
+  "established_content_knowledge": {
+    "confirmed_content_pillars": [
+      "Outfit hero reveal",
+      "Drape and movement",
+      "Visible design details",
+      "Front, side and back views using the same real outfit",
+      "Styling ideas using supplied information",
+      "Product information using confirmed fields",
+      "Cinematic garment video",
+      "Choice and engagement posts"
+    ],
+    "content_priority": "Show the real garment clearly, preserve its details, and help a viewer understand what is actually visible and confirmed.",
+    "unknown_category_rule": "Do not assume the brand sells modestwear, abayas, ethnic wear, western wear, occasion wear or everyday wear. Use the exact category supplied for each product.",
+    "unknown_market_rule": "Do not localize hashtags, SEO or copy to a city or country until the location is confirmed.",
+    "unknown_commercial_rule": "No price, order method, delivery, exchange, size or availability data is established.",
+    "data_confidence": {
+      "category": "Confirmed",
+      "genres": "Confirmed",
+      "tone": "Editorial guidance",
+      "contact": "Unknown",
+      "social": "Unknown",
+      "catalogue": "Unknown",
+      "commercial_terms": "Unknown"
+    }
+  },
+  "writing_direction": {
+    "brand_voice": [
+      "Graceful",
+      "Stylish",
+      "Uncluttered",
+      "Warm",
+      "Product-led",
+      "Confident"
+    ],
+    "primary_language": "English or Hinglish",
+    "focus": [
+      "Actual outfit",
+      "Drape",
+      "Movement",
+      "Visible detail",
+      "Styling possibility",
+      "Simple enquiry action"
+    ],
+    "avoid": [
+      "Assuming modestwear or abayas",
+      "Assuming ethnic-only positioning",
+      "Invented fabric or handwork",
+      "Unconfirmed size, price or stock",
+      "Fake location",
+      "Fake Instagram link",
+      "Changing colour or design",
+      "Generic luxury claims",
+      "Overloaded text"
+    ],
+    "copy_rule": "If the product has not been described, write only about what is safely visible and ask for the missing facts.",
+    "punctuation_style": "Simple polished sentences and no em dashes."
+  },
+  "content_playbook": {
+    "cinematic_outfit_reel": {
+      "sequence": [
+        "Movement hook",
+        "Full silhouette",
+        "Visible detail close-up",
+        "Side or back view",
+        "Simple detail or DM CTA"
+      ],
+      "rule": "Do not name fabric, work, fit or occasion unless supplied."
+    },
+    "product_carousel": {
+      "sequence": [
+        "Hero view",
+        "Front details",
+        "Side view",
+        "Back view",
+        "Confirmed facts",
+        "Current enquiry CTA"
+      ],
+      "rule": "All slides must show the same actual product accurately."
+    },
+    "static_post": {
+      "style": "One strong outfit image with minimal text and ample space.",
+      "rule": "Use only the official logo once supplied."
+    },
+    "styling_post": {
+      "objective": "Suggest ways to style the exact garment.",
+      "rule": "Separate optional styling suggestions from included product components."
+    },
+    "informational_post": {
+      "objective": "Explain product details, care or sizing only from current approved data."
+    },
+    "engagement_post": {
+      "safe_prompts": [
+        "Which look would you choose?",
+        "Save this outfit for your style reference.",
+        "Which detail caught your eye first?"
+      ]
+    }
+  },
+  "women_clothing_product_description_framework": {
+    "required_fields": [
+      "Official product name",
+      "Category",
+      "Product code",
+      "Colour",
+      "Fabric",
+      "Visible work or print",
+      "Silhouette",
+      "Fit",
+      "Length",
+      "Sleeve",
+      "Included pieces",
+      "Sizes",
+      "Price",
+      "Stock",
+      "Care",
+      "Shipping",
+      "Returns"
+    ],
+    "safe_order": [
+      "Style or movement hook",
+      "Exact product identity",
+      "Confirmed visible or supplied detail",
+      "Optional styling note",
+      "Approved enquiry CTA"
+    ],
+    "unknown_field_rule": "Omit unknowns and request them. Never infer fabric, weave, embellishment, comfort, lining, transparency, fit or included pieces from a single photo.",
+    "fidelity_rule": "Preserve the garment's colour, shape, pattern, surface work, neckline, sleeves and proportions.",
+    "gender_rule": "Keep the default audience and product system within women's clothing."
+  },
+  "caption_format": {
+    "default_use": "Instagram and Facebook feed posts and reels.",
+    "body_length": "Usually 25 to 70 words excluding footer, hashtags and SEO bracket. Longer educational captions are allowed when requested.",
+    "body_structure": [
+      "One strong, brand-relevant hook.",
+      "One to three clear lines using only verified details.",
+      "One direct enquiry, visit, booking, save, share or link-in-bio CTA."
+    ],
+    "format_order": [
+      "Caption body",
+      "Blank line",
+      "Approved location and contact footer when available",
+      "Agency credit when required",
+      "Blank line",
+      "Exactly three hashtags",
+      "Blank line",
+      "Exactly one square-bracket SEO block"
+    ],
+    "hashtag_rule": "Exactly three hashtags unless the user explicitly requests another count.",
+    "seo_rule": "Use five to eight natural search phrases inside one and only one pair of square brackets.",
+    "story_rule": "For story copy, use a short headline, one support line and one CTA. Omit the feed footer, hashtags and SEO unless requested.",
+    "reel_overlay_rule": "Keep each text card short enough to read comfortably on a phone. Do not repeat the whole caption on screen.",
+    "final_checks": [
+      "Use only facts approved for the selected post.",
+      "Use exactly three relevant hashtags.",
+      "Use one square-bracket SEO block containing five to eight comma-separated phrases.",
+      "Use one clear CTA.",
+      "Remove every em dash before delivery.",
+      "Do not add a location footer.",
+      "Do not add any Instagram tag except @herchoice_byasma.",
+      "Check every product field for source support."
+    ]
+  },
+  "fixed_footer": {
+    "standard_lines": [
+      "📲 DM @herchoice_byasma for details of this outfit."
+    ],
+    "status": "Official-handle CTA confirmed 2026-09-25. Replace with phone/website/location if the owner supplies them.",
+    "agency_credit_optional": "💫 Managed by: @famebrosstudio",
+    "usage": "Use the @herchoice_byasma DM footer on all feed posts. Agency credit may be used only in Famebros-managed deliverables.",
+    "exceptions": [
+      "Story overlays",
+      "Comments",
+      "Unpublished concept drafts"
+    ]
+  },
+  "suggested_hashtag_bank": [
+    "#HerChoiceByAsma",
+    "#AsmaWomenClothing",
+    "#WomensClothing",
+    "#WomensFashion",
+    "#OutfitDetails",
+    "#StyleInspiration",
+    "#FashionReel",
+    "#OutfitOfTheDay"
+  ],
+  "seo_keyword_bank": [
+    "Her Choice by Asma",
+    "Asma Women Clothing",
+    "herchoice_byasma",
+    "women's clothing brand",
+    "women's fashion collection",
+    "outfit details for women",
+    "women's outfit inspiration",
+    "stylish women's outfits"
+  ],
+  "cta_bank": [
+    "DM @herchoice_byasma for details of this outfit.",
+    "Which look would you choose?",
+    "Save this outfit for your style reference.",
+    "Which detail caught your eye first?",
+    "Ask us for the confirmed fabric, size and price."
+  ],
+  "suggested_hooks": [
+    "Let the outfit move before the details speak.",
+    "A closer look at the details that shape the look.",
+    "Grace in every angle.",
+    "One outfit, more than one way to style it.",
+    "Which detail would make you choose this look?",
+    "Simple styling, strong presence."
+  ],
+  "visual_and_asset_guidance": {
+    "feed_size": "1080 x 1440 pixels",
+    "story_and_reel_size": "1080 x 1920 pixels",
+    "style": [
+      "Graceful",
+      "Clean",
+      "Product-first",
+      "Cinematic",
+      "Uncluttered"
+    ],
+    "palette": "Not established. Derive temporary neutral support colours from the supplied garment without presenting them as official brand colours.",
+    "typography": "Not established. Use restrained, readable typography in concept work until the brand fonts are supplied.",
+    "asset_priority": [
+      "Actual outfit",
+      "True colour",
+      "Full silhouette",
+      "Movement",
+      "Visible detail",
+      "Multiple real angles"
+    ],
+    "fidelity_rules": [
+      "Do not change the garment colour.",
+      "Do not change its pattern, design, neckline, sleeves, shape or length.",
+      "Do not add embroidery, embellishment or accessories and imply they are included.",
+      "Do not reshape the model or replace the product with a similar garment."
+    ],
+    "thumbnail_rule": "One real outfit and one short hook. Do not add unconfirmed price, fabric or location."
+  },
+  "carousel_and_reel_system": {
+    "product_carousel": [
+      "Slide 1: Full outfit",
+      "Slide 2: Front detail",
+      "Slide 3: Side or movement",
+      "Slide 4: Back detail",
+      "Slide 5: Confirmed product facts",
+      "Slide 6: Enquiry CTA"
+    ],
+    "cinematic_reel": [
+      "0 to 2 seconds: Movement hook",
+      "2 to 6 seconds: Full silhouette",
+      "6 to 11 seconds: Visible details",
+      "11 to 14 seconds: Alternate angle",
+      "14 to 16 seconds: CTA"
+    ],
+    "editing_style": [
+      "Natural garment movement",
+      "Accurate colour",
+      "Clean cuts",
+      "Minimal text",
+      "No artificial design changes"
+    ],
+    "music_direction": "Elegant or contemporary fashion audio with appropriate usage rights."
+  },
+  "other_output_modes": {
+    "story_sequence": [
+      "Outfit reveal",
+      "Detail close-up",
+      "Question or DM CTA"
+    ],
+    "catalogue_copy": "Complete only after product fields and commerce terms are supplied.",
+    "whatsapp_copy": "Do not create until the official number and product details are confirmed.",
+    "comment_reply": "Avoid price, size, stock or shipping answers unless the current data is available.",
+    "voiceover": "Short English or Hinglish product-led narration using only confirmed visual and product facts."
+  },
+  "sample_caption": {
+    "status": "Illustrative low-risk caption for a real outfit reveal. Add the official page or contact only after confirmation.",
+    "scenario": "Cinematic women's outfit reel",
+    "caption_body": "Grace in every angle. Let the silhouette, movement and visible details make the first impression. Which part of this look caught your eye first? DM @herchoice_byasma for the confirmed product details.",
+    "footer": [
+      "📲 DM @herchoice_byasma"
+    ],
+    "hashtags": [
+      "#HerChoiceByAsma",
+      "#WomensFashion",
+      "#OutfitDetails"
+    ],
+    "seo_keywords": [
+      "Her Choice by Asma",
+      "Asma Women Clothing",
+      "women's fashion collection",
+      "outfit details for women",
+      "women's outfit inspiration",
+      "stylish women's outfits"
+    ],
+    "full_caption": "Grace in every angle. Let the silhouette, movement and visible details make the first impression. Which part of this look caught your eye first? DM @herchoice_byasma for the confirmed product details.\n\n📲 DM @herchoice_byasma\n\n#HerChoiceByAsma #WomensFashion #OutfitDetails\n\n[Her Choice by Asma, Asma Women Clothing, women's fashion collection, outfit details for women, women's outfit inspiration, stylish women's outfits]",
+    "validation": {
+      "hashtags": 3,
+      "seo_phrases": 6,
+      "invented_contact": false,
+      "invented_location": false,
+      "invented_product_fact": false
+    }
+  },
+  "accuracy_rules": [
+    "Do not connect this brand to Aasme Asma or any similarly named business.",
+    "Do not invent an Instagram link, phone, address, city, website or email.",
+    "Do not assume modestwear, abayas, ethnic wear or western wear.",
+    "Do not invent fabric, work, fit, sizes, price, stock, shipping or returns.",
+    "Preserve the real garment's colour, shape, pattern and design.",
+    "Use the exact category supplied for each product.",
+    "Keep content women-only unless the brand scope changes.",
+    "Remove every em dash."
+  ],
+  "per_post_input": {
+    "required_core": [
+      "Output mode",
+      "Objective",
+      "Actual product assets",
+      "Official product name",
+      "Exact category",
+      "Audience",
+      "CTA",
+      "Publication date"
+    ],
+    "product_inputs": [
+      "Product code",
+      "Colour",
+      "Fabric",
+      "Work or print",
+      "Silhouette",
+      "Fit",
+      "Length",
+      "Sleeve",
+      "Included pieces",
+      "Sizes",
+      "Price",
+      "Stock",
+      "Care"
+    ],
+    "commerce_inputs": [
+      "Official account",
+      "Website",
+      "Phone",
+      "Order method",
+      "Shipping",
+      "Returns",
+      "Location"
+    ],
+    "creative_inputs": [
+      "Official logo",
+      "Brand colours",
+      "Fonts",
+      "Format",
+      "Headline",
+      "Reference",
+      "Music"
+    ],
+    "input_rule": "This brand has major unresolved identity and commerce fields. Ask for them before producing sales-ready copy."
+  },
+  "master_brand_instruction": "Create content only for Asma Women Clothing, trading as Her Choice by Asma. The official Instagram is @herchoice_byasma (owner-supplied 2026-09-25). The confirmed scope is women's clothing with graceful, stylish, uncluttered, informational and cinematic content. No website, phone, email, address, city or catalogue is established, so never invent them. Do not assume the brand sells modestwear, abayas, ethnic-only or western-only clothing; use the exact category supplied for each real outfit. Preserve garment colour, shape, pattern and design. Never invent fabric, work, fit, sizes, price, stock, shipping or returns. Use DM @herchoice_byasma as the CTA. Standard captions use exactly three hashtags and one SEO bracket with five to eight phrases. Remove all em dashes.",
+  "missing_information": {
+    "identity": [
+      "Official legal or trading name",
+      "Owner or founder",
+      "Brand story",
+      "Country",
+      "City",
+      "Target market"
+    ],
+    "contact": [
+      "Official Instagram confirmed (@herchoice_byasma, owner-supplied 2026-09-25; bio/posts still to be read once accessible)",
+      "Facebook",
+      "Website",
+      "Phone",
+      "WhatsApp",
+      "Email",
+      "Address",
+      "Google Maps URL"
+    ],
+    "catalogue": [
+      "Exact product categories",
+      "Product names and codes",
+      "Fabric",
+      "Work",
+      "Sizes",
+      "Prices",
+      "Stock",
+      "Care",
+      "Images"
+    ],
+    "commerce": [
+      "Order method",
+      "Currency",
+      "Payment",
+      "Shipping regions",
+      "Delivery times",
+      "Returns and exchange",
+      "Support hours"
+    ],
+    "brand_system": [
+      "Logo",
+      "Colour codes",
+      "Fonts",
+      "Photography guide",
+      "Tone guide",
+      "Packaging"
+    ],
+    "agency": [
+      "Package",
+      "Deliverable counts",
+      "Shoot plan",
+      "Approval workflow",
+      "Billing details"
+    ],
+    "priority": "Instagram handle confirmed. Next: read the live bio/posts for categories and shop links, then collect catalogue, commerce policies and brand kit.",
+    "identity_note": "Public trading name is Her Choice by Asma per the official handle; keep legal/trading-name confirmation in the identity queue."
+  },
+  "sources": {
+    "user_facts": [
+      "Exact brand name from the Famebros dataset.",
+      "Women's clothing category.",
+      "Informational and cinematic content genres.",
+      "Official Instagram @herchoice_byasma (Her Choice by Asma) supplied directly by the brand owner, 2026-09-25."
+    ],
+    "public_sources": [],
+    "public_search_note": "Web search 2026-09-25 for herchoice_byasma returned zero indexed results; direct Instagram fetch returns a login wall. No bio, follower, address, phone or catalogue facts could be scraped, so nothing beyond the owner-supplied handle was added.",
+    "internal_dataset": "Famebros_Brand_Caption_Dataset.json record asma_women_clothing.",
+    "source_rule": "Direct brand-owner confirmation is required before adding social, contact, location, catalogue or commerce facts."
+  }
+}

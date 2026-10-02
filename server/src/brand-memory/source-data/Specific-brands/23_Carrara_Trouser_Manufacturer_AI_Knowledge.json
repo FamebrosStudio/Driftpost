@@ -1,0 +1,1226 @@
+{
+  "schema_version": "3.0",
+  "brand_number": 23,
+  "brand_id": "carrara_trousers",
+  "brand_name": "CARRARA | Trousers Manufacturers",
+  "aliases": [
+    "Carrara Trouser Manufacturer",
+    "Carrara Trouser Manufacturer Ahmedabad",
+    "Carrara Trousers",
+    "CARRARA Trousers",
+    "Carrara Trouser",
+    "Carrara Clothing",
+    "@carraraclothing"
+  ],
+  "knowledge_scope": "One brand only. This file combines user-provided facts, the matched official Instagram identity, indexed public content, historical content vocabulary and strict AI production rules for CARRARA, a premium men's trouser manufacturer in Ahmedabad. Confirmed business facts are separated from editorial guidance and unverified catalogue terms. Never convert a content suggestion into a product, fit, fabric, size, price, MOQ, margin, production-capacity or delivery-time claim.",
+  "business": {
+    "category": "Men's trouser manufacturing",
+    "industry": "Men's apparel manufacturing and wholesale menswear supply",
+    "business_type": "Wholesale-only men's trouser manufacturer",
+    "business_type_status": "User-provided positioning and matched indexed Instagram content state wholesale only.",
+    "city": "Ahmedabad",
+    "state": "Gujarat",
+    "country": "India",
+    "service_area": "Pan India",
+    "service_area_status": "User-provided brand fact. Pan India delivery is established, but delivery timing, freight, minimum order and coverage exceptions are not established.",
+    "primary_audience": [
+      "Menswear retailers",
+      "Menswear distributors",
+      "Wholesale buyers",
+      "Multi-brand apparel stores",
+      "Menswear resellers and trade buyers across India"
+    ],
+    "audience_rule": "Write to wholesale buyers, retailers and distributors. Do not write a direct-to-consumer purchase caption unless the current brief explicitly introduces a retail channel.",
+    "core_positioning": "A premium Ahmedabad men's trouser manufacturer serving wholesale menswear businesses across India.",
+    "approved_positioning_short": "Premium men's trousers for wholesale buyers across India.",
+    "primary_value_propositions": [
+      "Focused specialization in men's trousers",
+      "Wholesale-oriented business communication",
+      "Sharp, product-led presentation",
+      "Fit and silhouette as the visual focus",
+      "Ahmedabad manufacturing identity",
+      "Pan India wholesale reach"
+    ],
+    "value_proposition_rule": "Quality, consistency, scale, supply capability and finishing may be discussed only in restrained brand language unless the asset or brief supplies objective proof. Never imply certifications, output volume, defect rates or guaranteed consistency.",
+    "commercial_model": {
+      "confirmed": [
+        "Wholesale only",
+        "Enquiries accepted through Instagram DM",
+        "Public enquiry phone available",
+        "Pan India delivery"
+      ],
+      "not_established": [
+        "Minimum order quantity",
+        "Minimum order value",
+        "Price list",
+        "Wholesale margins",
+        "Distributor territory rights",
+        "Credit period",
+        "Payment terms",
+        "Dispatch time",
+        "Delivery time",
+        "Shipping charges",
+        "Returns or exchange terms",
+        "Private labelling",
+        "Custom manufacturing",
+        "Sample policy",
+        "Production capacity",
+        "Stock availability"
+      ]
+    },
+    "owner_or_founder": null,
+    "owner_status": "No owner, founder or spokesperson name has been established.",
+    "year_established": null,
+    "year_established_status": "Not established.",
+    "onboarding_or_billing_note": "9 August appears in prior internal working context as a billing or onboarding date. Treat it as internal-only until its meaning and year are confirmed. Never use it in public copy.",
+    "currency": "INR",
+    "dataset_date": "2026-09-25",
+    "commercial_accuracy_rule": "Every price, MOQ, fabric, fit name, size, colour, stock status, dispatch promise, delivery promise, payment term and offer must come from the current approved brief, catalogue or rate sheet. If absent, invite a wholesale enquiry without guessing."
+  },
+  "contact": {
+    "phone_display": "+91 7600007731",
+    "phone_e164": "+917600007731",
+    "phone_status": "Previously supplied by the user and matched in indexed official Instagram content.",
+    "whatsapp_number": null,
+    "whatsapp_status": "Do not label the public phone as WhatsApp unless the current official profile or brief confirms WhatsApp use.",
+    "email": null,
+    "email_status": "No official public email has been established.",
+    "website": null,
+    "website_status": "No official website has been established.",
+    "address_full": null,
+    "address_status": "Only Ahmedabad, Gujarat, India is established. No street address, office, factory, warehouse or showroom address is confirmed.",
+    "location_display": "Ahmedabad, Gujarat, India",
+    "google_maps_url": null,
+    "google_maps_status": "No official map listing has been established.",
+    "public_enquiry_methods": [
+      "Instagram DM at @carraraclothing",
+      "Call +91 7600007731"
+    ],
+    "contact_rule": "Use only +91 7600007731 and @carraraclothing. Never invent a street address, email, website, second number, WhatsApp link or catalogue URL."
+  },
+  "social_media": {
+    "instagram_handle": "@carraraclothing",
+    "instagram_url": "https://www.instagram.com/carraraclothing/",
+    "instagram_status": "Established by prior user-provided brand data and matched to indexed public content using the brand's wholesale positioning and phone number.",
+    "instagram_profile_name": "CARRARA | Trousers Manufacturers",
+    "instagram_profile_name_status": "User-provided exact presentation.",
+    "instagram_identity_markers": [
+      "Carrara brand name",
+      "Men's trousers manufacturer positioning",
+      "Wholesale-only messaging",
+      "+91 7600007731",
+      "Retailer and distributor audience"
+    ],
+    "instagram_reference_rule": "Use this page to understand current visual language, collection emphasis and public vocabulary. Do not treat any old post's stock, fit, fabric, offer or delivery statement as current without checking its date and the active brief.",
+    "facebook_url": null,
+    "youtube_url": null,
+    "linkedin_url": null,
+    "threads_url": null,
+    "other_social_status": "No other official social profiles have been established.",
+    "managing_agency": "Famebros Studio",
+    "agency_instagram_handle": "@famebrosstudio",
+    "agency_instagram_url": "https://www.instagram.com/famebrosstudio/",
+    "agency_credit_default": "💫 Managed by: @famebrosstudio",
+    "agency_credit_rule": "Include the agency credit in standard feed and reel captions. Omit it for story copy, comments, replies and repost text unless requested."
+  },
+  "established_content_knowledge": {
+    "confirmed_content_genres": [
+      "Transformation",
+      "Model shoot"
+    ],
+    "genre_interpretation": {
+      "transformation": "Show the difference that trouser choice, fit, silhouette and styling make to a complete menswear look. Never frame the model's body as the problem.",
+      "model_shoot": "Keep the trouser visible, correctly fitted and product-led. Posing, crop and styling should help buyers understand silhouette and presentation."
+    },
+    "expanded_content_pillars": [
+      "Model-led trouser showcases",
+      "Outfit transformation using a different trouser silhouette",
+      "Formal versus casual styling",
+      "Fit and silhouette education",
+      "Front, side and back product views",
+      "Waistband, pocket, closure and hem details when visible",
+      "Fabric movement and drape when demonstrated",
+      "Colour-led collection edits",
+      "Retail-counter collection presentation",
+      "Wholesale collection introductions",
+      "Retailer and distributor enquiry posts",
+      "New-arrival announcements with verified product details",
+      "Behind-the-scenes manufacturing only with genuine footage",
+      "Quality-control process only with genuine documented steps",
+      "Packaging and dispatch only with genuine footage",
+      "Pan India buyer communication",
+      "Seasonal menswear styling",
+      "Festival greetings with refined menswear cues",
+      "Save-worthy trouser styling references",
+      "Collection enquiry reminders"
+    ],
+    "confirmed_product_scope": [
+      "Men's trousers"
+    ],
+    "historical_content_vocabulary": [
+      "Formal trousers",
+      "Casual trousers",
+      "Travel fit",
+      "Straight fit",
+      "Narrow fit"
+    ],
+    "historical_vocabulary_status": "These terms appeared in earlier Carrara content work. They are useful retrieval and draft labels, but they are not a current catalogue confirmation. Use a term publicly only when the supplied product, asset, catalogue or brief confirms it.",
+    "not_confirmed_as_products": [
+      "Chinos",
+      "Cargo trousers",
+      "Jeans",
+      "Joggers",
+      "Track pants",
+      "Suiting",
+      "Shirts",
+      "Blazers",
+      "Shorts",
+      "Women's trousers",
+      "Kidswear"
+    ],
+    "not_confirmed_as_features": [
+      "Stretch fabric",
+      "Wrinkle resistance",
+      "Water resistance",
+      "Breathability rating",
+      "Four-way stretch",
+      "Elasticated waist",
+      "Machine washability",
+      "Fade resistance",
+      "Stain resistance",
+      "Premium imported fabric",
+      "Handcrafted construction"
+    ],
+    "content_priority": "Make the actual trouser the hero. Start with fit, silhouette, styling result or wholesale relevance. Support the message with only the details visible in the asset or supplied in the brief.",
+    "buyer_context": [
+      "Retail assortment planning",
+      "Menswear collection selection",
+      "Silhouette variety",
+      "Model presentation for retail appeal",
+      "Collection enquiry",
+      "Pan India wholesale sourcing"
+    ],
+    "festival_visual_history": {
+      "raksha_bandhan_direction": "Premium modern menswear, masculine editorial minimalism, a brother in well-fitted trousers, sibling emotion, and a charcoal, black, beige, taupe or brown palette.",
+      "ganesh_chaturthi_direction": "Professional 1080x1440 creative with the logo at top, cream, beige, deep brown, subtle maroon and gold, refined Ganpati symbolism and restrained tailoring or fabric cues.",
+      "white_background_preference": "A clean white background was requested after rejecting a repeated reference style.",
+      "history_rule": "These are historical art directions, not permanent brand-kit specifications. Use them when the campaign context matches or when the current brief repeats them."
+    }
+  },
+  "writing_direction": {
+    "status": "Operational voice built from user-provided brand facts, established content genres and matched wholesale positioning.",
+    "brand_voice": [
+      "Professional",
+      "Sharp",
+      "Product focused",
+      "Premium",
+      "Direct",
+      "Trade aware",
+      "Modern",
+      "Confident without exaggeration"
+    ],
+    "tone_rule": "Never funny. Do not use comedy, meme language, prank framing, childish wordplay or deliberately unserious hooks.",
+    "language": {
+      "primary": "English",
+      "secondary": "Direct Hinglish",
+      "rule": "Use clean English by default. Use straightforward Hinglish only when requested or when the source video naturally uses it. Avoid forced slang."
+    },
+    "audience_address": [
+      "Retailers",
+      "Distributors",
+      "Menswear buyers",
+      "Wholesale partners",
+      "Business owners"
+    ],
+    "preferred_copy_traits": [
+      "Lead with a clear product or buyer benefit",
+      "Keep sentences compact",
+      "Name only verified product details",
+      "Describe what the viewer can see",
+      "Connect silhouette to styling",
+      "Use trade language only when the post is B2B",
+      "End with one clear enquiry action"
+    ],
+    "avoid": [
+      "Funny or meme-led copy",
+      "Unverified superlatives such as best, number one or India's leading",
+      "Luxury claims without support",
+      "Guaranteed sales or profit claims",
+      "Guaranteed fit for every body",
+      "Unverified comfort, durability or fabric-performance claims",
+      "Made-to-measure or tailoring claims",
+      "Direct-to-consumer purchase instructions unless approved",
+      "Fake scarcity",
+      "Invented testimonials",
+      "MOQ, price, margin or delivery claims not in the brief",
+      "Long generic fashion poetry that hides the product",
+      "Too many emojis",
+      "Competitor comparisons",
+      "Body shaming"
+    ],
+    "emoji_style": "Minimal. Use zero to three relevant emojis at most in a standard caption. Phone, location and agency footer icons are allowed.",
+    "punctuation_style": "Clean punctuation and short paragraphs. No em dashes.",
+    "b2b_copy_rule": "The brand is wholesale only. Use B2B framing by default for sales-led posts, but do not insert commercial specifics that were not supplied.",
+    "transformation_copy_rule": "Describe the shift in outfit balance, trouser silhouette or styling. Never suggest that the model's body needed correction."
+  },
+  "content_playbook": {
+    "model_shoot_post": {
+      "objective": "Present a trouser clearly and make the styling easy for a wholesale buyer to evaluate.",
+      "structure": [
+        "Open with the silhouette or styling result",
+        "Name the product only as specifically as the brief allows",
+        "Mention one or two visible details",
+        "Connect the look to a retailer or menswear audience when relevant",
+        "Close with a collection enquiry CTA"
+      ],
+      "proof_needed": [
+        "Correct style or SKU name",
+        "Confirmed fit label",
+        "Confirmed colour",
+        "Confirmed fabric if mentioned",
+        "Actual model and product asset"
+      ]
+    },
+    "transformation_post": {
+      "objective": "Show how trouser selection changes the overall menswear look.",
+      "safe_angles": [
+        "Casual to polished",
+        "Relaxed styling to sharp styling",
+        "One top styled with two confirmed trouser silhouettes",
+        "Untucked to finished outfit styling",
+        "Footwear change with the same trousers",
+        "Before and after pressing or final styling when genuine"
+      ],
+      "avoid": [
+        "Digitally changing the model's body",
+        "Calling a body shape a flaw",
+        "Showing a false fit correction",
+        "Comparing unrelated products as the same SKU",
+        "Inventing a tailoring alteration"
+      ]
+    },
+    "fit_education_post": {
+      "objective": "Explain visible silhouette differences without pretending a fit label has been confirmed.",
+      "safe_language": [
+        "A cleaner line through the leg",
+        "A sharper overall silhouette",
+        "A more relaxed visual profile",
+        "A structured finish",
+        "A balanced trouser break"
+      ],
+      "rule": "Use formal names such as straight fit, narrow fit or travel fit only when the current product information confirms them."
+    },
+    "detail_post": {
+      "objective": "Highlight construction visible in supplied close-ups.",
+      "eligible_details": [
+        "Waistband",
+        "Belt loops",
+        "Front closure",
+        "Pleat or flat-front construction",
+        "Pocket placement",
+        "Seam line",
+        "Hem finish",
+        "Fabric texture",
+        "Stitching",
+        "Drape"
+      ],
+      "rule": "Describe only what is clearly visible or supplied. Do not infer material composition or construction quality from appearance alone."
+    },
+    "wholesale_collection_post": {
+      "objective": "Generate qualified retailer and distributor enquiries.",
+      "structure": [
+        "State wholesale-only positioning",
+        "Identify the collection or product shown",
+        "Give verified buyer-relevant details",
+        "Mention Pan India delivery only when useful",
+        "Invite DM or phone enquiry"
+      ],
+      "details_to_request": [
+        "Collection name",
+        "SKU list",
+        "Fits",
+        "Colours",
+        "Fabrics",
+        "Sizes",
+        "MOQ",
+        "Price or price range",
+        "Stock status",
+        "Dispatch location",
+        "Delivery terms"
+      ]
+    },
+    "manufacturing_bts_post": {
+      "objective": "Build trade trust through authentic process visibility.",
+      "eligible_scenes": [
+        "Pattern or cutting footage",
+        "Stitching",
+        "Finishing",
+        "Pressing",
+        "Inspection",
+        "Folding",
+        "Packing",
+        "Dispatch preparation"
+      ],
+      "rule": "Name a process only when it is genuinely shown and confirmed as Carrara's operation. Do not use stock factory footage as proof."
+    },
+    "offer_or_rate_post": {
+      "objective": "Communicate an approved commercial offer accurately.",
+      "required_fields": [
+        "Eligible product or collection",
+        "Buyer eligibility",
+        "MOQ or order threshold",
+        "Price, discount or benefit",
+        "Start date",
+        "End date",
+        "Stock or allocation condition",
+        "Payment condition",
+        "Shipping condition",
+        "Contact method"
+      ],
+      "rule": "Do not publish an offer, rate or free-delivery claim until every relevant term is supplied."
+    },
+    "festival_post": {
+      "objective": "Share a tasteful greeting while keeping Carrara's menswear identity visible.",
+      "style": "Refined, minimal and fashion-led. Use tailoring, fabric, silhouette or model cues rather than generic festive clutter.",
+      "sales_rule": "Do not add an offer or wholesale urgency unless the approved brief includes one."
+    },
+    "testimonial_post": {
+      "objective": "Build trust using authentic buyer feedback.",
+      "rule": "Use only an exact, approved customer or trade-buyer statement. Do not invent names, cities, ratings, order sizes or outcomes."
+    },
+    "platform_adaptation": {
+      "instagram_feed": "Product-led caption with one CTA, approved footer, exactly three hashtags and one SEO bracket.",
+      "instagram_reel": "Fast hook, clear product reveal, minimal on-screen text, product detail sequence and wholesale CTA.",
+      "instagram_story": "One message per frame, large text and DM or call action. Omit the standard caption footer unless requested.",
+      "whatsapp": "Compact trade message with collection context, verified commercial details and contact action.",
+      "catalogue": "Structured SKU data. No poetic filler and no missing commercial facts disguised as copy."
+    }
+  },
+  "trouser_product_and_wholesale_description_framework": {
+    "purpose": "Help an AI describe each Carrara trouser accurately for model shoots, reels, catalogues and wholesale enquiries without inventing specifications.",
+    "required_identity_fields": [
+      "Collection name",
+      "Product name",
+      "SKU or article number",
+      "Current availability",
+      "Wholesale eligibility"
+    ],
+    "product_classification_fields": [
+      "Product category",
+      "Use case",
+      "Confirmed fit name",
+      "Rise",
+      "Front construction",
+      "Leg shape",
+      "Length or inseam option",
+      "Closure",
+      "Pocket configuration",
+      "Waistband construction"
+    ],
+    "material_fields": [
+      "Fabric name",
+      "Fibre composition",
+      "Fabric weight if supplied",
+      "Stretch percentage if supplied",
+      "Texture",
+      "Drape",
+      "Lining",
+      "Care instructions"
+    ],
+    "appearance_fields": [
+      "Colour name",
+      "Pattern",
+      "Surface texture",
+      "Visible stitching",
+      "Hardware",
+      "Pleat detail",
+      "Pocket detail",
+      "Hem finish"
+    ],
+    "fit_and_model_fields": [
+      "Model height if approved",
+      "Model waist size if approved",
+      "Size worn",
+      "Fit at waist",
+      "Fit at thigh",
+      "Leg line",
+      "Trouser break",
+      "Styling pieces",
+      "Footwear"
+    ],
+    "wholesale_fields": [
+      "MOQ",
+      "Size ratio or assortment",
+      "Colour options",
+      "Wholesale price",
+      "Taxes",
+      "Packaging",
+      "Stock status",
+      "Dispatch time",
+      "Delivery coverage",
+      "Freight terms",
+      "Payment terms",
+      "Sample policy",
+      "Replacement or return policy"
+    ],
+    "safe_description_order": [
+      "Name the verified product",
+      "Describe the visible silhouette",
+      "Add one or two confirmed construction details",
+      "Add verified fabric or colour information",
+      "Explain the styling context",
+      "Add wholesale details only when supplied",
+      "Close with the approved enquiry action"
+    ],
+    "allowed_visual_observations": [
+      "The leg appears clean and structured",
+      "The silhouette looks relaxed or close when visually clear",
+      "A pleat, pocket, waistband or closure is visible",
+      "The fabric shows visible texture or drape",
+      "The outfit reads as formal, smart casual or casual based on complete styling"
+    ],
+    "visual_observation_rule": "Use appearance language, not hidden specification claims. For example, say 'the fabric shows a smooth finish' instead of claiming a composition or performance feature.",
+    "claim_confirmation_matrix": {
+      "fit_name": "Requires catalogue, tag, approved brief or brand confirmation.",
+      "fabric_composition": "Requires catalogue, tag, approved brief or brand confirmation.",
+      "size_range": "Requires current size chart or approved brief.",
+      "comfort": "May be quoted only as approved brand wording or an attributed real testimonial. Do not guarantee.",
+      "durability": "Requires approved evidence or test information. Do not infer from visuals.",
+      "wholesale_price": "Requires current approved rate sheet.",
+      "MOQ": "Requires current approved trade terms.",
+      "delivery_time": "Requires current operational confirmation.",
+      "pan_india_delivery": "Established general fact, but specific pin-code coverage and timing still require confirmation.",
+      "customisation": "Not established. Do not offer it.",
+      "private_label": "Not established. Do not offer it."
+    },
+    "missing_data_behavior": "Omit an unknown specification from public copy. In internal drafts, label it as 'confirmation required'. Never replace it with a plausible industry default."
+  },
+  "caption_format": {
+    "default_use": "Instagram feed and reel captions",
+    "body_length": "Usually 25 to 55 words, excluding footer, hashtags and SEO bracket. Longer educational or wholesale-detail captions are allowed when the brief contains enough verified information.",
+    "body_structure": [
+      "Short product, silhouette or buyer-focused hook",
+      "One or two factual supporting lines",
+      "One clear wholesale or collection CTA"
+    ],
+    "format_order": [
+      "Caption body",
+      "Blank line",
+      "Approved contact and location footer",
+      "Agency credit",
+      "Blank line",
+      "Exactly three hashtags",
+      "Blank line",
+      "Exactly one square-bracket SEO block"
+    ],
+    "hashtag_rule": "Use exactly three relevant hashtags in the standard final caption unless the user requests another count.",
+    "seo_rule": "Use exactly one square-bracket block containing five to eight natural, comma-separated search phrases. Do not use multiple brackets and do not repeat hashtags inside the bracket.",
+    "cta_rule": "Use one primary CTA. For collection and wholesale posts, prefer DM @carraraclothing or call +91 7600007731.",
+    "line_break_rule": "Keep the hook, support and CTA readable. Separate the caption body, footer, hashtags and SEO block with blank lines.",
+    "story_rule": "For story copy, omit the full feed-caption footer, hashtags and SEO block unless specifically requested.",
+    "comment_rule": "For replies and comments, answer naturally without footer, hashtags or SEO bracket.",
+    "accuracy_gate": [
+      "Is the post definitely Carrara?",
+      "Is the product name confirmed?",
+      "Are fit and fabric details confirmed?",
+      "Is the post wholesale-facing?",
+      "Are commercial terms current?",
+      "Is +91 7600007731 correct?",
+      "Are there exactly three hashtags?",
+      "Is there exactly one SEO bracket with five to eight phrases?",
+      "Is the tone professional and never funny?",
+      "Are all em dashes removed?"
+    ]
+  },
+  "fixed_footer": {
+    "standard_feed_and_reel_lines": [
+      "📍 Ahmedabad",
+      "📞 +91 7600007731",
+      "💫 Managed by: @famebrosstudio"
+    ],
+    "compact_option": [
+      "📍 Ahmedabad | 📞 +91 7600007731",
+      "💫 Managed by: @famebrosstudio"
+    ],
+    "footer_status": "Location and agency credit are established. The phone is user-provided and matched in indexed official Instagram content.",
+    "footer_rule": "Use the standard lines in normal feed and reel captions. Do not add an unverified street address, email, website or WhatsApp label.",
+    "mode_exceptions": [
+      "Omit for story text unless requested",
+      "Omit for comments and replies",
+      "Omit for repost text unless requested",
+      "A catalogue may use a structured contact panel instead"
+    ]
+  },
+  "suggested_hashtag_bank": {
+    "brand": [
+      "#CarraraClothing",
+      "#CarraraTrousers",
+      "#CarraraTrouserManufacturer"
+    ],
+    "category": [
+      "#MensTrousers",
+      "#MenswearManufacturer",
+      "#TrouserManufacturer",
+      "#WholesaleMenswear",
+      "#MenswearWholesale"
+    ],
+    "location": [
+      "#AhmedabadManufacturer",
+      "#AhmedabadMenswear",
+      "#GujaratManufacturer",
+      "#MadeInAhmedabad"
+    ],
+    "buyer": [
+      "#MenswearRetailers",
+      "#MenswearDistributors",
+      "#WholesaleBuyers",
+      "#RetailBusinessIndia",
+      "#MenswearBusiness"
+    ],
+    "content": [
+      "#TrouserStyle",
+      "#MenswearStyle",
+      "#MensOutfitIdeas",
+      "#FormalWearMen",
+      "#SmartCasualMen"
+    ],
+    "selection_rule": "Select exactly three in the standard format: usually one brand tag, one category or buyer tag and one location or content tag. Keep every selected tag relevant to the actual post."
+  },
+  "seo_keyword_bank": {
+    "confirmed_core": [
+      "Carrara trousers",
+      "Carrara Clothing",
+      "trouser manufacturer Ahmedabad",
+      "men's trouser manufacturer",
+      "wholesale trousers India",
+      "menswear manufacturer India",
+      "men's trousers wholesale",
+      "Ahmedabad menswear manufacturer",
+      "wholesale menswear supplier",
+      "trouser supplier Ahmedabad"
+    ],
+    "buyer_intent": [
+      "trousers for menswear retailers",
+      "men's trouser distributor enquiry",
+      "wholesale trouser collection",
+      "men's apparel wholesale Ahmedabad",
+      "trouser supplier for retailers",
+      "Pan India trouser supplier"
+    ],
+    "style_and_content": [
+      "men's trouser styling",
+      "men's outfit ideas",
+      "formal trouser styling",
+      "casual trouser styling",
+      "trouser silhouette guide",
+      "men's smart casual trousers"
+    ],
+    "conditional_terms": [
+      "travel fit trousers",
+      "straight fit trousers",
+      "narrow fit trousers",
+      "formal trousers wholesale",
+      "casual trousers wholesale"
+    ],
+    "conditional_terms_rule": "Use a fit or product term only when the current asset, product sheet or brief confirms it.",
+    "selection_rule": "Choose five to eight natural phrases that match the post. Avoid stuffing the same root phrase repeatedly and do not add unverified fabrics, fits, sizes or product categories."
+  },
+  "cta_bank": {
+    "approved_general": [
+      "DM us for collection enquiries.",
+      "Save the trouser look you prefer."
+    ],
+    "wholesale": [
+      "DM @carraraclothing for wholesale enquiries.",
+      "Call +91 7600007731 to enquire about the collection.",
+      "Retailers and distributors can DM us to explore the collection.",
+      "Connect with Carrara for wholesale collection details.",
+      "Planning your next menswear selection? DM us for current collection details."
+    ],
+    "engagement": [
+      "Save this silhouette for your next menswear edit.",
+      "Which look would suit your collection?",
+      "Share this with a menswear buyer.",
+      "Save the styling reference."
+    ],
+    "conditional": [
+      "Ask for the latest catalogue only when a current catalogue exists.",
+      "Request the rate list only when an approved rate list is available.",
+      "Book a sample only when a sample policy is confirmed.",
+      "Order now only when stock, price, MOQ and order flow are confirmed."
+    ],
+    "cta_rule": "Use one main CTA. Never promise a catalogue, sample, price, stock reservation, delivery date or callback unless the workflow exists and the brief approves it."
+  },
+  "suggested_hooks": {
+    "model_shoot": [
+      "A sharper silhouette starts with the right trousers.",
+      "The trouser sets the direction of the entire look.",
+      "Clean lines. Strong styling. Product first.",
+      "A silhouette designed to hold the look together.",
+      "One trouser, a more polished menswear story."
+    ],
+    "transformation": [
+      "Watch the outfit change when the silhouette changes.",
+      "From simple styling to a sharper finish.",
+      "The right trouser can rebalance the complete look.",
+      "Same styling idea, a different trouser impact.",
+      "A clean trouser line changes the final impression."
+    ],
+    "wholesale": [
+      "Wholesale only, built for menswear businesses.",
+      "For retailers building a sharper trouser selection.",
+      "A trouser collection made for the trade.",
+      "Menswear retailers, explore Carrara's latest approved collection.",
+      "Product-led trousers for wholesale buyers across India."
+    ],
+    "details": [
+      "The finish is in the visible details.",
+      "Look closer at the construction of the silhouette.",
+      "Waistband, line and finish, shown clearly.",
+      "A closer view of the details that shape the look."
+    ],
+    "festival": [
+      "Celebrating the occasion with refined style.",
+      "A festive greeting, finished with Carrara's sharp menswear language.",
+      "Tradition, togetherness and a well-finished look."
+    ],
+    "hook_rule": "A hook is a draft starting point, not a factual claim. Adapt it to the actual product and footage. Keep it professional and never funny."
+  },
+  "visual_and_asset_guidance": {
+    "default_dimensions": {
+      "instagram_feed": "1080x1440 pixels, 3:4",
+      "instagram_story": "1080x1920 pixels, 9:16",
+      "instagram_reel": "1080x1920 pixels, 9:16",
+      "safe_zone_rule": "Keep essential text, logo and trouser details away from interface-covered top and bottom areas in vertical content."
+    },
+    "visual_identity_direction": [
+      "Premium modern menswear",
+      "Masculine editorial minimalism",
+      "Product-first framing",
+      "Structured compositions",
+      "Clean white, ivory or neutral backgrounds",
+      "Charcoal, black, beige, taupe and brown as useful historical direction",
+      "Subtle red, maroon or gold only when relevant to campaign or branding",
+      "Controlled lighting that reveals trouser texture and line"
+    ],
+    "brand_kit_status": "No definitive logo files, colour codes, font names, spacing system or permanent graphic system are stored in this record. Use supplied approved assets as the authority.",
+    "logo_rules": [
+      "Use the supplied official Carrara logo only",
+      "Do not redraw, stretch, recolour or add effects unless the brand kit permits it",
+      "Keep clear space around the logo",
+      "Place the logo where it remains readable without competing with the trouser",
+      "Do not type CARRARA as a substitute when the real logo is required"
+    ],
+    "garment_integrity_rules": [
+      "Preserve the exact colour of the trouser",
+      "Preserve waistband shape and height",
+      "Preserve pleats or flat-front construction",
+      "Preserve pockets and pocket angles",
+      "Preserve belt loops, closure and hardware",
+      "Preserve seam positions and stitching",
+      "Preserve leg width, taper and hem",
+      "Preserve fabric texture and drape",
+      "Do not remove creases that are part of the designed construction",
+      "Do not create details hidden in the source asset"
+    ],
+    "model_integrity_rules": [
+      "Preserve the model's identity, face, skin tone and body proportions",
+      "Do not digitally slim, widen or lengthen the model to change the perceived fit",
+      "Do not distort legs or waist",
+      "Do not change a pose in a way that alters garment construction",
+      "Retouch temporary distractions lightly while keeping natural skin texture",
+      "Keep footwear and top styling coherent with the trouser use case"
+    ],
+    "model_shoot_shot_list": [
+      "Full-length front view",
+      "Three-quarter front view",
+      "Side silhouette",
+      "Back view",
+      "Walking shot to show movement",
+      "Seated shot only when the trouser remains visible",
+      "Waistband and closure close-up",
+      "Pocket detail",
+      "Fabric texture close-up",
+      "Hem and footwear relationship",
+      "Two or more styling combinations when genuinely available"
+    ],
+    "product_shoot_preparation": [
+      "Confirm SKU, fit, colour and size before shooting",
+      "Steam or press the garment appropriately",
+      "Check pockets, waistband, belt loops and closure",
+      "Remove lint and loose threads",
+      "Match footwear to the styling objective",
+      "Capture consistent front, side and back views",
+      "Record the model size and product size for internal accuracy",
+      "Capture close-ups before changing the look"
+    ],
+    "b2b_catalogue_design": [
+      "Use a repeatable grid",
+      "Keep background, crop and scale consistent",
+      "Show SKU and confirmed colour clearly",
+      "Reserve structured space for verified specifications",
+      "Keep trade terms separate from fashion copy",
+      "Do not put uncertain fields into a final catalogue"
+    ],
+    "ai_image_rules": [
+      "Treat the supplied product photo as the source of truth",
+      "Do not generate a substitute trouser and present it as an actual Carrara SKU",
+      "Do not add a Carrara logo to a generic garment",
+      "Do not invent factory, staff, machinery, packaging or stock imagery",
+      "Label conceptual campaign visuals internally until the brand approves them",
+      "For exact product marketing, use real approved product photography"
+    ],
+    "festival_direction": "Keep festive symbolism refined and secondary to the menswear identity. Avoid excessive ornaments, crowded motifs, cartoon styling or visuals unrelated to the brand.",
+    "accessibility": [
+      "Use high text contrast",
+      "Keep essential type large enough for mobile viewing",
+      "Avoid placing text over busy fabric detail",
+      "Add useful alt text that names the visible trouser and styling without unsupported claims"
+    ]
+  },
+  "carousel_and_reel_system": {
+    "carousel_templates": {
+      "product_showcase": [
+        "Slide 1: Clean hero image and product or collection name",
+        "Slide 2: Full front silhouette",
+        "Slide 3: Side or movement view",
+        "Slide 4: Confirmed construction details",
+        "Slide 5: Styling context",
+        "Slide 6: Wholesale enquiry CTA and approved contact"
+      ],
+      "fit_education": [
+        "Slide 1: Fit question or visual hook",
+        "Slide 2: First confirmed silhouette",
+        "Slide 3: Second confirmed silhouette if genuinely available",
+        "Slide 4: Visible differences",
+        "Slide 5: Styling use cases",
+        "Slide 6: Save or collection enquiry CTA"
+      ],
+      "wholesale_collection": [
+        "Slide 1: Wholesale-only collection opener",
+        "Slide 2: Collection overview",
+        "Slide 3: Confirmed fits or styles",
+        "Slide 4: Confirmed colours or details",
+        "Slide 5: Verified trade information",
+        "Slide 6: DM @carraraclothing or call +91 7600007731"
+      ],
+      "transformation": [
+        "Slide 1: Before look",
+        "Slide 2: Styling transition",
+        "Slide 3: After look",
+        "Slide 4: Trouser detail responsible for the visual change",
+        "Slide 5: Save-worthy styling takeaway",
+        "Slide 6: Collection enquiry CTA"
+      ]
+    },
+    "reel_templates": {
+      "model_reveal_10_to_15_seconds": [
+        "0 to 2 seconds: Strong full-look reveal",
+        "2 to 5 seconds: Front and three-quarter view",
+        "5 to 8 seconds: Side or walking silhouette",
+        "8 to 11 seconds: Waistband, pocket or fabric detail",
+        "11 to 15 seconds: Brand and wholesale CTA"
+      ],
+      "transformation_8_to_12_seconds": [
+        "0 to 2 seconds: Before styling",
+        "2 to 4 seconds: Controlled transition",
+        "4 to 8 seconds: Finished trouser-led look",
+        "8 to 10 seconds: Product detail",
+        "10 to 12 seconds: Save or enquire CTA"
+      ],
+      "wholesale_15_to_25_seconds": [
+        "0 to 3 seconds: Wholesale-only buyer hook",
+        "3 to 10 seconds: Collection montage",
+        "10 to 16 seconds: Confirmed styles, colours or details",
+        "16 to 21 seconds: Pan India delivery or verified trade point",
+        "21 to 25 seconds: DM and phone CTA"
+      ],
+      "manufacturing_bts_15_to_30_seconds": [
+        "Open with a genuine process shot",
+        "Show real sequential steps",
+        "Use concise labels only for confirmed processes",
+        "End on the finished trouser",
+        "Close with Carrara identity and wholesale enquiry"
+      ]
+    },
+    "on_screen_text_rules": [
+      "Use short phrases, ideally three to seven words per card",
+      "Keep text away from the trouser's key details",
+      "Use verified fit, fabric and commercial terms only",
+      "Do not overcrowd the reel with specification text",
+      "Keep the final contact frame long enough to read"
+    ],
+    "editing_style": [
+      "Clean cuts",
+      "Controlled speed ramps only when they do not distort the garment",
+      "Match cuts between similar poses",
+      "Subtle typography",
+      "Natural or neutral colour grade",
+      "No gimmicky comedy effects",
+      "No transitions that hide the actual fit"
+    ],
+    "music_direction": "Choose polished, modern and masculine audio that supports product presentation. Avoid comic sound effects or audio that makes the brand feel unserious. Confirm music licensing for paid use.",
+    "thumbnail_rule": "Use a strong full-length or three-quarter trouser view, Carrara branding and no more than one short headline."
+  },
+  "other_output_modes": {
+    "story_copy": {
+      "format": "One idea per frame, usually 4 to 12 words, with a DM or call action on the final frame.",
+      "footer_policy": "Do not paste the full feed footer into every frame.",
+      "sample_sequence": [
+        "Wholesale only",
+        "A sharper trouser-led collection",
+        "For retailers and distributors",
+        "DM @carraraclothing"
+      ]
+    },
+    "whatsapp_trade_message": {
+      "format": "Greeting, collection context, verified product and commercial details, media or catalogue link if supplied, and one response action.",
+      "required_check": "Confirm recipient audience, current collection, MOQ, price, stock, dispatch and delivery details before sending a sales message."
+    },
+    "catalogue_copy": {
+      "format": "Collection, SKU, confirmed fit, fabric, colours, sizes, construction, care, MOQ, price, stock and contact.",
+      "rule": "Leave an internal field blank or mark confirmation required during drafting. Never publish placeholders or guessed values."
+    },
+    "product_alt_text": {
+      "format": "Describe the model, trouser colour, visible silhouette, styling and setting in one or two factual sentences.",
+      "rule": "Do not add unseen fabric, fit, comfort or performance claims."
+    },
+    "google_business_copy": {
+      "status": "Do not create or optimize a listing until an official physical address and business profile are confirmed.",
+      "safe_short_description": "Carrara is an Ahmedabad-based men's trouser manufacturer serving wholesale buyers, retailers and distributors across India."
+    },
+    "ad_copy": {
+      "rule": "Use only approved target market, products, wholesale terms, price and fulfilment claims. Do not promise profits, sales growth or guaranteed delivery.",
+      "safe_headline_examples": [
+        "Wholesale Men's Trousers from Ahmedabad",
+        "Explore Carrara's Trouser Collection",
+        "For Menswear Retailers and Distributors"
+      ]
+    },
+    "bilingual_copy": {
+      "rule": "Keep brand name, product names and commercial terms exact. Use natural, direct Hinglish rather than literal translation.",
+      "sample_tone": "Retailers aur distributors ke liye Carrara trouser collection. Current styles ki details ke liye DM karein."
+    },
+    "comment_reply": {
+      "price_enquiry": "Please DM @carraraclothing or call +91 7600007731 for current wholesale details.",
+      "retail_enquiry": "Carrara is wholesale only. Please DM us if you are a retailer or distributor.",
+      "catalogue_enquiry": "Please DM us for the current collection details. Share a catalogue only when an approved current catalogue exists.",
+      "delivery_enquiry": "Pan India delivery is available. Please share the delivery location by DM so the current terms can be confirmed."
+    }
+  },
+  "sample_caption": {
+    "status": "New illustrative example based on established wholesale positioning. It is not a historical caption and it does not confirm a specific fit, fabric, size, price or MOQ.",
+    "scenario": "Model-led wholesale trouser showcase",
+    "caption_body": "Wholesale only. A sharp trouser silhouette can define the complete menswear look. Explore the Carrara collection created for retailers and distributors across India. DM @carraraclothing or call +91 7600007731 for collection enquiries.",
+    "footer": [
+      "📍 Ahmedabad",
+      "📞 +91 7600007731",
+      "💫 Managed by: @famebrosstudio"
+    ],
+    "hashtags": [
+      "#CarraraClothing",
+      "#WholesaleMenswear",
+      "#MensTrousers"
+    ],
+    "seo_keywords": [
+      "Carrara trousers",
+      "trouser manufacturer Ahmedabad",
+      "men's trouser manufacturer",
+      "wholesale trousers India",
+      "menswear retailers",
+      "trouser supplier Ahmedabad"
+    ],
+    "full_caption": "Wholesale only. A sharp trouser silhouette can define the complete menswear look. Explore the Carrara collection created for retailers and distributors across India. DM @carraraclothing or call +91 7600007731 for collection enquiries.\n\n📍 Ahmedabad\n📞 +91 7600007731\n💫 Managed by: @famebrosstudio\n\n#CarraraClothing #WholesaleMenswear #MensTrousers\n\n[Carrara trousers, trouser manufacturer Ahmedabad, men's trouser manufacturer, wholesale trousers India, menswear retailers, trouser supplier Ahmedabad]",
+    "validation": {
+      "body_word_count_target": "25 to 55 words",
+      "hashtags_count": 3,
+      "seo_phrase_count": 6,
+      "square_bracket_blocks": 1,
+      "unverified_product_claims": 0,
+      "tone": "Professional and wholesale-focused"
+    }
+  },
+  "accuracy_rules": {
+    "source_priority": [
+      "Current written instructions from the user or authorized Carrara representative",
+      "Current approved Carrara catalogue, rate sheet, size chart and product sheet",
+      "Current official @carraraclothing profile and post",
+      "Actual supplied photo, video, transcript, label or packaging",
+      "This knowledge file",
+      "Historical content only when clearly relevant and revalidated"
+    ],
+    "hard_rules": [
+      "Never funny",
+      "Never invent a product, fit, fabric, colour, size, price, MOQ, margin, offer, stock level, production capacity, dispatch time or delivery time",
+      "Never claim retail availability unless a retail channel is explicitly approved",
+      "Never offer private labelling, custom manufacturing or samples unless confirmed",
+      "Never invent an address, email, website, WhatsApp number, owner or factory location",
+      "Never use a similarly named Carrara business as a source",
+      "Never change garment construction in an image",
+      "Never fabricate a testimonial, retailer list or distribution footprint",
+      "Never publish internal onboarding or billing information",
+      "Never present a historical post's commercial terms as current",
+      "Never use an em dash"
+    ],
+    "known_contact_lock": {
+      "instagram": "@carraraclothing",
+      "instagram_url": "https://www.instagram.com/carraraclothing/",
+      "phone": "+91 7600007731",
+      "location": "Ahmedabad, Gujarat, India",
+      "rule": "Use these exact values until an authorized current update is supplied."
+    },
+    "wholesale_claims": {
+      "allowed": [
+        "Wholesale only",
+        "For retailers and distributors",
+        "Pan India delivery",
+        "Ahmedabad-based men's trouser manufacturer"
+      ],
+      "requires_current_confirmation": [
+        "MOQ",
+        "Price",
+        "Margin",
+        "Credit",
+        "Territory",
+        "Sample",
+        "Dispatch date",
+        "Delivery date",
+        "Free shipping",
+        "Stock quantity"
+      ]
+    },
+    "visual_claim_rule": "Describe visible form as appearance, not as hidden performance or composition. If the model is wearing the trouser, do not infer the size, fit name or fabric without product data.",
+    "uncertainty_behavior": [
+      "Omit an unknown from public copy",
+      "Ask internally for the exact missing field when it affects correctness",
+      "Use a general collection-enquiry CTA when commercial specifics are absent",
+      "Label suggestions as editorial guidance, not verified brand facts",
+      "Prefer silence over a plausible guess"
+    ],
+    "pre_publish_checklist": [
+      "Correct brand and Instagram handle",
+      "Correct phone number",
+      "Correct product or SKU",
+      "Fit and fabric verified",
+      "Sizes and colours verified",
+      "Commercial terms current",
+      "Visual shows the real product",
+      "Wholesale audience clear",
+      "No retail contradiction",
+      "No funny tone",
+      "One clear CTA",
+      "Footer mode correct",
+      "Exactly three hashtags when using standard format",
+      "Exactly one SEO bracket with five to eight phrases",
+      "No em dash",
+      "No internal notes in final copy"
+    ]
+  },
+  "per_post_input": {
+    "required_core": [
+      "Output mode: feed, reel, story, carousel, WhatsApp, catalogue, ad or reply",
+      "Post objective",
+      "Actual asset or transcript",
+      "Target audience",
+      "Desired language",
+      "Desired CTA"
+    ],
+    "product_inputs": [
+      "Collection name",
+      "Product name",
+      "SKU or article number",
+      "Product category",
+      "Confirmed fit",
+      "Colour",
+      "Fabric and composition",
+      "Construction details",
+      "Sizes",
+      "Care instructions",
+      "Stock status"
+    ],
+    "model_shoot_inputs": [
+      "Model name only if publication is approved",
+      "Model height if relevant and approved",
+      "Size worn",
+      "Styling pieces",
+      "Footwear",
+      "Visible product details",
+      "Required image credits",
+      "Retouching limits"
+    ],
+    "wholesale_inputs": [
+      "Eligible buyer type",
+      "MOQ",
+      "Price or rate sheet",
+      "Tax treatment",
+      "Size ratio",
+      "Colour assortment",
+      "Stock",
+      "Sample policy",
+      "Payment terms",
+      "Dispatch time",
+      "Delivery terms",
+      "Freight terms",
+      "Return or replacement terms"
+    ],
+    "offer_inputs": [
+      "Offer name",
+      "Eligible products",
+      "Buyer eligibility",
+      "Benefit or discount",
+      "Start date",
+      "End date",
+      "Order threshold",
+      "Stock limitation",
+      "Redemption method",
+      "Exclusions"
+    ],
+    "creative_inputs": [
+      "Reference links",
+      "Approved logo",
+      "Brand colours and fonts",
+      "Format dimensions",
+      "Headline",
+      "Mandatory copy",
+      "Music direction",
+      "On-screen text",
+      "Thumbnail text"
+    ],
+    "input_handling_rule": "Use only supplied and visible facts. If a missing field changes the truth of the output, stop that claim, omit it or request confirmation. Do not delay a safe general caption merely because optional specifications are absent.",
+    "minimum_safe_caption_input": [
+      "Confirmed Carrara asset",
+      "Post objective",
+      "Whether the post is collection enquiry, education or engagement",
+      "One visible or confirmed product detail",
+      "Preferred CTA"
+    ]
+  },
+  "master_brand_instruction": "You are creating content for CARRARA | Trousers Manufacturers, the Ahmedabad-based wholesale-only men's trouser brand at @carraraclothing. Write for menswear retailers, distributors and wholesale buyers across India in a professional, sharp, premium and product-focused voice. The brand must never sound funny. Make the actual trouser, fit, silhouette, styling or verified construction detail the center of the content. Use English by default and direct Hinglish only when requested. Use +91 7600007731 for public phone enquiries and https://www.instagram.com/carraraclothing/ as the official Instagram reference. Pan India delivery is established, but specific delivery timing, freight and coverage conditions are not. Do not invent or infer product types, fit names, fabric composition, colours, sizes, prices, MOQ, margins, offers, stock, private-label services, custom manufacturing, samples, production capacity, dispatch times or payment terms. Historical terms such as formal trousers, casual trousers, travel fit, straight fit and narrow fit may be used only when the current asset or brief confirms them. Preserve the model and garment exactly in visual work. For a normal Instagram feed or reel caption, write a concise hook, factual support and one CTA, then add the approved Ahmedabad and phone footer, the Famebros Studio credit, exactly three relevant hashtags and exactly one square-bracket SEO block containing five to eight relevant phrases. Omit feed-format metadata for stories, comments and replies unless requested. Remove all em dashes before delivery.",
+  "missing_information": {
+    "business_identity": [
+      "Legal entity name",
+      "Owner or founder",
+      "Year established",
+      "Factory address",
+      "Office or showroom address",
+      "GST or registration details",
+      "Production capacity",
+      "Team or spokesperson"
+    ],
+    "contact_and_channels": [
+      "Official email",
+      "Official website",
+      "Confirmed WhatsApp number",
+      "Google Maps listing",
+      "Facebook page",
+      "YouTube channel",
+      "LinkedIn page"
+    ],
+    "product_catalogue": [
+      "Current collection names",
+      "Full product categories",
+      "SKU list",
+      "Fit names",
+      "Fabric names and compositions",
+      "Colourways",
+      "Size range",
+      "Size chart",
+      "Care instructions",
+      "Packaging details"
+    ],
+    "commercial_terms": [
+      "MOQ",
+      "Wholesale price list",
+      "Taxes",
+      "Margin guidance",
+      "Size ratios",
+      "Sample policy",
+      "Payment terms",
+      "Credit terms",
+      "Stock policy",
+      "Dispatch time",
+      "Delivery time",
+      "Freight terms",
+      "Return or replacement policy",
+      "Distributor terms",
+      "Private-label or customization availability"
+    ],
+    "brand_system": [
+      "Official logo files",
+      "Colour codes",
+      "Fonts",
+      "Logo clear-space rules",
+      "Photography guide",
+      "Graphic templates",
+      "Approved tagline",
+      "Music or audio direction"
+    ],
+    "agency_scope": [
+      "Exact Famebros package",
+      "Monthly deliverable count",
+      "Posting responsibility",
+      "Approval workflow",
+      "Response-time expectation",
+      "Ad-management scope",
+      "Shoot frequency",
+      "Billing date meaning and year"
+    ],
+    "priority_update_request": "Obtain the current catalogue, fit and fabric map, size chart, MOQ, rate sheet, commercial terms, full address, official brand kit and exact Famebros service scope. These additions would most improve catalogue copy, B2B captions and sales accuracy."
+  },
+  "sources": {
+    "user_provided_and_prior_context": [
+      {
+        "fact_set": "Exact presentation and official identity",
+        "details": "CARRARA | Trousers Manufacturers; @carraraclothing; https://www.instagram.com/carraraclothing/",
+        "confidence": "high"
+      },
+      {
+        "fact_set": "Business and audience",
+        "details": "Premium men's trouser manufacturer in Ahmedabad serving wholesalers and retailers across India; wholesale only; Pan India delivery.",
+        "confidence": "high"
+      },
+      {
+        "fact_set": "Public phone",
+        "details": "+91 7600007731",
+        "confidence": "high"
+      },
+      {
+        "fact_set": "Content and tone",
+        "details": "Transformation and model-shoot genres; professional, sharp, product-focused; never funny.",
+        "confidence": "high"
+      },
+      {
+        "fact_set": "Historical creative direction",
+        "details": "Premium modern menswear, minimal editorial styling, white or neutral backgrounds and restrained festival palettes.",
+        "confidence": "medium, campaign-specific"
+      }
+    ],
+    "internal_dataset": [
+      {
+        "file": "Famebros_Brand_Caption_Dataset.json",
+        "record": "carrara_trousers",
+        "used_for": "Brand ID, aliases, category, location, genres, baseline writing direction, keywords and no-invention rules."
+      },
+      {
+        "file": "Famebros_Brand_Caption_Dataset.txt",
+        "record": "Carrara Trouser Manufacturer",
+        "used_for": "Human-readable cross-check of the same baseline record."
+      }
+    ],
+    "public_web_check": [
+      {
+        "checked_on": "2026-09-25",
+        "url": "https://www.instagram.com/carraraclothing/",
+        "result": "Search indexing matched official-looking Carrara wholesale content with +91 7600007731, retailer and distributor language and wholesale-trouser keywords. Direct profile opening was rate-limited, so the user-provided handle remains the primary identity evidence.",
+        "confidence": "high for identity match; current profile fields should still be rechecked before a major campaign"
+      }
+    ],
+    "source_usage_rules": [
+      "Current approved brand information overrides this file.",
+      "An old public post does not prove a current price, offer, stock status or commercial term.",
+      "A visible garment does not prove its fabric composition, fit name or size.",
+      "Editorial guidance is not a business fact.",
+      "Do not learn from unrelated businesses with Carrara in their name."
+    ]
+  }
+}

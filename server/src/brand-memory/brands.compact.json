@@ -277,7 +277,7 @@
     {
       "id": "sk_furniture",
       "name": "SK Furniture",
-      "aliases": [],
+      "aliases": ["SK Furniture Market"],
       "cat": "Furniture",
       "loc": "",
       "genres": [
@@ -1071,7 +1071,7 @@
     {
       "id": "zam_zam_motors",
       "name": "Zam Zam Motors",
-      "aliases": [],
+      "aliases": ["Zamzam Motors", "Zam Zam Motors Mulund", "@zamzam_motorss", "zamzammotorss"],
       "cat": "Car dealership",
       "loc": "",
       "genres": [
@@ -1405,7 +1405,7 @@
     {
       "id": "seven_cube_footwear",
       "name": "Seven Cube Footwear",
-      "aliases": [],
+      "aliases": ["Seven Cube", "Seven cube footwear"],
       "cat": "Footwear",
       "loc": "",
       "genres": [
