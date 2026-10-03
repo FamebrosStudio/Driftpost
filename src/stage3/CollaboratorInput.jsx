@@ -107,7 +107,10 @@ export default function CollaboratorInput({ value, onChange, accounts = [], toke
       detail: account.platform_account_id ? `ID ${account.platform_account_id}` : account.account_name,
     })),
     ...remote
-      .filter((result) => result.account && !typedAll.has(String(result.username || '').toLowerCase()))
+      // Keep an exact Meta match visible even though it is already typed: the
+      // result is useful confirmation and can be selected without losing the
+      // other handles in a multi-collaborator entry.
+      .filter((result) => result.account)
       .map((result) => ({
         key: `ig:${result.account.platform_account_id}`,
         username: result.account.username,
@@ -115,8 +118,14 @@ export default function CollaboratorInput({ value, onChange, accounts = [], toke
       })),
   ];
 
+  const addHandle = (username) => {
+    const current = splitHandles(value);
+    if (current.some((handle) => handle.toLowerCase() === String(username).toLowerCase())) return;
+    onChange([...current, username].join(', '));
+  };
+
   return <div className="s3-collab-picker">
-    <input value={value || ''} onChange={(event) => { onChange(event.target.value); setOpen(true); }} onFocus={() => setOpen(true)} onBlur={() => window.setTimeout(() => setOpen(false), 120)} onKeyDown={(event) => { if (event.key === 'Escape') setOpen(false); }} placeholder="Type Instagram usernames (up to 3)" autoComplete="off" aria-autocomplete="list" aria-expanded={open && options.length > 0} />
+    <input value={value || ''} onChange={(event) => { onChange(event.target.value); setOpen(true); }} onFocus={() => setOpen(true)} onBlur={() => window.setTimeout(() => setOpen(false), 120)} onKeyDown={(event) => { if (event.key === 'Escape') setOpen(false); }} placeholder="Type exact Instagram @usernames (up to 3)" autoComplete="off" aria-autocomplete="list" aria-expanded={open && options.length > 0} />
     {resolved.length > 0 && <ul className="s3-collab-ids">
       {resolved.map((entry) => <li key={entry.key} className={entry.id ? `ok ${entry.source}` : entry.source}>
         <span className="handle">@{entry.name}</span>
@@ -126,7 +135,7 @@ export default function CollaboratorInput({ value, onChange, accounts = [], toke
       </li>)}
     </ul>}
     {open && (options.length > 0 || searching || note) && <div className="s3-collab-options" role="listbox">
-      {options.slice(0, 8).map((option) => <button key={option.key} type="button" role="option" onMouseDown={(event) => event.preventDefault()} onClick={() => { onChange(option.username); setOpen(false); }}><span>@{option.username}</span>{option.detail && <small>{option.detail}</small>}</button>)}
+      {options.slice(0, 8).map((option) => <button key={option.key} type="button" role="option" onMouseDown={(event) => event.preventDefault()} onClick={() => { addHandle(option.username); setOpen(false); }}><span>@{option.username}</span>{option.detail && <small>{option.detail}</small>}</button>)}
       {searching && options.length === 0 && <p className="s3-collab-status">Checking Instagram…</p>}
       {note && <p className="s3-collab-status">{note}</p>}
     </div>}
