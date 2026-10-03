@@ -450,7 +450,21 @@ export async function generateCaptions(summary, opts = {}) {
           throw new Error('AI returned an empty answer. Tap Write again — retry usually works.');
         }
       }
-      const qualityIssue = captionQualityIssue(parsed, { only, brand, mem });
+      let qualityIssue = captionQualityIssue(parsed, { only, brand, mem });
+      // A malformed/missing YouTube description must not discard otherwise
+      // useful cards after the repair retry. Build a factual, publishable
+      // fallback from the generated title (which already reflects the brief)
+      // rather than returning a 500 to the composer.
+      if (qualityIssue && attempt === 1 && /^(youtube) has no useful caption body$/.test(qualityIssue)) {
+        const title = clean(parsed.youtube?.title, 100) || brand?.name || 'This post';
+        const brandName = brand?.name || 'this business';
+        parsed.youtube = {
+          ...(parsed.youtube || {}),
+          description: `Discover ${title.replace(/[.!?]+$/g, '')}. Get in touch with ${brandName} to learn more.`,
+        };
+        qualityIssue = captionQualityIssue(parsed, { only, brand, mem });
+        if (!qualityIssue) console.warn('[ai] used safe YouTube description fallback after retry validation failed');
+      }
       if (qualityIssue) throw new Error(`caption quality check: ${qualityIssue}`);
       text = parsed;
       lastErr = null;
