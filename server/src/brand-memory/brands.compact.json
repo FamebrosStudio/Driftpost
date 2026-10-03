@@ -278,7 +278,8 @@
       "id": "sk_furniture",
       "name": "SK Furniture",
       "aliases": [
-        "SK Furniture Market"
+        "SK Furniture Market",
+        "@skfurnituremarket"
       ],
       "cat": "Furniture",
       "loc": "",
@@ -308,7 +309,7 @@
       ],
       "mandatory": [],
       "ex": "Ghar ka furniture choose karna bhi family meeting ban jaata hai. ðŸ˜‚\nTag the person jiska final decision chalta hai.",
-      "ig": null,
+      "ig": "@skfurnituremarket",
       "ready": "ready_with_post_brief",
       "web": null,
       "email": null
@@ -395,7 +396,8 @@
       "id": "mahalaxmi_ghatla",
       "name": "Mahalaxmi Jewellers",
       "aliases": [
-        "Mahalaxmi Jewellers Ghatla"
+        "Mahalaxmi Jewellers Ghatla",
+        "@mahalaxmi.jewellers.ghatla"
       ],
       "cat": "Jewellery",
       "loc": "Ghatla, Mumbai",
@@ -426,7 +428,7 @@
       ],
       "mandatory": [],
       "ex": "Aapke special moments ke liye, ek special design. âœ¨\nExplore the piece featured here at Mahalaxmi Jewellers, Ghatla.\nDM us for details.",
-      "ig": null,
+      "ig": "@mahalaxmi.jewellers.ghatla",
       "ready": "ready_with_post_brief",
       "web": null,
       "email": null
