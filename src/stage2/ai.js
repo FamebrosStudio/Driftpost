@@ -44,8 +44,51 @@ async function sampleVideo(file, count = 3) {
       video.onerror = () => { clearTimeout(timer); reject(new Error('Video preview could not be read')); };
     });
     const duration = Number(video.duration) || 0;
-    if (!Number.isFinite(duration) || duration <= 0) throw new Error('Video has no readable duration');
     const frames = [];
+    const captureFrame = (index) => {
+      const scale = Math.min(1, 1024 / Math.max(video.videoWidth, video.videoHeight));
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.max(1, Math.round(video.videoWidth * scale));
+      canvas.height = Math.max(1, Math.round(video.videoHeight * scale));
+      canvas.getContext('2d')?.drawImage(video, 0, 0, canvas.width, canvas.height);
+      return new Promise((resolve) => canvas.toBlob((blob) => {
+        if (blob) frames.push(new File([blob], `video-frame-${index + 1}.jpg`, { type: 'image/jpeg' }));
+        resolve();
+      }, 'image/jpeg', 0.76));
+    };
+    if (!Number.isFinite(duration) || duration <= 0) {
+      // MediaRecorder WebM exports commonly have no finite duration in their
+      // metadata. They can still decode normally, so sample a few early frames
+      // while playing instead of rejecting the whole caption request.
+      await new Promise((resolve, reject) => {
+        if (video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) return resolve();
+        const timer = setTimeout(() => reject(new Error('Video preview timed out')), 10000);
+        video.onloadeddata = () => { clearTimeout(timer); resolve(); };
+        video.onerror = () => { clearTimeout(timer); reject(new Error('Video preview could not be read')); };
+      });
+      if (video.videoWidth && video.videoHeight) await captureFrame(0);
+      try { await video.play(); } catch {}
+      let previousSample = Number(video.currentTime) || 0;
+      const deadline = Date.now() + 8000;
+      while (frames.length < count && !video.ended && Date.now() < deadline) {
+        const mediaTime = await new Promise((resolve) => {
+          let settled = false;
+          const done = (time) => { if (!settled) { settled = true; clearTimeout(timer); resolve(time); } };
+          const timer = setTimeout(() => done(Number(video.currentTime) || previousSample), 1200);
+          if (typeof video.requestVideoFrameCallback === 'function') {
+            video.requestVideoFrameCallback((_now, metadata) => done(Number(metadata.mediaTime) || Number(video.currentTime) || previousSample));
+          } else {
+            video.addEventListener('timeupdate', () => done(Number(video.currentTime) || previousSample), { once: true });
+          }
+        });
+        if (mediaTime - previousSample >= 0.65 && video.videoWidth && video.videoHeight) {
+          await captureFrame(frames.length);
+          previousSample = mediaTime;
+        }
+      }
+      try { video.pause(); } catch {}
+      return frames;
+    }
     const frameCount = Math.min(count, Math.max(1, Math.floor(duration * 2)));
     for (let i = 0; i < frameCount; i++) {
       const time = Math.max(0, Math.min(duration - 0.05, duration * ((i + 0.5) / frameCount)));
@@ -55,13 +98,7 @@ async function sampleVideo(file, count = 3) {
         video.onseeked = () => { clearTimeout(timer); resolve(); };
         video.currentTime = time;
       });
-      const scale = Math.min(1, 1024 / Math.max(video.videoWidth, video.videoHeight));
-      const canvas = document.createElement('canvas');
-      canvas.width = Math.max(1, Math.round(video.videoWidth * scale));
-      canvas.height = Math.max(1, Math.round(video.videoHeight * scale));
-      canvas.getContext('2d')?.drawImage(video, 0, 0, canvas.width, canvas.height);
-      const blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/jpeg', 0.76));
-      if (blob) frames.push(new File([blob], `video-frame-${i + 1}.jpg`, { type: 'image/jpeg' }));
+      await captureFrame(i);
     }
     return frames;
   } finally {
