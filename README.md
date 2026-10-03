@@ -2,13 +2,6 @@
 
 One calm composer for **YouTube, Instagram, Facebook and X**. Remake of Social-Flow: dark-gold brand-first UI, split frontend + unified publish API + Supabase.
 
-## What changed vs Social-Flow
-- Name: `Driftpost` (unique, calm, post-anywhere).
-- Platforms: YouTube + Instagram + Facebook + X (X re-added with OAuth2 + publishing).
-- UI: dark-gold theme, brand-first 4-phone composer (Metricool-style), per-platform sections, brand filter/hide, Active badges, animated dropdowns.
-- Code: `App.jsx` + `lib.js` (brand grouping); backend `google.js` / `youtube-upload.js` / `meta.js` / `x.js` / `x-publish.js`; single `POST /api/publish` + `GET /api/jobs/:id`.
-- DB: `platform_connections` (yt/ig/fb/x) + `post_history`.
-
 ## Run locally
 ```powershell
 # frontend
