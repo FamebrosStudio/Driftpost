@@ -1,4 +1,4 @@
-# Driftpost 〜
+# Driftpost
 
 One calm composer for **YouTube, Instagram, Facebook and X**. Remake of Social-Flow: dark-gold brand-first UI, split frontend + unified publish API + Supabase.
 
