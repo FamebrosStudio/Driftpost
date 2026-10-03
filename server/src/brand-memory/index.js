@@ -679,8 +679,8 @@ export function breakdownBlock(parsed) {
 }
 export function globalBrandRules() {
   return [
-    'Caption: hook + 1 useful detail + 1 CTA (length and emoji count follow the user request). No em dash. Real supplied offer facts (first 100, 0.5gm gold) are celebrated with urgency; never invent offers.',
-    'Append footer, then exactly 3 hashtags, then [5-8 SEO phrases]. Never reuse another brand footer. Real supplied offer facts (first 100, 0.5gm gold) are celebrated with urgency; never invent offers.',
+    'Write a specific hook and one useful detail when available. Use at most one fitting CTA. Follow user-selected length, tone and emoji settings. No em dash.',
+    'Instagram only: append the selected brand footer, then exactly 3 relevant hashtags, then the SEO phrase bracket. Other platforms follow their own format. Never reuse another brand footer. Celebrate an offer only when the current brief confirms one; never invent offer terms.',
     'MAP Clothing + Carrara never funny. Luxxe = transformation only. Rajlaxmi Sangli = Marathi. Hazel: no mithai word. Smietz: include 35 years experience + 96045 23931.',
     'Never invent phone/address/price/offers/results/quotes. Omit unknown optionals; ask only if essential.',
   ].join('\n');
