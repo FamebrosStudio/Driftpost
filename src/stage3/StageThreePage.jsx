@@ -1,5 +1,5 @@
 import React, { Suspense, lazy, useEffect, useMemo, useRef, useState } from 'react';
-import { api, apiUrl, groupBrands, PLATFORMS, resetPostState, schedulePost, fetchWithAuth } from '../lib.js';
+import { api, apiUrl, friendlyErrorMessage, groupBrands, PLATFORMS, resetPostState, schedulePost, fetchWithAuth } from '../lib.js';
 import { readVault, updateVault, vaultFiles } from '../stage2/mediaVault.js';
 import { requestCaptions, mapResponse, approveCaption } from '../stage2/ai.js';
 import { composeOutput } from '../stage2/PlatformOutputCard.jsx';
@@ -570,7 +570,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
       }));
       if (!res.ok) {
         markSubmitted(false);
-        throw new Error(data.error || 'Publish failed');
+        throw new Error(friendlyErrorMessage(data.error || 'Publish failed', { status: res.status, action: 'publish this post' }));
       }
       if (!data?.job?.id) {
         markSubmitted(false);
@@ -617,7 +617,10 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
         continue;
       }
       const jobProgress = Number(j.job.progress);
-      report({ state: j.job.state, progress: Number.isFinite(jobProgress) ? jobProgress : 50, url: j.job.url, message: j.job.message });
+      const jobMessage = j.job.state === 'failed'
+        ? friendlyErrorMessage(j.job.message, { action: 'publish this post' })
+        : j.job.message;
+      report({ state: j.job.state, progress: Number.isFinite(jobProgress) ? jobProgress : 50, url: j.job.url, message: jobMessage });
       // Queued jobs share the API polling budget; check them less often until
       // a worker starts, then return to responsive three-second progress.
       pollDelay = j.job.state === 'queued' ? 20000 : 3000;
@@ -628,7 +631,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
       }
       if (j.job.state === 'failed') {
         finishAcceptedJob(false);
-        throw new Error(j.job.message);
+        throw new Error(jobMessage);
       }
     }
   };
@@ -684,7 +687,10 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
             message: `${completed}/${plan.length} accounts posted · ${completed < plan.length ? 'continuing…' : 'finalizing…'}`,
           });
         } catch (e) {
-          accountResults[i] = { account: names[i], error: e.message || 'failed' };
+          accountResults[i] = {
+            account: names[i],
+            error: friendlyErrorMessage(e.message || 'Publish failed', { status: e.status || 0, action: 'publish this post' }),
+          };
           accountProgress[i] = { state: 'failed', progress: 100, message: 'Failed' };
           const completed = accountResults.filter(Boolean).length;
           commitPublishResult(out, pid, {

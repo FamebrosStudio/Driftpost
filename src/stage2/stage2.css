@@ -99,6 +99,7 @@
 .s2-msg { margin: 10px 0 0; font-size: 13px; line-height: 1.6; border-radius: 12px; padding: 10px 12px; }
 .s2-msg.ok { background: var(--acc-soft); border: 1px solid var(--line-hard); color: var(--muted); }
 .s2-msg.err { border: 1px solid var(--danger, #e5484d); color: var(--danger, #e5484d); }
+.s2-msg.warn { border: 1px solid #b7791f; color: #f6c667; background: color-mix(in srgb, #b7791f 10%, transparent); }
 
 /* outputs */
 .s2-out-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }

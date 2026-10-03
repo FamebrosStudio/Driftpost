@@ -252,7 +252,7 @@ export async function schedulePost(token, options) {
     body: form,
   });
   const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data.error || 'Could not schedule the post');
+  if (!res.ok) throw new Error(friendlyErrorMessage(data.error || 'Could not schedule the post', { status: res.status, action: 'schedule this post' }));
   return data.schedule;
 }
 
@@ -271,7 +271,7 @@ export async function submitCampaign(token, { targets, caption, title = '', name
   else if (when) form.append('scheduled_at', new Date(when).toISOString());
   const path = '/api/schedules/campaign';
   const { res, data } = await fetchWithAuth(apiRequestUrl(path, 'POST'), token, { method: 'POST', body: form });
-  if (!res.ok) throw new Error(data.error || 'Could not submit campaign');
+  if (!res.ok) throw new Error(friendlyErrorMessage(data.error || 'Could not submit campaign', { status: res.status, action: 'submit this campaign' }));
   return data;
 }
 
@@ -342,6 +342,40 @@ export async function resetPostState(userId) {
 const DOWN_MSG = 'Server is unreachable — it may be waking up. Wait a minute and retry.';
 const isNetworkFail = (e) => e?.name === 'TypeError'
   || /Failed to fetch|Network request failed|NetworkError|Load failed/i.test(String(e?.message || ''));
+
+// Keep raw provider/parser details out of the UI while preserving Driftpost's
+// useful field-validation messages.
+export function friendlyErrorMessage(message, { status = 0, action = 'complete this request' } = {}) {
+  const text = String(message || '').trim();
+  const lower = text.toLowerCase();
+  // Platform OAuth tokens are separate from the Driftpost login session.
+  // Reconnecting the social account is the fix; signing in again won't help.
+  if (/token has been expired or revoked|error validating access token|oauthexception|invalid oauth access token|access token.*expired|session has expired.*facebook|session has expired.*instagram/.test(lower)) {
+    return 'This social account’s connection has expired. Open Accounts, reconnect the affected Facebook or Instagram account, then retry the post.';
+  }
+  if (/badformat|failed to decode audio|unsupported.*audio|audio.*format/.test(lower)) {
+    return 'Speech analysis could not read this video’s audio format. Your captions were still generated from the prompt and video frames. Use a video with a supported audio track, or turn off speech analysis.';
+  }
+  if (/failed to parse the request body as json|unexpected end of hex escape/.test(lower)) {
+    return 'The caption service could not read part of the selected text or media. Re-select the media and try again.';
+  }
+  if (/^ai failed:\s*xai error 400\b/i.test(text)) {
+    return 'The caption service rejected this request. Check the AI model setting in Render and try again.';
+  }
+  if (status === 401 || /session expired|invalid jwt|token expired/i.test(lower)) {
+    return 'Your session has expired. Sign in again, then retry.';
+  }
+  if (status === 413 || /entity too large|payload too large/.test(lower)) {
+    return 'This upload is too large for the selected action. Choose a smaller file and try again.';
+  }
+  if (status === 429 || /too many requests|rate limit/.test(lower)) {
+    return 'Driftpost is receiving too many requests right now. Wait a moment and try again.';
+  }
+  if (status >= 500 || /^server error$|internal server error|stack trace|uncaught exception|\bat [\w./\\:-]+:\d+:\d+/.test(text)) {
+    return `Driftpost couldn’t ${action}. Please try again; if it continues, contact support.`;
+  }
+  return text || `Driftpost couldn’t ${action}. Please try again.`;
+}
 
 // One shared refresh flight: ten 401s at once trigger exactly one token
 // refresh, and every waiter replays with the same fresh token.
@@ -451,12 +485,13 @@ export async function api(path, token, options = {}) {
       if (!ct.includes('json')) throw new Error('API unreachable — check your connection and try again.');
       const data = await res.json().catch(() => ({}));
       if (res.status === 401) {
-        const err = new Error(data.error || 'Session expired');
+        const err = new Error(friendlyErrorMessage(data.error || 'Session expired', { status: res.status, action: 'continue' }));
         err.status = 401;
         throw err;
       }
       if (!res.ok) {
-        const err = new Error(data.error || 'Request failed');
+        const action = path === '/api/ai/captions' ? 'generate captions' : path.startsWith('/api/publish') ? 'publish this post' : path.startsWith('/api/schedule') ? 'schedule this post' : 'complete this request';
+        const err = new Error(friendlyErrorMessage(data.error || 'Request failed', { status: res.status, action }));
         err.status = res.status;
         const retryAfter = Number(res.headers.get('retry-after') || res.headers.get('ratelimit-reset'));
         if (retryAfter > 0) err.retryAfterMs = Math.min(60000, retryAfter * 1000);

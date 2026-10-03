@@ -181,8 +181,8 @@ export default function StageTwoPage({ session, onBack, onSignOut, onNavigate, o
         : data.captionMemoryStatus === 'unavailable'
           ? 'Your captions are in local History, but account learning could not confirm a save.'
           : 'Your captions are saved in local History. Opt in to personalisation to save and reuse account examples.';
-      const mediaNote = data.videoAnalysisWarning ? ` Video speech could not be analyzed: ${data.videoAnalysisWarning}` : '';
-      say(`Done — review each platform card below. ${saved}${mediaNote}`, data.captionMemoryStatus === 'unavailable' || !!data.videoAnalysisWarning ? 'err' : 'ok');
+      const mediaNote = data.videoAnalysisWarning ? ` ${data.videoAnalysisWarning}` : '';
+      say(`Done — review each platform card below. ${saved}${mediaNote}`, data.captionMemoryStatus === 'unavailable' ? 'err' : data.videoAnalysisWarning ? 'warn' : 'ok');
     } catch (e) {
       say(e.message || 'Generation failed.', 'err');
     } finally {
@@ -284,7 +284,7 @@ export default function StageTwoPage({ session, onBack, onSignOut, onNavigate, o
             </div>
           )}
           {!busy && aiMsg && (
-            <p className={aiMsgKind === 'err' ? 's2-msg err' : 's2-msg ok'}>{aiMsg}</p>
+            <p className={`s2-msg ${aiMsgKind === 'err' ? 'err' : aiMsgKind === 'warn' ? 'warn' : 'ok'}`} role={aiMsgKind === 'err' ? 'alert' : 'status'}>{aiMsg}</p>
           )}
         </section>
 

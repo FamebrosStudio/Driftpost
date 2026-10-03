@@ -739,6 +739,17 @@ app.delete('/api/account', requireUser, limit({ windowMs: 60 * 1000, max: 5, key
 });
 
 // --- AI captions (Grok + local brand memory, server-side key) ---
+function friendlySpeechWarning(error) {
+  const detail = String(error?.message || error || '').toLowerCase();
+  if (/badformat|failed to decode audio|unsupported.*audio|audio.*format/.test(detail)) {
+    return 'Speech analysis could not read this video’s audio format. Your captions were still generated from the prompt and video frames. For spoken words to be included, export the video with AAC audio in an MP4 file.';
+  }
+  if (/timeout|timed out|aborterror/.test(detail)) {
+    return 'Speech analysis took too long, but your captions were still generated. Retry later if you want the spoken audio included.';
+  }
+  return 'Speech analysis was unavailable, but your captions were still generated from the prompt and video frames. Try again later if you want the spoken audio included.';
+}
+
 app.post('/api/ai/captions', requireUser, requireAiAccess, aiLimit, (req, res, next) => {
   if (req.is('multipart/form-data')) return aiImageUpload.fields([
     { name: 'images', maxCount: 4 }, { name: 'video', maxCount: 1 },
@@ -761,8 +772,8 @@ app.post('/api/ai/captions', requireUser, requireAiAccess, aiLimit, (req, res, n
         transcript = speech.text;
         transcriptLanguage = speech.language;
       } catch (error) {
-        videoAnalysisWarning = String(error?.message || 'Audio transcription failed').slice(0, 240);
-        console.warn('[ai] video transcription failed:', videoAnalysisWarning);
+        videoAnalysisWarning = friendlySpeechWarning(error);
+        console.warn('[ai] video transcription failed:', String(error?.message || error).slice(0, 500));
       }
     }
     const brandLabel = String(req.body?.brand || '');
