@@ -49,6 +49,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
   const [files, setFiles] = useState([]);
   const [thumb, setThumb] = useState(null);
   const [coverMap, setCoverMap] = useState({ instagram: null, facebook: null });
+  const coverEditsRef = useRef({ thumb: false, instagram: false, facebook: false });
   const [outputs, setOutputs] = useState(() => load(scopedKey('driftpost-stage2-outputs', userId), {}));
   const [cfg, setCfg] = useState(() => load(scopedKey('driftpost-stage3-cfg', userId), {}));
    const [overrides, setOverrides] = useState(() => load(scopedKey('driftpost-stage3-accounts', userId), {}));
@@ -105,7 +106,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
        const vault = await readVault(mediaKey);
        const list = vaultFiles(vault);
        if (list.length) setFiles(list);
-       if (vault?.thumb?.blob instanceof Blob) {
+       if (!coverEditsRef.current.thumb && vault?.thumb?.blob instanceof Blob) {
          const b = vault.thumb.blob;
          const raw = b instanceof File ? b : new File([b], vault.thumb.name || 'cover.jpg', { type: b.type || 'image/jpeg' });
          setThumb({ raw, name: vault.thumb.name || raw.name });
@@ -117,7 +118,13 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
          const raw = saved.blob instanceof File ? saved.blob : new File([saved.blob], saved.name || `${platform}-cover.jpg`, { type: saved.blob.type || 'image/jpeg' });
          restoredCovers[platform] = { raw, name: saved.name || raw.name };
        }
-       setCoverMap((old) => ({ ...old, ...restoredCovers }));
+       setCoverMap((old) => {
+         const next = { ...old };
+         for (const [platform, cover] of Object.entries(restoredCovers)) {
+           if (!coverEditsRef.current[platform]) next[platform] = cover;
+         }
+         return next;
+       });
      })();
    }, [mediaKey]);
 
@@ -342,6 +349,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
   });
   const onAccount = (pid, id) => setOverrides((o) => { const n = { ...o, [pid]: id }; save(scopedKey('driftpost-stage3-accounts', userId), n); return n; });
   const onThumb = (t) => {
+    coverEditsRef.current.thumb = true;
     setThumb(t);
     updateVault(mediaKey, (prev) => ({
         ...(prev || {}),
@@ -350,6 +358,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
       }));
   };
   const onPlatformCover = (platform, t) => {
+    coverEditsRef.current[platform] = true;
     setCoverMap((old) => ({ ...old, [platform]: t }));
     updateVault(mediaKey, (prev) => {
       const stored = { ...(prev?.coverMap || {}) };
