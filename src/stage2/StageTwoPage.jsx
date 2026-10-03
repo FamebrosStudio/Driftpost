@@ -6,7 +6,7 @@ import MediaGallery from './MediaGallery.jsx';
 import PromptBuilder from './PromptBuilder.jsx';
 import { composeOutput } from './PlatformOutputCard.jsx';
 import { logCaptions } from '../history/log.js';
-import { readVault, writeVault, vaultFiles } from './mediaVault.js';
+import { readVault, updateVault, vaultFiles } from './mediaVault.js';
 import { requestCaptions as fetchCaptions, mapResponse } from './ai.js';
 import CrosspostToggle from './CrosspostToggle.jsx';
 import OutputContainer from './OutputContainer.jsx';
@@ -75,14 +75,12 @@ export default function StageTwoPage({ session, onBack, onSignOut, onNavigate, o
   }, [mediaKey]);
   useEffect(() => {
     // Preserve the YouTube cover (written by Stage 3) across saves.
-    (async () => {
-      const prev = await readVault(mediaKey);
-      writeVault(mediaKey, {
-        thumb: prev?.thumb || null,
-        coverMap: prev?.coverMap || {},
-        files: files.map((f) => ({ name: f.name, type: f.type, blob: f.raw })).filter((f) => f.blob instanceof Blob),
-      });
-    })();
+    updateVault(mediaKey, (prev) => ({
+      ...(prev || {}),
+      thumb: prev?.thumb || null,
+      coverMap: prev?.coverMap || {},
+      files: files.map((f) => ({ name: f.name, type: f.type, blob: f.raw })).filter((f) => f.blob instanceof Blob),
+    }));
   }, [mediaKey, files]);
 
   useEffect(() => { save(scopedKey('driftpost-stage2-brief', userId), brief); }, [brief, userId]);

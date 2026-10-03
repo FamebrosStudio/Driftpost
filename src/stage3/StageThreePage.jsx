@@ -1,6 +1,6 @@
 import React, { Suspense, lazy, useEffect, useMemo, useRef, useState } from 'react';
 import { api, apiUrl, groupBrands, PLATFORMS, resetPostState, schedulePost, fetchWithAuth } from '../lib.js';
-import { readVault, writeVault, vaultFiles } from '../stage2/mediaVault.js';
+import { readVault, updateVault, vaultFiles } from '../stage2/mediaVault.js';
 import { requestCaptions, mapResponse, approveCaption } from '../stage2/ai.js';
 import { composeOutput } from '../stage2/PlatformOutputCard.jsx';
 import { photoToVideo } from './photoVideo.js';
@@ -343,23 +343,19 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
   const onAccount = (pid, id) => setOverrides((o) => { const n = { ...o, [pid]: id }; save(scopedKey('driftpost-stage3-accounts', userId), n); return n; });
   const onThumb = (t) => {
     setThumb(t);
-    (async () => {
-      const prev = await readVault(mediaKey);
-      writeVault(mediaKey, {
+    updateVault(mediaKey, (prev) => ({
         ...(prev || {}),
         files: (prev?.files || []),
         thumb: t?.raw instanceof Blob ? { name: t.name, blob: t.raw } : null,
-      });
-    })();
+      }));
   };
   const onPlatformCover = (platform, t) => {
     setCoverMap((old) => ({ ...old, [platform]: t }));
-    (async () => {
-      const prev = await readVault(mediaKey);
+    updateVault(mediaKey, (prev) => {
       const stored = { ...(prev?.coverMap || {}) };
       stored[platform] = t?.raw instanceof Blob ? { name: t.name, blob: t.raw } : null;
-      writeVault(mediaKey, { ...(prev || {}), files: prev?.files || [], coverMap: stored });
-    })();
+      return { ...(prev || {}), files: prev?.files || [], coverMap: stored };
+    });
   };
   const onMusicApplied = async (file) => {
     const nextFiles = [{ raw: file, name: file.name, size: `${(file.size / 1024 / 1024).toFixed(1)} MB`, type: file.type }];
@@ -367,11 +363,10 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
     localStorage.removeItem(cloudCacheKey);
     setReviewed({});
     save(scopedKey('driftpost-stage3-reviewed', userId), {});
-    const previous = await readVault(mediaKey);
-    await writeVault(mediaKey, {
+    await updateVault(mediaKey, (previous) => ({
       ...(previous || {}),
       files: [{ name: file.name, type: file.type, blob: file }],
-    });
+    }));
   };
   // Reviewing a card is the approval signal: the server keeps this caption as a
   // reference so the next generation for the same brand writes closer to it.

@@ -37,6 +37,29 @@ export async function writeVault(key, value) {
   } catch {}
 }
 
+// Apply a read/modify/write in one IndexedDB readwrite transaction. Separate
+// Stage 2 media and Stage 3 cover saves must not overwrite one another's
+// changes when they happen close together.
+export async function updateVault(key, update) {
+  let db;
+  try {
+    db = await open();
+    await new Promise((res, rej) => {
+      const tx = db.transaction('media', 'readwrite');
+      const store = tx.objectStore('media');
+      const rq = store.get(key);
+      rq.onsuccess = () => {
+        try { store.put(update(rq.result || null), key); }
+        catch (error) { tx.abort(); rej(error); }
+      };
+      rq.onerror = () => rej(rq.error);
+      tx.oncomplete = res;
+      tx.onerror = () => rej(tx.error);
+      tx.onabort = () => rej(tx.error || new Error('Media save was interrupted.'));
+    });
+  } catch {} finally { db?.close(); }
+}
+
 export const vaultFiles = (vault) => (vault?.files || [])
   .filter((f) => f.blob instanceof Blob)
   .map((f) => {
