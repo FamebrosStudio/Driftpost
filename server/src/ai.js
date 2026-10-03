@@ -675,8 +675,10 @@ export async function generateCaptions(summary, opts = {}) {
   return out;
 }
 
-function xaiError(data, res) {
-  const msg = data?.error?.message || data?.error || `xAI error ${res.status}`;
+function xaiError(data, res, rawBody = '') {
+  const msg = data?.error?.message || data?.error?.detail || data?.error || data?.message
+    || (rawBody.trim().startsWith('{') ? rawBody.slice(0, 400) : '')
+    || `xAI error ${res.status}`;
   if (res.status === 401) throw new Error('AI key rejected. Check XAI_API_KEY.');
   if (res.status === 402 || /credit|balance|payment|billing/i.test(String(msg))) {
     throw new Error('AI out of credits. Top up the xAI account, then retry.');
@@ -705,8 +707,10 @@ async function callChat({ model, systemText, userMsg, images = [], maxTokens }) 
         ],
       }),
     }, 120000);
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok) xaiError(data, res);
+  const rawBody = await res.text();
+  let data = {};
+  try { data = JSON.parse(rawBody); } catch {}
+  if (!res.ok) xaiError(data, res, rawBody);
   const rawContent = data.choices?.[0]?.message?.content;
   // Some models return content parts instead of a plain string.
   const text = Array.isArray(rawContent)
@@ -749,8 +753,10 @@ async function callResponsesWithSearch({ model, systemText, userMsg, maxTokens =
         ],
       }),
     }, 45000);
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok) xaiError(data, res);
+  const rawBody = await res.text();
+  let data = {};
+  try { data = JSON.parse(rawBody); } catch {}
+  if (!res.ok) xaiError(data, res, rawBody);
   const text = extractResponsesText(data);
   if (!text.trim()) throw new Error('AI returned an empty answer with live search. Retry without Live SEO.');
   return { text, usage: data.usage };
