@@ -35,7 +35,7 @@
   "social_media": {
     "instagram_handle": "@uns_creation2112",
     "instagram_url": "https://www.instagram.com/uns_creation2112/",
-    "instagram_identity_status": "Previously matched to UNS Creation during public-profile research for the user-supplied brand roster.",
+    "instagram_identity_status": "Official account mapping supplied directly by user on 2026-10-03.",
     "instagram_content_access": "Use the page as a reference when access is available. Do not claim knowledge of a new post, collection, price or availability unless it is retrieved or supplied.",
     "facebook_url": null,
     "youtube_url": null,
@@ -428,5 +428,17 @@
       "type": "user_writing_preferences",
       "supports": "Short hooks, English or Hinglish by context, one CTA, three hashtags, one comma-separated SEO bracket and no em dashes."
     }
-  ]
+  ],
+  "research_update": {
+    "checked_on": "2026-10-03",
+    "official_account": {
+      "platform": "Instagram",
+      "handle": "@uns_creation2112",
+      "url": "https://www.instagram.com/uns_creation2112/",
+      "identity_authority": "User supplied as official"
+    },
+    "source_urls": [],
+    "observations": [],
+    "rule": "Directory, creator and indexed-post facts are leads; reconfirm current contacts, offers and commercial details before public use."
+  }
 }

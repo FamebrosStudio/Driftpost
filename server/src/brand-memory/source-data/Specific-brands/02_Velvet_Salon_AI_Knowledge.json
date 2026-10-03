@@ -44,7 +44,8 @@
     "youtube_url": null,
     "managing_agency": "Famebros Studio",
     "agency_instagram_handle": "@famebrosstudio",
-    "agency_instagram_url": "https://www.instagram.com/famebrosstudio/"
+    "agency_instagram_url": "https://www.instagram.com/famebrosstudio/",
+    "instagram_status": "Official handle supplied by user on 2026-10-03; current public claims still require source verification."
   },
   "established_content_knowledge": {
     "confirmed_content_genres": [
@@ -132,7 +133,7 @@
       "Urgency around a real limited offer"
     ],
     "avoid_style": [
-      "Generic beauty clichés",
+      "Generic beauty clichÃ©s",
       "Long introductions",
       "Forced humour",
       "Mocking clients, staff or appearance",
@@ -251,9 +252,9 @@
   "fixed_footer": {
     "source": "User-supplied Velvet Salon details in data.txt.",
     "lines": [
-      "📍 Shop No. 15, Tulsi Park, Amrut Park Road, Wayle Nagar, Near Starbucks, Khadakpada Circle, Kalyan",
-      "📞 +91 98210 06703",
-      "💫 Managed by: @famebrosstudio"
+      "ðŸ“ Shop No. 15, Tulsi Park, Amrut Park Road, Wayle Nagar, Near Starbucks, Khadakpada Circle, Kalyan",
+      "ðŸ“ž +91 98210 06703",
+      "ðŸ’« Managed by: @famebrosstudio"
     ],
     "usage": "Append this block to normal feed and reel captions unless the user requests a different format.",
     "rules": [
@@ -386,7 +387,7 @@
     "transformation": {
       "status": "Illustrative template requiring a confirmed service and visible result.",
       "required_input": "Replace [confirmed service] and [visible result] with facts from the current post.",
-      "text": "A fresh look starts here. ✨\nThis [confirmed service] brings out a [visible result] designed to feel polished, modern and completely you.\nSave this for your next salon appointment.\n\n📍 Shop No. 15, Tulsi Park, Amrut Park Road, Wayle Nagar, Near Starbucks, Khadakpada Circle, Kalyan\n📞 +91 98210 06703\n💫 Managed by: @famebrosstudio\n\n#VelvetSalon #HairTransformation #KalyanSalon\n\n[Velvet Salon, hair transformation Kalyan, salon in Khadakpada, hair makeover Kalyan, unisex salon in Kalyan]"
+      "text": "A fresh look starts here. âœ¨\nThis [confirmed service] brings out a [visible result] designed to feel polished, modern and completely you.\nSave this for your next salon appointment.\n\nðŸ“ Shop No. 15, Tulsi Park, Amrut Park Road, Wayle Nagar, Near Starbucks, Khadakpada Circle, Kalyan\nðŸ“ž +91 98210 06703\nðŸ’« Managed by: @famebrosstudio\n\n#VelvetSalon #HairTransformation #KalyanSalon\n\n[Velvet Salon, hair transformation Kalyan, salon in Khadakpada, hair makeover Kalyan, unisex salon in Kalyan]"
     },
     "informational": {
       "status": "Illustrative structure. Insert only salon-approved information.",
@@ -394,7 +395,7 @@
     },
     "funny_reel": {
       "status": "Illustrative structure. Match the actual joke shown in the reel.",
-      "template": "That moment when [actual salon situation] 😂 Tag the friend who does this every time."
+      "template": "That moment when [actual salon situation] ðŸ˜‚ Tag the friend who does this every time."
     }
   },
   "accuracy_rules": [
@@ -458,6 +459,34 @@
     {
       "type": "user_writing_preferences",
       "supports": "Short hooks, English or Hinglish by context, one CTA, three hashtags, one comma-separated SEO bracket and no em dashes."
+    },
+    {
+      "type": "user_supplied_official_instagram_handle",
+      "url": "https://www.instagram.com/velvetlounge.unisexsalon/",
+      "checked_on": "2026-10-03",
+      "supports": "User explicitly supplied this official account mapping; does not independently verify all profile claims."
+    },
+    {
+      "type": "public_research_reference",
+      "url": "https://pictame.com/en/discover/hashtag/velvet-vanity-salon",
+      "checked_on": "2026-10-03",
+      "supports": "Research lead, with confidence limits recorded in research_update."
     }
-  ]
+  ],
+  "research_update": {
+    "checked_on": "2026-10-03",
+    "official_account": {
+      "platform": "Instagram",
+      "handle": "@velvetlounge.unisexsalon",
+      "url": "https://www.instagram.com/velvetlounge.unisexsalon/",
+      "identity_authority": "User supplied as official"
+    },
+    "source_urls": [
+      "https://pictame.com/en/discover/hashtag/velvet-vanity-salon"
+    ],
+    "observations": [
+      "Indexed post: 50% off selected services and haircuts ₹99/₹199 through 12-Apr-2026; address Tisgaon Road, Kalyan East, phone +91 98210 06703. Expired offer and location conflict with file; do not reuse until owner confirms."
+    ],
+    "rule": "Directory, creator and indexed-post facts are leads; reconfirm current contacts, offers and commercial details before public use."
+  }
 }

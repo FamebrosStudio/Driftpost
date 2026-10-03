@@ -41,7 +41,8 @@
     "youtube_url": null,
     "managing_agency": "Famebros Studio",
     "agency_instagram_handle": "@famebrosstudio",
-    "agency_instagram_url": "https://www.instagram.com/famebrosstudio/"
+    "agency_instagram_url": "https://www.instagram.com/famebrosstudio/",
+    "instagram_status": "Official handle supplied by user on 2026-10-03; current public claims still require source verification."
   },
   "established_content_knowledge": {
     "confirmed_business_genre": "Women's clothing",
@@ -89,7 +90,7 @@
       "Appreciating visible design details"
     ],
     "avoid_style": [
-      "Generic fashion clichés without product details",
+      "Generic fashion clichÃ©s without product details",
       "Body shaming or appearance insecurity",
       "Claims that one size suits everyone",
       "Invented fabric, embroidery or craftsmanship details",
@@ -229,7 +230,7 @@
   "footer_policy": {
     "fixed_brand_footer_available": false,
     "confirmed_footer_lines": [
-      "🎥 Managed by: @famebrosstudio ✨"
+      "ðŸŽ¥ Managed by: @famebrosstudio âœ¨"
     ],
     "default_usage": "Use the agency credit only when the user wants the standard Famebros footer. Do not invent an address, phone number or WhatsApp line.",
     "contact_cta_rule": "Until a contact method is confirmed, use neutral CTAs such as 'DM to enquire' only if Instagram direct messages are the intended ordering route for the current campaign.",
@@ -351,7 +352,7 @@
   "sample_caption": {
     "status": "Illustrative template. It must be completed with the current garment's confirmed facts.",
     "required_input": "Replace every bracketed placeholder before publishing.",
-    "text": "A look made to be noticed. ✨\nThe [confirmed garment type] stands out with its [visible detail] and [confirmed colour], creating a look made for [confirmed occasion].\nSave this for your next outfit inspiration.\n\n🎥 Managed by: @famebrosstudio ✨\n\n#UNSCreation #[ConfirmedGarmentTag] #WomensFashion\n\n[UNS Creation, confirmed garment type, confirmed colour outfit, women's fashion, confirmed occasion outfit, outfit inspiration]"
+    "text": "A look made to be noticed. âœ¨\nThe [confirmed garment type] stands out with its [visible detail] and [confirmed colour], creating a look made for [confirmed occasion].\nSave this for your next outfit inspiration.\n\nðŸŽ¥ Managed by: @famebrosstudio âœ¨\n\n#UNSCreation #[ConfirmedGarmentTag] #WomensFashion\n\n[UNS Creation, confirmed garment type, confirmed colour outfit, women's fashion, confirmed occasion outfit, outfit inspiration]"
   },
   "accuracy_rules": [
     "Use only UNS Creation facts and the current post brief.",
@@ -389,7 +390,7 @@
     "recent_captions": [],
     "additional_instructions": []
   },
-  "master_brand_instruction": "Write as UNS Creation, a women's clothing brand. Keep the voice stylish, feminine, confident, modern and concise. Use English by default and natural Hinglish when the reel or user request calls for it. Base every caption on the actual supplied garment and brief. Mention garment type, colour, fabric, work, size, price, occasion, stock and availability only when confirmed. Begin with one specific fashion hook, describe one or two real visual details and choose one relevant CTA. For normal feed and reel captions, use exactly three relevant hashtags and one square bracket containing 5 to 8 comma-separated SEO phrases. Add only confirmed contact information. The only currently approved footer line is the optional agency credit: 🎥 Managed by: @famebrosstudio ✨. Avoid em dashes, body shaming, generic filler, invented product claims, fake urgency and information from other brands. Return ready-to-copy public text without null fields or internal notes.",
+  "master_brand_instruction": "Write as UNS Creation, a women's clothing brand. Keep the voice stylish, feminine, confident, modern and concise. Use English by default and natural Hinglish when the reel or user request calls for it. Base every caption on the actual supplied garment and brief. Mention garment type, colour, fabric, work, size, price, occasion, stock and availability only when confirmed. Begin with one specific fashion hook, describe one or two real visual details and choose one relevant CTA. For normal feed and reel captions, use exactly three relevant hashtags and one square bracket containing 5 to 8 comma-separated SEO phrases. Add only confirmed contact information. The only currently approved footer line is the optional agency credit: ðŸŽ¥ Managed by: @famebrosstudio âœ¨. Avoid em dashes, body shaming, generic filler, invented product claims, fake urgency and information from other brands. Return ready-to-copy public text without null fields or internal notes.",
   "missing_information": [
     "Phone and WhatsApp number",
     "Full address, city and service area",
@@ -427,6 +428,24 @@
     {
       "type": "user_writing_preferences",
       "supports": "Short hooks, English or Hinglish by context, one CTA, three hashtags, one comma-separated SEO bracket and no em dashes."
+    },
+    {
+      "type": "user_supplied_official_instagram_handle",
+      "url": "https://www.instagram.com/uns_creation2112/",
+      "checked_on": "2026-10-03",
+      "supports": "User explicitly supplied this official account mapping; does not independently verify all profile claims."
     }
-  ]
+  ],
+  "research_update": {
+    "checked_on": "2026-10-03",
+    "official_account": {
+      "platform": "Instagram",
+      "handle": "@uns_creation2112",
+      "url": "https://www.instagram.com/uns_creation2112/",
+      "identity_authority": "User supplied as official"
+    },
+    "source_urls": [],
+    "observations": [],
+    "rule": "Directory, creator and indexed-post facts are leads; reconfirm current contacts, offers and commercial details before public use."
+  }
 }

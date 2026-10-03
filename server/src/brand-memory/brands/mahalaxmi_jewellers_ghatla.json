@@ -53,7 +53,7 @@
   "social_media": {
     "instagram_handle": "@mahalaxmi.jewellers.ghatla",
     "instagram_url": "https://www.instagram.com/mahalaxmi.jewellers.ghatla/",
-    "instagram_identity_status": "Indexed reel aggregation matches the Ghatla branch and group contact details. The direct profile should be checked before relying on new posts.",
+    "instagram_identity_status": "Official account mapping supplied directly by user on 2026-10-03.",
     "facebook_page_used_for_group_campaigns": "https://www.facebook.com/KanchanMalaJewellers/",
     "facebook_status": "Group campaigns for Ghatla are also published through the Kanchanmala page.",
     "youtube_url": null,
@@ -673,5 +673,21 @@
     ],
     "publishing_rule": "Use the headline offer only with the Ghatla branch. Before final transactional copy, add the missing eligibility and redemption terms supplied by the client.",
     "safe_core_message": "Mahalaxmi Jewellers is offering 0.5 gram of gold to the first 100 eligible visitors at its new Ghatla shop, subject to confirmed campaign terms."
+  },
+  "research_update": {
+    "checked_on": "2026-10-03",
+    "official_account": {
+      "platform": "Instagram",
+      "handle": "@mahalaxmi.jewellers.ghatla",
+      "url": "https://www.instagram.com/mahalaxmi.jewellers.ghatla/",
+      "identity_authority": "User supplied as official"
+    },
+    "source_urls": [
+      "https://pictame.com/en/discover/hashtag/1-gram-gold-rate-in-mumbai"
+    ],
+    "observations": [
+      "Indexed group campaign from supplied Ghatla account: shared contact +91 80974 96670, historical loan/EMI/savings offers. Verify current terms and branch contact."
+    ],
+    "rule": "Directory, creator and indexed-post facts are leads; reconfirm current contacts, offers and commercial details before public use."
   }
 }

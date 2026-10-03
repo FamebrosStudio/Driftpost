@@ -55,15 +55,15 @@
   "social_media": {
     "instagram_handle": "@herchoice_byasma",
     "instagram_url": "https://www.instagram.com/herchoice_byasma/",
-    "instagram_status": "Official page supplied directly by the user and matched by public search indexing.",
     "facebook_url": null,
     "website_url": null,
     "managing_agency": "Famebros Studio",
     "agency_instagram_handle": "@famebrosstudio",
     "agency_instagram_url": "https://www.instagram.com/famebrosstudio/",
-    "agency_credit_default": "💫 Managed by: @famebrosstudio",
+    "agency_credit_default": "ðŸ’« Managed by: @famebrosstudio",
     "excluded_candidates": [],
-    "reference_rule": "Use the official page to study real products and public language. Recheck price, stock, sizes and ordering terms on the publication date."
+    "reference_rule": "Use the official page to study real products and public language. Recheck price, stock, sizes and ordering terms on the publication date.",
+    "instagram_status": "Official handle supplied by user on 2026-10-03; current public claims still require source verification."
   },
   "established_content_knowledge": {
     "confirmed_content_genres": [
@@ -254,8 +254,8 @@
   },
   "fixed_footer": {
     "standard_lines": [
-      "📲 DM @herchoice_byasma to order",
-      "💫 Managed by: @famebrosstudio"
+      "ðŸ“² DM @herchoice_byasma to order",
+      "ðŸ’« Managed by: @famebrosstudio"
     ],
     "usage": "Use for standard feed and reel captions. Add a phone, address or website only after confirmation.",
     "exceptions": [
@@ -369,8 +369,8 @@
     "scenario": "Mahira Khan-inspired suit reel",
     "caption_body": "The trending Mahira Khan-inspired suit is now part of the HerChoice by Asma fashion story. Elegant details, a graceful silhouette and a look made for the moments you want to remember. DM us for the current price, sizes and availability.",
     "footer": [
-      "📲 DM @herchoice_byasma to order",
-      "💫 Managed by: @famebrosstudio"
+      "ðŸ“² DM @herchoice_byasma to order",
+      "ðŸ’« Managed by: @famebrosstudio"
     ],
     "hashtags": [
       "#HerChoiceByAsma",
@@ -385,7 +385,7 @@
       "festive suits for women",
       "women's fashion collection"
     ],
-    "full_caption": "The trending Mahira Khan-inspired suit is now part of the HerChoice by Asma fashion story. Elegant details, a graceful silhouette and a look made for the moments you want to remember. DM us for the current price, sizes and availability.\n\n📲 DM @herchoice_byasma to order\n💫 Managed by: @famebrosstudio\n\n#HerChoiceByAsma #PakistaniSuits #EthnicWear\n\n[HerChoice by Asma, Mahira Khan inspired suit, Pakistani suits for women, Pakistani ethnic wear, festive suits for women, women's fashion collection]",
+    "full_caption": "The trending Mahira Khan-inspired suit is now part of the HerChoice by Asma fashion story. Elegant details, a graceful silhouette and a look made for the moments you want to remember. DM us for the current price, sizes and availability.\n\nðŸ“² DM @herchoice_byasma to order\nðŸ’« Managed by: @famebrosstudio\n\n#HerChoiceByAsma #PakistaniSuits #EthnicWear\n\n[HerChoice by Asma, Mahira Khan inspired suit, Pakistani suits for women, Pakistani ethnic wear, festive suits for women, women's fashion collection]",
     "validation": {
       "hashtags": 3,
       "seo_phrases": 6,
@@ -500,7 +500,8 @@
       "Launch or go-live date of 11 September 2026.",
       "First 50 members launch offer of 15% off.",
       "DM-to-order workflow.",
-      "Premium, feminine and curiosity-led copy direction."
+      "Premium, feminine and curiosity-led copy direction.",
+      "Official Instagram handle supplied directly by user on 2026-10-03."
     ],
     "public_sources": [
       {
@@ -521,5 +522,17 @@
     ],
     "internal_dataset": "Famebros_Brand_Caption_Dataset.json record asma_women_clothing.",
     "source_rule": "Current approved catalogue and commerce information override older launch and indexed post details."
+  },
+  "research_update": {
+    "checked_on": "2026-10-03",
+    "official_account": {
+      "platform": "Instagram",
+      "handle": "@herchoice_byasma",
+      "url": "https://www.instagram.com/herchoice_byasma/",
+      "identity_authority": "User supplied as official"
+    },
+    "source_urls": [],
+    "observations": [],
+    "rule": "Directory, creator and indexed-post facts are leads; reconfirm current contacts, offers and commercial details before public use."
   }
 }

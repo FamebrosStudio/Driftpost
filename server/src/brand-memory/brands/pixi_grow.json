@@ -2,25 +2,27 @@
   "schema_version": "3.0",
   "brand_number": 32,
   "brand_id": "pixi_grow",
-  "brand_name": "Pixi Grow",
+  "brand_name": "Pixigrow Media",
   "aliases": [
-    "PixiGrow",
-    "Pixigrow Media"
+    "Pixigrow Media",
+    "PixiGrow Media",
+    "Pixi Grow",
+    "@pixigrowmedia"
   ],
-  "knowledge_scope": "One brand only. This file covers every currently known and researched fact for Pixi Grow. The internal record confirms the name and onboarding note, but the exact business category, owner, location, official social page and service catalogue are not safely established. The file is designed to prevent identity mixing while still supporting brand-introduction and asset-led content.",
+  "knowledge_scope": "The user confirms @pixigrowmedia as the official Pixigrow Media account. Public campaign credits indicate media/campaign work, and a same-name LinkedIn profile lists Rajkot. Exact legal entity/account relationship, address, contact and full service catalogue remain unverified.",
   "business": {
-    "category": null,
-    "industry": null,
+    "category": "Media and campaign content; exact services unconfirmed",
+    "industry": "Media, digital content and campaign marketing",
     "business_model": null,
-    "location": null,
+    "location": "Rajkot association (public profile); exact business address unverified",
     "country": null,
     "currency": null,
-    "core_positioning": "Not established. Define only after the official brand identity and offer are supplied.",
+    "core_positioning": "Media/campaign content brand; define specific positioning only from an approved brief.",
     "primary_audience": null,
     "onboarding_or_billing_note": "The first day of an unspecified month appeared in the user-provided brand list. This is not a founding date.",
     "dataset_date": "2026-09-26",
-    "identity_confidence": "Low until the official account is supplied.",
-    "commercial_accuracy_rule": "Do not invent a service, product, audience, location, price, result or business model from the name."
+    "identity_confidence": "Official account confirmed by user; service and legal identity details remain incomplete.",
+    "commercial_accuracy_rule": "Do not invent exact services, clients, campaign results, audience, contact, address, prices or performance metrics."
   },
   "contact": {
     "phone": null,
@@ -33,16 +35,10 @@
     "contact_rule": "Do not use contact details from a similar Pixi, Pixigrow or agriculture product."
   },
   "social_media": {
-    "instagram_handle": null,
-    "instagram_url": null,
-    "instagram_status": "Not resolved.",
+    "instagram_handle": "@pixigrowmedia",
+    "instagram_url": "https://www.instagram.com/pixigrowmedia/",
+    "instagram_status": "Official handle supplied by user. Public campaign credits and a same-name Rajkot profile support media/campaign work, but the account-to-legal-entity connection is not independently verified.",
     "public_candidates_not_confirmed": [
-      {
-        "identity": "Pixigrow Media",
-        "location_signal": "Rajkot, Gujarat",
-        "source": "https://in.linkedin.com/in/pixigrow-media-994378421",
-        "reason_not_adopted": "The exact connection to the user's client is not confirmed."
-      },
       {
         "identity": "PIXIGROW design studio",
         "website": "https://pixigrow.com/",
@@ -57,14 +53,19 @@
     "agency_instagram_handle": "@famebrosstudio",
     "agency_instagram_url": "https://www.instagram.com/famebrosstudio/",
     "agency_credit_default": "💫 Managed by: @famebrosstudio",
-    "reference_rule": "Do not tag or learn from a candidate until the user or owner confirms the official identity."
+    "reference_rule": "Use the user-confirmed account as the identity anchor. Do not merge pixigrow.com or the agriculture product; verify profile claims before using them.",
+    "instagram_identity_status": "User confirmed official handle on 2026-10-03."
   },
   "established_content_knowledge": {
     "confirmed_facts": [
-      "The working brand name is Pixi Grow."
+      "The user identifies @pixigrowmedia as the official account.",
+      "Public campaign credits associate @pixigrowmedia with campaign work.",
+      "A same-name public profile lists Rajkot; exact operating location is unverified."
     ],
-    "confirmed_content_genres": [],
-    "content_status": "Business identity required before category-specific strategy.",
+    "confirmed_content_genres": [
+      "Media and campaign content, broad category only"
+    ],
+    "content_status": "The account identity is user-confirmed; exact services and claims still need approved briefs.",
     "safe_content_pillars": [
       "Logo or identity reveal using supplied assets",
       "Founder statement using supplied copy",
@@ -73,23 +74,21 @@
       "Behind-the-scenes footage with approved context"
     ],
     "prohibited_assumptions": [
-      "Digital agency",
-      "Design studio",
-      "Agriculture or fertiliser",
-      "Children's brand",
-      "Beauty brand",
-      "Software company",
-      "Rajkot location"
+      "Specific service list beyond observed campaign credits",
+      "Client outcomes or performance claims",
+      "Exact location or contact details",
+      "Prices, audience or guarantees",
+      "Pixigrow.com design studio and Pixi Grow fertilizer are separate unconfirmed namesakes."
     ],
     "data_confidence": {
-      "name": "Confirmed by internal record",
-      "category": "Unknown",
-      "social": "Unknown",
-      "location": "Unknown",
+      "name": "Confirmed by user account mapping",
+      "category": "Broad media/campaign evidence only",
+      "social": "Confirmed by user",
+      "location": "Rajkot association only; address unknown",
       "contacts": "Unknown",
       "offer": "Unknown"
     },
-    "content_priority": "Confirm identity first. Until then, produce only asset-led drafts that state no unsupported category or result."
+    "content_priority": "Use the supplied account identity and media/campaign context; require an approved brief for each service, client or result claim."
   },
   "writing_direction": {
     "brand_voice": [
@@ -314,11 +313,11 @@
     }
   },
   "accuracy_rules": [
-    "Do not assume Pixi Grow is the Pixigrow Media profile, pixigrow.com design studio or PIXI GROW agriculture product.",
-    "Do not invent category, location, owner, contact, price or services.",
-    "Do not tag any unconfirmed account.",
-    "Use only supplied assets and brief facts.",
-    "Keep candidates labelled as unconfirmed research leads.",
+    "Use @pixigrowmedia as the user-confirmed official account.",
+    "Do not merge pixigrow.com or agricultural product namesakes.",
+    "Do not invent specific services, clients, performance, audience, prices, address or contacts.",
+    "Describe only campaign/media work supported by the supplied brief or reviewed assets.",
+    "Keep Rajkot as an unverified city-level association, not a branch address.",
     "Remove every em dash."
   ],
   "per_post_input": {
@@ -341,14 +340,13 @@
     ],
     "input_rule": "Do not create category-specific copy until the identity gate is complete."
   },
-  "master_brand_instruction": "Create content only for the user's Pixi Grow brand. Its business category, location, official Instagram, website, contacts, audience and offer are not yet confirmed. Never connect it automatically to Pixigrow Media in Rajkot, pixigrow.com, an agriculture product or another similarly named business. Use only the exact supplied asset and brief. Until identity is confirmed, limit output to clearly labelled neutral concepts, use no category-specific SEO and do not invent contact details. Standard concept captions use exactly three hashtags and one SEO bracket with five to eight neutral phrases. Remove all em dashes.",
+  "master_brand_instruction": "Create content for Pixigrow Media, using the user-confirmed @pixigrowmedia account. Public campaign credits support a broad media/campaign-content context; exact services, clients, results, address, contacts, audience and prices remain unverified. Do not merge the unrelated pixigrow.com studio or agricultural product. Use only supplied assets and approved brief facts. Standard captions use exactly three relevant hashtags and one SEO bracket with five to eight phrases. Remove all em dashes.",
   "missing_information": {
     "identity": [
-      "Official page",
-      "Exact spelling and capitalization",
-      "Category",
-      "Owner",
-      "Location"
+      "Legal entity and account relationship",
+      "Owner or founder",
+      "Exact service categories",
+      "Target audience"
     ],
     "contact": [
       "Phone",
@@ -357,11 +355,11 @@
       "Address"
     ],
     "offer": [
-      "Services or products",
-      "Audience",
+      "Approved service list",
       "Prices",
       "Availability",
-      "USPs"
+      "USPs and substantiated results",
+      "Client/campaign permissions"
     ],
     "brand_system": [
       "Logo",
@@ -370,26 +368,53 @@
       "Visual references",
       "Tone"
     ],
-    "priority": "Obtain the official Instagram page and exact category before using this file for public content."
+    "priority": "Confirm legal identity, exact service menu, owner, contact and approved result claims before commercial copy."
   },
   "sources": {
     "user_facts": [
-      "Brand name Pixi Grow.",
-      "Onboarding or billing note listed as the first day of an unspecified month."
+      "Official Instagram handle @pixigrowmedia supplied by user on 2026-10-03.",
+      "Pixigrow Media display-name mapping supplied by the user."
     ],
     "public_sources": [
       {
         "url": "https://in.linkedin.com/in/pixigrow-media-994378421",
-        "checked_on": "2026-09-26",
-        "used_for": "Unconfirmed Rajkot candidate only."
+        "checked_on": "2026-10-03",
+        "used_for": "Same-name profile gives a Rajkot location signal; account/legal relationship and exact address unverified."
       },
       {
-        "url": "https://pixigrow.com/",
-        "checked_on": "2026-09-26",
-        "used_for": "Unconfirmed design-studio candidate only."
+        "url": "https://pictame.com/en/discover/hashtag/praveg-beach-resort-diu",
+        "checked_on": "2026-10-03",
+        "used_for": "Indexed third-party post credits a Diu resort campaign to @pixigrowmedia; supports broad campaign work, not service claims or ownership."
+      },
+      {
+        "url": "https://www.planetexim.net/indian-company/pixigrow-media-private-limited/cin/U73100GJ2026PTC179519.html",
+        "checked_on": "2026-10-03",
+        "used_for": "Third-party company-record lead only; incorporation listed 2026-06-21, not independently verified against the Instagram account."
       }
     ],
     "internal_dataset": "Famebros_Brand_Caption_Dataset.json record pixi_grow.",
-    "source_rule": "Direct user or owner confirmation is required before adopting any public candidate."
+    "source_rule": "Direct user or owner confirmation is required before adopting any public candidate.",
+    "public_search_note": "The user confirmed the official handle. Public references corroborate campaign activity and a same-name Rajkot profile; legal entity, contact and service details remain unresolved."
+  },
+  "research_update": {
+    "checked_on": "2026-10-03",
+    "official_account": {
+      "platform": "Instagram",
+      "handle": "@pixigrowmedia",
+      "url": "https://www.instagram.com/pixigrowmedia/",
+      "identity_authority": "User supplied as official"
+    },
+    "source_urls": [
+      "https://in.linkedin.com/in/pixigrow-media-994378421",
+      "https://pictame.com/en/discover/hashtag/praveg-beach-resort-diu",
+      "https://www.planetexim.net/indian-company/pixigrow-media-private-limited/cin/U73100GJ2026PTC179519.html"
+    ],
+    "observations": [
+      "User supplied this official handle.",
+      "Indexed third-party campaign credit supports campaign/media context.",
+      "Same-name profile indicates Rajkot association; exact location and legal-account relationship remain unverified.",
+      "A third-party registry lists PIXIGROW MEDIA PRIVATE LIMITED incorporated 2026-06-21; verify directly before formal legal or history claims."
+    ],
+    "rule": "Directory, creator and indexed-post facts are leads; reconfirm current contacts, offers and commercial details before public use."
   }
 }

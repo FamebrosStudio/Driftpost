@@ -63,7 +63,8 @@
     "agency_instagram_handle": "@famebrosstudio",
     "agency_instagram_url": "https://www.instagram.com/famebrosstudio/",
     "agency_credit_default": "💫 Managed by: @famebrosstudio",
-    "reference_rule": "Use official portfolio content only with client consent and current service details. Do not reuse another artist's look or course claim."
+    "reference_rule": "Use official portfolio content only with client consent and current service details. Do not reuse another artist's look or course claim.",
+    "instagram_identity_status": "Official account mapping supplied directly by user on 2026-10-03."
   },
   "established_content_knowledge": {
     "confirmed_services": [
@@ -531,5 +532,17 @@
     "public_search_note": "Web/phone searches on 2026-09-25 for Qash Makeovers Kurla + 70457 76977 returned no verifiable listing (only unrelated Qash fintech results). Phone, address and handle stay user-provided.",
     "internal_dataset": "Famebros_Brand_Caption_Dataset.json record qash_makeovers.",
     "source_rule": "Current studio-approved booking, course and service information overrides any historical event or portfolio caption."
+  },
+  "research_update": {
+    "checked_on": "2026-10-03",
+    "official_account": {
+      "platform": "Instagram",
+      "handle": "@qash_makeovers",
+      "url": "https://www.instagram.com/qash_makeovers/",
+      "identity_authority": "User supplied as official"
+    },
+    "source_urls": [],
+    "observations": [],
+    "rule": "Directory, creator and indexed-post facts are leads; reconfirm current contacts, offers and commercial details before public use."
   }
 }

@@ -139,7 +139,8 @@
     "agency_instagram_handle": "@famebrosstudio",
     "agency_instagram_url": "https://www.instagram.com/famebrosstudio/",
     "agency_credit_default": "💫 Managed by: @famebrosstudio",
-    "agency_credit_rule": "Include the Famebros Studio credit in standard captions unless the current brief explicitly removes it."
+    "agency_credit_rule": "Include the Famebros Studio credit in standard captions unless the current brief explicitly removes it.",
+    "instagram_identity_status": "Official account mapping supplied directly by user on 2026-10-03."
   },
   "established_content_knowledge": {
     "confirmed_content_genres": [
@@ -1467,5 +1468,22 @@
       "type": "user_writing_preferences",
       "supports": "One comprehensive brand per JSON file, caption plus contact footer, exactly three hashtags, one square SEO keyword bracket, default 1080x1440 feed size, agency credit and no em dashes."
     }
-  ]
+  ],
+  "research_update": {
+    "checked_on": "2026-10-03",
+    "official_account": {
+      "platform": "Instagram",
+      "handle": "@bhanu.designer",
+      "url": "https://www.instagram.com/bhanu.designer/",
+      "identity_authority": "User supplied as official"
+    },
+    "source_urls": [
+      "https://imginn.com/tags/EthnicMenswear/",
+      "https://bhanudesigner.com/"
+    ],
+    "observations": [
+      "Indexed profile post associates @bhanu.designer with phone 9224447024, custom wedding/ethnic menswear, Shop 7 K.K. Smruti Apartment, Maneklal Estate, Ghatkopar West. Full address remains subject to existing caveat."
+    ],
+    "rule": "Directory, creator and indexed-post facts are leads; reconfirm current contacts, offers and commercial details before public use."
+  }
 }

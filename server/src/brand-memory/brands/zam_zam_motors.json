@@ -71,7 +71,8 @@
     "agency_instagram_handle": "@famebrosstudio",
     "agency_instagram_url": "https://www.instagram.com/famebrosstudio/",
     "agency_credit_default": "💫 Managed by: @famebrosstudio",
-    "reference_rule": "Use the account to understand visual history only after confirming it is still controlled by the business. Never treat an old vehicle post as current inventory."
+    "reference_rule": "Use the account to understand visual history only after confirming it is still controlled by the business. Never treat an old vehicle post as current inventory.",
+    "instagram_identity_status": "Official account mapping supplied directly by user on 2026-10-03."
   },
   "established_content_knowledge": {
     "confirmed_content_pillars": [
@@ -564,5 +565,17 @@
     "public_search_note": "Public exact-name, phone, handle and address searches on 2026-10-02 did not independently verify this Mulund West business or current social-account control. Search results for other Zam Zam Motors in Bhiwandi and unrelated countries had different or unverified identities and were excluded. Keep the supplied address, phone and historical Instagram handle labeled as user-provided.",
     "internal_dataset": "Famebros_Brand_Caption_Dataset.json record zam_zam_motors.",
     "source_rule": "A current dealership stock sheet and current brand-approved contact information override historical examples in this file."
+  },
+  "research_update": {
+    "checked_on": "2026-10-03",
+    "official_account": {
+      "platform": "Instagram",
+      "handle": "@zamzam_motorss",
+      "url": "https://www.instagram.com/zamzam_motorss/",
+      "identity_authority": "User supplied as official"
+    },
+    "source_urls": [],
+    "observations": [],
+    "rule": "Directory, creator and indexed-post facts are leads; reconfirm current contacts, offers and commercial details before public use."
   }
 }

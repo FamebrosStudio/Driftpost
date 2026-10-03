@@ -55,15 +55,15 @@
   "social_media": {
     "instagram_handle": "@qash_makeovers",
     "instagram_url": "https://www.instagram.com/qash_makeovers/",
-    "instagram_status": "Official handle in the user-provided brand record.",
     "facebook_name": "Qash Makeovers Studio and Academy and Freelancing",
     "facebook_url": null,
     "facebook_status": "Exact user-provided page name; verified direct URL not established.",
     "managing_agency": "Famebros Studio",
     "agency_instagram_handle": "@famebrosstudio",
     "agency_instagram_url": "https://www.instagram.com/famebrosstudio/",
-    "agency_credit_default": "💫 Managed by: @famebrosstudio",
-    "reference_rule": "Use official portfolio content only with client consent and current service details. Do not reuse another artist's look or course claim."
+    "agency_credit_default": "ðŸ’« Managed by: @famebrosstudio",
+    "reference_rule": "Use official portfolio content only with client consent and current service details. Do not reuse another artist's look or course claim.",
+    "instagram_status": "Official handle supplied by user on 2026-10-03; current public claims still require source verification."
   },
   "established_content_knowledge": {
     "confirmed_services": [
@@ -269,13 +269,13 @@
   },
   "fixed_footer": {
     "standard_lines": [
-      "📍 Shop No. 2, Rajal Godavari Apartment, Teachers Colony, Kurla West, Mumbai",
-      "📞 +91 70457 76977",
-      "💫 Managed by: @famebrosstudio"
+      "ðŸ“ Shop No. 2, Rajal Godavari Apartment, Teachers Colony, Kurla West, Mumbai",
+      "ðŸ“ž +91 70457 76977",
+      "ðŸ’« Managed by: @famebrosstudio"
     ],
     "compact_lines": [
-      "📍 Kurla West | 📞 +91 70457 76977",
-      "💫 Managed by: @famebrosstudio"
+      "ðŸ“ Kurla West | ðŸ“ž +91 70457 76977",
+      "ðŸ’« Managed by: @famebrosstudio"
     ],
     "usage": "Use the standard footer for booking, bridal and academy posts. Use the compact footer when the caption is long.",
     "exceptions": [
@@ -396,9 +396,9 @@
     "scenario": "Bridal makeup reveal",
     "caption_body": "A bridal look should enhance your features and still feel completely like you. From the eye detail to the final hairstyle, every element is planned around the occasion. Call us with your event date to check the current bridal booking availability.",
     "footer": [
-      "📍 Shop No. 2, Rajal Godavari Apartment, Teachers Colony, Kurla West, Mumbai",
-      "📞 +91 70457 76977",
-      "💫 Managed by: @famebrosstudio"
+      "ðŸ“ Shop No. 2, Rajal Godavari Apartment, Teachers Colony, Kurla West, Mumbai",
+      "ðŸ“ž +91 70457 76977",
+      "ðŸ’« Managed by: @famebrosstudio"
     ],
     "hashtags": [
       "#QashMakeovers",
@@ -413,7 +413,7 @@
       "bridal booking Mumbai",
       "occasion makeup Kurla"
     ],
-    "full_caption": "A bridal look should enhance your features and still feel completely like you. From the eye detail to the final hairstyle, every element is planned around the occasion. Call us with your event date to check the current bridal booking availability.\n\n📍 Shop No. 2, Rajal Godavari Apartment, Teachers Colony, Kurla West, Mumbai\n📞 +91 70457 76977\n💫 Managed by: @famebrosstudio\n\n#QashMakeovers #BridalMakeupMumbai #KurlaMakeupArtist\n\n[Qash Makeovers Kurla, bridal makeup Mumbai, makeup artist in Kurla West, bridal hairstyling Mumbai, bridal booking Mumbai, occasion makeup Kurla]",
+    "full_caption": "A bridal look should enhance your features and still feel completely like you. From the eye detail to the final hairstyle, every element is planned around the occasion. Call us with your event date to check the current bridal booking availability.\n\nðŸ“ Shop No. 2, Rajal Godavari Apartment, Teachers Colony, Kurla West, Mumbai\nðŸ“ž +91 70457 76977\nðŸ’« Managed by: @famebrosstudio\n\n#QashMakeovers #BridalMakeupMumbai #KurlaMakeupArtist\n\n[Qash Makeovers Kurla, bridal makeup Mumbai, makeup artist in Kurla West, bridal hairstyling Mumbai, bridal booking Mumbai, occasion makeup Kurla]",
     "validation": {
       "hashtags": 3,
       "seo_phrases": 6,
@@ -525,11 +525,24 @@
       "Confirmed phone and full Kurla West address.",
       "Bridal, party, hairstyling, academy and venue-service categories.",
       "Transformation, informational, tips, booking, academy and seminar genres.",
-      "Historical 3 September free seminar."
+      "Historical 3 September free seminar.",
+      "Official Instagram handle supplied directly by user on 2026-10-03."
     ],
     "public_sources": [],
     "public_search_note": "Web/phone searches on 2026-09-25 for Qash Makeovers Kurla + 70457 76977 returned no verifiable listing (only unrelated Qash fintech results). Phone, address and handle stay user-provided.",
     "internal_dataset": "Famebros_Brand_Caption_Dataset.json record qash_makeovers.",
     "source_rule": "Current studio-approved booking, course and service information overrides any historical event or portfolio caption."
+  },
+  "research_update": {
+    "checked_on": "2026-10-03",
+    "official_account": {
+      "platform": "Instagram",
+      "handle": "@qash_makeovers",
+      "url": "https://www.instagram.com/qash_makeovers/",
+      "identity_authority": "User supplied as official"
+    },
+    "source_urls": [],
+    "observations": [],
+    "rule": "Directory, creator and indexed-post facts are leads; reconfirm current contacts, offers and commercial details before public use."
   }
 }

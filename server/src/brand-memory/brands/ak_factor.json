@@ -41,7 +41,7 @@
   "social_media": {
     "instagram_handle": "@ak.factor_byarsh",
     "instagram_url": "https://www.instagram.com/ak.factor_byarsh/",
-    "instagram_identity_status": "Indexed posts match the brand name, Wadala location, wholesale positioning and confirmed phone number.",
+    "instagram_identity_status": "Official account mapping supplied directly by user on 2026-10-03.",
     "facebook_name": "AK Factor by Arsh",
     "facebook_url": null,
     "youtube_url": null,
@@ -471,5 +471,17 @@
       "type": "user_writing_preferences",
       "supports": "Short hooks, contextual English or Hinglish, one CTA, three hashtags, one SEO bracket and no em dashes."
     }
-  ]
+  ],
+  "research_update": {
+    "checked_on": "2026-10-03",
+    "official_account": {
+      "platform": "Instagram",
+      "handle": "@ak.factor_byarsh",
+      "url": "https://www.instagram.com/ak.factor_byarsh/",
+      "identity_authority": "User supplied as official"
+    },
+    "source_urls": [],
+    "observations": [],
+    "rule": "Directory, creator and indexed-post facts are leads; reconfirm current contacts, offers and commercial details before public use."
+  }
 }

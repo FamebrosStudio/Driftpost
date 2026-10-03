@@ -38,15 +38,14 @@
     "contact_rule": "Do not use details from a similarly named footwear seller."
   },
   "social_media": {
-    "instagram_handle": "sevencubes.footwear",
+    "instagram_handle": "@sevencubes.footwear",
     "instagram_url": "https://www.instagram.com/sevencubes.footwear/",
-    "instagram_status": "User-supplied connected-account handle; not independently matched in public search.",
     "facebook_url": null,
     "website_url": null,
     "managing_agency": "Famebros Studio",
     "agency_instagram_handle": "@famebrosstudio",
     "agency_instagram_url": "https://www.instagram.com/famebrosstudio/",
-    "agency_credit_default": "💫 Managed by: @famebrosstudio",
+    "agency_credit_default": "ðŸ’« Managed by: @famebrosstudio",
     "reference_rule": "Obtain the official page directly. Do not tag a guessed account.",
     "evidence": [
       {
@@ -54,7 +53,8 @@
         "detail": "The active caption screen identifies the selected account as @sevencubes.footwear.",
         "observed_date": "2026-10-02"
       }
-    ]
+    ],
+    "instagram_status": "Official handle supplied by user on 2026-10-03; current public claims still require source verification."
   },
   "established_content_knowledge": {
     "confirmed_content_pillars": [
@@ -227,7 +227,7 @@
   },
   "fixed_footer": {
     "standard_lines": [
-      "💫 Managed by: @famebrosstudio"
+      "ðŸ’« Managed by: @famebrosstudio"
     ],
     "status": "Agency credit only. Keep the caption CTA in the caption body; no verified public address or phone is available.",
     "usage": "Use only when the publication is going through the confirmed brand account.",
@@ -336,7 +336,7 @@
     "scenario": "Footwear reveal",
     "caption_body": "A closer look at your next outfit detail. Explore the real pair featured by Seven Cube Footwear, from its silhouette to the visible finish. DM the brand for the confirmed sizes, price and current availability.",
     "footer": [
-      "💫 Managed by: @famebrosstudio"
+      "ðŸ’« Managed by: @famebrosstudio"
     ],
     "hashtags": [
       "#SevenCubeFootwear",
@@ -351,7 +351,7 @@
       "on foot shoe showcase",
       "shoe size information"
     ],
-    "full_caption": "A closer look at your next outfit detail. Explore the real pair featured by Seven Cube Footwear, from its silhouette to the visible finish. DM the brand for the confirmed sizes, price and current availability.\n\n💫 Managed by: @famebrosstudio\n\n#SevenCubeFootwear #FootwearStyle #ShoeDetails\n\n[Seven Cube Footwear, footwear collection, shoe styling ideas, footwear product details, on foot shoe showcase, shoe size information]",
+    "full_caption": "A closer look at your next outfit detail. Explore the real pair featured by Seven Cube Footwear, from its silhouette to the visible finish. DM the brand for the confirmed sizes, price and current availability.\n\nðŸ’« Managed by: @famebrosstudio\n\n#SevenCubeFootwear #FootwearStyle #ShoeDetails\n\n[Seven Cube Footwear, footwear collection, shoe styling ideas, footwear product details, on foot shoe showcase, shoe size information]",
     "validation": {
       "hashtags": 3,
       "seo_phrases": 6,
@@ -445,7 +445,8 @@
       "Seven Cube Footwear name.",
       "Footwear category.",
       "Informational and edit-led content genres.",
-      "17 September operational note."
+      "17 September operational note.",
+      "Official Instagram handle supplied directly by user on 2026-10-03."
     ],
     "public_sources": [],
     "public_search_note": "Exact-name searches for Seven Cube Footwear, Seven Cube Footwear Mumbai and SevenCubeFootwear on 2026-10-02 did not reliably identify this business or its official social accounts. Unrelated namesakes and generic footwear results were excluded; do not infer location, contact, audience segment, catalogue or commerce terms. Exact search for the screenshot address and phone did not produce a reliable matching public source.",
@@ -455,5 +456,17 @@
   "missing_details": [
     "Public enquiry phone number",
     "Exact public store address and applicable branch"
-  ]
+  ],
+  "research_update": {
+    "checked_on": "2026-10-03",
+    "official_account": {
+      "platform": "Instagram",
+      "handle": "@sevencubes.footwear",
+      "url": "https://www.instagram.com/sevencubes.footwear/",
+      "identity_authority": "User supplied as official"
+    },
+    "source_urls": [],
+    "observations": [],
+    "rule": "Directory, creator and indexed-post facts are leads; reconfirm current contacts, offers and commercial details before public use."
+  }
 }

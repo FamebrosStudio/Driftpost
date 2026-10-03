@@ -59,7 +59,8 @@
     "youtube_url": null,
     "managing_agency": "Famebros Studio",
     "agency_instagram_handle": "@famebrosstudio",
-    "agency_instagram_url": "https://www.instagram.com/famebrosstudio/"
+    "agency_instagram_url": "https://www.instagram.com/famebrosstudio/",
+    "instagram_status": "Official handle supplied by user on 2026-10-03; current public claims still require source verification."
   },
   "shared_group_locations": {
     "usage": "Use this complete block only for group-wide posts covering all three jewellery stores.",
@@ -164,7 +165,7 @@
       "Hidden making charges or scheme conditions",
       "Calling imitation stones precious",
       "Using another branch address",
-      "Overused royal or luxury clichés",
+      "Overused royal or luxury clichÃ©s",
       "Em dashes"
     ]
   },
@@ -367,23 +368,23 @@
   },
   "fixed_footer": {
     "kurla_only_lines": [
-      "📍 Shree Mahalaxmi Jewellers",
+      "ðŸ“ Shree Mahalaxmi Jewellers",
       "Shop 15, Building 8, C-Wing, Sharad Co-Op Housing Society, Kapus Kamgar Nagar, Near Tilak Nagar Station, Kurla East, Mumbai 400024",
-      "📞 +91 96190 96762 | +91 80974 96670",
-      "🎥 Managed by: @famebrosstudio ✨"
+      "ðŸ“ž +91 96190 96762 | +91 80974 96670",
+      "ðŸŽ¥ Managed by: @famebrosstudio âœ¨"
     ],
     "group_footer_lines": [
-      "📍 Shree Mahalaxmi Jewellers",
+      "ðŸ“ Shree Mahalaxmi Jewellers",
       "Shop 15, Building 8, C-Wing, Sharad Co-Op Housing Society, Kapus Kamgar Nagar, Near Tilak Nagar Station, Kurla East, Mumbai 400024",
       "",
-      "📍 Kanchanmala Jewellers",
+      "ðŸ“ Kanchanmala Jewellers",
       "Shop 1/1, Plot 93, N.G. Acharya Marg, Chembur, Mumbai 400071",
       "",
-      "📍 Mahalaxmi Jewellers",
+      "ðŸ“ Mahalaxmi Jewellers",
       "Shop 1, Khardev Nagar Road, Ghatla, Chembur, Mumbai 400071",
       "",
-      "📞 +91 96190 96762 | +91 80974 96670",
-      "🎥 Managed by: @famebrosstudio ✨"
+      "ðŸ“ž +91 96190 96762 | +91 80974 96670",
+      "ðŸŽ¥ Managed by: @famebrosstudio âœ¨"
     ],
     "usage": "Use the Kurla-only footer for branch content. Use the group footer only when the post explicitly represents all three stores.",
     "rules": [
@@ -507,7 +508,7 @@
   },
   "sample_caption": {
     "status": "Illustrative evergreen product caption. It avoids unconfirmed purity, weight, price and stock claims.",
-    "text": "A design made for meaningful moments. ✨\nEvery visible detail brings elegance and tradition together, creating a jewellery look worth saving for your next celebration.\nVisit our Kurla store to explore the current collection.\n\n📍 Shree Mahalaxmi Jewellers\nShop 15, Building 8, C-Wing, Sharad Co-Op Housing Society, Kapus Kamgar Nagar, Near Tilak Nagar Station, Kurla East, Mumbai 400024\n📞 +91 96190 96762 | +91 80974 96670\n🎥 Managed by: @famebrosstudio ✨\n\n#ShreeMahalaxmiJewellers #JewelleryWithTrust #KurlaJewellers\n\n[Shree Mahalaxmi Jewellers, Mahalaxmi Jewellers Kurla, jewellery store in Kurla, jewellery near Tilak Nagar Station, jewellery in Mumbai, elegant jewellery designs]"
+    "text": "A design made for meaningful moments. âœ¨\nEvery visible detail brings elegance and tradition together, creating a jewellery look worth saving for your next celebration.\nVisit our Kurla store to explore the current collection.\n\nðŸ“ Shree Mahalaxmi Jewellers\nShop 15, Building 8, C-Wing, Sharad Co-Op Housing Society, Kapus Kamgar Nagar, Near Tilak Nagar Station, Kurla East, Mumbai 400024\nðŸ“ž +91 96190 96762 | +91 80974 96670\nðŸŽ¥ Managed by: @famebrosstudio âœ¨\n\n#ShreeMahalaxmiJewellers #JewelleryWithTrust #KurlaJewellers\n\n[Shree Mahalaxmi Jewellers, Mahalaxmi Jewellers Kurla, jewellery store in Kurla, jewellery near Tilak Nagar Station, jewellery in Mumbai, elegant jewellery designs]"
   },
   "accuracy_rules": [
     "Use only Shree Mahalaxmi Jewellers Kurla facts and the current brief.",
@@ -599,6 +600,34 @@
     {
       "type": "user_writing_preferences",
       "supports": "Short hooks, contextual English or Hinglish, one CTA, three hashtags, one SEO bracket and no em dashes."
+    },
+    {
+      "type": "user_supplied_official_instagram_handle",
+      "url": "https://www.instagram.com/mahalaxmi.jewellers.kurla/",
+      "checked_on": "2026-10-03",
+      "supports": "User explicitly supplied this official account mapping; does not independently verify all profile claims."
+    },
+    {
+      "type": "public_research_reference",
+      "url": "https://pictame.com/en/discover/hashtag/mumbai-gold-rate",
+      "checked_on": "2026-10-03",
+      "supports": "Research lead, with confidence limits recorded in research_update."
     }
-  ]
+  ],
+  "research_update": {
+    "checked_on": "2026-10-03",
+    "official_account": {
+      "platform": "Instagram",
+      "handle": "@mahalaxmi.jewellers.kurla",
+      "url": "https://www.instagram.com/mahalaxmi.jewellers.kurla/",
+      "identity_authority": "User supplied as official"
+    },
+    "source_urls": [
+      "https://pictame.com/en/discover/hashtag/mumbai-gold-rate"
+    ],
+    "observations": [
+      "Indexed group campaign with shared number +91 80974 96670 and gold EMI/loan/savings claims; treat as historical campaign, not verified dedicated current contact or current offer."
+    ],
+    "rule": "Directory, creator and indexed-post facts are leads; reconfirm current contacts, offers and commercial details before public use."
+  }
 }

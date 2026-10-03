@@ -5,7 +5,9 @@
   "brand_name": "Seven Cube Footwear",
   "aliases": [
     "Seven Cube",
-    "Seven cube footwear"
+    "Seven cube footwear",
+    "@sevencubes.footwear",
+    "sevencubes.footwear"
   ],
   "knowledge_scope": "One brand only. This file covers Seven Cube Footwear based on the confirmed footwear category and informational and edit-led content genres. Official social, location, contact, audience segment, catalogue and commercial terms remain unresolved, so the system emphasizes real-product fidelity and strict anti-invention controls.",
   "business": {
@@ -37,8 +39,8 @@
     "contact_rule": "Do not use details from a similarly named footwear seller."
   },
   "social_media": {
-    "instagram_handle": null,
-    "instagram_url": null,
+    "instagram_handle": "@sevencubes.footwear",
+    "instagram_url": "https://www.instagram.com/sevencubes.footwear/",
     "instagram_status": "Not resolved after exact-name public searches.",
     "facebook_url": null,
     "website_url": null,
@@ -46,7 +48,8 @@
     "agency_instagram_handle": "@famebrosstudio",
     "agency_instagram_url": "https://www.instagram.com/famebrosstudio/",
     "agency_credit_default": "💫 Managed by: @famebrosstudio",
-    "reference_rule": "Obtain the official page directly. Do not tag a guessed account."
+    "reference_rule": "Obtain the official page directly. Do not tag a guessed account.",
+    "instagram_identity_status": "Official account mapping supplied directly by user on 2026-10-03."
   },
   "established_content_knowledge": {
     "confirmed_content_pillars": [
@@ -444,5 +447,17 @@
     "public_search_note": "Exact-name searches for Seven Cube Footwear, Seven Cube Footwear Mumbai and SevenCubeFootwear on 2026-10-02 did not reliably identify this business or its official social accounts. Unrelated namesakes and generic footwear results were excluded; do not infer location, contact, audience segment, catalogue or commerce terms.",
     "internal_dataset": "Famebros_Brand_Caption_Dataset.json record seven_cube_footwear.",
     "source_rule": "Direct owner confirmation is required before adding public identity and commerce data."
+  },
+  "research_update": {
+    "checked_on": "2026-10-03",
+    "official_account": {
+      "platform": "Instagram",
+      "handle": "@sevencubes.footwear",
+      "url": "https://www.instagram.com/sevencubes.footwear/",
+      "identity_authority": "User supplied as official"
+    },
+    "source_urls": [],
+    "observations": [],
+    "rule": "Directory, creator and indexed-post facts are leads; reconfirm current contacts, offers and commercial details before public use."
   }
 }

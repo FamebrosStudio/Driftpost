@@ -101,7 +101,6 @@
   "social_media": {
     "instagram_handle": "@carraraclothing",
     "instagram_url": "https://www.instagram.com/carraraclothing/",
-    "instagram_status": "Established by prior user-provided brand data and matched to indexed public content using the brand's wholesale positioning and phone number.",
     "instagram_profile_name": "CARRARA | Trousers Manufacturers",
     "instagram_profile_name_status": "User-provided exact presentation.",
     "instagram_identity_markers": [
@@ -120,8 +119,9 @@
     "managing_agency": "Famebros Studio",
     "agency_instagram_handle": "@famebrosstudio",
     "agency_instagram_url": "https://www.instagram.com/famebrosstudio/",
-    "agency_credit_default": "💫 Managed by: @famebrosstudio",
-    "agency_credit_rule": "Include the agency credit in standard feed and reel captions. Omit it for story copy, comments, replies and repost text unless requested."
+    "agency_credit_default": "ðŸ’« Managed by: @famebrosstudio",
+    "agency_credit_rule": "Include the agency credit in standard feed and reel captions. Omit it for story copy, comments, replies and repost text unless requested.",
+    "instagram_status": "Official handle supplied by user on 2026-10-03; current public claims still require source verification."
   },
   "established_content_knowledge": {
     "confirmed_content_genres": [
@@ -534,13 +534,13 @@
   },
   "fixed_footer": {
     "standard_feed_and_reel_lines": [
-      "📍 Ahmedabad",
-      "📞 +91 7600007731",
-      "💫 Managed by: @famebrosstudio"
+      "ðŸ“ Ahmedabad",
+      "ðŸ“ž +91 7600007731",
+      "ðŸ’« Managed by: @famebrosstudio"
     ],
     "compact_option": [
-      "📍 Ahmedabad | 📞 +91 7600007731",
-      "💫 Managed by: @famebrosstudio"
+      "ðŸ“ Ahmedabad | ðŸ“ž +91 7600007731",
+      "ðŸ’« Managed by: @famebrosstudio"
     ],
     "footer_status": "Location and agency credit are established. The phone is user-provided and matched in indexed official Instagram content.",
     "footer_rule": "Use the standard lines in normal feed and reel captions. Do not add an unverified street address, email, website or WhatsApp label.",
@@ -913,9 +913,9 @@
     "scenario": "Model-led wholesale trouser showcase",
     "caption_body": "Wholesale only. A sharp trouser silhouette can define the complete menswear look. Explore the Carrara collection created for retailers and distributors across India. DM @carraraclothing or call +91 7600007731 for collection enquiries.",
     "footer": [
-      "📍 Ahmedabad",
-      "📞 +91 7600007731",
-      "💫 Managed by: @famebrosstudio"
+      "ðŸ“ Ahmedabad",
+      "ðŸ“ž +91 7600007731",
+      "ðŸ’« Managed by: @famebrosstudio"
     ],
     "hashtags": [
       "#CarraraClothing",
@@ -930,7 +930,7 @@
       "menswear retailers",
       "trouser supplier Ahmedabad"
     ],
-    "full_caption": "Wholesale only. A sharp trouser silhouette can define the complete menswear look. Explore the Carrara collection created for retailers and distributors across India. DM @carraraclothing or call +91 7600007731 for collection enquiries.\n\n📍 Ahmedabad\n📞 +91 7600007731\n💫 Managed by: @famebrosstudio\n\n#CarraraClothing #WholesaleMenswear #MensTrousers\n\n[Carrara trousers, trouser manufacturer Ahmedabad, men's trouser manufacturer, wholesale trousers India, menswear retailers, trouser supplier Ahmedabad]",
+    "full_caption": "Wholesale only. A sharp trouser silhouette can define the complete menswear look. Explore the Carrara collection created for retailers and distributors across India. DM @carraraclothing or call +91 7600007731 for collection enquiries.\n\nðŸ“ Ahmedabad\nðŸ“ž +91 7600007731\nðŸ’« Managed by: @famebrosstudio\n\n#CarraraClothing #WholesaleMenswear #MensTrousers\n\n[Carrara trousers, trouser manufacturer Ahmedabad, men's trouser manufacturer, wholesale trousers India, menswear retailers, trouser supplier Ahmedabad]",
     "validation": {
       "body_word_count_target": "25 to 55 words",
       "hashtags_count": 3,
@@ -1222,5 +1222,17 @@
       "Editorial guidance is not a business fact.",
       "Do not learn from unrelated businesses with Carrara in their name."
     ]
+  },
+  "research_update": {
+    "checked_on": "2026-10-03",
+    "official_account": {
+      "platform": "Instagram",
+      "handle": "@carraraclothing",
+      "url": "https://www.instagram.com/carraraclothing/",
+      "identity_authority": "User supplied as official"
+    },
+    "source_urls": [],
+    "observations": [],
+    "rule": "Directory, creator and indexed-post facts are leads; reconfirm current contacts, offers and commercial details before public use."
   }
 }

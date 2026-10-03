@@ -3,7 +3,10 @@
   "brand_number": 37,
   "brand_id": "olvkiixk",
   "brand_name": "OLVKIIXK",
-  "aliases": [],
+  "aliases": [
+    "@olvkiixk",
+    "olvkiixk"
+  ],
   "knowledge_scope": "One brand only. This file preserves the exact working spelling OLVKIIXK and the confirmed edit-led content note. Category, pronunciation, official account, audience, location, product or service, contacts and brand story remain unknown. The system is deliberately restrictive to prevent autocorrection and identity invention.",
   "business": {
     "category": null,
@@ -30,16 +33,17 @@
     "contact_rule": "No contact can be published until the official identity is supplied."
   },
   "social_media": {
-    "instagram_handle": null,
-    "instagram_url": null,
-    "instagram_status": "Not resolved. Exact-name searches returned no trustworthy official page.",
+    "instagram_handle": "@olvkiixk",
+    "instagram_url": "https://www.instagram.com/olvkiixk/",
+    "instagram_status": "Official account supplied directly by user; exact display name, category, products/services and audience remain unknown.",
     "facebook_url": null,
     "website_url": null,
     "managing_agency": "Famebros Studio",
     "agency_instagram_handle": "@famebrosstudio",
     "agency_instagram_url": "https://www.instagram.com/famebrosstudio/",
     "agency_credit_default": "💫 Managed by: @famebrosstudio",
-    "reference_rule": "Do not autocorrect the name into an account guess or learn from an unrelated result."
+    "reference_rule": "Do not autocorrect the name into an account guess or learn from an unrelated result.",
+    "instagram_identity_status": "Official account mapping supplied directly by user on 2026-10-03."
   },
   "established_content_knowledge": {
     "confirmed_facts": [
@@ -357,5 +361,17 @@
     "public_search_note": "Exact-name searches on 2026-09-26 did not return a trustworthy official identity.",
     "internal_dataset": "Famebros_Brand_Caption_Dataset.json record olvkiixk.",
     "source_rule": "Only direct user or owner confirmation may establish this brand's identity."
+  },
+  "research_update": {
+    "checked_on": "2026-10-03",
+    "official_account": {
+      "platform": "Instagram",
+      "handle": "@olvkiixk",
+      "url": "https://www.instagram.com/olvkiixk/",
+      "identity_authority": "User supplied as official"
+    },
+    "source_urls": [],
+    "observations": [],
+    "rule": "Directory, creator and indexed-post facts are leads; reconfirm current contacts, offers and commercial details before public use."
   }
 }

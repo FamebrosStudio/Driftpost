@@ -320,12 +320,9 @@
       "instagram": {
         "url": "https://www.instagram.com/velvetlounge.unisexsalon/",
         "handle": "@velvetlounge.unisexsalon",
-        "status": "candidate_needs_confirmation",
-        "evidence": [
-          "https://www.instagram.com/reel/DOgg2XuiM8S/",
-          "https://dingg.app/booking/velvet-lounge-shilphata-rd"
-        ],
-        "note": "Public references connect Velvet Lounge Kalyan and the same booking phone, but branch addresses differ. Confirm this is the correct account for the supplied Khadakpada footer."
+        "status": "user_supplied_handle",
+        "evidence": "Official account mapping supplied directly by user on 2026-10-03.",
+        "note": "Use as brand identity anchor. Current claims and commercial details still require verification."
       },
       "example": {
         "status": "new_illustrative_example_not_a_historical_caption",
@@ -346,9 +343,7 @@
         ],
         "full_caption": "Haircut ke time bas ek request: thoda sa still rehna! 😭✂️\nTag that friend who cannot sit still.\n\n📞 Contact: +91 9821006703\n📍 Location: Shop No. 15, Tulsi Park, Amrut Park Road, Wayle Nagar, Near Starbucks, Khadakpada Circle, Kalyan\n💫 Managed by: @famebrosstudio\n\n#VelvetSalon #SalonLife #KalyanSalon\n\n[Velvet Salon, salon Kalyan, hair transformation, hair styling, Khadakpada salon, salon life]"
       },
-      "missing_details": [
-        "Confirmed official Instagram page"
-      ],
+      "missing_details": [],
       "sources": [
         "data.txt: brand name and listed genres",
         "Exact caption example in data.txt"
@@ -419,11 +414,9 @@
       "instagram": {
         "url": "https://www.instagram.com/uns_creation2112/",
         "handle": "@uns_creation2112",
-        "status": "public_profile_matched",
-        "evidence": [
-          "https://www.instagram.com/uns_creation2112/"
-        ],
-        "note": "Profile identifies UNS Creation and dresses, co-ord sets and Indo-Western content."
+        "status": "user_supplied_handle",
+        "evidence": "Official account mapping supplied directly by user on 2026-10-03.",
+        "note": "Use as brand identity anchor. Current claims and commercial details still require verification."
       },
       "example": {
         "status": "new_illustrative_example_not_a_historical_caption",
@@ -609,11 +602,9 @@
       "instagram": {
         "url": "https://www.instagram.com/ak.factor_byarsh/",
         "handle": "@ak.factor_byarsh",
-        "status": "public_profile_matched",
-        "evidence": [
-          "https://www.instagram.com/ak.factor_byarsh/"
-        ],
-        "note": "Profile identifies AK Factor by Arsh and menswear wholesale."
+        "status": "user_supplied_handle",
+        "evidence": "Official account mapping supplied directly by user on 2026-10-03.",
+        "note": "Use as brand identity anchor. Current claims and commercial details still require verification."
       },
       "example": {
         "status": "new_illustrative_example_not_a_historical_caption",
@@ -1383,11 +1374,9 @@
       "instagram": {
         "url": "https://www.instagram.com/ali.and.hussain.salon/",
         "handle": "@ali.and.hussain.salon",
-        "status": "candidate_needs_confirmation",
-        "evidence": [
-          "User-pasted connected Instagram account list"
-        ],
-        "note": "The handle exists in the user’s list, but Ali Salon versus Ali and Hussain Salon mapping is not explicit. Do not retrieve automatically until confirmed."
+        "status": "user_supplied_handle",
+        "evidence": "Official account mapping supplied directly by user on 2026-10-03.",
+        "note": "Use as brand identity anchor. Current claims and commercial details still require verification."
       },
       "example": {
         "status": "new_illustrative_example_not_a_historical_caption",
@@ -1409,7 +1398,6 @@
         "full_caption": "“Bas thoda sa trim” bolke reference photo poora naya look ka. 😂✂️\nTag your haircut buddy.\n\n📍 Mulund, Mumbai\n💫 Managed by: @famebrosstudio\n\n#AliSalon #SalonLife #StyleInspiration\n\n[Ali Salon, salon Mulund, haircut, hair transformation, salon humour, hair styling]"
       },
       "missing_details": [
-        "Confirmed official Instagram page",
         "Public enquiry phone, if the brand wants it in captions",
         "Exact public address and applicable branch, if required"
       ],
@@ -1675,13 +1663,11 @@
         "💫 Managed by: @famebrosstudio"
       ],
       "instagram": {
-        "url": "https://www.instagram.com/v.j_jewels/",
-        "handle": "@v.j_jewels",
-        "status": "candidate_needs_confirmation",
-        "evidence": [
-          "https://www.instagram.com/v.j_jewels/"
-        ],
-        "note": "Matching name found, but the source roster has no location or phone to distinguish multiple VJ Jewels businesses. Do not learn from this account until confirmed."
+        "url": "https://www.instagram.com/infinitysilver._/",
+        "handle": "@infinitysilver._",
+        "status": "user_supplied_handle",
+        "evidence": "Official account mapping supplied directly by user on 2026-10-03.",
+        "note": "Use as brand identity anchor. Current claims and commercial details still require verification."
       },
       "example": {
         "status": "new_illustrative_example_not_a_historical_caption",
@@ -1702,7 +1688,6 @@
         "full_caption": "The details deserve a closer look. ✨\nDiscover the piece featured in this VJ Jewels showcase.\nDM us to enquire.\n\n💫 Managed by: @famebrosstudio\n\n#VJJewels #JewelleryDesign #DesignDetails\n\n[VJ Jewels, jewellery design, jewellery showcase, occasion jewellery, jewellery details]"
       },
       "missing_details": [
-        "Confirmed official Instagram page",
         "Public enquiry phone, if the brand wants it in captions",
         "Exact public address and applicable branch, if required"
       ],
@@ -2163,11 +2148,9 @@
       "instagram": {
         "url": "https://www.instagram.com/bhanu.designer/",
         "handle": "@bhanu.designer",
-        "status": "public_post_matched",
-        "evidence": [
-          "https://www.instagram.com/reel/DF8OMzMT9yp/"
-        ],
-        "note": "Post explicitly links the handle with 9224447024, matching the user’s earlier brand contact."
+        "status": "user_supplied_handle",
+        "evidence": "Official account mapping supplied directly by user on 2026-10-03.",
+        "note": "Use as brand identity anchor. Current claims and commercial details still require verification."
       },
       "example": {
         "status": "new_illustrative_example_not_a_historical_caption",
@@ -2268,12 +2251,9 @@
       "instagram": {
         "url": "https://www.instagram.com/smietzbeautyhub/",
         "handle": "@smietzbeautyhub",
-        "status": "public_post_matched",
-        "evidence": [
-          "https://www.instagram.com/p/DdRUtSRk0QE/",
-          "https://www.instagram.com/p/DcObw76trQV/"
-        ],
-        "note": "Indexed posts identify the handle and Mulund beauty hub. Full live profile access was unavailable."
+        "status": "user_supplied_handle",
+        "evidence": "Official account mapping supplied directly by user on 2026-10-03.",
+        "note": "Use as brand identity anchor. Current claims and commercial details still require verification."
       },
       "example": {
         "status": "new_illustrative_example_not_a_historical_caption",
@@ -2368,11 +2348,11 @@
         "💫 Managed by: @famebrosstudio"
       ],
       "instagram": {
-        "url": null,
-        "handle": null,
-        "status": "not_resolved",
-        "evidence": [],
-        "note": "Exact page not established. Do not invent a handle or learn from a similarly named business."
+        "url": "https://www.instagram.com/carraraclothing/",
+        "handle": "@carraraclothing",
+        "status": "user_supplied_handle",
+        "evidence": "Official account mapping supplied directly by user on 2026-10-03.",
+        "note": "Use as brand identity anchor. Current claims and commercial details still require verification."
       },
       "example": {
         "status": "new_illustrative_example_not_a_historical_caption",
@@ -2393,7 +2373,6 @@
         "full_caption": "The right silhouette brings the look together.\nExplore the trousers featured in this Carrara showcase.\nDM us for collection enquiries.\n\n📍 Ahmedabad\n💫 Managed by: @famebrosstudio\n\n#CarraraTrouserManufacturer #MensTrousers #StyleInspiration\n\n[Carrara trousers, trouser manufacturer Ahmedabad, mens trousers, trouser styling, mens outfit ideas]"
       },
       "missing_details": [
-        "Confirmed official Instagram page",
         "Public enquiry phone, if the brand wants it in captions",
         "Exact public address and applicable branch, if required"
       ],
@@ -2466,11 +2445,11 @@
         "💫 Managed by: @famebrosstudio"
       ],
       "instagram": {
-        "url": null,
-        "handle": null,
-        "status": "not_resolved",
-        "evidence": [],
-        "note": "Exact page not established. Do not invent a handle or learn from a similarly named business."
+        "url": "https://www.instagram.com/rajlaxmijewellers2012/",
+        "handle": "@rajlaxmijewellers2012",
+        "status": "user_supplied_handle",
+        "evidence": "Official account mapping supplied directly by user on 2026-10-03.",
+        "note": "Use as brand identity anchor. Current claims and commercial details still require verification."
       },
       "example": {
         "status": "new_illustrative_example_not_a_historical_caption",
@@ -2491,7 +2470,6 @@
         "full_caption": "खास क्षणांसाठी खास डिझाइन. ✨\nराजलक्ष्मी ज्वेलर्समधील या दागिन्याची सुंदर झलक पाहा.\nअधिक माहितीसाठी आम्हाला संदेश पाठवा.\n\n📍 Sangli\n💫 Managed by: @famebrosstudio\n\n#RajlaxmiJewellers #SangliJewellers #JewelleryDesign\n\n[Rajlaxmi Jewellers Sangli, सांगली ज्वेलर्स, दागिन्यांची डिझाइन, पारंपरिक दागिने, jewellery Sangli]"
       },
       "missing_details": [
-        "Confirmed official Instagram page",
         "Public enquiry phone, if the brand wants it in captions",
         "Exact public address and applicable branch, if required"
       ],
@@ -2668,12 +2646,9 @@
       "instagram": {
         "url": "https://www.instagram.com/hazeldryfruits/",
         "handle": "@hazeldryfruits",
-        "status": "public_post_matched",
-        "evidence": [
-          "https://www.instagram.com/reel/DdOkkPLIZMH/",
-          "https://www.facebook.com/hazeldryfruits/"
-        ],
-        "note": "Indexed content tags Hazel and Famebros Collab; matching business reference identifies Rajkot."
+        "status": "user_supplied_handle",
+        "evidence": "Official account mapping supplied directly by user on 2026-10-03.",
+        "note": "Use as brand identity anchor. Current claims and commercial details still require verification."
       },
       "example": {
         "status": "new_illustrative_example_not_a_historical_caption",
@@ -2855,11 +2830,11 @@
         "💫 Managed by: @famebrosstudio"
       ],
       "instagram": {
-        "url": null,
-        "handle": null,
-        "status": "not_resolved",
-        "evidence": [],
-        "note": "Exact page not established. Do not invent a handle or learn from a similarly named business."
+        "url": "https://www.instagram.com/zamzam_motorss/",
+        "handle": "@zamzam_motorss",
+        "status": "user_supplied_handle",
+        "evidence": "Official account mapping supplied directly by user on 2026-10-03.",
+        "note": "Use as brand identity anchor. Current claims and commercial details still require verification."
       },
       "example": {
         "status": "new_illustrative_example_not_a_historical_caption",
@@ -2880,7 +2855,6 @@
         "full_caption": "Your next drive could start here. 🚘\nTake a closer look at the car in this reel.\nDM Zam Zam Motors for its details.\n\n💫 Managed by: @famebrosstudio\n\n#ZamZamMotors #CarShowcase #EverydayMoments\n\n[Zam Zam Motors, car showcase, car enquiries, car details, car shopping]"
       },
       "missing_details": [
-        "Confirmed official Instagram page",
         "Public enquiry phone, if the brand wants it in captions",
         "Exact public address and applicable branch, if required"
       ],
@@ -3241,11 +3215,11 @@
         "💫 Managed by: @famebrosstudio"
       ],
       "instagram": {
-        "url": null,
-        "handle": null,
-        "status": "not_resolved",
-        "evidence": [],
-        "note": "Exact page not established. Do not invent a handle or learn from a similarly named business."
+        "url": "https://www.instagram.com/herchoice_byasma/",
+        "handle": "@herchoice_byasma",
+        "status": "user_supplied_handle",
+        "evidence": "Official account mapping supplied directly by user on 2026-10-03.",
+        "note": "Use as brand identity anchor. Current claims and commercial details still require verification."
       },
       "example": {
         "status": "new_illustrative_example_not_a_historical_caption",
@@ -3266,7 +3240,6 @@
         "full_caption": "Let the outfit do the talking. ✨\nA closer look at the style featured by Asma Women Clothing.\nDM us for outfit details.\n\n💫 Managed by: @famebrosstudio\n\n#AsmaWomenClothing #WomensFashion #StyleInspiration\n\n[Asma Women Clothing, women clothing, outfit inspiration, women fashion, fashion showcase]"
       },
       "missing_details": [
-        "Confirmed official Instagram page",
         "Public enquiry phone, if the brand wants it in captions",
         "Exact public address and applicable branch, if required"
       ],
@@ -3379,10 +3352,10 @@
     },
     {
       "brand_id": "pixi_grow",
-      "name": "Pixi Grow",
+      "name": "Pixigrow Media",
       "aliases": [],
-      "category": null,
-      "location": null,
+      "category": "Media and campaign content, exact service scope unconfirmed",
+      "location": "Rajkot association (public profile); exact address unverified",
       "content_genres": [],
       "caption_direction": {
         "status": "editorial_default_based_on_source_genres",
@@ -3416,11 +3389,11 @@
         "💫 Managed by: @famebrosstudio"
       ],
       "instagram": {
-        "url": null,
-        "handle": null,
-        "status": "not_resolved",
-        "evidence": [],
-        "note": "Exact page not established. Do not invent a handle or learn from a similarly named business."
+        "url": "https://www.instagram.com/pixigrowmedia/",
+        "handle": "@pixigrowmedia",
+        "status": "user_supplied_handle",
+        "evidence": "Official account mapping supplied directly by user on 2026-10-03; campaign-credit evidence supports broad media/campaign activity.",
+        "note": "Use only supported brief and asset details. Legal account link, service menu, address and commercial claims remain unverified."
       },
       "example": {
         "status": "new_illustrative_example_not_a_historical_caption",
@@ -3429,17 +3402,15 @@
         "full_caption": null
       },
       "missing_details": [
-        "Confirmed official Instagram page",
         "Public enquiry phone, if the brand wants it in captions",
         "Exact public address and applicable branch, if required",
-        "Approved content genres; source did not specify usable genres",
-        "Exact business category, product range and audience"
+        "Approved content genres; source did not specify usable genres"
       ],
       "sources": [
         "data.txt: brand name and listed genres"
       ],
       "footer_policy": "Use these known lines for feed/reel captions. This is the proposed standard except the two source-file footers and the explicit Smietz rules. Omit footer for story/comment/repost modes unless requested. Do not add missing contact fields.",
-      "readiness": "needs_brand_identity",
+      "readiness": "ready_with_post_brief",
       "always_exclude_from_captions": [
         "Internal dates and onboarding notes",
         "Profile verification status",
@@ -3695,10 +3666,10 @@
       ],
       "instagram": {
         "url": "https://www.instagram.com/sevencubes.footwear/",
-        "handle": "sevencubes.footwear",
-        "status": "user_supplied_connected_account",
-        "evidence": [],
-        "note": "Selected-account header shown in user screenshot; not independently matched in public search."
+        "handle": "@sevencubes.footwear",
+        "status": "user_supplied_handle",
+        "evidence": "Official account mapping supplied directly by user on 2026-10-03.",
+        "note": "Use as brand identity anchor. Current claims and commercial details still require verification."
       },
       "example": {
         "status": "new_illustrative_example_not_a_historical_caption",
@@ -3866,11 +3837,11 @@
         "💫 Managed by: @famebrosstudio"
       ],
       "instagram": {
-        "url": null,
-        "handle": null,
-        "status": "not_resolved",
-        "evidence": [],
-        "note": "Exact page not established. Do not invent a handle or learn from a similarly named business."
+        "url": "https://www.instagram.com/olvkiixk/",
+        "handle": "@olvkiixk",
+        "status": "user_supplied_handle",
+        "evidence": "Official account mapping supplied directly by user on 2026-10-03.",
+        "note": "Use as brand identity anchor. Current claims and commercial details still require verification."
       },
       "example": {
         "status": "new_illustrative_example_not_a_historical_caption",
@@ -3879,7 +3850,6 @@
         "full_caption": null
       },
       "missing_details": [
-        "Confirmed official Instagram page",
         "Public enquiry phone, if the brand wants it in captions",
         "Exact public address and applicable branch, if required",
         "Exact business category, product range and audience",
@@ -3943,11 +3913,11 @@
         "💫 Managed by: @famebrosstudio"
       ],
       "instagram": {
-        "url": null,
-        "handle": null,
-        "status": "not_resolved",
-        "evidence": [],
-        "note": "Exact page not established. Do not invent a handle or learn from a similarly named business."
+        "url": "https://www.instagram.com/anandfurniture_interiors/",
+        "handle": "@anandfurniture_interiors",
+        "status": "user_supplied_handle",
+        "evidence": "Official account mapping supplied directly by user on 2026-10-03.",
+        "note": "Use as brand identity anchor. Current claims and commercial details still require verification."
       },
       "example": {
         "status": "new_illustrative_example_not_a_historical_caption",
@@ -3968,7 +3938,6 @@
         "full_caption": "A new piece can change the feel of a room.\nTake a closer look at the item featured by Anand Furniture.\nDM us for details.\n\n💫 Managed by: @famebrosstudio\n\n#AnandFurniture #FurnitureDesign #EverydayMoments\n\n[Anand Furniture, home furniture, furniture collection, room ideas, furniture design]"
       },
       "missing_details": [
-        "Confirmed official Instagram page",
         "Public enquiry phone, if the brand wants it in captions",
         "Exact public address and applicable branch, if required",
         "Approved content genres; source did not specify usable genres"
@@ -4031,11 +4000,11 @@
         "💫 Managed by: @famebrosstudio"
       ],
       "instagram": {
-        "url": null,
-        "handle": null,
-        "status": "not_resolved",
-        "evidence": [],
-        "note": "Exact page not established. Do not invent a handle or learn from a similarly named business."
+        "url": "https://www.instagram.com/uvafashions_mumbai/",
+        "handle": "@uvafashions_mumbai",
+        "status": "user_supplied_handle",
+        "evidence": "Official account mapping supplied directly by user on 2026-10-03.",
+        "note": "Use as brand identity anchor. Current claims and commercial details still require verification."
       },
       "example": {
         "status": "new_illustrative_example_not_a_historical_caption",
@@ -4044,7 +4013,6 @@
         "full_caption": null
       },
       "missing_details": [
-        "Confirmed official Instagram page",
         "Public enquiry phone, if the brand wants it in captions",
         "Exact public address and applicable branch, if required",
         "Approved content genres; source did not specify usable genres",

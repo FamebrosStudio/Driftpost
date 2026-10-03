@@ -6,7 +6,8 @@
   "aliases": [
     "SYnergic Interior",
     "Synergic Interior",
-    "Studio Synergic"
+    "Studio Synergic",
+    "@synergicstudio"
   ],
   "knowledge_scope": "One brand only. Confirmed business details, observed project themes and recommended AI writing guidance are separated.",
   "business": {
@@ -57,7 +58,8 @@
     "youtube_url": null,
     "managing_agency": "Famebros Studio",
     "agency_instagram_handle": "@famebrosstudio",
-    "agency_instagram_url": "https://www.instagram.com/famebrosstudio/"
+    "agency_instagram_url": "https://www.instagram.com/famebrosstudio/",
+    "instagram_status": "Official handle supplied by user on 2026-10-03; current public claims still require source verification."
   },
   "established_content_knowledge": {
     "confirmed_content_genres": [
@@ -139,7 +141,7 @@
       "Invented project budget or timeline",
       "Unconfirmed material brands",
       "Guaranteed cost savings",
-      "Generic dream-home clichés without design detail",
+      "Generic dream-home clichÃ©s without design detail",
       "Criticising the client's original home",
       "Implying all visible furniture is custom-made",
       "Em dashes"
@@ -315,10 +317,10 @@
   },
   "fixed_footer": {
     "lines": [
-      "📍 Kandivali East, Mumbai",
-      "📞 +91 97027 22025 | +91 98218 58408",
-      "📧 studiosynergic@gmail.com",
-      "🎥 Managed by: @famebrosstudio ✨"
+      "ðŸ“ Kandivali East, Mumbai",
+      "ðŸ“ž +91 97027 22025 | +91 98218 58408",
+      "ðŸ“§ studiosynergic@gmail.com",
+      "ðŸŽ¥ Managed by: @famebrosstudio âœ¨"
     ],
     "source": "Brand-associated public professional content plus agency credit.",
     "usage": "Default footer for project, informational and transformation captions.",
@@ -450,7 +452,7 @@
   },
   "sample_caption": {
     "status": "Illustrative caption based on observed storage and bedroom themes. It must match the actual supplied project asset.",
-    "text": "Hidden storage, visible calm. ✨\nThoughtful planning allows a bedroom to feel clean and comfortable while every corner continues to work for everyday life. The result is a space where function becomes part of the design.\nSave this idea for your home planning.\n\n📍 Kandivali East, Mumbai\n📞 +91 97027 22025 | +91 98218 58408\n📧 studiosynergic@gmail.com\n🎥 Managed by: @famebrosstudio ✨\n\n#SYnergicStudio #SmartStorage #MumbaiInteriors\n\n[SYnergic Studio, interior designer in Kandivali, smart storage solutions, modern bedroom design, residential interiors Mumbai, custom furniture Mumbai]"
+    "text": "Hidden storage, visible calm. âœ¨\nThoughtful planning allows a bedroom to feel clean and comfortable while every corner continues to work for everyday life. The result is a space where function becomes part of the design.\nSave this idea for your home planning.\n\nðŸ“ Kandivali East, Mumbai\nðŸ“ž +91 97027 22025 | +91 98218 58408\nðŸ“§ studiosynergic@gmail.com\nðŸŽ¥ Managed by: @famebrosstudio âœ¨\n\n#SYnergicStudio #SmartStorage #MumbaiInteriors\n\n[SYnergic Studio, interior designer in Kandivali, smart storage solutions, modern bedroom design, residential interiors Mumbai, custom furniture Mumbai]"
   },
   "accuracy_rules": [
     "Use only SYnergic Studio facts and the current project brief.",
@@ -531,6 +533,34 @@
     {
       "type": "user_writing_preferences",
       "supports": "Short hooks, contextual English or Hinglish, one CTA, three hashtags, one SEO bracket and no em dashes."
+    },
+    {
+      "type": "user_supplied_official_instagram_handle",
+      "url": "https://www.instagram.com/synergicstudio/",
+      "checked_on": "2026-10-03",
+      "supports": "User explicitly supplied this official account mapping; does not independently verify all profile claims."
+    },
+    {
+      "type": "public_research_reference",
+      "url": "https://pictame.com/en/discover/hashtag/minimalist-study-space-design-inspiration",
+      "checked_on": "2026-10-03",
+      "supports": "Research lead, with confidence limits recorded in research_update."
     }
-  ]
+  ],
+  "research_update": {
+    "checked_on": "2026-10-03",
+    "official_account": {
+      "platform": "Instagram",
+      "handle": "@synergicstudio",
+      "url": "https://www.instagram.com/synergicstudio/",
+      "identity_authority": "User supplied as official"
+    },
+    "source_urls": [
+      "https://pictame.com/en/discover/hashtag/minimalist-study-space-design-inspiration"
+    ],
+    "observations": [
+      "Indexed post for supplied handle shows +91 97027 22025 / +91 98218 58408, studiosynergic@gmail.com, Kandivali East, and study-table/workspace design. Numbers not confirmed as WhatsApp."
+    ],
+    "rule": "Directory, creator and indexed-post facts are leads; reconfirm current contacts, offers and commercial details before public use."
+  }
 }

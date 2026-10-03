@@ -50,8 +50,6 @@
     "google_maps_url": null
   },
   "social_media": {
-    "instagram_handle": "@roopalisarees",
-    "instagram_url": "https://www.instagram.com/roopalisarees/",
     "instagram_status": "Search-indexed profile and posts align with the exact approved phone number and Mira Road address. Profile access was throttled during this review, so obtain owner confirmation if account ownership matters for account linking.",
     "facebook_url": "https://www.facebook.com/roopalisareesmiraroad/",
     "facebook_status": "Indexed page for Roopali Sarees in Mira Road, with matching business identity.",
@@ -62,7 +60,10 @@
     "youtube_url": null,
     "managing_agency": "Famebros Studio",
     "agency_instagram_handle": "@famebrosstudio",
-    "agency_instagram_url": "https://www.instagram.com/famebrosstudio/"
+    "agency_instagram_url": "https://www.instagram.com/famebrosstudio/",
+    "instagram_handle": "@roopalisarees",
+    "instagram_url": "https://www.instagram.com/roopalisarees/",
+    "instagram_identity_status": "Official account mapping supplied directly by user on 2026-10-03."
   },
   "established_content_knowledge": {
     "confirmed_content_genres": [
@@ -591,5 +592,16 @@
       "type": "user_writing_preferences",
       "supports": "Short useful hooks, one CTA, agency credit, exactly three hashtags, one SEO bracket and no em dashes."
     }
-  ]
+  ],
+  "research_update": {
+    "checked_on": "2026-10-03",
+    "official_account": "@roopalisarees",
+    "source_urls": [
+      "https://in.linkedin.com/company/roopali",
+      "https://magicpin.in/Thane/Mira-Road/Fashion/Roopali-Sarees/store/2922c0"
+    ],
+    "observations": [
+      "Public listings differ on exact shop numbers in B-49 Sector 1, Shanti Nagar, Mira Road East. Confirm current address and phone."
+    ]
+  }
 }

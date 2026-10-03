@@ -3,7 +3,11 @@
   "brand_number": 8,
   "brand_id": "sk_furniture_market",
   "brand_name": "SK Furniture Market",
-  "aliases": ["SK Furniture"],
+  "aliases": [
+    "SK Furniture",
+    "@skfurnituremarket",
+    "skfurnituremarket"
+  ],
   "knowledge_scope": "One brand only. Confirmed business details, product evidence, internal case-study data and AI writing guidance are separated.",
   "business": {
     "category": "Furniture store and market",
@@ -41,7 +45,7 @@
   "social_media": {
     "instagram_handle": "@skfurnituremarket",
     "instagram_url": "https://www.instagram.com/skfurnituremarket/",
-    "instagram_identity_status": "Confirmed in the user's connected-account list. Indexed posts and videos match the Thane business and furniture category.",
+    "instagram_identity_status": "Official account mapping supplied directly by user on 2026-10-03.",
     "facebook_name": "SK Furniture Market",
     "facebook_url": "https://www.facebook.com/61568995627934/",
     "facebook_status": "Indexed Facebook page matches the store name and Thane location.",
@@ -509,5 +513,21 @@
       "type": "user_writing_preferences",
       "supports": "Short hooks, natural Hinglish, one CTA, three hashtags, one SEO bracket and no em dashes."
     }
-  ]
+  ],
+  "research_update": {
+    "checked_on": "2026-10-03",
+    "official_account": {
+      "platform": "Instagram",
+      "handle": "@skfurnituremarket",
+      "url": "https://www.instagram.com/skfurnituremarket/",
+      "identity_authority": "User supplied as official"
+    },
+    "source_urls": [
+      "https://magicpin.in/Thane/Naupada/Lifestyle/Sk-Furniture-Market/store/19033a0"
+    ],
+    "observations": [
+      "Matching Magicpin listing: Purna Shanti Heights, Khartan Road, Jambli Naka, Thane West 400601; +91 84338 70901; furniture maker/store/wholesaler/interior decorator; cash/card/UPI/EMI per listing. Verify changing terms."
+    ],
+    "rule": "Directory, creator and indexed-post facts are leads; reconfirm current contacts, offers and commercial details before public use."
+  }
 }

@@ -6,7 +6,8 @@
   "aliases": [
     "UVA Fashions Mumbai",
     "Uva Fashions",
-    "Uvafashions"
+    "Uvafashions",
+    "@uvafashions_mumbai"
   ],
   "knowledge_scope": "One brand only. This file covers the user's Uvafashions Mumbai record. Mumbai and the fashion category are confirmed, but the exact garment segment, audience, retail or wholesale model, official Instagram, contact details and catalogue remain unresolved.",
   "business": {
@@ -36,16 +37,16 @@
     "contact_rule": "Use Mumbai at city level only. Do not invent a locality or contact."
   },
   "social_media": {
-    "instagram_handle": null,
-    "instagram_url": null,
-    "instagram_status": "Not resolved after exact-name searches.",
+    "instagram_handle": "@uvafashions_mumbai",
+    "instagram_url": "https://www.instagram.com/uvafashions_mumbai/",
     "facebook_url": null,
     "website_url": null,
     "managing_agency": "Famebros Studio",
     "agency_instagram_handle": "@famebrosstudio",
     "agency_instagram_url": "https://www.instagram.com/famebrosstudio/",
-    "agency_credit_default": "💫 Managed by: @famebrosstudio",
-    "reference_rule": "Do not tag or study a similarly named UVA fashion business without direct confirmation."
+    "agency_credit_default": "ðŸ’« Managed by: @famebrosstudio",
+    "reference_rule": "Do not tag or study a similarly named UVA fashion business without direct confirmation.",
+    "instagram_status": "Official handle supplied by user on 2026-10-03; current public claims still require source verification."
   },
   "established_content_knowledge": {
     "confirmed_facts": [
@@ -205,8 +206,8 @@
   },
   "fixed_footer": {
     "standard_lines": [
-      "📍 Mumbai",
-      "💫 Managed by: @famebrosstudio"
+      "ðŸ“ Mumbai",
+      "ðŸ’« Managed by: @famebrosstudio"
     ],
     "status": "City-level footer only. No locality or contact is established.",
     "usage": "Use Mumbai only after confirming the post is for this exact brand.",
@@ -313,8 +314,8 @@
     "scenario": "Garment showcase",
     "caption_body": "Let the garment do the talking. A closer look at the silhouette, movement and visible details featured by Uvafashions Mumbai. Ask the official brand for the confirmed product information once its page is supplied.",
     "footer": [
-      "📍 Mumbai",
-      "💫 Managed by: @famebrosstudio"
+      "ðŸ“ Mumbai",
+      "ðŸ’« Managed by: @famebrosstudio"
     ],
     "hashtags": [
       "#Uvafashions",
@@ -329,7 +330,7 @@
       "outfit details Mumbai",
       "Mumbai fashion collection"
     ],
-    "full_caption": "Let the garment do the talking. A closer look at the silhouette, movement and visible details featured by Uvafashions Mumbai. Ask the official brand for the confirmed product information once its page is supplied.\n\n📍 Mumbai\n💫 Managed by: @famebrosstudio\n\n#Uvafashions #MumbaiFashion #ClothingShowcase\n\n[Uvafashions Mumbai, UVA Fashions Mumbai, fashion brand Mumbai, clothing showcase Mumbai, outfit details Mumbai, Mumbai fashion collection]",
+    "full_caption": "Let the garment do the talking. A closer look at the silhouette, movement and visible details featured by Uvafashions Mumbai. Ask the official brand for the confirmed product information once its page is supplied.\n\nðŸ“ Mumbai\nðŸ’« Managed by: @famebrosstudio\n\n#Uvafashions #MumbaiFashion #ClothingShowcase\n\n[Uvafashions Mumbai, UVA Fashions Mumbai, fashion brand Mumbai, clothing showcase Mumbai, outfit details Mumbai, Mumbai fashion collection]",
     "validation": {
       "hashtags": 3,
       "seo_phrases": 6,
@@ -422,11 +423,24 @@
       "Uvafashions Mumbai name.",
       "Broad fashion category.",
       "Mumbai location at city level.",
-      "Not started yet status."
+      "Not started yet status.",
+      "Official Instagram handle supplied directly by user on 2026-10-03."
     ],
     "public_sources": [],
     "public_search_note": "Exact-name searches on 2026-09-26 did not safely resolve the official business.",
     "internal_dataset": "Famebros_Brand_Caption_Dataset.json record uva_fashions.",
     "source_rule": "Direct owner confirmation is required before adding audience, business model, social, contact or catalogue facts."
+  },
+  "research_update": {
+    "checked_on": "2026-10-03",
+    "official_account": {
+      "platform": "Instagram",
+      "handle": "@uvafashions_mumbai",
+      "url": "https://www.instagram.com/uvafashions_mumbai/",
+      "identity_authority": "User supplied as official"
+    },
+    "source_urls": [],
+    "observations": [],
+    "rule": "Directory, creator and indexed-post facts are leads; reconfirm current contacts, offers and commercial details before public use."
   }
 }

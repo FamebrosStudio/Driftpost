@@ -6,7 +6,9 @@
   "aliases": [
     "VJ Jewels",
     "VJ Jewels – Infinity Silver",
-    "Infinity Silver"
+    "Infinity Silver",
+    "@infinitysilver._",
+    "infinitysilver._"
   ],
   "knowledge_scope": "One brand only. User-confirmed brand knowledge, campaign-specific facts, AI writing guidance and unresolved business details are separated. Do not merge information from unrelated businesses with similar names.",
   "business": {
@@ -37,14 +39,15 @@
     "publishing_rule": "Do not invent contact details. Use Instagram DM or event-specific contact information supplied in the current brief."
   },
   "social_media": {
-    "instagram_handle": "@v.j_jewels",
-    "instagram_url": "https://www.instagram.com/v.j_jewels/",
+    "instagram_handle": "@infinitysilver._",
+    "instagram_url": "https://www.instagram.com/infinitysilver._/",
     "instagram_status": "Active brand Instagram used in the user's brand workflow.",
     "facebook_url": null,
     "youtube_url": null,
     "managing_agency": "Famebros Studio",
     "agency_instagram_handle": "@famebrosstudio",
-    "agency_instagram_url": "https://www.instagram.com/famebrosstudio/"
+    "agency_instagram_url": "https://www.instagram.com/famebrosstudio/",
+    "instagram_identity_status": "Official account mapping supplied directly by user on 2026-10-03."
   },
   "established_content_knowledge": {
     "confirmed_content_genres": [
@@ -620,5 +623,17 @@
       "type": "user_writing_preferences",
       "supports": "Short hooks, contextual English or Hinglish, one CTA, exactly three hashtags, one SEO bracket and no em dashes."
     }
-  ]
+  ],
+  "research_update": {
+    "checked_on": "2026-10-03",
+    "official_account": {
+      "platform": "Instagram",
+      "handle": "@infinitysilver._",
+      "url": "https://www.instagram.com/infinitysilver._/",
+      "identity_authority": "User supplied as official"
+    },
+    "source_urls": [],
+    "observations": [],
+    "rule": "Directory, creator and indexed-post facts are leads; reconfirm current contacts, offers and commercial details before public use."
+  }
 }

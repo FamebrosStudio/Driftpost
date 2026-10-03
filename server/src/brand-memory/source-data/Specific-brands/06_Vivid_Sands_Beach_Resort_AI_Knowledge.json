@@ -52,7 +52,8 @@
     "youtube_url": null,
     "managing_agency": "Famebros Studio",
     "agency_instagram_handle": "@famebrosstudio",
-    "agency_instagram_url": "https://www.instagram.com/famebrosstudio/"
+    "agency_instagram_url": "https://www.instagram.com/famebrosstudio/",
+    "instagram_status": "Official handle supplied by user on 2026-10-03; current public claims still require source verification."
   },
   "confirmed_positioning": {
     "primary": "A beachside stay in Revdanda for coastal breaks near Alibaug.",
@@ -204,7 +205,7 @@
         "Booking and cancellation terms"
       ],
       "rules": [
-        "Do not reuse the historical ₹8,900 offer.",
+        "Do not reuse the historical â‚¹8,900 offer.",
         "State taxes clearly.",
         "Do not advertise breakfast, meals or activities unless included.",
         "Use urgency only with a confirmed deadline or room limit."
@@ -278,10 +279,10 @@
   },
   "fixed_footer": {
     "lines": [
-      "📍 Vivid Sands, Sr. No. 5/2, Revdanda, Alibaug, Maharashtra 402202",
-      "📞 Call or WhatsApp: +91 98331 85566",
-      "🌐 https://vividsands.com/",
-      "🎥 Managed by: @famebrosstudio ✨"
+      "ðŸ“ Vivid Sands, Sr. No. 5/2, Revdanda, Alibaug, Maharashtra 402202",
+      "ðŸ“ž Call or WhatsApp: +91 98331 85566",
+      "ðŸŒ https://vividsands.com/",
+      "ðŸŽ¥ Managed by: @famebrosstudio âœ¨"
     ],
     "source": "Official website, official social copy and user-supplied agency credit.",
     "usage": "Default feed and reel footer. The website line may be omitted when a shorter caption is requested.",
@@ -402,13 +403,13 @@
   },
   "sample_caption": {
     "status": "Illustrative destination caption using confirmed location and contact details. It does not claim specific room amenities.",
-    "text": "Leave the city pace behind and wake up closer to the coast. 🌊\nVivid Sands brings your next relaxed Revdanda escape within reach, with Alibaug's coastal side ready to explore.\nCall or WhatsApp for current availability and rates.\n\n📍 Vivid Sands, Sr. No. 5/2, Revdanda, Alibaug, Maharashtra 402202\n📞 Call or WhatsApp: +91 98331 85566\n🌐 https://vividsands.com/\n🎥 Managed by: @famebrosstudio ✨\n\n#VividSandsResort #Revdanda #CoastalEscape\n\n[Vivid Sands Beach Resort, resort in Revdanda, beach resort near Alibaug, Revdanda beach stay, Alibaug weekend getaway, weekend trip from Mumbai]"
+    "text": "Leave the city pace behind and wake up closer to the coast. ðŸŒŠ\nVivid Sands brings your next relaxed Revdanda escape within reach, with Alibaug's coastal side ready to explore.\nCall or WhatsApp for current availability and rates.\n\nðŸ“ Vivid Sands, Sr. No. 5/2, Revdanda, Alibaug, Maharashtra 402202\nðŸ“ž Call or WhatsApp: +91 98331 85566\nðŸŒ https://vividsands.com/\nðŸŽ¥ Managed by: @famebrosstudio âœ¨\n\n#VividSandsResort #Revdanda #CoastalEscape\n\n[Vivid Sands Beach Resort, resort in Revdanda, beach resort near Alibaug, Revdanda beach stay, Alibaug weekend getaway, weekend trip from Mumbai]"
   },
   "accuracy_rules": [
     "Use only Vivid Sands facts and the current brief.",
     "Keep supplied property photos unchanged.",
     "Do not invent room types, amenities, meal plans, views, prices, occupancy or availability.",
-    "Do not reuse the historical ₹8,900 offer without confirmation.",
+    "Do not reuse the historical â‚¹8,900 offer without confirmation.",
     "Do not promise a three-hour journey as exact.",
     "Do not invent distances to Korlai Fort, Kashid Beach, Nagaon Beach, Birla Mandir or Phansad Wildlife Sanctuary.",
     "Do not claim private beach access unless confirmed for the current campaign.",
@@ -442,7 +443,7 @@
     "recent_captions": [],
     "additional_instructions": []
   },
-  "master_brand_instruction": "Write as Vivid Sands Beach Resort in Revdanda, Alibaug. Use a relaxing, inviting, scenic, warm and concise hospitality voice. Position the property as a Revdanda coastal getaway near Alibaug and approximately three hours from Mumbai, while treating travel time as variable. Describe only the property, room, view and amenities actually shown or confirmed. Preserve every supplied property photo exactly and never add, remove or modify architecture, rooms, pool, beach, landscape, people, weather or amenities. Never invent rates, room types, meal plans, occupancy, availability, private beach access or current offers. Treat the ₹8,900 plus taxes offer excluding 31 December as historical and inactive until reconfirmed. Mention Korlai Fort, Kashid Beach, Nagaon Beach, Birla Mandir and Phansad Wildlife Sanctuary only as nearby exploration ideas unless verified distance data is supplied. For normal feed and reel captions, append the Vivid Sands footer, exactly three relevant hashtags and one bracket containing 5 to 8 comma-separated SEO phrases. Preserve +91 98331 85566, the official address and website. Avoid em dashes and return ready-to-copy public text without null fields or internal notes.",
+  "master_brand_instruction": "Write as Vivid Sands Beach Resort in Revdanda, Alibaug. Use a relaxing, inviting, scenic, warm and concise hospitality voice. Position the property as a Revdanda coastal getaway near Alibaug and approximately three hours from Mumbai, while treating travel time as variable. Describe only the property, room, view and amenities actually shown or confirmed. Preserve every supplied property photo exactly and never add, remove or modify architecture, rooms, pool, beach, landscape, people, weather or amenities. Never invent rates, room types, meal plans, occupancy, availability, private beach access or current offers. Treat the â‚¹8,900 plus taxes offer excluding 31 December as historical and inactive until reconfirmed. Mention Korlai Fort, Kashid Beach, Nagaon Beach, Birla Mandir and Phansad Wildlife Sanctuary only as nearby exploration ideas unless verified distance data is supplied. For normal feed and reel captions, append the Vivid Sands footer, exactly three relevant hashtags and one bracket containing 5 to 8 comma-separated SEO phrases. Preserve +91 98331 85566, the official address and website. Avoid em dashes and return ready-to-copy public text without null fields or internal notes.",
   "missing_information": [
     "Current room categories and official room specifications",
     "Current rates, packages and taxes",
@@ -489,6 +490,41 @@
     {
       "type": "user_writing_preferences",
       "supports": "Short hooks, contextual English or Hinglish, one CTA, three hashtags, one SEO bracket and no em dashes."
+    },
+    {
+      "type": "user_supplied_official_instagram_handle",
+      "url": "https://www.instagram.com/vividsandsresort/",
+      "checked_on": "2026-10-03",
+      "supports": "User explicitly supplied this official account mapping; does not independently verify all profile claims."
+    },
+    {
+      "type": "public_research_reference",
+      "url": "https://www.google.com.pk/travel/hotels/entity/CgoI89TQ7te0iYF0EAE",
+      "checked_on": "2026-10-03",
+      "supports": "Research lead, with confidence limits recorded in research_update."
+    },
+    {
+      "type": "public_research_reference",
+      "url": "https://pictame.com/en/discover/hashtag/alibaug-stays",
+      "checked_on": "2026-10-03",
+      "supports": "Research lead, with confidence limits recorded in research_update."
     }
-  ]
+  ],
+  "research_update": {
+    "checked_on": "2026-10-03",
+    "official_account": {
+      "platform": "Instagram",
+      "handle": "@vividsandsresort",
+      "url": "https://www.instagram.com/vividsandsresort/",
+      "identity_authority": "User supplied as official"
+    },
+    "source_urls": [
+      "https://www.google.com.pk/travel/hotels/entity/CgoI89TQ7te0iYF0EAE",
+      "https://pictame.com/en/discover/hashtag/alibaug-stays"
+    ],
+    "observations": [
+      "Google Hotels listing: Agarkot, Revdanda 402202; check-in 14:00, checkout 11:00, pool/parking. Third-party; confirm. Creator claims about beach, pool, rooms and restaurant require resort confirmation."
+    ],
+    "rule": "Directory, creator and indexed-post facts are leads; reconfirm current contacts, offers and commercial details before public use."
+  }
 }

@@ -121,7 +121,8 @@
     "agency_instagram_handle": "@famebrosstudio",
     "agency_instagram_url": "https://www.instagram.com/famebrosstudio/",
     "agency_credit_default": "💫 Managed by: @famebrosstudio",
-    "agency_credit_rule": "Include the agency credit in standard feed and reel captions. Omit it for story copy, comments, replies and repost text unless requested."
+    "agency_credit_rule": "Include the agency credit in standard feed and reel captions. Omit it for story copy, comments, replies and repost text unless requested.",
+    "instagram_identity_status": "Official account mapping supplied directly by user on 2026-10-03."
   },
   "established_content_knowledge": {
     "confirmed_content_genres": [
@@ -1222,5 +1223,17 @@
       "Editorial guidance is not a business fact.",
       "Do not learn from unrelated businesses with Carrara in their name."
     ]
+  },
+  "research_update": {
+    "checked_on": "2026-10-03",
+    "official_account": {
+      "platform": "Instagram",
+      "handle": "@carraraclothing",
+      "url": "https://www.instagram.com/carraraclothing/",
+      "identity_authority": "User supplied as official"
+    },
+    "source_urls": [],
+    "observations": [],
+    "rule": "Directory, creator and indexed-post facts are leads; reconfirm current contacts, offers and commercial details before public use."
   }
 }

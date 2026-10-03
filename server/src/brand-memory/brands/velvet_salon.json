@@ -38,7 +38,7 @@
   "social_media": {
     "instagram_handle": "@velvetlounge.unisexsalon",
     "instagram_url": "https://www.instagram.com/velvetlounge.unisexsalon/",
-    "instagram_identity_status": "Confirmed by the user as Velvet Salon's Instagram account.",
+    "instagram_identity_status": "Official account mapping supplied directly by user on 2026-10-03.",
     "instagram_content_access": "Use the page as a brand reference when access is available. Do not claim knowledge of a new post unless the post or its content is supplied.",
     "facebook_url": null,
     "youtube_url": null,
@@ -459,5 +459,21 @@
       "type": "user_writing_preferences",
       "supports": "Short hooks, English or Hinglish by context, one CTA, three hashtags, one comma-separated SEO bracket and no em dashes."
     }
-  ]
+  ],
+  "research_update": {
+    "checked_on": "2026-10-03",
+    "official_account": {
+      "platform": "Instagram",
+      "handle": "@velvetlounge.unisexsalon",
+      "url": "https://www.instagram.com/velvetlounge.unisexsalon/",
+      "identity_authority": "User supplied as official"
+    },
+    "source_urls": [
+      "https://pictame.com/en/discover/hashtag/velvet-vanity-salon"
+    ],
+    "observations": [
+      "Indexed post: 50% off selected services and haircuts â‚¹99/â‚¹199 through 12-Apr-2026; address Tisgaon Road, Kalyan East, phone +91 98210 06703. Expired offer and location conflict with file; do not reuse until owner confirms."
+    ],
+    "rule": "Directory, creator and indexed-post facts are leads; reconfirm current contacts, offers and commercial details before public use."
+  }
 }

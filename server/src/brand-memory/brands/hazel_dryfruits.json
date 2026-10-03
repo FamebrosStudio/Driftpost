@@ -82,7 +82,8 @@
     "agency_instagram_handle": "@famebrosstudio",
     "agency_instagram_url": "https://www.instagram.com/famebrosstudio/",
     "agency_credit_default": "💫 Managed by: @famebrosstudio",
-    "reference_rule": "Use current official social content to understand product names and presentation. Do not copy an expired price, flavour, offer or availability claim."
+    "reference_rule": "Use current official social content to understand product names and presentation. Do not copy an expired price, flavour, offer or availability claim.",
+    "instagram_identity_status": "Official account mapping supplied directly by user on 2026-10-03."
   },
   "established_content_knowledge": {
     "confirmed_content_genres": [
@@ -792,5 +793,17 @@
     ],
     "internal_dataset": "Famebros_Brand_Caption_Dataset.json record hazel_dryfruits.",
     "source_rule": "Current brand-approved product and commercial information overrides older social posts and this file."
+  },
+  "research_update": {
+    "checked_on": "2026-10-03",
+    "official_account": {
+      "platform": "Instagram",
+      "handle": "@hazeldryfruits",
+      "url": "https://www.instagram.com/hazeldryfruits/",
+      "identity_authority": "User supplied as official"
+    },
+    "source_urls": [],
+    "observations": [],
+    "rule": "Directory, creator and indexed-post facts are leads; reconfirm current contacts, offers and commercial details before public use."
   }
 }

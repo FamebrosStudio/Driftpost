@@ -47,7 +47,8 @@
     "youtube_url": null,
     "managing_agency": "Famebros Studio",
     "agency_instagram_handle": "@famebrosstudio",
-    "agency_instagram_url": "https://www.instagram.com/famebrosstudio/"
+    "agency_instagram_url": "https://www.instagram.com/famebrosstudio/",
+    "instagram_status": "Official handle supplied by user on 2026-10-03; current public claims still require source verification."
   },
   "established_content_knowledge": {
     "confirmed_content_genres": [
@@ -91,7 +92,7 @@
     "reported_metric_label": "Rent",
     "reported_metric_value_inr": 200000,
     "metric_note": "The stored user note labels this figure as rent. Its meaning and period should be confirmed before any use.",
-    "public_usage_rule": "Reverify dates, platform analytics, attribution method, spend, leads and the meaning of the ₹2 lakh metric before publishing an agency case study."
+    "public_usage_rule": "Reverify dates, platform analytics, attribution method, spend, leads and the meaning of the â‚¹2 lakh metric before publishing an agency case study."
   },
   "writing_direction": {
     "status": "Recommended defaults based on the confirmed content genres and indexed retail positioning.",
@@ -200,7 +201,7 @@
         "Delivery charges"
       ],
       "rules": [
-        "Do not publish zero down payment or ₹500 down payment from an older reel without current confirmation.",
+        "Do not publish zero down payment or â‚¹500 down payment from an older reel without current confirmation.",
         "Do not say no-cost EMI unless explicitly confirmed.",
         "Show eligibility and fees clearly.",
         "Use exact dates for limited offers."
@@ -292,9 +293,9 @@
   },
   "fixed_footer": {
     "lines": [
-      "📍 Shop No. 50 and 51, Purna Shanti Heights, Khartan Road, Thane 400601",
-      "📞 +91 84338 70901",
-      "🎥 Managed by: @famebrosstudio ✨"
+      "ðŸ“ Shop No. 50 and 51, Purna Shanti Heights, Khartan Road, Thane 400601",
+      "ðŸ“ž +91 84338 70901",
+      "ðŸŽ¥ Managed by: @famebrosstudio âœ¨"
     ],
     "source": "Indexed SK Furniture Market social content and the standard agency credit.",
     "usage": "Default feed and reel footer until the user supplies a different approved contact block.",
@@ -418,16 +419,16 @@
   },
   "sample_caption": {
     "status": "Illustrative evergreen caption for a confirmed multipurpose furniture reel. It contains no EMI or price claim.",
-    "text": "Small space, smart furniture. 🔥\nThis multipurpose design brings function and a cleaner setup together, making everyday use feel easier without crowding the room.\nCall for current price and availability.\n\n📍 Shop No. 50 and 51, Purna Shanti Heights, Khartan Road, Thane 400601\n📞 +91 84338 70901\n🎥 Managed by: @famebrosstudio ✨\n\n#SKFurnitureMarket #MultipurposeFurniture #ThaneFurniture\n\n[SK Furniture Market, furniture store in Thane, multipurpose furniture Thane, home furniture Khartan Road, furniture market Thane, smart furniture for small spaces]"
+    "text": "Small space, smart furniture. ðŸ”¥\nThis multipurpose design brings function and a cleaner setup together, making everyday use feel easier without crowding the room.\nCall for current price and availability.\n\nðŸ“ Shop No. 50 and 51, Purna Shanti Heights, Khartan Road, Thane 400601\nðŸ“ž +91 84338 70901\nðŸŽ¥ Managed by: @famebrosstudio âœ¨\n\n#SKFurnitureMarket #MultipurposeFurniture #ThaneFurniture\n\n[SK Furniture Market, furniture store in Thane, multipurpose furniture Thane, home furniture Khartan Road, furniture market Thane, smart furniture for small spaces]"
   },
   "accuracy_rules": [
     "Use only SK Furniture Market facts and the current post brief.",
     "Do not invent prices, discounts, EMI terms, material, dimensions, warranty, stock, delivery or assembly.",
-    "Treat zero down payment and ₹500 down payment as previous content themes that require current confirmation.",
+    "Treat zero down payment and â‚¹500 down payment as previous content themes that require current confirmation.",
     "Do not guarantee durability, water resistance, termite resistance or load capacity.",
     "Do not describe a product as manufactured in-house unless confirmed for that item.",
     "Do not publish internal case-study metrics in consumer captions.",
-    "Reverify analytics and define the ₹2 lakh metric before any agency case study.",
+    "Reverify analytics and define the â‚¹2 lakh metric before any agency case study.",
     "Do not copy Sarama Furniture or Anand Furniture details.",
     "If an optional detail is missing, omit it.",
     "If an essential offer or product detail is missing, ask one short question.",
@@ -462,7 +463,7 @@
     "recent_captions": [],
     "additional_instructions": []
   },
-  "master_brand_instruction": "Write as SK Furniture Market in Thane. Use an energetic, bold, affordable, relatable and direct voice. Use natural Hinglish for funny, cringe-style and owner-led reels, and clear English or Hinglish for product, offer and informational posts. Treat cringe as intentionally exaggerated entertainment without humiliating customers, staff or any social group. Focus on the exact furniture item, visible function and confirmed buyer benefit. Never invent price, discount, material, dimensions, storage, warranty, stock, delivery, assembly or finance terms. Treat zero down payment, ₹500 down payment and easy EMI as previous content themes requiring current confirmation with full eligibility, fees, tenure and finance-partner information. Keep internal case-study metrics out of consumer copy. For normal feed and reel captions, append the SK Furniture Market footer, exactly three relevant hashtags and one bracket containing 5 to 8 comma-separated SEO phrases. Preserve +91 84338 70901 and the Khartan Road address. Avoid em dashes and return ready-to-copy public text without null fields or internal notes.",
+  "master_brand_instruction": "Write as SK Furniture Market in Thane. Use an energetic, bold, affordable, relatable and direct voice. Use natural Hinglish for funny, cringe-style and owner-led reels, and clear English or Hinglish for product, offer and informational posts. Treat cringe as intentionally exaggerated entertainment without humiliating customers, staff or any social group. Focus on the exact furniture item, visible function and confirmed buyer benefit. Never invent price, discount, material, dimensions, storage, warranty, stock, delivery, assembly or finance terms. Treat zero down payment, â‚¹500 down payment and easy EMI as previous content themes requiring current confirmation with full eligibility, fees, tenure and finance-partner information. Keep internal case-study metrics out of consumer copy. For normal feed and reel captions, append the SK Furniture Market footer, exactly three relevant hashtags and one bracket containing 5 to 8 comma-separated SEO phrases. Preserve +91 84338 70901 and the Khartan Road address. Avoid em dashes and return ready-to-copy public text without null fields or internal notes.",
   "missing_information": [
     "WhatsApp confirmation",
     "Opening hours and weekly closing day",
@@ -478,7 +479,7 @@
     "Customisation options",
     "Return or cancellation policy",
     "Approved logo, fonts and colour palette",
-    "Clarification of internal ₹2 lakh metric",
+    "Clarification of internal â‚¹2 lakh metric",
     "Verified performance case-study dates and attribution"
   ],
   "sources": [
@@ -507,6 +508,34 @@
     {
       "type": "user_writing_preferences",
       "supports": "Short hooks, natural Hinglish, one CTA, three hashtags, one SEO bracket and no em dashes."
+    },
+    {
+      "type": "user_supplied_official_instagram_handle",
+      "url": "https://www.instagram.com/skfurnituremarket/",
+      "checked_on": "2026-10-03",
+      "supports": "User explicitly supplied this official account mapping; does not independently verify all profile claims."
+    },
+    {
+      "type": "public_research_reference",
+      "url": "https://magicpin.in/Thane/Naupada/Lifestyle/Sk-Furniture-Market/store/19033a0",
+      "checked_on": "2026-10-03",
+      "supports": "Research lead, with confidence limits recorded in research_update."
     }
-  ]
+  ],
+  "research_update": {
+    "checked_on": "2026-10-03",
+    "official_account": {
+      "platform": "Instagram",
+      "handle": "@skfurnituremarket",
+      "url": "https://www.instagram.com/skfurnituremarket/",
+      "identity_authority": "User supplied as official"
+    },
+    "source_urls": [
+      "https://magicpin.in/Thane/Naupada/Lifestyle/Sk-Furniture-Market/store/19033a0"
+    ],
+    "observations": [
+      "Matching Magicpin listing: Purna Shanti Heights, Khartan Road, Jambli Naka, Thane West 400601; +91 84338 70901; furniture maker/store/wholesaler/interior decorator; cash/card/UPI/EMI per listing. Verify changing terms."
+    ],
+    "rule": "Directory, creator and indexed-post facts are leads; reconfirm current contacts, offers and commercial details before public use."
+  }
 }

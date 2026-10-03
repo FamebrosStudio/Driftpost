@@ -4,7 +4,9 @@
   "brand_id": "anand_furniture",
   "brand_name": "Anand Furniture",
   "aliases": [
-    "anand furniture"
+    "anand furniture",
+    "@anandfurniture_interiors",
+    "anandfurniture_interiors"
   ],
   "knowledge_scope": "One brand only. This file covers the user's Anand Furniture record. The furniture category is confirmed, but exact city, business identity, official social account, contacts, catalogue and service terms remain unresolved because many unrelated businesses use the same name.",
   "business": {
@@ -35,9 +37,9 @@
     "contact_rule": "Do not use phone or address from Mumbai, Delhi, Kalyan, Thane or another listing until the exact branch is confirmed."
   },
   "social_media": {
-    "instagram_handle": null,
-    "instagram_url": null,
-    "instagram_status": "Not resolved.",
+    "instagram_handle": "@anandfurniture_interiors",
+    "instagram_url": "https://www.instagram.com/anandfurniture_interiors/",
+    "instagram_status": "Official account supplied directly by user; the public profile still needs review for product and location facts.",
     "public_match_problem": "Searches returned several unrelated Anand Furniture businesses in different cities.",
     "facebook_url": null,
     "website_url": null,
@@ -45,7 +47,8 @@
     "agency_instagram_handle": "@famebrosstudio",
     "agency_instagram_url": "https://www.instagram.com/famebrosstudio/",
     "agency_credit_default": "💫 Managed by: @famebrosstudio",
-    "reference_rule": "Require the official link directly from the user or owner before learning from social content."
+    "reference_rule": "Require the official link directly from the user or owner before learning from social content.",
+    "instagram_identity_status": "Official account mapping supplied directly by user on 2026-10-03."
   },
   "established_content_knowledge": {
     "confirmed_facts": [
@@ -420,5 +423,17 @@
     "public_search_note": "Searches returned multiple unrelated same-name businesses, so none was adopted.",
     "internal_dataset": "Famebros_Brand_Caption_Dataset.json record anand_furniture.",
     "source_rule": "Direct owner confirmation is required to select the correct public business."
+  },
+  "research_update": {
+    "checked_on": "2026-10-03",
+    "official_account": {
+      "platform": "Instagram",
+      "handle": "@anandfurniture_interiors",
+      "url": "https://www.instagram.com/anandfurniture_interiors/",
+      "identity_authority": "User supplied as official"
+    },
+    "source_urls": [],
+    "observations": [],
+    "rule": "Directory, creator and indexed-post facts are leads; reconfirm current contacts, offers and commercial details before public use."
   }
 }

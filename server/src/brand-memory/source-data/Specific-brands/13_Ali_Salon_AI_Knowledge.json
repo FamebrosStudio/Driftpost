@@ -46,7 +46,8 @@
     "youtube_url": null,
     "managing_agency": "Famebros Studio",
     "agency_instagram_handle": "@famebrosstudio",
-    "agency_instagram_url": "https://www.instagram.com/famebrosstudio/"
+    "agency_instagram_url": "https://www.instagram.com/famebrosstudio/",
+    "instagram_status": "Official handle supplied by user on 2026-10-03; current public claims still require source verification."
   },
   "established_content_knowledge": {
     "confirmed_content_genres": [
@@ -69,7 +70,7 @@
     ],
     "positioning_usage_rule": "Use the experience-led voice without attacking other salons or trends.",
     "confirmed_current_prices": [],
-    "third_party_price_observation": "A third-party service page displays hair-colouring services starting from ₹1,000 per session. Treat this as unconfirmed and do not publish without salon approval.",
+    "third_party_price_observation": "A third-party service page displays hair-colouring services starting from â‚¹1,000 per session. Treat this as unconfirmed and do not publish without salon approval.",
     "confirmed_current_offers": [],
     "confirmed_service_packages": [],
     "confirmed_product_brands": [],
@@ -196,7 +197,7 @@
         "Booking method"
       ],
       "rules": [
-        "Do not use the third-party ₹1,000 observation as an approved price.",
+        "Do not use the third-party â‚¹1,000 observation as an approved price.",
         "Do not invent offers or limited slots.",
         "Show conditions clearly."
       ]
@@ -275,9 +276,9 @@
   },
   "fixed_footer": {
     "lines": [
-      "📍 Ali Salon, Mulund West, Mumbai",
-      "📞 Reserve your appointment: +91 99302 76884",
-      "🎥 Managed by: @famebrosstudio ✨"
+      "ðŸ“ Ali Salon, Mulund West, Mumbai",
+      "ðŸ“ž Reserve your appointment: +91 99302 76884",
+      "ðŸŽ¥ Managed by: @famebrosstudio âœ¨"
     ],
     "source": "Indexed official social content and agency credit.",
     "usage": "Default footer until the exact street address is confirmed.",
@@ -397,11 +398,11 @@
   "sample_captions": {
     "transformation": {
       "status": "Illustrative template requiring a confirmed service and result.",
-      "text": "The result speaks for itself. ✨\nThis [confirmed service] creates a [visible result] shaped around the client's actual hair and preferred style.\nSave this as your next hair reference.\n\n📍 Ali Salon, Mulund West, Mumbai\n📞 Reserve your appointment: +91 99302 76884\n🎥 Managed by: @famebrosstudio ✨\n\n#AliSalon #HairTransformation #MulundSalon\n\n[Ali Salon Mulund, hair transformation Mulund, unisex salon in Mulund West, confirmed service, hair salon Mulund, fresh hair look]"
+      "text": "The result speaks for itself. âœ¨\nThis [confirmed service] creates a [visible result] shaped around the client's actual hair and preferred style.\nSave this as your next hair reference.\n\nðŸ“ Ali Salon, Mulund West, Mumbai\nðŸ“ž Reserve your appointment: +91 99302 76884\nðŸŽ¥ Managed by: @famebrosstudio âœ¨\n\n#AliSalon #HairTransformation #MulundSalon\n\n[Ali Salon Mulund, hair transformation Mulund, unisex salon in Mulund West, confirmed service, hair salon Mulund, fresh hair look]"
     },
     "funny_reel": {
       "status": "Illustrative structure. Match the actual scene.",
-      "template": "Client ne bola [actual dialogue]... stylist ne samajh liya story abhi lambi hai. 😂 [One relevant CTA]."
+      "template": "Client ne bola [actual dialogue]... stylist ne samajh liya story abhi lambi hai. ðŸ˜‚ [One relevant CTA]."
     }
   },
   "accuracy_rules": [
@@ -409,7 +410,7 @@
     "Do not invent the exact street address, shop number or postal code.",
     "Do not use The Creamy Layer's address as Ali Salon's location.",
     "Do not invent service prices, offers, appointment availability, products or treatment duration.",
-    "Do not use the third-party ₹1,000 starting price without salon confirmation.",
+    "Do not use the third-party â‚¹1,000 starting price without salon confirmation.",
     "Do not promise zero damage, permanent results or identical outcomes.",
     "Do not identify a colouring or treatment technique from appearance alone.",
     "Do not make jokes that humiliate clients or staff.",
@@ -483,6 +484,24 @@
     {
       "type": "user_writing_preferences",
       "supports": "Short hooks, Hinglish or English by context, one CTA, three hashtags, one SEO bracket and no em dashes."
+    },
+    {
+      "type": "user_supplied_official_instagram_handle",
+      "url": "https://www.instagram.com/ali.and.hussain.salon/",
+      "checked_on": "2026-10-03",
+      "supports": "User explicitly supplied this official account mapping; does not independently verify all profile claims."
     }
-  ]
+  ],
+  "research_update": {
+    "checked_on": "2026-10-03",
+    "official_account": {
+      "platform": "Instagram",
+      "handle": "@ali.and.hussain.salon",
+      "url": "https://www.instagram.com/ali.and.hussain.salon/",
+      "identity_authority": "User supplied as official"
+    },
+    "source_urls": [],
+    "observations": [],
+    "rule": "Directory, creator and indexed-post facts are leads; reconfirm current contacts, offers and commercial details before public use."
+  }
 }

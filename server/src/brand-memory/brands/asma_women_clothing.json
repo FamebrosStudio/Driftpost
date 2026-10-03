@@ -57,11 +57,12 @@
     "managing_agency": "Famebros Studio",
     "agency_instagram_handle": "@famebrosstudio",
     "agency_instagram_url": "https://www.instagram.com/famebrosstudio/",
-    "agency_credit_default": "💫 Managed by: @famebrosstudio",
+    "agency_credit_default": "ðŸ’« Managed by: @famebrosstudio",
     "excluded_candidates": [
       "Aasme Asma and other similarly named fashion brands found in search are not treated as this brand. Only @herchoice_byasma is approved."
     ],
-    "reference_rule": "Use only @herchoice_byasma content for styling and wording cues, and verify every product field before writing. Never tag or imitate a similarly named account."
+    "reference_rule": "Use only @herchoice_byasma content for styling and wording cues, and verify every product field before writing. Never tag or imitate a similarly named account.",
+    "instagram_identity_status": "Official account mapping supplied directly by user on 2026-10-03."
   },
   "established_content_knowledge": {
     "confirmed_content_pillars": [
@@ -227,10 +228,10 @@
   },
   "fixed_footer": {
     "standard_lines": [
-      "📲 DM @herchoice_byasma for details of this outfit."
+      "ðŸ“² DM @herchoice_byasma for details of this outfit."
     ],
     "status": "Official-handle CTA confirmed 2026-09-25. Replace with phone/website/location if the owner supplies them.",
-    "agency_credit_optional": "💫 Managed by: @famebrosstudio",
+    "agency_credit_optional": "ðŸ’« Managed by: @famebrosstudio",
     "usage": "Use the @herchoice_byasma DM footer on all feed posts. Agency credit may be used only in Famebros-managed deliverables.",
     "exceptions": [
       "Story overlays",
@@ -342,7 +343,7 @@
     "scenario": "Cinematic women's outfit reel",
     "caption_body": "Grace in every angle. Let the silhouette, movement and visible details make the first impression. Which part of this look caught your eye first? DM @herchoice_byasma for the confirmed product details.",
     "footer": [
-      "📲 DM @herchoice_byasma"
+      "ðŸ“² DM @herchoice_byasma"
     ],
     "hashtags": [
       "#HerChoiceByAsma",
@@ -357,7 +358,7 @@
       "women's outfit inspiration",
       "stylish women's outfits"
     ],
-    "full_caption": "Grace in every angle. Let the silhouette, movement and visible details make the first impression. Which part of this look caught your eye first? DM @herchoice_byasma for the confirmed product details.\n\n📲 DM @herchoice_byasma\n\n#HerChoiceByAsma #WomensFashion #OutfitDetails\n\n[Her Choice by Asma, Asma Women Clothing, women's fashion collection, outfit details for women, women's outfit inspiration, stylish women's outfits]",
+    "full_caption": "Grace in every angle. Let the silhouette, movement and visible details make the first impression. Which part of this look caught your eye first? DM @herchoice_byasma for the confirmed product details.\n\nðŸ“² DM @herchoice_byasma\n\n#HerChoiceByAsma #WomensFashion #OutfitDetails\n\n[Her Choice by Asma, Asma Women Clothing, women's fashion collection, outfit details for women, women's outfit inspiration, stylish women's outfits]",
     "validation": {
       "hashtags": 3,
       "seo_phrases": 6,
@@ -491,5 +492,17 @@
     "public_search_note": "Web search 2026-09-25 for herchoice_byasma returned zero indexed results; direct Instagram fetch returns a login wall. No bio, follower, address, phone or catalogue facts could be scraped, so nothing beyond the owner-supplied handle was added.",
     "internal_dataset": "Famebros_Brand_Caption_Dataset.json record asma_women_clothing.",
     "source_rule": "Direct brand-owner confirmation is required before adding social, contact, location, catalogue or commerce facts."
+  },
+  "research_update": {
+    "checked_on": "2026-10-03",
+    "official_account": {
+      "platform": "Instagram",
+      "handle": "@herchoice_byasma",
+      "url": "https://www.instagram.com/herchoice_byasma/",
+      "identity_authority": "User supplied as official"
+    },
+    "source_urls": [],
+    "observations": [],
+    "rule": "Directory, creator and indexed-post facts are leads; reconfirm current contacts, offers and commercial details before public use."
   }
 }

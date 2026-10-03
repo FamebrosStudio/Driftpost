@@ -6,7 +6,9 @@
   "aliases": [
     "SYnergic Interior",
     "Synergic Interior",
-    "Studio Synergic"
+    "Studio Synergic",
+    "@synergicstudio",
+    "synergicstudio"
   ],
   "knowledge_scope": "One brand only. Confirmed business details, observed project themes and recommended AI writing guidance are separated.",
   "business": {
@@ -51,7 +53,7 @@
   "social_media": {
     "instagram_handle": "@synergicstudio",
     "instagram_url": "https://www.instagram.com/synergicstudio/",
-    "instagram_identity_status": "Previously matched through indexed profile content for SYnergic Studio. Current direct-profile indexing is limited.",
+    "instagram_identity_status": "Official account mapping supplied directly by user on 2026-10-03.",
     "linkedin_professional_profile": "https://in.linkedin.com/in/ar-yadnesh-nare-a13a671b7",
     "facebook_url": null,
     "youtube_url": null,
@@ -532,5 +534,21 @@
       "type": "user_writing_preferences",
       "supports": "Short hooks, contextual English or Hinglish, one CTA, three hashtags, one SEO bracket and no em dashes."
     }
-  ]
+  ],
+  "research_update": {
+    "checked_on": "2026-10-03",
+    "official_account": {
+      "platform": "Instagram",
+      "handle": "@synergicstudio",
+      "url": "https://www.instagram.com/synergicstudio/",
+      "identity_authority": "User supplied as official"
+    },
+    "source_urls": [
+      "https://pictame.com/en/discover/hashtag/minimalist-study-space-design-inspiration"
+    ],
+    "observations": [
+      "Indexed post for supplied handle shows +91 97027 22025 / +91 98218 58408, studiosynergic@gmail.com, Kandivali East, and study-table/workspace design. Numbers not confirmed as WhatsApp."
+    ],
+    "rule": "Directory, creator and indexed-post facts are leads; reconfirm current contacts, offers and commercial details before public use."
+  }
 }

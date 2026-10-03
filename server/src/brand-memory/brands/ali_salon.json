@@ -37,7 +37,7 @@
   "social_media": {
     "instagram_handle": "@ali.and.hussain.salon",
     "instagram_url": "https://www.instagram.com/ali.and.hussain.salon/",
-    "instagram_identity_status": "Confirmed in the user's account list. Indexed content matches Ali Salon, Hussain Shaikh, Mulund West and the reservation number.",
+    "instagram_identity_status": "Official account mapping supplied directly by user on 2026-10-03.",
     "facebook_name": "ALI SALON hussain shaikh",
     "facebook_url": "https://www.facebook.com/p/ALI-SALON-hussain-shaikh-100063942311129/",
     "facebook_status": "Indexed page matches the salon, location and reservation number.",
@@ -484,5 +484,17 @@
       "type": "user_writing_preferences",
       "supports": "Short hooks, Hinglish or English by context, one CTA, three hashtags, one SEO bracket and no em dashes."
     }
-  ]
+  ],
+  "research_update": {
+    "checked_on": "2026-10-03",
+    "official_account": {
+      "platform": "Instagram",
+      "handle": "@ali.and.hussain.salon",
+      "url": "https://www.instagram.com/ali.and.hussain.salon/",
+      "identity_authority": "User supplied as official"
+    },
+    "source_urls": [],
+    "observations": [],
+    "rule": "Directory, creator and indexed-post facts are leads; reconfirm current contacts, offers and commercial details before public use."
+  }
 }

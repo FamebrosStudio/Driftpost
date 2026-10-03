@@ -5,7 +5,8 @@
   "brand_name": "Roopali Sarees",
   "aliases": [
     "Roopali Saree",
-    "Roopali Sarees Mira Road"
+    "Roopali Sarees Mira Road",
+    "@roopalisarees"
   ],
   "knowledge_scope": "One brand only. User-approved contact details, brand-published product evidence, older campaign claims, external directory facts and recommended writing guidance are explicitly separated. Never use similarly named Roopali shops in Malad, Goregaon, Bhopal or elsewhere as evidence for this Mira Road brand.",
   "business": {
@@ -52,7 +53,6 @@
   "social_media": {
     "instagram_handle": "@roopalisarees",
     "instagram_url": "https://www.instagram.com/roopalisarees/",
-    "instagram_status": "Search-indexed profile and posts align with the exact approved phone number and Mira Road address. Profile access was throttled during this review, so obtain owner confirmation if account ownership matters for account linking.",
     "facebook_url": "https://www.facebook.com/roopalisareesmiraroad/",
     "facebook_status": "Indexed page for Roopali Sarees in Mira Road, with matching business identity.",
     "linkedin_url": "https://www.linkedin.com/company/roopali",
@@ -62,7 +62,8 @@
     "youtube_url": null,
     "managing_agency": "Famebros Studio",
     "agency_instagram_handle": "@famebrosstudio",
-    "agency_instagram_url": "https://www.instagram.com/famebrosstudio/"
+    "agency_instagram_url": "https://www.instagram.com/famebrosstudio/",
+    "instagram_status": "Official handle supplied by user on 2026-10-03; current public claims still require source verification."
   },
   "established_content_knowledge": {
     "confirmed_content_genres": [
@@ -289,7 +290,10 @@
     "rule": "Only the asset and product-specific brief can establish item properties. Store-level published categories do not establish any photographed item's composition or availability."
   },
   "caption_format": {
-    "default_platforms": ["Instagram", "Facebook"],
+    "default_platforms": [
+      "Instagram",
+      "Facebook"
+    ],
     "default_number_of_options": 1,
     "body_word_target": "25 to 60 words, excluding footer, hashtags and keyword bracket.",
     "short_reel_word_target": "12 to 40 words.",
@@ -313,9 +317,9 @@
   },
   "fixed_footer": {
     "lines": [
-      "📍 Roopali Sarees, Shop No. 1, B-49, Chaitali Bldg., Sector-1, Shanti Nagar, Mira Road (E), Thane - 401107",
-      "📞 +91 90225 61477",
-      "🎥 Managed by: @famebrosstudio ✨"
+      "ðŸ“ Roopali Sarees, Shop No. 1, B-49, Chaitali Bldg., Sector-1, Shanti Nagar, Mira Road (E), Thane - 401107",
+      "ðŸ“ž +91 90225 61477",
+      "ðŸŽ¥ Managed by: @famebrosstudio âœ¨"
     ],
     "source": "User-approved recent caption details, corroborated by indexed brand posts.",
     "usage": "Default for feed and reel captions when the user wants the full business footer. Shorten for Stories and text overlays.",
@@ -327,11 +331,29 @@
     ]
   },
   "suggested_hashtag_bank": {
-    "brand": ["#RoopaliSarees"],
-    "category": ["#SareeStyle", "#DesignerSarees", "#EthnicWear", "#IndianWear"],
-    "occasion": ["#WeddingSaree", "#FestiveFashion", "#OccasionWear"],
-    "location": ["#MiraRoadShopping", "#MiraRoadFashion", "#ThaneShopping"],
-    "campaign_only_when_active": ["#Buy1Get1Free", "#SareeOffer"],
+    "brand": [
+      "#RoopaliSarees"
+    ],
+    "category": [
+      "#SareeStyle",
+      "#DesignerSarees",
+      "#EthnicWear",
+      "#IndianWear"
+    ],
+    "occasion": [
+      "#WeddingSaree",
+      "#FestiveFashion",
+      "#OccasionWear"
+    ],
+    "location": [
+      "#MiraRoadShopping",
+      "#MiraRoadFashion",
+      "#ThaneShopping"
+    ],
+    "campaign_only_when_active": [
+      "#Buy1Get1Free",
+      "#SareeOffer"
+    ],
     "rule": "Choose exactly three truthful and relevant tags. Avoid location tags for unrelated Roopali shops."
   },
   "seo_keyword_bank": [
@@ -396,11 +418,22 @@
     "hook_note": "Suggestions only. Product, occasion, availability and any promotion must match the real asset and current approved brief."
   },
   "visual_and_asset_guidance": {
-    "default_feed_size_px": {"width": 1080, "height": 1440},
-    "default_story_size_px": {"width": 1080, "height": 1920},
+    "default_feed_size_px": {
+      "width": 1080,
+      "height": 1440
+    },
+    "default_story_size_px": {
+      "width": 1080,
+      "height": 1920
+    },
     "reel_aspect_ratio": "9:16",
     "layout": "Product-led ethnic fashion presentation with readable details and the saree or outfit as the unmistakable hero.",
-    "preferred_visual_mood": ["Warm", "Festive when relevant", "Polished", "True-to-product"],
+    "preferred_visual_mood": [
+      "Warm",
+      "Festive when relevant",
+      "Polished",
+      "True-to-product"
+    ],
     "fixed_brand_colours": null,
     "fixed_brand_fonts": null,
     "logo_asset": null,
@@ -449,7 +482,7 @@
   },
   "sample_caption": {
     "status": "Illustrative generic saree showcase; do not use unchanged for a specific product without checking the actual visuals.",
-    "text": "A saree worth seeing in motion. ✨\nFrom the full drape to the little details, explore the look up close and find your favourite for the next celebration. Visit us in Mira Road East or call to check availability.\n\n📍 Roopali Sarees, Shop No. 1, B-49, Chaitali Bldg., Sector-1, Shanti Nagar, Mira Road (E), Thane - 401107\n📞 +91 90225 61477\n🎥 Managed by: @famebrosstudio ✨\n\n#RoopaliSarees #SareeStyle #MiraRoadShopping\n\n[Roopali Sarees Mira Road, saree shop in Mira Road East, women's ethnic wear, festive saree look, saree shopping Thane]"
+    "text": "A saree worth seeing in motion. âœ¨\nFrom the full drape to the little details, explore the look up close and find your favourite for the next celebration. Visit us in Mira Road East or call to check availability.\n\nðŸ“ Roopali Sarees, Shop No. 1, B-49, Chaitali Bldg., Sector-1, Shanti Nagar, Mira Road (E), Thane - 401107\nðŸ“ž +91 90225 61477\nðŸŽ¥ Managed by: @famebrosstudio âœ¨\n\n#RoopaliSarees #SareeStyle #MiraRoadShopping\n\n[Roopali Sarees Mira Road, saree shop in Mira Road East, women's ethnic wear, festive saree look, saree shopping Thane]"
   },
   "accuracy_rules": [
     "Treat the user's approved phone and address as the public footer source over conflicting directories.",
@@ -558,6 +591,41 @@
     {
       "type": "user_writing_preferences",
       "supports": "Short useful hooks, one CTA, agency credit, exactly three hashtags, one SEO bracket and no em dashes."
+    },
+    {
+      "type": "user_supplied_official_instagram_handle",
+      "url": "https://www.instagram.com/roopalisarees/",
+      "checked_on": "2026-10-03",
+      "supports": "User explicitly supplied this official account mapping; does not independently verify all profile claims."
+    },
+    {
+      "type": "public_research_reference",
+      "url": "https://in.linkedin.com/company/roopali",
+      "checked_on": "2026-10-03",
+      "supports": "Research lead, with confidence limits recorded in research_update."
+    },
+    {
+      "type": "public_research_reference",
+      "url": "https://magicpin.in/Thane/Mira-Road/Fashion/Roopali-Sarees/store/2922c0",
+      "checked_on": "2026-10-03",
+      "supports": "Research lead, with confidence limits recorded in research_update."
     }
-  ]
+  ],
+  "research_update": {
+    "checked_on": "2026-10-03",
+    "official_account": {
+      "platform": "Instagram",
+      "handle": "@roopalisarees",
+      "url": "https://www.instagram.com/roopalisarees/",
+      "identity_authority": "User supplied as official"
+    },
+    "source_urls": [
+      "https://in.linkedin.com/company/roopali",
+      "https://magicpin.in/Thane/Mira-Road/Fashion/Roopali-Sarees/store/2922c0"
+    ],
+    "observations": [
+      "Listings differ on exact shop numbers in B-49 Sector 1, Shanti Nagar, Mira Road East; one lists 10:00-22:00 and 022 2812 1687. Confirm current address/number."
+    ],
+    "rule": "Directory, creator and indexed-post facts are leads; reconfirm current contacts, offers and commercial details before public use."
+  }
 }

@@ -54,7 +54,7 @@
   "social_media": {
     "instagram_handle": "@kanchanmala.jewellers.chembur",
     "instagram_url": "https://www.instagram.com/kanchanmala.jewellers.chembur/",
-    "instagram_identity_status": "Indexed profile matches the Chembur branch, address, gold-on-EMI positioning and since-1992 statement.",
+    "instagram_identity_status": "Official account mapping supplied directly by user on 2026-10-03.",
     "facebook_name": "Kanchanmala Jewellers",
     "facebook_url": "https://www.facebook.com/KanchanMalaJewellers/",
     "facebook_status": "Indexed official page matches the Chembur address, phone numbers and jewellery campaigns.",
@@ -611,5 +611,22 @@
       "type": "user_writing_preferences",
       "supports": "Short hooks, contextual English or Hinglish, one CTA, three hashtags, one SEO bracket and no em dashes."
     }
-  ]
+  ],
+  "research_update": {
+    "checked_on": "2026-10-03",
+    "official_account": {
+      "platform": "Instagram",
+      "handle": "@kanchanmala.jewellers.chembur",
+      "url": "https://www.instagram.com/kanchanmala.jewellers.chembur/",
+      "identity_authority": "User supplied as official"
+    },
+    "source_urls": [
+      "https://magicpin.in/Mumbai/Chembur-West/Fashion/Kanchanmala-Jewellers/store/aba5ca",
+      "https://pictame.com/en/discover/hashtag/mumbai-gold-rate"
+    ],
+    "observations": [
+      "Matching listing: Plot 93, Shop 1/1, N.G. Acharya Marg, Chembur West; 022 2521 3531; listed 10:00-20:00. Confirm with brand. Indexed 2025 jewellery-group offers are historical."
+    ],
+    "rule": "Directory, creator and indexed-post facts are leads; reconfirm current contacts, offers and commercial details before public use."
+  }
 }

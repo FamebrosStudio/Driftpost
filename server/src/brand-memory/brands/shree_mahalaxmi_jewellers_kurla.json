@@ -53,7 +53,7 @@
   "social_media": {
     "instagram_handle": "@mahalaxmi.jewellers.kurla",
     "instagram_url": "https://www.instagram.com/mahalaxmi.jewellers.kurla/",
-    "instagram_identity_status": "Indexed profile matches the Kurla branch, both phone numbers and jewellery positioning.",
+    "instagram_identity_status": "Official account mapping supplied directly by user on 2026-10-03.",
     "facebook_name": "Shree Mahalaxmi Jeweller",
     "facebook_url": "https://www.facebook.com/mahalaxmi.jewellers.kurla/",
     "youtube_url": null,
@@ -601,5 +601,21 @@
       "type": "user_writing_preferences",
       "supports": "Short hooks, contextual English or Hinglish, one CTA, three hashtags, one SEO bracket and no em dashes."
     }
-  ]
+  ],
+  "research_update": {
+    "checked_on": "2026-10-03",
+    "official_account": {
+      "platform": "Instagram",
+      "handle": "@mahalaxmi.jewellers.kurla",
+      "url": "https://www.instagram.com/mahalaxmi.jewellers.kurla/",
+      "identity_authority": "User supplied as official"
+    },
+    "source_urls": [
+      "https://pictame.com/en/discover/hashtag/mumbai-gold-rate"
+    ],
+    "observations": [
+      "Indexed group campaign with shared number +91 80974 96670 and gold EMI/loan/savings claims; treat as historical campaign, not verified dedicated current contact or current offer."
+    ],
+    "rule": "Directory, creator and indexed-post facts are leads; reconfirm current contacts, offers and commercial details before public use."
+  }
 }

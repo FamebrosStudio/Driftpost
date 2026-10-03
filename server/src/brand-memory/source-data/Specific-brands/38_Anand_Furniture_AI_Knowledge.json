@@ -4,7 +4,8 @@
   "brand_id": "anand_furniture",
   "brand_name": "Anand Furniture",
   "aliases": [
-    "anand furniture"
+    "anand furniture",
+    "@anandfurniture_interiors"
   ],
   "knowledge_scope": "One brand only. This file covers the user's Anand Furniture record. The furniture category is confirmed, but exact city, business identity, official social account, contacts, catalogue and service terms remain unresolved because many unrelated businesses use the same name.",
   "business": {
@@ -35,17 +36,17 @@
     "contact_rule": "Do not use phone or address from Mumbai, Delhi, Kalyan, Thane or another listing until the exact branch is confirmed."
   },
   "social_media": {
-    "instagram_handle": null,
-    "instagram_url": null,
-    "instagram_status": "Not resolved.",
+    "instagram_handle": "@anandfurniture_interiors",
+    "instagram_url": "https://www.instagram.com/anandfurniture_interiors/",
     "public_match_problem": "Searches returned several unrelated Anand Furniture businesses in different cities.",
     "facebook_url": null,
     "website_url": null,
     "managing_agency": "Famebros Studio",
     "agency_instagram_handle": "@famebrosstudio",
     "agency_instagram_url": "https://www.instagram.com/famebrosstudio/",
-    "agency_credit_default": "💫 Managed by: @famebrosstudio",
-    "reference_rule": "Require the official link directly from the user or owner before learning from social content."
+    "agency_credit_default": "ðŸ’« Managed by: @famebrosstudio",
+    "reference_rule": "Use the user-confirmed account for future brand learning; do not borrow facts from same-name businesses.",
+    "instagram_status": "Official handle supplied by user on 2026-10-03; current public claims still require source verification."
   },
   "established_content_knowledge": {
     "confirmed_facts": [
@@ -205,7 +206,7 @@
   "fixed_footer": {
     "standard_lines": [
       "DM Anand Furniture for current product details.",
-      "💫 Managed by: @famebrosstudio"
+      "ðŸ’« Managed by: @famebrosstudio"
     ],
     "status": "Temporary generic wording. Official handle and contact are missing.",
     "usage": "Use only through the confirmed brand account.",
@@ -312,7 +313,7 @@
     "scenario": "Furniture product reveal",
     "caption_body": "A new piece can change the feel of a room. Take a closer look at the actual item featured by Anand Furniture, then ask for its confirmed dimensions, material, price and availability before planning your space.",
     "footer": [
-      "💫 Managed by: @famebrosstudio"
+      "ðŸ’« Managed by: @famebrosstudio"
     ],
     "hashtags": [
       "#AnandFurniture",
@@ -327,7 +328,7 @@
       "furniture product details",
       "furniture enquiry"
     ],
-    "full_caption": "A new piece can change the feel of a room. Take a closer look at the actual item featured by Anand Furniture, then ask for its confirmed dimensions, material, price and availability before planning your space.\n\n💫 Managed by: @famebrosstudio\n\n#AnandFurniture #FurnitureDesign #RoomPlanning\n\n[Anand Furniture, home furniture collection, furniture design ideas, room planning furniture, furniture product details, furniture enquiry]",
+    "full_caption": "A new piece can change the feel of a room. Take a closer look at the actual item featured by Anand Furniture, then ask for its confirmed dimensions, material, price and availability before planning your space.\n\nðŸ’« Managed by: @famebrosstudio\n\n#AnandFurniture #FurnitureDesign #RoomPlanning\n\n[Anand Furniture, home furniture collection, furniture design ideas, room planning furniture, furniture product details, furniture enquiry]",
     "validation": {
       "hashtags": 3,
       "seo_phrases": 6,
@@ -380,7 +381,6 @@
   "master_brand_instruction": "Create content only for the user's Anand Furniture brand. Furniture is confirmed, but the exact business identity, city, social accounts, contacts, catalogue and terms are not. Many unrelated businesses use this name, so never select a public listing without direct confirmation. Write helpful, practical English or Hinglish based on the actual product. Do not copy SK Furniture or Sarama Furniture details. Never invent material, dimensions, price, stock, warranty, delivery, assembly or returns. Preserve the product exactly. Use a generic DM CTA only through the confirmed brand account. Standard concept captions use exactly three hashtags and one SEO bracket with five to eight phrases. Remove all em dashes.",
   "missing_information": {
     "identity": [
-      "Official Instagram",
       "Website",
       "Owner",
       "City",
@@ -408,17 +408,30 @@
       "Fonts",
       "Photography guide"
     ],
-    "priority": "Confirm the official page and city before connecting any public data to this brand."
+    "priority": "Review supplied official profile and confirm city, address and business/contact details before assigning commercial facts."
   },
   "sources": {
     "user_facts": [
       "Anand Furniture name.",
       "Furniture category.",
-      "Not started yet status."
+      "Not started yet status.",
+      "Official Instagram handle supplied directly by user on 2026-10-03."
     ],
     "public_sources": [],
     "public_search_note": "Searches returned multiple unrelated same-name businesses, so none was adopted.",
     "internal_dataset": "Famebros_Brand_Caption_Dataset.json record anand_furniture.",
     "source_rule": "Direct owner confirmation is required to select the correct public business."
+  },
+  "research_update": {
+    "checked_on": "2026-10-03",
+    "official_account": {
+      "platform": "Instagram",
+      "handle": "@anandfurniture_interiors",
+      "url": "https://www.instagram.com/anandfurniture_interiors/",
+      "identity_authority": "User supplied as official"
+    },
+    "source_urls": [],
+    "observations": [],
+    "rule": "Directory, creator and indexed-post facts are leads; reconfirm current contacts, offers and commercial details before public use."
   }
 }

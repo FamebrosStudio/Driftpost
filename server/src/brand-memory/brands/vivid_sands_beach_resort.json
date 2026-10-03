@@ -46,7 +46,7 @@
   "social_media": {
     "instagram_handle": "@vividsandsresort",
     "instagram_url": "https://www.instagram.com/vividsandsresort/",
-    "instagram_identity_status": "Previously matched to Vivid Sands Resort. Indexed posts confirm the booking number and Revdanda beach positioning.",
+    "instagram_identity_status": "Official account mapping supplied directly by user on 2026-10-03.",
     "facebook_name": "Vivid Sands Resort",
     "facebook_url": "https://www.facebook.com/people/Vivid-Sands-Resort/61583952140622/",
     "youtube_url": null,
@@ -490,5 +490,22 @@
       "type": "user_writing_preferences",
       "supports": "Short hooks, contextual English or Hinglish, one CTA, three hashtags, one SEO bracket and no em dashes."
     }
-  ]
+  ],
+  "research_update": {
+    "checked_on": "2026-10-03",
+    "official_account": {
+      "platform": "Instagram",
+      "handle": "@vividsandsresort",
+      "url": "https://www.instagram.com/vividsandsresort/",
+      "identity_authority": "User supplied as official"
+    },
+    "source_urls": [
+      "https://www.google.com.pk/travel/hotels/entity/CgoI89TQ7te0iYF0EAE",
+      "https://pictame.com/en/discover/hashtag/alibaug-stays"
+    ],
+    "observations": [
+      "Google Hotels listing: Agarkot, Revdanda 402202; check-in 14:00, checkout 11:00, pool/parking. Third-party; confirm. Creator claims about beach, pool, rooms and restaurant require resort confirmation."
+    ],
+    "rule": "Directory, creator and indexed-post facts are leads; reconfirm current contacts, offers and commercial details before public use."
+  }
 }

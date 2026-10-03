@@ -6,7 +6,9 @@
   "aliases": [
     "UVA Fashions Mumbai",
     "Uva Fashions",
-    "Uvafashions"
+    "Uvafashions",
+    "@uvafashions_mumbai",
+    "uvafashions_mumbai"
   ],
   "knowledge_scope": "One brand only. This file covers the user's Uvafashions Mumbai record. Mumbai and the fashion category are confirmed, but the exact garment segment, audience, retail or wholesale model, official Instagram, contact details and catalogue remain unresolved.",
   "business": {
@@ -36,8 +38,8 @@
     "contact_rule": "Use Mumbai at city level only. Do not invent a locality or contact."
   },
   "social_media": {
-    "instagram_handle": null,
-    "instagram_url": null,
+    "instagram_handle": "@uvafashions_mumbai",
+    "instagram_url": "https://www.instagram.com/uvafashions_mumbai/",
     "instagram_status": "Not resolved after exact-name searches.",
     "facebook_url": null,
     "website_url": null,
@@ -45,7 +47,8 @@
     "agency_instagram_handle": "@famebrosstudio",
     "agency_instagram_url": "https://www.instagram.com/famebrosstudio/",
     "agency_credit_default": "💫 Managed by: @famebrosstudio",
-    "reference_rule": "Do not tag or study a similarly named UVA fashion business without direct confirmation."
+    "reference_rule": "Do not tag or study a similarly named UVA fashion business without direct confirmation.",
+    "instagram_identity_status": "Official account mapping supplied directly by user on 2026-10-03."
   },
   "established_content_knowledge": {
     "confirmed_facts": [
@@ -428,5 +431,17 @@
     "public_search_note": "Exact-name searches on 2026-09-26 did not safely resolve the official business.",
     "internal_dataset": "Famebros_Brand_Caption_Dataset.json record uva_fashions.",
     "source_rule": "Direct owner confirmation is required before adding audience, business model, social, contact or catalogue facts."
+  },
+  "research_update": {
+    "checked_on": "2026-10-03",
+    "official_account": {
+      "platform": "Instagram",
+      "handle": "@uvafashions_mumbai",
+      "url": "https://www.instagram.com/uvafashions_mumbai/",
+      "identity_authority": "User supplied as official"
+    },
+    "source_urls": [],
+    "observations": [],
+    "rule": "Directory, creator and indexed-post facts are leads; reconfirm current contacts, offers and commercial details before public use."
   }
 }

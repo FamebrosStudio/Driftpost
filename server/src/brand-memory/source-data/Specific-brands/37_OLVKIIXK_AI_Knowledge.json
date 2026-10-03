@@ -3,7 +3,9 @@
   "brand_number": 37,
   "brand_id": "olvkiixk",
   "brand_name": "OLVKIIXK",
-  "aliases": [],
+  "aliases": [
+    "@olvkiixk"
+  ],
   "knowledge_scope": "One brand only. This file preserves the exact working spelling OLVKIIXK and the confirmed edit-led content note. Category, pronunciation, official account, audience, location, product or service, contacts and brand story remain unknown. The system is deliberately restrictive to prevent autocorrection and identity invention.",
   "business": {
     "category": null,
@@ -30,16 +32,16 @@
     "contact_rule": "No contact can be published until the official identity is supplied."
   },
   "social_media": {
-    "instagram_handle": null,
-    "instagram_url": null,
-    "instagram_status": "Not resolved. Exact-name searches returned no trustworthy official page.",
+    "instagram_handle": "@olvkiixk",
+    "instagram_url": "https://www.instagram.com/olvkiixk/",
     "facebook_url": null,
     "website_url": null,
     "managing_agency": "Famebros Studio",
     "agency_instagram_handle": "@famebrosstudio",
     "agency_instagram_url": "https://www.instagram.com/famebrosstudio/",
-    "agency_credit_default": "💫 Managed by: @famebrosstudio",
-    "reference_rule": "Do not autocorrect the name into an account guess or learn from an unrelated result."
+    "agency_credit_default": "ðŸ’« Managed by: @famebrosstudio",
+    "reference_rule": "Do not autocorrect the name into an account guess or learn from an unrelated result.",
+    "instagram_status": "Official handle supplied by user on 2026-10-03; current public claims still require source verification."
   },
   "established_content_knowledge": {
     "confirmed_facts": [
@@ -185,7 +187,7 @@
   },
   "fixed_footer": {
     "standard_lines": [
-      "💫 Managed by: @famebrosstudio"
+      "ðŸ’« Managed by: @famebrosstudio"
     ],
     "status": "Agency credit only. No brand contact is established.",
     "usage": "Use only in an approved Famebros output.",
@@ -261,7 +263,7 @@
     "scenario": "Name and edit teaser",
     "caption_body": "OLVKIIXK begins here. One exact name, one approved visual direction and more verified details to come.",
     "footer": [
-      "💫 Managed by: @famebrosstudio"
+      "ðŸ’« Managed by: @famebrosstudio"
     ],
     "hashtags": [
       "#OLVKIIXK",
@@ -275,7 +277,7 @@
       "OLVKIIXK edits",
       "OLVKIIXK information"
     ],
-    "full_caption": "OLVKIIXK begins here. One exact name, one approved visual direction and more verified details to come.\n\n💫 Managed by: @famebrosstudio\n\n#OLVKIIXK #BrandEdit #VisualEdit\n\n[OLVKIIXK, OLVKIIXK official, OLVKIIXK brand, OLVKIIXK edits, OLVKIIXK information]",
+    "full_caption": "OLVKIIXK begins here. One exact name, one approved visual direction and more verified details to come.\n\nðŸ’« Managed by: @famebrosstudio\n\n#OLVKIIXK #BrandEdit #VisualEdit\n\n[OLVKIIXK, OLVKIIXK official, OLVKIIXK brand, OLVKIIXK edits, OLVKIIXK information]",
     "validation": {
       "hashtags": 3,
       "seo_phrases": 5,
@@ -325,7 +327,6 @@
       "Location"
     ],
     "digital": [
-      "Instagram",
       "Website",
       "Email",
       "Phone",
@@ -345,17 +346,30 @@
       "Edit style",
       "References"
     ],
-    "priority": "Confirm the exact identity before any public content is produced."
+    "priority": "Confirm exact brand spelling, category, owner, audience and location; the handle alone does not establish products or services."
   },
   "sources": {
     "user_facts": [
       "Working name OLVKIIXK.",
       "Edit-led content note.",
-      "Not started yet status."
+      "Not started yet status.",
+      "Official Instagram handle supplied directly by user on 2026-10-03."
     ],
     "public_sources": [],
     "public_search_note": "Exact-name searches on 2026-09-26 did not return a trustworthy official identity.",
     "internal_dataset": "Famebros_Brand_Caption_Dataset.json record olvkiixk.",
     "source_rule": "Only direct user or owner confirmation may establish this brand's identity."
+  },
+  "research_update": {
+    "checked_on": "2026-10-03",
+    "official_account": {
+      "platform": "Instagram",
+      "handle": "@olvkiixk",
+      "url": "https://www.instagram.com/olvkiixk/",
+      "identity_authority": "User supplied as official"
+    },
+    "source_urls": [],
+    "observations": [],
+    "rule": "Directory, creator and indexed-post facts are leads; reconfirm current contacts, offers and commercial details before public use."
   }
 }
