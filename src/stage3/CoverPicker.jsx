@@ -77,8 +77,8 @@ export default function CoverPicker({ platform, files = [], cover, onChange }) {
       <input ref={inputRef} type="file" accept="image/jpeg,image/png,image/webp" hidden onChange={(event) => { importCover(event.target.files?.[0]); event.target.value = ''; }} />
     </div>
     {videoUrl && <div className="s3-frame-picker">
-      <video ref={videoRef} src={videoUrl} preload="metadata" muted playsInline onLoadedMetadata={(event) => { setDuration(event.currentTarget.duration || 0); setTime(0); }} onSeeked={(event) => setTime(event.currentTarget.currentTime || 0)} />
-      <label><span>Choose a frame · {time.toFixed(1)}s</span><input type="range" min="0" max={duration || 0} step="0.1" value={Math.min(time, duration || 0)} onChange={(event) => { const next = Number(event.target.value); setTime(next); if (videoRef.current) videoRef.current.currentTime = next; }} disabled={!duration || busy} /></label>
+      <video ref={videoRef} src={videoUrl} preload="metadata" muted playsInline onLoadedMetadata={(event) => { const length = Number.isFinite(event.currentTarget.duration) ? event.currentTarget.duration : 0; setDuration(length); setTime((current) => Math.min(current, length)); }} />
+      <label><span>Choose a frame · {time.toFixed(1)}s</span><input type="range" min="0" max={duration || 0} step="0.1" value={Math.min(time, duration || 0)} onChange={(event) => { const next = Number(event.target.value); setTime(next); const video = videoRef.current; if (video && Number.isFinite(next)) video.currentTime = next; }} disabled={!duration || busy} /></label>
       <button type="button" className="s3-mini-btn" onClick={useFrame} disabled={!duration || busy}>Use selected frame</button>
     </div>}
     {!videoUrl && <small className="s3-subnote">Attach a video in Stage 2 to choose a frame. Uploaded covers are prepared as {FORMATS[platform].label} JPEGs.</small>}
