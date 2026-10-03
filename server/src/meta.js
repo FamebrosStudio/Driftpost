@@ -344,7 +344,10 @@ export async function discoverInstagramAccount({ igUserId, pageToken, username }
   } catch (e) {
     value = { ok: false, reason: 'unavailable', message: e?.message || '' };
   }
-  discoveryCache.set(cacheKey, { at: Date.now(), value });
+  // Cache only successful resolutions. Permission failures can become valid
+  // immediately after a user updates Meta's Login for Business config and
+  // reconnects; caching those failures makes the UI lie for the full TTL.
+  if (value.ok) discoveryCache.set(cacheKey, { at: Date.now(), value });
   return value;
 }
 

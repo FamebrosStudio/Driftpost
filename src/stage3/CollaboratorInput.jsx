@@ -21,7 +21,7 @@ const shortId = (id) => {
 
 const MISS_TEXT = {
   'not-found': 'no ID — will tag by username',
-  permission: 'needs instagram_manage_insights',
+  permission: 'Meta permission missing — add instagram_manage_insights to the Facebook Login for Business configuration, then reconnect Instagram.',
   unavailable: 'Meta could not answer — will tag by username',
   'no-connection': 'connect an Instagram account to resolve',
 };
