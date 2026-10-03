@@ -676,9 +676,14 @@ export async function generateCaptions(summary, opts = {}) {
 }
 
 function xaiError(data, res, rawBody = '') {
+  const trimmedBody = rawBody.trim();
+  const bodyDetail = trimmedBody && !trimmedBody.startsWith('<')
+    ? trimmedBody.replace(/[\r\n\t]+/g, ' ').slice(0, 400)
+    : '';
   const msg = data?.error?.message || data?.error?.detail || data?.error || data?.message
-    || (rawBody.trim().startsWith('{') ? rawBody.slice(0, 400) : '')
+    || bodyDetail
     || `xAI error ${res.status}`;
+  console.error(`[ai] xAI request rejected (${res.status}); request id: ${res.headers.get('x-request-id') || res.headers.get('request-id') || 'unavailable'}; detail: ${String(msg).slice(0, 400)}`);
   if (res.status === 401) throw new Error('AI key rejected. Check XAI_API_KEY.');
   if (res.status === 402 || /credit|balance|payment|billing/i.test(String(msg))) {
     throw new Error('AI out of credits. Top up the xAI account, then retry.');
