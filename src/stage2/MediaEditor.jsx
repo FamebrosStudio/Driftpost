@@ -65,7 +65,7 @@ function cropWindow(box, sw, sh, ratio) {
   return { x, y, w: Math.max(1, w), h: Math.max(1, h) };
 }
 
-export default function MediaEditor({ entry, onClose, onApply }) {
+export default function MediaEditor({ entry, onClose, onApply, onChooseMusic }) {
   const isVideo = entry.type.startsWith('video/');
   const [bmp, setBmp] = useState(null);
   const [vidEl, setVidEl] = useState(null);
@@ -593,6 +593,7 @@ export default function MediaEditor({ entry, onClose, onApply }) {
             <button type="button" className="s2-done" disabled={busy || !ready} onClick={done}>
               {busy ? (busyText || 'Saving…') : isVideo ? 'Done editing (render video)' : 'Done editing'}
             </button>
+            {isVideo && onChooseMusic && <button type="button" className="s2-editor-music" disabled={busy} onClick={onChooseMusic}>Add licensed music</button>}
             <button type="button" className="s2-cancel" onClick={onClose}>Cancel</button>
           </div>
         </div>

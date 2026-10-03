@@ -21,7 +21,6 @@ export async function mixMusicIntoVideo(videoFile, audioBlob, { audioContext, mu
   video.playsInline = true;
   video.preload = 'auto';
   music.preload = 'auto';
-  video.muted = true;
 
   let recorder;
   let animation = 0;
@@ -44,11 +43,12 @@ export async function mixMusicIntoVideo(videoFile, audioBlob, { audioContext, mu
     const videoSource = context.createMediaElementSource(video);
     const videoGain = context.createGain();
     videoGain.gain.value = 1;
-    videoSource.connect(videoGain).connect(context.destination);
+    // Send source audio only into the recorded stream, not the user's speakers.
+    videoSource.connect(videoGain);
     const musicSource = context.createMediaElementSource(music);
     const musicGain = context.createGain();
     musicGain.gain.value = Math.max(0, Math.min(1, musicVolume));
-    musicSource.connect(musicGain).connect(context.destination);
+    musicSource.connect(musicGain);
     const audioDestination = context.createMediaStreamDestination();
     videoGain.connect(audioDestination);
     musicGain.connect(audioDestination);

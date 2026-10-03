@@ -189,21 +189,6 @@
 .s3-approval-choice small { margin-top: 4px; color: var(--muted); font-size: 10px; line-height: 1.45; }
 .s3-review-links { display: flex; flex-direction: column; align-items: center; gap: 5px; width: min(680px, 100%); color: var(--muted); font-size: 10px; overflow-wrap: anywhere; }
 .s3-review-links a { color: var(--acc); font-weight: 650; }
-.s3-epidemic { margin-top: 12px; padding: 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--panel); color: var(--ink); }
-.s3-epidemic summary { cursor: pointer; font-size: 12px; font-weight: 700; }
-.s3-epidemic > p { margin: 8px 0; color: var(--muted); font-size: 11px; line-height: 1.5; }
-.s3-epidemic form { display: flex; gap: 6px; }
-.s3-epidemic input { min-width: 0; flex: 1; border: 1px solid var(--line-hard); border-radius: 8px; padding: 8px; background: var(--panel2); color: var(--ink); font: inherit; font-size: 11px; }
-.s3-epidemic button { border: 0; border-radius: 8px; padding: 8px 11px; background: var(--acc); color: var(--acc-ink); font-size: 11px; font-weight: 700; cursor: pointer; }
-.s3-epidemic button:disabled { opacity: .55; cursor: wait; }
-.s3-epidemic .s3-epidemic-error { color: var(--danger, #e5484d); }
-.s3-epidemic .s3-epidemic-status { color: var(--ok); }
-.s3-epidemic ul { display: grid; gap: 5px; margin: 9px 0 0; padding: 0; list-style: none; }
-.s3-epidemic li { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 7px 0; border-top: 1px solid var(--line); }
-.s3-epidemic li b, .s3-epidemic li small { display: block; }
-.s3-epidemic li b { font-size: 11px; }
-.s3-epidemic li small { margin-top: 3px; color: var(--muted); font-size: 10px; }
-.s3-epidemic li em { flex: 0 0 auto; color: var(--muted); font-size: 9px; font-style: normal; }
 @media (max-width: 480px) { .s3-repeat-row { grid-template-columns: 1fr; gap: 0; } }
 @keyframes s3Zoom { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
 

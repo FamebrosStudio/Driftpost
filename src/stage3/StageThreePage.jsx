@@ -10,8 +10,6 @@ import { logCaptions, logPost } from '../history/log.js';
 import ProgressStepper from './ProgressStepper.jsx';
 import PlatformTabs from './PlatformTabs.jsx';
 import Workspace from './Workspace.jsx';
-import MediaPreview from './MediaPreview.jsx';
-import EpidemicCatalog from '../music/EpidemicCatalog.jsx';
 import ScheduleModal from './ScheduleModal.jsx';
 import './stage3.css';
 import { WorkspaceNav } from '../workspace/Workspace.jsx';
@@ -365,17 +363,6 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
       stored[platform] = t?.raw instanceof Blob ? { name: t.name, blob: t.raw } : null;
       return { ...(prev || {}), files: prev?.files || [], coverMap: stored };
     });
-  };
-  const onMusicApplied = async (file) => {
-    const nextFiles = [{ raw: file, name: file.name, size: `${(file.size / 1024 / 1024).toFixed(1)} MB`, type: file.type }];
-    setFiles(nextFiles);
-    localStorage.removeItem(cloudCacheKey);
-    setReviewed({});
-    save(scopedKey('driftpost-stage3-reviewed', userId), {});
-    await updateVault(mediaKey, (previous) => ({
-      ...(previous || {}),
-      files: [{ name: file.name, type: file.type, blob: file }],
-    }));
   };
   // Reviewing a card is the approval signal: the server keeps this caption as a
   // reference so the next generation for the same brand writes closer to it.
@@ -1123,7 +1110,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
             <PlatformTabs platforms={platforms} tab={tab} setTab={setTab} statusOf={statusOf} greyed={greyed} />
             {tab && (
               <div key={tab} className="s3-cols" style={{ marginTop: 14 }}>
-                <div><MediaPreview files={files} /><EpidemicCatalog token={session.access_token} files={files} onApply={onMusicApplied} /></div>
+                <MediaPreview files={files} />
                 <Workspace
                   pid={tab}
                   accounts={accountsFor(tab)}

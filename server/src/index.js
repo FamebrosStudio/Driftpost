@@ -317,6 +317,7 @@ const aiLimit = limit({ windowMs: 60 * 60 * 1000, max: 30, ns: 'ai', key: userKe
 const oauthLimit = limit({ windowMs: 60 * 1000, max: 20, ns: 'oauth', key: userKey });
 const connectionsLimit = limit({ windowMs: 60 * 1000, max: 60, ns: 'conn', key: userKey });
 const musicLimit = limit({ windowMs: 60 * 1000, max: 30, ns: 'music', key: userKey });
+const musicPreviewResourceLimit = limit({ windowMs: 60 * 1000, max: 1200, ns: 'music-preview', key: (req) => `ip:${req.ip}` });
 // The collaborator picker asks Meta on every settled keystroke, so it needs
 // more headroom than the other read endpoints — while still being bounded.
 const igLookupLimit = limit({ windowMs: 60 * 1000, max: 120, ns: 'iglookup', key: userKey });
@@ -434,6 +435,12 @@ app.get('/health', (_req, res) => res.set('Cache-Control', 'no-store').json({
 
 // Epidemic Sound catalog access stays on the server so the provider key is
 // never sent to the browser. Configure EPIDEMIC_SOUND_API_KEY in Render.
+const musicPreviewSessions = new Map();
+setInterval(() => {
+  const now = Date.now();
+  for (const [id, stream] of musicPreviewSessions) if (stream.expiresAt <= now) musicPreviewSessions.delete(id);
+}, 60_000).unref();
+
 app.get('/api/music/search', requireUser, musicLimit, async (req, res) => {
   const apiKey = String(process.env.EPIDEMIC_SOUND_API_KEY || '').trim();
   if (!apiKey) return res.status(503).json({ error: 'Epidemic Sound is not configured. Add EPIDEMIC_SOUND_API_KEY to the server environment.' });
@@ -474,6 +481,97 @@ app.get('/api/music/search', requireUser, musicLimit, async (req, res) => {
   } catch (error) {
     const timedOut = error?.name === 'TimeoutError' || error?.name === 'AbortError';
     return res.status(502).json({ error: timedOut ? 'Epidemic Sound took too long to respond.' : 'Could not reach Epidemic Sound. Try again shortly.' });
+  }
+});
+
+// Epidemic previews are HLS manifests plus short-lived CDN cookies. Proxy
+// playlist/segment requests so browser playback never receives the API key or
+// needs third-party cookies. The random session URL expires quickly.
+app.get('/api/music/tracks/:trackId/preview', requireUser, musicLimit, async (req, res) => {
+  const apiKey = String(process.env.EPIDEMIC_SOUND_API_KEY || '').trim();
+  const trackId = String(req.params.trackId || '');
+  if (!apiKey) return res.status(503).json({ error: 'Epidemic Sound is not configured on the server.' });
+  if (!/^[A-Za-z0-9_-]{1,100}$/.test(trackId)) return res.status(400).json({ error: 'Invalid music track.' });
+  try {
+    const response = await fetch(`https://partner-content-api.epidemicsound.com/v0/tracks/${encodeURIComponent(trackId)}/hls`, {
+      headers: { Accept: 'application/json', Authorization: `Bearer ${apiKey}` },
+      signal: AbortSignal.timeout(12000),
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok || !data.url || !data.cookie?.name || !data.cookie?.value) {
+      const status = response.status === 404 ? 404 : response.status === 429 ? 429 : response.status === 403 ? 403 : 502;
+      return res.status(status).json({ error: status === 403 ? 'Epidemic Sound did not authorize preview playback for this track.' : status === 404 ? 'This track is no longer available.' : status === 429 ? 'Epidemic Sound rate limit reached. Try again shortly.' : 'Could not prepare this track preview.' });
+    }
+    const streamUrl = new URL(data.url);
+    const cookieDomain = String(data.cookie.domain || streamUrl.hostname).replace(/^\./, '').toLowerCase();
+    const cookieName = String(data.cookie.name);
+    const cookieValue = String(data.cookie.value);
+    if (streamUrl.protocol !== 'https:' || !(streamUrl.hostname === cookieDomain || streamUrl.hostname.endsWith(`.${cookieDomain}`)) || !cookieDomain.endsWith('epidemicsite.com') || !/^[A-Za-z0-9_-]{1,100}$/.test(cookieName) || /[\r\n]/.test(cookieValue)) {
+      return res.status(502).json({ error: 'Epidemic Sound returned an invalid preview URL.' });
+    }
+    const expiresAt = Math.min(Date.parse(data.cookie.expires) || Date.now() + 5 * 60_000, Date.now() + 15 * 60_000);
+    if (expiresAt <= Date.now()) return res.status(502).json({ error: 'This track preview expired. Press Preview to try again.' });
+    const id = crypto.randomBytes(24).toString('base64url');
+    musicPreviewSessions.set(id, {
+      host: streamUrl.hostname.toLowerCase(),
+      baseUrl: streamUrl.href,
+      cookieName,
+      cookieValue,
+      cookieDomain,
+      expiresAt,
+    });
+    res.set('Cache-Control', 'no-store').json({
+      url: `/api/music/preview/${id}/resource?url=${encodeURIComponent(streamUrl.href)}`,
+      expiresAt: new Date(expiresAt).toISOString(),
+    });
+  } catch (error) {
+    return res.status(502).json({ error: error?.name === 'TimeoutError' ? 'Epidemic Sound preview took too long to prepare.' : 'Could not reach Epidemic Sound preview.' });
+  }
+});
+
+app.get('/api/music/preview/:streamId/resource', musicPreviewResourceLimit, async (req, res) => {
+  const stream = musicPreviewSessions.get(String(req.params.streamId || ''));
+  if (!stream || stream.expiresAt <= Date.now()) {
+    musicPreviewSessions.delete(String(req.params.streamId || ''));
+    return res.status(410).json({ error: 'This preview expired. Press Preview to start it again.' });
+  }
+  let target;
+  const requestedUrl = String(req.query.url || '');
+  if (requestedUrl.length > 2048) return res.status(400).end();
+  try { target = new URL(requestedUrl); } catch { return res.status(400).end(); }
+  const host = target.hostname.toLowerCase();
+  if (target.protocol !== 'https:' || !(host === stream.host || host.endsWith(`.${stream.cookieDomain}`)) || !host.endsWith('epidemicsite.com')) return res.status(400).end();
+  try {
+    const upstream = await fetch(target, {
+      headers: host === stream.host || host.endsWith(`.${stream.cookieDomain}`) ? { Cookie: `${stream.cookieName}=${stream.cookieValue}` } : {},
+      signal: AbortSignal.timeout(20000),
+    });
+    if (!upstream.ok || !upstream.body) return res.status(upstream.status || 502).end();
+    const contentType = String(upstream.headers.get('content-type') || '');
+    if (/mpegurl/i.test(contentType) || target.pathname.endsWith('.m3u8')) {
+      const manifest = await upstream.text();
+      const route = `/api/music/preview/${req.params.streamId}/resource?url=`;
+      const rewrite = (reference) => {
+        try {
+          const absolute = new URL(reference, target);
+          const name = absolute.hostname.toLowerCase();
+          if (absolute.protocol !== 'https:' || !(name === stream.host || name.endsWith(`.${stream.cookieDomain}`)) || !name.endsWith('epidemicsite.com')) return reference;
+          return `${route}${encodeURIComponent(absolute.href)}`;
+        } catch { return reference; }
+      };
+      const rewritten = manifest
+        .replace(/URI="([^"]+)"/g, (_match, uri) => `URI="${rewrite(uri)}"`)
+        .split(/\r?\n/).map((line) => line && !line.startsWith('#') ? rewrite(line) : line).join('\n');
+      return res.status(200).type('application/vnd.apple.mpegurl').set('Cache-Control', 'no-store').send(rewritten);
+    }
+    res.status(200).set({
+      'Content-Type': contentType || 'application/octet-stream',
+      'Cache-Control': 'no-store',
+      'X-Content-Type-Options': 'nosniff',
+    });
+    Readable.fromWeb(upstream.body).pipe(res);
+  } catch (error) {
+    return res.status(502).json({ error: error?.name === 'TimeoutError' ? 'Music preview segment timed out.' : 'Could not load music preview.' });
   }
 });
 

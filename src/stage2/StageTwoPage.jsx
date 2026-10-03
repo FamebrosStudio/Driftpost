@@ -12,6 +12,7 @@ import CrosspostToggle from './CrosspostToggle.jsx';
 import OutputContainer from './OutputContainer.jsx';
 import ContinueButton from './ContinueButton.jsx';
 import PageLoading from '../PageLoading.jsx';
+import EpidemicCatalog from '../music/EpidemicCatalog.jsx';
 import './stage2.css';
 import { WorkspaceNav } from '../workspace/Workspace.jsx';
 import { hasAiAccess } from '../ai-access.js';
@@ -51,6 +52,8 @@ export default function StageTwoPage({ session, onBack, onSignOut, onNavigate, o
   const say = (msg, kind = 'ok') => { setAiMsg(msg); setAiMsgKind(kind); };
   const [crosspost, setCrosspost] = useState(() => load('driftpost-stage2-crosspost', false));
   const [editing, setEditing] = useState(-1);
+  const [musicVideoIndex, setMusicVideoIndex] = useState(-1);
+  const [musicFocusToken, setMusicFocusToken] = useState(0);
   const [saveTick, setSaveTick] = useState(false);
 
   useEffect(() => { document.title = 'Stage 2 · Driftpost'; }, []);
@@ -145,6 +148,16 @@ export default function StageTwoPage({ session, onBack, onSignOut, onNavigate, o
       ? { raw: outFile, name: outFile.name, size: `${(outFile.size / 1024 / 1024).toFixed(1)} MB`, type: outFile.type }
       : f)));
     setEditing(-1);
+  };
+  const applyMusicAt = (i, outFile) => {
+    setFiles((fs) => fs.map((f, j) => j === i
+      ? { raw: outFile, name: outFile.name, size: `${(outFile.size / 1024 / 1024).toFixed(1)} MB`, type: outFile.type }
+      : f));
+  };
+  const chooseMusicForVideo = (i) => {
+    setMusicVideoIndex(i);
+    setEditing(-1);
+    setMusicFocusToken((n) => n + 1);
   };
 
   const requestCaptions = (pid) => fetchCaptions(session.access_token, {
@@ -247,20 +260,6 @@ export default function StageTwoPage({ session, onBack, onSignOut, onNavigate, o
         </header>
         <ProgressStepper current={2} />
 
-        <section className="s2-sec" aria-label="Add media">
-          <div className="s2-sec-head">
-            <h2>Add media</h2>
-            <span className="s2-count">{files.length}/10</span>
-          </div>
-          <p className="sub">Images or video — shown on every selected platform. Tap Edit on a photo or video to crop it.</p>
-          <MediaUploader count={files.length} onFiles={addFiles} canUseAi={canUseAi} />
-          <MediaGallery files={files} onRemove={removeAt} onEdit={setEditing} />
-        </section>
-
-        {basePlatforms.includes('instagram') && basePlatforms.includes('facebook') && (
-          <CrosspostToggle on={crosspostOn} onChange={setCrosspostSaved} />
-        )}
-
         <section className="s2-sec" aria-label={canUseAi ? 'Write prompt' : 'Write content'}>
           <h2>{canUseAi ? 'Write prompt' : 'Write your content'}</h2>
           {canUseAi ? <>
@@ -288,6 +287,24 @@ export default function StageTwoPage({ session, onBack, onSignOut, onNavigate, o
           )}
         </section>
 
+        <section className="s2-sec s2-music-section" aria-label="Licensed music">
+          <EpidemicCatalog token={session.access_token} files={files} selectedIndex={musicVideoIndex} onSelectVideo={setMusicVideoIndex} onApply={applyMusicAt} focusToken={musicFocusToken} />
+        </section>
+
+        <section className="s2-sec" aria-label="Add media">
+          <div className="s2-sec-head">
+            <h2>Add media</h2>
+            <span className="s2-count">{files.length}/10</span>
+          </div>
+          <p className="sub">Images or video — shown on every selected platform. Tap Edit on a photo or video to crop it.</p>
+          <MediaUploader count={files.length} onFiles={addFiles} canUseAi={canUseAi} />
+          <MediaGallery files={files} onRemove={removeAt} onEdit={setEditing} />
+        </section>
+
+        {basePlatforms.includes('instagram') && basePlatforms.includes('facebook') && (
+          <CrosspostToggle on={crosspostOn} onChange={setCrosspostSaved} />
+        )}
+
         {targetPlatforms.length > 0 && (
           <section className="s2-sec" aria-label={canUseAi ? 'AI output' : 'Platform drafts'}>
             <div className="s2-sec-head">
@@ -303,7 +320,7 @@ export default function StageTwoPage({ session, onBack, onSignOut, onNavigate, o
       <ContinueButton disabled={!canContinue} saved={saveTick} onClick={cont} />
       {editing >= 0 && files[editing] && (
         <Suspense fallback={<PageLoading label="Loading media editor…" />}>
-          <MediaEditor entry={files[editing]} onClose={() => setEditing(-1)} onApply={(f) => applyEditAt(editing, f)} />
+          <MediaEditor entry={files[editing]} onClose={() => setEditing(-1)} onApply={(f) => applyEditAt(editing, f)} onChooseMusic={files[editing].type.startsWith('video/') ? () => chooseMusicForVideo(editing) : undefined} />
         </Suspense>
       )}
     </div>
