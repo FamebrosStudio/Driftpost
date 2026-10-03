@@ -88,6 +88,15 @@ const PUB_PAGES = [
   { id: 'security', label: 'Security', hidden: true },
 ];
 
+const PUBLIC_SEO = {
+  home: { title: 'Driftpost | Social Media Scheduler for Multiple Brands', description: 'Schedule and publish social media posts across Instagram, Facebook, YouTube and X. Manage multiple brands and accounts in one workspace.' },
+  about: { title: 'Multi-Brand Social Media Management for Agencies | Driftpost', description: 'See how Driftpost helps agencies, studios and creators organize client brands, social accounts, content and publishing in one workspace.' },
+  how: { title: 'How to Schedule and Publish Social Media Posts | Driftpost', description: 'Learn how to connect social accounts, organize brands, prepare platform-specific content and schedule posts with Driftpost.' },
+  platforms: { title: 'Publish to Instagram, Facebook, YouTube and X | Driftpost', description: 'Explore Driftpost publishing options for Instagram, Facebook Pages, YouTube channels and X accounts, including platform-specific post settings.' },
+  faq: { title: 'Social Media Scheduler FAQs | Driftpost', description: 'Answers about multi-platform publishing, scheduling, account connections, permissions, privacy and using Driftpost for multiple brands.' },
+  contact: { title: 'Contact Driftpost Support', description: 'Contact the Driftpost team for account connection help, brand onboarding, publishing issues and product questions.' },
+};
+
 const pageFromUrl = () => {
   // Real multi-page URLs (/privacy) first, legacy hash (#/privacy) second.
   const path = String(window.location.pathname || '/').replace(/^\/+|\/+$/g, '').split('/')[0];
@@ -376,7 +385,7 @@ function Landing({ onEnter, session, pubPage, setPubPage }) {
       <header className="landing-in">
         <div className="landing-kicker">One workspace. Four platforms.</div>
         <h1><SpotLine text="Post once." /><br /><SpotLine text="Everywhere." /></h1>
-        <p>Create for four platforms from one workspace.</p>
+        <p>Schedule and publish social media posts across Instagram, Facebook, YouTube and X. Manage multiple brands and accounts in one workspace, with content tailored to each platform.</p>
         <div className="landing-cta">
           <button className="skew-btn grad" onClick={onEnter}><span>{session ? 'Enter console' : 'Get started free ’'}</span></button>
         </div>
@@ -528,10 +537,26 @@ export default function App() {
     // Landing page is always public and indexable.
     // Console/auth are private (noindex for logged-in users).
     const isLanding = entry === 'landing' && !approvalId;
-    document.title = approvalId ? 'Review post · Driftpost' : isLanding
-      ? (pubPage === 'home' ? 'Driftpost — Publish Everywhere' : `${PUB_PAGES.find((p) => p.id === pubPage)?.label} · Driftpost`)
-      : (session ? 'Console · Driftpost' : 'Sign in · Driftpost');
+    const seo = PUBLIC_SEO[pubPage] || {
+      title: `${PUB_PAGES.find((p) => p.id === pubPage)?.label || 'Driftpost'} | Driftpost`,
+      description: 'Driftpost is a social media publishing workspace for managing multiple brands and connected platform accounts.',
+    };
+    const pageUrl = `${window.location.origin}${pubPage === 'home' ? '/' : `/${pubPage}`}`;
+    document.title = approvalId ? 'Review post | Driftpost' : isLanding
+      ? seo.title
+      : (session ? 'Console | Driftpost' : 'Sign in | Driftpost');
     document.querySelector('meta[name="robots"]')?.setAttribute('content', isLanding ? 'index, follow, max-image-preview:large' : 'noindex, nofollow');
+    document.querySelector('meta[name="description"]')?.setAttribute('content', seo.description);
+    const canonical = document.querySelector('link[rel="canonical"]');
+    if (canonical && isLanding) canonical.setAttribute('href', pageUrl);
+    const socialMeta = {
+      'meta[property="og:title"]': seo.title,
+      'meta[property="og:description"]': seo.description,
+      'meta[property="og:url"]': pageUrl,
+      'meta[name="twitter:title"]': seo.title,
+      'meta[name="twitter:description"]': seo.description,
+    };
+    for (const [selector, value] of Object.entries(socialMeta)) document.querySelector(selector)?.setAttribute('content', value);
   }, [session, entry, pubPage, approvalId]);
 
   useEffect(() => { window.scrollTo(0, 0); }, [pubPage]);
