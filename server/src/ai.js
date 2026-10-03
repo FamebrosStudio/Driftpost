@@ -419,7 +419,7 @@ export async function generateCaptions(summary, opts = {}) {
   let text;
   let usage;
   let lastErr = null;
-  let retryFeedback = '';
+  let retrySystemFeedback = '';
   // One automatic retry: a truncated or malformed first reply is usually
   // followed by a clean one — the user never sees the hiccup.
   // Single-card output caps are small (one card, not four).
@@ -430,12 +430,12 @@ export async function generateCaptions(summary, opts = {}) {
       if (trends) {
         // Live SEO via the current Agent Tools API (Responses endpoint).
         // Old chat-completions `search_parameters` is deprecated and errors out.
-        const r = await callResponsesWithSearch({ model, systemText, userMsg: `${userMsg}${retryFeedback}`, maxTokens: only ? 500 : 950 });
+        const r = await callResponsesWithSearch({ model, systemText: `${systemText}${retrySystemFeedback}`, userMsg, maxTokens: only ? 500 : 950 });
         text = r.text;
         usage = r.usage;
       } else {
         // Keep a four-platform reply compact; retry with more room if truncated.
-        const r = await callChat({ model, systemText, userMsg: `${userMsg}${retryFeedback}`, images, maxTokens: attempt ? outTokensRetry : outTokens });
+        const r = await callChat({ model, systemText: `${systemText}${retrySystemFeedback}`, userMsg, images, maxTokens: attempt ? outTokensRetry : outTokens });
         text = r.text;
         usage = r.usage;
       }
@@ -460,7 +460,7 @@ export async function generateCaptions(summary, opts = {}) {
       // Only unreadable/empty payloads retry — config/credit errors fail fast.
       if (!/unreadable|empty answer|caption quality check/i.test(e.message)) throw e;
       if (/caption quality check/i.test(e.message)) {
-        retryFeedback = `\n\nFINAL QUALITY REPAIR: Your previous draft failed because ${e.message.replace(/^caption quality check:\s*/i, '')}. Rewrite every required platform card with a complete, useful body, and use only the selected brand. Do not repeat that defect.`;
+        retrySystemFeedback = `\n\nSERVER QUALITY REPAIR (required): Your previous draft failed validation because ${e.message.replace(/^caption quality check:\s*/i, '')}. Rewrite the failed platform card with a complete, useful prose body in its required JSON field. For YouTube, put at least two complete SEO sentences in youtube.description; a title, tags, hashtags, or footer alone do not count as a description. Keep the requested JSON shape and use only the selected brand's verified facts.`;
       }
       if (attempt === 0) await new Promise((r) => setTimeout(r, 800));
     }
