@@ -212,7 +212,17 @@ export function groupBrands(connections) {
         if (brand.map[p]) continue;
         let best = null;
         let bestScore = 0;
+        // Meta's OAuth gives us the definitive Page ↔ Instagram relationship.
+        // Prefer that over name similarity so different handles/Page labels
+        // still appear as one business account group.
+        if (anchorPlat === 'facebook' && p === 'instagram') {
+          const page = connections.find((c) => c.id === brand.map.facebook);
+          best = (byPlat.instagram || []).find((c) => !used.has(c.id)
+            && String(c.linked_page_id || '') === String(page?.platform_account_id || '')) || null;
+          if (best) bestScore = 100;
+        }
         for (const c of byPlat[p] || []) {
+          if (best) break;
           if (used.has(c.id)) continue;
           const s = brandScore(brand.label, c.account_name, rare);
           if (s > bestScore) { bestScore = s; best = c; }

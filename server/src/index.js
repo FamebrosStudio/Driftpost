@@ -642,10 +642,21 @@ app.get('/api/ai/access', requireUser, requireAiAccess, (_req, res) => res.json(
 app.get('/api/connections', requireUser, connectionsLimit, burstLimit, async (req, res) => {
   try {
     const { data, error } = await supabase.from('platform_connections')
-      .select('id, platform, platform_account_id, account_name, avatar_url, created_at')
+      .select('id, platform, platform_account_id, account_name, avatar_url, created_at, encrypted_tokens')
       .eq('user_id', req.user.id);
     if (error) return res.status(500).json({ error: 'Unable to load accounts' });
-    res.json({ connections: data });
+    // Instagram is connected through a Facebook Page in Meta OAuth. Use that
+    // actual relationship for brand grouping instead of guessing from names
+    // (which often differ, e.g. an IG handle vs the Page's display name).
+    // Never send encrypted token material to the browser.
+    const connections = (data || []).map(({ encrypted_tokens, ...connection }) => {
+      if (connection.platform !== 'instagram') return connection;
+      try {
+        const pageId = decryptJson(encrypted_tokens)?.page_id;
+        return pageId ? { ...connection, linked_page_id: String(pageId) } : connection;
+      } catch { return connection; }
+    });
+    res.json({ connections });
   } catch {
     res.status(500).json({ error: 'Unable to load accounts' });
   }
