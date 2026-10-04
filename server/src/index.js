@@ -308,6 +308,10 @@ const userKey = (req) => `u:${req.user?.id || req.ip}`;
 const burstLimit = limit({ windowMs: 60 * 1000, max: 180, ns: 'burst', key: (req) => `ip:${req.ip}` });
 const strictBurstLimit = limit({ windowMs: 60 * 1000, max: 30, ns: 'strict', key: (req) => `ip:${req.ip}` });
 const publishLimit = limit({ windowMs: 60 * 1000, max: 10, ns: 'pub', key: userKey });
+// Group scheduling makes one authenticated request per account. Keep a
+// dedicated bound high enough for a 20–25-account batch without weakening the
+// immediate-publish limit.
+const scheduleRequestLimit = limit({ windowMs: 60 * 1000, max: 30, ns: 'schedule', key: userKey });
 // A Post All fan-out may legitimately submit dozens of independent account
 // jobs in one minute. Keep a firm per-IP/user bound without treating one
 // reviewed batch like an abusive request burst.
@@ -485,39 +489,65 @@ app.get('/api/music/search', requireUser, musicLimit, async (req, res) => {
   }
 });
 
-// Epidemic previews are HLS manifests plus short-lived CDN cookies. Proxy
-// playlist/segment requests so browser playback never receives the API key or
-// needs third-party cookies. The random session URL expires quickly.
+// Epidemic previews are HLS manifests. Prefer their simpler /stream endpoint;
+// fall back to /hls for partner configurations that still require a short-lived
+// CDN cookie. Proxy every playlist/segment so neither API keys nor CDN cookies
+// are exposed to the browser.
 app.get('/api/music/tracks/:trackId/preview', requireUser, musicLimit, async (req, res) => {
   const apiKey = String(process.env.EPIDEMIC_SOUND_API_KEY || '').trim();
   const trackId = String(req.params.trackId || '');
   if (!apiKey) return res.status(503).json({ error: 'Epidemic Sound is not configured on the server.' });
   if (!/^[A-Za-z0-9_-]{1,100}$/.test(trackId)) return res.status(400).json({ error: 'Invalid music track.' });
   try {
-    const response = await fetch(`https://partner-content-api.epidemicsound.com/v0/tracks/${encodeURIComponent(trackId)}/hls`, {
-      headers: { Accept: 'application/json', Authorization: `Bearer ${apiKey}` },
-      signal: AbortSignal.timeout(25000),
-    });
-    const data = await response.json().catch(() => ({}));
-    if (!response.ok || !data.url || !data.cookie?.name || !data.cookie?.value) {
-      const status = response.status === 404 ? 404 : response.status === 429 ? 429 : response.status === 403 ? 403 : 502;
-      return res.status(status).json({ error: status === 403 ? 'Epidemic Sound did not authorize preview playback for this track.' : status === 404 ? 'This track is no longer available.' : status === 429 ? 'Epidemic Sound rate limit reached. Try again shortly.' : 'Could not prepare this track preview.' });
+    const upstreamHeaders = { Accept: 'application/json', Authorization: `Bearer ${apiKey}` };
+    const fetchPreview = async (kind) => {
+      const response = await fetch(`https://partner-content-api.epidemicsound.com/v0/tracks/${encodeURIComponent(trackId)}/${kind}`, {
+        headers: upstreamHeaders,
+        signal: AbortSignal.timeout(25000),
+      });
+      return { response, data: await response.json().catch(() => ({})), kind };
+    };
+    // HLS is the documented preview route and carries the CDN cookie needed
+    // for its manifest/segments. Try it first; /stream is a compatible
+    // fallback for partner keys that expose the cookie-free manifest only.
+    let preview = null;
+    for (const kind of ['hls', 'stream']) {
+      const attempt = await fetchPreview(kind);
+      preview = attempt;
+      const usable = attempt.response.ok && !!attempt.data.url
+        && (kind !== 'hls' || (!!attempt.data.cookie?.name && !!attempt.data.cookie?.value));
+      if (usable) break;
+    }
+    const { response, data } = preview;
+    if (!response.ok || !data.url || (preview.kind === 'hls' && (!data.cookie?.name || !data.cookie?.value))) {
+      const status = response.status === 404 ? 404 : response.status === 429 ? 429 : response.status === 403 ? 403 : response.status === 401 ? 502 : 502;
+      const error = response.status === 401
+        ? 'Epidemic Sound rejected the server API key. Check EPIDEMIC_SOUND_API_KEY.'
+        : response.status === 403
+          ? 'Epidemic Sound denied preview access to this track.'
+          : response.status === 404
+            ? 'This track is no longer available in the preview catalog.'
+            : response.status === 429
+              ? 'Epidemic Sound rate limit reached. Try again shortly.'
+              : 'Epidemic Sound could not prepare a preview stream. Try again shortly.';
+      return res.status(status).json({ error });
     }
     const streamUrl = new URL(data.url);
-    const cookieDomain = String(data.cookie.domain || streamUrl.hostname).replace(/^\./, '').toLowerCase();
-    const cookieName = String(data.cookie.name);
-    const cookieValue = String(data.cookie.value);
-    if (streamUrl.protocol !== 'https:' || !(streamUrl.hostname === cookieDomain || streamUrl.hostname.endsWith(`.${cookieDomain}`)) || !cookieDomain.endsWith('epidemicsite.com') || !/^[A-Za-z0-9_-]{1,100}$/.test(cookieName) || /[\r\n]/.test(cookieValue)) {
+    const cookieName = String(data.cookie?.name || '');
+    const cookieValue = String(data.cookie?.value || '');
+    const cookieDomain = String(data.cookie?.domain || streamUrl.hostname).replace(/^\./, '').toLowerCase();
+    const allowedHost = (host) => host === 'epidemicsite.com' || host.endsWith('.epidemicsite.com');
+    if (streamUrl.protocol !== 'https:' || !allowedHost(streamUrl.hostname.toLowerCase()) || !(streamUrl.hostname === cookieDomain || streamUrl.hostname.endsWith(`.${cookieDomain}`)) || !allowedHost(cookieDomain) || (cookieName && !/^[A-Za-z0-9_-]{1,100}$/.test(cookieName)) || /[\r\n]/.test(cookieValue)) {
       return res.status(502).json({ error: 'Epidemic Sound returned an invalid preview URL.' });
     }
-    const expiresAt = Math.min(Date.parse(data.cookie.expires) || Date.now() + 5 * 60_000, Date.now() + 15 * 60_000);
+    const expiresAt = Math.min(Date.parse(data.cookie?.expires || data.expires) || Date.now() + 5 * 60_000, Date.now() + 15 * 60_000);
     if (expiresAt <= Date.now()) return res.status(502).json({ error: 'This track preview expired. Press Preview to try again.' });
     const id = crypto.randomBytes(24).toString('base64url');
     musicPreviewSessions.set(id, {
       host: streamUrl.hostname.toLowerCase(),
       baseUrl: streamUrl.href,
-      cookieName,
-      cookieValue,
+      cookieName: cookieName || null,
+      cookieValue: cookieValue || null,
       cookieDomain,
       expiresAt,
     });
@@ -541,10 +571,11 @@ app.get('/api/music/preview/:streamId/resource', musicPreviewResourceLimit, asyn
   if (requestedUrl.length > 2048) return res.status(400).end();
   try { target = new URL(requestedUrl); } catch { return res.status(400).end(); }
   const host = target.hostname.toLowerCase();
-  if (target.protocol !== 'https:' || !(host === stream.host || host.endsWith(`.${stream.cookieDomain}`)) || !host.endsWith('epidemicsite.com')) return res.status(400).end();
+  const allowedHost = (value) => value === 'epidemicsite.com' || value.endsWith('.epidemicsite.com');
+  if (target.protocol !== 'https:' || !(host === stream.host || host.endsWith(`.${stream.cookieDomain}`)) || !allowedHost(host)) return res.status(400).end();
   try {
     const upstream = await fetch(target, {
-      headers: host === stream.host || host.endsWith(`.${stream.cookieDomain}`) ? { Cookie: `${stream.cookieName}=${stream.cookieValue}` } : {},
+      headers: stream.cookieName ? { Cookie: `${stream.cookieName}=${stream.cookieValue}` } : {},
       signal: AbortSignal.timeout(20000),
     });
     if (!upstream.ok || !upstream.body) return res.status(upstream.status || 502).end();
@@ -556,7 +587,7 @@ app.get('/api/music/preview/:streamId/resource', musicPreviewResourceLimit, asyn
         try {
           const absolute = new URL(reference, target);
           const name = absolute.hostname.toLowerCase();
-          if (absolute.protocol !== 'https:' || !(name === stream.host || name.endsWith(`.${stream.cookieDomain}`)) || !name.endsWith('epidemicsite.com')) return reference;
+          if (absolute.protocol !== 'https:' || !(name === stream.host || name.endsWith(`.${stream.cookieDomain}`)) || !allowedHost(name)) return reference;
           return `${route}${encodeURIComponent(absolute.href)}`;
         } catch { return reference; }
       };
@@ -1478,7 +1509,8 @@ async function validateCampaignInputs(req, res) {
   if (targets.some((t) => t.platform === 'x') && Array.from(caption).length > 280) return reject(400, 'X captions must be 280 characters or fewer.');
   if (targets.some((t) => t.platform === 'instagram') && caption.length > 2200) return reject(400, 'Instagram captions must be 2,200 characters or fewer.');
   if (!publishNow && !req.body.scheduled_at) return reject(400, 'Choose Post now or set a scheduled date and time.');
-  if (!publishNow && (!Number.isFinite(when) || when < Date.now() + 60_000 || when > Date.now() + 365 * 24 * 3600_000)) {
+  const requestStartedAt = Number(req.scheduleRequestStartedAt) || Date.now();
+  if (!publishNow && (!Number.isFinite(when) || when < requestStartedAt + 60_000 || when > Date.now() + 365 * 24 * 3600_000)) {
     return reject(400, 'Choose a time between 1 minute and 1 year from now.');
   }
   const byField = new Map();
@@ -1510,7 +1542,12 @@ async function validateCampaignInputs(req, res) {
   return { targets, caption, title, campaignName, when, publishNow, byField, files, byId };
 }
 
-app.post('/api/schedules/campaign', requireUser, strictBurstLimit, publishLimit, campaignUpload, async (req, res) => {
+function markScheduleRequestStart(req, _res, next) {
+  req.scheduleRequestStartedAt = Date.now();
+  next();
+}
+
+app.post('/api/schedules/campaign', requireUser, strictBurstLimit, scheduleRequestLimit, markScheduleRequestStart, campaignUpload, async (req, res) => {
   const campaign = await validateCampaignInputs(req, res);
   if (!campaign) return;
   const { targets, caption, title, campaignName, when, publishNow, files, byField, byId } = campaign;
@@ -2028,16 +2065,9 @@ app.post('/api/approvals/:id', strictBurstLimit, async (req, res) => {
   res.json({ ok: true, decision });
 });
 
-// Record when the client started sending the scheduling request, before
-// multer receives potentially large media files. Validate the requested
-// time against this point, not after the full upload has completed; otherwise
-// a valid near-future schedule can become a false 400 for large videos.
-const markScheduleRequestStart = (req, _res, next) => {
-  req.scheduleRequestStartedAt = Date.now();
-  next();
-};
-
-app.post('/api/schedule', requireUser, strictBurstLimit, publishLimit, markScheduleRequestStart, publishUpload, async (req, res) => {
+// Record request start before Multer receives large media; otherwise a valid
+// near-future schedule could become a false 400 after upload completes.
+app.post('/api/schedule', requireUser, strictBurstLimit, scheduleRequestLimit, markScheduleRequestStart, publishUpload, async (req, res) => {
   const files = [...(req.files?.media || []), ...(req.file ? [req.file] : [])];
   const instagramFiles = req.files?.instagram_media || [];
   const facebookFiles = req.files?.facebook_media || [];
@@ -2244,11 +2274,20 @@ async function runDueSchedules() {
       await removeUnreferencedScheduleMedia(row.user_id, row.id, scheduleMediaPaths(row));
     }
 
-    const { data: due, error: dueError } = await supabase.from('scheduled_posts')
-      .select('*').eq('status', 'scheduled').lte('scheduled_at', new Date().toISOString())
-      .order('scheduled_at', { ascending: true }).limit(SCHED_BATCH);
-    if (dueError) throw dueError;
-    for (const row of due || []) {
+    // Page through overdue approvals as needed. They intentionally remain in
+    // `scheduled`, so a fixed first page could otherwise hide ready posts.
+    const ready = [];
+    const scanPageSize = 1000;
+    for (let offset = 0; ready.length < SCHED_BATCH; offset += scanPageSize) {
+      const { data: duePage, error: dueError } = await supabase.from('scheduled_posts')
+        .select('*').eq('status', 'scheduled').lte('scheduled_at', new Date().toISOString())
+        .order('scheduled_at', { ascending: true }).range(offset, offset + scanPageSize - 1);
+      if (dueError) throw dueError;
+      const rows = duePage || [];
+      ready.push(...rows.filter((row) => row.body?.approval_status !== 'pending').slice(0, SCHED_BATCH - ready.length));
+      if (rows.length < scanPageSize) break;
+    }
+    for (const row of ready) {
       // Approval links pause the existing scheduled row until the reviewer
       // approves it. It remains visible/cancellable from the owner's calendar.
       if (row.body?.approval_status === 'pending') continue;

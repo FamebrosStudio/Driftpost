@@ -1,5 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 
+const MIN_SCHEDULE_AHEAD_MS = 2 * 60_000;
+
 // Pick when to publish. Validates a real future time before it can fire.
 function defaultWhen() {
   const d = new Date(Date.now() + 60 * 60 * 1000);
@@ -20,13 +22,15 @@ function calendarWhen() {
     if (!item || Date.now() - item.createdAt > 6 * 60 * 60 * 1000 || !/^\d{4}-\d{2}-\d{2}$/.test(item.date)) return defaultWhen();
     const [year, month, day] = item.date.split('-').map(Number);
     const d = new Date(year, month - 1, day, 9, 0, 0, 0);
-    if (d.getFullYear() !== year || d.getMonth() !== month - 1 || d.getDate() !== day || d.getTime() < Date.now() + 60_000) return defaultWhen();
+    if (d.getFullYear() !== year || d.getMonth() !== month - 1 || d.getDate() !== day || d.getTime() < Date.now() + MIN_SCHEDULE_AHEAD_MS) return defaultWhen();
     return formatLocal(d);
   } catch { return defaultWhen(); }
 }
 
 function minimumWhen() {
-  return formatLocal(new Date(Date.now() + 60_000));
+  // datetime-local has minute precision; round up so the browser's min value
+  // can never silently point to a time already inside the server safety window.
+  return formatLocal(new Date(Date.now() + MIN_SCHEDULE_AHEAD_MS + 59_999));
 }
 
 function parseCsv(text) {
@@ -61,7 +65,7 @@ function parseCsv(text) {
     const text = String(r[textIndex] || '').trim();
     const timestamp = Date.parse(String(rawWhen || '').trim());
     if (!Number.isFinite(timestamp)) throw new Error(`Row ${i + 2}: enter a valid date and time.`);
-    if (timestamp < Date.now() + 60_000) throw new Error(`Row ${i + 2}: choose a future time at least one minute from now.`);
+    if (timestamp < Date.now() + MIN_SCHEDULE_AHEAD_MS) throw new Error(`Row ${i + 2}: choose a future time at least two minutes from now.`);
     if (timestamp > Date.now() + 365 * 24 * 3600 * 1000) throw new Error(`Row ${i + 2}: schedule within the next year.`);
     if (!text) throw new Error(`Row ${i + 2}: caption cannot be empty.`);
     return { when: new Date(timestamp).toISOString(), text };
@@ -107,8 +111,8 @@ export default function ScheduleModal({ platforms, accountFor, invalidFor, busy,
     if (bulkError) return setErr('Fix the CSV import or clear it before scheduling.');
     const t = Date.parse(when);
     if (!bulkRows.length && !Number.isFinite(t)) return setErr('Pick a valid date and time.');
-    if (!bulkRows.length && t < Date.now() + 60 * 1000) return setErr('Choose a time at least 1 minute from now.');
-    if (bulkRows.some((r) => Date.parse(r.when) < Date.now() + 60_000)) return setErr('A CSV time has passed. Import an updated CSV.');
+    if (!bulkRows.length && t < Date.now() + MIN_SCHEDULE_AHEAD_MS) return setErr('Choose a time at least 2 minutes from now.');
+    if (bulkRows.some((r) => Date.parse(r.when) < Date.now() + MIN_SCHEDULE_AHEAD_MS)) return setErr('A CSV time is too soon. Import an updated CSV with times at least 2 minutes away.');
     if (!accountFor(sel)) return setErr('Pick an account for that platform first.');
     const bad = invalidFor?.(sel);
     if (bad) return setErr(`Fix the card first: ${bad}`);

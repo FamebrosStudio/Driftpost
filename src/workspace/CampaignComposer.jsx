@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { api, submitCampaign } from '../lib.js';
 
 const MAX_VIDEO = 400 * 1024 * 1024;
+const MIN_SCHEDULE_AHEAD_MS = 2 * 60_000;
 const dateTimeValue = (day) => {
   const d = new Date(`${day}T12:00:00`);
   if (day === new Date().toLocaleDateString('en-CA')) d.setTime(Date.now() + 60 * 60 * 1000);
@@ -10,7 +11,9 @@ const dateTimeValue = (day) => {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
 };
 const localNow = () => {
-  const d = new Date(Date.now() + 60 * 1000);
+  // datetime-local has minute precision. Round the two-minute safety window
+  // up to the next whole minute so the displayed minimum is never too early.
+  const d = new Date(Date.now() + MIN_SCHEDULE_AHEAD_MS + 59_999);
   const pad = (n) => String(n).padStart(2, '0');
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
 };
@@ -93,7 +96,7 @@ export default function CampaignComposer({ session, accounts, day, onClose, onSa
     if (selected.some((account) => account.platform === 'x') && Array.from(caption.trim()).length > 280) return setError('X captions must be 280 characters or fewer.');
     if (selected.some((account) => account.platform === 'instagram') && caption.trim().length > 2200) return setError('Instagram captions must be 2,200 characters or fewer.');
     if (selected.some((account) => account.platform === 'youtube') && !title.trim()) return setError('YouTube needs a title.');
-    if (when && new Date(when).getTime() < Date.now() + 60_000) return setError('Choose a scheduled time at least one minute from now.');
+    if (when && new Date(when).getTime() < Date.now() + MIN_SCHEDULE_AHEAD_MS) return setError('Choose a scheduled time at least two minutes from now.');
     setBusy(true);
     try {
       const targets = selected.map((connection) => ({ connection, files: mediaById[connection.id] || [] }));

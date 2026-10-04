@@ -52,9 +52,9 @@
     "lal_bangla_showroom_phone_e164": "+919044036667",
     "lal_bangla_showroom_phone_status": "Current website showroom phone and WhatsApp.",
     "naya_ganj_address": "60/10 Purani Dal Mandi, Naya Ganj, Kanpur, Uttar Pradesh 208001",
-    "lal_bangla_address": "Main Market, 514-A, Kajikhera, Lal Bangla, near N-2 Road Chauraha, Kanpur, Uttar Pradesh 208007",
+    "lal_bangla_address": "N-2 Road Chauraha, Lal Bangla, Kanpur, Uttar Pradesh 208001",
     "lal_bangla_address_social_variant": "N-2 Road Chauraha, Lal Bangla, Kanpur, Uttar Pradesh 208001",
-    "lal_bangla_address_note": "The current website gives 514-A Kajikhera and pincode 208007, while older social captions use the shorter N-2 Road Chauraha address and pincode 208001. Use the website format for new detailed footers unless the store approves a different version.",
+    "lal_bangla_address_note": "Use the owner-confirmed caption address: N-2 Road Chauraha, Lal Bangla, Kanpur, Uttar Pradesh 208001. This supersedes older address variants in source materials.",
     "third_branch_address": "Kidwai Nagar Chauraha, Kanpur",
     "third_branch_address_note": "Use only for the third-store campaign. Add the full street address and pincode only after approval.",
     "email": "deviskanpur@gmail.com",
@@ -536,7 +536,7 @@
       "Specific festive, opening or product hook",
       "Exact product or approved offer detail",
       "One visit, call, save, share or mark-the-date CTA",
-      "Correct branch or campaign footer",
+      "Complete three-location directory footer, always including all three locations",
       "Exactly three relevant hashtags",
       "Exactly one square bracket containing 5 to 8 comma-separated SEO phrases"
     ],
@@ -551,6 +551,15 @@
     "output_rule": "Return ready-to-copy public content without null fields, internal production notes or draft-only offer ideas."
   },
   "fixed_footer": {
+    "prefer_group_footer": true,
+    "group_footer_lines": [
+      "Location: 60/10 Purani Dal Mandi, Naya Ganj, Kanpur, Uttar Pradesh 208001",
+      "Location: N-2 Road Chauraha, Lal Bangla, Kanpur, Uttar Pradesh 208001",
+      "Customer Care: +91 88740 00032",
+      "Location: Kidwai Nagar Chauraha, Kanpur",
+      "Kidwai Nagar contact: +91 88740 00177",
+      "Managed by: @famebrosstudio"
+    ],
     "third_store_campaign_lines": [
       "📅 Grand Opening: 11 October 2026",
       "📍 Kidwai Nagar Chauraha, Kanpur",
@@ -573,9 +582,9 @@
       "📞 +91 90440 36667",
       "🎥 Managed by: @famebrosstudio ✨"
     ],
-    "usage": "Use the third-store footer for the opening campaign. Use the relevant existing showroom footer for branch-specific inventory. Use the general footer for brand-wide posts.",
+    "usage": "For every standard social caption, include the complete three-location directory in group_footer_lines, as requested by the owner. A post may add campaign details, but must not remove any of these three locations.",
     "rules": [
-      "Do not put the customer-care number, branch number and opening campaign number together unless the design needs a complete directory.",
+      "The owner requested a complete three-location directory in every standard caption; use only the phone numbers shown in that directory.",
       "Do not attach the Lal Bangla number to Naya Ganj or vice versa.",
       "Do not describe Kidwai Nagar as open before 11 October 2026.",
       "Do not use deviandcompany.com."
