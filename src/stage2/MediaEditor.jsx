@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import VideoTimelineEditor from './VideoTimelineEditor.jsx';
 
 // Crop + resize only (per wireframe): aspect pills, rotate, flip,
 // fit-or-crop, done. Images export exact-size JPEG; videos re-encode
@@ -82,6 +83,7 @@ export default function MediaEditor({ entry, onClose, onApply, onChooseMusic }) 
   const [preview, setPreview] = useState('');
   const [busy, setBusy] = useState(false);
   const [busyText, setBusyText] = useState('');
+  const [showVideoTimeline, setShowVideoTimeline] = useState(false);
   const [normTick, setNormTick] = useState(0); // bumped whenever the baked base changes
   const normRef = useRef(null);
   const wrapRef = useRef(null);
@@ -540,6 +542,20 @@ export default function MediaEditor({ entry, onClose, onApply, onChooseMusic }) 
     }
   };
 
+  if (showVideoTimeline && isVideo) {
+    return (
+      <div className="s2-overlay" onClick={() => setShowVideoTimeline(false)}>
+        <div onClick={(e) => e.stopPropagation()}>
+          <VideoTimelineEditor
+            entry={entry}
+            onBack={() => setShowVideoTimeline(false)}
+            onApply={(file) => { setShowVideoTimeline(false); onApply(file); }}
+          />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="s2-overlay" onClick={onClose}>
       <div className="s2-editor" role="dialog" aria-modal="true" aria-label={`Edit ${entry.name}`} onClick={(e) => e.stopPropagation()}>
@@ -593,7 +609,8 @@ export default function MediaEditor({ entry, onClose, onApply, onChooseMusic }) 
             <button type="button" className="s2-done" disabled={busy || !ready} onClick={done}>
               {busy ? (busyText || 'Saving…') : isVideo ? 'Done editing (render video)' : 'Done editing'}
             </button>
-            {isVideo && onChooseMusic && <button type="button" className="s2-editor-music" disabled={busy} onClick={onChooseMusic}>Add licensed music</button>}
+            {isVideo && <button type="button" className="s2-editor-music" disabled={busy} onClick={() => setShowVideoTimeline(true)}>Edit video</button>}
+            {isVideo && onChooseMusic && <button type="button" className="s2-editor-music" disabled={busy} onClick={onChooseMusic}>Add music</button>}
             <button type="button" className="s2-cancel" onClick={onClose}>Cancel</button>
           </div>
         </div>

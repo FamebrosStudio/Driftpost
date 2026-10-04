@@ -260,6 +260,20 @@ export default function StageTwoPage({ session, onBack, onSignOut, onNavigate, o
         </header>
         <ProgressStepper current={2} />
 
+        <section className="s2-sec" aria-label="Add media">
+          <div className="s2-sec-head">
+            <h2>Add media</h2>
+            <span className="s2-count">{files.length}/10</span>
+          </div>
+          <p className="sub">Images or video — shown on every selected platform. Tap Edit on a photo or video to crop it.</p>
+          <MediaUploader count={files.length} onFiles={addFiles} canUseAi={canUseAi} />
+          <MediaGallery files={files} onRemove={removeAt} onEdit={setEditing} />
+        </section>
+
+        <section className="s2-sec s2-music-section" aria-label="Music">
+          <EpidemicCatalog token={session.access_token} files={files} selectedIndex={musicVideoIndex} onSelectVideo={setMusicVideoIndex} onApply={applyMusicAt} focusToken={musicFocusToken} />
+        </section>
+
         <section className="s2-sec" aria-label={canUseAi ? 'Write prompt' : 'Write content'}>
           <h2>{canUseAi ? 'Write prompt' : 'Write your content'}</h2>
           {canUseAi ? <>
@@ -285,20 +299,6 @@ export default function StageTwoPage({ session, onBack, onSignOut, onNavigate, o
           {!busy && aiMsg && (
             <p className={`s2-msg ${aiMsgKind === 'err' ? 'err' : aiMsgKind === 'warn' ? 'warn' : 'ok'}`} role={aiMsgKind === 'err' ? 'alert' : 'status'}>{aiMsg}</p>
           )}
-        </section>
-
-        <section className="s2-sec s2-music-section" aria-label="Licensed music">
-          <EpidemicCatalog token={session.access_token} files={files} selectedIndex={musicVideoIndex} onSelectVideo={setMusicVideoIndex} onApply={applyMusicAt} focusToken={musicFocusToken} />
-        </section>
-
-        <section className="s2-sec" aria-label="Add media">
-          <div className="s2-sec-head">
-            <h2>Add media</h2>
-            <span className="s2-count">{files.length}/10</span>
-          </div>
-          <p className="sub">Images or video — shown on every selected platform. Tap Edit on a photo or video to crop it.</p>
-          <MediaUploader count={files.length} onFiles={addFiles} canUseAi={canUseAi} />
-          <MediaGallery files={files} onRemove={removeAt} onEdit={setEditing} />
         </section>
 
         {basePlatforms.includes('instagram') && basePlatforms.includes('facebook') && (

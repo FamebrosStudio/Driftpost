@@ -108,7 +108,7 @@ export default function EpidemicCatalog({ token, files, selectedIndex, onSelectV
   };
 
   return <details className="s2-epidemic" ref={detailsRef}>
-    <summary>Add licensed music</summary>
+    <summary>Add music</summary>
     <p>Preview a track, then mix it into one video. Mixing and editing happen in this browser; the original file stays unchanged unless you apply the finished version.</p>
     {!!videoFiles.length && <label className="s2-music-video">Video to soundtrack
       <select value={currentVideo?.index ?? ''} onChange={(event) => onSelectVideo(Number(event.target.value))} disabled={!!addingId}>
