@@ -12,6 +12,9 @@ export default function VideoTimelineEditor({ entry, onBack, onApply }) {
   const [duration, setDuration] = useState(0);
   const [start, setStart] = useState(0);
   const [end, setEnd] = useState(0);
+  const [playhead, setPlayhead] = useState(0);
+  const [playing, setPlaying] = useState(false);
+  const [dragging, setDragging] = useState('');
   const [busy, setBusy] = useState(false);
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState('');
@@ -120,6 +123,46 @@ export default function VideoTimelineEditor({ entry, onBack, onApply }) {
 
   const clampStart = (raw) => setStart(Math.min(Number(raw), Math.max(0, end - 0.25)));
   const clampEnd = (raw) => setEnd(Math.max(Number(raw), Math.min(duration, start + 0.25)));
+  const timeFromPointer = (event) => {
+    const rect = event.currentTarget.getBoundingClientRect();
+    return Math.max(0, Math.min(duration, ((event.clientX - rect.left) / rect.width) * duration));
+  };
+  const movePlayhead = (time) => {
+    const bounded = Math.max(start, Math.min(end, time));
+    setPlayhead(bounded);
+    if (videoRef.current) videoRef.current.currentTime = bounded;
+  };
+  const beginDrag = (kind, event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    event.currentTarget.setPointerCapture?.(event.pointerId);
+    setDragging(kind);
+  };
+  const dragTimeline = (event) => {
+    if (!dragging || !duration) return;
+    const time = timeFromPointer(event);
+    if (dragging === 'start') clampStart(time);
+    else if (dragging === 'end') clampEnd(time);
+    else movePlayhead(time);
+  };
+  const handleKey = (kind, event) => {
+    if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+    event.preventDefault();
+    const delta = event.shiftKey ? 1 : 0.1;
+    const current = kind === 'start' ? start : kind === 'end' ? end : playhead;
+    const value = event.key === 'Home' ? 0 : event.key === 'End' ? duration : current + (event.key === 'ArrowLeft' ? -delta : delta);
+    if (kind === 'start') clampStart(value);
+    else if (kind === 'end') clampEnd(value);
+    else movePlayhead(value);
+  };
+  const togglePlayback = () => {
+    const video = videoRef.current;
+    if (!video) return;
+    if (video.paused) {
+      if (video.currentTime < start || video.currentTime >= end) movePlayhead(start);
+      video.play().catch(() => setError('Could not play this video in the browser.'));
+    } else video.pause();
+  };
 
   return (
     <div className="s2-video-editor-page" role="dialog" aria-modal="true" aria-label="Edit video timeline">
@@ -127,21 +170,43 @@ export default function VideoTimelineEditor({ entry, onBack, onApply }) {
         <div><h2>Edit video</h2><p>Trim your clip in this browser. Original media is not uploaded by the editor.</p></div>
         <button type="button" className="s2-cancel" onClick={onBack} disabled={busy}>Back to crop tools</button>
       </header>
-      <div className="s2-video-editor-body">
-        <video ref={videoRef} src={url} controls playsInline preload="metadata" onTimeUpdate={(e) => {
-          if (busy && e.currentTarget.currentTime >= end) e.currentTarget.pause();
-        }} />
-        <div className="s2-timeline">
-          <div className="s2-timeline-label"><span>Trim range</span><b>{fmt(start)} – {fmt(end)} <small>/ {fmt(duration)}</small></b></div>
-          <label>Start <input type="range" min="0" max={Math.max(duration, 0.1)} step="0.1" value={start} disabled={!duration || busy} onChange={(e) => clampStart(e.target.value)} /></label>
-          <label>End <input type="range" min="0" max={Math.max(duration, 0.1)} step="0.1" value={end} disabled={!duration || busy} onChange={(e) => clampEnd(e.target.value)} /></label>
+      <div className="s2-video-editor-workspace">
+        <div className="s2-video-preview-wrap">
+          <video ref={videoRef} src={url} playsInline preload="metadata" onTimeUpdate={(e) => {
+            const time = e.currentTarget.currentTime;
+            setPlayhead(time);
+            if (playing && time >= end) e.currentTarget.pause();
+            if (busy && time >= end) e.currentTarget.pause();
+          }} onPlay={() => setPlaying(true)} onPause={() => setPlaying(false)} />
+          <div className="s2-video-transport">
+            <button type="button" aria-label={playing ? 'Pause' : 'Play'} disabled={busy || !duration} onClick={togglePlayback}>{playing ? 'Pause' : 'Play'}</button>
+            <span>{fmt(playhead)} <small>/ {fmt(duration)}</small></span>
+            <button type="button" className="s2-editor-music" disabled={!duration || busy} onClick={() => movePlayhead(start)}>Go to start</button>
+          </div>
+        </div>
+        <section className="s2-timeline" aria-label="Video timeline">
+          <div className="s2-timeline-title"><div><span>Timeline</span><small>Drag the handles to trim · drag the playhead to scrub</small></div><b>Selected {fmt(Math.max(0, end - start))}</b></div>
+          <div className="s2-timeline-ruler" aria-hidden="true">{[0, 0.25, 0.5, 0.75, 1].map((fraction) => <span key={fraction} style={{ left: `${fraction * 100}%` }}>{fmt(duration * fraction)}</span>)}</div>
+          <div className={`s2-clip-track${dragging ? ' is-dragging' : ''}`} onPointerMove={dragTimeline} onPointerUp={() => setDragging('')} onPointerCancel={() => setDragging('')} onPointerDown={(event) => {
+            if (event.target === event.currentTarget || event.target.classList.contains('s2-clip-strip')) movePlayhead(timeFromPointer(event));
+          }}>
+            <div className="s2-clip-strip" aria-hidden="true" />
+            <div className="s2-clip-selected" style={{ left: `${duration ? start / duration * 100 : 0}%`, width: `${duration ? (end - start) / duration * 100 : 0}%` }} />
+            <button type="button" className="s2-trim-handle start" style={{ left: `${duration ? start / duration * 100 : 0}%` }} role="slider" aria-label="Trim start" aria-valuemin="0" aria-valuemax={duration} aria-valuenow={start} disabled={!duration || busy} onPointerDown={(event) => beginDrag('start', event)} onKeyDown={(event) => handleKey('start', event)} />
+            <button type="button" className="s2-trim-handle end" style={{ left: `${duration ? end / duration * 100 : 0}%` }} role="slider" aria-label="Trim end" aria-valuemin="0" aria-valuemax={duration} aria-valuenow={end} disabled={!duration || busy} onPointerDown={(event) => beginDrag('end', event)} onKeyDown={(event) => handleKey('end', event)} />
+            <button type="button" className="s2-playhead" style={{ left: `${duration ? playhead / duration * 100 : 0}%` }} aria-label="Timeline playhead" aria-valuemin="0" aria-valuemax={duration} aria-valuenow={playhead} role="slider" disabled={!duration || busy} onPointerDown={(event) => beginDrag('playhead', event)} onKeyDown={(event) => handleKey('playhead', event)} />
+          </div>
+          <div className="s2-timeline-values">
+            <label>In <input type="number" min="0" max={Math.max(0, end - 0.25)} step="0.1" value={start.toFixed(1)} disabled={!duration || busy} onChange={(event) => clampStart(event.target.value)} /></label>
+            <label>Out <input type="number" min={Math.min(duration, start + 0.25)} max={duration} step="0.1" value={end.toFixed(1)} disabled={!duration || busy} onChange={(event) => clampEnd(event.target.value)} /></label>
+          </div>
           <div className="s2-timeline-actions">
-            <button type="button" className="s2-editor-music" disabled={!duration || busy} onClick={() => { videoRef.current.currentTime = start; videoRef.current.play().catch(() => {}); }}>Preview trim</button>
+            <button type="button" className="s2-editor-music" disabled={!duration || busy} onClick={() => { movePlayhead(start); videoRef.current.play().catch(() => setError('Could not play this video in the browser.')); }}>Preview selection</button>
             <button type="button" className="s2-done" disabled={!duration || busy} onClick={renderTrim}>{busy ? `Rendering… ${progress}%` : 'Render trimmed video'}</button>
           </div>
           {busy && <progress className="s2-trim-progress" max="100" value={progress} aria-label="Render progress" />}
           {error && <p className="s2-trim-error" role="alert">{error}</p>}
-        </div>
+        </section>
       </div>
     </div>
   );

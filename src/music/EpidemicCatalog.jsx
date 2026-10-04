@@ -7,7 +7,7 @@ function artistNames(track) {
   return names.map((artist) => typeof artist === 'string' ? artist : artist?.name).filter(Boolean).join(', ');
 }
 
-export default function EpidemicCatalog({ token, files, selectedIndex, onSelectVideo, onApply, focusToken = 0 }) {
+export default function EpidemicCatalog({ token, files, selectedIndex, onSelectVideo, onApply }) {
   const [term, setTerm] = useState('upbeat');
   const [tracks, setTracks] = useState([]);
   const [busy, setBusy] = useState(false);
@@ -33,12 +33,6 @@ export default function EpidemicCatalog({ token, files, selectedIndex, onSelectV
     if (audio) { audio.pause(); audio.removeAttribute('src'); audio.load(); }
   };
   useEffect(() => () => stopPreview(), []);
-  useEffect(() => {
-    if (!focusToken || !detailsRef.current) return;
-    detailsRef.current.open = true;
-    window.requestAnimationFrame(() => detailsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }));
-  }, [focusToken]);
-
   const search = async (event) => {
     event.preventDefault();
     if (!term.trim() || busy) return;

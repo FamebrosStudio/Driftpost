@@ -53,7 +53,6 @@ export default function StageTwoPage({ session, onBack, onSignOut, onNavigate, o
   const [crosspost, setCrosspost] = useState(() => load('driftpost-stage2-crosspost', false));
   const [editing, setEditing] = useState(-1);
   const [musicVideoIndex, setMusicVideoIndex] = useState(-1);
-  const [musicFocusToken, setMusicFocusToken] = useState(0);
   const [saveTick, setSaveTick] = useState(false);
 
   useEffect(() => { document.title = 'Stage 2 · Driftpost'; }, []);
@@ -154,12 +153,6 @@ export default function StageTwoPage({ session, onBack, onSignOut, onNavigate, o
       ? { raw: outFile, name: outFile.name, size: `${(outFile.size / 1024 / 1024).toFixed(1)} MB`, type: outFile.type }
       : f));
   };
-  const chooseMusicForVideo = (i) => {
-    setMusicVideoIndex(i);
-    setEditing(-1);
-    setMusicFocusToken((n) => n + 1);
-  };
-
   const requestCaptions = (pid) => fetchCaptions(session.access_token, {
     brief, brand: brandLabel, files, tone, emoji, length, analysis,
     ...(pid ? { only: pid } : targetPlatforms.length === 1 ? { only: targetPlatforms[0] } : {}),
@@ -271,7 +264,7 @@ export default function StageTwoPage({ session, onBack, onSignOut, onNavigate, o
         </section>
 
         <section className="s2-sec s2-music-section" aria-label="Music">
-          <EpidemicCatalog token={session.access_token} files={files} selectedIndex={musicVideoIndex} onSelectVideo={setMusicVideoIndex} onApply={applyMusicAt} focusToken={musicFocusToken} />
+          <EpidemicCatalog token={session.access_token} files={files} selectedIndex={musicVideoIndex} onSelectVideo={setMusicVideoIndex} onApply={applyMusicAt} />
         </section>
 
         <section className="s2-sec" aria-label={canUseAi ? 'Write prompt' : 'Write content'}>
@@ -320,7 +313,7 @@ export default function StageTwoPage({ session, onBack, onSignOut, onNavigate, o
       <ContinueButton disabled={!canContinue} saved={saveTick} onClick={cont} />
       {editing >= 0 && files[editing] && (
         <Suspense fallback={<PageLoading label="Loading media editor…" />}>
-          <MediaEditor entry={files[editing]} onClose={() => setEditing(-1)} onApply={(f) => applyEditAt(editing, f)} onChooseMusic={files[editing].type.startsWith('video/') ? () => chooseMusicForVideo(editing) : undefined} />
+          <MediaEditor entry={files[editing]} onClose={() => setEditing(-1)} onApply={(f) => applyEditAt(editing, f)} />
         </Suspense>
       )}
     </div>

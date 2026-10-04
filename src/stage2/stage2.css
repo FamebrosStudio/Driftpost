@@ -165,24 +165,54 @@
 .s2-video-editor-head h2 { margin: 0 0 5px; font-size: 21px; }
 .s2-video-editor-head p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.5; }
 .s2-video-editor-head .s2-cancel { width: auto; flex: 0 0 auto; margin: 0; }
-.s2-video-editor-body { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(260px, .8fr); align-items: start; gap: clamp(14px, 2vw, 24px); }
-.s2-video-editor-body > video { display: block; width: 100%; max-height: 68vh; background: #090b10; border: 1px solid var(--line-hard); border-radius: 12px; object-fit: contain; }
-.s2-timeline { min-width: 0; padding: 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--panel2); }
-.s2-timeline-label { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 16px; font-size: 13px; }
-.s2-timeline-label b { color: var(--ink); }
-.s2-timeline-label small { color: var(--muted); font-weight: 500; }
-.s2-timeline > label { display: grid; gap: 8px; margin: 14px 0; color: var(--muted); font-size: 12px; font-weight: 700; }
-.s2-timeline input[type="range"] { width: 100%; accent-color: var(--acc); }
-.s2-timeline-actions { display: grid; gap: 8px; margin-top: 18px; }
+.s2-video-editor-workspace { display: grid; gap: 16px; }
+.s2-video-preview-wrap { position: relative; display: grid; justify-items: center; padding: 12px 12px 0; background: #090b10; border: 1px solid var(--line-hard); border-radius: 12px; }
+.s2-video-preview-wrap > video { display: block; width: 100%; max-height: 55vh; aspect-ratio: 16 / 9; object-fit: contain; background: #090b10; }
+.s2-video-transport { width: 100%; min-height: 48px; display: flex; align-items: center; gap: 12px; padding: 6px 2px; color: var(--ink); font-variant-numeric: tabular-nums; }
+.s2-video-transport > button:first-child { min-width: 76px; padding: 8px 14px; border: 1px solid var(--line-hard); border-radius: 8px; color: var(--ink); background: var(--panel2); font: inherit; font-size: 12px; font-weight: 700; cursor: pointer; }
+.s2-video-transport > button:first-child:hover:not(:disabled) { border-color: var(--acc); }
+.s2-video-transport > button:disabled { opacity: .5; cursor: wait; }
+.s2-video-transport > span { font-size: 12px; }
+.s2-video-transport small { color: var(--muted); }
+.s2-video-transport .s2-editor-music { width: auto; margin: 0 0 0 auto; padding: 8px 12px; }
+.s2-timeline { min-width: 0; padding: clamp(14px, 2vw, 22px); border: 1px solid var(--line); border-radius: 12px; background: var(--panel2); }
+.s2-timeline-title { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 26px; font-size: 13px; }
+.s2-timeline-title > div { display: grid; gap: 4px; }
+.s2-timeline-title > div > span { font-size: 14px; font-weight: 750; }
+.s2-timeline-title small { color: var(--muted); font-size: 11px; font-weight: 500; }
+.s2-timeline-title > b { padding: 6px 9px; border: 1px solid var(--line-hard); border-radius: 7px; color: var(--ink); font-size: 11px; font-variant-numeric: tabular-nums; }
+.s2-timeline-ruler { position: relative; height: 20px; margin: 0 9px 4px; color: var(--muted); font-size: 10px; font-variant-numeric: tabular-nums; }
+.s2-timeline-ruler span { position: absolute; transform: translateX(-50%); white-space: nowrap; }
+.s2-timeline-ruler span:first-child { transform: none; }
+.s2-timeline-ruler span:last-child { transform: translateX(-100%); }
+.s2-clip-track { position: relative; height: 68px; margin: 0 9px; border: 1px solid var(--line-hard); border-radius: 7px; background: #10131b; touch-action: none; cursor: crosshair; }
+.s2-clip-strip { position: absolute; inset: 0; border-radius: inherit; opacity: .72; background-color: #34374b; background-image: repeating-linear-gradient(90deg, transparent 0 7.8%, rgba(132,115,247,.38) 7.8% 8%, transparent 8% 16.4%), linear-gradient(180deg, rgba(255,255,255,.1), transparent 45%, rgba(0,0,0,.18)); }
+.s2-clip-selected { position: absolute; top: 0; bottom: 0; box-sizing: border-box; border-top: 2px solid var(--acc); border-bottom: 2px solid var(--acc); background: rgba(132,115,247,.2); pointer-events: none; }
+.s2-trim-handle { position: absolute; z-index: 2; top: -5px; bottom: -5px; width: 14px; padding: 0; border: 2px solid #fff; border-radius: 5px; background: var(--acc); transform: translateX(-50%); cursor: ew-resize; touch-action: none; box-shadow: 0 1px 5px #0008; }
+.s2-trim-handle::after { content: ''; position: absolute; inset: 20% 4px; border-inline: 1px solid rgba(255,255,255,.85); }
+.s2-playhead { position: absolute; z-index: 3; top: -12px; bottom: -12px; width: 2px; padding: 0; border: 0; background: #fff; transform: translateX(-50%); cursor: ew-resize; touch-action: none; box-shadow: 0 0 3px #000; }
+.s2-playhead::before { content: ''; position: absolute; top: 0; left: 50%; width: 10px; height: 10px; border-radius: 2px 2px 5px 5px; background: #fff; transform: translateX(-50%); }
+.s2-clip-track.is-dragging { cursor: ew-resize; }
+.s2-clip-track button:disabled { opacity: .45; }
+.s2-timeline-values { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 12px; margin: 18px 0 4px; }
+.s2-timeline-values label { display: flex; align-items: center; gap: 7px; color: var(--muted); font-size: 11px; font-weight: 700; }
+.s2-timeline-values input { width: 84px; padding: 7px 8px; border: 1px solid var(--line-hard); border-radius: 7px; background: var(--input); color: var(--ink); font: inherit; font-variant-numeric: tabular-nums; }
+.s2-timeline-values input:focus { outline: 1px solid var(--acc); }
+.s2-timeline-actions { display: flex; justify-content: flex-end; gap: 9px; margin-top: 14px; }
 .s2-timeline-actions .s2-editor-music, .s2-timeline-actions .s2-done { margin: 0; }
+.s2-timeline-actions .s2-editor-music { width: auto; padding-inline: 18px; }
+.s2-timeline-actions .s2-done { width: auto; padding-inline: 22px; }
 .s2-trim-progress { width: 100%; height: 8px; margin-top: 12px; accent-color: var(--acc); }
 .s2-trim-error { margin: 12px 0 0; padding: 10px 12px; border: 1px solid var(--danger, #e5484d); color: var(--danger, #ff696e); font-size: 13px; line-height: 1.5; overflow-wrap: anywhere; }
 @media (max-width: 720px) {
   .s2-video-editor-page { width: calc(100vw - 16px); max-height: calc(100dvh - 16px); padding: 14px; }
   .s2-video-editor-head { align-items: stretch; flex-direction: column; }
   .s2-video-editor-head .s2-cancel { width: 100%; }
-  .s2-video-editor-body { grid-template-columns: 1fr; }
-  .s2-video-editor-body > video { max-height: 48vh; }
+  .s2-video-preview-wrap { padding: 6px 6px 0; }
+  .s2-video-preview-wrap > video { max-height: 48vh; }
+  .s2-clip-track { height: 56px; }
+  .s2-timeline-actions { display: grid; grid-template-columns: 1fr; }
+  .s2-timeline-actions .s2-editor-music, .s2-timeline-actions .s2-done { width: 100%; }
 }
 
 /* Licensed music discovery and preview (browser-side render/mix). */
