@@ -110,7 +110,7 @@ async function sampleVideo(file, count = 3) {
 
 // Shared Stage 2/3 caption generation: one request, per-platform answers.
 // Pass only:<platform> for a fast single-card regen (one card, ~1/3 tokens).
-export function requestCaptions(token, { brief, brand, files, tone, emoji, length, analysis = 'fast', only }) {
+export function requestCaptions(token, { brief, brand, files, tone, emoji, length, analysis = 'fast', only, platforms }) {
   return (async () => {
     const entries = files || [];
     const analyzeMedia = analysis === 'analyze';
@@ -129,7 +129,9 @@ export function requestCaptions(token, { brief, brand, files, tone, emoji, lengt
       goal: 'enquiries',
       trends: false,
       tone, emoji, length,
-      ...(only ? { only } : {}),
+      ...(only ? { only } : Array.isArray(platforms) && platforms.length
+        ? { only: JSON.stringify([...new Set(platforms)]) }
+        : {}),
     };
     const compacted = await Promise.all(selected.map((photo) => compactImage(photo?.raw || photo)));
     compacted.filter(Boolean).forEach((file) => form.append('images', file, file.name));

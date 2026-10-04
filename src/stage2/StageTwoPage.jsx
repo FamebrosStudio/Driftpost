@@ -172,7 +172,7 @@ export default function StageTwoPage({ session, onBack, onSignOut, onNavigate, o
     }));
   };
   const requestCaptions = (pid) => fetchCaptions(session.access_token, {
-    brief, brand: brandLabel, files, tone, emoji, length, analysis,
+    brief, brand: brandLabel, files, tone, emoji, length, analysis, platforms: targetPlatforms,
     ...(pid ? { only: pid } : targetPlatforms.length === 1 ? { only: targetPlatforms[0] } : {}),
   });
 
