@@ -66,7 +66,7 @@ function cropWindow(box, sw, sh, ratio) {
   return { x, y, w: Math.max(1, w), h: Math.max(1, h) };
 }
 
-export default function MediaEditor({ entry, onClose, onApply }) {
+export default function MediaEditor({ entry, token, onClose, onApply, onApplyMusic }) {
   const isVideo = entry.type.startsWith('video/');
   const [bmp, setBmp] = useState(null);
   const [vidEl, setVidEl] = useState(null);
@@ -548,8 +548,10 @@ export default function MediaEditor({ entry, onClose, onApply }) {
         <div onClick={(e) => e.stopPropagation()}>
           <VideoTimelineEditor
             entry={entry}
+            token={token}
             onBack={() => setShowVideoTimeline(false)}
             onApply={(file) => { setShowVideoTimeline(false); onApply(file); }}
+            onApplyMusic={onApplyMusic}
           />
         </div>
       </div>

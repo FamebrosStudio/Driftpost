@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import EpidemicCatalog from '../music/EpidemicCatalog.jsx';
 
 const fmt = (value) => {
   const n = Number.isFinite(value) ? Math.max(0, value) : 0;
@@ -7,7 +8,7 @@ const fmt = (value) => {
 
 // Browser-only trim editor. It re-encodes the selected interval to WebM and
 // carries the source audio track through when the browser exposes captureStream.
-export default function VideoTimelineEditor({ entry, onBack, onApply }) {
+export default function VideoTimelineEditor({ entry, token, onBack, onApply, onApplyMusic }) {
   const videoRef = useRef(null);
   const [duration, setDuration] = useState(0);
   const [start, setStart] = useState(0);
@@ -15,6 +16,7 @@ export default function VideoTimelineEditor({ entry, onBack, onApply }) {
   const [playhead, setPlayhead] = useState(0);
   const [playing, setPlaying] = useState(false);
   const [dragging, setDragging] = useState('');
+  const [musicTrack, setMusicTrack] = useState(null);
   const [busy, setBusy] = useState(false);
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState('');
@@ -196,6 +198,13 @@ export default function VideoTimelineEditor({ entry, onBack, onApply }) {
             <button type="button" className="s2-trim-handle end" style={{ left: `${duration ? end / duration * 100 : 0}%` }} role="slider" aria-label="Trim end" aria-valuemin="0" aria-valuemax={duration} aria-valuenow={end} disabled={!duration || busy} onPointerDown={(event) => beginDrag('end', event)} onKeyDown={(event) => handleKey('end', event)} />
             <button type="button" className="s2-playhead" style={{ left: `${duration ? playhead / duration * 100 : 0}%` }} aria-label="Timeline playhead" aria-valuemin="0" aria-valuemax={duration} aria-valuenow={playhead} role="slider" disabled={!duration || busy} onPointerDown={(event) => beginDrag('playhead', event)} onKeyDown={(event) => handleKey('playhead', event)} />
           </div>
+          <div className={`s2-audio-track${musicTrack ? ' has-music' : ''}`}>
+            <div className="s2-audio-track-label"><b>AUDIO</b><span>{musicTrack ? `${musicTrack.title || musicTrack.name || 'Music'}${musicTrack.mainArtists?.[0]?.name ? ` · ${musicTrack.mainArtists[0].name}` : ''}` : 'No music added'}</span></div>
+            <div className="s2-audio-lane" aria-label={musicTrack ? 'Added music track' : 'Empty audio track'}>
+              {musicTrack && <div className="s2-audio-clip" style={{ left: `${duration ? start / duration * 100 : 0}%`, width: `${duration ? (end - start) / duration * 100 : 100}%` }}><span>{musicTrack.title || musicTrack.name || 'Music'}</span></div>}
+              {!musicTrack && <span className="s2-audio-empty">Choose a soundtrack below</span>}
+            </div>
+          </div>
           <div className="s2-timeline-values">
             <label>In <input type="number" min="0" max={Math.max(0, end - 0.25)} step="0.1" value={start.toFixed(1)} disabled={!duration || busy} onChange={(event) => clampStart(event.target.value)} /></label>
             <label>Out <input type="number" min={Math.min(duration, start + 0.25)} max={duration} step="0.1" value={end.toFixed(1)} disabled={!duration || busy} onChange={(event) => clampEnd(event.target.value)} /></label>
@@ -206,6 +215,19 @@ export default function VideoTimelineEditor({ entry, onBack, onApply }) {
           </div>
           {busy && <progress className="s2-trim-progress" max="100" value={progress} aria-label="Render progress" />}
           {error && <p className="s2-trim-error" role="alert">{error}</p>}
+          <div className="s2-editor-music-catalog">
+            <EpidemicCatalog
+              token={token}
+              files={[entry]}
+              selectedIndex={0}
+              onSelectVideo={() => {}}
+              summaryLabel={musicTrack ? 'Change or preview music' : 'Add music to audio track'}
+              onApply={async (_index, mixedFile, track) => {
+                await onApplyMusic(mixedFile);
+                setMusicTrack(track);
+              }}
+            />
+          </div>
         </section>
       </div>
     </div>

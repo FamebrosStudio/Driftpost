@@ -12,7 +12,6 @@ import CrosspostToggle from './CrosspostToggle.jsx';
 import OutputContainer from './OutputContainer.jsx';
 import ContinueButton from './ContinueButton.jsx';
 import PageLoading from '../PageLoading.jsx';
-import EpidemicCatalog from '../music/EpidemicCatalog.jsx';
 import './stage2.css';
 import { WorkspaceNav } from '../workspace/Workspace.jsx';
 import { hasAiAccess } from '../ai-access.js';
@@ -52,7 +51,6 @@ export default function StageTwoPage({ session, onBack, onSignOut, onNavigate, o
   const say = (msg, kind = 'ok') => { setAiMsg(msg); setAiMsgKind(kind); };
   const [crosspost, setCrosspost] = useState(() => load('driftpost-stage2-crosspost', false));
   const [editing, setEditing] = useState(-1);
-  const [musicVideoIndex, setMusicVideoIndex] = useState(-1);
   const [saveTick, setSaveTick] = useState(false);
 
   useEffect(() => { document.title = 'Stage 2 · Driftpost'; }, []);
@@ -263,10 +261,6 @@ export default function StageTwoPage({ session, onBack, onSignOut, onNavigate, o
           <MediaGallery files={files} onRemove={removeAt} onEdit={setEditing} />
         </section>
 
-        <section className="s2-sec s2-music-section" aria-label="Music">
-          <EpidemicCatalog token={session.access_token} files={files} selectedIndex={musicVideoIndex} onSelectVideo={setMusicVideoIndex} onApply={applyMusicAt} />
-        </section>
-
         <section className="s2-sec" aria-label={canUseAi ? 'Write prompt' : 'Write content'}>
           <h2>{canUseAi ? 'Write prompt' : 'Write your content'}</h2>
           {canUseAi ? <>
@@ -313,7 +307,7 @@ export default function StageTwoPage({ session, onBack, onSignOut, onNavigate, o
       <ContinueButton disabled={!canContinue} saved={saveTick} onClick={cont} />
       {editing >= 0 && files[editing] && (
         <Suspense fallback={<PageLoading label="Loading media editor…" />}>
-          <MediaEditor entry={files[editing]} onClose={() => setEditing(-1)} onApply={(f) => applyEditAt(editing, f)} />
+          <MediaEditor entry={files[editing]} token={session.access_token} onClose={() => setEditing(-1)} onApply={(f) => applyEditAt(editing, f)} onApplyMusic={(f) => applyMusicAt(editing, f)} />
         </Suspense>
       )}
     </div>

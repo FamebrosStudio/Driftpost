@@ -7,7 +7,7 @@ function artistNames(track) {
   return names.map((artist) => typeof artist === 'string' ? artist : artist?.name).filter(Boolean).join(', ');
 }
 
-export default function EpidemicCatalog({ token, files, selectedIndex, onSelectVideo, onApply }) {
+export default function EpidemicCatalog({ token, files, selectedIndex, onSelectVideo, onApply, summaryLabel = 'Add music' }) {
   const [term, setTerm] = useState('upbeat');
   const [tracks, setTracks] = useState([]);
   const [busy, setBusy] = useState(false);
@@ -102,7 +102,7 @@ export default function EpidemicCatalog({ token, files, selectedIndex, onSelectV
   };
 
   return <details className="s2-epidemic" ref={detailsRef}>
-    <summary>Add music</summary>
+    <summary>{summaryLabel}</summary>
     <p>Preview a track, then mix it into one video. Mixing and editing happen in this browser; the original file stays unchanged unless you apply the finished version.</p>
     {!!videoFiles.length && <label className="s2-music-video">Video to soundtrack
       <select value={currentVideo?.index ?? ''} onChange={(event) => onSelectVideo(Number(event.target.value))} disabled={!!addingId}>
