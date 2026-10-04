@@ -11,6 +11,7 @@ import ProgressStepper from './ProgressStepper.jsx';
 import PlatformTabs from './PlatformTabs.jsx';
 import Workspace from './Workspace.jsx';
 import ScheduleModal from './ScheduleModal.jsx';
+import MediaPreview from './MediaPreview.jsx';
 import './stage3.css';
 import { WorkspaceNav } from '../workspace/Workspace.jsx';
 import { hasAiAccess } from '../ai-access.js';

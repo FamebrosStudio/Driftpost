@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import VideoTimelineEditor from './VideoTimelineEditor.jsx';
+import EpidemicCatalog from '../music/EpidemicCatalog.jsx';
 
 // Crop + resize only (per wireframe): aspect pills, rotate, flip,
 // fit-or-crop, done. Images export exact-size JPEG; videos re-encode
@@ -66,7 +67,7 @@ function cropWindow(box, sw, sh, ratio) {
   return { x, y, w: Math.max(1, w), h: Math.max(1, h) };
 }
 
-export default function MediaEditor({ entry, token, onClose, onApply, onApplyMusic }) {
+export default function MediaEditor({ entry, token, onClose, onApply, onApplyMusic, onRemoveMusic }) {
   const isVideo = entry.type.startsWith('video/');
   const [bmp, setBmp] = useState(null);
   const [vidEl, setVidEl] = useState(null);
@@ -552,6 +553,7 @@ export default function MediaEditor({ entry, token, onClose, onApply, onApplyMus
             onBack={() => setShowVideoTimeline(false)}
             onApply={(file) => { setShowVideoTimeline(false); onApply(file); }}
             onApplyMusic={onApplyMusic}
+            onRemoveMusic={onRemoveMusic}
           />
         </div>
       </div>
@@ -615,6 +617,21 @@ export default function MediaEditor({ entry, token, onClose, onApply, onApplyMus
             <button type="button" className="s2-cancel" onClick={onClose}>Cancel</button>
           </div>
         </div>
+        {!isVideo && onApplyMusic && <div className="s2-editor-music-catalog s2-image-editor-music">
+          <h3>Add music to this image</h3>
+          <p>Choose a track and duration. Driftpost creates a short MP4 from your photo so it can play with music.</p>
+          <EpidemicCatalog
+            token={token}
+            files={[entry]}
+            selectedIndex={0}
+            onSelectVideo={() => {}}
+            summaryLabel="Browse music"
+            onApply={async (_index, file, track) => {
+              await onApplyMusic(file, track);
+              onClose();
+            }}
+          />
+        </div>}
       </div>
     </div>
   );

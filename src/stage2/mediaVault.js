@@ -64,5 +64,8 @@ export const vaultFiles = (vault) => (vault?.files || [])
   .filter((f) => f.blob instanceof Blob)
   .map((f) => {
     const raw = f.blob instanceof File ? f.blob : new File([f.blob], f.name || 'media', { type: f.type || 'image/jpeg' });
-    return { raw, name: f.name || raw.name, size: `${(raw.size / 1024 / 1024).toFixed(1)} MB`, type: raw.type };
+    const musicOriginalRaw = f.musicOriginalRaw instanceof Blob
+      ? (f.musicOriginalRaw instanceof File ? f.musicOriginalRaw : new File([f.musicOriginalRaw], `${String(f.name || raw.name).replace(/\.[^.]+$/, '')}-original${raw.name.match(/\.[^.]+$/)?.[0] || ''}`, { type: f.musicOriginalRaw.type || raw.type }))
+      : null;
+    return { raw, musicOriginalRaw, musicTrack: f.musicTrack || null, name: f.name || raw.name, size: `${(raw.size / 1024 / 1024).toFixed(1)} MB`, type: raw.type };
   });

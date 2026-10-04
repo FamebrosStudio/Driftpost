@@ -476,6 +476,7 @@ app.get('/api/music/search', requireUser, musicLimit, async (req, res) => {
     res.set('Cache-Control', 'private, max-age=30').json({
       tracks: Array.isArray(payload.tracks) ? payload.tracks : [],
       pagination: payload.pagination || null,
+      links: payload.links || null,
       aggregations: payload.aggregations || null,
     });
   } catch (error) {
@@ -495,7 +496,7 @@ app.get('/api/music/tracks/:trackId/preview', requireUser, musicLimit, async (re
   try {
     const response = await fetch(`https://partner-content-api.epidemicsound.com/v0/tracks/${encodeURIComponent(trackId)}/hls`, {
       headers: { Accept: 'application/json', Authorization: `Bearer ${apiKey}` },
-      signal: AbortSignal.timeout(12000),
+      signal: AbortSignal.timeout(25000),
     });
     const data = await response.json().catch(() => ({}));
     if (!response.ok || !data.url || !data.cookie?.name || !data.cookie?.value) {

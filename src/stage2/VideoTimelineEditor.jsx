@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import EpidemicCatalog from '../music/EpidemicCatalog.jsx';
+import { mp4RecordingType } from '../music/mixVideoAudio.js';
 
 const fmt = (value) => {
   const n = Number.isFinite(value) ? Math.max(0, value) : 0;
@@ -8,7 +9,7 @@ const fmt = (value) => {
 
 // Browser-only trim editor. It re-encodes the selected interval to WebM and
 // carries the source audio track through when the browser exposes captureStream.
-export default function VideoTimelineEditor({ entry, token, onBack, onApply, onApplyMusic }) {
+export default function VideoTimelineEditor({ entry, token, onBack, onApply, onApplyMusic, onRemoveMusic }) {
   const videoRef = useRef(null);
   const [duration, setDuration] = useState(0);
   const [start, setStart] = useState(0);
@@ -16,7 +17,8 @@ export default function VideoTimelineEditor({ entry, token, onBack, onApply, onA
   const [playhead, setPlayhead] = useState(0);
   const [playing, setPlaying] = useState(false);
   const [dragging, setDragging] = useState('');
-  const [musicTrack, setMusicTrack] = useState(null);
+  const [musicTrack, setMusicTrack] = useState(() => entry.musicTrack || null);
+  const [musicSourceFile, setMusicSourceFile] = useState(() => entry.musicOriginalRaw || entry.raw);
   const [busy, setBusy] = useState(false);
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState('');
@@ -56,8 +58,9 @@ export default function VideoTimelineEditor({ entry, token, onBack, onApply, onA
     const video = videoRef.current;
     if (!video || !duration) { setError('Video is still loading. Try again in a moment.'); return; }
     if (end - start < 0.25) { setError('Choose a section at least 0.25 seconds long.'); return; }
-    if (!window.MediaRecorder || !HTMLCanvasElement.prototype.captureStream) {
-      setError('Video trimming is not supported in this browser. Please use the latest Chrome or Edge.'); return;
+    const mimeType = mp4RecordingType();
+    if (!mimeType || !HTMLCanvasElement.prototype.captureStream) {
+      setError('This browser cannot render a compatible MP4 here. Please use the latest Chrome or Edge.'); return;
     }
     setBusy(true); setProgress(0);
     let recorder;
@@ -79,9 +82,7 @@ export default function VideoTimelineEditor({ entry, token, onBack, onApply, onA
         sourceStream = capture.call(video);
         sourceStream.getAudioTracks().forEach((track) => outputStream.addTrack(track));
       }
-      const candidates = ['video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus', 'video/webm'];
-      const mimeType = candidates.find((type) => MediaRecorder.isTypeSupported(type)) || '';
-      recorder = new MediaRecorder(outputStream, mimeType ? { mimeType } : undefined);
+      recorder = new MediaRecorder(outputStream, { mimeType, videoBitsPerSecond: 5_000_000, audioBitsPerSecond: 192_000 });
       const chunks = [];
       recorder.ondataavailable = (event) => { if (event.data?.size) chunks.push(event.data); };
       const stopped = new Promise((resolve, reject) => {
@@ -107,10 +108,10 @@ export default function VideoTimelineEditor({ entry, token, onBack, onApply, onA
       draw();
       await stopped;
       cancelAnimationFrame(raf);
-      const blob = new Blob(chunks, { type: recorder.mimeType || 'video/webm' });
+      const blob = new Blob(chunks, { type: recorder.mimeType || mimeType });
       if (!blob.size) throw new Error('The rendered clip is empty. Please retry.');
       const baseName = String(entry.name || 'video').replace(/\.[a-z0-9]+$/i, '');
-      onApply(new File([blob], `${baseName}-trimmed.webm`, { type: blob.type }));
+      onApply(new File([blob], `${baseName}-trimmed.mp4`, { type: blob.type }));
     } catch (err) {
       setError(err?.message || 'Could not render this trimmed video. Try Chrome or Edge.');
     } finally {
@@ -201,9 +202,14 @@ export default function VideoTimelineEditor({ entry, token, onBack, onApply, onA
           <div className={`s2-audio-track${musicTrack ? ' has-music' : ''}`}>
             <div className="s2-audio-track-label"><b>AUDIO</b><span>{musicTrack ? `${musicTrack.title || musicTrack.name || 'Music'}${musicTrack.mainArtists?.[0]?.name ? ` · ${musicTrack.mainArtists[0].name}` : ''}` : 'No music added'}</span></div>
             <div className="s2-audio-lane" aria-label={musicTrack ? 'Added music track' : 'Empty audio track'}>
-              {musicTrack && <div className="s2-audio-clip" style={{ left: `${duration ? start / duration * 100 : 0}%`, width: `${duration ? (end - start) / duration * 100 : 100}%` }}><span>{musicTrack.title || musicTrack.name || 'Music'}</span></div>}
+              {musicTrack && <div className="s2-audio-clip" style={{ left: 0, width: '100%' }}><span>{musicTrack.title || musicTrack.name || 'Music'}</span></div>}
               {!musicTrack && <span className="s2-audio-empty">Choose a soundtrack below</span>}
             </div>
+            {musicTrack && <button type="button" className="s2-audio-remove" onClick={async () => {
+              await onRemoveMusic();
+              setMusicTrack(null);
+              setMusicSourceFile(entry.musicOriginalRaw || musicSourceFile);
+            }}>Remove</button>}
           </div>
           <div className="s2-timeline-values">
             <label>In <input type="number" min="0" max={Math.max(0, end - 0.25)} step="0.1" value={start.toFixed(1)} disabled={!duration || busy} onChange={(event) => clampStart(event.target.value)} /></label>
@@ -218,12 +224,12 @@ export default function VideoTimelineEditor({ entry, token, onBack, onApply, onA
           <div className="s2-editor-music-catalog">
             <EpidemicCatalog
               token={token}
-              files={[entry]}
+              files={[{ ...entry, raw: musicSourceFile || entry.raw }]}
               selectedIndex={0}
               onSelectVideo={() => {}}
-              summaryLabel={musicTrack ? 'Change or preview music' : 'Add music to audio track'}
+              summaryLabel={musicTrack ? 'Replace or preview music' : 'Add music to audio track'}
               onApply={async (_index, mixedFile, track) => {
-                await onApplyMusic(mixedFile);
+                await onApplyMusic(mixedFile, track);
                 setMusicTrack(track);
               }}
             />

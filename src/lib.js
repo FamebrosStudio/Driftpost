@@ -476,7 +476,12 @@ export async function api(path, token, options = {}) {
       });
       const ct = res.headers.get('content-type') || '';
       if ([502, 503, 504].includes(res.status)) {
-        const err = new Error('Server is waking up — retrying shortly.');
+        // Our API returns structured errors for upstream integrations (music,
+        // Meta, etc.). Preserve those instead of mislabeling every 502 as a
+        // Render cold start. Render gateway pages are HTML and keep the wakeup
+        // guidance below.
+        const payload = ct.includes('json') ? await res.json().catch(() => ({})) : {};
+        const err = new Error(payload.error || 'Server is waking up — retrying shortly.');
         err.status = res.status;
         throw err;
       }

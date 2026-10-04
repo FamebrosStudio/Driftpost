@@ -79,7 +79,13 @@ export default function StageTwoPage({ session, onBack, onSignOut, onNavigate, o
       ...(prev || {}),
       thumb: prev?.thumb || null,
       coverMap: prev?.coverMap || {},
-      files: files.map((f) => ({ name: f.name, type: f.type, blob: f.raw })).filter((f) => f.blob instanceof Blob),
+      files: files.map((f) => ({
+        name: f.name,
+        type: f.type,
+        blob: f.raw,
+        musicOriginalRaw: f.musicOriginalRaw instanceof Blob ? f.musicOriginalRaw : null,
+        musicTrack: f.musicTrack || null,
+      })).filter((f) => f.blob instanceof Blob),
     }));
   }, [mediaKey, files]);
 
@@ -146,10 +152,24 @@ export default function StageTwoPage({ session, onBack, onSignOut, onNavigate, o
       : f)));
     setEditing(-1);
   };
-  const applyMusicAt = (i, outFile) => {
+  const applyMusicAt = (i, outFile, track) => {
     setFiles((fs) => fs.map((f, j) => j === i
-      ? { raw: outFile, name: outFile.name, size: `${(outFile.size / 1024 / 1024).toFixed(1)} MB`, type: outFile.type }
+      ? {
+        raw: outFile,
+        musicOriginalRaw: f.musicOriginalRaw || f.raw,
+        musicTrack: track ? { id: track.id, title: track.title, name: track.name, artists: track.artists, mainArtists: track.mainArtists } : f.musicTrack,
+        name: outFile.name,
+        size: `${(outFile.size / 1024 / 1024).toFixed(1)} MB`,
+        type: outFile.type,
+      }
       : f));
+  };
+  const removeMusicAt = (i) => {
+    setFiles((fs) => fs.map((f, j) => {
+      if (j !== i || !f.musicOriginalRaw) return f;
+      const raw = f.musicOriginalRaw;
+      return { raw, name: raw.name || f.name.replace(/-with-music\.mp4$/i, ''), size: `${(raw.size / 1024 / 1024).toFixed(1)} MB`, type: raw.type };
+    }));
   };
   const requestCaptions = (pid) => fetchCaptions(session.access_token, {
     brief, brand: brandLabel, files, tone, emoji, length, analysis,
@@ -307,7 +327,7 @@ export default function StageTwoPage({ session, onBack, onSignOut, onNavigate, o
       <ContinueButton disabled={!canContinue} saved={saveTick} onClick={cont} />
       {editing >= 0 && files[editing] && (
         <Suspense fallback={<PageLoading label="Loading media editor…" />}>
-          <MediaEditor entry={files[editing]} token={session.access_token} onClose={() => setEditing(-1)} onApply={(f) => applyEditAt(editing, f)} onApplyMusic={(f) => applyMusicAt(editing, f)} />
+          <MediaEditor entry={files[editing]} token={session.access_token} onClose={() => setEditing(-1)} onApply={(f) => applyEditAt(editing, f)} onApplyMusic={(f, track) => applyMusicAt(editing, f, track)} onRemoveMusic={() => removeMusicAt(editing)} />
         </Suspense>
       )}
     </div>
