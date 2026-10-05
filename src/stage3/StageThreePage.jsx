@@ -380,8 +380,10 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
       if (c.pollOn && !(c.opts?.[0]?.trim() && c.opts?.[1]?.trim())) return 'a poll needs at least 2 answers';
     }
     if (pid === 'facebook' && c.cta && !c.link?.trim()) return 'a button needs a website link above';
+    if (pid === 'facebook' && files.length > 20) return 'Facebook allows up to 20 photos per carousel';
     if (pid === 'facebook' && !v.message?.trim() && !c.link?.trim() && !files.length) return 'add post text, a website link, or media';
     if (pid === 'instagram' && !files.some((f) => /^(image|video)\//.test(f.type))) return 'Instagram needs a photo or video';
+    if (pid === 'instagram' && files.length > 10) return 'Instagram publishing supports up to 10 carousel slides. Remove extra slides or post them using Instagram directly.';
     if (pid === 'instagram' && Array.from(composeOutput(pid, v)).length > 2200) return 'caption plus hashtags exceeds Instagram’s 2,200 character limit';
     if (pid === 'instagram' && parseInstagramCollaborators(c.collabs).error) return parseInstagramCollaborators(c.collabs).error;
     if (pid === 'youtube' && !files.some((f) => f.type.startsWith('video/')) && !files.length) return 'YouTube needs a video file, or a photo to convert into a Short';
@@ -395,6 +397,8 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
       ? 'facebook'
       : pid === 'facebook' && mirrorTarget === 'instagram' ? 'instagram' : '';
     if (!target) return '';
+    if (target === 'facebook' && files.length > 20) return 'Facebook allows up to 20 photos per carousel';
+    if (target === 'instagram' && files.length > 10) return 'Instagram publishing supports up to 10 carousel slides. Remove extra slides or post them using Instagram directly.';
     if (isGroupFlow ? !groupMemberIds(target).length : !accountFor(target)) return `no ${NAMES[target]} account is selected`;
     if (target === 'instagram' && !files.some((f) => /^(image|video)\//.test(f.type))) return 'Instagram needs a photo or video';
     if (target === 'instagram' && Array.from(mainText('facebook')).length > 2200) return 'the Instagram caption exceeds 2,200 characters';
@@ -524,7 +528,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
        if (usePreuploaded) metaUploads = uploaded.files;
        else {
          const preparedMedia = pid === 'instagram' ? (igMedia || sourceMedia) : (fbMedia || sourceMedia);
-         try { metaUploads = await uploadDirectMetaMedia(preparedMedia.slice(0, 10)); }
+         try { metaUploads = await uploadDirectMetaMedia(preparedMedia.slice(0, 20)); }
          catch { /* fall back to the established multipart upload path */ }
        }
      }
@@ -541,15 +545,15 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
      } else {
        // mediaOverride replaces the selected files (used for photo -> video).
        const media = pid === 'instagram' ? (igMedia || sourceMedia) : pid === 'facebook' ? (fbMedia || sourceMedia) : sourceMedia;
-       for (const f of media.slice(0, 10)) { if (f?.raw) form.append('media', f.raw); }
+       for (const f of media.slice(0, 20)) { if (f?.raw) form.append('media', f.raw); }
      }
      if (pid === 'facebook' && mirrorTarget === 'instagram' && igMedia) {
-       for (const f of igMedia.slice(0, 10)) {
+       for (const f of igMedia.slice(0, 20)) {
          if (f?.raw && f.type?.startsWith('image/')) form.append('instagram_media', f.raw, f.name);
        }
      }
      if (pid === 'instagram' && mirrorTarget === 'facebook' && fbMedia) {
-       for (const f of fbMedia.slice(0, 10)) {
+       for (const f of fbMedia.slice(0, 20)) {
          if (f?.raw && f.type?.startsWith('image/')) form.append('facebook_media', f.raw, f.name);
        }
      }

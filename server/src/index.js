@@ -1370,11 +1370,11 @@ app.get('/api/oauth/x/callback', callbackLimit, async (req, res) => {
 });
 
 // --- Unified publish: youtube | facebook | instagram | x ---
-// Accepts up to 10 `media` files (carousel). Single-file clients keep working.
+// Accepts up to 20 `media` files (Facebook carousel); platform caps are validated below.
 const publishUpload = upload.fields([
-  { name: 'media', maxCount: 10 },
-  { name: 'instagram_media', maxCount: 10 },
-  { name: 'facebook_media', maxCount: 10 },
+  { name: 'media', maxCount: 20 },
+  { name: 'instagram_media', maxCount: 20 },
+  { name: 'facebook_media', maxCount: 20 },
   { name: 'thumbnail', maxCount: 1 },
   { name: 'cover_instagram', maxCount: 1 },
   { name: 'cover_facebook', maxCount: 1 },
@@ -1418,7 +1418,7 @@ app.post('/api/publish', requireUser, publishRequestBurstLimit, publishQueueLimi
       return res.status(400).json({ error: 'Stored media can only be used directly for Instagram or Facebook posts.' });
     }
     let count = 0;
-    for (let index = 0; index < 10; index++) {
+    for (let index = 0; index < 20; index++) {
       const objectPath = String(req.body[`mediaPath${index}`] || '');
       if (!objectPath) break;
       const [owner, filename, ...extra] = objectPath.split('/');
@@ -1439,6 +1439,14 @@ app.post('/api/publish', requireUser, publishRequestBurstLimit, publishQueueLimi
       await cleanup();
       return res.status(400).json({ error: 'No uploaded media was found. Re-upload the media and try again.' });
     }
+    if (platform === 'instagram' && count > 10) {
+      await cleanup();
+      return res.status(400).json({ error: 'Instagram publishing supports up to 10 carousel slides.' });
+    }
+    if (platform === 'facebook' && count > 20) {
+      await cleanup();
+      return res.status(400).json({ error: 'Facebook allows up to 20 photos per carousel.' });
+    }
     if (count > 1 && req.body.mediaType0?.startsWith('video/')) {
       await cleanup();
       return res.status(400).json({ error: 'Carousel takes photos only (2-10). Post videos one at a time.' });
@@ -1455,9 +1463,21 @@ app.post('/api/publish', requireUser, publishRequestBurstLimit, publishQueueLimi
       return res.status(400).json({ error: 'Covers must be valid JPEG images no larger than 5 MB.' });
     }
   }
-  if (files.length > 10) {
+  if (platform === 'instagram' && files.length > 10) {
     await cleanup();
-    return res.status(400).json({ error: 'Carousel allows up to 10 photos' });
+    return res.status(400).json({ error: 'Instagram publishing supports up to 10 carousel slides.' });
+  }
+  if (platform === 'facebook' && files.length > 20) {
+    await cleanup();
+    return res.status(400).json({ error: 'Facebook allows up to 20 photos per carousel.' });
+  }
+  if (platform === 'x' && files.length > 4) {
+    await cleanup();
+    return res.status(400).json({ error: 'X allows up to 4 media attachments.' });
+  }
+  if (platform === 'youtube' && files.length > 1) {
+    await cleanup();
+    return res.status(400).json({ error: 'YouTube accepts one video per post.' });
   }
   for (const f of files) {
     // Reject executables/scripts/archives before they touch any publisher.
@@ -2061,7 +2081,10 @@ setInterval(() => {
 const SCHED_BATCH = 5;
 
 function validateMedia(platform, files) {
-  if (files.length > 10) return 'Carousel allows up to 10 photos';
+  if (platform === 'instagram' && files.length > 10) return 'Instagram publishing supports up to 10 carousel slides.';
+  if (platform === 'facebook' && files.length > 20) return 'Facebook allows up to 20 photos per carousel.';
+  if (platform === 'x' && files.length > 4) return 'X allows up to 4 media attachments.';
+  if (platform === 'youtube' && files.length > 1) return 'YouTube accepts one video per post.';
   for (const f of files) {
     const mt = String(f.mimetype || '');
     if (!mt.startsWith('image/') && !mt.startsWith('video/')) return 'Only image and video files are accepted';
@@ -2073,7 +2096,7 @@ function validateMedia(platform, files) {
   const imgCount = files.filter((f) => String(f.mimetype || '').startsWith('image/')).length;
   const vidCount = files.filter((f) => String(f.mimetype || '').startsWith('video/')).length;
   if (files.length > 1 && vidCount > 0 && (platform === 'instagram' || platform === 'facebook')) {
-    return 'Carousel takes photos only (2-10). Post videos one at a time.';
+    return `Carousel takes photos only (2-${platform === 'instagram' ? 10 : 20}). Post videos one at a time.`;
   }
   if (platform === 'x' && files.length > 4) return 'X allows up to 4 photos per post';
   return null;

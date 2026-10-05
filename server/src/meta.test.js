@@ -56,6 +56,34 @@ test('Facebook carousel attaches hosted image URLs without file uploads', async 
   });
 });
 
+test('Facebook carousel publishes all 20 photos without truncating the carousel', async () => {
+  const responses = Array.from({ length: 20 }, (_, i) => ({ id: `photo-${i + 1}` }));
+  responses.push({ id: 'post-20' });
+  await withFetch(responses, async (requests) => {
+    const mediaList = Array.from({ length: 20 }, (_, i) => ({
+      url: `https://storage.example/user/photo-${i + 1}.jpg`, mimetype: 'image/jpeg',
+    }));
+    await publishFacebookCarousel({ pageId: 'page-1', pageToken: 'secret-token', text: 'caption', mediaList });
+    assert.equal(requests.length, 21);
+    const finalBody = JSON.parse(requests[20].init.body);
+    assert.equal(finalBody.attached_media.length, 20);
+    assert.equal(finalBody.attached_media[19].media_fbid, 'photo-20');
+  });
+});
+
+test('Facebook carousel rejects more than 20 photos without uploading any', async () => {
+  await withFetch([], async (requests) => {
+    const mediaList = Array.from({ length: 21 }, (_, i) => ({
+      url: `https://storage.example/user/photo-${i + 1}.jpg`, mimetype: 'image/jpeg',
+    }));
+    await assert.rejects(
+      publishFacebookCarousel({ pageId: 'page-1', pageToken: 'secret-token', text: 'caption', mediaList }),
+      /up to 20 photos/,
+    );
+    assert.equal(requests.length, 0);
+  });
+});
+
 test('Instagram collaborator publishing resolves handles to usernames, never numeric account IDs', async () => {
   await withFetch([{
     business_discovery: { id: '17841400000000000', username: 'mahalaxmi.jewellers.kurla' },

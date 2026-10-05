@@ -127,7 +127,7 @@ export default function Workspace({
       ) : (
         <>
           {pid === 'instagram' && <>
-            <p className="s3-note">Instagram photos are prepared as 1080 × 1350 JPEGs. Facebook uses its own 1200 × 630 version; your original stays unchanged.</p>
+            <p className="s3-note">Instagram and Facebook photos are prepared as 1080 × 1440 JPEGs; your original stays unchanged. Facebook supports up to 20 photos here; Instagram publishing supports up to 10 per carousel.</p>
             <CoverPicker platform="instagram" files={files} cover={thumb} onChange={onThumb} />
             {mirrorPlatform === 'facebook' && <CoverPicker platform="facebook" files={files} cover={mirrorCover} onChange={onMirrorCover} />}
             <Field label="Caption"><textarea value={values.caption || ''} onChange={(e) => set('caption', e.target.value)} placeholder="Write the caption…" /></Field>

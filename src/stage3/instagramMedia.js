@@ -1,8 +1,8 @@
 const IG_WIDTH = 1080;
-const IG_HEIGHT = 1350;
+const IG_HEIGHT = 1440;
 const IG_MAX_BYTES = 8 * 1024 * 1024;
-const FB_WIDTH = 1200;
-const FB_HEIGHT = 630;
+const FB_WIDTH = 1080;
+const FB_HEIGHT = 1440;
 const FB_MAX_BYTES = 10 * 1024 * 1024;
 
 function toBlob(canvas, quality) {
@@ -33,7 +33,7 @@ async function jpegForTarget(entry, { width: targetWidth, height: targetHeight, 
     const fit = Math.min(targetWidth / bitmap.width, targetHeight / bitmap.height);
     const width = bitmap.width * fit;
     const height = bitmap.height * fit;
-    ctx.drawImage(bitmap, (IG_WIDTH - width) / 2, (IG_HEIGHT - height) / 2, width, height);
+    ctx.drawImage(bitmap, (targetWidth - width) / 2, (targetHeight - height) / 2, width, height);
 
     let blob = await toBlob(canvas, 0.9);
     for (const quality of [0.82, 0.72, 0.62]) {

@@ -381,9 +381,9 @@ export async function resolveInstagramCollaboratorUsernames({ igUserId, pageToke
 export async function publishFacebookCarousel({ pageId, pageToken, text, mediaList }) {
   const items = (mediaList || []).filter((m) => (m?.url || m?.path || m?.bytes) && String(m.mimetype || '').startsWith('image/'));
   if (items.length < 2) throw new Error('Carousel needs at least 2 photos');
-  if (items.length > 10) throw new Error('Facebook carousel allows up to 10 photos');
+  if (items.length > 20) throw new Error('Facebook carousel allows up to 20 photos');
   const attached = [];
-  for (const m of items.slice(0, 10)) {
+  for (const m of items) {
     const form = new FormData();
     form.append('published', 'false');
     if (m.url) form.append('url', m.url);

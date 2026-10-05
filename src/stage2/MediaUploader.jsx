@@ -1,5 +1,7 @@
 import React, { useRef, useState } from 'react';
 
+const MAX_MEDIA_FILES = 20;
+
 // Big minimal dropzone: click to browse, or drag & drop. Images + video.
 export default function MediaUploader({ count, onFiles, canUseAi = false }) {
   const inputRef = useRef(null);
@@ -31,7 +33,7 @@ export default function MediaUploader({ count, onFiles, canUseAi = false }) {
         onDragLeave={() => setOver(false)}
         onDrop={(e) => { e.preventDefault(); setOver(false); take(e.dataTransfer.files); }}
       >
-        <b>+ Add Media{count ? ` (${count}/10)` : ''}</b>
+        <b>+ Add Media{count ? ` (${count}/${MAX_MEDIA_FILES})` : ''}</b>
         <small>{canUseAi ? 'Images or video, up to 400 MB per file. Choose Analyze photo + video in the prompt settings to include visual and spoken details.' : 'Images or video, up to 400 MB per file.'}</small>
       </button>
       {message && <small role="status" style={{ display: 'block', marginTop: 8, color: '#e28e8e' }}>{message}</small>}

@@ -136,7 +136,7 @@ export default function StageTwoPage({ session, onBack, onSignOut, onNavigate, o
   const brandLabel = s1.type === 'common_brand' ? brand?.label || '' : '';
 
   const addFiles = (list) => {
-    const room = Math.max(0, 10 - files.length);
+    const room = Math.max(0, 20 - files.length);
     const mapped = list.slice(0, room).map((f) => ({
       raw: f, name: f.name, size: `${(f.size / 1024 / 1024).toFixed(1)} MB`, type: f.type,
     }));
@@ -274,7 +274,7 @@ export default function StageTwoPage({ session, onBack, onSignOut, onNavigate, o
         <section className="s2-sec" aria-label="Add media">
           <div className="s2-sec-head">
             <h2>Add media</h2>
-            <span className="s2-count">{files.length}/10</span>
+            <span className="s2-count">{files.length}/20</span>
           </div>
           <p className="sub">Images or video — shown on every selected platform. Tap Edit on a photo or video to crop it.</p>
           <MediaUploader count={files.length} onFiles={addFiles} canUseAi={canUseAi} />
