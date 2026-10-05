@@ -5,11 +5,11 @@
   "rewrites": [
     {
       "source": "/health",
-      "destination": "https://driftpost.onrender.com/health"
+      "destination": "https://driftpost-production.up.railway.app/health"
     },
     {
       "source": "/api/:path*",
-      "destination": "https://driftpost.onrender.com/api/:path*"
+      "destination": "https://driftpost-production.up.railway.app/api/:path*"
     },
     {
       "source": "/(.*)",
