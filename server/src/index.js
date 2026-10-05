@@ -433,12 +433,12 @@ setInterval(() => {
 app.get('/', (_req, res) => res.json({ ok: true, service: 'driftpost-api', platforms: ['youtube', 'instagram', 'facebook', 'x'] }));
 app.get('/health', (_req, res) => res.set('Cache-Control', 'no-store').json({
   ok: true,
-  revision: process.env.RENDER_GIT_COMMIT?.slice(0, 12) || null,
+  revision: (process.env.RAILWAY_GIT_COMMIT_SHA || process.env.RENDER_GIT_COMMIT)?.slice(0, 12) || null,
   uptimeSeconds: Math.floor(process.uptime()),
 }));
 
 // Epidemic Sound catalog access stays on the server so the provider key is
-// never sent to the browser. Configure EPIDEMIC_SOUND_API_KEY in Render.
+// never sent to the browser. Configure EPIDEMIC_SOUND_API_KEY in the API host.
 const musicPreviewSessions = new Map();
 setInterval(() => {
   const now = Date.now();
@@ -487,6 +487,37 @@ app.get('/api/music/search', requireUser, musicLimit, async (req, res) => {
     const timedOut = error?.name === 'TimeoutError' || error?.name === 'AbortError';
     return res.status(502).json({ error: timedOut ? 'Epidemic Sound took too long to respond.' : 'Could not reach Epidemic Sound. Try again shortly.' });
   }
+});
+
+// Issue short-lived signed upload grants so large media can travel directly
+// from the browser to Supabase Storage instead of consuming Railway egress.
+// The service key stays on the API; the client receives permission for only
+// the individual object paths listed in this request.
+app.post('/api/storage/sign-uploads', requireUser, async (req, res) => {
+  const files = req.body?.files;
+  if (!Array.isArray(files) || files.length < 1 || files.length > 20) {
+    return res.status(400).json({ error: 'Choose between 1 and 20 media files.' });
+  }
+  const results = [];
+  for (const item of files) {
+    const name = String(item?.name || '').slice(0, 240);
+    const mimetype = String(item?.mimetype || '').toLowerCase();
+    const size = Number(item?.size);
+    if (!name || !/^(image|video)\//.test(mimetype) || !Number.isFinite(size) || size < 1 || size > MAX_UPLOAD_BYTES) {
+      return res.status(400).json({ error: 'A media file has an invalid name, type, or size (maximum 400 MB).' });
+    }
+    const ext = path.extname(name).replace(/[^a-z0-9.]/gi, '').slice(1, 8)
+      || (mimetype.startsWith('video/') ? 'mp4' : 'jpg');
+    const key = `${req.user.id}/${crypto.randomUUID()}.${ext}`;
+    const storage = supabase.storage.from(BUCKET);
+    const { data, error } = await storage.createSignedUploadUrl(key, { upsert: false });
+    if (error || !data?.token) {
+      return res.status(502).json({ error: 'Could not prepare a direct media upload. Please retry.' });
+    }
+    const { data: publicData } = storage.getPublicUrl(key);
+    results.push({ name, path: key, token: data.token, publicUrl: publicData.publicUrl, mimetype, size });
+  }
+  res.json({ results });
 });
 
 // Epidemic previews are HLS manifests. Prefer their simpler /stream endpoint;
@@ -1359,6 +1390,42 @@ app.post('/api/publish', requireUser, publishRequestBurstLimit, publishQueueLimi
     await cleanup();
     return res.status(400).json({ error: 'Pick YouTube, Instagram, Facebook or X' });
   }
+  // Hosted media references are accepted only for Meta publishing and only
+  // for random object keys inside the authenticated user's storage folder.
+  // Derive public URLs on the server; never let clients make Meta fetch an
+  // arbitrary URL on their behalf.
+  if (req.body.hasPreuploadedMedia === '1') {
+    if (!['instagram', 'facebook'].includes(platform) || files.length) {
+      await cleanup();
+      return res.status(400).json({ error: 'Stored media can only be used directly for Instagram or Facebook posts.' });
+    }
+    let count = 0;
+    for (let index = 0; index < 10; index++) {
+      const objectPath = String(req.body[`mediaPath${index}`] || '');
+      if (!objectPath) break;
+      const [owner, filename, ...extra] = objectPath.split('/');
+      const mimetype = String(req.body[`mediaType${index}`] || '').toLowerCase();
+      const name = String(req.body[`mediaName${index}`] || `media_${index}`).slice(0, 240);
+      if (owner !== req.user.id || extra.length || !/^[0-9a-f-]{36}\.[a-z0-9]{1,8}$/i.test(filename || '')
+        || !/^(image|video)\/[a-z0-9.+-]+$/.test(mimetype)) {
+        await cleanup();
+        return res.status(400).json({ error: 'Stored media reference is invalid. Re-upload the media and try again.' });
+      }
+      const { data } = supabase.storage.from(BUCKET).getPublicUrl(objectPath);
+      req.body[`mediaUrl${index}`] = data.publicUrl;
+      req.body[`mediaName${index}`] = name;
+      req.body[`mediaType${index}`] = mimetype;
+      count++;
+    }
+    if (!count) {
+      await cleanup();
+      return res.status(400).json({ error: 'No uploaded media was found. Re-upload the media and try again.' });
+    }
+    if (count > 1 && req.body.mediaType0?.startsWith('video/')) {
+      await cleanup();
+      return res.status(400).json({ error: 'Carousel takes photos only (2-10). Post videos one at a time.' });
+    }
+  }
   const collaboratorError = instagramCollaboratorError(platform, req.body);
   if (collaboratorError) {
     await cleanup();
@@ -1748,7 +1815,7 @@ async function runPublish(job, conn, payload, body, userId) {
        let mediaList = [];
        let publicUrl = null;
        let publicUrls = [];
-       if (preUploaded) { for (const e of preUploaded) publicUrls.push(e.url); for (const e of preUploaded) mediaList.push({ originalname: e.name, mimetype: e.mimetype || '' }); publicUrl = publicUrls[0] || null; }
+       if (preUploaded) { for (const e of preUploaded) { publicUrls.push(e.url); mediaList.push({ originalname: e.name, mimetype: e.mimetype || '', url: e.url }); } publicUrl = publicUrls[0] || null; }
        const uploadOnePublic = async (f) => {
         const rawExt = path.extname(f.originalname || '');
         const safeExt = rawExt.replace(/[^a-z0-9.]/gi, '').slice(0, 8)
@@ -1761,16 +1828,27 @@ async function runPublish(job, conn, payload, body, userId) {
         return { url: data.publicUrl, file: f };
       };
       const instagramPublicUrls = [];
-      for (const f of instagramFiles) {
-        const up = await uploadOnePublic(f);
-        instagramPublicUrls.push(up.url);
+      if (preUploaded && job.platform === 'facebook' && instagramFiles.length) {
+        // A Facebook-originated image mirror has a different aspect-ratio
+        // rendition for Instagram; use that variant rather than the FB URL.
+        for (const f of instagramFiles) {
+          const up = await uploadOnePublic(f);
+          instagramPublicUrls.push(up.url);
+        }
+      } else if (preUploaded) {
+        instagramPublicUrls.push(...preUploaded.map((item) => item.url));
+      } else {
+        for (const f of instagramFiles) {
+          const up = await uploadOnePublic(f);
+          instagramPublicUrls.push(up.url);
+        }
       }
       const instagramCoverUrl = coverFiles.instagram ? (await uploadOnePublic(coverFiles.instagram)).url : null;
       const facebookMediaList = [];
       for (const f of facebookFiles) {
         facebookMediaList.push({ ...f, originalname: f.originalname, mimetype: f.mimetype });
       }
-      if (allFiles.length) {
+      if (allFiles.length && !preUploaded) {
         // Upload every file once so carousel + mirrors share the same URLs.
         // Single-photo/video keeps the old `media`/`publicUrl` behaviour.
         for (const f of allFiles) {
@@ -1781,17 +1859,11 @@ async function runPublish(job, conn, payload, body, userId) {
          publicUrl = publicUrls[0] || null;
          media = mediaList[0] || null;
        }
-       // Instagram consumes public URLs directly. Facebook multipart uploads
-       // use files on disk instead of retaining entire videos in memory.
+       // Both Meta APIs can fetch media from a public URL. Keep media as a
+       // URL reference for Facebook too; do not download it to Railway first.
        const needsFacebookFile = job.platform === 'facebook'
          || (allowCrossPost && String(body.ig_share_fb || '') === '1');
        if (preUploaded && !media && mediaList.length && needsFacebookFile) {
-         for (let i = 0; i < preUploaded.length; i++) {
-           const downloadedPath = path.join(os.tmpdir(), `driftpost-media-${crypto.randomUUID()}`);
-           downloadedMediaPaths.push(downloadedPath);
-           await downloadMediaFile(preUploaded[i].url, downloadedPath);
-           mediaList[i].path = downloadedPath;
-         }
          media = mediaList[0];
        }
       job.state = 'publishing'; job.progress = 60; job.message = `Publishing to ${job.platform}${isCarousel ? ' (carousel)' : ''}`;
@@ -2088,6 +2160,31 @@ app.post('/api/schedule', requireUser, strictBurstLimit, scheduleRequestLimit, m
     await cleanupTmp();
     return res.status(400).json({ error: 'Pick YouTube, Instagram, Facebook or X' });
   }
+  const directStored = [];
+  if (req.body.hasPreuploadedMedia === '1') {
+    if (!['instagram', 'facebook'].includes(platform) || files.length) {
+      await cleanupTmp();
+      return res.status(400).json({ error: 'Stored media can only be scheduled directly for Instagram or Facebook.' });
+    }
+    for (let index = 0; index < 10; index++) {
+      const objectPath = String(req.body[`mediaPath${index}`] || '');
+      if (!objectPath) break;
+      const [owner, filename, ...extra] = objectPath.split('/');
+      const mimetype = String(req.body[`mediaType${index}`] || '').toLowerCase();
+      const size = Number(req.body[`mediaSize${index}`]);
+      const name = String(req.body[`mediaName${index}`] || filename || `media_${index}`).slice(0, 240);
+      if (owner !== req.user.id || extra.length || !/^[0-9a-f-]{36}\.[a-z0-9]{1,8}$/i.test(filename || '')
+        || !mimetype.startsWith('video/') || !Number.isFinite(size) || size < 1 || size > MAX_UPLOAD_BYTES) {
+        await cleanupTmp();
+        return res.status(400).json({ error: 'Direct-scheduled video reference is invalid. Re-upload the video and try again.' });
+      }
+      directStored.push({ path: objectPath, mimetype, name, size });
+    }
+    if (!directStored.length || directStored.length > 1) {
+      await cleanupTmp();
+      return res.status(400).json({ error: 'Schedule one video at a time.' });
+    }
+  }
   const collaboratorError = instagramCollaboratorError(platform, req.body);
   if (collaboratorError) {
     await cleanupTmp();
@@ -2119,7 +2216,7 @@ app.post('/api/schedule', requireUser, strictBurstLimit, scheduleRequestLimit, m
     await cleanupTmp();
     return res.status(400).json({ error: 'The final repeat must be within the next year.' });
   }
-  const mediaErr = validateMedia(platform, files);
+  const mediaErr = validateMedia(platform, files.length ? files : directStored);
   const igVariantError = validateMedia('instagram', instagramFiles);
   const fbVariantError = validateMedia('facebook', facebookFiles);
   if (mediaErr || igVariantError || fbVariantError) {
@@ -2166,7 +2263,8 @@ app.post('/api/schedule', requireUser, strictBurstLimit, scheduleRequestLimit, m
   const storedCovers = {};
   let thumbPath = null;
   try {
-    for (const f of files) {
+    if (directStored.length) stored.push(...directStored);
+    else for (const f of files) {
       const ext = (path.extname(f.originalname || '') || (String(f.mimetype).startsWith('video/') ? '.mp4' : '.jpg'))
         .replace(/[^a-z0-9.]/gi, '').slice(0, 8);
       const key = `${prefix}/${crypto.randomUUID()}${ext}`;
@@ -2332,10 +2430,17 @@ async function runDueSchedules() {
             throw error;
           }
         };
+        const hostedMetaVideo = ['instagram', 'facebook'].includes(row.platform)
+          && (row.media || []).length === 1
+          && String(row.media[0].mimetype || '').startsWith('video/');
         const localFiles = [];
-        for (const media of row.media || []) localFiles.push(await downloadScheduledFile(media, 'driftpost-sched'));
+        if (!hostedMetaVideo) {
+          for (const media of row.media || []) localFiles.push(await downloadScheduledFile(media, 'driftpost-sched'));
+        }
         const localInstagramFiles = [];
-        for (const media of row.body?.driftpost_instagram_media || []) localInstagramFiles.push(await downloadScheduledFile(media, 'driftpost-sched-ig'));
+        if (!hostedMetaVideo) {
+          for (const media of row.body?.driftpost_instagram_media || []) localInstagramFiles.push(await downloadScheduledFile(media, 'driftpost-sched-ig'));
+        }
         const localFacebookFiles = [];
         for (const media of row.body?.driftpost_facebook_media || []) localFacebookFiles.push(await downloadScheduledFile(media, 'driftpost-sched-fb'));
         let thumbFile = null;
@@ -2347,7 +2452,17 @@ async function runDueSchedules() {
           if (!cover?.path) continue;
           localCovers[platformName] = await downloadScheduledFile({ ...cover, mimetype: 'image/jpeg', name: cover.name || 'cover.jpg' }, `driftpost-sched-${platformName}-cover`);
         }
-        await queuePublish(() => runPublish(job, conn, { files: localFiles, instagramFiles: localInstagramFiles, facebookFiles: localFacebookFiles, thumbFile, coverFiles: localCovers }, row.body || {}, row.user_id), job);
+        const publishBody = { ...(row.body || {}) };
+        if (hostedMetaVideo) {
+          const item = row.media[0];
+          const { data } = supabase.storage.from(BUCKET).getPublicUrl(item.path);
+          publishBody.hasPreuploadedMedia = '1';
+          publishBody.mediaUrl0 = data.publicUrl;
+          publishBody.mediaPath0 = item.path;
+          publishBody.mediaName0 = item.name || 'scheduled-video';
+          publishBody.mediaType0 = item.mimetype || 'video/mp4';
+        }
+        await queuePublish(() => runPublish(job, conn, { files: localFiles, instagramFiles: localInstagramFiles, facebookFiles: localFacebookFiles, thumbFile, coverFiles: localCovers }, publishBody, row.user_id), job);
         const done = jobs.get(job.id) || job;
         const published = done.state === 'completed';
         await supabase.from('scheduled_posts').update({

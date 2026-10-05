@@ -680,7 +680,11 @@
         "Alibaug beach resort",
         "beachside stay",
         "weekend getaway",
-        "family getaway"
+        "family getaway",
+        "Premium Room Revdanda",
+        "private pool cottage Alibaug",
+        "beach access Revdanda",
+        "beachfront restaurant Revdanda"
       ],
       "approved_facts": [
         {
@@ -690,6 +694,10 @@
         {
           "text": "The official website lists rooms, private pool villas, a swimming pool, lawn and restaurant. Do not assign a villa amenity to every room.",
           "source": "https://vividsands.com/"
+        },
+        {
+          "text": "Official website lists Premium Rooms with air conditioning, a king-size bed and extra foldout; Premium Cottages with separate living area, pull-out couch, king bedroom and private pool. The official site describes a swimming pool and also calls it an infinity pool, without establishing whether these are separate; it lists beach access, open lawn, a beachfront multi-cuisine restaurant, games, gated community and CCTV/security. Revdanda Fort is a nearby attraction, not an on-property amenity. Match cottage features only to cottages; meal inclusions, room occupancy, rates and availability are not confirmed.",
+          "source": "https://vividsands.com/ (checked 2026-10-04)"
         }
       ],
       "mandatory_copy": [],
@@ -741,7 +749,8 @@
       ],
       "sources": [
         "data.txt: brand name and listed genres",
-        "https://vividsands.com/"
+        "https://vividsands.com/",
+        "https://vividsands.com/contact-us/"
       ],
       "footer_policy": "Use these known lines for feed/reel captions. This is the proposed standard except the two source-file footers and the explicit Smietz rules. Omit footer for story/comment/repost modes unless requested. Do not add missing contact fields.",
       "readiness": "ready_with_post_brief",
@@ -938,10 +947,12 @@
       },
       "missing_details": [
         "Current product price, stock and delivery terms for each post.",
-        "Confirm WhatsApp availability before labeling the phone number as WhatsApp."
+        "Confirm WhatsApp availability before labeling the phone number as WhatsApp.",
+        "Verify third-party directory phone/address/EMI information directly with the brand before publishing"
       ],
       "sources": [
-        "Specific-brands/08_SK_Furniture_Market_AI_Knowledge.json: brand identity, location, contact and writing rules."
+        "Specific-brands/08_SK_Furniture_Market_AI_Knowledge.json: brand identity, location, contact and writing rules.",
+        "https://magicpin.in/Thane/Naupada/Lifestyle/Sk-Furniture-Market/store/19033a0"
       ],
       "footer_policy": "Use these known lines for feed/reel captions. This is the proposed standard except the two source-file footers and the explicit Smietz rules. Omit footer for story/comment/repost modes unless requested. Do not add missing contact fields.",
       "readiness": "ready_with_post_brief",
@@ -1193,11 +1204,14 @@
         "💫 Managed by: @famebrosstudio"
       ],
       "instagram": {
-        "url": null,
-        "handle": null,
-        "status": "not_resolved",
-        "evidence": [],
-        "note": "Exact page not established. Do not invent a handle or learn from a similarly named business."
+        "url": "https://www.instagram.com/mahalaxmi.jewellers.ghatla/",
+        "handle": "@mahalaxmi.jewellers.ghatla",
+        "status": "user_supplied_handle",
+        "evidence": [
+          "User-provided official brand account list",
+          "Detailed operational brand profile"
+        ],
+        "note": "Official account mapping supplied directly by the user; this is the Ghatla branch, not the Kurla or Chembur account."
       },
       "example": {
         "status": "new_illustrative_example_not_a_historical_caption",
@@ -1218,12 +1232,12 @@
         "full_caption": "Aapke special moments ke liye, ek special design. ✨\nExplore the piece featured here at Mahalaxmi Jewellers, Ghatla.\nDM us for details.\n\n📍 Ghatla, Mumbai\n💫 Managed by: @famebrosstudio\n\n#MahalaxmiJewellers #JewelleryDesign #DesignDetails\n\n[Mahalaxmi Jewellers Ghatla, jewellers Ghatla, jewellery designs, traditional jewellery, occasion jewellery]"
       },
       "missing_details": [
-        "Confirmed official Instagram page",
         "Public enquiry phone, if the brand wants it in captions",
         "Exact public address and applicable branch, if required"
       ],
       "sources": [
-        "data.txt: brand name and listed genres"
+        "data.txt: brand name and listed genres",
+        "User-provided official brand account list"
       ],
       "footer_policy": "Use these known lines for feed/reel captions. This is the proposed standard except the two source-file footers and the explicit Smietz rules. Omit footer for story/comment/repost modes unless requested. Do not add missing contact fields.",
       "readiness": "ready_with_post_brief",
@@ -1860,11 +1874,14 @@
         "💫 Managed by: @famebrosstudio"
       ],
       "instagram": {
-        "url": null,
-        "handle": null,
-        "status": "not_resolved",
-        "evidence": [],
-        "note": "Exact page not established. Do not invent a handle or learn from a similarly named business."
+        "url": "https://www.instagram.com/roopalisarees/",
+        "handle": "@roopalisarees",
+        "status": "user_supplied_handle",
+        "evidence": [
+          "User-provided official brand account list",
+          "Detailed operational brand profile"
+        ],
+        "note": "Official account mapping supplied directly by the user; detailed profile and indexed public identity point to Roopali Sarees in Mira Road."
       },
       "example": {
         "status": "new_illustrative_example_not_a_historical_caption",
@@ -1885,12 +1902,12 @@
         "full_caption": "A saree moment worth saving. ✨\nLet the colour and drape do the talking.\nDM Roopali Saree to enquire about this look.\n\n💫 Managed by: @famebrosstudio\n\n#RoopaliSaree #WomensFashion #StyleInspiration\n\n[Roopali Saree, saree collection, saree styling, women ethnic wear, occasion wear]"
       },
       "missing_details": [
-        "Confirmed official Instagram page",
         "Public enquiry phone, if the brand wants it in captions",
         "Exact public address and applicable branch, if required"
       ],
       "sources": [
-        "data.txt: brand name and listed genres"
+        "data.txt: brand name and listed genres",
+        "User-provided official brand account list"
       ],
       "footer_policy": "Use these known lines for feed/reel captions. This is the proposed standard except the two source-file footers and the explicit Smietz rules. Omit footer for story/comment/repost modes unless requested. Do not add missing contact fields.",
       "readiness": "ready_with_post_brief",
@@ -3445,12 +3462,14 @@
       "missing_details": [
         "Public enquiry phone, if the brand wants it in captions",
         "Exact public address and applicable branch, if required",
-        "Approved content genres; source did not specify usable genres"
+        "Approved content genres; source did not specify usable genres",
+        "Confirm exact service menu and whether named campaign partners may be presented as current clients"
       ],
       "sources": [
         "data.txt: brand name and listed genres",
         "User supplied official Instagram handle: @pixigrowmedia (2026-10-03)",
-        "User supplied @pixigrowmedia as the official account on 2026-10-03."
+        "User supplied @pixigrowmedia as the official account on 2026-10-03.",
+        "https://pictame.com/en/discover/hashtag/famous-places-to-visit-in-mumbai"
       ],
       "footer_policy": "Use these known lines for feed/reel captions. This is the proposed standard except the two source-file footers and the explicit Smietz rules. Omit footer for story/comment/repost modes unless requested. Do not add missing contact fields.",
       "readiness": "ready_with_post_brief",
@@ -3713,8 +3732,10 @@
         "url": "https://www.instagram.com/sevencubes.footwear/",
         "handle": "@sevencubes.footwear",
         "status": "user_supplied_handle",
-        "evidence": "Official account mapping supplied directly by user on 2026-10-03.",
-        "note": "Use this profile as brand-specific reference. User confirms the mapping; commercial claims still require source/current confirmation."
+        "evidence": [
+          "User-provided official brand account list"
+        ],
+        "note": "Official account mapping supplied by the user: @sevencubes.footwear. Public product, contact and location claims remain unverified."
       },
       "example": {
         "status": "new_illustrative_example_not_a_historical_caption",
@@ -3742,7 +3763,8 @@
         "Specific-brands/35_Seven_Cube_Footwear_AI_Knowledge.json: supplied category, genre and product accuracy rules.",
         "Public exact-name searches on 2026-10-02 did not reliably identify this business; unrelated namesakes were excluded.",
         "User-supplied caption-screen screenshot, 2026-10-02: selected account header shows @sevencubes.footwear.",
-        "User supplied official Instagram handle: @sevencubes.footwear (2026-10-03)"
+        "User supplied official Instagram handle: @sevencubes.footwear (2026-10-03)",
+        "User-provided official brand account list"
       ],
       "footer_policy": "Use these known lines for feed/reel captions. This is the proposed standard except the two source-file footers and the explicit Smietz rules. Omit footer for story/comment/repost modes unless requested. Do not add missing contact fields.",
       "readiness": "ready_with_post_brief",
@@ -4084,11 +4106,10 @@
     }
   ],
   "instagram_coverage": {
-    "public_profile_matched": 11,
-    "candidate_needs_confirmation": 3,
-    "user_supplied_handle": 6,
+    "public_profile_matched": 9,
+    "user_supplied_handle": 24,
     "public_reference_matched": 1,
-    "not_resolved": 15,
-    "public_post_matched": 5
+    "public_post_matched": 2,
+    "not_resolved": 5
   }
 }

@@ -179,17 +179,17 @@ export default function EpidemicCatalog({ token, files, selectedIndex, onSelectV
       <button type="submit" disabled={busy || !!addingId || previewBusy || !term.trim()}>{busy ? 'Searching…' : 'Search tracks'}</button>
     </form>
     {!canAdd && <p className="s2-music-status">Add a photo or video to the editor to use a soundtrack.</p>}
-    {previewTrack && <div className="s2-music-player" aria-live="polite"><span>Previewing: <b>{previewTrack.title || previewTrack.name}</b></span><audio ref={audioRef} controls preload="none" onPlay={() => { setPreviewBusy(false); setPreviewPlaying(true); }} onPause={() => setPreviewPlaying(false)} onEnded={() => { setPreviewTrack(null); setPreviewPlaying(false); }} /></div>}
+    {previewTrack && <div className="s2-music-player" aria-live="polite"><span><small>NOW PREVIEWING</small><b>{previewTrack.title || previewTrack.name}</b></span><audio ref={audioRef} controls preload="none" onPlay={() => { setPreviewBusy(false); setPreviewPlaying(true); }} onPause={() => setPreviewPlaying(false)} onEnded={() => { setPreviewTrack(null); setPreviewPlaying(false); }} /></div>}
     {addingId && <div className="s2-music-progress" role="status"><span>Mixing music into your video… {progress}% — keep this tab open</span><i><b style={{ width: `${progress}%` }} /></i></div>}
     {error && <p className="s2-music-error" role="alert">{error}</p>}
     {searched && !tracks.length && <p className="s2-music-status">No tracks found for that search.</p>}
-    {!!tracks.length && <ul>{tracks.map((track) => <li key={track.id}>
+    {!!tracks.length && <><div className="s2-music-results-head"><b>Tracks</b><span>{tracks.length}{nextOffset != null ? '+' : ''} found</span></div><ul>{tracks.map((track) => <li key={track.id} className={previewTrack?.id === track.id ? 'is-previewing' : ''}>
       <span><b>{track.title || track.name || 'Untitled track'}</b><small>{artistNames(track) || 'Epidemic Sound'}{track.bpm ? ` · ${track.bpm} BPM` : ''}{track.length ? ` · ${Math.round(track.length / 60)}:${String(track.length % 60).padStart(2, '0')}` : ''}</small></span>
       <div className="s2-music-actions">
-        <button type="button" className="s2-music-preview" disabled={previewBusy || !!addingId} onClick={() => preview(track)}>{previewTrack?.id === track.id && previewBusy ? 'Loading…' : previewTrack?.id === track.id && previewPlaying ? 'Pause' : 'Preview'}</button>
-        <button type="button" disabled={!canAdd || !!addingId || previewBusy} onClick={() => addTrack(track)}>{addingId === track.id ? 'Adding…' : isImage ? 'Add music to image' : 'Add to video'}</button>
+        <button type="button" className="s2-music-preview" aria-label={`${previewTrack?.id === track.id && previewPlaying ? 'Pause' : 'Preview'} ${track.title || track.name || 'track'}`} disabled={previewBusy || !!addingId} onClick={() => preview(track)}>{previewTrack?.id === track.id && previewBusy ? 'Loading…' : previewTrack?.id === track.id && previewPlaying ? 'Pause' : 'Preview'}</button>
+        <button type="button" aria-label={`${isImage ? 'Add music to image' : 'Add music to video'}: ${track.title || track.name || 'track'}`} disabled={!canAdd || !!addingId || previewBusy} onClick={() => addTrack(track)}>{addingId === track.id ? 'Adding…' : isImage ? 'Add to image' : 'Add to video'}</button>
       </div>
-    </li>)}</ul>}
+    </li>)}</ul></>}
     {nextOffset != null && <button type="button" className="s2-music-more" disabled={busy || !!addingId || previewBusy} onClick={loadMore}>{busy ? 'Loading…' : 'Load more tracks'}</button>}
   </details>;
 }

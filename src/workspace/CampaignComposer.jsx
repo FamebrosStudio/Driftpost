@@ -123,6 +123,7 @@ export default function CampaignComposer({ session, accounts, day, onClose, onSa
     <div className="ws-panel-head"><div><span className="ws-eyebrow">One caption, account-specific media</span><h2 id="campaign-title">Create a campaign</h2></div><button type="button" className="ws-secondary" onClick={onClose}>Close</button></div>
     <p className="ws-campaign-intro">Select any connected accounts, drop each account’s own design or video onto its card, write one shared caption, then publish now or schedule them together.</p>
     {!accounts.length ? <div className="ws-inline-state">No connected accounts found. Connect a social account first.</div> : <>
+      <div className="ws-campaign-account-head"><h3>Connected accounts</h3><span>{selected.length} selected</span></div>
       <div className="ws-campaign-accounts" role="group" aria-label="Connected accounts">
         {accounts.map((account) => <label key={account.id} className={`ws-campaign-account ${selectedIds.includes(account.id) ? 'selected' : ''}`}>
           <input type="checkbox" checked={selectedIds.includes(account.id)} onChange={() => toggle(account.id)} />
@@ -130,16 +131,16 @@ export default function CampaignComposer({ session, accounts, day, onClose, onSa
         </label>)}
       </div>
       {selected.length > 0 && <div className="ws-campaign-media">
-        <h3>Media for each account <small>Drag files into a card or browse. Instagram photos need JPEG.</small></h3>
+        <h3>Media for each account <small>Drop a file here or browse. Instagram photos need JPEG.</small></h3>
         {selected.map((account) => <label key={account.id} className="ws-campaign-drop" onDragOver={(event) => event.preventDefault()} onDrop={(event) => { event.preventDefault(); setFiles(account, event.dataTransfer.files); }}>
           <span><b>{account.account_name || account.name || platformLabel(account.platform)}</b><small>{platformLabel(account.platform)} · {mediaById[account.id]?.length ? mediaById[account.id].map((file) => file.name).join(', ') : 'Drop media here or choose files'}</small></span>
-          <input type="file" accept="image/*,video/*" multiple={account.platform !== 'youtube'} onChange={(event) => setFiles(account, event.target.files)} />
+          <input aria-label={`Choose media for ${account.account_name || account.name || platformLabel(account.platform)}`} type="file" accept="image/*,video/*" multiple={account.platform !== 'youtube'} onChange={(event) => setFiles(account, event.target.files)} />
         </label>)}
       </div>}
       {selected.some((account) => account.platform === 'youtube') && <label className="ws-campaign-field"><span>YouTube title</span><input maxLength={100} value={title} onChange={(event) => setTitle(event.target.value)} placeholder="Shared video title" /></label>}
       <label className="ws-campaign-field"><span>Campaign name <small>Optional, for your team</small></span><input maxLength={120} value={name} onChange={(event) => setName(event.target.value)} placeholder="e.g. Diwali 2026" /></label>
       <label className="ws-campaign-field"><span>Shared caption</span><textarea rows={5} value={caption} onChange={(event) => setCaption(event.target.value)} placeholder="This caption will be used for every selected account." /></label>
-      <label className="ws-campaign-field"><span>Schedule date and time</span><input type="datetime-local" min={minDateTime} value={scheduledAt} onChange={(event) => setScheduledAt(event.target.value)} /></label>
+      <label className="ws-campaign-field"><span>Schedule date and time <small>Shown in your local time</small></span><input type="datetime-local" min={minDateTime} value={scheduledAt} onChange={(event) => setScheduledAt(event.target.value)} /></label>
       {notice && <p className="ws-inline-state" role="status">{notice}</p>}
       {error && <p className="ws-inline-state ws-campaign-error" role="alert">{error}</p>}
       {jobs.length > 0 && <div className="ws-campaign-progress" aria-live="polite">{jobs.map((post) => <div key={post.id}><b>{platformLabel(post.platform)}</b><span>{post.status}{post.error ? `: ${post.error}` : post.result_url ? ': published' : ''}</span></div>)}</div>}

@@ -192,6 +192,36 @@
 @media (max-width: 480px) { .s3-repeat-row { grid-template-columns: 1fr; gap: 0; } }
 @keyframes s3Zoom { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
 
+/* Scheduling: stronger hierarchy, clearer selected time, and touch-friendly controls. */
+.s3-sched { width: min(520px, 100%); max-height: min(90dvh, 820px); padding: clamp(18px, 4vw, 26px); box-shadow: 0 24px 80px #0008; overscroll-behavior: contain; }
+.s3-sched-head { display: flex; align-items: center; gap: 12px; margin-bottom: 9px; }
+.s3-sched-mark { display: grid; place-items: center; width: 42px; height: 42px; flex: 0 0 auto; border: 1px solid var(--acc-soft); border-radius: 13px; background: var(--acc-soft); color: var(--acc); font-size: 23px; }
+.s3-sched-kicker { display: block; margin-bottom: 4px; color: var(--acc); font-size: 9px; font-weight: 800; letter-spacing: 1.4px; }
+.s3-sched-head h2 { margin: 0; font-size: clamp(18px, 3vw, 21px); letter-spacing: -.35px; }
+.s3-sched .sub { margin: 0 0 18px 54px; max-width: 390px; }
+.s3-sched .s3-field { margin: 0 0 14px; }
+.s3-sched input[type="datetime-local"] { min-height: 46px; font-variant-numeric: tabular-nums; }
+.s3-quick { gap: 7px; margin-bottom: 14px; }
+.s3-quick button { min-height: 39px; padding-inline: 15px; transition: border-color .16s ease, color .16s ease, background .16s ease; }
+.s3-quick button[aria-pressed="true"] { border-color: var(--acc); color: var(--acc); background: var(--acc-soft); }
+.s3-sched-summary { display: flex; align-items: flex-start; gap: 10px; margin: -3px 0 16px; padding: 11px 12px; border: 1px solid color-mix(in srgb, var(--ok) 32%, var(--line)); border-radius: 11px; background: color-mix(in srgb, var(--ok) 7%, var(--panel)); }
+.s3-sched-summary > span { display: grid; place-items: center; width: 21px; height: 21px; flex: 0 0 auto; border-radius: 50%; background: color-mix(in srgb, var(--ok) 16%, transparent); color: var(--ok); font-size: 12px; font-weight: 800; }
+.s3-sched-summary > div { display: grid; gap: 3px; min-width: 0; }
+.s3-sched-summary b { font-size: 12px; }
+.s3-sched-summary small { color: var(--muted); font-size: 10px; line-height: 1.45; }
+.s3-sched .s3-acts { gap: 9px; margin-top: 17px; }
+.s3-sched .s3-acts button { min-height: 44px; }
+.s3-sched button:focus-visible, .s3-sched input:focus-visible, .s3-sched select:focus-visible, .s3-sched summary:focus-visible { outline: 2px solid var(--acc); outline-offset: 2px; }
+@media (max-width: 520px) {
+  .s3-overlay { align-items: flex-end; padding: 0; }
+  .s3-sched { width: 100%; max-height: 92dvh; border-radius: 20px 20px 0 0; padding: 20px 18px calc(env(safe-area-inset-bottom) + 16px); }
+  .s3-sched .sub { margin-left: 0; }
+  .s3-quick { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .s3-quick button { padding-inline: 7px; }
+  .s3-sched .s3-acts { display: grid; grid-template-columns: 1fr 1fr; }
+  .s3-sched .s3-acts button { min-width: 0; }
+}
+
 /* publish bar */
 .s3-pub { position: fixed; left: 0; right: 0; bottom: 0; z-index: 50; background: var(--bg); border-top: 1px solid var(--line); padding: 12px 20px calc(env(safe-area-inset-bottom) + 12px); display: flex; flex-direction: column; align-items: center; gap: 8px; animation: s3BarUp 0.5s 0.15s ease both; }
 .s3-pub-row { display: flex; align-items: center; gap: 12px; width: min(680px, 100%); }

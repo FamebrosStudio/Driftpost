@@ -622,10 +622,16 @@
     {
       "type": "user_writing_preferences",
       "supports": "Short hooks, contextual English or Hinglish, one CTA, exactly three hashtags, one SEO bracket and no em dashes."
+    },
+    {
+      "type": "same_name_collision_rejected",
+      "url": "https://www.infinitysilver.sk/; https://www.pricemania.sk/infinitysilver-sk/",
+      "checked_on": "2026-10-04",
+      "supports": "Search also surfaces a Slovak/Czech InfinitySilver jewellery retailer with unrelated European catalogue, currencies and contact details. No evidence links it to the user-confirmed @infinitysilver._ VJ Jewels campaign. Its 925-silver product specs, prices, shipping and phone must not be attributed to this brand."
     }
   ],
   "research_update": {
-    "checked_on": "2026-10-03",
+    "checked_on": "2026-10-04",
     "official_account": {
       "platform": "Instagram",
       "handle": "@infinitysilver._",
@@ -634,6 +640,9 @@
     },
     "source_urls": [],
     "observations": [],
-    "rule": "Directory, creator and indexed-post facts are leads; reconfirm current contacts, offers and commercial details before public use."
+    "rule": "Directory, creator and indexed-post facts are leads; reconfirm current contacts, offers and commercial details before public use.",
+    "additional_observations": [
+      "Exact-handle searches did not surface attributable new product/contact facts. A European InfinitySilver retailer was identified as an unrelated same-name collision and excluded."
+    ]
   }
 }

@@ -46,7 +46,7 @@
     "agency_instagram_handle": "@famebrosstudio",
     "agency_instagram_url": "https://www.instagram.com/famebrosstudio/",
     "agency_credit_default": "ðŸ’« Managed by: @famebrosstudio",
-    "reference_rule": "Obtain the official page directly. Do not tag a guessed account.",
+    "reference_rule": "This is the user-confirmed official account. Do not claim to have reviewed new posts unless retrieved or supplied.",
     "evidence": [
       {
         "source": "User-supplied screenshot header",
@@ -54,7 +54,7 @@
         "observed_date": "2026-10-02"
       }
     ],
-    "instagram_status": "Official handle supplied by user on 2026-10-03; current public claims still require source verification."
+    "instagram_status": "Official account mapping supplied directly by user on 2026-10-03; current product, location and contact details remain unverified."
   },
   "established_content_knowledge": {
     "confirmed_content_pillars": [
@@ -401,7 +401,7 @@
     ],
     "input_rule": "Ask for the product sheet and official account before sales-ready copy."
   },
-  "master_brand_instruction": "Create content only for Seven Cube Footwear. The confirmed facts are the footwear category and informational and edit-led content genres. The connected account handle is supplied as @sevencubes.footwear; the official location, phone, audience segment, catalogue and commerce rules are not independently confirmed. No public enquiry phone, exact store address, branch or general size range is confirmed. Never add one unless the current post brief or approved product data explicitly supplies it. Write crisp, contemporary English or Hinglish focused on the actual pair and visible details. Never assume gender, leather, branded authenticity, orthopaedic value, comfort, fit, size, price or stock. Preserve the uploaded footwear exactly. Use only a generic enquiry CTA until the official account is supplied. Standard captions use exactly three hashtags and one SEO bracket with five to eight phrases. Remove all em dashes.",
+  "master_brand_instruction": "Create content only for Seven Cube Footwear. The confirmed facts are the footwear category and informational and edit-led content genres. The user confirms @sevencubes.footwear as the official Instagram handle. The location, phone, audience segment, catalogue and commerce rules are not confirmed. No public enquiry phone, exact store address, branch or general size range is confirmed. Never add one unless the current post brief or approved product data explicitly supplies it. Write crisp, contemporary English or Hinglish focused on the actual pair and visible details. Never assume gender, leather, branded authenticity, orthopaedic value, comfort, fit, size, price or stock. Preserve the uploaded footwear exactly. Use a simple DM/enquiry CTA when appropriate; do not invent phone, website or store details. Standard captions use exactly three hashtags and one SEO bracket with five to eight phrases. Remove all em dashes.",
   "missing_information": {
     "identity": [
       "Official Instagram",
@@ -449,7 +449,7 @@
       "Official Instagram handle supplied directly by user on 2026-10-03."
     ],
     "public_sources": [],
-    "public_search_note": "Exact-name searches for Seven Cube Footwear, Seven Cube Footwear Mumbai and SevenCubeFootwear on 2026-10-02 did not reliably identify this business or its official social accounts. Unrelated namesakes and generic footwear results were excluded; do not infer location, contact, audience segment, catalogue or commerce terms. Exact search for the screenshot address and phone did not produce a reliable matching public source.",
+    "public_search_note": "Exact-name and exact-handle searches on 2026-10-04 did not reliably reveal attributable product, location or contact details. The user confirms @sevencubes.footwear as the official account. Unrelated namesakes and generic footwear listings were excluded; do not infer location, contact, audience segment, catalogue or commerce terms.",
     "internal_dataset": "Famebros_Brand_Caption_Dataset.json record seven_cube_footwear.",
     "source_rule": "Direct owner confirmation is required before adding public identity and commerce data."
   },

@@ -88,3 +88,10 @@ Monitor `https://driftpost.onrender.com/health` every five minutes and enable
 email alerts for downtime/recovery. The owner must confirm UptimeRobot's
 activation email before its monitoring starts. The existing GitHub Actions
 check remains a backup; neither monitor guarantees that every publish succeeds.
+
+## Temporary Railway API deployment
+
+For the temporary Railway migration, follow
+[docs/railway-temporary-migration.md](docs/railway-temporary-migration.md).
+Only the API moves; keep the frontend on Vercel and Supabase as the persistent
+database/auth/media store until the Railway API has been tested.

@@ -131,9 +131,12 @@ export default function ScheduleModal({ platforms, accountFor, invalidFor, busy,
 
   return (
     <div className="s3-overlay" onClick={onClose}>
-      <div className="s3-sched" role="dialog" aria-modal="true" aria-label="Schedule this post" onClick={(e) => e.stopPropagation()}>
-        <h2>Schedule instead of posting now</h2>
-        <p className="sub">We publish automatically at the time you pick. You can cancel any time before it runs.</p>
+      <div className="s3-sched" role="dialog" aria-modal="true" aria-labelledby="s3-sched-title" aria-describedby="s3-sched-description" onClick={(e) => e.stopPropagation()}>
+        <div className="s3-sched-head">
+          <span className="s3-sched-mark" aria-hidden="true">◷</span>
+          <div><span className="s3-sched-kicker">PLAN YOUR PUBLISH</span><h2 id="s3-sched-title">Choose when to publish</h2></div>
+        </div>
+        <p className="sub" id="s3-sched-description">Your post will be queued now and published automatically at the time you choose.</p>
 
         <label className="s3-field">
           <span>Platforms to publish</span>
@@ -148,7 +151,7 @@ export default function ScheduleModal({ platforms, accountFor, invalidFor, busy,
 
         <div className="s3-quick">
           {quick.map((q) => (
-            <button key={q.label} type="button" onClick={() => setWhen(q.value)}>{q.label}</button>
+            <button key={q.label} type="button" aria-pressed={when === q.value} onClick={() => setWhen(q.value)}>{q.label}</button>
           ))}
         </div>
 
@@ -156,6 +159,10 @@ export default function ScheduleModal({ platforms, accountFor, invalidFor, busy,
           <span>Date and time</span>
           <input type="datetime-local" value={when} min={minimumWhen()} onChange={(e) => setWhen(e.target.value)} />
         </label>
+        {Number.isFinite(Date.parse(when)) && <div className="s3-sched-summary" aria-live="polite">
+          <span aria-hidden="true">✓</span>
+          <div><b>{new Date(when).toLocaleString(undefined, { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}</b><small>Shown in your local time · scheduled posts can start a little after this time if a platform is busy</small></div>
+        </div>}
 
         <div className="s3-repeat-row">
           <label className="s3-field">

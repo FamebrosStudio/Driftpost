@@ -105,11 +105,14 @@ export async function getMetaPages(userToken) {
 }
 
 export async function publishFacebook({ pageId, pageToken, text, link, linkMeta, targeting, cta, unpublished, media, cover }) {
-  // media: multer file or undefined. Text-only -> /feed. Photo -> /photos. Video -> /videos.
+  // `url` lets Meta fetch large media from Storage/CDN itself, avoiding a
+  // second 100-400 MB transfer through the API server. Keep multipart support
+  // for legacy uploads and small cover images.
   if (media?.mimetype?.startsWith('video/')) {
     const form = new FormData();
     form.append('description', text || '');
-    form.append('source', await mediaBlob(media), media.originalname);
+    if (media.url) form.append('file_url', media.url);
+    else form.append('source', await mediaBlob(media), media.originalname);
     if (cover?.path) form.append('thumb', await mediaBlob(cover), cover.originalname || 'cover.jpg');
     const res = await fetch(`${GRAPH}/${pageId}/videos?access_token=${encodeURIComponent(pageToken)}`, { method: 'POST', body: form });
     const data = await res.json();
@@ -119,7 +122,8 @@ export async function publishFacebook({ pageId, pageToken, text, link, linkMeta,
   if (media?.mimetype?.startsWith('image/')) {
     const form = new FormData();
     form.append('caption', text || '');
-    form.append('source', await mediaBlob(media), media.originalname);
+    if (media.url) form.append('url', media.url);
+    else form.append('source', await mediaBlob(media), media.originalname);
     const res = await fetch(`${GRAPH}/${pageId}/photos?access_token=${encodeURIComponent(pageToken)}`, { method: 'POST', body: form });
     const data = await res.json();
     if (!res.ok) throw await graphError(res, 'Facebook photo failed', data);
@@ -372,14 +376,15 @@ export async function resolveInstagramCollaboratorIds({ igUserId, pageToken, han
 // --- Facebook multi-photo: upload each as unpublished, then one feed post ---
 // Prevents N separate timeline posts when a carousel is intended.
 export async function publishFacebookCarousel({ pageId, pageToken, text, mediaList }) {
-  const items = (mediaList || []).filter((m) => (m?.path || m?.bytes) && String(m.mimetype || '').startsWith('image/'));
+  const items = (mediaList || []).filter((m) => (m?.url || m?.path || m?.bytes) && String(m.mimetype || '').startsWith('image/'));
   if (items.length < 2) throw new Error('Carousel needs at least 2 photos');
   if (items.length > 10) throw new Error('Facebook carousel allows up to 10 photos');
   const attached = [];
   for (const m of items.slice(0, 10)) {
     const form = new FormData();
     form.append('published', 'false');
-    form.append('source', await mediaBlob(m), m.originalname || 'photo.jpg');
+    if (m.url) form.append('url', m.url);
+    else form.append('source', await mediaBlob(m), m.originalname || 'photo.jpg');
     const res = await fetch(`${GRAPH}/${pageId}/photos?access_token=${encodeURIComponent(pageToken)}`, { method: 'POST', body: form });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error?.message || 'Facebook photo upload failed');

@@ -687,6 +687,10 @@
         {
           "text": "The official website lists rooms, private pool villas, a swimming pool, lawn and restaurant. Do not assign a villa amenity to every room.",
           "source": "https://vividsands.com/"
+        },
+        {
+          "text": "Official website lists Premium Rooms (air-conditioning, king-size bed, extra foldout) and Premium Cottages (separate living area, pull-out couch, king bedroom, private pool); the website describes a swimming pool and also calls it an infinity pool, without establishing whether these are separate; it lists beach access, lawn, a beachfront multi-cuisine restaurant, games and CCTV/security. Do not assign cottage features to other room types or imply meal inclusion.",
+          "source": "https://vividsands.com/ (checked 2026-10-04)"
         }
       ],
       "mandatory_copy": [],

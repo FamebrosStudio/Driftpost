@@ -23,7 +23,16 @@
     "founding_year": null,
     "check_in_time": null,
     "check_out_time": null,
-    "opening_hours": "Hospitality property; booking and reception hours have not been confirmed."
+    "opening_hours": "Hospitality property; booking and reception hours have not been confirmed.",
+    "amenities": [
+      "Swimming pool (the official site also describes it as an infinity pool; it does not clarify whether these are separate pools)",
+      "Beach access",
+      "Open lawn",
+      "Beachfront, multi-cuisine restaurant",
+      "Games",
+      "Gated community",
+      "CCTV and security"
+    ]
   },
   "contact": {
     "phone_display": "+91 98331 85566",
@@ -78,9 +87,41 @@
       "Local travel information"
     ],
     "genre_note": "The original roster specifically lists page review without named genres. Additional genres are safe editorial modes based on confirmed resort positioning and supplied briefs.",
-    "confirmed_amenities": [],
-    "amenities_note": "Do not assume pool, restaurant, meals, parking, Wi-Fi, private beach access, pet policy or room amenities unless confirmed for the current post or booking source.",
-    "confirmed_room_types": [],
+    "confirmed_amenities": [
+      "Swimming pool (the official site also describes it as an infinity pool; it does not clarify whether these are separate pools)",
+      "Beach access",
+      "Open lawn",
+      "Beachfront, multi-cuisine restaurant",
+      "Games",
+      "Gated community",
+      "CCTV and security"
+    ],
+    "amenities_note": "Listed on the official website checked 2026-10-04. The site describes a swimming pool and also an infinity pool; do not imply two separate pools. Reconfirm whether each facility is available or included for the current booking or footage. Do not imply private beach ownership, meal inclusion, or room-wide amenities.",
+    "confirmed_room_types": [
+      {
+        "name": "Premium Room",
+        "confirmed_features": [
+          "Air-conditioned",
+          "King-size bed",
+          "Extra foldout bed"
+        ],
+        "source": "https://vividsands.com/",
+        "source_checked_on": "2026-10-04",
+        "note": "Website says suitable for small families or couples; occupancy maximum is not stated."
+      },
+      {
+        "name": "Premium Cottage",
+        "confirmed_features": [
+          "Separate living area",
+          "Pull-out couch",
+          "King-size bed in bedroom",
+          "Private pool"
+        ],
+        "source": "https://vividsands.com/",
+        "source_checked_on": "2026-10-04",
+        "note": "Do not generalize private pool to other room types."
+      }
+    ],
     "confirmed_meal_plans": [],
     "confirmed_current_rates": [],
     "confirmed_current_offers": []
@@ -416,7 +457,8 @@
     "If an optional detail is missing, omit it.",
     "If an essential booking or offer detail is missing, ask one short question.",
     "Do not print null values or internal notes in public copy.",
-    "An Instagram link is a reference pointer. Do not claim to have reviewed new posts unless retrieved or supplied."
+    "An Instagram link is a reference pointer. Do not claim to have reviewed new posts unless retrieved or supplied.",
+    "Use official room and facility facts when the brief or footage identifies the matching room/facility; never assign the Premium Cottage private pool to a Premium Room or imply meals are included."
   ],
   "per_post_input": {
     "brand_id": "vivid_sands_beach_resort",
@@ -442,12 +484,10 @@
     "recent_captions": [],
     "additional_instructions": []
   },
-  "master_brand_instruction": "Write as Vivid Sands Beach Resort in Revdanda, Alibaug. Use a relaxing, inviting, scenic, warm and concise hospitality voice. Position the property as a Revdanda coastal getaway near Alibaug and approximately three hours from Mumbai, while treating travel time as variable. Describe only the property, room, view and amenities actually shown or confirmed. Preserve every supplied property photo exactly and never add, remove or modify architecture, rooms, pool, beach, landscape, people, weather or amenities. Never invent rates, room types, meal plans, occupancy, availability, private beach access or current offers. Treat the ₹8,900 plus taxes offer excluding 31 December as historical and inactive until reconfirmed. Mention Korlai Fort, Kashid Beach, Nagaon Beach, Birla Mandir and Phansad Wildlife Sanctuary only as nearby exploration ideas unless verified distance data is supplied. For normal feed and reel captions, append the Vivid Sands footer, exactly three relevant hashtags and one bracket containing 5 to 8 comma-separated SEO phrases. Preserve +91 98331 85566, the official address and website. Avoid em dashes and return ready-to-copy public text without null fields or internal notes.",
+  "master_brand_instruction": "Write as Vivid Sands Beach Resort in Revdanda, Alibaug. Use a relaxing, inviting, scenic, warm and concise hospitality voice. Position the property as a Revdanda coastal getaway near Alibaug and approximately three hours from Mumbai, while treating travel time as variable. Use website-confirmed details accurately: Premium Rooms are air-conditioned with a king-size bed and extra foldout; Premium Cottages have a separate living area, pull-out couch, king bedroom and private pool. The official site lists a swimming pool (also called an infinity pool on the site; whether there are separate pools is unclear), beach access, lawn and a beachfront multi-cuisine restaurant, games, gated community and CCTV/security. Match room-specific claims to the supplied brief or footage; never imply meal inclusion or assign cottage features to every room. Describe other property, room, view and amenities only when shown or confirmed. Preserve every supplied property photo exactly and never add, remove or modify architecture, rooms, pool, beach, landscape, people, weather or amenities. Never invent rates, room types, meal plans, occupancy, availability, private beach access or current offers. Treat the ₹8,900 plus taxes offer excluding 31 December as historical and inactive until reconfirmed. Mention Korlai Fort, Kashid Beach, Nagaon Beach, Birla Mandir and Phansad Wildlife Sanctuary only as nearby exploration ideas unless verified distance data is supplied. For normal feed and reel captions, append the Vivid Sands footer, exactly three relevant hashtags and one bracket containing 5 to 8 comma-separated SEO phrases. Preserve +91 98331 85566, the official address and website. Avoid em dashes and return ready-to-copy public text without null fields or internal notes.",
   "missing_information": [
-    "Current room categories and official room specifications",
     "Current rates, packages and taxes",
     "Current meal plans",
-    "Confirmed amenities list",
     "Check-in and check-out times from the property",
     "Booking and cancellation policy",
     "Maximum occupancy by room",
@@ -489,10 +529,22 @@
     {
       "type": "user_writing_preferences",
       "supports": "Short hooks, contextual English or Hinglish, one CTA, three hashtags, one SEO bracket and no em dashes."
+    },
+    {
+      "type": "official_website_property_and_accommodation_pages",
+      "url": "https://vividsands.com/",
+      "checked_on": "2026-10-04",
+      "supports": "Premium Room and Premium Cottage names/features; website-listed swimming pool (also called an infinity pool; distinct pools not established), beach access, open lawn, beachfront multi-cuisine restaurant, games, gated community and CCTV/security; Revdanda Fort is a nearby attraction link, not an on-property amenity. The property page contains placeholder carousel text; no rates, occupancy limits, check-in/out, booking terms or meal inclusions established."
+    },
+    {
+      "type": "official_contact_page",
+      "url": "https://vividsands.com/contact-us/",
+      "checked_on": "2026-10-04",
+      "supports": "Phone +91 9833185566, Vivid Sands email vividsands@gmail.com, address Sr. No. 5/2, Revdanda, Alibag, Maharashtra 402202. Page also renders a Campers Coast email/address label; do not use that conflicting label as Vivid Sands contact data."
     }
   ],
   "research_update": {
-    "checked_on": "2026-10-03",
+    "checked_on": "2026-10-04",
     "official_account": {
       "platform": "Instagram",
       "handle": "@vividsandsresort",
@@ -500,12 +552,15 @@
       "identity_authority": "User supplied as official"
     },
     "source_urls": [
-      "https://www.google.com.pk/travel/hotels/entity/CgoI89TQ7te0iYF0EAE",
-      "https://pictame.com/en/discover/hashtag/alibaug-stays"
+      "https://vividsands.com/",
+      "https://vividsands.com/contact-us/"
     ],
     "observations": [
-      "Google Hotels listing: Agarkot, Revdanda 402202; check-in 14:00, checkout 11:00, pool/parking. Third-party; confirm. Creator claims about beach, pool, rooms and restaurant require resort confirmation."
+      "Official website identifies Vivid Sands Resort as a beachfront property near Alibaug and describes the beach as steps from the room.",
+      "Official website describes Premium Rooms with AC, king bed and extra foldout; Premium Cottages with separate living area, pull-out couch, king bedroom and private pool.",
+      "Official website lists infinity pool, beach access, Revdanda Fort, games, large swimming pool, open lawn, beachfront restaurant, multi-cuisine restaurant, gated community and CCTV/security.",
+      "The contact page contains a Campers Coast label alongside Vivid Sands contact details; do not import Campers Coast contact data."
     ],
-    "rule": "Directory, creator and indexed-post facts are leads; reconfirm current contacts, offers and commercial details before public use."
+    "rule": "Official site details are confirmed property facts but booking inclusion, availability, room occupancy, rates, meal plans and policies remain unknown. Match claims to supplied footage and named room type; do not assign cottage features to standard rooms."
   }
 }

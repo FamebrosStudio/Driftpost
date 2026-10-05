@@ -75,7 +75,19 @@
       "contacts": "Unknown",
       "offer": "Unknown"
     },
-    "content_priority": "Confirm identity first. Until then, produce only asset-led drafts that state no unsupported category or result."
+    "content_priority": "Confirm identity first. Until then, produce only asset-led drafts that state no unsupported category or result.",
+    "public_campaign_credit_observations": [
+      {
+        "brand_or_page": "Praveg Beach Resort Diu",
+        "source": "https://pictame.com/en/discover/hashtag/praveg-beach-resort-diu",
+        "status": "Indexed campaign credit only; no active-client, service-menu or result claims."
+      },
+      {
+        "brand_or_page": "Our Rajkot",
+        "source": "https://pictame.com/en/discover/hashtag/famous-places-to-visit-in-mumbai",
+        "status": "Indexed campaign credit only; no active-client, service-menu or result claims."
+      }
+    ]
   },
   "writing_direction": {
     "brand_voice": [
@@ -305,7 +317,8 @@
     "Do not tag any unconfirmed account.",
     "Use only supplied assets and brief facts.",
     "Keep candidates labelled as unconfirmed research leads.",
-    "Remove every em dash."
+    "Remove every em dash.",
+    "Historical indexed campaign credits can be used only as historical portfolio examples when relevant. Do not imply active client status, endorsements, results or an unverified service menu."
   ],
   "per_post_input": {
     "required_identity": [
@@ -387,6 +400,11 @@
         "url": "https://www.planetexim.net/indian-company/pixigrow-media-private-limited/cin/U73100GJ2026PTC179519.html",
         "checked_on": "2026-10-03",
         "used_for": "Research lead; confidence limits are recorded in research_update."
+      },
+      {
+        "url": "https://pictame.com/en/discover/hashtag/famous-places-to-visit-in-mumbai",
+        "checked_on": "2026-10-04",
+        "used_for": "Search-indexed post credits Pixigrow Media for Our Rajkot media content; past campaign-credit evidence only, not an active-client or performance claim."
       }
     ],
     "internal_dataset": "Famebros_Brand_Caption_Dataset.json record pixi_grow.",

@@ -88,7 +88,21 @@
       "contacts": "Unknown",
       "offer": "Unknown"
     },
-    "content_priority": "Use the supplied account identity and media/campaign context; require an approved brief for each service, client or result claim."
+    "content_priority": "Use the supplied account identity and media/campaign context; require an approved brief for each service, client or result claim.",
+    "public_campaign_credit_observations": [
+      {
+        "observation": "Third-party indexed public post credits @pixigrowmedia with campaign work for Praveg Beach Resort Diu.",
+        "source": "https://pictame.com/en/discover/hashtag/praveg-beach-resort-diu",
+        "checked_on": "2026-10-04",
+        "status": "Past campaign-credit evidence only; does not establish current client relationship, contract, exact service list, results or authorization to imply endorsement."
+      },
+      {
+        "observation": "Third-party indexed public posts associate @pixigrowmedia with @our_rajkot media content/campaigns.",
+        "source": "https://pictame.com/en/discover/hashtag/famous-places-to-visit-in-mumbai",
+        "checked_on": "2026-10-04",
+        "status": "Historical campaign-credit evidence only; no performance metrics or current relationship verified."
+      }
+    ]
   },
   "writing_direction": {
     "brand_voice": [
@@ -318,7 +332,8 @@
     "Do not invent specific services, clients, performance, audience, prices, address or contacts.",
     "Describe only campaign/media work supported by the supplied brief or reviewed assets.",
     "Keep Rajkot as an unverified city-level association, not a branch address.",
-    "Remove every em dash."
+    "Remove every em dash.",
+    "Historical indexed campaign credits may be mentioned as past campaign examples only when the post brief calls for portfolio content; never imply a current client relationship, endorsement, campaign results or an unverified service offering."
   ],
   "per_post_input": {
     "required_identity": [
@@ -390,6 +405,11 @@
         "url": "https://www.planetexim.net/indian-company/pixigrow-media-private-limited/cin/U73100GJ2026PTC179519.html",
         "checked_on": "2026-10-03",
         "used_for": "Third-party company-record lead only; incorporation listed 2026-06-21, not independently verified against the Instagram account."
+      },
+      {
+        "url": "https://pictame.com/en/discover/hashtag/famous-places-to-visit-in-mumbai",
+        "checked_on": "2026-10-04",
+        "used_for": "Indexed post credits Pixigrow media for Our Rajkot content; historical campaign-credit evidence only, not current client status or performance."
       }
     ],
     "internal_dataset": "Famebros_Brand_Caption_Dataset.json record pixi_grow.",
@@ -397,7 +417,7 @@
     "public_search_note": "The user confirmed the official handle. Public references corroborate campaign activity and a same-name Rajkot profile; legal entity, contact and service details remain unresolved."
   },
   "research_update": {
-    "checked_on": "2026-10-03",
+    "checked_on": "2026-10-04",
     "official_account": {
       "platform": "Instagram",
       "handle": "@pixigrowmedia",
@@ -415,6 +435,9 @@
       "Same-name profile indicates Rajkot association; exact location and legal-account relationship remain unverified.",
       "A third-party registry lists PIXIGROW MEDIA PRIVATE LIMITED incorporated 2026-06-21; verify directly before formal legal or history claims."
     ],
-    "rule": "Directory, creator and indexed-post facts are leads; reconfirm current contacts, offers and commercial details before public use."
+    "rule": "Directory, creator and indexed-post facts are leads; reconfirm current contacts, offers and commercial details before public use.",
+    "additional_observations": [
+      "Search-indexed media posts credit @pixigrowmedia for content/campaign work related to Praveg Beach Resort Diu and Our Rajkot. These support campaign-credit history only; exact services, current client status and outcomes are unverified."
+    ]
   }
 }

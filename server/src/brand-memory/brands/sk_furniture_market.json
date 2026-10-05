@@ -512,22 +512,29 @@
     {
       "type": "user_writing_preferences",
       "supports": "Short hooks, natural Hinglish, one CTA, three hashtags, one SEO bracket and no em dashes."
+    },
+    {
+      "type": "third_party_directory_lead_unverified",
+      "url": "https://magicpin.in/Thane/Naupada/Lifestyle/Sk-Furniture-Market/store/19033a0",
+      "checked_on": "2026-10-04",
+      "supports": "Magicpin listing claims furniture manufacturer/maker/store/wholesaler, interior decorator and office furniture; gives Purna Shanti Heights, Khartan Rd, Jambli Naka, Thane West 400601 and +91 84338 70901; mentions EMI/cash/card/UPI. Listing is third-party and owner-verification is not established. Do not use as approved contact, exact current location, active finance offer or caption fact until directly confirmed."
     }
   ],
   "research_update": {
-    "checked_on": "2026-10-03",
+    "checked_on": "2026-10-04",
+    "source_urls": [
+      "https://magicpin.in/Thane/Naupada/Lifestyle/Sk-Furniture-Market/store/19033a0"
+    ],
+    "observations": [
+      "A Magicpin listing gives address Purna Shanti Heights, Khartan Rd, Jambli Naka, Thane West 400601 and phone +91 84338 70901; categorizes furniture manufacturer/maker/store/wholesaler, interior decorator and office furniture; lists EMI/cash/card/UPI.",
+      "This is third-party directory information; exact business/account match and current phone/address/finance terms need direct owner confirmation. Similar-name confusion remains possible."
+    ],
+    "rule": "Do not promote or inject directory-only contact, address, payment, EMI, delivery, warranty or product claims as confirmed. Keep owner-verified brand facts and current post brief authoritative.",
     "official_account": {
       "platform": "Instagram",
       "handle": "@skfurnituremarket",
       "url": "https://www.instagram.com/skfurnituremarket/",
       "identity_authority": "User supplied as official"
-    },
-    "source_urls": [
-      "https://magicpin.in/Thane/Naupada/Lifestyle/Sk-Furniture-Market/store/19033a0"
-    ],
-    "observations": [
-      "Matching Magicpin listing: Purna Shanti Heights, Khartan Road, Jambli Naka, Thane West 400601; +91 84338 70901; furniture maker/store/wholesaler/interior decorator; cash/card/UPI/EMI per listing. Verify changing terms."
-    ],
-    "rule": "Directory, creator and indexed-post facts are leads; reconfirm current contacts, offers and commercial details before public use."
+    }
   }
 }

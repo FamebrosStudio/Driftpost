@@ -73,7 +73,15 @@
       "topic": "Short, engaging staff-hiring reel",
       "status": "Past content request only",
       "reuse_rule": "Do not publish a vacancy or claim that Velvet Salon is hiring unless the role, salary or terms, contact method and application deadline are confirmed for the current post."
-    }
+    },
+    "historical_public_observations": [
+      {
+        "observed_on": "2026-10-04",
+        "source": "https://pictame.com/en/discover/hashtag/velvet-vanity-salon",
+        "fact": "Indexed anniversary offer: 50% off advanced services; haircuts starting at INR 99/INR 199; stated validity through 2026-04-12.",
+        "status": "Expired; third-party indexed post; never reuse as current pricing."
+      }
+    ]
   },
   "writing_direction": {
     "status": "Recommended defaults based on the brand's confirmed content genres and the user's writing preferences.",
@@ -471,22 +479,29 @@
       "url": "https://pictame.com/en/discover/hashtag/velvet-vanity-salon",
       "checked_on": "2026-10-03",
       "supports": "Research lead, with confidence limits recorded in research_update."
+    },
+    {
+      "type": "third_party_indexed_public_post_expired_offer",
+      "url": "https://pictame.com/en/discover/hashtag/velvet-vanity-salon",
+      "checked_on": "2026-10-04",
+      "supports": "Indexed post attributed to @velvetlounge.unisexsalon advertised an anniversary offer with 50% off advanced services and haircuts starting at INR 99/INR 199, expiring 2026-04-12, and mentioned Tisgaon Road, Kalyan East and +91 98210 06703. Third-party scrape; promotional pricing is expired and location wording differs from owner-provided address. Do not use as current offer, price list, WhatsApp confirmation or replacement address."
     }
   ],
   "research_update": {
-    "checked_on": "2026-10-03",
+    "checked_on": "2026-10-04",
+    "source_urls": [
+      "https://pictame.com/en/discover/hashtag/velvet-vanity-salon"
+    ],
+    "observations": [
+      "Third-party indexed post attributed to official handle mentions hair and beauty services, Tisgaon Road/Kalyan East and +91 98210 06703. It advertised an anniversary promotion valid only until 2026-04-12; that offer is expired.",
+      "Post location wording conflicts with owner-provided Khadakpada address, so preserve the owner-provided canonical address until the owner resolves it. Phone appears as a contact lead but WhatsApp status is not independently verified."
+    ],
+    "rule": "Expired promotional claims must never be presented as current. Third-party indexed content is an observation only; owner-provided contact/address remains canonical when sources conflict.",
     "official_account": {
       "platform": "Instagram",
       "handle": "@velvetlounge.unisexsalon",
       "url": "https://www.instagram.com/velvetlounge.unisexsalon/",
       "identity_authority": "User supplied as official"
-    },
-    "source_urls": [
-      "https://pictame.com/en/discover/hashtag/velvet-vanity-salon"
-    ],
-    "observations": [
-      "Indexed post: 50% off selected services and haircuts ₹99/₹199 through 12-Apr-2026; address Tisgaon Road, Kalyan East, phone +91 98210 06703. Expired offer and location conflict with file; do not reuse until owner confirms."
-    ],
-    "rule": "Directory, creator and indexed-post facts are leads; reconfirm current contacts, offers and commercial details before public use."
+    }
   }
 }

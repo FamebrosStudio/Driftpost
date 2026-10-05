@@ -15,6 +15,7 @@ import MediaPreview from './MediaPreview.jsx';
 import './stage3.css';
 import { WorkspaceNav } from '../workspace/Workspace.jsx';
 import { hasAiAccess } from '../ai-access.js';
+import { getSupabase } from '../session.js';
 
 function load(key, fallback) {
   try {
@@ -53,9 +54,9 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
   const [cfg, setCfg] = useState(() => load(scopedKey('driftpost-stage3-cfg', userId), {}));
    const [overrides, setOverrides] = useState(() => load(scopedKey('driftpost-stage3-accounts', userId), {}));
    const pinnedBrandAccounts = load('driftpost-stage1-brand-accounts', {});
-   // Pre-upload technique: media is pushed to Supabase while the
-   // user is reviewing captions, so "Post" skips the file transfer
-   // entirely and the server just downloads once for Facebook.
+   // Video uploads go straight from the browser to Supabase. Meta can use
+   // that public URL; the server only downloads a copy when Facebook's API
+   // specifically requires a multipart file.
    const [cloudProgress, setCloudProgress] = useState(null);
    const [cloudDone, setCloudDone] = useState(false);
   const [reviewed, setReviewed] = useState(() => load(scopedKey('driftpost-stage3-reviewed', userId), {}));
@@ -100,6 +101,47 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
 
    const mediaKey = `driftpost-stage2-media:${session.user.id}`;
    const cloudCacheKey = `driftpost-media-uploads:${session.user.id}`;
+   const metaVariantCache = useRef(new Map());
+   const directUploadCache = useRef(new Map());
+   const prepareMetaFiles = async (platform, source) => {
+     const key = `${platform}:${mediaSignature(source)}`;
+     if (!metaVariantCache.current.has(key)) {
+       metaVariantCache.current.set(key, platform === 'instagram'
+         ? instagramMediaFiles(source)
+         : facebookMediaFiles(source));
+     }
+     return metaVariantCache.current.get(key);
+   };
+   const uploadDirectMetaMedia = async (entries) => {
+     const key = mediaSignature(entries);
+     if (directUploadCache.current.has(key)) return directUploadCache.current.get(key);
+     const promise = (async () => {
+       const signed = await api('/api/storage/sign-uploads', session.access_token, {
+         method: 'POST',
+         body: JSON.stringify({ files: entries.map((f) => ({
+           name: f.name || f.raw?.name || 'media',
+           mimetype: f.type || f.raw?.type || 'application/octet-stream',
+           size: f.raw?.size || 0,
+         })) }),
+       });
+       const client = await getSupabase();
+       if (!client || signed.results?.length !== entries.length) throw new Error('Could not prepare direct storage upload');
+       const bucket = import.meta.env.VITE_MEDIA_BUCKET || 'driftpost-media';
+       const output = [];
+       for (let index = 0; index < entries.length; index++) {
+         const grant = signed.results[index];
+         const { error } = await client.storage.from(bucket).uploadToSignedUrl(
+           grant.path, grant.token, entries[index].raw, { contentType: grant.mimetype, upsert: false },
+         );
+         if (error) throw error;
+         output.push({ name: grant.name, path: grant.path, publicUrl: grant.publicUrl, mimetype: grant.mimetype, size: grant.size });
+       }
+       return output;
+     })();
+     directUploadCache.current.set(key, promise);
+     try { return await promise; }
+     catch (error) { directUploadCache.current.delete(key); throw error; }
+   };
    useEffect(() => {
      (async () => {
        const vault = await readVault(mediaKey);
@@ -129,9 +171,35 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
 
    // Pre-upload media to Supabase while the user reviews captions.
    // Stored in localStorage so "Post" can skip the file transfer.
-    useEffect(() => {
-      (async () => {
-        if (!files.length) return;
+   useEffect(() => {
+     (async () => {
+       const type = load('driftpost-stage1-type', '');
+       let selectedPlatforms = [];
+       if (type === 'platform_selection') selectedPlatforms = load('driftpost-stage1-platforms', []);
+       else if (type === 'common_brand') {
+         const selectedBrand = groupBrands(connections).find((item) => item.key === load('driftpost-stage1-brand', ''));
+         selectedPlatforms = Object.keys(selectedBrand?.map || {});
+       } else if (type === 'create_groups' || type === 'existing_groups') {
+         if (!connections.length) return; // connections are still loading
+         const allGroups = load('driftpost-groups', []);
+         const groups = type === 'create_groups' ? allGroups : allGroups.filter((item) => item.id === load('driftpost-stage1-group', ''));
+         const byId = Object.fromEntries(connections.map((connection) => [connection.id, connection.platform]));
+         selectedPlatforms = [...new Set(groups.flatMap((group) => {
+           const members = [...new Set((group.accountIds || []).map((id) => byId[id]).filter(Boolean))];
+           return Array.isArray(group.platforms) && group.platforms.length
+             ? group.platforms.filter((platform) => members.includes(platform))
+             : members;
+         }))];
+       }
+       // X/YouTube upload media directly to their own APIs; don't create an
+       // unused Supabase copy for those-only posts.
+       if (!selectedPlatforms.some((platform) => platform === 'instagram' || platform === 'facebook')) {
+         try { localStorage.removeItem(cloudCacheKey); } catch {}
+         if (cloudDone) setCloudDone(false);
+         setCloudProgress(null);
+         return;
+       }
+       if (!files.length) return;
         // Photos now get smaller, platform-specific renditions at publish
         // time, so pre-uploading the originals would waste storage and then
         // send the same bytes again. Keep the fast pre-upload path for video.
@@ -151,30 +219,24 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
         try { localStorage.removeItem(cloudCacheKey); } catch {}
         const out = [];
         setCloudProgress({ done: 0, total: files.length });
-        // Send each file as multipart and ask the server to upload to
-        // Supabase Storage using the service key. This bypasses
-        // browser CORS restrictions that would otherwise block a
-        // direct client-side POST to Supabase Storage.
-        for (let i = 0; i < files.length; i++) {
-          const f = files[i];
-          try {
-            const body = new FormData();
-            body.append('file', f.raw, f.name || `upload-${Date.now()}`);
-            const res = await api('/api/storage/upload', session.access_token, {
-              method: 'POST',
-              body,
-            });
-            if (!res.results?.[0]?.publicUrl) throw new Error('server upload failed');
-            out.push({ name: f.name || res.results[0].name, publicUrl: res.results[0].publicUrl, mimetype: f.type || '' });
-          } catch (e) { /* keep going; the normal upload path will recover */ }
-          setCloudProgress({ done: i + 1, total: files.length });
+        // Ask the API for narrowly scoped, one-object upload grants, then
+        // stream the media browser -> Supabase. Sending these large bytes
+        // through the API first needlessly counted them as Railway egress.
+        try {
+          out.push(...await uploadDirectMetaMedia(files));
+          setCloudProgress({ done: files.length, total: files.length });
+        } catch (e) {
+          // The existing publish upload is still available if direct storage
+          // uploads are unavailable in this browser/network.
+          out.length = 0;
+          setCloudProgress(null);
         }
         if (out.length === files.length) {
           save(cloudCacheKey, { files: out, filesKey: curKey });
           setCloudDone(true);
         }
       })();
-    }, [files, cloudDone, cloudCacheKey]);
+    }, [files, cloudDone, cloudCacheKey, connections]);
 
   // Stage 1 + 2 context drives everything.
   const s1 = useMemo(() => ({
@@ -452,18 +514,29 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
      for (const [k, v] of Object.entries(body)) form.append(k, v);
      const sourceMedia = mediaOverride || files;
      const igMedia = (pid === 'instagram' || (pid === 'facebook' && mirrorTarget === 'instagram'))
-       ? await instagramMediaFiles(sourceMedia)
+       ? await prepareMetaFiles('instagram', sourceMedia)
        : null;
      const fbMedia = (pid === 'facebook' || (pid === 'instagram' && mirrorTarget === 'facebook'))
-       ? await facebookMediaFiles(sourceMedia)
+       ? await prepareMetaFiles('facebook', sourceMedia)
        : null;
-     if (usePreuploaded && !mediaOverride && pid === 'facebook') {
+     let metaUploads = null;
+     if ((pid === 'facebook' || pid === 'instagram') && sourceMedia.length && !mediaOverride) {
+       if (usePreuploaded) metaUploads = uploaded.files;
+       else {
+         const preparedMedia = pid === 'instagram' ? (igMedia || sourceMedia) : (fbMedia || sourceMedia);
+         try { metaUploads = await uploadDirectMetaMedia(preparedMedia.slice(0, 10)); }
+         catch { /* fall back to the established multipart upload path */ }
+       }
+     }
+     if (metaUploads?.length && !mediaOverride && (pid === 'facebook' || pid === 'instagram')) {
        body.hasPreuploadedMedia = '1';
        form.append('hasPreuploadedMedia', '1');
-       uploaded.files.forEach((f, i) => {
+       metaUploads.forEach((f, i) => {
          form.append('mediaUrl' + i, f.publicUrl);
+         form.append('mediaPath' + i, f.path);
          form.append('mediaName' + i, f.name);
          form.append('mediaType' + i, f.mimetype || '');
+         form.append('mediaSize' + i, String(f.size || 0));
        });
      } else {
        // mediaOverride replaces the selected files (used for photo -> video).
@@ -1003,6 +1076,23 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
         for (const item of prepared) {
           const { q, id, skipCrossPost, instagramFiles, facebookFiles, platformFiles } = item;
           const postBody = { ...bodyFor(q, { skipCrossPost }), connection_id: id };
+          const cachedDirectMedia = load(cloudCacheKey, null);
+          const canScheduleStoredVideo = ['instagram', 'facebook'].includes(q)
+            && platformFiles.length > 0
+            && platformFiles.every((item) => (item.type || item.raw?.type || '').startsWith('video/'))
+            && cachedDirectMedia?.filesKey === mediaSignature(files)
+            && cachedDirectMedia.files?.length === platformFiles.length
+            && cachedDirectMedia.files.every((item) => item.path && item.publicUrl);
+          if (canScheduleStoredVideo) {
+            postBody.hasPreuploadedMedia = '1';
+            cachedDirectMedia.files.forEach((item, index) => {
+              postBody[`mediaUrl${index}`] = item.publicUrl;
+              postBody[`mediaPath${index}`] = item.path;
+              postBody[`mediaName${index}`] = item.name;
+              postBody[`mediaType${index}`] = item.mimetype;
+              postBody[`mediaSize${index}`] = String(item.size || 0);
+            });
+          }
           if (requestApproval) postBody.approval_status = 'pending';
           if (entry.text) {
             const caption = String(entry.text).trim();
@@ -1019,7 +1109,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
             repeatEveryDays: repeat.repeatEveryDays || 0,
             repeatRemaining: repeat.repeatRemaining || 0,
             body: postBody,
-            files: platformFiles,
+            files: canScheduleStoredVideo ? [] : platformFiles,
             instagramFiles,
             facebookFiles,
             thumb: q === 'youtube' ? thumb : null,

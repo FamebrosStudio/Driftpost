@@ -23,7 +23,43 @@
     "founding_year": null,
     "check_in_time": null,
     "check_out_time": null,
-    "opening_hours": "Hospitality property; booking and reception hours have not been confirmed."
+    "opening_hours": "Hospitality property; booking and reception hours have not been confirmed.",
+    "room_types": [
+      {
+        "name": "Premium Room",
+        "confirmed_features": [
+          "Air-conditioned",
+          "King-size bed",
+          "Extra foldout bed"
+        ],
+        "source": "https://vividsands.com/",
+        "source_checked_on": "2026-10-04",
+        "note": "Website says suitable for small families or couples; occupancy maximum is not stated."
+      },
+      {
+        "name": "Premium Cottage",
+        "confirmed_features": [
+          "Separate living area",
+          "Pull-out couch",
+          "King-size bed in bedroom",
+          "Private pool"
+        ],
+        "source": "https://vividsands.com/",
+        "source_checked_on": "2026-10-04",
+        "note": "Do not generalize private pool to other room types."
+      }
+    ],
+    "amenities": [
+      "Swimming pool (the official site also describes it as an infinity pool; it does not clarify whether these are separate pools)",
+      "Beach access",
+      "Open lawn",
+      "Beachfront, multi-cuisine restaurant",
+      "Games",
+      "Gated community",
+      "CCTV and security"
+    ],
+    "meals_or_meal_plans": [],
+    "room_occupancy_maximum": null
   },
   "contact": {
     "phone_display": "+91 98331 85566",
@@ -79,12 +115,45 @@
       "Local travel information"
     ],
     "genre_note": "The original roster specifically lists page review without named genres. Additional genres are safe editorial modes based on confirmed resort positioning and supplied briefs.",
-    "confirmed_amenities": [],
-    "amenities_note": "Do not assume pool, restaurant, meals, parking, Wi-Fi, private beach access, pet policy or room amenities unless confirmed for the current post or booking source.",
-    "confirmed_room_types": [],
+    "confirmed_amenities": [
+      "Swimming pool (the official site also describes it as an infinity pool; it does not clarify whether these are separate pools)",
+      "Beach access",
+      "Open lawn",
+      "Beachfront, multi-cuisine restaurant",
+      "Games",
+      "Gated community",
+      "CCTV and security"
+    ],
+    "amenities_note": "Listed on the official website checked 2026-10-04. The site describes a swimming pool and also an infinity pool; do not imply two separate pools. Reconfirm whether each facility is available or included for the current booking or footage. Do not imply private beach ownership, meal inclusion, or room-wide amenities.",
+    "confirmed_room_types": [
+      {
+        "name": "Premium Room",
+        "confirmed_features": [
+          "Air-conditioned",
+          "King-size bed",
+          "Extra foldout bed"
+        ],
+        "source": "https://vividsands.com/",
+        "source_checked_on": "2026-10-04",
+        "note": "Website says suitable for small families or couples; occupancy maximum is not stated."
+      },
+      {
+        "name": "Premium Cottage",
+        "confirmed_features": [
+          "Separate living area",
+          "Pull-out couch",
+          "King-size bed in bedroom",
+          "Private pool"
+        ],
+        "source": "https://vividsands.com/",
+        "source_checked_on": "2026-10-04",
+        "note": "Do not generalize private pool to other room types."
+      }
+    ],
     "confirmed_meal_plans": [],
     "confirmed_current_rates": [],
-    "confirmed_current_offers": []
+    "confirmed_current_offers": [],
+    "confirmed_rates": []
   },
   "historical_campaigns": {
     "archived_offer": {
@@ -417,7 +486,8 @@
     "If an optional detail is missing, omit it.",
     "If an essential booking or offer detail is missing, ask one short question.",
     "Do not print null values or internal notes in public copy.",
-    "An Instagram link is a reference pointer. Do not claim to have reviewed new posts unless retrieved or supplied."
+    "An Instagram link is a reference pointer. Do not claim to have reviewed new posts unless retrieved or supplied.",
+    "Official website facts are confirmed, but do not assign Premium Cottage private-pool features to Premium Rooms; do not imply meals, rates, occupancy, or current availability."
   ],
   "per_post_input": {
     "brand_id": "vivid_sands_beach_resort",
@@ -443,12 +513,10 @@
     "recent_captions": [],
     "additional_instructions": []
   },
-  "master_brand_instruction": "Write as Vivid Sands Beach Resort in Revdanda, Alibaug. Use a relaxing, inviting, scenic, warm and concise hospitality voice. Position the property as a Revdanda coastal getaway near Alibaug and approximately three hours from Mumbai, while treating travel time as variable. Describe only the property, room, view and amenities actually shown or confirmed. Preserve every supplied property photo exactly and never add, remove or modify architecture, rooms, pool, beach, landscape, people, weather or amenities. Never invent rates, room types, meal plans, occupancy, availability, private beach access or current offers. Treat the â‚¹8,900 plus taxes offer excluding 31 December as historical and inactive until reconfirmed. Mention Korlai Fort, Kashid Beach, Nagaon Beach, Birla Mandir and Phansad Wildlife Sanctuary only as nearby exploration ideas unless verified distance data is supplied. For normal feed and reel captions, append the Vivid Sands footer, exactly three relevant hashtags and one bracket containing 5 to 8 comma-separated SEO phrases. Preserve +91 98331 85566, the official address and website. Avoid em dashes and return ready-to-copy public text without null fields or internal notes.",
+  "master_brand_instruction": "Write as Vivid Sands Beach Resort in Revdanda, Alibaug. Use a relaxing, inviting, scenic, warm and concise hospitality voice. Position the property as a Revdanda coastal getaway near Alibaug and approximately three hours from Mumbai, while treating travel time as variable. Use confirmed website details accurately: Premium Rooms are air-conditioned with a king-size bed and extra foldout; Premium Cottages have separate living area, pull-out couch, king bedroom and private pool. Website-listed facilities include a swimming pool (also described as an infinity pool; whether there are separate pools is unclear), beach access, open lawn, a beachfront multi-cuisine restaurant, games, gated community and CCTV/security. Revdanda Fort is a nearby attraction, not an on-property amenity. Match room claims to the named room and supplied visuals. Do not imply meals, occupancy, rates or availability. Preserve every supplied property photo exactly and never add, remove or modify architecture, rooms, pool, beach, landscape, people, weather or amenities. Never invent rates, room types, meal plans, occupancy, availability, private beach access or current offers. Treat the â‚¹8,900 plus taxes offer excluding 31 December as historical and inactive until reconfirmed. Mention Korlai Fort, Kashid Beach, Nagaon Beach, Birla Mandir and Phansad Wildlife Sanctuary only as nearby exploration ideas unless verified distance data is supplied. For normal feed and reel captions, append the Vivid Sands footer, exactly three relevant hashtags and one bracket containing 5 to 8 comma-separated SEO phrases. Preserve +91 98331 85566, the official address and website. Avoid em dashes and return ready-to-copy public text without null fields or internal notes.",
   "missing_information": [
-    "Current room categories and official room specifications",
     "Current rates, packages and taxes",
     "Current meal plans",
-    "Confirmed amenities list",
     "Check-in and check-out times from the property",
     "Booking and cancellation policy",
     "Maximum occupancy by room",
@@ -508,6 +576,18 @@
       "url": "https://pictame.com/en/discover/hashtag/alibaug-stays",
       "checked_on": "2026-10-03",
       "supports": "Research lead, with confidence limits recorded in research_update."
+    },
+    {
+      "type": "official_website_property_and_accommodation_pages",
+      "url": "https://vividsands.com/",
+      "checked_on": "2026-10-04",
+      "supports": "Official room names and features, listed facilities, beach access positioning and security features. No occupancy, rates, meal inclusions or policies."
+    },
+    {
+      "type": "official_contact_page",
+      "url": "https://vividsands.com/contact-us/",
+      "checked_on": "2026-10-04",
+      "supports": "Vivid Sands phone, brand email and address. Page contains conflicting Campers Coast label; do not use Campers Coast contact information for Vivid Sands."
     }
   ],
   "research_update": {
