@@ -369,8 +369,17 @@ export function friendlyErrorMessage(message, { status = 0, action = 'complete t
   if (/failed to parse the request body as json|unexpected end of hex escape/.test(lower)) {
     return 'The caption service could not read part of the selected text or media. Re-select the media and try again.';
   }
+  if (/^this prompt names .+, but the selected account is .+\./i.test(text)) {
+    return `Your prompt mentions a different brand than the selected account. ${text}`;
+  }
+  if (/^ai key rejected\b/i.test(text)) {
+    return 'Caption generation is not configured correctly on the server. Please contact support and include the time of the error.';
+  }
+  if (/^ai out of credits\b/i.test(text)) {
+    return 'Caption generation is temporarily unavailable because the AI provider account has no credits. Please contact the Driftpost administrator.';
+  }
   if (/^ai failed:\s*xai error 400\b/i.test(text)) {
-    return 'The caption service rejected this request. Check the AI model setting in Render and try again.';
+    return 'The AI provider rejected this caption request. If you attached a video or photos, switch Media Analyzer to Fast and retry; if it continues, the server AI model configuration needs checking.';
   }
   if (status === 401 || /session expired|invalid jwt|token expired/i.test(lower)) {
     return 'Your session has expired. Sign in again, then retry.';
@@ -508,6 +517,9 @@ export async function api(path, token, options = {}) {
         const action = path === '/api/ai/captions' ? 'generate captions' : path.startsWith('/api/publish') ? 'publish this post' : path.startsWith('/api/schedule') ? 'schedule this post' : 'complete this request';
         const err = new Error(friendlyErrorMessage(data.error || 'Request failed', { status: res.status, action }));
         err.status = res.status;
+        if (res.status >= 500 && data.errorId) {
+          err.message = `${err.message} Reference: ${String(data.errorId).slice(0, 16)}.`;
+        }
         const retryAfter = Number(res.headers.get('retry-after') || res.headers.get('ratelimit-reset'));
         if (retryAfter > 0) err.retryAfterMs = Math.min(60000, retryAfter * 1000);
         throw err;

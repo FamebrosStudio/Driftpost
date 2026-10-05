@@ -1012,8 +1012,23 @@ app.post('/api/ai/captions', requireUser, requireAiAccess, aiLimit, (req, res, n
     res.json({ ...out, captionMemoryStatus, transcriptLanguage, videoAnalysisWarning });
   } catch (e) {
     const msg = String(e.message || 'AI failed');
-    const code = /credits/i.test(msg) ? 402 : /configured/i.test(msg) ? 503 : /transcription|video audio/i.test(msg) ? 502 : 500;
-    res.status(code).json({ error: msg });
+    const isBrandMismatch = /^This prompt names .+, but the selected account is .+\./i.test(msg);
+    const isBriefValidation = /^Write a short summary first/i.test(msg);
+    const code = /credits/i.test(msg) ? 402
+      : /configured/i.test(msg) ? 503
+        : isBrandMismatch ? 409
+          : isBriefValidation ? 400
+            : /transcription|video audio/i.test(msg) ? 502 : 500;
+    // Keep server/provider failures diagnosable without logging prompts, media,
+    // captions, or account tokens. The reference is safe to show the user.
+    const errorId = code >= 500 ? crypto.randomUUID().slice(0, 8) : null;
+    if (errorId) {
+      const category = /xai|provider|model/i.test(msg) ? 'provider'
+        : /json|unreadable|empty answer/i.test(msg) ? 'response_format'
+          : /caption quality check/i.test(msg) ? 'caption_validation' : 'internal';
+      console.error(`[ai] caption generation failed ref=${errorId} status=${code} category=${category}`);
+    }
+    res.status(code).json({ error: msg, ...(errorId ? { errorId } : {}) });
   } finally {
     await Promise.all(uploads.map((file) => fs.unlink(file.path).catch(() => {})));
   }
