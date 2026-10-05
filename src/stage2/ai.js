@@ -2,28 +2,35 @@ import { api } from '../lib.js';
 
 async function compactImage(file) {
   if (!file?.type?.startsWith('image/')) return null;
+  let bitmap = null;
   try {
-    const bitmap = await createImageBitmap(file);
-    const scale = Math.min(1, 1400 / Math.max(bitmap.width, bitmap.height));
+    bitmap = await createImageBitmap(file);
+    const maxEdge = 1280;
+    const scale = Math.min(1, maxEdge / Math.max(bitmap.width, bitmap.height));
     const canvas = document.createElement('canvas');
     canvas.width = Math.max(1, Math.round(bitmap.width * scale));
     canvas.height = Math.max(1, Math.round(bitmap.height * scale));
-    canvas.getContext('2d').drawImage(bitmap, 0, 0, canvas.width, canvas.height);
-    let blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/jpeg', 0.82));
-    if (blob?.size > 2 * 1024 * 1024) {
-      const smaller = document.createElement('canvas');
-      const shrink = Math.min(1, 1100 / Math.max(bitmap.width, bitmap.height));
-      smaller.width = Math.max(1, Math.round(bitmap.width * shrink));
-      smaller.height = Math.max(1, Math.round(bitmap.height * shrink));
-      smaller.getContext('2d').drawImage(bitmap, 0, 0, smaller.width, smaller.height);
-      blob = await new Promise((resolve) => smaller.toBlob(resolve, 'image/jpeg', 0.68));
+    const context = canvas.getContext('2d', { alpha: false });
+    if (!context) return null;
+    context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+    const encode = (quality) => new Promise((resolve) => canvas.toBlob(resolve, 'image/jpeg', quality));
+    let blob = await encode(0.76);
+    // Keep vision uploads small for faster analysis, especially on slower
+    // networks and machines. Only resize/re-encode when the first pass needs it.
+    if (blob?.size > 1_250_000) {
+      const shrink = Math.min(1, 1024 / Math.max(bitmap.width, bitmap.height));
+      canvas.width = Math.max(1, Math.round(bitmap.width * shrink));
+      canvas.height = Math.max(1, Math.round(bitmap.height * shrink));
+      canvas.getContext('2d', { alpha: false })?.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+      blob = await encode(0.64);
     }
-    bitmap.close?.();
-    if (!blob || blob.size > 2 * 1024 * 1024) return null;
+    if (!blob || blob.size > 1_500_000) return null;
     const base = String(file.name || 'photo').replace(/\.[^.]+$/, '').slice(0, 80) || 'photo';
     return new File([blob], `${base}.jpg`, { type: 'image/jpeg' });
   } catch {
-    return ['image/jpeg', 'image/png'].includes(file.type) && file.size <= 2 * 1024 * 1024 ? file : null;
+    return ['image/jpeg', 'image/png'].includes(file.type) && file.size <= 1_500_000 ? file : null;
+  } finally {
+    bitmap?.close?.();
   }
 }
 
