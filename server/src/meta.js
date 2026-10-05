@@ -355,22 +355,25 @@ export async function discoverInstagramAccount({ igUserId, pageToken, username }
   return value;
 }
 
-// The publishing API's `collaborators` wants Instagram user IDs, but people
-// think in usernames. Resolve them here. A value that is already numeric is
-// passed straight through, and a handle that cannot be resolved is returned
-// untouched so Meta — not this resolver — has the final say.
-export async function resolveInstagramCollaboratorIds({ igUserId, pageToken, handles }) {
+// The Instagram publishing API expects collaborator usernames, not the
+// numeric IDs returned by Business Discovery. Resolve only to canonicalize a
+// handle when possible; retain the user-entered username if discovery is not
+// available so Meta can validate it during publishing.
+export async function resolveInstagramCollaboratorUsernames({ igUserId, pageToken, handles }) {
   const list = [...new Set((handles || []).map((h) => String(h || '').trim().replace(/^@+/, '')).filter(Boolean))];
-  const ids = [];
+  const usernames = [];
   let needsPermission = false;
   for (const handle of list) {
-    if (/^\d+$/.test(handle)) { ids.push(handle); continue; }
+    if (/^\d+$/.test(handle)) { usernames.push(handle); continue; }
     const found = await discoverInstagramAccount({ igUserId, pageToken, username: handle });
-    if (found.ok) { ids.push(found.account.platform_account_id); continue; }
+    if (found.ok) {
+      usernames.push(String(found.account.username || handle).replace(/^@+/, ''));
+      continue;
+    }
     if (found.reason === 'permission') needsPermission = true;
-    ids.push(handle);
+    usernames.push(handle);
   }
-  return { ids, needsPermission };
+  return { usernames, needsPermission };
 }
 
 // --- Facebook multi-photo: upload each as unpublished, then one feed post ---

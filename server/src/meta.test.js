@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { publishFacebook, publishFacebookCarousel } from './meta.js';
+import { publishFacebook, publishFacebookCarousel, resolveInstagramCollaboratorUsernames } from './meta.js';
 
 async function withFetch(responses, run) {
   const original = globalThis.fetch;
@@ -53,5 +53,30 @@ test('Facebook carousel attaches hosted image URLs without file uploads', async 
     assert.equal(requests[0].init.body.get('url'), 'https://storage.example/user/one.jpg');
     assert.equal(requests[1].init.body.get('url'), 'https://storage.example/user/two.jpg');
     assert.equal(requests[0].init.body.get('published'), 'false');
+  });
+});
+
+test('Instagram collaborator publishing resolves handles to usernames, never numeric account IDs', async () => {
+  await withFetch([{
+    business_discovery: { id: '17841400000000000', username: 'mahalaxmi.jewellers.kurla' },
+  }], async () => {
+    const result = await resolveInstagramCollaboratorUsernames({
+      igUserId: '17841411111111111',
+      pageToken: 'page-token',
+      handles: ['@mahalaxmi.jewellers.kurla'],
+    });
+    assert.deepEqual(result.usernames, ['mahalaxmi.jewellers.kurla']);
+    assert.equal(result.usernames.includes('17841400000000000'), false);
+  });
+});
+
+test('Instagram collaborator username is preserved when account discovery is unavailable', async () => {
+  await withFetch([{ error: { message: 'not found' } }], async () => {
+    const result = await resolveInstagramCollaboratorUsernames({
+      igUserId: '17841411111111111',
+      pageToken: 'page-token',
+      handles: ['@mahalaxmi.jewellers.kurla'],
+    });
+    assert.deepEqual(result.usernames, ['mahalaxmi.jewellers.kurla']);
   });
 });

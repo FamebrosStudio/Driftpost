@@ -1929,16 +1929,15 @@ async function runPublish(job, conn, payload, body, userId) {
             try {
               const igTokens = dec(igConn.encrypted_tokens);
               const igUrls = instagramPublicUrls.length ? instagramPublicUrls : publicUrls;
-              // Same resolution as the direct Instagram path: Meta wants
-              // Instagram user IDs, the composer collects usernames.
-              const igCollabIds = igCollabs.length
-                ? (await meta.resolveInstagramCollaboratorIds({ igUserId: igConn.platform_account_id, pageToken: igTokens.access_token, handles: igCollabs })).ids
+              // The composer and Instagram publishing API both use usernames.
+              const igCollaboratorUsernames = igCollabs.length
+                ? (await meta.resolveInstagramCollaboratorUsernames({ igUserId: igConn.platform_account_id, pageToken: igTokens.access_token, handles: igCollabs })).usernames
                 : [];
               if (isCarousel) {
                 const mirror = await meta.publishInstagramCarousel({
                   igUserId: igConn.platform_account_id, pageToken: igTokens.access_token,
                   caption: String(body.fb_message ?? fallbackText),
-                  collabs: igCollabIds,
+                  collabs: igCollaboratorUsernames,
                   mediaUrls: igUrls,
                 });
                 if (mirror.id) job.publishedPosts.push({ platform: 'instagram', connectionId: igConn.id, postId: String(mirror.id) });
@@ -1946,7 +1945,7 @@ async function runPublish(job, conn, payload, body, userId) {
                 const mirror = await meta.publishInstagram({
                   igUserId: igConn.platform_account_id, pageToken: igTokens.access_token,
                   caption: String(body.fb_message ?? fallbackText),
-                  collabs: igCollabIds,
+                  collabs: igCollaboratorUsernames,
                   mediaUrl: igUrls[0] || publicUrl, isVideo: !!(file?.mimetype || mediaList[0]?.mimetype || '').startsWith('video/'),
                   coverUrl: instagramCoverUrl,
                   onStage,
@@ -1970,7 +1969,7 @@ async function runPublish(job, conn, payload, body, userId) {
         const partner = String(body.ig_partner || '').trim().replace(/^@+/, '');
         if (partner) caption = `${caption}\n\nPaid partnership with @${partner}`.trim();
         const collabs = igCollabs.length
-          ? (await meta.resolveInstagramCollaboratorIds({ igUserId: igId, pageToken, handles: igCollabs })).ids
+          ? (await meta.resolveInstagramCollaboratorUsernames({ igUserId: igId, pageToken, handles: igCollabs })).usernames
           : [];
         const locationId = String(body.ig_location || '').trim() || null;
         let out;
