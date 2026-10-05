@@ -1,5 +1,6 @@
 ﻿import React, { Suspense, lazy, useEffect, useRef, useState } from 'react';
 import { useSession, getSupabase, pokeSession } from './session.js';
+import { friendlyAuthError } from './authMessages.js';
 import BrandIcon from './brand.jsx';
 import ConsentGate from './connect/ConsentGate.jsx';
 import AiAccessGate from './connect/AiAccessGate.jsx';
@@ -457,27 +458,34 @@ function Auth({ mode, setMode, onBack, markFresh }) {
     e.preventDefault();
     if (mode === 'signup' && !agreed) { setError('Please accept the Terms of Service and Privacy Policy first.'); return; }
     setBusy(true); setError(''); setInfo('');
-    const client = await getSupabase();
-    if (!client) { setError('Supabase is not configured. Add VITE_SUPABASE_URL + key.'); setBusy(false); return; }
-    const res = mode === 'login'
-      ? await client.auth.signInWithPassword({ email, password })
-      : await client.auth.signUp({ email, password, options: { emailRedirectTo: window.location.origin, data: { tos_accepted_at: new Date().toISOString(), tos_version: TOS_VERSION, privacy_version: TOS_VERSION } } });
-    if (res.error) setError(res.error.message);
-    else if (mode === 'signup' && !res.data.session) setInfo('Check your inbox to confirm email, then sign in.');
-    else { pokeSession(); markFresh?.(); }
-    setBusy(false);
+    try {
+      const client = await getSupabase();
+      if (!client) { setError(friendlyAuthError('Supabase is not configured', mode === 'login' ? 'sign in' : 'create your account')); return; }
+      const res = mode === 'login'
+        ? await client.auth.signInWithPassword({ email, password })
+        : await client.auth.signUp({ email, password, options: { emailRedirectTo: window.location.origin, data: { tos_accepted_at: new Date().toISOString(), tos_version: TOS_VERSION, privacy_version: TOS_VERSION } } });
+      if (res?.error) setError(friendlyAuthError(res.error, mode === 'login' ? 'sign in' : 'create your account'));
+      else if (mode === 'signup' && !res?.data?.session) setInfo('Check your inbox to confirm your email, then sign in.');
+      else { pokeSession(); markFresh?.(); }
+    } catch (cause) {
+      setError(friendlyAuthError(cause, mode === 'login' ? 'sign in' : 'create your account'));
+    } finally { setBusy(false); }
   };
 
   const google = async () => {
     setBusy(true); setError(''); setInfo('');
     if (mode === 'signup' && !agreed) { setError('Please accept the Terms of Service and Privacy Policy first.'); setBusy(false); return; }
-    const client = await getSupabase();
-    if (!client) { setError('Supabase is not configured.'); setBusy(false); return; }
-    markFresh?.();
-    const { error } = await client.auth.signInWithOAuth({
-      provider: 'google', options: { redirectTo: window.location.origin, queryParams: { prompt: 'select_account' } }
-    });
-    if (error) { setError(error.message); setBusy(false); }
+    try {
+      const client = await getSupabase();
+      if (!client) { setError(friendlyAuthError('Supabase is not configured', mode === 'login' ? 'sign in' : 'create your account')); return; }
+      markFresh?.();
+      const { error } = await client.auth.signInWithOAuth({
+        provider: 'google', options: { redirectTo: window.location.origin, queryParams: { prompt: 'select_account' } }
+      });
+      if (error) setError(friendlyAuthError(error, mode === 'login' ? 'sign in' : 'create your account'));
+    } catch (cause) {
+      setError(friendlyAuthError(cause, mode === 'login' ? 'sign in' : 'create your account'));
+    } finally { setBusy(false); }
   };
 
   return (

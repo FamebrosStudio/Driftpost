@@ -135,6 +135,8 @@ export async function mixMusicIntoVideo(videoFile, audioBlob, { audioContext, mu
   let audioDestination;
   let abortHandler;
   let stopTimer;
+  let context;
+  let ownsAudioContext = false;
   try {
     const waitFor = (media, eventName, message, timeout = 30_000) => new Promise((resolve, reject) => {
       let timer;
@@ -160,7 +162,13 @@ export async function mixMusicIntoVideo(videoFile, audioBlob, { audioContext, mu
     if (!Number.isFinite(video.duration) || video.duration <= 0) throw new Error('This video has no usable duration.');
     if (!video.videoWidth || !video.videoHeight) throw new Error('This video has no readable picture frames.');
 
-    const context = audioContext || new AudioContext();
+    if (audioContext) context = audioContext;
+    else {
+      const Context = window.AudioContext || window.webkitAudioContext;
+      if (!Context) throw new Error('This browser cannot mix audio into video.');
+      context = new Context();
+      ownsAudioContext = true;
+    }
     if (context.state !== 'running') await context.resume();
     const videoSource = context.createMediaElementSource(video);
     const videoGain = context.createGain();
@@ -237,7 +245,10 @@ export async function mixMusicIntoVideo(videoFile, audioBlob, { audioContext, mu
     video.pause(); music.pause();
     video.removeAttribute('src'); music.removeAttribute('src');
     video.load(); music.load();
-    objectUrls.forEach(URL.revokeObjectURL);
-    if (audioContext && audioContext.state !== 'closed') await audioContext.close().catch(() => {});
+    URL.revokeObjectURL(videoUrl);
+    URL.revokeObjectURL(musicUrl);
+    // The caller may share its context with other editor audio operations.
+    // Only close a context that this function created itself.
+    if (ownsAudioContext && context?.state !== 'closed') await context?.close?.().catch(() => {});
   }
 }
