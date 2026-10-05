@@ -372,6 +372,13 @@ export function friendlyErrorMessage(message, { status = 0, action = 'complete t
   if (/^this prompt names .+, but the selected account is .+\./i.test(text)) {
     return `Your prompt mentions a different brand than the selected account. ${text}`;
   }
+  const captionQualityIssue = /^caption quality check:\s*(instagram|facebook|youtube|x) (has no useful caption body|mentions another brand)/i.exec(text);
+  if (captionQualityIssue?.[2].toLowerCase().startsWith('mentions another brand')) {
+    return `Generation stopped because the ${captionQualityIssue[1]} draft included another business name. Keep the prompt focused on the selected business, then generate again.`;
+  }
+  if (captionQualityIssue) {
+    return `The AI returned an incomplete ${captionQualityIssue[1]} draft. Simplify the prompt or switch Media Analyzer to Fast captions, then try again.`;
+  }
   if (/^ai key rejected\b/i.test(text)) {
     return 'Caption generation is not configured correctly on the server. Please contact support and include the time of the error.';
   }
