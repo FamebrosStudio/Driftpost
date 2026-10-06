@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { publishFacebook, publishFacebookCarousel, resolveInstagramCollaboratorUsernames } from './meta.js';
+import { publishFacebook, publishFacebookCarousel, resolveInstagramCollaboratorUsernames, subscribeInstagramWebhooks } from './meta.js';
 
 async function withFetch(responses, run) {
   const original = globalThis.fetch;
@@ -82,6 +82,24 @@ test('Facebook carousel rejects more than 20 photos without uploading any', asyn
     );
     assert.equal(requests.length, 0);
   });
+});
+
+test('enabling Instagram automation subscribes that account to comment and message webhooks', async () => {
+  await withFetch([{ success: true }], async (requests) => {
+    const result = await subscribeInstagramWebhooks({ igUserId: 'ig-account-1', accessToken: 'page-token' });
+    assert.deepEqual(result.fields, ['comments', 'messages']);
+    assert.equal(requests[0].url, 'https://graph.facebook.com/v21.0/ig-account-1/subscribed_apps');
+    assert.equal(requests[0].init.method, 'POST');
+    assert.equal(requests[0].init.body.get('subscribed_fields'), 'comments,messages');
+    assert.equal(requests[0].init.body.get('access_token'), 'page-token');
+  });
+});
+
+test('Instagram webhook subscription surfaces Meta permission failures', async () => {
+  await assert.rejects(subscribeInstagramWebhooks({
+    igUserId: 'ig-account-1', accessToken: 'page-token',
+    fetchImpl: async () => new Response(JSON.stringify({ error: { message: 'Permission denied' } }), { status: 403 }),
+  }), /Permission denied/);
 });
 
 test('Instagram collaborator publishing resolves handles to usernames, never numeric account IDs', async () => {

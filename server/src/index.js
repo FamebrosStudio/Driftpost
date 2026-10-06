@@ -16,7 +16,7 @@ import { exchangeGoogleCode, getYouTubeChannel, youtubeAuthorizationUrl } from '
 import { learnedVoice, markLatestUsed, markUsed, recordGeneration } from './captionMemory.js';
 import { consentState, forgetUser, hasPersonalisationConsent, recordConsent, POLICY_VERSION, PURPOSES } from './consent.js';
 import { setVideoThumbnail, uploadVideoResumable, validAccessToken } from './youtube-upload.js';
-import { deleteFacebookPost, discoverInstagramAccount, exchangeMetaCode, getMetaPages, longLivedToken, metaAuthorizationUrl, metaBusinessLoginUrl, publishFacebook, publishInstagram } from './meta.js';
+import { deleteFacebookPost, discoverInstagramAccount, exchangeMetaCode, getMetaPages, longLivedToken, metaAuthorizationUrl, metaBusinessLoginUrl, publishFacebook, publishInstagram, subscribeInstagramWebhooks } from './meta.js';
 import { createPkcePair, exchangeXCode, getXUser, xAuthorizationUrl } from './x.js';
 import { createXPost, deleteXPost, uploadXMedia, validXAccessToken } from './x-publish.js';
 import { generateCaptions } from './ai.js';
@@ -833,7 +833,9 @@ app.get('/api/automations/instagram', requireUser, connectionsLimit, burstLimit,
 });
 
 app.put('/api/automations/instagram/:connectionId', requireUser, strictBurstLimit, async (req, res) => {
-  const { data: connection } = await supabase.from('platform_connections').select('id').eq('id', req.params.connectionId).eq('user_id', req.user.id).eq('platform', 'instagram').maybeSingle();
+  const { data: connection } = await supabase.from('platform_connections')
+    .select('id, platform_account_id, encrypted_tokens')
+    .eq('id', req.params.connectionId).eq('user_id', req.user.id).eq('platform', 'instagram').maybeSingle();
   if (!connection) return res.status(404).json({ error: 'Instagram account not found' });
   const input = req.body || {};
   const rules = {
@@ -849,6 +851,17 @@ app.put('/api/automations/instagram/:connectionId', requireUser, strictBurstLimi
   if (enabled && !rules.comment_enabled && !rules.dm_keyword && !rules.default_reply) return res.status(400).json({ error: 'Add a comment or incoming-message rule before enabling automation.' });
   if (rules.comment_enabled && !rules.public_reply && !rules.private_reply) return res.status(400).json({ error: 'Add a public reply or private message for comment automation.' });
   if (rules.dm_keyword && !rules.dm_reply) return res.status(400).json({ error: 'Add a reply for the incoming-message keyword.' });
+  if (enabled) {
+    if (!process.env.META_WEBHOOK_VERIFY_TOKEN || !process.env.META_APP_SECRET) {
+      return res.status(503).json({ error: 'Meta webhook setup is incomplete. Configure META_WEBHOOK_VERIFY_TOKEN and META_APP_SECRET on the API first.' });
+    }
+    try {
+      const tokens = decryptJson(connection.encrypted_tokens);
+      await subscribeInstagramWebhooks({ igUserId: connection.platform_account_id, accessToken: tokens.access_token });
+    } catch (error) {
+      return res.status(502).json({ error: `Could not subscribe this Instagram account to Meta webhooks: ${error.message || 'check account permissions and reconnect it'}` });
+    }
+  }
   const { error } = await supabase.from('instagram_automations').upsert({ connection_id: connection.id, user_id: req.user.id, enabled, rules, updated_at: new Date().toISOString() }, { onConflict: 'connection_id' });
   if (error) return res.status(500).json({ error: 'Could not save Instagram automation. Apply the latest Supabase migrations.' });
   res.json({ ok: true, enabled, rules });

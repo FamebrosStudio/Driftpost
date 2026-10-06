@@ -7,6 +7,24 @@ const FB_SCOPES = [...new Set(`${process.env.META_FB_SCOPES || 'pages_show_list,
 // rejects instagram_business_* scopes with "Invalid Scopes".
 const SCOPES = FB_SCOPES;
 
+export async function subscribeInstagramWebhooks({ igUserId, accessToken, fetchImpl = fetch }) {
+  const accountId = String(igUserId || '').trim();
+  const token = String(accessToken || '').trim();
+  if (!accountId || !token) throw new Error('Reconnect the Instagram account before enabling Auto DM.');
+  const body = new URLSearchParams({ subscribed_fields: 'comments,messages', access_token: token });
+  const response = await fetchImpl(`${GRAPH}/${encodeURIComponent(accountId)}/subscribed_apps`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body,
+    signal: AbortSignal.timeout(12000),
+  });
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok || payload.success !== true) {
+    throw new Error(payload.error?.message || 'Meta did not subscribe this Instagram account to comment and message webhooks.');
+  }
+  return { fields: ['comments', 'messages'] };
+}
+
 export function metaAuthorizationUrl(state) {
   const p = new URLSearchParams({
     client_id: process.env.META_APP_ID,
