@@ -22,6 +22,7 @@ import { createXPost, deleteXPost, uploadXMedia, validXAccessToken } from './x-p
 import { generateCaptions } from './ai.js';
 import { uploadMediaFile, downloadMediaFile } from './media-io.js';
 import { scheduleIdentity } from './schedule-fields.js';
+import { runAutomationAction } from './automation-events.js';
 import { eraseUserMedia } from './storage-cleanup.js';
 
 const required = ['FRONTEND_URL', 'SUPABASE_URL', 'SUPABASE_SECRET_KEY', 'TOKEN_ENCRYPTION_KEY', 'STATE_SIGNING_SECRET'];
@@ -38,6 +39,13 @@ const AI_ALLOWED_EMAILS = new Set([
 ]);
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SECRET_KEY, { auth: { persistSession: false, autoRefreshToken: false } });
 const jobs = new Map();
+const scheduleWorkerHealth = {
+  running: false,
+  lastTickAt: null,
+  lastSuccessAt: null,
+  lastError: null,
+  lastClaimedCount: 0,
+};
 const allowedOrigins = (process.env.FRONTEND_URL || '').split(',').map((o) => o.trim()).filter(Boolean);
 // Hardcoded fallback so the API stays reachable from the deployed frontend
 // even if FRONTEND_URL is missing on the server env.
@@ -182,14 +190,16 @@ app.post('/api/meta/webhook', express.raw({ type: 'application/json', limit: '1m
   if (expected.length !== received.length || !crypto.timingSafeEqual(expected, received)) return res.sendStatus(401);
   let payload;
   try { payload = JSON.parse(req.body.toString('utf8')); } catch { return res.sendStatus(400); }
-  res.sendStatus(200);
-  setImmediate(async () => {
-    try {
-      for (const entry of payload.entry || []) {
-        const igId = String(entry.id || '');
-        const { data: connections } = await supabase.from('platform_connections').select('*').eq('platform', 'instagram').eq('platform_account_id', igId);
-        for (const connection of connections || []) {
-        const { data: automation } = await supabase.from('instagram_automations').select('rules, enabled').eq('connection_id', connection.id).eq('user_id', connection.user_id).maybeSingle();
+  try {
+    for (const entry of payload.entry || []) {
+      const igId = String(entry.id || '');
+      const { data: connections, error: connectionsError } = await supabase.from('platform_connections')
+        .select('*').eq('platform', 'instagram').eq('platform_account_id', igId);
+      if (connectionsError) throw connectionsError;
+      for (const connection of connections || []) {
+        const { data: automation, error: automationError } = await supabase.from('instagram_automations')
+          .select('rules, enabled').eq('connection_id', connection.id).eq('user_id', connection.user_id).maybeSingle();
+        if (automationError) throw automationError;
         if (!automation?.enabled) continue;
         const token = decryptJson(connection.encrypted_tokens)?.access_token;
         if (!token) continue;
@@ -202,13 +212,22 @@ app.post('/api/meta/webhook', express.raw({ type: 'application/json', limit: '1m
           if (!commentId || String(comment.from?.id || '') === igId) continue;
           const keyword = String(rules.comment_keyword || '').trim().toLowerCase();
           if (!rules.comment_enabled || (keyword && !commentText.toLowerCase().includes(keyword))) continue;
-          const { data: first } = await supabase.from('instagram_automation_events').insert({ event_id: `comment:${connection.id}:${commentId}`, user_id: connection.user_id, connection_id: connection.id, event_type: 'comment' }).select('event_id');
-          if (!first?.length) continue;
           for (const [field, edge] of [['public_reply', 'replies'], ['private_reply', 'private_replies']]) {
             const message = String(rules[field] || '').trim();
             if (!message) continue;
-            const response = await fetch(`https://graph.facebook.com/v21.0/${encodeURIComponent(commentId)}/${edge}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: message.slice(0, 1000), access_token: token }), signal: AbortSignal.timeout(12000) });
-            if (!response.ok) console.error(`[instagram automation] ${field} failed:`, (await response.json().catch(() => ({}))).error?.message || response.status);
+            await runAutomationAction(supabase, {
+              event_id: `comment:${connection.id}:${commentId}:${field}`,
+              user_id: connection.user_id,
+              connection_id: connection.id,
+              event_type: 'comment',
+            }, async () => {
+              const response = await fetch(`https://graph.facebook.com/v21.0/${encodeURIComponent(commentId)}/${edge}`, {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: message.slice(0, 1000), access_token: token }),
+                signal: AbortSignal.timeout(12000),
+              });
+              if (!response.ok) throw new Error(`${field} failed: ${(await response.json().catch(() => ({}))).error?.message || response.status}`);
+            });
           }
         }
         for (const messaging of entry.messaging || []) {
@@ -220,15 +239,29 @@ app.post('/api/meta/webhook', express.raw({ type: 'application/json', limit: '1m
           const keyword = String(rules.dm_keyword || '').trim().toLowerCase();
           const replyText = keyword && message.toLowerCase().includes(keyword) ? rules.dm_reply : rules.default_reply;
           if (!replyText) continue;
-          const { data: first } = await supabase.from('instagram_automation_events').insert({ event_id: `message:${connection.id}:${messageId}`, user_id: connection.user_id, connection_id: connection.id, event_type: 'message' }).select('event_id');
-          if (!first?.length) continue;
-          const response = await fetch(`https://graph.facebook.com/v21.0/${encodeURIComponent(igId)}/messages`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ recipient: { id: senderId }, message: { text: String(replyText).slice(0, 1000) }, access_token: token }), signal: AbortSignal.timeout(12000) });
-          if (!response.ok) console.error('[instagram automation] DM reply failed:', (await response.json().catch(() => ({}))).error?.message || response.status);
-        }
+          await runAutomationAction(supabase, {
+            event_id: `message:${connection.id}:${messageId}`,
+            user_id: connection.user_id,
+            connection_id: connection.id,
+            event_type: 'message',
+          }, async () => {
+            const response = await fetch(`https://graph.facebook.com/v21.0/${encodeURIComponent(igId)}/messages`, {
+              method: 'POST', headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ recipient: { id: senderId }, message: { text: String(replyText).slice(0, 1000) }, access_token: token }),
+              signal: AbortSignal.timeout(12000),
+            });
+            if (!response.ok) throw new Error(`DM reply failed: ${(await response.json().catch(() => ({}))).error?.message || response.status}`);
+          });
         }
       }
-    } catch (error) { console.error('[instagram automation] webhook processing failed:', error?.message || error); }
-  });
+    }
+    return res.sendStatus(200);
+  } catch (error) {
+    console.error('[instagram automation] webhook processing failed:', error?.message || error);
+    // A non-2xx response asks Meta to retry. Successful individual actions
+    // remain deduplicated; only the failed action's claim is released.
+    return res.sendStatus(500);
+  }
 });
 
 // AI vision inputs are browser-resized preview copies only; this is a small
@@ -436,6 +469,15 @@ app.get('/health', (_req, res) => res.set('Cache-Control', 'no-store').json({
   ok: true,
   revision: (process.env.RAILWAY_GIT_COMMIT_SHA || process.env.RENDER_GIT_COMMIT)?.slice(0, 12) || null,
   uptimeSeconds: Math.floor(process.uptime()),
+  scheduler: {
+    enabled: true,
+    running: scheduleWorkerHealth.running,
+    intervalSeconds: 15,
+    lastTickAt: scheduleWorkerHealth.lastTickAt,
+    lastSuccessAt: scheduleWorkerHealth.lastSuccessAt,
+    lastClaimedCount: scheduleWorkerHealth.lastClaimedCount,
+    lastError: scheduleWorkerHealth.lastError,
+  },
 }));
 
 // Epidemic Sound catalog access stays on the server so the provider key is
@@ -2402,6 +2444,9 @@ let scheduleTickRunning = false;
 async function runDueSchedules() {
   if (scheduleTickRunning) return;
   scheduleTickRunning = true;
+  scheduleWorkerHealth.running = true;
+  scheduleWorkerHealth.lastTickAt = new Date().toISOString();
+  scheduleWorkerHealth.lastClaimedCount = 0;
   try {
     // A process can be restarted after claiming a row. Recover old claims so
     // schedules do not remain stuck forever; the 30 minute window is longer
@@ -2438,6 +2483,7 @@ async function runDueSchedules() {
         .eq('id', row.id).eq('status', 'scheduled').select();
       if (claimError) throw claimError;
       if (!claimed || !claimed.length) continue;
+      scheduleWorkerHealth.lastClaimedCount += 1;
       const { data: conn } = await supabase.from('platform_connections')
         .select('*').eq('id', row.connection_id).eq('user_id', row.user_id).maybeSingle();
       const job = {
@@ -2453,6 +2499,24 @@ async function runDueSchedules() {
       };
       jobs.set(job.id, job);
       const downloadedPaths = [];
+      // Keep long platform uploads alive; stale recovery only applies when
+      // this process has stopped refreshing the publishing row.
+      let heartbeatRunning = false;
+      const leaseHeartbeat = setInterval(async () => {
+        if (heartbeatRunning) return;
+        heartbeatRunning = true;
+        try {
+          const { error } = await supabase.from('scheduled_posts')
+            .update({ updated_at: new Date().toISOString() })
+            .eq('id', row.id).eq('status', 'publishing');
+          if (error) console.error('[scheduler] Could not refresh publish lease:', error.message);
+        } catch (error) {
+          console.error('[scheduler] Could not refresh publish lease:', error?.message || error);
+        } finally {
+          heartbeatRunning = false;
+        }
+      }, 60 * 1000);
+      leaseHeartbeat.unref();
       try {
         if (!conn) throw new Error('The connected account is gone — reconnect it.');
         const downloadScheduledFile = async (media, prefix, required = true) => {
@@ -2551,13 +2615,19 @@ async function runDueSchedules() {
           updated_at: new Date().toISOString(),
         }).eq('id', row.id);
         await removeUnreferencedScheduleMedia(row.user_id, row.id, scheduleMediaPaths(row));
+      } finally {
+        clearInterval(leaseHeartbeat);
       }
     }
+    scheduleWorkerHealth.lastSuccessAt = new Date().toISOString();
+    scheduleWorkerHealth.lastError = null;
   } catch (e) {
-    // Keep the interval alive while making the failure visible in Render logs.
+    scheduleWorkerHealth.lastError = String(e?.message || e).slice(0, 500);
+    // Keep the interval alive while making the failure visible in API logs.
     console.error('[scheduler] Tick failed:', e?.message || e);
   } finally {
     scheduleTickRunning = false;
+    scheduleWorkerHealth.running = false;
   }
 }
 setInterval(runDueSchedules, 15 * 1000).unref();
