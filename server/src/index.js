@@ -22,6 +22,7 @@ import { createXPost, deleteXPost, uploadXMedia, validXAccessToken } from './x-p
 import { generateCaptions } from './ai.js';
 import { uploadMediaFile, downloadMediaFile } from './media-io.js';
 import { scheduleIdentity } from './schedule-fields.js';
+import { eraseUserMedia } from './storage-cleanup.js';
 
 const required = ['FRONTEND_URL', 'SUPABASE_URL', 'SUPABASE_SECRET_KEY', 'TOKEN_ENCRYPTION_KEY', 'STATE_SIGNING_SECRET'];
 const missing = required.filter((n) => !process.env[n]);
@@ -151,7 +152,7 @@ app.post('/api/storage/upload', requireUser, parseStorageUpload, async (req, res
       if (!name || (!bytes && !filePath)) { results.push({ name, error: 'missing name or file data' }); continue; }
       const ext = path.extname(name).replace(/[^a-z0-9.]/gi, '').slice(1, 8)
         || (String(mimetype || '').startsWith('video/') ? 'mp4' : 'jpg');
-      const key = `${crypto.randomUUID()}.${ext}`;
+      const key = `${req.user.id}/${crypto.randomUUID()}.${ext}`;
       const storage = supabase.storage.from(BUCKET);
       const { error: upErr } = filePath
         ? await uploadMediaFile(storage, key, { path: filePath, mimetype }, { upsert: true })
@@ -889,18 +890,20 @@ app.get('/api/jobs/:id', requireUser, jobsLimit, (req, res) => {
   res.json({ job: j });
 });
 
-// Full account erasure: connections + history, then the login itself.
-// Media files use random untraceable keys and expire with the bucket lifecycle.
+// Full account erasure: remove owned storage objects and records before deleting
+// the login. Storage objects are public for platform publishing, so leaving
+// them behind after account deletion would leave the user's media accessible.
 app.delete('/api/account', requireUser, limit({ windowMs: 60 * 1000, max: 5, key: userKey }), async (req, res) => {
   try {
     const uid = req.user.id;
+    await eraseUserMedia(supabase.storage.from(BUCKET), uid);
+    await forgetUser(supabase, uid);
     const c = await supabase.from('platform_connections').delete().eq('user_id', uid);
     if (c.error) throw c.error;
     const h = await supabase.from('post_history').delete().eq('user_id', uid);
     if (h.error) throw h.error;
-    // Generated captions and the consent trail are personal data too, so they
-    // are erased with the account rather than orphaned.
-    await forgetUser(supabase, uid);
+    // Generated captions and the consent trail are personal data too; both are
+    // checked before we erase the login so a database error cannot be hidden.
     for (const [id, j] of jobs) if (j.userId === uid) jobs.delete(id);
     const { error: uErr } = await supabase.auth.admin.deleteUser(uid);
     if (uErr) throw uErr;

@@ -78,6 +78,8 @@ export async function recordConsent(supabase, { userId, purpose, granted, versio
 // a person asks to be forgotten.
 export async function forgetUser(supabase, userId) {
   if (!userId) return;
-  try { await supabase.from('caption_memory').delete().eq('user_id', userId); } catch {}
-  try { await supabase.from('consent_log').delete().eq('user_id', userId); } catch {}
+  for (const table of ['caption_memory', 'consent_log']) {
+    const { error } = await supabase.from(table).delete().eq('user_id', userId);
+    if (error) throw error;
+  }
 }
