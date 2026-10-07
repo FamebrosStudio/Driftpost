@@ -47,13 +47,6 @@
 .hist-empty { text-align: center; color: var(--ink); font-weight: 700; font-size: 15px; margin: 34px 0 6px; }
 .hist-note { text-align: center; color: var(--faint); font-size: 12.5px; line-height: 1.6; margin: 0 0 8px; }
 .hist button:focus-visible { outline: 2px solid var(--acc, #7c6cf5); outline-offset: 2px; }
-.hist-in { max-width: 920px; }
-.hist-heading h1 { font-size: clamp(30px, 4vw, 42px); letter-spacing: -.055em; }
-.hist-tabs { padding: 5px; border: 1px solid var(--line); border-radius: 15px; background: var(--panel); }
-.hist-tab { border-color: transparent; transition: color .18s ease, background .18s ease, box-shadow .18s ease; }
-.hist-tab.on { box-shadow: 0 6px 18px color-mix(in srgb, var(--acc, #7c6cf5) 25%, transparent); }
-.hist-row { border-radius: 14px; }
-.hist-activity { border-radius: 18px; }
 @media (prefers-reduced-motion: reduce) {
   .hist, .hist * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }

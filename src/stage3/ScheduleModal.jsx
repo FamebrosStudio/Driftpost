@@ -131,7 +131,7 @@ export default function ScheduleModal({ platforms, accountFor, invalidFor, busy,
 
   return (
     <div className="s3-overlay" onClick={onClose}>
-      <div className="s3-sched" data-lenis-prevent role="dialog" aria-modal="true" aria-labelledby="s3-sched-title" aria-describedby="s3-sched-description" onClick={(e) => e.stopPropagation()}>
+      <div className="s3-sched" role="dialog" aria-modal="true" aria-labelledby="s3-sched-title" aria-describedby="s3-sched-description" onClick={(e) => e.stopPropagation()}>
         <div className="s3-sched-head">
           <span className="s3-sched-mark" aria-hidden="true">◷</span>
           <div><span className="s3-sched-kicker">PLAN YOUR PUBLISH</span><h2 id="s3-sched-title">Choose when to publish</h2></div>

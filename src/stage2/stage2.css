@@ -21,11 +21,6 @@
 .s2-badge { display: inline-block; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--acc); border: 1px solid var(--acc); border-radius: 999px; padding: 5px 14px; font-weight: 700; }
 .s2-head h1 { font-size: clamp(26px, 4.6vw, 38px); letter-spacing: -0.5px; margin: 16px 0 8px; line-height: 1.15; }
 .s2-head p { color: var(--muted); font-size: 14.5px; margin: 0 auto; max-width: 560px; line-height: 1.6; }
-.s2-head h1 { letter-spacing: -.045em; }
-.s2-sec { border-radius: 20px; box-shadow: 0 12px 34px #00000018; }
-.s2-sec-head h2 { letter-spacing: -.025em; }
-.s2-drop { border-radius: 16px; background: color-mix(in srgb, var(--acc-soft) 52%, transparent); }
-.s2-drop:hover, .s2-drop.over { transform: translateY(-1px); }
 
 /* stepper (same language as Stage 1) */
 .s2-progress { margin: 26px auto 6px; max-width: 560px; animation: s2Up 0.5s 0.08s ease both; }

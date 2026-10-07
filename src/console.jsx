@@ -1,6 +1,4 @@
-import React, { lazy, Suspense, useRef, useState } from 'react';
-import gsap from 'gsap';
-import { useGSAP } from '@gsap/react';
+import React, { lazy, Suspense, useState } from 'react';
 import ConnectPage from './connect/ConnectPage.jsx';
 import StageOnePage from './stage1/StageOnePage.jsx';
 import StageTwoPage from './stage2/StageTwoPage.jsx';
@@ -10,23 +8,6 @@ import { WorkspaceNav, DashboardPage, CalendarPage, AnalyticsPage } from './work
 import AutomationsPage from './workspace/AutomationsPage.jsx';
 
 const HistoryPage = lazy(() => import('./history/HistoryPage.jsx'));
-
-function ConsolePageMotion({ route, children }) {
-  const scope = useRef(null);
-  useGSAP(() => {
-    const root = scope.current;
-    if (!root || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    const page = root.querySelector('.ws-main, .stage1-in, .stage2-in, .stage3-in, .connect-in, .hist-in') || root.firstElementChild;
-    if (!page) return;
-    const blocks = Array.from(page.children).filter((element) => !element.matches('.s1-top, .s2-top, .s3-top, .cn-top, .hist-top'));
-    gsap.fromTo(blocks.length ? blocks : page,
-      { autoAlpha: 0, y: 16 },
-      { autoAlpha: 1, y: 0, duration: 0.48, stagger: 0.055, ease: 'power2.out', clearProps: 'transform,opacity,visibility' },
-    );
-  }, { scope, dependencies: [route], revertOnUpdate: true });
-
-  return <div className="console-motion-root" ref={scope}>{children}</div>;
-}
 
 // Console entry — Overview, Calendar, Analytics and History surround the
 // existing create flow. A draft stage is persisted so refresh stays safe.
@@ -42,7 +23,7 @@ function BackgroundPublishNotice({ notice, onDismiss }) {
   if (!notice) return null;
   const accounts = Object.entries(notice.accounts || {});
   return (
-    <aside className="bg-publish-notice" data-lenis-prevent role="status" aria-live="polite">
+    <aside className="bg-publish-notice" role="status" aria-live="polite">
       <span className="bg-publish-notice__icon" aria-hidden="true">↗</span>
       <div>
         <div className="bg-publish-notice__heading">
@@ -94,7 +75,7 @@ export default function Console({ session, onSwitchAccount, onSignOut }) {
     setView(next);
   };
   const openHistory = () => navigate('history');
-  const withBackgroundNotice = (page) => <ConsolePageMotion route={view === 'create' ? `create-${stage}` : view}>{page}<BackgroundPublishNotice notice={backgroundPublishNotice} onDismiss={() => setBackgroundPublishNotice(null)} /></ConsolePageMotion>;
+  const withBackgroundNotice = (page) => <>{page}<BackgroundPublishNotice notice={backgroundPublishNotice} onDismiss={() => setBackgroundPublishNotice(null)} /></>;
   if (view === 'home') return withBackgroundNotice(<DashboardPage session={session} onNavigate={navigate} onCreate={() => navigate('create')} onSignOut={onSignOut} />);
   if (view === 'calendar') return withBackgroundNotice(<CalendarPage session={session} onNavigate={navigate} onCreate={(date) => {
     try { sessionStorage.setItem('driftpost-calendar-prefill', JSON.stringify({ date, createdAt: Date.now() })); } catch {}

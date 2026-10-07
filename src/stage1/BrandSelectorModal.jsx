@@ -22,7 +22,7 @@ export default function BrandSelectorModal({ brands, connections, activeKey, onP
 
   return (
     <div className="s1-overlay" onClick={onClose}>
-      <div className="s1-modal" data-lenis-prevent role="dialog" aria-modal="true" aria-label="Choose a brand" onClick={(e) => e.stopPropagation()}>
+      <div className="s1-modal" role="dialog" aria-modal="true" aria-label="Choose a brand" onClick={(e) => e.stopPropagation()}>
         <h2>Choose a brand</h2>
         <p className="sub">One brand, all its connected platforms together. Posting stays on that brand&apos;s accounts only.</p>
         <input className="s1-search" autoFocus value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search your brands" aria-label="Search your brands" />

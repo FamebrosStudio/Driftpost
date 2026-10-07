@@ -292,27 +292,3 @@
   .ws-insight .ws-text-button { margin-left: 45px; }
 }
 @media (prefers-reduced-motion: reduce) { .ws *, .ws *::before, .ws *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; } }
-
-/* Refined workspace surfaces */
-.ws-topbar { background: color-mix(in srgb, var(--bg) 82%, transparent); border-bottom-color: color-mix(in srgb, var(--line) 76%, transparent); }
-.ws-wordmark img.logo-img { transition: filter .2s ease, transform .2s ease; }
-.ws-wordmark:hover img.logo-img { filter: drop-shadow(0 0 10px color-mix(in srgb, var(--go) 42%, transparent)); transform: translateY(-1px); }
-.ws-nav button { border-radius: 10px 10px 0 0; }
-.ws-nav button.active { background: color-mix(in srgb, var(--go) 7%, transparent); }
-.ws-nav button.active::after { height: 3px; border-radius: 4px 4px 0 0; }
-.ws-heading h1 { letter-spacing: -.06em; }
-.ws-panel, .ws-stat, .ws-metric-card { border-radius: 18px; }
-.ws-panel { background: linear-gradient(145deg, color-mix(in srgb, var(--panel) 96%, white 4%), var(--panel)); box-shadow: 0 12px 36px #00000018; }
-.ws-welcome { border-radius: 24px; box-shadow: 0 18px 50px #00000020; }
-.ws-stat { border-top: 2px solid color-mix(in srgb, var(--go) 48%, var(--line)); box-shadow: 0 10px 28px #00000015; transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease; }
-.ws-stat:hover { transform: translateY(-3px); border-top-color: var(--go); box-shadow: 0 17px 38px #00000024; }
-.ws-stat > strong { letter-spacing: -.06em; }
-.ws-icon { border-radius: 11px; }
-.ws-day { transition: background .15s ease, box-shadow .15s ease; }
-.ws-day.today .ws-day-number { border-radius: 50%; box-shadow: 0 4px 14px color-mix(in srgb, var(--go) 35%, transparent); }
-.ws-event { border-radius: 6px; }
-.ws-campaign-account, .ws-campaign-drop, .automation-grid > .ws-panel { border-radius: 13px; }
-.ws-primary, .ws-secondary { border-radius: 11px; }
-.ws-primary { background: linear-gradient(110deg, #119b78, #087e73); box-shadow: 0 8px 22px #0d96742b; }
-.ws-primary:hover, .ws-secondary:hover { transform: translateY(-2px); }
-.ws-calendar-panel { overflow: hidden; }

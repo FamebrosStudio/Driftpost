@@ -86,18 +86,6 @@
 @keyframes cnUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
 @keyframes cnBarUp { from { opacity: 0; transform: translateY(100%); } to { opacity: 1; transform: none; } }
 .connect button:focus-visible, .connect [tabindex]:focus-visible { outline: 2px solid var(--acc); outline-offset: 2px; }
-.cn-card, .cn-brands { box-shadow: 0 14px 36px #00000018; transition: border-color .22s ease, transform .22s ease, box-shadow .22s ease; }
-.cn-card:hover { transform: translateY(-2px); box-shadow: 0 18px 42px #00000024; }
-.cn-card.linked { box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ok, #3ddc97) 18%, transparent), 0 14px 36px #00000018; }
-.cn-acct { transition: border-color .18s ease, background .18s ease; }
-.cn-acct:hover { border-color: var(--line-hard); }
-.cn-bar { background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); }
-.cn-next, .cn-connect { box-shadow: 0 9px 24px color-mix(in srgb, var(--acc) 22%, transparent); }
-.cn-badge { padding: 7px 15px; }
-.cn-head h1, .welcome-head h1 { letter-spacing: -.045em; }
-.cn-grid { gap: 16px; }
-.cn-card { border-radius: 20px; }
-.cn-brands { border-radius: 20px; }
 
 /* one-time welcome hero: sits above the full connect hub, same language */
 .welcome { --acc: #7c6cf5; --acc-ink: #ffffff; --acc-soft: #7c6cf51f; min-height: 100vh; background: var(--bg); color: var(--ink); }

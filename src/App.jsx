@@ -1,7 +1,4 @@
 ﻿import React, { Suspense, lazy, useEffect, useRef, useState } from 'react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { useGSAP } from '@gsap/react';
 import { useSession, getSupabase, pokeSession } from './session.js';
 import { friendlyAuthError } from './authMessages.js';
 import BrandIcon from './brand.jsx';
@@ -11,9 +8,6 @@ import PageLoading from './PageLoading.jsx';
 import ApprovalPage from './workspace/ApprovalPage.jsx';
 import { NotFoundPage, OfflinePage, ServerStartingPage, useConnectivity, useServerReadiness } from './RecoveryPages.jsx';
 import { apiRequestUrl } from './lib.js';
-import FadeContent from './ui/FadeContent.jsx';
-
-gsap.registerPlugin(ScrollTrigger, useGSAP);
 
 const Console = lazy(() => import('./console.jsx'));
 
@@ -360,29 +354,6 @@ function Landing({ onEnter, session, pubPage, setPubPage }) {
     els.forEach((el) => io.observe(el));
     return () => { io.disconnect(); if (mouseRaf.current) cancelAnimationFrame(mouseRaf.current); };
   }, [pubPage]);
-  useGSAP(() => {
-    const root = rootRef.current;
-    if (!root || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    root.classList.add('motion-ready');
-    if (!root.querySelector('.landing-in')) return;
-    const intro = gsap.timeline({ defaults: { ease: 'power3.out' } });
-    intro.fromTo('.land-nav', { y: -16, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.55 })
-      .fromTo('.landing-kicker', { y: 14, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.48 }, '-=0.22')
-      .fromTo('.landing-in h1', { y: 34, autoAlpha: 0, scale: 0.97 }, { y: 0, autoAlpha: 1, scale: 1, duration: 0.78 }, '-=0.18')
-      .fromTo('.landing-in > p, .landing-cta, .social-dock, .landing-stats, .scroll-hint', { y: 16, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.42, stagger: 0.07 }, '-=0.4');
-
-    gsap.to('.zig-big', {
-      yPercent: -22,
-      ease: 'none',
-      stagger: 0.08,
-      scrollTrigger: { trigger: '.zig', start: 'top bottom', end: 'bottom top', scrub: 0.55 },
-    });
-    gsap.fromTo('.land-foot h2', { y: 28, autoAlpha: 0 }, {
-      y: 0, autoAlpha: 1, duration: 0.75, ease: 'power3.out',
-      scrollTrigger: { trigger: '.land-foot', start: 'top 82%', once: true },
-    });
-  }, { scope: rootRef, dependencies: [pubPage], revertOnUpdate: true });
-
   const dock = [
     { id: 'youtube', tip: 'YouTube — video, titles, tags', href: 'https://www.youtube.com' },
     { id: 'instagram', tip: 'Instagram — reels, captions', href: 'https://www.instagram.com' },
@@ -439,38 +410,25 @@ function Landing({ onEnter, session, pubPage, setPubPage }) {
       <div className="hstrip-wrap">
         <div className="hstrip-label">Every platform, covered</div>
         <div className="hstrip">
-          {cards.map((c, i) => (
-            <FadeContent as="article" key={c.id} className="hcard" delay={i * 0.055} distance={18}>
+          {cards.map((c) => (
+            <div key={c.id} className="hcard">
               <span className="hcard-ic"><BrandIcon id={c.id} size={26} /></span>
               <b>{c.t}</b>
               <p>{c.d}</p>
-            </FadeContent>
+            </div>
           ))}
-          <FadeContent as="article" className="hcard hot" delay={0.22} distance={18}>
+          <div className="hcard hot">
             <b>One workspace, more control</b>
             <p>CSV batches, finite repeats, shareable approvals and available account metrics, alongside your connected brands.</p>
-          </FadeContent>
+          </div>
         </div>
       </div>
-      <FadeContent as="section" className="landing-story" distance={36} blur>
-        <div className="story-heading">
-          <span className="story-index">THE DAILY CONTENT LOOP / 01—04</span>
-          <h2>One idea.<br /><span>Everywhere it needs to go.</span></h2>
-          <p>Keep the creative work moving. Driftpost shapes each draft for the platform, then brings the publishing plan back into one view.</p>
-        </div>
-        <div className="story-signal" aria-hidden="true">
-          <div className="signal-core"><span>ONE<br />POST</span></div>
-          <i className="signal-orbit signal-orbit-a" /><i className="signal-orbit signal-orbit-b" />
-          <b className="signal-node signal-node-a">IG</b><b className="signal-node signal-node-b">FB</b><b className="signal-node signal-node-c">YT</b><b className="signal-node signal-node-d">X</b>
-        </div>
-      </FadeContent>
       <section className="zig">
-        <div className="zig-heading"><span>FOUR SMALL STEPS, ONE LESS MESSY DAY</span><h2>From first draft<br />to live post.</h2></div>
         {steps.map((s, i) => (
-          <FadeContent as="article" key={s.n} className={i % 2 ? 'zig-row flip' : 'zig-row'} distance={32} blur threshold={88}>
-            <div className="zig-copy"><span className="zig-n">{s.n} / 04</span><h2>{s.t}</h2><p>{s.d}</p></div>
+          <div key={s.n} className={i % 2 ? 'zig-row flip' : 'zig-row'}>
+            <div className="zig-copy"><span className="zig-n">{s.n}</span><h2>{s.t}</h2><p>{s.d}</p></div>
             <div className="zig-art"><span className="zig-big">{s.n}</span></div>
-          </FadeContent>
+          </div>
         ))}
       </section>
       <div className="marquee" aria-hidden="true"><div className="marquee-in">

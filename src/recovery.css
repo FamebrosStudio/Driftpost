@@ -55,10 +55,6 @@
 .starting-live-dot { width: 7px; height: 7px; border-radius: 50% !important; background: #6ee7b7; box-shadow: 0 0 12px #6ee7b7; animation: live-pulse 1.5s ease-in-out infinite; }
 .starting-dots { color: #a78bfa; letter-spacing: 2px; animation: dots-pulse 1s ease-in-out infinite alternate; }
 .starting-footnote { display: block; margin-top: 19px; color: #78859a; font-size: 11px; }
-.recovery-page { background: radial-gradient(ellipse at 50% 35%, #8053d525, transparent 35%), radial-gradient(ellipse at 80% 72%, #10b98112, transparent 33%), var(--rec-bg); }
-.recovery-content h1 { letter-spacing: -.075em; }
-.recovery-primary, .recovery-secondary { border-radius: 999px; }
-.recovery-primary { box-shadow: 0 13px 34px #8b5cf641; }
 @keyframes starting-progress { 0% { left: -42%; } 100% { left: 100%; } }
 @keyframes live-pulse { 50% { opacity: .35; box-shadow: 0 0 2px #6ee7b7; } }
 @keyframes dots-pulse { to { opacity: .35; } }
