@@ -90,7 +90,10 @@ export function PostedTab({ token }) {
           ...(remaining.length === 1 ? { platform: remaining[0].platform, postId: remaining[0].postId, connectionId: remaining[0].connectionId } : {}),
         });
         refresh();
-        setNotice(`${result.deleted} post${result.deleted === 1 ? '' : 's'} deleted. ${failed.map((r) => r.error).join(' ')}`);
+        const failedDetails = failed.map((r) => `${r.platform}: ${r.error}`).join(' ');
+        setNotice(result.deleted
+          ? `${result.deleted} platform post${result.deleted === 1 ? '' : 's'} deleted; ${failed.length} could not be deleted. ${failedDetails}`
+          : `No platform posts were deleted. ${failedDetails}`);
       }
     } catch (e) {
       setNotice(e.message || 'Could not delete the post. It is still in History.');
@@ -114,7 +117,7 @@ export function PostedTab({ token }) {
           {busy === p.at ? 'Deleting…' : 'Delete post'}
         </button>}
         {hasInstagram && <button type="button" className="hist-mini" onClick={() => setNotice('Instagram does not allow deleting published media through its official API. Open View and delete it in Instagram.')}>Delete on Instagram</button>}
-        <button type="button" className="hist-mini" title="Remove this History entry only; the live post stays up" onClick={() => { removePostLog(p.at); refresh(); }}>Forget</button>
+        <button type="button" className="hist-mini" title="Remove this entry from this browser only; it does not delete the live platform post" onClick={() => { removePostLog(p.at); refresh(); }}>Remove from History</button>
       </div>;
     })}
     {notice && <p className="hist-note" role="status">{notice}</p>}
@@ -127,17 +130,25 @@ function ScheduledTab({ token }) {
   const [busy, setBusy] = useState('');
   const [error, setError] = useState('');
 
-  const load = () => {
-    setError('');
-    listSchedules(token).then(setRows).catch((e) => { setError(e.message || 'Could not load scheduled posts.'); setRows([]); });
-  };
-  useEffect(load, [token]);
+  useEffect(() => {
+    let active = true;
+    const load = () => listSchedules(token)
+      .then((data) => { if (active) { setRows(data); setError(''); } })
+      .catch((e) => { if (active) setError(e.message || 'Could not load scheduled posts.'); });
+    void load();
+    // Refresh platform-side schedule outcomes while History is open. The API
+    // worker publishes independently, so a one-time fetch left stale states
+    // on screen and made completed schedules look stuck.
+    const timer = window.setInterval(load, 15_000);
+    return () => { active = false; window.clearInterval(timer); };
+  }, [token]);
 
+  if (rows === null && error) return <div><p className="hist-note" role="alert">{error}</p><button type="button" className="hist-mini" onClick={() => { setError(''); listSchedules(token).then(setRows).catch((e) => setError(e.message || 'Could not load scheduled posts.')); }}>Retry</button></div>;
   if (rows === null) return <p className="hist-empty">Loading scheduled posts…</p>;
-  if (error) return <div><p className="hist-note" role="alert">{error}</p><button type="button" className="hist-mini" onClick={load}>Retry</button></div>;
   if (!rows.length) {
     return (
       <div>
+        {error && <p className="hist-note" role="status">Schedule status refresh failed: {error}</p>}
         <p className="hist-empty">Nothing scheduled.</p>
         <p className="hist-note">In Stage 3, press “Schedule instead” and we publish automatically at the time you pick.</p>
       </div>
@@ -145,6 +156,7 @@ function ScheduledTab({ token }) {
   }
   return (
     <div>
+      {error && <p className="hist-note" role="status">Schedule status refresh failed: {error}. Retrying automatically.</p>}
       {rows.map((r) => {
         const when = new Date(r.scheduled_at);
         const whenText = `${when.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })} · ${when.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })}`;

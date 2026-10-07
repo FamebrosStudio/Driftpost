@@ -22,6 +22,7 @@ import { createXPost, deleteXPost, uploadXMedia, validXAccessToken } from './x-p
 import { generateCaptions } from './ai.js';
 import { uploadMediaFile, downloadMediaFile } from './media-io.js';
 import { scheduleIdentity } from './schedule-fields.js';
+import { deleteResultsStatus } from './delete-results.js';
 import { runAutomationAction } from './automation-events.js';
 import { eraseUserMedia } from './storage-cleanup.js';
 
@@ -1142,7 +1143,13 @@ app.delete('/api/posts', requireUser, strictBurstLimit, async (req, res) => {
     }
   }
   const failed = results.filter((result) => !result.ok);
-  res.status(failed.length ? (failed.length === results.length ? 502 : 207) : 200)
+  // Content-free audit trail for provider failures; never log captions, IDs,
+  // or account tokens.
+  console.info('[post-delete] finished', results.map(({ platform: name, ok }) => `${name}:${ok ? 'deleted' : 'failed'}`).join(','));
+  // Provider-level delete denials are valid per-item outcomes, not a server
+  // outage. Always use 207 when any target failed so the client receives the
+  // detailed results instead of treating 502 as a transient Railway error.
+  res.status(deleteResultsStatus(results))
     .json({ results, deleted: results.length - failed.length });
 });
 
@@ -2406,6 +2413,7 @@ app.post('/api/schedule', requireUser, strictBurstLimit, scheduleRequestLimit, m
       thumb_path: thumbPath,
     }).select().single();
     if (error) throw new Error('Could not save the schedule');
+    console.info('[schedule] queued', platform, data.id, data.scheduled_at);
     await cleanupTmp();
     res.status(201).json({ schedule: data });
   } catch (e) {
@@ -2497,6 +2505,7 @@ async function runDueSchedules() {
       if (claimError) throw claimError;
       if (!claimed || !claimed.length) continue;
       scheduleWorkerHealth.lastClaimedCount += 1;
+      console.info('[scheduler] claimed', row.platform, row.id);
       const { data: conn } = await supabase.from('platform_connections')
         .select('*').eq('id', row.connection_id).eq('user_id', row.user_id).maybeSingle();
       const job = {
@@ -2591,6 +2600,7 @@ async function runDueSchedules() {
           error: published ? null : (done.message || 'Publish failed'),
           updated_at: new Date().toISOString(),
         }).eq('id', row.id);
+        console.info('[scheduler] finished', row.platform, row.id, published ? 'published' : 'failed');
         let mediaRetained = false;
         const everyDays = Number(row.body?.repeat_every_days || 0);
         let remaining = Number(row.body?.repeat_remaining || 0);
@@ -2627,6 +2637,7 @@ async function runDueSchedules() {
           error: e.message || 'Publish failed',
           updated_at: new Date().toISOString(),
         }).eq('id', row.id);
+        console.error('[scheduler] post failed', row.platform, row.id, String(e?.message || e).slice(0, 300));
         await removeUnreferencedScheduleMedia(row.user_id, row.id, scheduleMediaPaths(row));
       } finally {
         clearInterval(leaseHeartbeat);

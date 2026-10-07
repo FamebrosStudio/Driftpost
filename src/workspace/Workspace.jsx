@@ -103,11 +103,15 @@ export function CalendarPage({ session, onNavigate, onCreate, onSignOut }) {
   const gridEnd = new Date(gridStart); gridEnd.setDate(gridStart.getDate() + 42);
   useEffect(() => {
     let active = true; setLoading(true); setNotice('');
-    listSchedules(session.access_token, { from: gridStart.toISOString(), to: gridEnd.toISOString() })
+    const load = () => listSchedules(session.access_token, { from: gridStart.toISOString(), to: gridEnd.toISOString() })
       .then((data) => { if (active) setRows(data); })
       .catch((err) => { if (active) setNotice(err.message || 'Could not load your calendar.'); })
       .finally(() => { if (active) setLoading(false); });
-    return () => { active = false; };
+    void load();
+    // Keep scheduled/publishing/published/failed badges current while the
+    // calendar stays open; publishing is performed by the server worker.
+    const timer = window.setInterval(load, 15_000);
+    return () => { active = false; window.clearInterval(timer); };
   }, [session.access_token, month.getFullYear(), month.getMonth(), reloadTick]);
   useEffect(() => {
     let active = true;
