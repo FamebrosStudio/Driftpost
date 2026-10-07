@@ -134,7 +134,7 @@ export default function CollaboratorInput({ value, onChange, accounts = [], toke
           : <span className="miss">{entry.source === 'checking' ? 'Checking Instagram…' : (MISS_TEXT[entry.source] || 'will tag by username')}</span>}
       </li>)}
     </ul>}
-    {open && (options.length > 0 || searching || note) && <div className="s3-collab-options" role="listbox">
+    {open && (options.length > 0 || searching || note) && <div className="s3-collab-options" data-lenis-prevent role="listbox">
       {options.slice(0, 8).map((option) => <button key={option.key} type="button" role="option" onMouseDown={(event) => event.preventDefault()} onClick={() => { addHandle(option.username); setOpen(false); }}><span>@{option.username}</span>{option.detail && <small>{option.detail}</small>}</button>)}
       {searching && options.length === 0 && <p className="s3-collab-status">Checking Instagram…</p>}
       {note && <p className="s3-collab-status">{note}</p>}

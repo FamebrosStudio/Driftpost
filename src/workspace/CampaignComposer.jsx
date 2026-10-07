@@ -124,7 +124,7 @@ export default function CampaignComposer({ session, accounts, day, onClose, onSa
     <p className="ws-campaign-intro">Select any connected accounts, drop each account’s own design or video onto its card, write one shared caption, then publish now or schedule them together.</p>
     {!accounts.length ? <div className="ws-inline-state">No connected accounts found. Connect a social account first.</div> : <>
       <div className="ws-campaign-account-head"><h3>Connected accounts</h3><span>{selected.length} selected</span></div>
-      <div className="ws-campaign-accounts" role="group" aria-label="Connected accounts">
+      <div className="ws-campaign-accounts" data-lenis-prevent role="group" aria-label="Connected accounts">
         {accounts.map((account) => <label key={account.id} className={`ws-campaign-account ${selectedIds.includes(account.id) ? 'selected' : ''}`}>
           <input type="checkbox" checked={selectedIds.includes(account.id)} onChange={() => toggle(account.id)} />
           <span><b>{account.account_name || account.name || platformLabel(account.platform)}</b><small>{platformLabel(account.platform)}</small></span>
@@ -143,7 +143,7 @@ export default function CampaignComposer({ session, accounts, day, onClose, onSa
       <label className="ws-campaign-field"><span>Schedule date and time <small>Shown in your local time</small></span><input type="datetime-local" min={minDateTime} value={scheduledAt} onChange={(event) => setScheduledAt(event.target.value)} /></label>
       {notice && <p className="ws-inline-state" role="status">{notice}</p>}
       {error && <p className="ws-inline-state ws-campaign-error" role="alert">{error}</p>}
-      {jobs.length > 0 && <div className="ws-campaign-progress" aria-live="polite">{jobs.map((post) => <div key={post.id}><b>{platformLabel(post.platform)}</b><span>{post.status}{post.error ? `: ${post.error}` : post.result_url ? ': published' : ''}</span></div>)}</div>}
+      {jobs.length > 0 && <div className="ws-campaign-progress" data-lenis-prevent aria-live="polite">{jobs.map((post) => <div key={post.id}><b>{platformLabel(post.platform)}</b><span>{post.status}{post.error ? `: ${post.error}` : post.result_url ? ': published' : ''}</span></div>)}</div>}
       <div className="ws-campaign-actions"><button className="ws-secondary" type="button" disabled={locked || !selected.length} onClick={() => submit('')}>{busy && !campaignId ? 'Starting…' : 'Post now'}</button><button className="ws-primary" type="button" disabled={locked || !selected.length || !scheduledAt} onClick={() => submit(scheduledAt)}>Schedule campaign</button></div>
     </>}
   </section>;

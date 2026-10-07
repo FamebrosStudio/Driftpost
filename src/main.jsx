@@ -2,6 +2,7 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App.jsx';
 import AppErrorBoundary from './AppErrorBoundary.jsx';
+import ScrollExperience from './ui/ScrollExperience.jsx';
 import './styles.css';
 
 // A tab can keep an older HTML/app bundle open after a deployment while the
@@ -21,6 +22,8 @@ window.addEventListener('vite:preloadError', (event) => {
 
 createRoot(document.getElementById('root')).render(
   <AppErrorBoundary>
-    <App />
+    <ScrollExperience>
+      <App />
+    </ScrollExperience>
   </AppErrorBoundary>,
 );

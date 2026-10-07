@@ -562,7 +562,7 @@ export default function MediaEditor({ entry, token, onClose, onApply, onApplyMus
 
   return (
     <div className="s2-overlay" onClick={onClose}>
-      <div className="s2-editor" role="dialog" aria-modal="true" aria-label={`Edit ${entry.name}`} onClick={(e) => e.stopPropagation()}>
+      <div className="s2-editor" data-lenis-prevent role="dialog" aria-modal="true" aria-label={`Edit ${entry.name}`} onClick={(e) => e.stopPropagation()}>
         <h2>Edit {isVideo ? 'video' : 'media'}</h2>
         <p className="sub">{entry.name} · {isVideo ? 'fit or crop, re-encoded with audio kept' : 'fit or crop, exact-size HD output'}</p>
         <div className="s2-ed-cols">

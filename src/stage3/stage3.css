@@ -22,6 +22,11 @@
 .s3-badge { display: inline-block; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--acc); border: 1px solid var(--acc); border-radius: 999px; padding: 5px 14px; font-weight: 700; }
 .s3-head h1 { font-size: clamp(26px, 4.6vw, 38px); letter-spacing: -0.5px; margin: 16px 0 8px; line-height: 1.15; }
 .s3-head p { color: var(--muted); font-size: 14.5px; margin: 0 auto; max-width: 560px; line-height: 1.6; }
+.s3-head h1 { letter-spacing: -.045em; }
+.stage3-in > section { border-radius: 18px; }
+.s3-tabs { gap: 9px; }
+.s3-tab { box-shadow: 0 5px 18px #00000012; }
+.s3-tab.on { box-shadow: 0 8px 22px color-mix(in srgb, var(--acc) 30%, transparent); }
 
 /* stepper */
 .s3-progress { margin: 26px auto 6px; max-width: 560px; animation: s3Up 0.5s 0.08s ease both; }

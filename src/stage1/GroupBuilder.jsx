@@ -118,7 +118,7 @@ export default function GroupBuilder({ connections, token, onConnectionsChange, 
 
   return (
     <div className="s1-overlay" onClick={onClose}>
-      <div className="s1-modal" role="dialog" aria-modal="true" aria-label="Create a group" onClick={(e) => e.stopPropagation()}>
+      <div className="s1-modal" data-lenis-prevent role="dialog" aria-modal="true" aria-label="Create a group" onClick={(e) => e.stopPropagation()}>
         <h2>Create a group</h2>
         <p className="sub">A group is 2 or more accounts that share the same content, caption and media. Pick the platforms, pick the accounts, name it, save.</p>
         <input className="s1-field" value={name} maxLength={60} onChange={(e) => setName(e.target.value)} placeholder="Group name — e.g. Salon group" aria-label="Group name" />

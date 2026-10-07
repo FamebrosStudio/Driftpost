@@ -174,7 +174,7 @@ export function PostedTab({ token }) {
     {notice && <p className="hist-note" role="status">{notice}</p>}
     <p className="hist-note">Scheduled publishing appears above. Platform deletion is selected per destination; Instagram posts must be deleted in Instagram. Remove from History only clears this browser’s entry.</p>
     {deleteDialog && <div className="hist-modal-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) closeDeleteDialog(); }}>
-      <section className="hist-delete-modal" role="dialog" aria-modal="true" aria-labelledby="hist-delete-title">
+      <section className="hist-delete-modal" data-lenis-prevent role="dialog" aria-modal="true" aria-labelledby="hist-delete-title">
         <h2 id="hist-delete-title">Choose platforms to delete from</h2>
         <p>Select only the platform copies you want removed. This cannot be undone.</p>
         <div className="hist-delete-options">

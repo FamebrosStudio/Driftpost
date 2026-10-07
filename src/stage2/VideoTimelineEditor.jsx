@@ -168,7 +168,7 @@ export default function VideoTimelineEditor({ entry, token, onBack, onApply, onA
   };
 
   return (
-    <div className="s2-video-editor-page" role="dialog" aria-modal="true" aria-label="Edit video timeline">
+    <div className="s2-video-editor-page" data-lenis-prevent role="dialog" aria-modal="true" aria-label="Edit video timeline">
       <header className="s2-video-editor-head">
         <div><h2>Edit video</h2><p>Trim your clip in this browser. Original media is not uploaded by the editor.</p></div>
         <button type="button" className="s2-cancel" onClick={onBack} disabled={busy}>Back to crop tools</button>
