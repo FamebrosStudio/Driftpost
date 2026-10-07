@@ -147,7 +147,7 @@ function visibleBodyLen(text, brandName) {
 // Reject empty platform cards and cross-brand contamination before canonical
 // footer assembly. One retry is allowed with direct feedback;
 // if the second answer is still defective, do not return a broken caption.
-function captionQualityIssue(parsed, { platforms, brand, mem }) {
+export function captionQualityIssue(parsed, { platforms, brand, mem }) {
   const minLength = { youtube: 24, instagram: 28, facebook: 20, x: 12 };
   const ownNames = new Set([brand?.name, ...(brand?.aliases || [])]
     .map((s) => String(s || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim()));
@@ -166,9 +166,14 @@ function captionQualityIssue(parsed, { platforms, brand, mem }) {
   }
   const escapeRe = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   for (const platform of platforms) {
+    if (platform === 'youtube') {
+      const title = String(parsed?.youtube?.title || '').trim();
+      if (!title || Array.from(title).length > 100) return 'youtube title is missing or too long';
+    }
     const key = MAIN_KEY[platform];
     const text = String(parsed?.[platform]?.[key] || '').trim();
     if (visibleBodyLen(text, brand?.name) < minLength[platform]) return `${platform} has no useful caption body`;
+    if (platform === 'x' && Array.from(text).length > 280) return 'x exceeds 280 characters';
     for (const name of otherNames) {
       if (new RegExp(`(^|[^A-Za-z0-9])${escapeRe(name)}($|[^A-Za-z0-9])`, 'i').test(text)) {
         return `${platform} mentions another brand (${name})`;
@@ -176,6 +181,30 @@ function captionQualityIssue(parsed, { platforms, brand, mem }) {
     }
   }
   return '';
+}
+
+export function requestedCaptionPlatforms(onlyValue, platforms) {
+  const only = String(onlyValue || '');
+  if (PLATFORM_ORDER.includes(only)) return [only];
+  if (only && !only.startsWith('[') && !Array.isArray(platforms)) {
+    throw new Error('Choose at least one valid platform before generating captions.');
+  }
+  let selection = Array.isArray(platforms) ? platforms : null;
+  if (!selection && only.startsWith('[')) {
+    try {
+      const parsed = JSON.parse(only);
+      if (!Array.isArray(parsed)) throw new Error();
+      selection = parsed;
+    } catch {
+      throw new Error('Choose at least one valid platform before generating captions.');
+    }
+  }
+  if (!selection) return [...PLATFORM_ORDER];
+  const selected = [...new Set(selection)];
+  if (!selected.length || selected.some((platform) => !PLATFORM_ORDER.includes(platform))) {
+    throw new Error('Choose at least one valid platform before generating captions.');
+  }
+  return PLATFORM_ORDER.filter((platform) => selected.includes(platform));
 }
 
 function tryParseObject(candidate) {  try {    return JSON.parse(candidate);
@@ -359,17 +388,7 @@ export async function generateCaptions(summary, opts = {}) {
   // Single-card regen: only the requested platform is written (~1/3 tokens).
   const onlyValue = String(opts.only || '');
   const only = PLATFORM_ORDER.includes(onlyValue) ? onlyValue : null;
-  let platformSelection = Array.isArray(opts.platforms) ? opts.platforms : null;
-  if (!platformSelection && !only && onlyValue.startsWith('[')) {
-    try {
-      const parsedSelection = JSON.parse(onlyValue);
-      if (Array.isArray(parsedSelection)) platformSelection = parsedSelection;
-    } catch {}
-  }
-  const requestedPlatforms = only
-    ? [only]
-    : [...new Set((platformSelection || PLATFORM_ORDER).filter((platform) => PLATFORM_ORDER.includes(platform)))];
-  if (!requestedPlatforms.length) requestedPlatforms.push(...PLATFORM_ORDER);
+  const requestedPlatforms = requestedCaptionPlatforms(onlyValue, opts.platforms);
 
   // Local resolve — 0 tokens. Dynamic import keeps cold start fast.
   // Explicit brand picks match loosely (20); bare-brief matches need 50+ so
