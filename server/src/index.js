@@ -2192,9 +2192,10 @@ async function removeUnreferencedScheduleMedia(userId, rowId, paths) {
 }
 
 app.get('/api/schedules', requireUser, jobsLimit, async (req, res) => {
+  const historyMode = req.query.history === '1';
   let query = supabase.from('scheduled_posts')
     .select('*').eq('user_id', req.user.id)
-    .order('scheduled_at', { ascending: true }).limit(100);
+    .order(historyMode ? 'updated_at' : 'scheduled_at', { ascending: !historyMode }).limit(100);
   const from = typeof req.query.from === 'string' ? Date.parse(req.query.from) : NaN;
   const to = typeof req.query.to === 'string' ? Date.parse(req.query.to) : NaN;
   if (req.query.from && !Number.isFinite(from)) return res.status(400).json({ error: 'Invalid schedule start date' });

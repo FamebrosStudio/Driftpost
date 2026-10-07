@@ -304,6 +304,7 @@ export const listSchedules = (token, range = {}) => {
   const params = new URLSearchParams();
   if (range.from) params.set('from', range.from);
   if (range.to) params.set('to', range.to);
+  if (range.history) params.set('history', '1');
   const query = params.toString();
   return api(`/api/schedules${query ? `?${query}` : ''}`, token).then((d) => d.schedules || []);
 };

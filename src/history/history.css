@@ -13,6 +13,26 @@
 .hist-tab { flex: 1 1 130px; border: 1.5px solid var(--line-hard); background: var(--panel2); color: var(--muted); border-radius: 999px; padding: 10px 6px; font-size: 12.5px; font-weight: 700; cursor: pointer; white-space: nowrap; }
 .hist-tab.on { background: var(--acc, #7c6cf5); border-color: transparent; color: #fff; }
 .hist-row { display: flex; align-items: center; gap: 10px; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 11px 12px; margin-top: 8px; min-width: 0; flex-wrap: wrap; }
+.hist-activity { margin: 0 0 22px; padding: 14px; border: 1px solid var(--line); border-radius: 14px; background: var(--panel2); }
+.hist-activity-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.hist-activity-head h2 { margin: 0; font-size: 15px; }
+.hist-activity-head > span { display: grid; place-items: center; min-width: 25px; height: 25px; padding: 0 7px; border-radius: 99px; background: var(--panel); color: var(--muted); font-size: 11px; font-weight: 700; }
+.hist-activity > .hist-note { margin: 12px 0 0; text-align: left; }
+.hist-error { display: block; color: var(--danger, #e5484d) !important; margin-top: 3px; }
+.hist-modal-backdrop { position: fixed; z-index: 1000; inset: 0; display: grid; place-items: center; padding: 18px; background: rgb(0 0 0 / 65%); }
+.hist-delete-modal { width: min(100%, 480px); max-height: min(85vh, 680px); overflow: auto; padding: 22px; border: 1px solid var(--line-hard); border-radius: 16px; background: var(--panel); box-shadow: 0 24px 80px rgb(0 0 0 / 40%); }
+.hist-delete-modal h2 { margin: 0 0 7px; font-size: 18px; }
+.hist-delete-modal > p { margin: 0 0 16px; color: var(--muted); font-size: 12.5px; line-height: 1.5; }
+.hist-delete-options { display: grid; gap: 8px; }
+.hist-delete-option { display: flex; align-items: center; gap: 11px; min-width: 0; padding: 11px; border: 1px solid var(--line); border-radius: 10px; cursor: pointer; }
+.hist-delete-option input { width: 17px; height: 17px; accent-color: var(--acc, #7c6cf5); flex: 0 0 auto; }
+.hist-delete-option > span:last-child { display: grid; gap: 3px; min-width: 0; }
+.hist-delete-option b { font-size: 12.5px; }
+.hist-delete-option small { color: var(--muted); font-size: 11px; line-height: 1.4; }
+.hist-delete-option.unsupported { opacity: .72; cursor: not-allowed; }
+.hist-delete-actions { display: flex; justify-content: flex-end; gap: 9px; margin-top: 20px; }
+.hist-delete-actions .danger { background: var(--danger, #e5484d); border-color: transparent; color: white; }
+.hist-delete-actions .danger:hover { color: white; filter: brightness(1.08); }
 .hist-ic { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 10px; background: var(--panel2); border: 1px solid var(--line); flex: 0 0 auto; }
 .hist-body { flex: 1; min-width: 0; }
 .hist-body b { display: block; font-size: 13.5px; overflow-wrap: break-word; }
@@ -29,4 +49,9 @@
 .hist button:focus-visible { outline: 2px solid var(--acc, #7c6cf5); outline-offset: 2px; }
 @media (prefers-reduced-motion: reduce) {
   .hist, .hist * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+@media (max-width: 520px) {
+  .hist-delete-modal { padding: 18px; }
+  .hist-delete-actions { flex-direction: column-reverse; }
+  .hist-delete-actions button { width: 100%; }
 }

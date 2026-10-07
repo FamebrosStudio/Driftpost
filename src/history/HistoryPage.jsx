@@ -60,68 +60,144 @@ export function PostedTab({ token }) {
   const [posts, setPosts] = useState(readPostLog);
   const [busy, setBusy] = useState(null);
   const [notice, setNotice] = useState('');
+  const [scheduleRows, setScheduleRows] = useState([]);
+  const [scheduleError, setScheduleError] = useState('');
+  const [scheduleBusy, setScheduleBusy] = useState('');
+  const [deleteDialog, setDeleteDialog] = useState(null);
+  const [selectedDeleteTargets, setSelectedDeleteTargets] = useState([]);
   const refresh = () => setPosts(readPostLog());
   const getTargets = (post) => Array.isArray(post.publishedPosts) && post.publishedPosts.length
     ? post.publishedPosts
     : (post.postId && post.connectionId ? [{ platform: post.platform, postId: post.postId, connectionId: post.connectionId }] : []);
-  const deleteLive = async (post) => {
+  const targetKey = (target) => `${target.platform}:${target.connectionId}:${target.postId}`;
+  useEffect(() => {
+    let active = true;
+    const load = () => listSchedules(token, { history: true })
+      .then((data) => { if (active) { setScheduleRows(data); setScheduleError(''); } })
+      .catch((error) => { if (active) setScheduleError(error.message || 'Could not load scheduled posts.'); });
+    void load();
+    const timer = window.setInterval(load, 15_000);
+    return () => { active = false; window.clearInterval(timer); };
+  }, [token]);
+  const openDeleteDialog = (post) => {
     const targets = getTargets(post);
-    const deletable = targets.filter((p) => ['facebook', 'youtube', 'x'].includes(p.platform));
-    if (!deletable.length) {
-      setNotice('Instagram does not allow deleting published media through its official API. Delete it in Instagram, then use Forget here.');
-      return;
-    }
-    const names = [...new Set(deletable.map((p) => p.platform))].join(', ');
-    if (!window.confirm(`Permanently delete this post${deletable.length > 1 ? 's' : ''} from ${names}? This cannot be undone.`)) return;
-    setBusy(post.at);
+    setDeleteDialog(post);
+    setSelectedDeleteTargets(targets.filter((target) => ['facebook', 'youtube', 'x'].includes(target.platform)).map(targetKey));
     setNotice('');
+  };
+  const closeDeleteDialog = () => {
+    if (busy !== null) return;
+    setDeleteDialog(null);
+    setSelectedDeleteTargets([]);
+  };
+  const deleteLive = async () => {
+    const post = deleteDialog;
+    if (!post) return;
+    const allTargets = getTargets(post);
+    const selected = allTargets.filter((target) => selectedDeleteTargets.includes(targetKey(target)) && ['facebook', 'youtube', 'x'].includes(target.platform));
+    if (!selected.length) return;
+    setBusy(post.at);
     try {
-      const result = await api('/api/posts', token, { method: 'DELETE', body: JSON.stringify({ posts: targets }) });
+      const result = await api('/api/posts', token, { method: 'DELETE', body: JSON.stringify({ posts: selected }) });
       const failed = result.results.filter((r) => !r.ok);
-      if (!failed.length) {
+      // The delete endpoint returns platform + postId (not connectionId).
+      const deletedKeys = new Set(result.results.filter((r) => r.ok).map((r) => `${r.platform}:${r.postId}`));
+      const remaining = allTargets.filter((target) => !deletedKeys.has(`${target.platform}:${target.postId}`));
+      if (!remaining.length) {
         removePostLog(post.at);
-        refresh();
-        setNotice('Post deleted from the platform and removed from History.');
       } else {
-        const deletedIds = new Set(result.results.filter((r) => r.ok).map((r) => `${r.platform}:${r.postId}`));
-        const remaining = targets.filter((p) => !deletedIds.has(`${p.platform}:${p.postId}`));
         updatePostLog(post.at, {
           publishedPosts: remaining,
           ...(remaining.length === 1 ? { platform: remaining[0].platform, postId: remaining[0].postId, connectionId: remaining[0].connectionId } : {}),
         });
-        refresh();
-        const failedDetails = failed.map((r) => `${r.platform}: ${r.error}`).join(' ');
-        setNotice(result.deleted
-          ? `${result.deleted} platform post${result.deleted === 1 ? '' : 's'} deleted; ${failed.length} could not be deleted. ${failedDetails}`
-          : `No platform posts were deleted. ${failedDetails}`);
       }
+      refresh();
+      const failedDetails = failed.map((r) => `${r.platform}: ${r.error}`).join(' ');
+      const skipped = allTargets.length - selected.length;
+      const summary = result.deleted
+        ? `${result.deleted} selected platform post${result.deleted === 1 ? '' : 's'} deleted${failed.length ? `; ${failed.length} failed` : ''}${skipped ? `; ${skipped} unselected` : ''}.`
+        : `No selected platform posts were deleted${skipped ? `; ${skipped} unselected` : ''}.`;
+      setNotice([summary, failedDetails].filter(Boolean).join(' '));
+      setDeleteDialog(null);
+      setSelectedDeleteTargets([]);
     } catch (e) {
       setNotice(e.message || 'Could not delete the post. It is still in History.');
     } finally {
       setBusy(null);
     }
   };
-  if (!posts.length) return <div><p className="hist-empty">Nothing posted yet.</p><p className="hist-note">Posts published after delete support was added can be deleted from the platform here.</p></div>;
+  const cancelScheduled = async (id) => {
+    setScheduleBusy(id);
+    try {
+      await cancelSchedule(token, id);
+      setScheduleRows((rows) => rows.map((row) => row.id === id ? { ...row, status: 'cancelled' } : row));
+      setNotice('Scheduled post cancelled.');
+    } catch (error) { setNotice(error.message || 'Could not cancel this scheduled post.'); }
+    finally { setScheduleBusy(''); }
+  };
+  const scheduleHistory = [...scheduleRows].sort((a, b) => Date.parse(b.updated_at || b.scheduled_at) - Date.parse(a.updated_at || a.scheduled_at));
   return <div>
+    <section className="hist-activity">
+      <div className="hist-activity-head"><h2>Scheduled posts</h2><span>{scheduleHistory.length}</span></div>
+      {scheduleError && <p className="hist-note" role="status">Could not refresh scheduled posts: {scheduleError}</p>}
+      {!scheduleHistory.length && <p className="hist-note">No scheduled posts yet. New and completed scheduled posts will appear here.</p>}
+      {scheduleHistory.map((row) => {
+        const when = new Date(row.scheduled_at);
+        const label = row.status === 'published' ? 'Published' : row.status === 'failed' ? 'Failed' : row.status === 'cancelled' ? 'Cancelled' : row.status === 'publishing' ? 'Publishing…' : 'Scheduled';
+        const tone = row.status === 'published' ? 'ok' : row.status === 'failed' ? 'fail' : '';
+        return <div key={row.id} className="hist-row">
+          <span className="hist-ic"><BrandIcon id={row.platform} size={15} /></span>
+          <span className="hist-body"><b>{row.platform[0].toUpperCase() + row.platform.slice(1)}{row.result_url ? ' · ' : ''}{row.result_url && <a href={row.result_url} target="_blank" rel="noreferrer">View post</a>}</b>
+            <small>{when.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })} · {when.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })} · <span className={tone ? `hist-status ${tone}` : ''}>{label}</span></small>
+            {row.error && <small className="hist-error">{row.error}</small>}
+          </span>
+          {['scheduled', 'publishing'].includes(row.status) && <button type="button" className="hist-mini danger" disabled={scheduleBusy === row.id} onClick={() => cancelScheduled(row.id)}>{scheduleBusy === row.id ? 'Cancelling…' : 'Cancel'}</button>}
+        </div>;
+      })}
+    </section>
+    {!posts.length && <><p className="hist-empty">Nothing posted yet.</p><p className="hist-note">Posts published after delete support was added can be deleted from the platform here.</p></>}
     {posts.map((p) => {
       const targets = getTargets(p);
-      const canDelete = targets.some((x) => ['facebook', 'youtube', 'x'].includes(x.platform));
-      const hasInstagram = targets.some((x) => x.platform === 'instagram');
+      const canDelete = targets.length > 0;
       return <div key={p.at} className="hist-row">
         <span className="hist-ic"><BrandIcon id={p.platform} size={15} /></span>
         <span className="hist-body">
           <b>{p.text ? (p.text.length > 90 ? p.text.slice(0, 90) + '…' : p.text) : p.platform}</b>
           <small>{fmtDate(p.at)}{p.url ? ' · ' : ''}{p.url && <a href={p.url} target="_blank" rel="noreferrer">View</a>}</small>
         </span>
-        {canDelete && <button type="button" className="hist-mini danger" disabled={busy === p.at} title="Permanently delete the published post from its platform" onClick={() => deleteLive(p)}>
+        {canDelete && <button type="button" className="hist-mini danger" disabled={busy === p.at} title="Choose which platforms to delete this post from" onClick={() => openDeleteDialog(p)}>
           {busy === p.at ? 'Deleting…' : 'Delete post'}
         </button>}
-        {hasInstagram && <button type="button" className="hist-mini" onClick={() => setNotice('Instagram does not allow deleting published media through its official API. Open View and delete it in Instagram.')}>Delete on Instagram</button>}
         <button type="button" className="hist-mini" title="Remove this entry from this browser only; it does not delete the live platform post" onClick={() => { removePostLog(p.at); refresh(); }}>Remove from History</button>
       </div>;
     })}
     {notice && <p className="hist-note" role="status">{notice}</p>}
-    <p className="hist-note">Delete post permanently removes supported posts from the platform. Forget only clears this History entry. Instagram posts must be deleted in Instagram.</p>
+    <p className="hist-note">Scheduled publishing appears above. Platform deletion is selected per destination; Instagram posts must be deleted in Instagram. Remove from History only clears this browser’s entry.</p>
+    {deleteDialog && <div className="hist-modal-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) closeDeleteDialog(); }}>
+      <section className="hist-delete-modal" role="dialog" aria-modal="true" aria-labelledby="hist-delete-title">
+        <h2 id="hist-delete-title">Choose platforms to delete from</h2>
+        <p>Select only the platform copies you want removed. This cannot be undone.</p>
+        <div className="hist-delete-options">
+          {getTargets(deleteDialog).map((target, index) => {
+            const key = targetKey(target);
+            const supported = ['facebook', 'youtube', 'x'].includes(target.platform);
+            const samePlatformCount = getTargets(deleteDialog).filter((item) => item.platform === target.platform).length;
+            const occurrence = getTargets(deleteDialog).slice(0, index).filter((item) => item.platform === target.platform).length + 1;
+            const label = target.platform[0].toUpperCase() + target.platform.slice(1) + (samePlatformCount > 1 ? ` account ${occurrence}` : '');
+            return <label className={`hist-delete-option ${supported ? '' : 'unsupported'}`} key={key}>
+              <input type="checkbox" checked={selectedDeleteTargets.includes(key)} disabled={!supported || busy !== null}
+                onChange={(event) => setSelectedDeleteTargets((current) => event.target.checked ? [...current, key] : current.filter((value) => value !== key))} />
+              <BrandIcon id={target.platform} size={17} />
+              <span><b>{label}</b><small>{supported ? 'Delete this platform copy' : 'Delete directly in Instagram; API deletion is unavailable'}</small></span>
+            </label>;
+          })}
+        </div>
+        <div className="hist-delete-actions">
+          <button type="button" className="hist-mini" disabled={busy !== null} onClick={closeDeleteDialog}>Cancel</button>
+          <button type="button" className="hist-mini danger" disabled={!selectedDeleteTargets.length || busy !== null} onClick={deleteLive}>{busy !== null ? 'Deleting…' : 'Delete selected'}</button>
+        </div>
+      </section>
+    </div>}
   </div>;
 }
 

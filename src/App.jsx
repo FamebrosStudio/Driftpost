@@ -6,6 +6,8 @@ import ConsentGate from './connect/ConsentGate.jsx';
 import AiAccessGate from './connect/AiAccessGate.jsx';
 import PageLoading from './PageLoading.jsx';
 import ApprovalPage from './workspace/ApprovalPage.jsx';
+import { NotFoundPage, OfflinePage, ServerStartingPage, useConnectivity, useServerReadiness } from './RecoveryPages.jsx';
+import { apiRequestUrl } from './lib.js';
 
 const Console = lazy(() => import('./console.jsx'));
 
@@ -522,12 +524,27 @@ export default function App() {
   const [mode, setMode] = useState('login');
   const [entry, setEntry] = useState('landing');
   const [pubPage, setPubPageState] = useState(() => (typeof window !== 'undefined' ? hashPage() : 'home'));
+  const [unknownRoute, setUnknownRoute] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    const path = window.location.pathname.replace(/^\/+|\/+$/g, '');
+    return Boolean(path && !PUB_PAGES.some((page) => page.id === path) && !/^approve\/[0-9a-f-]{36}$/i.test(path));
+  });
+  const { online, checking, retry } = useConnectivity();
+  const host = typeof window === 'undefined' ? '' : window.location.hostname;
+  const monitorServer = Boolean(import.meta.env.PROD && host && !['localhost', '127.0.0.1', '::1'].includes(host));
+  const serverReady = useServerReadiness(monitorServer, apiRequestUrl('/health'));
   const setPubPage = (id) => {
     setPubPageState(id);
+    setUnknownRoute(false);
     try { window.history.pushState({}, '', id === 'home' ? '/' : `/${id}`); } catch {}
   };
   useEffect(() => {
-    const onUrl = () => { setApprovalId(readApprovalId()); setPubPageState(pageFromUrl()); };
+    const onUrl = () => {
+      const path = window.location.pathname.replace(/^\/+|\/+$/g, '');
+      setApprovalId(readApprovalId());
+      setPubPageState(pageFromUrl());
+      setUnknownRoute(Boolean(path && !PUB_PAGES.some((page) => page.id === path) && !/^approve\/[0-9a-f-]{36}$/i.test(path)));
+    };
     window.addEventListener('popstate', onUrl);
     window.addEventListener('hashchange', onUrl);
     return () => { window.removeEventListener('popstate', onUrl); window.removeEventListener('hashchange', onUrl); };
@@ -544,13 +561,13 @@ export default function App() {
   useEffect(() => {
     // Landing page is always public and indexable.
     // Console/auth are private (noindex for logged-in users).
-    const isLanding = entry === 'landing' && !approvalId;
+    const isLanding = entry === 'landing' && !approvalId && !unknownRoute;
     const seo = PUBLIC_SEO[pubPage] || {
       title: `${PUB_PAGES.find((p) => p.id === pubPage)?.label || 'Driftpost'} | Driftpost`,
       description: 'Driftpost is a social media publishing workspace for managing multiple brands and connected platform accounts.',
     };
     const pageUrl = `${window.location.origin}${pubPage === 'home' ? '/' : `/${pubPage}`}`;
-    document.title = approvalId ? 'Review post | Driftpost' : isLanding
+    document.title = unknownRoute ? 'Page not found | Driftpost' : !online ? 'Connection paused | Driftpost' : !serverReady ? 'Driftpost is getting ready | Driftpost' : approvalId ? 'Review post | Driftpost' : isLanding
       ? seo.title
       : (session ? 'Console | Driftpost' : 'Sign in | Driftpost');
     document.querySelector('meta[name="robots"]')?.setAttribute('content', isLanding ? 'index, follow, max-image-preview:large' : 'noindex, nofollow');
@@ -565,29 +582,31 @@ export default function App() {
       'meta[name="twitter:description"]': seo.description,
     };
     for (const [selector, value] of Object.entries(socialMeta)) document.querySelector(selector)?.setAttribute('content', value);
-  }, [session, entry, pubPage, approvalId]);
+  }, [session, entry, pubPage, approvalId, unknownRoute, online, serverReady]);
 
   useEffect(() => { window.scrollTo(0, 0); }, [pubPage]);
 
-  if (approvalId) return <ApprovalPage id={approvalId} />;
+  const keepConnectivity = (page) => <>{page}{!online ? <OfflinePage onRetry={retry} checking={checking} /> : !serverReady && <ServerStartingPage />}</>;
+  if (approvalId) return keepConnectivity(<ApprovalPage id={approvalId} />);
+  if (unknownRoute) return keepConnectivity(<NotFoundPage onHome={() => { setUnknownRoute(false); setPubPage('home'); setEntry('landing'); }} onEnter={session ? () => { setUnknownRoute(false); setEntry('console'); } : null} />);
 
   // Everyone lands on the landing page first; console is reached
   // by clicking "Enter console" from there.
-  if (entry === 'landing') return <Landing session={session} pubPage={pubPage} setPubPage={setPubPage} onEnter={() => session ? setEntry('console') : setEntry('auth')} />;
-  if (entry === 'auth') return <Auth mode={mode} setMode={setMode} onBack={() => setEntry('landing')} />;
-  if (!session) return <Auth mode={mode} setMode={setMode} onBack={() => setEntry('landing')} />;
+  if (entry === 'landing') return keepConnectivity(<Landing session={session} pubPage={pubPage} setPubPage={setPubPage} onEnter={() => session ? setEntry('console') : setEntry('auth')} />);
+  if (entry === 'auth') return keepConnectivity(<Auth mode={mode} setMode={setMode} onBack={() => setEntry('landing')} />);
+  if (!session) return keepConnectivity(<Auth mode={mode} setMode={setMode} onBack={() => setEntry('landing')} />);
   // console
-  return (
+  return keepConnectivity(
     <Suspense fallback={<PageLoading label="Opening your workspace…" />}>
       <ConsentGate
         session={session}
-        onOpenPage={(p) => { setPubPageState(p); setEntry('landing'); }}
+        onOpenPage={(p) => { setPubPageState(p); setUnknownRoute(false); setEntry('landing'); }}
       >
         <AiAccessGate session={session}>
           <Console session={session} onSwitchAccount={() => doSignOut('auth')} onSignOut={() => doSignOut('landing')} />
         </AiAccessGate>
       </ConsentGate>
-    </Suspense>
+    </Suspense>,
   );
 }
 
