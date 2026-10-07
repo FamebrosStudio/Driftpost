@@ -138,6 +138,15 @@ export function CalendarPage({ session, onNavigate, onCreate, onSignOut }) {
     const time = `${String(original.getHours()).padStart(2, '0')}:${String(original.getMinutes()).padStart(2, '0')}:00`;
     const next = new Date(`${day}T${time}`);
     if (!Number.isFinite(next.getTime())) return;
+    const now = Date.now();
+    if (next.getTime() < now + 2 * 60_000) {
+      setNotice('That day and time has passed or is too close. Drop the post on a later day; its original local time will be kept.');
+      return;
+    }
+    if (next.getTime() > now + 365 * 24 * 60 * 60_000) {
+      setNotice('Scheduled posts can only be moved within the next year.');
+      return;
+    }
     setBusy(id);
     try {
       const data = await moveSchedule(session.access_token, id, next.toISOString());
