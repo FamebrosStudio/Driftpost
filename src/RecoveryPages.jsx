@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import './recovery.css';
 
-function DriftMark() {
-  return <span className="recovery-mark" aria-hidden="true"><i /><i /><i /></span>;
+function DriftpostLogo() {
+  return <img src="/logo-dark-620.png" alt="Driftpost" width="620" height="160" />;
 }
 
 export function NotFoundPage({ onHome, onEnter }) {
   return <main className="recovery-page recovery-404">
-    <header className="recovery-top"><a href="/" className="recovery-brand" onClick={(event) => { event.preventDefault(); onHome(); }}><DriftMark /> driftpost</a><span>ROUTE NOT FOUND</span></header>
+    <header className="recovery-top"><a href="/" className="recovery-brand" onClick={(event) => { event.preventDefault(); onHome(); }}><DriftpostLogo /></a><span>ROUTE NOT FOUND</span></header>
     <section className="recovery-content">
       <div className="recovery-art" aria-hidden="true">
         <div className="recovery-orbit orbit-one" /><div className="recovery-orbit orbit-two" />
@@ -26,7 +26,7 @@ export function NotFoundPage({ onHome, onEnter }) {
 
 export function OfflinePage({ onRetry, checking }) {
   return <main className="recovery-page recovery-offline" role="alertdialog" aria-modal="true" aria-labelledby="offline-title">
-    <header className="recovery-top"><span className="recovery-brand"><DriftMark /> driftpost</span><span>CONNECTION PAUSED</span></header>
+    <header className="recovery-top"><span className="recovery-brand"><DriftpostLogo /></span><span>CONNECTION PAUSED</span></header>
     <section className="recovery-content">
       <div className="offline-art" aria-hidden="true"><div className="offline-signal"><i /><i /><i /><i /></div><span className="offline-cut">×</span><div className="offline-cloud"><i /><i /></div><div className="offline-ground" /></div>
       <p className="recovery-kicker">Your work is still here</p>
@@ -41,9 +41,8 @@ export function OfflinePage({ onRetry, checking }) {
 
 export function ServerStartingPage() {
   return <main className="recovery-page recovery-starting" role="status" aria-live="polite">
-    <header className="recovery-top"><span className="recovery-brand"><DriftMark /> driftpost</span><span>WORKSPACE INITIALIZING</span></header>
+    <header className="recovery-top"><span className="recovery-brand"><DriftpostLogo /></span><span>WORKSPACE INITIALIZING</span></header>
     <section className="recovery-content">
-      <div className="starting-art" aria-hidden="true"><div className="starting-ring ring-a" /><div className="starting-ring ring-b" /><div className="starting-core"><DriftMark /></div><span className="starting-spark spark-one">✳</span><span className="starting-spark spark-two">·</span><span className="starting-spark spark-three">✦</span></div>
       <p className="recovery-kicker">A fresh workspace is on its way</p>
       <h1>Driftpost is<br />getting ready.</h1>
       <p className="recovery-copy">We’re connecting to the publishing server. This usually takes a few seconds after an update or a quiet period. This page will move on as soon as it’s ready.</p>
@@ -84,8 +83,10 @@ export function useServerReadiness(enabled, healthUrl) {
   React.useEffect(() => {
     if (!enabled) { setReady(true); return undefined; }
     let active = true;
-    let timer = 0;
+    let pollTimer = 0;
+    let revealTimer = 0;
     let controller = null;
+    const openedAt = Date.now();
     setReady(false);
     const check = async () => {
       controller = new AbortController();
@@ -100,11 +101,17 @@ export function useServerReadiness(enabled, healthUrl) {
       } catch {}
       finally { window.clearTimeout(timeout); }
       if (!active) return;
-      setReady(isReady);
-      timer = window.setTimeout(check, isReady ? 30_000 : 4_000);
+      if (isReady) {
+        const visibleFor = Date.now() - openedAt;
+        if (visibleFor < 1_100) {
+          setReady(false);
+          revealTimer = window.setTimeout(() => { if (active) setReady(true); }, 1_100 - visibleFor);
+        } else setReady(true);
+      } else setReady(false);
+      pollTimer = window.setTimeout(check, isReady ? 30_000 : 4_000);
     };
     void check();
-    return () => { active = false; window.clearTimeout(timer); controller?.abort(); };
+    return () => { active = false; window.clearTimeout(pollTimer); window.clearTimeout(revealTimer); controller?.abort(); };
   }, [enabled, healthUrl]);
   return ready;
 }
