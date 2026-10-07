@@ -141,7 +141,7 @@
       "Urgency around a real limited offer"
     ],
     "avoid_style": [
-      "Generic beauty clichÃ©s",
+      "Generic beauty clichés",
       "Long introductions",
       "Forced humour",
       "Mocking clients, staff or appearance",
@@ -260,9 +260,9 @@
   "fixed_footer": {
     "source": "User-supplied Velvet Salon details in data.txt.",
     "lines": [
-      "ðŸ“ Shop No. 15, Tulsi Park, Amrut Park Road, Wayle Nagar, Near Starbucks, Khadakpada Circle, Kalyan",
-      "ðŸ“ž +91 98210 06703",
-      "ðŸ’« Managed by: @famebrosstudio"
+      "📍 Shop No. 15, Tulsi Park, Amrut Park Road, Wayle Nagar, Near Starbucks, Khadakpada Circle, Kalyan",
+      "📞 +91 98210 06703",
+      "💫 Managed by: @famebrosstudio"
     ],
     "usage": "Append this block to normal feed and reel captions unless the user requests a different format.",
     "rules": [
@@ -395,7 +395,7 @@
     "transformation": {
       "status": "Illustrative template requiring a confirmed service and visible result.",
       "required_input": "Replace [confirmed service] and [visible result] with facts from the current post.",
-      "text": "A fresh look starts here. âœ¨\nThis [confirmed service] brings out a [visible result] designed to feel polished, modern and completely you.\nSave this for your next salon appointment.\n\nðŸ“ Shop No. 15, Tulsi Park, Amrut Park Road, Wayle Nagar, Near Starbucks, Khadakpada Circle, Kalyan\nðŸ“ž +91 98210 06703\nðŸ’« Managed by: @famebrosstudio\n\n#VelvetSalon #HairTransformation #KalyanSalon\n\n[Velvet Salon, hair transformation Kalyan, salon in Khadakpada, hair makeover Kalyan, unisex salon in Kalyan]"
+      "text": "A fresh look starts here. ✨\nThis [confirmed service] brings out a [visible result] designed to feel polished, modern and completely you.\nSave this for your next salon appointment.\n\n📍 Shop No. 15, Tulsi Park, Amrut Park Road, Wayle Nagar, Near Starbucks, Khadakpada Circle, Kalyan\n📞 +91 98210 06703\n💫 Managed by: @famebrosstudio\n\n#VelvetSalon #HairTransformation #KalyanSalon\n\n[Velvet Salon, hair transformation Kalyan, salon in Khadakpada, hair makeover Kalyan, unisex salon in Kalyan]"
     },
     "informational": {
       "status": "Illustrative structure. Insert only salon-approved information.",
@@ -403,7 +403,7 @@
     },
     "funny_reel": {
       "status": "Illustrative structure. Match the actual joke shown in the reel.",
-      "template": "That moment when [actual salon situation] ðŸ˜‚ Tag the friend who does this every time."
+      "template": "That moment when [actual salon situation] 😂 Tag the friend who does this every time."
     }
   },
   "accuracy_rules": [

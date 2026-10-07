@@ -137,7 +137,7 @@
     "managing_agency": "Famebros Studio",
     "agency_instagram_handle": "@famebrosstudio",
     "agency_instagram_url": "https://www.instagram.com/famebrosstudio/",
-    "agency_credit_default": "ðŸ’« Managed by: @famebrosstudio",
+    "agency_credit_default": "💫 Managed by: @famebrosstudio",
     "agency_credit_rule": "Include the Famebros Studio credit in standard captions unless the current brief explicitly removes it.",
     "instagram_status": "Official handle supplied by user on 2026-10-03; current public claims still require source verification."
   },
@@ -197,32 +197,32 @@
         {
           "category": "Sherwanis",
           "listed_products": 18,
-          "observed_price_range": "â‚¹19,000 to â‚¹23,500"
+          "observed_price_range": "₹19,000 to ₹23,500"
         },
         {
           "category": "Jodhpuri and Bandhgala",
           "listed_products": 9,
-          "observed_price_range": "â‚¹11,500 to â‚¹14,500"
+          "observed_price_range": "₹11,500 to ₹14,500"
         },
         {
           "category": "Nehru Jackets",
           "listed_products": 4,
-          "observed_price_range": "â‚¹5,000 to â‚¹6,500"
+          "observed_price_range": "₹5,000 to ₹6,500"
         },
         {
           "category": "Kurtas",
           "listed_products": 12,
-          "observed_price_range": "â‚¹5,600 to â‚¹6,000"
+          "observed_price_range": "₹5,600 to ₹6,000"
         },
         {
           "category": "Indo-Western",
           "listed_products": 5,
-          "observed_price_range": "â‚¹12,000 to â‚¹14,500"
+          "observed_price_range": "₹12,000 to ₹14,500"
         },
         {
           "category": "Tuxedos and Suits",
           "listed_products": 1,
-          "observed_price_range": "â‚¹18,000"
+          "observed_price_range": "₹18,000"
         }
       ],
       "snapshot_rule": "Counts, stock and prices are discovery data. Refresh the exact collection or product page before using them in customer-facing content."
@@ -240,7 +240,7 @@
         "Collect from the atelier or receive insured, tracked delivery",
         "Retain measurements on file for future orders"
       ],
-      "consultation_fee": "â‚¹5,000",
+      "consultation_fee": "₹5,000",
       "consultation_adjustment": "The official homepage says the full consultation fee is adjusted against an order commissioned within 30 days.",
       "consultation_rule": "Recheck the live consultation page before quoting the fee or adjustment terms."
     },
@@ -257,12 +257,12 @@
     "shipping_snapshot": {
       "checked_on": "2026-09-24",
       "coverage": "India only",
-      "free_delivery": "Orders above â‚¹50,000",
+      "free_delivery": "Orders above ₹50,000",
       "charges": [
-        "Up to 1 kg: â‚¹90",
-        "1 to 2 kg: â‚¹150",
-        "2 to 5 kg: â‚¹260",
-        "Over 5 kg: â‚¹420"
+        "Up to 1 kg: ₹90",
+        "1 to 2 kg: ₹150",
+        "2 to 5 kg: ₹260",
+        "Over 5 kg: ₹420"
       ],
       "tracking": "Insured and tracked shipping, with courier and tracking details sent on WhatsApp",
       "signature": "The website says someone must be present to sign and the parcel is not left with a neighbour or security desk.",
@@ -724,36 +724,36 @@
     "hashtag_selection": "Use one brand hashtag, one product or occasion hashtag and one location or intent hashtag.",
     "seo_keyword_count": "5 to 8 phrases",
     "seo_format": "One square bracket group with comma-separated phrases and no hashtag symbols.",
-    "price_format": "Use the rupee symbol and Indian digit grouping, such as â‚¹18,000. Identify purchase price or rental price clearly.",
+    "price_format": "Use the rupee symbol and Indian digit grouping, such as ₹18,000. Identify purchase price or rental price clearly.",
     "punctuation": "Never use an em dash. Use commas, colons, full stops or parentheses.",
     "output_rule": "Return publication-ready content without source notes, internal reasoning, placeholder facts or warnings. When essential product or rental facts are missing, request them before writing a transactional caption."
   },
   "fixed_footer": {
     "default_full_lines": [
-      "ðŸ“ Shop No. 7, K.K. Smruti Apartment, near Saraswat Bank, Maneklal Estate, Ghatkopar West, Mumbai 400086",
-      "ðŸ“ž Call or WhatsApp: +91 92244 47024",
-      "ðŸ’« Managed by: @famebrosstudio"
+      "📍 Shop No. 7, K.K. Smruti Apartment, near Saraswat Bank, Maneklal Estate, Ghatkopar West, Mumbai 400086",
+      "📞 Call or WhatsApp: +91 92244 47024",
+      "💫 Managed by: @famebrosstudio"
     ],
     "short_lines": [
-      "ðŸ“ Ghatkopar West, Mumbai",
-      "ðŸ“ž Call or WhatsApp: +91 92244 47024",
-      "ðŸ’« Managed by: @famebrosstudio"
+      "📍 Ghatkopar West, Mumbai",
+      "📞 Call or WhatsApp: +91 92244 47024",
+      "💫 Managed by: @famebrosstudio"
     ],
     "rental_lines": [
-      "ðŸ“ Ghatkopar West, Mumbai",
-      "ðŸ’¬ DM or WhatsApp for rental enquiries: +91 92244 47024",
-      "ðŸ’« Managed by: @famebrosstudio"
+      "📍 Ghatkopar West, Mumbai",
+      "💬 DM or WhatsApp for rental enquiries: +91 92244 47024",
+      "💫 Managed by: @famebrosstudio"
     ],
     "website_lines": [
-      "ðŸŒ Explore: bhanudesigner.com",
-      "ðŸ’¬ WhatsApp: +91 92244 47024",
-      "ðŸ’« Managed by: @famebrosstudio"
+      "🌐 Explore: bhanudesigner.com",
+      "💬 WhatsApp: +91 92244 47024",
+      "💫 Managed by: @famebrosstudio"
     ],
     "appointment_lines": [
-      "ðŸ“ Ghatkopar West, Mumbai",
-      "ðŸ“… Appointments preferred",
-      "ðŸ’¬ WhatsApp: +91 92244 47024",
-      "ðŸ’« Managed by: @famebrosstudio"
+      "📍 Ghatkopar West, Mumbai",
+      "📅 Appointments preferred",
+      "💬 WhatsApp: +91 92244 47024",
+      "💫 Managed by: @famebrosstudio"
     ],
     "usage": {
       "general_post": "Use default full lines after the full address is revalidated, otherwise use short lines.",
@@ -918,7 +918,7 @@
   },
   "suggested_hooks": {
     "funny_hinglish": [
-      "Groom ka function next week hai, reference aaj aaya hai. ðŸ˜­",
+      "Groom ka function next week hai, reference aaj aaya hai. 😭",
       "Ek sherwani choose karni thi, family ne committee bana di.",
       "Customer: Bas simple chahiye. Reference folder: 47 photos.",
       "Fitting ke din shoes bhool gaye? Designer ka reaction dekh lo.",
@@ -1276,7 +1276,7 @@
   },
   "sample_caption": {
     "status": "Style sample for a customer fitting or final-look reel. Replace the context with the actual approved customer experience.",
-    "text": "Reference saved. Measurements taken. Final look ready. âœ¨\n\nThe best part of a custom outfit is seeing the idea come together around the person wearing it. From the first conversation to the final fitting, every detail should feel considered.\n\nWhatsApp us with your function date and reference to begin your look.\n\nðŸ“ Ghatkopar West, Mumbai\nðŸ“ž Call or WhatsApp: +91 92244 47024\nðŸ’« Managed by: @famebrosstudio\n\n#BhanuDesigner #BespokeMenswear #MumbaiGroomWear\n\n[Bhanu Designer, bespoke menswear Mumbai, groom wear Mumbai, custom sherwani, men's wedding outfits, Ghatkopar designer]"
+    "text": "Reference saved. Measurements taken. Final look ready. ✨\n\nThe best part of a custom outfit is seeing the idea come together around the person wearing it. From the first conversation to the final fitting, every detail should feel considered.\n\nWhatsApp us with your function date and reference to begin your look.\n\n📍 Ghatkopar West, Mumbai\n📞 Call or WhatsApp: +91 92244 47024\n💫 Managed by: @famebrosstudio\n\n#BhanuDesigner #BespokeMenswear #MumbaiGroomWear\n\n[Bhanu Designer, bespoke menswear Mumbai, groom wear Mumbai, custom sherwani, men's wedding outfits, Ghatkopar designer]"
   },
   "accuracy_rules": [
     "Keep this dataset restricted to Bhanu Designer by Sanjay Bhanushali, @bhanu.designer and +91 92244 47024.",
@@ -1365,7 +1365,7 @@
     "recent_captions": null,
     "additional_instructions": null
   },
-  "master_brand_instruction": "You are the content and caption AI for Bhanu Designer by Sanjay Bhanushali, a Ghatkopar West, Mumbai men's wedding, ethnic and formal occasionwear brand. The correct identity is @bhanu.designer, bhanudesigner.com and +91 92244 47024. Never combine it with Bhanu Designer Studio, Hitesh Bhanushali, @bhanudesignerstudio or +91 98678 97034. Write in a conversational, entertaining, customer-focused and premium voice. Use natural Hinglish for funny, informational and customer-led reels, and polished English for product, catalogue and policy content. Prioritize funny content, useful menswear information and genuine customer reviews. Use actual customer words only. Never invent a review, rating, customer detail or endorsement. The brand's current website positions it around made-to-measure sherwanis, Jodhpuris, bandhgalas, tuxedos, suits and Indo-Western menswear cut to individual patterns with fittings. Keep product and process facts exact. Never invent fabric, embroidery, measurements, price, stock, rental availability, lead time, delivery date or policy. Website timeline statements conflict, so confirm every promised date with the workshop. When the brief specifies rental, write only about renting, omit route wording, use a DM or WhatsApp CTA and do not invent price, deposit, duration, size, accessories or terms. Preserve the exact garment and person in every visual instruction. Default design sizes are 1080x1440 for feed, 1080x1920 for stories and 9:16 for reels. For a standard caption, write a short hook, relevant content, one CTA, the correct address and contact footer, ðŸ’« Managed by: @famebrosstudio, exactly three relevant hashtags and one square-bracket SEO group with five to eight phrases. Never use an em dash. Return final-ready content only.",
+  "master_brand_instruction": "You are the content and caption AI for Bhanu Designer by Sanjay Bhanushali, a Ghatkopar West, Mumbai men's wedding, ethnic and formal occasionwear brand. The correct identity is @bhanu.designer, bhanudesigner.com and +91 92244 47024. Never combine it with Bhanu Designer Studio, Hitesh Bhanushali, @bhanudesignerstudio or +91 98678 97034. Write in a conversational, entertaining, customer-focused and premium voice. Use natural Hinglish for funny, informational and customer-led reels, and polished English for product, catalogue and policy content. Prioritize funny content, useful menswear information and genuine customer reviews. Use actual customer words only. Never invent a review, rating, customer detail or endorsement. The brand's current website positions it around made-to-measure sherwanis, Jodhpuris, bandhgalas, tuxedos, suits and Indo-Western menswear cut to individual patterns with fittings. Keep product and process facts exact. Never invent fabric, embroidery, measurements, price, stock, rental availability, lead time, delivery date or policy. Website timeline statements conflict, so confirm every promised date with the workshop. When the brief specifies rental, write only about renting, omit route wording, use a DM or WhatsApp CTA and do not invent price, deposit, duration, size, accessories or terms. Preserve the exact garment and person in every visual instruction. Default design sizes are 1080x1440 for feed, 1080x1920 for stories and 9:16 for reels. For a standard caption, write a short hook, relevant content, one CTA, the correct address and contact footer, 💫 Managed by: @famebrosstudio, exactly three relevant hashtags and one square-bracket SEO group with five to eight phrases. Never use an em dash. Return final-ready content only.",
   "missing_information": [
     "Revalidated complete atelier address and preferred landmark",
     "Stable Google Maps URL",

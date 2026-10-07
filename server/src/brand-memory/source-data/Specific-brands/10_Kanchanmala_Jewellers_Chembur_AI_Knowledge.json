@@ -106,7 +106,7 @@
       "Gold chains",
       "Customer experiences",
       "Customer and weekly winners",
-      "Gold savings plan starting from â‚¹500 per month",
+      "Gold savings plan starting from ₹500 per month",
       "Wedding-season jewellery"
     ],
     "additional_user_supplied_topics": [
@@ -170,7 +170,7 @@
       "Hidden making charges or scheme conditions",
       "Calling imitation stones precious",
       "Using another branch address",
-      "Overused royal or luxury clichÃ©s",
+      "Overused royal or luxury clichés",
       "Em dashes"
     ]
   },
@@ -253,7 +253,7 @@
       "rule": "Do not promise full value, zero deduction or instant exchange without written branch terms."
     },
     "gold_savings_or_sip": {
-      "status": "Recently indexed campaign starting from â‚¹500 per month for 12 months. Full current terms are required.",
+      "status": "Recently indexed campaign starting from ₹500 per month for 12 months. Full current terms are required.",
       "required_details": [
         "Official programme name",
         "Monthly contribution",
@@ -266,7 +266,7 @@
         "Branch eligibility",
         "Validity"
       ],
-      "rule": "Use the official scheme name. Do not describe it as a regulated investment, promise returns or publish the â‚¹500 figure without confirming that the programme is still active."
+      "rule": "Use the official scheme name. Do not describe it as a regulated investment, promise returns or publish the ₹500 figure without confirming that the programme is still active."
     },
     "customer_story_or_review": {
       "focus": "A real customer moment or approved review.",
@@ -374,23 +374,23 @@
   },
   "fixed_footer": {
     "chembur_only_lines": [
-      "ðŸ“ Kanchanmala Jewellers",
+      "📍 Kanchanmala Jewellers",
       "Shop 1/1, Plot 93, N.G. Acharya Marg, Chembur, Mumbai 400071",
-      "ðŸ“ž +91 96190 96762 | +91 80974 96670",
-      "ðŸŽ¥ Managed by: @famebrosstudio âœ¨"
+      "📞 +91 96190 96762 | +91 80974 96670",
+      "🎥 Managed by: @famebrosstudio ✨"
     ],
     "group_footer_lines": [
-      "ðŸ“ Shree Mahalaxmi Jewellers",
+      "📍 Shree Mahalaxmi Jewellers",
       "Shop 15, Building 8, C-Wing, Sharad Co-Op Housing Society, Kapus Kamgar Nagar, Near Tilak Nagar Station, Kurla East, Mumbai 400024",
       "",
-      "ðŸ“ Kanchanmala Jewellers",
+      "📍 Kanchanmala Jewellers",
       "Shop 1/1, Plot 93, N.G. Acharya Marg, Chembur, Mumbai 400071",
       "",
-      "ðŸ“ Mahalaxmi Jewellers",
+      "📍 Mahalaxmi Jewellers",
       "Shop 1, Khardev Nagar Road, Ghatla, Chembur, Mumbai 400071",
       "",
-      "ðŸ“ž +91 96190 96762 | +91 80974 96670",
-      "ðŸŽ¥ Managed by: @famebrosstudio âœ¨"
+      "📞 +91 96190 96762 | +91 80974 96670",
+      "🎥 Managed by: @famebrosstudio ✨"
     ],
     "usage": "Use the Chembur-only footer for Kanchanmala content. Use the group footer only when the post explicitly represents all three stores.",
     "rules": [
@@ -421,7 +421,7 @@
     ],
     "conditional": {
       "#GoldOnEMI": "Use only when current EMI terms are confirmed.",
-      "#GoldSavingsPlan": "Use only when the â‚¹500 monthly programme is active and terms are confirmed.",
+      "#GoldSavingsPlan": "Use only when the ₹500 monthly programme is active and terms are confirmed.",
       "#OldGoldExchange": "Use only with current exchange terms."
     },
     "rule": "Select exactly three relevant hashtags. Do not use the full bank."
@@ -518,14 +518,14 @@
   },
   "sample_caption": {
     "status": "Illustrative evergreen product caption. It avoids unconfirmed metal purity, weight, price, plan and stock claims.",
-    "text": "A design made to become part of your story. âœ¨\nEvery visible detail brings elegance and meaning together, creating a jewellery look worth saving for your next celebration.\nVisit our Chembur store to explore the current collection.\n\nðŸ“ Kanchanmala Jewellers\nShop 1/1, Plot 93, N.G. Acharya Marg, Chembur, Mumbai 400071\nðŸ“ž +91 96190 96762 | +91 80974 96670\nðŸŽ¥ Managed by: @famebrosstudio âœ¨\n\n#KanchanmalaJewellers #JewelleryWithTrust #ChemburJewellers\n\n[Kanchanmala Jewellers, gold jewellery in Chembur, jewellery store on N.G. Acharya Marg, jewellery in Mumbai, elegant jewellery designs, Chembur jewellery store]"
+    "text": "A design made to become part of your story. ✨\nEvery visible detail brings elegance and meaning together, creating a jewellery look worth saving for your next celebration.\nVisit our Chembur store to explore the current collection.\n\n📍 Kanchanmala Jewellers\nShop 1/1, Plot 93, N.G. Acharya Marg, Chembur, Mumbai 400071\n📞 +91 96190 96762 | +91 80974 96670\n🎥 Managed by: @famebrosstudio ✨\n\n#KanchanmalaJewellers #JewelleryWithTrust #ChemburJewellers\n\n[Kanchanmala Jewellers, gold jewellery in Chembur, jewellery store on N.G. Acharya Marg, jewellery in Mumbai, elegant jewellery designs, Chembur jewellery store]"
   },
   "accuracy_rules": [
     "Use only Kanchanmala Jewellers Chembur facts and the current brief.",
     "Do not mix the Chembur, Kurla and Ghatla branch names or addresses.",
     "Do not invent metal, purity, weight, stones, certification, price, making charges, stock or delivery.",
     "Do not publish current gold or silver rates without a date-stamped branch source.",
-    "Treat gold EMI, old gold exchange and the â‚¹500 monthly plan as conditional on current written terms.",
+    "Treat gold EMI, old gold exchange and the ₹500 monthly plan as conditional on current written terms.",
     "Do not describe a jewellery plan as a regulated SIP or promise financial returns.",
     "Do not reuse closed winner campaigns.",
     "If an optional detail is missing, omit it.",
@@ -562,7 +562,7 @@
     "additional_instructions": [],
     "monthly_plan_details": null
   },
-  "master_brand_instruction": "Write as Kanchanmala Jewellers in Chembur, Mumbai. Use a trustworthy, elegant, warm, family-oriented and concise jewellery voice. Use English by default, natural Hinglish for local or owner-led reels, and Hindi or Marathi when requested. Use the since-1992 statement only when relevant and recheck it before anniversary calculations. Focus on the actual jewellery piece, occasion, visible design and confirmed technical details. Never invent metal, purity, karat, weight, stones, certification, price, making charges, stock or offer terms. Treat gold on EMI, old gold exchange and the advertised â‚¹500-per-month 12-month jewellery plan as conditional topics requiring current branch terms. Do not call a jewellery savings plan a regulated SIP or promise returns. For Kanchanmala feed and reel captions, append the Chembur footer, exactly three relevant hashtags and one bracket containing 5 to 8 comma-separated SEO phrases. Use the group footer only for posts representing all three stores. Preserve +91 96190 96762, +91 80974 96670 and the exact N.G. Acharya Marg address. Avoid em dashes and return ready-to-copy public text without null fields or internal notes.",
+  "master_brand_instruction": "Write as Kanchanmala Jewellers in Chembur, Mumbai. Use a trustworthy, elegant, warm, family-oriented and concise jewellery voice. Use English by default, natural Hinglish for local or owner-led reels, and Hindi or Marathi when requested. Use the since-1992 statement only when relevant and recheck it before anniversary calculations. Focus on the actual jewellery piece, occasion, visible design and confirmed technical details. Never invent metal, purity, karat, weight, stones, certification, price, making charges, stock or offer terms. Treat gold on EMI, old gold exchange and the advertised ₹500-per-month 12-month jewellery plan as conditional topics requiring current branch terms. Do not call a jewellery savings plan a regulated SIP or promise returns. For Kanchanmala feed and reel captions, append the Chembur footer, exactly three relevant hashtags and one bracket containing 5 to 8 comma-separated SEO phrases. Use the group footer only for posts representing all three stores. Preserve +91 96190 96762, +91 80974 96670 and the exact N.G. Acharya Marg address. Avoid em dashes and return ready-to-copy public text without null fields or internal notes.",
   "missing_information": [
     "Opening hours and weekly closing day",
     "WhatsApp confirmation",
@@ -572,7 +572,7 @@
     "Current gold and silver rates",
     "Current making charges",
     "Current EMI programme terms",
-    "Official name and complete â‚¹500 monthly plan terms",
+    "Official name and complete ₹500 monthly plan terms",
     "Current old gold exchange policy",
     "Buyback and repair policies",
     "Customisation process and delivery timeline",
@@ -601,7 +601,7 @@
     },
     {
       "type": "indexed_brand_social_posts",
-      "supports": "Men's jewellery, customer stories, winner content and the advertised â‚¹500 monthly 12-month plan as campaign topics."
+      "supports": "Men's jewellery, customer stories, winner content and the advertised ₹500 monthly 12-month plan as campaign topics."
     },
     {
       "type": "user_brand_knowledge",

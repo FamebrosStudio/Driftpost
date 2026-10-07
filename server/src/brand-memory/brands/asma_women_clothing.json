@@ -2,39 +2,42 @@
   "schema_version": "3.0",
   "brand_number": 31,
   "brand_id": "asma_women_clothing",
-  "brand_name": "Asma Women Clothing",
+  "brand_name": "HerChoice by Asma",
   "aliases": [
-    "Asma Women's Clothing",
     "Asma Women Clothing",
+    "Asma Women's Clothing",
     "Her Choice by Asma",
-    "@herchoice_byasma",
-    "herchoice_byasma"
+    "@herchoice_byasma"
   ],
-  "knowledge_scope": "One brand only. This file covers Asma Women Clothing, trading publicly as Her Choice by Asma (@herchoice_byasma, user-supplied official Instagram). The women's-clothing category and editorial system are established and the official Instagram handle is now confirmed by the brand owner; location, phone, website, product catalogue and commercial policies remain unresolved, so strict anti-invention rules still apply.",
+  "knowledge_scope": "One brand only. This file covers HerChoice by Asma, previously tracked as Asma Women Clothing, its official Instagram identity, Pakistani women's fashion and ethnic-wear direction, public product signals, launch history, DM-led ordering, content system and strict product-accuracy controls.",
   "business": {
-    "category": "Women's clothing",
+    "category": "Pakistani women's fashion and ethnic clothing",
     "industry": "Women's fashion and apparel",
-    "business_model": null,
+    "business_model": [
+      "Instagram-led fashion discovery",
+      "DM-led product enquiries and ordering"
+    ],
     "gender_scope": "Women only",
     "city": null,
     "state": null,
     "country": null,
-    "currency": null,
-    "core_positioning": "A women's clothing brand requiring graceful, stylish and uncluttered presentation focused on the real outfit, its drape, movement and visible details.",
-    "approved_positioning_short": "Women's clothing presented with graceful product-led storytelling.",
+    "currency": "INR",
+    "core_positioning": "A women's fashion label presenting Pakistani-inspired suits and elegant ethnic looks through feminine, premium and curiosity-led storytelling.",
+    "approved_positioning_short": "Pakistani women's fashion with elegant statement dressing.",
     "primary_audience": [
-      "Women shopping for clothing",
-      "Fashion-discovery audiences",
-      "Customers comparing outfit details",
-      "Occasion shoppers only when the actual product supports the occasion"
+      "Women shopping for Pakistani-inspired clothing",
+      "Ethnic-wear shoppers",
+      "Festive and wedding-wear shoppers when the product fits the occasion",
+      "Customers following celebrity-inspired suit trends"
     ],
     "confirmed_content_genres": [
       "Women's clothing",
       "Informational",
       "Cinematic"
     ],
-    "dataset_date": "2026-09-25",
-    "commercial_accuracy_rule": "Never invent fabric, sizes, price, stock, city, contact details, shipping, returns, occasion, category or brand story."
+    "dataset_date": "2026-09-26",
+    "commercial_accuracy_rule": "Never invent fabric, work, included pieces, size, price, stock, shipping, delivery, exchange, authenticity or celebrity endorsement.",
+    "launch_history": "The brand was announced as launching or going live on 11 September 2026."
   },
   "contact": {
     "phone": null,
@@ -44,79 +47,102 @@
     "address": null,
     "city": null,
     "google_maps_url": null,
-    "contact_status": "No phone, address or website established. Instagram DM is the only approved contact route.",
-    "contact_rule": "Use DM @herchoice_byasma as the CTA now that the official handle is confirmed by the owner. Until phone/address/website are supplied, leave those fields blank."
+    "contact_status": "No contact or location information is established.",
+    "contact_rule": "Use DM @herchoice_byasma for current product and ordering details. Phone, address, website and WhatsApp remain unconfirmed.",
+    "order_method": "Instagram DM",
+    "order_method_status": "Confirmed in the user-provided launch direction."
   },
   "social_media": {
     "instagram_handle": "@herchoice_byasma",
     "instagram_url": "https://www.instagram.com/herchoice_byasma/",
-    "instagram_status": "Official handle supplied directly by the brand owner, confirmed 2026-09-25. Bio/posts not scrapable (Instagram login wall, zero web-indexed data); recheck bio, follower count and shop links before quoting them.",
-    "public_name": "Her Choice by Asma",
     "facebook_url": null,
     "website_url": null,
     "managing_agency": "Famebros Studio",
     "agency_instagram_handle": "@famebrosstudio",
     "agency_instagram_url": "https://www.instagram.com/famebrosstudio/",
-    "agency_credit_default": "ðŸ’« Managed by: @famebrosstudio",
-    "excluded_candidates": [
-      "Aasme Asma and other similarly named fashion brands found in search are not treated as this brand. Only @herchoice_byasma is approved."
-    ],
-    "reference_rule": "Use only @herchoice_byasma content for styling and wording cues, and verify every product field before writing. Never tag or imitate a similarly named account.",
-    "instagram_identity_status": "Official account mapping supplied directly by user on 2026-10-03."
+    "agency_credit_default": "💫 Managed by: @famebrosstudio",
+    "excluded_candidates": [],
+    "reference_rule": "Use the official page to study real products and public language. Recheck price, stock, sizes and ordering terms on the publication date.",
+    "instagram_status": "Official handle supplied by user on 2026-10-03; current public claims still require source verification."
   },
   "established_content_knowledge": {
-    "confirmed_content_pillars": [
-      "Outfit hero reveal",
-      "Drape and movement",
-      "Visible design details",
-      "Front, side and back views using the same real outfit",
-      "Styling ideas using supplied information",
-      "Product information using confirmed fields",
-      "Cinematic garment video",
-      "Choice and engagement posts"
+    "confirmed_content_genres": [
+      "Pakistani women's fashion",
+      "Women's ethnic wear",
+      "Informational",
+      "Cinematic",
+      "Product showcase",
+      "Trend-led fashion"
     ],
-    "content_priority": "Show the real garment clearly, preserve its details, and help a viewer understand what is actually visible and confirmed.",
-    "unknown_category_rule": "Do not assume the brand sells modestwear, abayas, ethnic wear, western wear, occasion wear or everyday wear. Use the exact category supplied for each product.",
-    "unknown_market_rule": "Do not localize hashtags, SEO or copy to a city or country until the location is confirmed.",
-    "unknown_commercial_rule": "No price, order method, delivery, exchange, size or availability data is established.",
-    "data_confidence": {
-      "category": "Confirmed",
-      "genres": "Confirmed",
-      "tone": "Editorial guidance",
-      "contact": "Unknown",
-      "social": "Unknown",
-      "catalogue": "Unknown",
-      "commercial_terms": "Unknown"
-    }
+    "confirmed_product_signals": [
+      "Pakistani-inspired stitched suits",
+      "Mahira Khan-inspired suit content",
+      "Luxury pret styling",
+      "Farshi salwar and co-ord looks",
+      "Embroidered kurti sets",
+      "Festive and wedding-wear positioning when supported by the product"
+    ],
+    "product_signal_rule": "These categories are supported by indexed public posts, but every individual product's fabric, work, components, price, size and availability require current confirmation.",
+    "launch_campaign": {
+      "date": "2026-09-11",
+      "offer": "First 50 members receive 15% off",
+      "status": "Historical launch campaign. Do not reuse as a current offer without written confirmation."
+    },
+    "public_content_signal": "Recent indexed posts use searchable phrases around Pakistani fashion, celebrity-inspired suits, premium ethnic wear, stylish kurtas and exclusive collections.",
+    "content_pillars": [
+      "Full outfit reveal",
+      "Front, side and back details",
+      "Drape and movement",
+      "Embroidery and cutwork close-ups when visible",
+      "Celebrity-inspired trend explanation without implying endorsement",
+      "Colour stories",
+      "Festive styling",
+      "Wedding guest styling",
+      "Product fact carousel",
+      "DM-to-order CTA"
+    ],
+    "tone_history": [
+      "Premium",
+      "Feminine",
+      "Elegant",
+      "Curiosity-led",
+      "Trend-aware"
+    ],
+    "approved_copy_direction": [
+      "Elegant Pakistani charm",
+      "Favourite looks returning in fresh colours",
+      "Stay close. The reveal is worth the wait."
+    ],
+    "content_priority": "Make the real outfit the hero, preserve every design detail and translate current product facts into elegant, searchable copy."
   },
   "writing_direction": {
     "brand_voice": [
-      "Graceful",
-      "Stylish",
-      "Uncluttered",
-      "Warm",
-      "Product-led",
-      "Confident"
+      "Premium",
+      "Feminine",
+      "Elegant",
+      "Curiosity-led",
+      "Trend-aware",
+      "Product-focused"
     ],
     "primary_language": "English or Hinglish",
     "focus": [
-      "Actual outfit",
-      "Drape",
-      "Movement",
-      "Visible detail",
-      "Styling possibility",
-      "Simple enquiry action"
+      "Pakistani fashion identity",
+      "Real outfit",
+      "Drape and movement",
+      "Visible embroidery or cutwork",
+      "Fresh colours",
+      "Occasion relevance",
+      "DM ordering"
     ],
     "avoid": [
-      "Assuming modestwear or abayas",
-      "Assuming ethnic-only positioning",
-      "Invented fabric or handwork",
-      "Unconfirmed size, price or stock",
-      "Fake location",
-      "Fake Instagram link",
-      "Changing colour or design",
-      "Generic luxury claims",
-      "Overloaded text"
+      "Invented fabric or work",
+      "False celebrity endorsement",
+      "Calling an inspired look original celebrity clothing",
+      "Unconfirmed price or stock",
+      "Unconfirmed shipping or exchange",
+      "Changing garment colour or design",
+      "Fake urgency",
+      "Expired launch discount"
     ],
     "copy_rule": "If the product has not been described, write only about what is safely visible and ask for the missing facts.",
     "punctuation_style": "Simple polished sentences and no em dashes."
@@ -222,57 +248,57 @@
       "Use one clear CTA.",
       "Remove every em dash before delivery.",
       "Do not add a location footer.",
-      "Do not add any Instagram tag except @herchoice_byasma.",
+      "Do not add an Instagram tag until the official page is confirmed.",
       "Check every product field for source support."
     ]
   },
   "fixed_footer": {
     "standard_lines": [
-      "ðŸ“² DM @herchoice_byasma for details of this outfit."
+      "📲 DM @herchoice_byasma to order",
+      "💫 Managed by: @famebrosstudio"
     ],
-    "status": "Official-handle CTA confirmed 2026-09-25. Replace with phone/website/location if the owner supplies them.",
-    "agency_credit_optional": "ðŸ’« Managed by: @famebrosstudio",
-    "usage": "Use the @herchoice_byasma DM footer on all feed posts. Agency credit may be used only in Famebros-managed deliverables.",
+    "usage": "Use for standard feed and reel captions. Add a phone, address or website only after confirmation.",
     "exceptions": [
       "Story overlays",
       "Comments",
-      "Unpublished concept drafts"
+      "Private replies",
+      "When agency credit is not required"
     ]
   },
   "suggested_hashtag_bank": [
     "#HerChoiceByAsma",
-    "#AsmaWomenClothing",
-    "#WomensClothing",
-    "#WomensFashion",
-    "#OutfitDetails",
-    "#StyleInspiration",
-    "#FashionReel",
-    "#OutfitOfTheDay"
+    "#PakistaniSuits",
+    "#PakistaniFashion",
+    "#EthnicWear",
+    "#FarshiSalwar",
+    "#MahiraKhanInspired",
+    "#FestiveWear",
+    "#WomensFashion"
   ],
   "seo_keyword_bank": [
-    "Her Choice by Asma",
-    "Asma Women Clothing",
-    "herchoice_byasma",
-    "women's clothing brand",
-    "women's fashion collection",
-    "outfit details for women",
-    "women's outfit inspiration",
-    "stylish women's outfits"
+    "HerChoice by Asma",
+    "Pakistani suits for women",
+    "Mahira Khan inspired suit",
+    "Pakistani ethnic wear",
+    "farshi salwar set",
+    "embroidered kurti set",
+    "luxury pret for women",
+    "festive suits for women"
   ],
   "cta_bank": [
-    "DM @herchoice_byasma for details of this outfit.",
-    "Which look would you choose?",
-    "Save this outfit for your style reference.",
-    "Which detail caught your eye first?",
-    "Ask us for the confirmed fabric, size and price."
+    "DM @herchoice_byasma for the current price, sizes and availability.",
+    "Save this look for your festive wardrobe.",
+    "Which colour would you choose?",
+    "Send this to someone who loves Pakistani fashion.",
+    "DM the product screenshot to enquire."
   ],
   "suggested_hooks": [
-    "Let the outfit move before the details speak.",
-    "A closer look at the details that shape the look.",
-    "Grace in every angle.",
-    "One outfit, more than one way to style it.",
-    "Which detail would make you choose this look?",
-    "Simple styling, strong presence."
+    "The Pakistani look your wardrobe has been waiting for.",
+    "Celebrity-inspired elegance, styled for your wardrobe.",
+    "The farshi salwar is having its moment.",
+    "A closer look at the details behind this statement suit.",
+    "Your festive wardrobe just found its next favourite.",
+    "Stay close. The reveal is worth the wait."
   ],
   "visual_and_asset_guidance": {
     "feed_size": "1080 x 1440 pixels",
@@ -339,42 +365,43 @@
     "voiceover": "Short English or Hinglish product-led narration using only confirmed visual and product facts."
   },
   "sample_caption": {
-    "status": "Illustrative low-risk caption for a real outfit reveal. Add the official page or contact only after confirmation.",
-    "scenario": "Cinematic women's outfit reel",
-    "caption_body": "Grace in every angle. Let the silhouette, movement and visible details make the first impression. Which part of this look caught your eye first? DM @herchoice_byasma for the confirmed product details.",
+    "status": "Illustrative trend-led caption. Confirm the exact product, price, size and stock before publication.",
+    "scenario": "Mahira Khan-inspired suit reel",
+    "caption_body": "The trending Mahira Khan-inspired suit is now part of the HerChoice by Asma fashion story. Elegant details, a graceful silhouette and a look made for the moments you want to remember. DM us for the current price, sizes and availability.",
     "footer": [
-      "ðŸ“² DM @herchoice_byasma"
+      "📲 DM @herchoice_byasma to order",
+      "💫 Managed by: @famebrosstudio"
     ],
     "hashtags": [
       "#HerChoiceByAsma",
-      "#WomensFashion",
-      "#OutfitDetails"
+      "#PakistaniSuits",
+      "#EthnicWear"
     ],
     "seo_keywords": [
-      "Her Choice by Asma",
-      "Asma Women Clothing",
-      "women's fashion collection",
-      "outfit details for women",
-      "women's outfit inspiration",
-      "stylish women's outfits"
+      "HerChoice by Asma",
+      "Mahira Khan inspired suit",
+      "Pakistani suits for women",
+      "Pakistani ethnic wear",
+      "festive suits for women",
+      "women's fashion collection"
     ],
-    "full_caption": "Grace in every angle. Let the silhouette, movement and visible details make the first impression. Which part of this look caught your eye first? DM @herchoice_byasma for the confirmed product details.\n\nðŸ“² DM @herchoice_byasma\n\n#HerChoiceByAsma #WomensFashion #OutfitDetails\n\n[Her Choice by Asma, Asma Women Clothing, women's fashion collection, outfit details for women, women's outfit inspiration, stylish women's outfits]",
+    "full_caption": "The trending Mahira Khan-inspired suit is now part of the HerChoice by Asma fashion story. Elegant details, a graceful silhouette and a look made for the moments you want to remember. DM us for the current price, sizes and availability.\n\n📲 DM @herchoice_byasma to order\n💫 Managed by: @famebrosstudio\n\n#HerChoiceByAsma #PakistaniSuits #EthnicWear\n\n[HerChoice by Asma, Mahira Khan inspired suit, Pakistani suits for women, Pakistani ethnic wear, festive suits for women, women's fashion collection]",
     "validation": {
       "hashtags": 3,
       "seo_phrases": 6,
-      "invented_contact": false,
-      "invented_location": false,
-      "invented_product_fact": false
+      "verified_fields_only": true,
+      "celebrity_endorsement_claim": false
     }
   },
   "accuracy_rules": [
-    "Do not connect this brand to Aasme Asma or any similarly named business.",
-    "Do not invent an Instagram link, phone, address, city, website or email.",
-    "Do not assume modestwear, abayas, ethnic wear or western wear.",
-    "Do not invent fabric, work, fit, sizes, price, stock, shipping or returns.",
-    "Preserve the real garment's colour, shape, pattern and design.",
-    "Use the exact category supplied for each product.",
-    "Keep content women-only unless the brand scope changes.",
+    "Use only @herchoice_byasma as the official Instagram page.",
+    "Keep the brand within Pakistani women's fashion and the exact categories shown by current products.",
+    "Never imply Mahira Khan or another celebrity endorses, wears or collaborates with the brand unless documented.",
+    "Never invent fabric, embroidery, cutwork, included pieces, lining, sizes, price, stock or care.",
+    "The first-50-members 15% offer belonged to the 11 September 2026 launch and is not evergreen.",
+    "Use Instagram DM as the confirmed order route.",
+    "Do not invent phone, address, website, shipping or exchange policies.",
+    "Preserve the garment's colour, shape, pattern, design and visible work.",
     "Remove every em dash."
   ],
   "per_post_input": {
@@ -423,75 +450,78 @@
     ],
     "input_rule": "This brand has major unresolved identity and commerce fields. Ask for them before producing sales-ready copy."
   },
-  "master_brand_instruction": "Create content only for Asma Women Clothing, trading as Her Choice by Asma. The official Instagram is @herchoice_byasma (owner-supplied 2026-09-25). The confirmed scope is women's clothing with graceful, stylish, uncluttered, informational and cinematic content. No website, phone, email, address, city or catalogue is established, so never invent them. Do not assume the brand sells modestwear, abayas, ethnic-only or western-only clothing; use the exact category supplied for each real outfit. Preserve garment colour, shape, pattern and design. Never invent fabric, work, fit, sizes, price, stock, shipping or returns. Use DM @herchoice_byasma as the CTA. Standard captions use exactly three hashtags and one SEO bracket with five to eight phrases. Remove all em dashes.",
+  "master_brand_instruction": "Create content only for HerChoice by Asma, the Pakistani women's fashion brand on Instagram at @herchoice_byasma. Use premium, feminine, elegant and curiosity-led English or Hinglish. Focus on the actual suit, drape, silhouette, visible work, fresh colour and occasion relevance. Public product signals include Pakistani-inspired stitched suits, Mahira Khan-inspired looks, luxury pret, farshi salwar styles, co-ord looks and embroidered kurti sets, but every product fact must be confirmed. Never imply celebrity endorsement or invent fabric, work, components, size, price, stock, shipping, exchange or delivery. The 15% launch benefit for the first 50 members was tied to 11 September 2026 and is historical. Use DM @herchoice_byasma as the confirmed order CTA. Standard captions use exactly three hashtags and one SEO bracket with five to eight phrases. Remove all em dashes.",
   "missing_information": {
-    "identity": [
-      "Official legal or trading name",
-      "Owner or founder",
-      "Brand story",
-      "Country",
-      "City",
-      "Target market"
+    "business": [
+      "Legal entity",
+      "Founder",
+      "Operating city",
+      "Business address",
+      "Business hours"
     ],
     "contact": [
-      "Official Instagram confirmed (@herchoice_byasma, owner-supplied 2026-09-25; bio/posts still to be read once accessible)",
-      "Facebook",
-      "Website",
       "Phone",
       "WhatsApp",
       "Email",
-      "Address",
+      "Website",
       "Google Maps URL"
     ],
     "catalogue": [
-      "Exact product categories",
-      "Product names and codes",
+      "Current product export",
+      "Product codes",
       "Fabric",
       "Work",
+      "Included pieces",
       "Sizes",
       "Prices",
       "Stock",
-      "Care",
-      "Images"
+      "Care"
     ],
     "commerce": [
-      "Order method",
-      "Currency",
-      "Payment",
+      "Payment methods",
       "Shipping regions",
       "Delivery times",
-      "Returns and exchange",
-      "Support hours"
+      "Exchange and return policy",
+      "Order confirmation process"
     ],
     "brand_system": [
-      "Logo",
+      "Logo files",
       "Colour codes",
       "Fonts",
       "Photography guide",
-      "Tone guide",
-      "Packaging"
+      "Packaging guide"
     ],
-    "agency": [
-      "Package",
-      "Deliverable counts",
-      "Shoot plan",
-      "Approval workflow",
-      "Billing details"
-    ],
-    "priority": "Instagram handle confirmed. Next: read the live bio/posts for categories and shop links, then collect catalogue, commerce policies and brand kit.",
-    "identity_note": "Public trading name is Her Choice by Asma per the official handle; keep legal/trading-name confirmation in the identity queue."
+    "priority": "Collect the current catalogue and commerce rules, then confirm location and direct contact information."
   },
   "sources": {
     "user_facts": [
-      "Exact brand name from the Famebros dataset.",
-      "Women's clothing category.",
-      "Informational and cinematic content genres.",
-      "Official Instagram @herchoice_byasma (Her Choice by Asma) supplied directly by the brand owner, 2026-09-25."
+      "Official Instagram page supplied as https://www.instagram.com/herchoice_byasma/.",
+      "Pakistani women's fashion direction.",
+      "Launch or go-live date of 11 September 2026.",
+      "First 50 members launch offer of 15% off.",
+      "DM-to-order workflow.",
+      "Premium, feminine and curiosity-led copy direction.",
+      "Official Instagram handle supplied directly by user on 2026-10-03."
     ],
-    "public_sources": [],
-    "public_search_note": "Web search 2026-09-25 for herchoice_byasma returned zero indexed results; direct Instagram fetch returns a login wall. No bio, follower, address, phone or catalogue facts could be scraped, so nothing beyond the owner-supplied handle was added.",
+    "public_sources": [
+      {
+        "url": "https://www.instagram.com/herchoice_byasma/",
+        "checked_on": "2026-09-26",
+        "used_for": "Official page identity and public content direction."
+      },
+      {
+        "url": "https://www.instagram.com/reel/DaclB5ctXa7/",
+        "checked_on": "2026-09-25",
+        "used_for": "Mahira Khan-inspired suit product signal."
+      },
+      {
+        "url": "https://www.instagram.com/p/Dc-r1kFqWN3/",
+        "checked_on": "2026-09-25",
+        "used_for": "Luxury pret and farshi salwar product signal."
+      }
+    ],
     "internal_dataset": "Famebros_Brand_Caption_Dataset.json record asma_women_clothing.",
-    "source_rule": "Direct brand-owner confirmation is required before adding social, contact, location, catalogue or commerce facts."
+    "source_rule": "Current approved catalogue and commerce information override older launch and indexed post details."
   },
   "research_update": {
     "checked_on": "2026-10-03",

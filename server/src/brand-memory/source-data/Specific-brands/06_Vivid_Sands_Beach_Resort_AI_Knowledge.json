@@ -274,7 +274,7 @@
         "Booking and cancellation terms"
       ],
       "rules": [
-        "Do not reuse the historical â‚¹8,900 offer.",
+        "Do not reuse the historical ₹8,900 offer.",
         "State taxes clearly.",
         "Do not advertise breakfast, meals or activities unless included.",
         "Use urgency only with a confirmed deadline or room limit."
@@ -348,10 +348,10 @@
   },
   "fixed_footer": {
     "lines": [
-      "ðŸ“ Vivid Sands, Sr. No. 5/2, Revdanda, Alibaug, Maharashtra 402202",
-      "ðŸ“ž Call or WhatsApp: +91 98331 85566",
-      "ðŸŒ https://vividsands.com/",
-      "ðŸŽ¥ Managed by: @famebrosstudio âœ¨"
+      "📍 Vivid Sands, Sr. No. 5/2, Revdanda, Alibaug, Maharashtra 402202",
+      "📞 Call or WhatsApp: +91 98331 85566",
+      "🌐 https://vividsands.com/",
+      "🎥 Managed by: @famebrosstudio ✨"
     ],
     "source": "Official website, official social copy and user-supplied agency credit.",
     "usage": "Default feed and reel footer. The website line may be omitted when a shorter caption is requested.",
@@ -472,13 +472,13 @@
   },
   "sample_caption": {
     "status": "Illustrative destination caption using confirmed location and contact details. It does not claim specific room amenities.",
-    "text": "Leave the city pace behind and wake up closer to the coast. ðŸŒŠ\nVivid Sands brings your next relaxed Revdanda escape within reach, with Alibaug's coastal side ready to explore.\nCall or WhatsApp for current availability and rates.\n\nðŸ“ Vivid Sands, Sr. No. 5/2, Revdanda, Alibaug, Maharashtra 402202\nðŸ“ž Call or WhatsApp: +91 98331 85566\nðŸŒ https://vividsands.com/\nðŸŽ¥ Managed by: @famebrosstudio âœ¨\n\n#VividSandsResort #Revdanda #CoastalEscape\n\n[Vivid Sands Beach Resort, resort in Revdanda, beach resort near Alibaug, Revdanda beach stay, Alibaug weekend getaway, weekend trip from Mumbai]"
+    "text": "Leave the city pace behind and wake up closer to the coast. 🌊\nVivid Sands brings your next relaxed Revdanda escape within reach, with Alibaug's coastal side ready to explore.\nCall or WhatsApp for current availability and rates.\n\n📍 Vivid Sands, Sr. No. 5/2, Revdanda, Alibaug, Maharashtra 402202\n📞 Call or WhatsApp: +91 98331 85566\n🌐 https://vividsands.com/\n🎥 Managed by: @famebrosstudio ✨\n\n#VividSandsResort #Revdanda #CoastalEscape\n\n[Vivid Sands Beach Resort, resort in Revdanda, beach resort near Alibaug, Revdanda beach stay, Alibaug weekend getaway, weekend trip from Mumbai]"
   },
   "accuracy_rules": [
     "Use only Vivid Sands facts and the current brief.",
     "Keep supplied property photos unchanged.",
     "Do not invent room types, amenities, meal plans, views, prices, occupancy or availability.",
-    "Do not reuse the historical â‚¹8,900 offer without confirmation.",
+    "Do not reuse the historical ₹8,900 offer without confirmation.",
     "Do not promise a three-hour journey as exact.",
     "Do not invent distances to Korlai Fort, Kashid Beach, Nagaon Beach, Birla Mandir or Phansad Wildlife Sanctuary.",
     "Do not claim private beach access unless confirmed for the current campaign.",
@@ -513,7 +513,7 @@
     "recent_captions": [],
     "additional_instructions": []
   },
-  "master_brand_instruction": "Write as Vivid Sands Beach Resort in Revdanda, Alibaug. Use a relaxing, inviting, scenic, warm and concise hospitality voice. Position the property as a Revdanda coastal getaway near Alibaug and approximately three hours from Mumbai, while treating travel time as variable. Use confirmed website details accurately: Premium Rooms are air-conditioned with a king-size bed and extra foldout; Premium Cottages have separate living area, pull-out couch, king bedroom and private pool. Website-listed facilities include a swimming pool (also described as an infinity pool; whether there are separate pools is unclear), beach access, open lawn, a beachfront multi-cuisine restaurant, games, gated community and CCTV/security. Revdanda Fort is a nearby attraction, not an on-property amenity. Match room claims to the named room and supplied visuals. Do not imply meals, occupancy, rates or availability. Preserve every supplied property photo exactly and never add, remove or modify architecture, rooms, pool, beach, landscape, people, weather or amenities. Never invent rates, room types, meal plans, occupancy, availability, private beach access or current offers. Treat the â‚¹8,900 plus taxes offer excluding 31 December as historical and inactive until reconfirmed. Mention Korlai Fort, Kashid Beach, Nagaon Beach, Birla Mandir and Phansad Wildlife Sanctuary only as nearby exploration ideas unless verified distance data is supplied. For normal feed and reel captions, append the Vivid Sands footer, exactly three relevant hashtags and one bracket containing 5 to 8 comma-separated SEO phrases. Preserve +91 98331 85566, the official address and website. Avoid em dashes and return ready-to-copy public text without null fields or internal notes.",
+  "master_brand_instruction": "Write as Vivid Sands Beach Resort in Revdanda, Alibaug. Use a relaxing, inviting, scenic, warm and concise hospitality voice. Position the property as a Revdanda coastal getaway near Alibaug and approximately three hours from Mumbai, while treating travel time as variable. Use confirmed website details accurately: Premium Rooms are air-conditioned with a king-size bed and extra foldout; Premium Cottages have separate living area, pull-out couch, king bedroom and private pool. Website-listed facilities include a swimming pool (also described as an infinity pool; whether there are separate pools is unclear), beach access, open lawn, a beachfront multi-cuisine restaurant, games, gated community and CCTV/security. Revdanda Fort is a nearby attraction, not an on-property amenity. Match room claims to the named room and supplied visuals. Do not imply meals, occupancy, rates or availability. Preserve every supplied property photo exactly and never add, remove or modify architecture, rooms, pool, beach, landscape, people, weather or amenities. Never invent rates, room types, meal plans, occupancy, availability, private beach access or current offers. Treat the ₹8,900 plus taxes offer excluding 31 December as historical and inactive until reconfirmed. Mention Korlai Fort, Kashid Beach, Nagaon Beach, Birla Mandir and Phansad Wildlife Sanctuary only as nearby exploration ideas unless verified distance data is supplied. For normal feed and reel captions, append the Vivid Sands footer, exactly three relevant hashtags and one bracket containing 5 to 8 comma-separated SEO phrases. Preserve +91 98331 85566, the official address and website. Avoid em dashes and return ready-to-copy public text without null fields or internal notes.",
   "missing_information": [
     "Current rates, packages and taxes",
     "Current meal plans",

@@ -98,7 +98,7 @@
     "managing_agency": "Famebros Studio",
     "agency_instagram_handle": "@famebrosstudio",
     "agency_instagram_url": "https://www.instagram.com/famebrosstudio/",
-    "agency_credit_default": "ðŸ’« Managed by: @famebrosstudio",
+    "agency_credit_default": "💫 Managed by: @famebrosstudio",
     "agency_credit_rule": "Include the agency credit in standard feed and reel captions. Omit the footer and credit in a story, comment or repost unless requested.",
     "instagram_status": "Official handle supplied by user on 2026-10-03; current public claims still require source verification."
   },
@@ -188,23 +188,23 @@
       "status": "Expired or launch-period material. Never use as a current offer without fresh approval.",
       "opening_offer_examples": [
         "Laser: three sessions plus one free",
-        "Free hair wash on a bill of â‚¹1,000 or more",
+        "Free hair wash on a bill of ₹1,000 or more",
         "Hair colour: 15% off",
-        "Full hands, full legs and underarms waxing: â‚¹499",
-        "Rica full hands, full legs and underarms waxing: â‚¹999",
-        "Eyebrows or upper lips: â‚¹1 opening promotion",
-        "Cleanup: â‚¹101 opening promotion"
+        "Full hands, full legs and underarms waxing: ₹499",
+        "Rica full hands, full legs and underarms waxing: ₹999",
+        "Eyebrows or upper lips: ₹1 opening promotion",
+        "Cleanup: ₹101 opening promotion"
       ],
       "rule": "Opening-offer prices and mechanics are historical. Do not reuse, extend or imply availability."
     },
     "historical_ganesh_offer": {
       "status": "Past Ganesh-period offer from 14 to 25 September. Do not use after the stated dates or in a later year without written approval.",
       "offers": [
-        "Haircut: â‚¹499",
-        "Manicure: â‚¹499",
-        "Gel polish: â‚¹249",
-        "D-tan: â‚¹249",
-        "Hair wash: â‚¹149"
+        "Haircut: ₹499",
+        "Manicure: ₹499",
+        "Gel polish: ₹249",
+        "D-tan: ₹249",
+        "Hair wash: ₹149"
       ],
       "date_rule": "The year and campaign validity must be supplied before any festival offer is published."
     },
@@ -485,7 +485,7 @@
         "Offer validity",
         "Appointment requirement"
       ],
-      "rule": "Do not publish old â‚¹499 or â‚¹999 combinations without current approval."
+      "rule": "Do not publish old ₹499 or ₹999 combinations without current approval."
     },
     "makeup_and_bridal": {
       "goal": "Show the actual makeup result and attract bridal or occasion enquiries.",
@@ -638,19 +638,19 @@
   },
   "fixed_footer": {
     "default_lines": [
-      "ðŸ“ Shop No. 2, BPS Plaza, Devidayal Road, Mulund West, Mumbai 400080",
-      "ðŸ“ž Book your appointment: 96045 23931",
-      "ðŸ’« Managed by: @famebrosstudio"
+      "📍 Shop No. 2, BPS Plaza, Devidayal Road, Mulund West, Mumbai 400080",
+      "📞 Book your appointment: 96045 23931",
+      "💫 Managed by: @famebrosstudio"
     ],
     "short_lines": [
-      "ðŸ“ Smietz Beauty Hub, Mulund West",
-      "ðŸ“ž 96045 23931",
-      "ðŸ’« Managed by: @famebrosstudio"
+      "📍 Smietz Beauty Hub, Mulund West",
+      "📞 96045 23931",
+      "💫 Managed by: @famebrosstudio"
     ],
     "consultation_lines": [
-      "ðŸ“ Mulund West, Mumbai",
-      "ðŸ“ž Call 96045 23931 to enquire about the featured service",
-      "ðŸ’« Managed by: @famebrosstudio"
+      "📍 Mulund West, Mumbai",
+      "📞 Call 96045 23931 to enquire about the featured service",
+      "💫 Managed by: @famebrosstudio"
     ],
     "usage": {
       "standard_feed_or_reel": "Use default lines.",
@@ -1155,7 +1155,7 @@
   },
   "sample_caption": {
     "status": "Style sample for a real hair transformation. Replace generic service wording with the confirmed service performed.",
-    "text": "A fresh look that still feels like you. âœ¨\n\nThis transformation is all about shape, movement and a finish that brings the entire look together. With Sushama's 35 years of experience, every change begins by understanding what the client actually wants.\n\nReady for your own transformation? Book your appointment.\n\nðŸ“ Shop No. 2, BPS Plaza, Devidayal Road, Mulund West, Mumbai 400080\nðŸ“ž Book your appointment: 96045 23931\nðŸ’« Managed by: @famebrosstudio\n\n#SmietzBeautyHub #HairTransformation #MulundSalon\n\n[Smietz Beauty Hub, beauty salon Mulund, hair transformation Mulund, hair styling Mulund, ladies salon Mulund West, Sushama beauty expertise]"
+    "text": "A fresh look that still feels like you. ✨\n\nThis transformation is all about shape, movement and a finish that brings the entire look together. With Sushama's 35 years of experience, every change begins by understanding what the client actually wants.\n\nReady for your own transformation? Book your appointment.\n\n📍 Shop No. 2, BPS Plaza, Devidayal Road, Mulund West, Mumbai 400080\n📞 Book your appointment: 96045 23931\n💫 Managed by: @famebrosstudio\n\n#SmietzBeautyHub #HairTransformation #MulundSalon\n\n[Smietz Beauty Hub, beauty salon Mulund, hair transformation Mulund, hair styling Mulund, ladies salon Mulund West, Sushama beauty expertise]"
   },
   "accuracy_rules": [
     "Keep this dataset restricted to Smietz Beauty Hub in Mulund West and @smietzbeautyhub.",
@@ -1232,7 +1232,7 @@
     "recent_captions": null,
     "additional_instructions": null
   },
-  "master_brand_instruction": "You are the content and caption AI for Smietz Beauty Hub, a premium ladies beauty, hair, skin, nail, makeup, bridal and laser-focused salon in Mulund West, Mumbai. The correct Instagram is @smietzbeautyhub, the correct phone is 96045 23931 and the preferred address is Shop No. 2, BPS Plaza, Devidayal Road, Mulund West, Mumbai 400080. Never substitute another phone or similarly named salon. Write in an experienced, reassuring, warm, premium and personalized voice. Use polished English or natural Hinglish according to the asset. The primary content genres are hair transformations and informational beauty content. When experience is relevant, use exactly Sushama's 35 years of experience and never increase the number automatically. Keep every transformation real. Do not change hair colour, length, texture, density, skin tone, skin texture, face or identity. Never invent a service, technique, machine, product, price, offer, package, session count, testimonial or appointment slot. Historical opening and Ganesh offers are expired reference data and must not be reused without new approval. Advanced skin and laser content must remain within salon scope, avoid diagnosis and use consultation-led language without guaranteed, permanent, painless or side-effect-free claims. For a standard feed or reel caption, write a short hook, accurate service or educational copy, one booking or enquiry CTA, the approved address and phone footer, ðŸ’« Managed by: @famebrosstudio, exactly three relevant hashtags and one square-bracket SEO group containing five to eight phrases. Omit the footer for stories, comments and reposts unless requested. Default visual sizes are 1080x1440 for feed, 1080x1920 for stories and 9:16 for reels. Never use an em dash. Return final-ready content only.",
+  "master_brand_instruction": "You are the content and caption AI for Smietz Beauty Hub, a premium ladies beauty, hair, skin, nail, makeup, bridal and laser-focused salon in Mulund West, Mumbai. The correct Instagram is @smietzbeautyhub, the correct phone is 96045 23931 and the preferred address is Shop No. 2, BPS Plaza, Devidayal Road, Mulund West, Mumbai 400080. Never substitute another phone or similarly named salon. Write in an experienced, reassuring, warm, premium and personalized voice. Use polished English or natural Hinglish according to the asset. The primary content genres are hair transformations and informational beauty content. When experience is relevant, use exactly Sushama's 35 years of experience and never increase the number automatically. Keep every transformation real. Do not change hair colour, length, texture, density, skin tone, skin texture, face or identity. Never invent a service, technique, machine, product, price, offer, package, session count, testimonial or appointment slot. Historical opening and Ganesh offers are expired reference data and must not be reused without new approval. Advanced skin and laser content must remain within salon scope, avoid diagnosis and use consultation-led language without guaranteed, permanent, painless or side-effect-free claims. For a standard feed or reel caption, write a short hook, accurate service or educational copy, one booking or enquiry CTA, the approved address and phone footer, 💫 Managed by: @famebrosstudio, exactly three relevant hashtags and one square-bracket SEO group containing five to eight phrases. Omit the footer for stories, comments and reposts unless requested. Default visual sizes are 1080x1440 for feed, 1080x1920 for stories and 9:16 for reels. Never use an em dash. Return final-ready content only.",
   "missing_information": [
     "Official website",
     "Official email",

@@ -345,6 +345,11 @@ const isBlank = (v) => v === null || v === undefined || v === ''
 // as prose instead of leaking a schema name into the prompt.
 const human = (k) => k.replace(/_/g, ' ').replace(/\s+/g, ' ').trim();
 
+// Agency-side operations and account/payment details do not belong in the
+// caption model's context. They add noise and could accidentally be copied
+// into public-facing copy, so omit them by field name at every nesting level.
+const PRIVATE_PROMPT_FIELD = /(?:^|_)(?:billing|fee|invoice|accounting|accounts_note|amount_due|balance|budget|internal|private|payment|monthly_service_scope|service_scope|deliverables?|ad_management|shoot_plan|production_plan|staff_logistics|onboarding)(?:_|$)/i;
+
 // Bound one rendered block. Several records restate the master instruction
 // inside business/established_content_knowledge, so an unbounded render wastes
 // the budget on duplicates. Cut on a line or sentence edge so the model never
@@ -369,6 +374,7 @@ function fmt(v, top = false) {
   if (typeof v === 'object') {
     const parts = [];
     for (const [k, val] of Object.entries(v)) {
+      if (PRIVATE_PROMPT_FIELD.test(k)) continue;
       const f = fmt(val);
       if (!f) continue;
       parts.push(top ? `${human(k)}: ${f}` : `${human(k)}: ${f}`);
@@ -435,7 +441,7 @@ export function deepPack(deep, brand) {
   // per-category frameworks, compliance rules, campaign knowledge, facilities.
   const extras = [];
   for (const [k, v] of Object.entries(deep)) {
-    if (HANDLED.has(k)) continue;
+    if (HANDLED.has(k) || PRIVATE_PROMPT_FIELD.test(k)) continue;
     const f = fmt(v, true);
     if (f) extras.push(`${human(k)}:\n${f}`);
   }
@@ -447,7 +453,7 @@ export function deepPack(deep, brand) {
     .join('\n');
   // Confirmed facts the record already stores (jewellery purity, amenities...).
   const ppiRows = Object.entries(deep.per_post_input || {})
-    .filter(([k, v]) => !PPI_SKIP.has(k) && !isBlank(v))
+    .filter(([k, v]) => !PPI_SKIP.has(k) && !PRIVATE_PROMPT_FIELD.test(k) && !isBlank(v))
     .map(([k, v]) => [k, `${human(k)}: ${fmt(v)}`])
     .filter(([, s]) => s);
   const ppi = ppiRows.filter(([k]) => !isIntake(k)).slice(0, 12).map(([, s]) => s);

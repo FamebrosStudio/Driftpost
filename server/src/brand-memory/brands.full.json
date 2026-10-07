@@ -3170,9 +3170,14 @@
     },
     {
       "brand_id": "asma_women_clothing",
-      "name": "Asma Women Clothing",
-      "aliases": [],
-      "category": "Women clothing",
+      "name": "HerChoice by Asma",
+      "aliases": [
+        "Asma Women Clothing",
+        "Asma Women's Clothing",
+        "Her Choice by Asma",
+        "@herchoice_byasma"
+      ],
+      "category": "Pakistani women's fashion and ethnic clothing",
       "location": null,
       "content_genres": [
         "women_clothing",
@@ -3181,7 +3186,7 @@
       ],
       "caption_direction": {
         "status": "editorial_default_based_on_source_genres",
-        "tone": "Graceful, stylish and uncluttered",
+        "tone": "Premium, feminine, elegant and curiosity-led",
         "audience": "Women shopping for clothing",
         "language": "English or Hinglish",
         "focus": [
@@ -3191,21 +3196,22 @@
         ],
         "avoid": [
           "Women only",
-          "Do not assume modestwear, abayas, ethnic-only or a specific city",
-          "No invented fabric, sizes or price"
+          "Never imply celebrity endorsement",
+          "Do not invent fabric, work, included pieces, size, price, stock, shipping, delivery, exchange or returns"
         ],
         "cta_options": [
-          "DM us for details of this outfit.",
+          "DM @herchoice_byasma for current product details.",
           "Which look would you choose?"
         ],
         "language_status": "editorial_default_not_a_claim_about_all_past_posts"
       },
       "keyword_bank": [
-        "Asma Women Clothing",
-        "women clothing",
-        "outfit inspiration",
-        "women fashion",
-        "fashion showcase"
+        "HerChoice by Asma",
+        "Pakistani women's fashion",
+        "Pakistani suits for women",
+        "Pakistani ethnic wear",
+        "women's fashion collection",
+        "festive suits for women"
       ],
       "approved_facts": [],
       "mandatory_copy": [],
@@ -3228,20 +3234,21 @@
       "example": {
         "status": "new_illustrative_example_not_a_historical_caption",
         "scenario": "Cinematic women outfit showcase",
-        "body": "Let the outfit do the talking. ✨\nA closer look at the style featured by Asma Women Clothing.\nDM us for outfit details.",
+        "body": "The outfit's details take the lead.\nA refined look from HerChoice by Asma.\nDM for current product details.",
         "hashtags": [
-          "AsmaWomenClothing",
-          "WomensFashion",
-          "StyleInspiration"
+          "HerChoiceByAsma",
+          "PakistaniSuits",
+          "EthnicWear"
         ],
         "seo_keywords": [
-          "Asma Women Clothing",
-          "women clothing",
-          "outfit inspiration",
-          "women fashion",
-          "fashion showcase"
+          "HerChoice by Asma",
+          "Pakistani women's fashion",
+          "Pakistani suits for women",
+          "Pakistani ethnic wear",
+          "women's fashion collection",
+          "festive suits for women"
         ],
-        "full_caption": "Let the outfit do the talking. ✨\nA closer look at the style featured by Asma Women Clothing.\nDM us for outfit details.\n\n💫 Managed by: @famebrosstudio\n\n#AsmaWomenClothing #WomensFashion #StyleInspiration\n\n[Asma Women Clothing, women clothing, outfit inspiration, women fashion, fashion showcase]"
+        "full_caption": "The outfit's details take the lead.\nA refined look from HerChoice by Asma.\nDM for current product details.\n\n💫 Managed by: @famebrosstudio\n\n#HerChoiceByAsma #PakistaniSuits #EthnicWear\n\n[HerChoice by Asma, Pakistani women's fashion, Pakistani suits for women, Pakistani ethnic wear, women's fashion collection, festive suits for women]"
       },
       "missing_details": [
         "Public enquiry phone, if the brand wants it in captions",

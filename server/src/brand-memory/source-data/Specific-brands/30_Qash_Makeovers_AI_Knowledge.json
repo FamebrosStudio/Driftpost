@@ -61,7 +61,7 @@
     "managing_agency": "Famebros Studio",
     "agency_instagram_handle": "@famebrosstudio",
     "agency_instagram_url": "https://www.instagram.com/famebrosstudio/",
-    "agency_credit_default": "ðŸ’« Managed by: @famebrosstudio",
+    "agency_credit_default": "💫 Managed by: @famebrosstudio",
     "reference_rule": "Use official portfolio content only with client consent and current service details. Do not reuse another artist's look or course claim.",
     "instagram_status": "Official handle supplied by user on 2026-10-03; current public claims still require source verification."
   },
@@ -269,13 +269,13 @@
   },
   "fixed_footer": {
     "standard_lines": [
-      "ðŸ“ Shop No. 2, Rajal Godavari Apartment, Teachers Colony, Kurla West, Mumbai",
-      "ðŸ“ž +91 70457 76977",
-      "ðŸ’« Managed by: @famebrosstudio"
+      "📍 Shop No. 2, Rajal Godavari Apartment, Teachers Colony, Kurla West, Mumbai",
+      "📞 +91 70457 76977",
+      "💫 Managed by: @famebrosstudio"
     ],
     "compact_lines": [
-      "ðŸ“ Kurla West | ðŸ“ž +91 70457 76977",
-      "ðŸ’« Managed by: @famebrosstudio"
+      "📍 Kurla West | 📞 +91 70457 76977",
+      "💫 Managed by: @famebrosstudio"
     ],
     "usage": "Use the standard footer for booking, bridal and academy posts. Use the compact footer when the caption is long.",
     "exceptions": [
@@ -396,9 +396,9 @@
     "scenario": "Bridal makeup reveal",
     "caption_body": "A bridal look should enhance your features and still feel completely like you. From the eye detail to the final hairstyle, every element is planned around the occasion. Call us with your event date to check the current bridal booking availability.",
     "footer": [
-      "ðŸ“ Shop No. 2, Rajal Godavari Apartment, Teachers Colony, Kurla West, Mumbai",
-      "ðŸ“ž +91 70457 76977",
-      "ðŸ’« Managed by: @famebrosstudio"
+      "📍 Shop No. 2, Rajal Godavari Apartment, Teachers Colony, Kurla West, Mumbai",
+      "📞 +91 70457 76977",
+      "💫 Managed by: @famebrosstudio"
     ],
     "hashtags": [
       "#QashMakeovers",
@@ -413,7 +413,7 @@
       "bridal booking Mumbai",
       "occasion makeup Kurla"
     ],
-    "full_caption": "A bridal look should enhance your features and still feel completely like you. From the eye detail to the final hairstyle, every element is planned around the occasion. Call us with your event date to check the current bridal booking availability.\n\nðŸ“ Shop No. 2, Rajal Godavari Apartment, Teachers Colony, Kurla West, Mumbai\nðŸ“ž +91 70457 76977\nðŸ’« Managed by: @famebrosstudio\n\n#QashMakeovers #BridalMakeupMumbai #KurlaMakeupArtist\n\n[Qash Makeovers Kurla, bridal makeup Mumbai, makeup artist in Kurla West, bridal hairstyling Mumbai, bridal booking Mumbai, occasion makeup Kurla]",
+    "full_caption": "A bridal look should enhance your features and still feel completely like you. From the eye detail to the final hairstyle, every element is planned around the occasion. Call us with your event date to check the current bridal booking availability.\n\n📍 Shop No. 2, Rajal Godavari Apartment, Teachers Colony, Kurla West, Mumbai\n📞 +91 70457 76977\n💫 Managed by: @famebrosstudio\n\n#QashMakeovers #BridalMakeupMumbai #KurlaMakeupArtist\n\n[Qash Makeovers Kurla, bridal makeup Mumbai, makeup artist in Kurla West, bridal hairstyling Mumbai, bridal booking Mumbai, occasion makeup Kurla]",
     "validation": {
       "hashtags": 3,
       "seo_phrases": 6,

@@ -317,9 +317,9 @@
   },
   "fixed_footer": {
     "lines": [
-      "ðŸ“ Roopali Sarees, Shop No. 1, B-49, Chaitali Bldg., Sector-1, Shanti Nagar, Mira Road (E), Thane - 401107",
-      "ðŸ“ž +91 90225 61477",
-      "ðŸŽ¥ Managed by: @famebrosstudio âœ¨"
+      "📍 Roopali Sarees, Shop No. 1, B-49, Chaitali Bldg., Sector-1, Shanti Nagar, Mira Road (E), Thane - 401107",
+      "📞 +91 90225 61477",
+      "🎥 Managed by: @famebrosstudio ✨"
     ],
     "source": "User-approved recent caption details, corroborated by indexed brand posts.",
     "usage": "Default for feed and reel captions when the user wants the full business footer. Shorten for Stories and text overlays.",
@@ -482,7 +482,7 @@
   },
   "sample_caption": {
     "status": "Illustrative generic saree showcase; do not use unchanged for a specific product without checking the actual visuals.",
-    "text": "A saree worth seeing in motion. âœ¨\nFrom the full drape to the little details, explore the look up close and find your favourite for the next celebration. Visit us in Mira Road East or call to check availability.\n\nðŸ“ Roopali Sarees, Shop No. 1, B-49, Chaitali Bldg., Sector-1, Shanti Nagar, Mira Road (E), Thane - 401107\nðŸ“ž +91 90225 61477\nðŸŽ¥ Managed by: @famebrosstudio âœ¨\n\n#RoopaliSarees #SareeStyle #MiraRoadShopping\n\n[Roopali Sarees Mira Road, saree shop in Mira Road East, women's ethnic wear, festive saree look, saree shopping Thane]"
+    "text": "A saree worth seeing in motion. ✨\nFrom the full drape to the little details, explore the look up close and find your favourite for the next celebration. Visit us in Mira Road East or call to check availability.\n\n📍 Roopali Sarees, Shop No. 1, B-49, Chaitali Bldg., Sector-1, Shanti Nagar, Mira Road (E), Thane - 401107\n📞 +91 90225 61477\n🎥 Managed by: @famebrosstudio ✨\n\n#RoopaliSarees #SareeStyle #MiraRoadShopping\n\n[Roopali Sarees Mira Road, saree shop in Mira Road East, women's ethnic wear, festive saree look, saree shopping Thane]"
   },
   "accuracy_rules": [
     "Treat the user's approved phone and address as the public footer source over conflicting directories.",

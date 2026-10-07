@@ -119,7 +119,7 @@
     "managing_agency": "Famebros Studio",
     "agency_instagram_handle": "@famebrosstudio",
     "agency_instagram_url": "https://www.instagram.com/famebrosstudio/",
-    "agency_credit_default": "ðŸ’« Managed by: @famebrosstudio",
+    "agency_credit_default": "💫 Managed by: @famebrosstudio",
     "agency_credit_rule": "Include the agency credit in standard feed and reel captions. Omit it for story copy, comments, replies and repost text unless requested.",
     "instagram_status": "Official handle supplied by user on 2026-10-03; current public claims still require source verification."
   },
@@ -534,13 +534,13 @@
   },
   "fixed_footer": {
     "standard_feed_and_reel_lines": [
-      "ðŸ“ Ahmedabad",
-      "ðŸ“ž +91 7600007731",
-      "ðŸ’« Managed by: @famebrosstudio"
+      "📍 Ahmedabad",
+      "📞 +91 7600007731",
+      "💫 Managed by: @famebrosstudio"
     ],
     "compact_option": [
-      "ðŸ“ Ahmedabad | ðŸ“ž +91 7600007731",
-      "ðŸ’« Managed by: @famebrosstudio"
+      "📍 Ahmedabad | 📞 +91 7600007731",
+      "💫 Managed by: @famebrosstudio"
     ],
     "footer_status": "Location and agency credit are established. The phone is user-provided and matched in indexed official Instagram content.",
     "footer_rule": "Use the standard lines in normal feed and reel captions. Do not add an unverified street address, email, website or WhatsApp label.",
@@ -913,9 +913,9 @@
     "scenario": "Model-led wholesale trouser showcase",
     "caption_body": "Wholesale only. A sharp trouser silhouette can define the complete menswear look. Explore the Carrara collection created for retailers and distributors across India. DM @carraraclothing or call +91 7600007731 for collection enquiries.",
     "footer": [
-      "ðŸ“ Ahmedabad",
-      "ðŸ“ž +91 7600007731",
-      "ðŸ’« Managed by: @famebrosstudio"
+      "📍 Ahmedabad",
+      "📞 +91 7600007731",
+      "💫 Managed by: @famebrosstudio"
     ],
     "hashtags": [
       "#CarraraClothing",
@@ -930,7 +930,7 @@
       "menswear retailers",
       "trouser supplier Ahmedabad"
     ],
-    "full_caption": "Wholesale only. A sharp trouser silhouette can define the complete menswear look. Explore the Carrara collection created for retailers and distributors across India. DM @carraraclothing or call +91 7600007731 for collection enquiries.\n\nðŸ“ Ahmedabad\nðŸ“ž +91 7600007731\nðŸ’« Managed by: @famebrosstudio\n\n#CarraraClothing #WholesaleMenswear #MensTrousers\n\n[Carrara trousers, trouser manufacturer Ahmedabad, men's trouser manufacturer, wholesale trousers India, menswear retailers, trouser supplier Ahmedabad]",
+    "full_caption": "Wholesale only. A sharp trouser silhouette can define the complete menswear look. Explore the Carrara collection created for retailers and distributors across India. DM @carraraclothing or call +91 7600007731 for collection enquiries.\n\n📍 Ahmedabad\n📞 +91 7600007731\n💫 Managed by: @famebrosstudio\n\n#CarraraClothing #WholesaleMenswear #MensTrousers\n\n[Carrara trousers, trouser manufacturer Ahmedabad, men's trouser manufacturer, wholesale trousers India, menswear retailers, trouser supplier Ahmedabad]",
     "validation": {
       "body_word_count_target": "25 to 55 words",
       "hashtags_count": 3,
