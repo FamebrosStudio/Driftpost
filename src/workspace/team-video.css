@@ -82,11 +82,20 @@
 .drive-intake-naming { display: block; margin-top: 14px; color: var(--faint); font-size: 10px; line-height: 1.6; }
 .drive-intake-naming code { color: var(--ink); white-space: normal; }
 .drive-intake-jobs { display: grid; gap: 7px; margin-top: 16px; padding-top: 13px; border-top: 1px solid var(--line); }
-.drive-intake-jobs > b { font-size: 11px; }
+.drive-intake-jobs .drive-jobs-heading { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.drive-jobs-heading b { font-size: 11px; }
+.drive-jobs-heading button { min-height: 28px; padding: 0 9px; border: 1px solid var(--line); border-radius: 6px; background: var(--panel); color: var(--ink); font: inherit; font-size: 9px; font-weight: 700; cursor: pointer; }
+.drive-jobs-heading button:hover { border-color: var(--go); box-shadow: 0 0 0 2px color-mix(in srgb, var(--go) 16%, transparent); }
 .drive-intake-jobs > div { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 4px 12px; padding: 9px 10px; border: 1px solid var(--line); border-radius: 8px; background: color-mix(in srgb, var(--bg) 60%, transparent); }
 .drive-intake-jobs > div > span { display: grid; gap: 3px; min-width: 0; }
 .drive-intake-jobs strong { overflow: hidden; color: var(--ink); font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
 .drive-intake-jobs small { color: var(--faint); font-size: 9px; }
+.drive-intake-jobs .drive-job-progress { grid-column: 1 / -1; color: var(--muted); line-height: 1.5; }
+.drive-intake-jobs .drive-job-destinations { grid-column: 1 / -1; color: var(--faint); line-height: 1.5; overflow-wrap: anywhere; }
+.drive-intake-jobs .drive-job-files { grid-column: 1 / -1; color: var(--muted); font-size: 9px; }
+.drive-job-files summary { cursor: pointer; }
+.drive-intake-jobs .drive-job-files small { display: block; margin-top: 5px; line-height: 1.5; overflow-wrap: anywhere; }
+.drive-intake-jobs .drive-job-empty { margin: 0; color: var(--faint); font-size: 10px; line-height: 1.5; }
 .drive-intake-jobs em { font-size: 9px; font-style: normal; font-weight: 800; text-transform: capitalize; }
 .drive-job-status.completed { color: var(--go); }
 .drive-job-status.failed, .drive-job-status.partial { color: #e07e72; }
@@ -98,6 +107,10 @@
 .drive-intake-jobs .drive-job-review-button:hover:not(:disabled) { border-color: #e2a84d; box-shadow: 0 0 0 2px color-mix(in srgb, #e2a84d 18%, transparent); }
 .drive-intake-jobs .drive-job-review-button:disabled { opacity: .6; cursor: wait; }
 .team-video-review-panel { display: grid; grid-template-columns: minmax(0, 1fr) minmax(220px, 36%); align-items: center; gap: 18px; margin: 0 0 15px; padding: 17px; border: 1px solid color-mix(in srgb, #e2a84d 58%, var(--line)); border-radius: 12px; background: color-mix(in srgb, #e2a84d 6%, var(--panel)); }
+.team-drive-review-images { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 8px; max-height: 340px; overflow: auto; }
+.team-drive-review-images figure { min-width: 0; margin: 0; }
+.team-drive-review-images img { display: block; width: 100%; height: 120px; border-radius: 7px; object-fit: contain; background: #090b10; }
+.team-drive-review-images figcaption { margin-top: 4px; color: var(--muted); font-size: 9px; overflow-wrap: anywhere; }
 .team-video-review-panel > div { display: grid; gap: 6px; }
 .team-video-review-panel b { color: #e2a84d; font-size: 13px; }
 .team-video-review-panel p { margin: 0; color: var(--ink); font-size: 12px; line-height: 1.5; }

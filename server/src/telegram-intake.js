@@ -123,6 +123,8 @@ export async function processIntakeJob(supabase, job, options = {}) {
   const table = options.table || 'telegram_video_jobs';
   const intakeKey = options.intakeKey || 'telegram_intake_job_id';
   const notify = options.notify || ((message) => reply(job.chat_id, message, job.message_id));
+  const progress = async (stage, detail = '') => { if (options.progress) await options.progress(stage, detail); };
+  const isCarousel = job.result?.media_kind === 'carousel';
   if (!ownerId) throw new Error('The Driftpost publishing account is not configured.');
   // A worker can restart after inserting publish rows but before updating the
   // inbox row. Detect that commit before retrying analysis so a Telegram retry
@@ -135,7 +137,7 @@ export async function processIntakeJob(supabase, job, options = {}) {
       status: 'publishing', result: { ...(job.result || {}), destinations: alreadyQueued }, updated_at: new Date().toISOString(),
     }).eq('id', job.id);
     if (updateError) console.error('[telegram-intake] could not reconcile queued publish rows:', updateError.message);
-    await notify(`This video is already queued for ${alreadyQueued.length} destination${alreadyQueued.length === 1 ? '' : 's'}. I will send the result when publishing finishes.`);
+    await notify(`This media is already queued for ${alreadyQueued.length} destination${alreadyQueued.length === 1 ? '' : 's'}. I will send the result when publishing finishes.`);
     return;
   }
   const { data: authResult, error: authError } = await supabase.auth.admin.getUserById(ownerId);
@@ -172,13 +174,31 @@ export async function processIntakeJob(supabase, job, options = {}) {
   const videoPath = path.join(directory, path.basename(job.file_name || 'incoming-video.mp4').replace(/[^a-z0-9._-]/gi, '_').slice(-140));
   const storedPaths = [];
   try {
-    const byteSize = options.download ? await options.download(job, videoPath) : await getTelegramVideo(job.telegram_file_id, videoPath);
-    const { frames, duration } = await sampleFrames(videoPath, directory);
+    await progress('downloading', isCarousel ? `Downloading ${job.result.source_drive_files?.length || 1} carousel images from Drive` : 'Downloading video from Drive');
+    let mediaFiles;
+    let frames;
+    let duration = 0;
+    if (isCarousel && options.downloadMedia) {
+      mediaFiles = await options.downloadMedia(job, directory);
+      if (!mediaFiles.length || mediaFiles.length > 10) throw new Error('A carousel needs between 1 and 10 supported images.');
+      frames = await Promise.all(mediaFiles.slice(0, 8).map(async (item) => ({ ...item, base64: (await fs.readFile(item.path)).toString('base64') })));
+    } else {
+      const byteSize = options.download ? await options.download(job, videoPath) : await getTelegramVideo(job.telegram_file_id, videoPath);
+      mediaFiles = [{ path: videoPath, name: path.basename(videoPath), mimetype: job.mime_type || 'video/mp4', size: byteSize }];
+      await progress('analyzing', 'Extracting video frames');
+      const sampled = await sampleFrames(videoPath, directory);
+      frames = sampled.frames;
+      duration = sampled.duration;
+    }
+    await progress('analyzing', isCarousel ? `Analyzing ${mediaFiles.length} carousel images` : 'Analyzing frames and speech');
     let transcript = '';
     let speechWarning = '';
-    try { transcript = (await transcribeVideo(videoPath, path.basename(videoPath), job.mime_type || 'video/mp4')).text || ''; }
+    try { if (!isCarousel) transcript = (await transcribeVideo(videoPath, path.basename(videoPath), job.mime_type || 'video/mp4')).text || ''; }
     catch (error) { speechWarning = brandHit.brand.id ? 'Speech transcription was unavailable; captions use the video frames and saved brand profile.' : 'Speech transcription was unavailable; captions use the video frames only.'; console.warn('[telegram-intake] transcription unavailable:', String(error?.message || error).slice(0, 220)); }
-    const platforms = [...new Set(destinations.map((item) => item.platform))];
+    const supportedDestinations = isCarousel ? destinations.filter((item) => ['instagram', 'facebook', 'x'].includes(item.platform)) : destinations;
+    if (isCarousel && !supportedDestinations.length) throw new Error('Photo carousels can publish to Instagram, Facebook, or X. This brand has no connected photo destination.');
+    if (isCarousel && destinations.some((item) => item.platform === 'x') && mediaFiles.length > 4) throw new Error('X supports up to 4 photos per post. Reduce this carousel to 4 images or remove X from the selected destinations.');
+    const platforms = [...new Set(supportedDestinations.map((item) => item.platform))];
     if (options.assessBrand && brandHit.brand.id) {
       let assessment;
       try { assessment = await options.assessBrand(brandHit.brand, frames, transcript); }
@@ -208,12 +228,12 @@ export async function processIntakeJob(supabase, job, options = {}) {
       }
     }
     const generated = await generateCaptions(
-      `Create accurate, platform-specific captions for the video sent to the ${brandHit.brand.name} account. Describe only what is visible or spoken.`,
+      `Create accurate, platform-specific captions for the ${isCarousel ? 'photo carousel' : 'video'} sent to the ${brandHit.brand.name} account. Describe only what is visible or spoken.`,
       {
         brand: brandHit.brand.id ? brandHit.brand.name : '',
         brandId: brandHit.brand.id,
         allowPrivateBrandData: !!brandHit.brand.id,
-        assetHint: `Video duration ${Math.round(duration)} seconds.`,
+        assetHint: isCarousel ? `A carousel of ${mediaFiles.length} images, ordered by filename.` : `Video duration ${Math.round(duration)} seconds.`,
         goal: 'enquiries', tone: 'auto', emoji: 'medium', length: 'medium',
         transcript,
         platforms,
@@ -222,7 +242,8 @@ export async function processIntakeJob(supabase, job, options = {}) {
       },
     );
     const captions = generated.captions || generated;
-    const coverSelection = await selectVideoCoverFrames(frames.map(({ name, mimetype, base64 }) => ({ name, mimetype, base64 })));
+    await progress('preparing', 'Writing platform captions and preparing media');
+    const coverSelection = isCarousel ? {} : await selectVideoCoverFrames(frames.map(({ name, mimetype, base64 }) => ({ name, mimetype, base64 })));
     const covers = {};
     for (const platform of platforms) {
       if (!['youtube', 'instagram', 'facebook'].includes(platform)) continue;
@@ -233,11 +254,24 @@ export async function processIntakeJob(supabase, job, options = {}) {
 
     const sourcePrefix = options.sourcePrefix || 'telegram';
     const videoKey = `scheduled/${ownerId}/${sourcePrefix}-${job.id}/video${path.extname(videoPath) || '.mp4'}`;
-    const { error: videoUploadError } = await uploadMediaFile(supabase.storage.from(process.env.MEDIA_BUCKET || 'driftpost-media'), videoKey, {
-      path: videoPath, mimetype: job.mime_type || 'video/mp4',
-    }, { contentType: job.mime_type || 'video/mp4', upsert: true });
-    if (videoUploadError) throw new Error('Could not save the video for automatic publishing.');
-    storedPaths.push(videoKey);
+    const storedMedia = [];
+    for (let index = 0; index < mediaFiles.length; index++) {
+      let item = mediaFiles[index];
+      if (isCarousel && item.mimetype === 'image/png' && platforms.includes('instagram')) {
+        const jpegPath = path.join(directory, `carousel-${index + 1}.jpg`);
+        await execFileAsync('ffmpeg', ['-hide_banner', '-loglevel', 'error', '-y', '-i', item.path, '-frames:v', '1', '-q:v', '2', jpegPath], { timeout: 60_000, maxBuffer: 1024 * 1024 });
+        const stat = await fs.stat(jpegPath);
+        const maxBytes = platforms.includes('instagram') ? 8 * 1024 * 1024 : 10 * 1024 * 1024;
+        if (stat.size > maxBytes) throw new Error(`Prepared carousel image ${index + 1} exceeds ${maxBytes / 1024 / 1024} MB for the connected platforms.`);
+        item = { ...item, path: jpegPath, mimetype: 'image/jpeg', size: stat.size };
+      }
+      const extension = item.mimetype === 'image/png' ? '.png' : '.jpg';
+      const key = `scheduled/${ownerId}/${sourcePrefix}-${job.id}/${isCarousel ? `image-${String(index + 1).padStart(2, '0')}${extension}` : `video${path.extname(item.name || videoPath) || '.mp4'}`}`;
+      const { error: mediaUploadError } = await uploadMediaFile(supabase.storage.from(process.env.MEDIA_BUCKET || 'driftpost-media'), key, item, { contentType: item.mimetype, upsert: true });
+      if (mediaUploadError) throw new Error(`Could not save ${isCarousel ? `carousel image ${index + 1}` : 'the video'} for automatic publishing.`);
+      storedPaths.push(key);
+      storedMedia.push({ path: key, mimetype: item.mimetype, name: item.name });
+    }
     const storedCovers = {};
     let thumbPath = null;
     for (const [platform, cover] of Object.entries(covers)) {
@@ -250,7 +284,8 @@ export async function processIntakeJob(supabase, job, options = {}) {
     }
 
     const byPlatform = captions;
-    const rows = destinations.map((connection) => {
+    await progress('queueing', `Adding ${storedMedia.length} ${isCarousel ? 'images' : 'video'} to the publishing queue`);
+    const rows = supportedDestinations.map((connection) => {
       const body = {
         text: '', skip_crosspost: '1', [intakeKey]: job.id,
         ai_generated: '1', yt_privacy: 'public',
@@ -280,7 +315,7 @@ export async function processIntakeJob(supabase, job, options = {}) {
         scheduled_at: new Date(Date.now() - 2000).toISOString(),
         status: 'scheduled',
         body,
-        media: [{ path: videoKey, mimetype: job.mime_type || 'video/mp4', name: path.basename(videoPath) }],
+        media: storedMedia,
         thumb_path: connection.platform === 'youtube' ? thumbPath : null,
       };
     });
@@ -289,11 +324,11 @@ export async function processIntakeJob(supabase, job, options = {}) {
     if (scheduleError || !scheduled || scheduled.length !== rows.length) throw new Error('The video was prepared, but Driftpost could not add every destination to its publishing queue.');
     const { error: intakeUpdateError } = await supabase.from(table).update({
       status: 'publishing',
-      result: { brand: brandHit.brand.name, destinations: scheduled, transcript: !!transcript, speechWarning },
+      result: { ...(job.result || {}), brand: brandHit.brand.name, destinations: scheduled, transcript: !!transcript, speechWarning, media_kind: isCarousel ? 'carousel' : 'video', progress: { stage: 'publishing', detail: `Queued to ${scheduled.length} destination${scheduled.length === 1 ? '' : 's'}`, updated_at: new Date().toISOString() } },
       updated_at: new Date().toISOString(),
     }).eq('id', job.id);
     if (intakeUpdateError) console.error('[telegram-intake] queued posts but could not update intake status:', intakeUpdateError.message);
-    await reply(job.chat_id, `✅ Video processed for ${brandHit.brand.name}. AI selected the cover and queued ${scheduled.length} destination${scheduled.length === 1 ? '' : 's'} for automatic publishing.${speechWarning ? `\n\nNote: ${speechWarning}` : ''}`, job.message_id);
+    await reply(job.chat_id, `✅ ${isCarousel ? `${mediaFiles.length}-image carousel` : 'Video'} processed for ${brandHit.brand.name}. Queued ${scheduled.length} destination${scheduled.length === 1 ? '' : 's'} for automatic publishing.${speechWarning ? `\n\nNote: ${speechWarning}` : ''}`, job.message_id);
   } catch (error) {
     await supabase.storage.from(process.env.MEDIA_BUCKET || 'driftpost-media').remove(storedPaths).catch(() => {});
     throw error;

@@ -1435,10 +1435,19 @@ app.get('/api/intake/drive/jobs/:jobId/media', requireUser, async (req, res) => 
     .eq('id', req.params.jobId).eq('owner_user_id', req.user.id).maybeSingle();
   if (error) return res.status(503).json({ error: 'Could not load this private review item.' });
   if (!job) return res.status(404).json({ error: 'Review item not found.' });
-  if (job.status !== 'failed' || !job.result?.review) return res.status(409).json({ error: 'This video is not waiting for human review.' });
+  if (job.status !== 'failed' || !job.result?.review) return res.status(409).json({ error: 'This media is not waiting for human review.' });
   try {
-    const upstream = await getDriveReviewFile(supabase, job);
-    res.setHeader('Content-Disposition', `inline; filename="${String(job.file_name || 'review-video.mp4').replace(/[\r\n"\\]/g, '_').slice(0, 180)}"`);
+    let mediaJob = job;
+    let mediaName = job.file_name || 'review-video.mp4';
+    if (job.result?.media_kind === 'carousel') {
+      const index = Number.parseInt(String(req.query.index || '0'), 10);
+      const item = job.result?.source_drive_files?.[index];
+      if (!Number.isInteger(index) || index < 0 || !item) return res.status(400).json({ error: 'Carousel image index is invalid.' });
+      mediaJob = { ...job, drive_file_id: item.id };
+      mediaName = item.name || `carousel-${index + 1}.jpg`;
+    }
+    const upstream = await getDriveReviewFile(supabase, mediaJob);
+    res.setHeader('Content-Disposition', `inline; filename="${String(mediaName).replace(/[\r\n"\\]/g, '_').slice(0, 180)}"`);
     streamDriveReviewFile(upstream, res);
   } catch (mediaError) {
     if (!res.headersSent) res.status(502).json({ error: String(mediaError?.message || 'Could not load this video for review.').slice(0, 300) });
