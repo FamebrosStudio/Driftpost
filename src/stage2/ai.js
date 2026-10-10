@@ -117,14 +117,14 @@ async function sampleVideo(file, count = 3) {
 
 // Shared Stage 2/3 caption generation: one request, per-platform answers.
 // Pass only:<platform> for a fast single-card regen (one card, ~1/3 tokens).
-export function requestCaptions(token, { brief, brand, files, tone, emoji, length, analysis = 'fast', only, platforms }) {
+export function requestCaptions(token, { brief, brand, files, tone, emoji, length, analysis = 'fast', only, platforms, frameCount = 3 }) {
   return (async () => {
     const entries = files || [];
     const analyzeMedia = analysis === 'analyze';
     const photos = analyzeMedia ? entries.filter((f) => f?.raw?.type?.startsWith('image/')) : [];
     const video = analyzeMedia ? entries.find((f) => f?.raw?.type?.startsWith('video/')) : null;
-    const frames = video ? await sampleVideo(video.raw) : [];
-    // Keep one generation call light: three video moments plus one photo, or
+    const frames = video ? await sampleVideo(video.raw, Math.max(1, Math.min(8, Number(frameCount) || 3))) : [];
+    // Keep the standard composer light: three video moments plus one photo, or
     // four photos. The video itself is sent once for speech transcription.
     const selected = video ? [...photos.slice(0, 1), ...frames] : photos.slice(0, 4);
     const form = new FormData();
@@ -139,6 +139,7 @@ export function requestCaptions(token, { brief, brand, files, tone, emoji, lengt
       ...(only ? { only } : Array.isArray(platforms) && platforms.length
         ? { only: JSON.stringify([...new Set(platforms)]) }
         : {}),
+      ...(video && Number(frameCount) > 3 ? { video_frame_analysis: '1' } : {}),
     };
     const compacted = await Promise.all(selected.map((photo) => compactImage(photo?.raw || photo)));
     compacted.filter(Boolean).forEach((file) => form.append('images', file, file.name));
@@ -148,7 +149,10 @@ export function requestCaptions(token, { brief, brand, files, tone, emoji, lengt
     if (video) form.append('video', video.raw, video.name || 'video.mp4');
     body.image_count = form.getAll('images').length;
     for (const [key, value] of Object.entries(body)) form.append(key, String(value ?? ''));
-    return api('/api/ai/captions', token, { method: 'POST', body: form });
+    const result = await api('/api/ai/captions', token, { method: 'POST', body: form });
+    // Keep extracted stills local for the private team flow's separate cover
+    // decision. They are not serialized back from the API.
+    return { ...result, videoFrames: frames };
   })();
 }
 

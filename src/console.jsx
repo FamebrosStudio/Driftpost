@@ -6,6 +6,7 @@ import StageThreePage from './stage3/StageThreePage.jsx';
 import PageLoading from './PageLoading.jsx';
 import { WorkspaceNav, DashboardPage, CalendarPage, AnalyticsPage } from './workspace/Workspace.jsx';
 import AutomationsPage from './workspace/AutomationsPage.jsx';
+import TeamVideoPage from './workspace/TeamVideoPage.jsx';
 
 const HistoryPage = lazy(() => import('./history/HistoryPage.jsx'));
 
@@ -76,6 +77,7 @@ export default function Console({ session, onSwitchAccount, onSignOut }) {
   };
   const openHistory = () => navigate('history');
   const withBackgroundNotice = (page) => <>{page}<BackgroundPublishNotice notice={backgroundPublishNotice} onDismiss={() => setBackgroundPublishNotice(null)} /></>;
+  if (view === 'team-video') return withBackgroundNotice(<TeamVideoPage session={session} onNavigate={navigate} onSignOut={onSignOut} onOpenReview={() => { setView('create'); go('3'); }} />);
   if (view === 'home') return withBackgroundNotice(<DashboardPage session={session} onNavigate={navigate} onCreate={() => navigate('create')} onSignOut={onSignOut} />);
   if (view === 'calendar') return withBackgroundNotice(<CalendarPage session={session} onNavigate={navigate} onCreate={(date) => {
     try { sessionStorage.setItem('driftpost-calendar-prefill', JSON.stringify({ date, createdAt: Date.now() })); } catch {}
@@ -96,7 +98,16 @@ export default function Console({ session, onSwitchAccount, onSignOut }) {
     }} onBackgroundProgress={(progress) => setBackgroundPublishNotice((current) => current?.id === progress.id ? progress : current)} />);
   }
   if (stage === '2') {
-    return withBackgroundNotice(<StageTwoPage session={session} onBack={() => go(1)} onNavigate={navigate} onSignOut={onSignOut} onNext={() => go(3)} />);
+    return withBackgroundNotice(<StageTwoPage session={session} onBack={() => {
+      try {
+        localStorage.removeItem(`driftpost-team-workflow:${session.user.id}`);
+        localStorage.removeItem(`driftpost-team-selection:${session.user.id}`);
+        localStorage.removeItem(`driftpost-team-warning:${session.user.id}`);
+        sessionStorage.removeItem(`driftpost-team-auto-publish:${session.user.id}`);
+        sessionStorage.removeItem(`driftpost-team-transcript:${session.user.id}`);
+      } catch {}
+      go(1);
+    }} onNavigate={navigate} onSignOut={onSignOut} onNext={() => go(3)} />);
   }
   if (stage === '1') {
     return withBackgroundNotice(<StageOnePage session={session} onNext={() => go(2)} onNavigate={navigate} onSignOut={onSignOut} />);

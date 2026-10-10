@@ -3,6 +3,7 @@ import BrandIcon from '../brand.jsx';
 import { api, listSchedules, cancelSchedule, moveSchedule, PLATFORMS } from '../lib.js';
 import CampaignComposer from './CampaignComposer.jsx';
 import { readPostLog } from '../history/log.js';
+import { isAiAccount } from '../ai-access.js';
 import './workspace.css';
 
 const NAV = [
@@ -37,6 +38,7 @@ export function WorkspaceNav({ page, onNavigate, email, onSignOut }) {
     </button>
     <nav className="ws-nav" aria-label="Main navigation">
       {NAV.map(([id, label, icon]) => <button key={id} type="button" className={page === id ? 'active' : ''} onClick={() => onNavigate(id)}><span><Icon name={icon} size={16} /></span>{label}</button>)}
+      {isAiAccount(email) && <button type="button" className={page === 'team-video' ? 'active' : ''} onClick={() => onNavigate('team-video')}><span><Icon name="sparkles" size={16} /></span>Team video</button>}
     </nav>
     <div className="ws-user"><span className="ws-user-dot">{(email || 'U')[0].toUpperCase()}</span><span>{email || 'Workspace'}</span>{onSignOut && <button type="button" className="ws-signout" onClick={onSignOut}>Sign out</button>}</div>
   </header>;
@@ -72,7 +74,7 @@ export function DashboardPage({ session, onNavigate, onCreate, onSignOut }) {
   const posts = useMemo(readPostLog, []);
   const upcoming = (schedules || []).filter((s) => s.status === 'scheduled').slice(0, 4);
   return <PageFrame page="home" onNavigate={onNavigate} email={session.user?.email} onSignOut={onSignOut} eyebrow="Your workspace" title={`Good to see you, ${greetingName(session.user?.email)}.`} intro="A clear view of what’s going out and what needs your attention.">
-    <section className="ws-welcome"><div><span className="ws-eyebrow">Publishing workspace</span><h2>Make room for the work.</h2><p>Plan your next post, pick a client, and publish across your connected channels.</p><button className="ws-primary" onClick={onCreate}>Start a post <Icon name="arrowRight" size={15} /></button></div><div className="ws-welcome-art" aria-hidden="true"><span><Icon name="sparkles" size={72} /></span><i /><b /></div></section>
+    <section className="ws-welcome"><div><span className="ws-eyebrow">Publishing workspace</span><h2>Make room for the work.</h2><p>Plan your next post, pick a client, and publish across your connected channels.</p><button className="ws-primary" onClick={onCreate}>Start a post <Icon name="arrowRight" size={15} /></button>{isAiAccount(session.user?.email) && <button className="ws-secondary ws-team-entry" onClick={() => onNavigate('team-video')}>Send a team video <Icon name="arrowRight" size={15} /></button>}</div><div className="ws-welcome-art" aria-hidden="true"><span><Icon name="sparkles" size={72} /></span><i /><b /></div></section>
     <div className="ws-stat-grid">
       <article className="ws-stat"><span>Connected accounts</span><strong>{connections === null ? '—' : connections.length}</strong><small>{connections?.length ? 'Ready to publish' : 'Connect your first channel'}</small><button onClick={() => onNavigate('accounts')}>Manage accounts <Icon name="arrowRight" size={13} /></button></article>
       <article className="ws-stat"><span>Scheduled posts</span><strong>{schedules === null ? '—' : schedules.filter((s) => s.status === 'scheduled').length}</strong><small>Waiting in your calendar</small><button onClick={() => onNavigate('calendar')}>Open calendar <Icon name="arrowRight" size={13} /></button></article>

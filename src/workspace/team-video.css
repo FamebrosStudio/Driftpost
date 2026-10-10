@@ -1,0 +1,59 @@
+.team-video-page { min-height: 100vh; color: var(--ink); background: var(--bg); }
+.team-video-main { width: min(980px, 100%); margin: 0 auto; padding: clamp(28px, 5vw, 58px) clamp(16px, 3vw, 30px) 64px; }
+.team-video-heading { margin: 0 0 25px; }
+.team-video-heading > span { color: var(--go); font-size: 10px; font-weight: 800; letter-spacing: .17em; }
+.team-video-heading h1 { max-width: 740px; margin: 9px 0; font-size: clamp(26px, 4.8vw, 43px); line-height: 1.08; letter-spacing: -.045em; }
+.team-video-heading p { max-width: 680px; margin: 0; color: var(--muted); font-size: 13px; line-height: 1.65; }
+.team-video-form { display: grid; gap: 13px; }
+.team-video-panel { min-width: 0; padding: clamp(17px, 3vw, 25px); border: 1px solid var(--line); border-radius: 12px; background: var(--panel); }
+.team-video-section-title { display: flex; gap: 12px; align-items: flex-start; margin: 0 0 18px; }
+.team-video-section-title > span { display: grid; place-items: center; flex: 0 0 auto; width: 29px; height: 29px; border-radius: 50%; background: color-mix(in srgb, var(--go) 13%, transparent); color: var(--go); font-size: 11px; font-weight: 750; }
+.team-video-section-title h2 { margin: 1px 0 4px; font-size: 16px; }
+.team-video-section-title p { margin: 0; color: var(--muted); font-size: 11px; line-height: 1.5; }
+.team-field { display: grid; gap: 7px; margin: 14px 0; color: var(--muted); font-size: 11px; font-weight: 650; }
+.team-field input, .team-field select, .team-field textarea { width: 100%; box-sizing: border-box; min-height: 42px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); color: var(--ink); font: inherit; font-size: 12px; font-weight: 400; }
+.team-field textarea { resize: vertical; line-height: 1.5; }
+.team-field input:focus-visible, .team-field select:focus-visible, .team-field textarea:focus-visible, .team-video-drop:focus-within { outline: 2px solid var(--go); outline-offset: 2px; }
+.team-video-drop { position: relative; display: grid; justify-items: center; gap: 7px; min-height: 148px; margin: 14px 0; padding: 22px 15px; border: 1px dashed var(--line-hard); border-radius: 10px; background: color-mix(in srgb, var(--bg) 70%, transparent); text-align: center; cursor: pointer; }
+.team-video-drop:hover { border-color: var(--go); }
+.team-video-drop input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+.team-video-drop-mark { color: var(--go); font-size: 25px; line-height: 1; }
+.team-video-drop b { max-width: 100%; overflow-wrap: anywhere; font-size: 13px; }
+.team-video-drop small, .team-file-field small { color: var(--faint); font-size: 10px; }
+.team-account-groups { display: grid; grid-template-columns: repeat(auto-fit, minmax(225px, 1fr)); gap: 10px; }
+.team-account-group { display: grid; align-content: start; gap: 6px; min-width: 0; margin: 0; padding: 10px; border: 1px solid var(--line); border-radius: 9px; }
+.team-account-group legend { padding: 0 5px; font-size: 11px; font-weight: 750; }
+.team-account { display: flex; gap: 9px; align-items: flex-start; padding: 9px; border: 1px solid transparent; border-radius: 7px; background: color-mix(in srgb, var(--bg) 62%, transparent); cursor: pointer; }
+.team-account.selected { border-color: color-mix(in srgb, var(--go) 60%, var(--line)); background: color-mix(in srgb, var(--go) 9%, var(--bg)); }
+.team-account input, .team-option input { flex: 0 0 auto; margin: 2px 0 0; accent-color: var(--go); }
+.team-account > span, .team-option > span { display: grid; min-width: 0; gap: 4px; }
+.team-account b, .team-option b { font-size: 11px; overflow-wrap: anywhere; }
+.team-account small, .team-option small { color: var(--muted); font-size: 10px; line-height: 1.45; }
+.team-account-confirm { display: flex; gap: 6px; align-items: flex-start; margin-top: 5px; color: var(--muted); cursor: pointer; }
+.team-account-confirm input { margin: 1px 0 0; }
+.team-selection-summary { margin: 12px 0 0; color: var(--go); font-size: 11px; font-weight: 650; }
+.team-options-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 15px; align-items: start; }
+.team-option { display: flex; gap: 9px; align-items: flex-start; margin: 12px 0; padding: 11px; border: 1px solid var(--line); border-radius: 8px; cursor: pointer; }
+.team-file-field { display: grid; gap: 8px; margin: 12px 0; color: var(--muted); font-size: 11px; font-weight: 650; }
+.team-file-field input { min-width: 0; max-width: 100%; color: var(--ink); font-size: 10px; }
+.team-file-field input::file-selector-button { padding: 8px 10px; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); color: var(--ink); font: inherit; cursor: pointer; }
+.team-file-field small { overflow-wrap: anywhere; font-weight: 400; }
+.team-auto { margin-top: 17px; border-color: color-mix(in srgb, var(--go) 42%, var(--line)); background: color-mix(in srgb, var(--go) 5%, var(--bg)); }
+.team-video-empty { margin: 5px 0; color: var(--muted); font-size: 11px; }
+.team-video-jobs { display: grid; gap: 9px; margin-top: 23px; padding: clamp(17px, 3vw, 25px); border: 1px solid var(--line); border-radius: 12px; background: var(--panel); }
+.team-video-jobs .team-video-section-title { margin-bottom: 4px; }
+.team-video-job { display: flex; justify-content: space-between; align-items: center; gap: 15px; padding: 12px; border: 1px solid var(--line); border-radius: 9px; background: color-mix(in srgb, var(--bg) 62%, transparent); }
+.team-video-job > div { display: grid; min-width: 0; gap: 4px; }
+.team-video-job b { font-size: 11px; }
+.team-video-job small { color: var(--muted); font-size: 10px; line-height: 1.45; overflow-wrap: anywhere; }
+.team-video-job .team-job-warning { color: #e2a84d; }
+.team-video-job button { flex: 0 0 auto; min-height: 35px; padding: 0 12px; border: 1px solid var(--line-hard); border-radius: 7px; background: var(--panel); color: var(--ink); font-size: 10px; font-weight: 700; cursor: pointer; }
+.team-video-alert, .team-video-error, .team-video-progress { padding: 11px 13px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); color: var(--muted); font-size: 11px; line-height: 1.5; }
+.team-video-error, .team-video-alert[role="alert"] { border-color: color-mix(in srgb, #ed6767 55%, var(--line)); color: #ed7777; }
+.team-video-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding-top: 2px; }
+.team-video-actions button { min-height: 43px; padding: 0 17px; border: 0; border-radius: 8px; background: var(--go); color: #fff; font-size: 12px; font-weight: 750; cursor: pointer; }
+.team-video-actions button:disabled { opacity: .5; cursor: not-allowed; }
+.team-video-actions small { color: var(--faint); font-size: 10px; }
+.ws-team-entry { margin-left: 8px; }
+@media (max-width: 650px) { .team-options-grid { grid-template-columns: 1fr; } .ws-team-entry { margin: 8px 0 0; } }
+@media (max-width: 760px) { .ws-nav { overflow-x: auto; } .ws-topbar { gap: 12px; } }

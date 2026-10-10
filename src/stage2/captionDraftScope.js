@@ -10,15 +10,30 @@ function read(key, fallback) {
 }
 
 export function readStageSelection(userId) {
-  return {
+  const teamWorkflow = read(keyFor('driftpost-team-workflow', userId), false);
+  const teamSelection = read(keyFor('driftpost-team-selection', userId), null);
+  const selection = {
     type: read('driftpost-stage1-type', ''),
     brandKey: read('driftpost-stage1-brand', ''),
     platforms: read('driftpost-stage1-platforms', []),
     groups: read('driftpost-groups', []),
     groupId: read('driftpost-stage1-group', ''),
+    teamWorkflow,
     crosspost: read(keyFor('driftpost-stage2-crosspost', userId), false),
     pinnedAccounts: read('driftpost-stage1-brand-accounts', {}),
   };
+  if (teamWorkflow && teamSelection?.group?.id) {
+    return {
+      ...selection,
+      type: 'existing_groups',
+      brandKey: teamSelection.brandKey || '',
+      groups: [teamSelection.group],
+      groupId: teamSelection.group.id,
+      platforms: [],
+      pinnedAccounts: {},
+    };
+  }
+  return selection;
 }
 
 function selectionFingerprint(selection) {
@@ -32,6 +47,7 @@ function selectionFingerprint(selection) {
       platforms: [...(group.platforms || [])].sort(),
     })).sort((a, b) => a.id.localeCompare(b.id)),
     groupId: selection.groupId || '',
+    teamWorkflow: !!selection.teamWorkflow,
     crosspost: !!selection.crosspost,
     pinnedAccounts: selection.pinnedAccounts || {},
   });

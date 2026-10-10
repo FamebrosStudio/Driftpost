@@ -255,3 +255,7 @@
 @media (prefers-reduced-motion: reduce) {
   .stage3, .stage3 *, .s3-light, .s3-light *, .s3-pub, .s3-pub * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }
+.team-analysis-warning { margin: 12px 0; padding: 12px 14px; border: 1px solid color-mix(in srgb, #e6a23c 55%, var(--line)); border-radius: 8px; background: color-mix(in srgb, #e6a23c 8%, var(--panel)); color: var(--ink); font-size: 11px; line-height: 1.55; }
+.team-transcript { margin: 10px 0 15px; padding: 11px 13px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); color: var(--muted); font-size: 11px; }
+.team-transcript summary { color: var(--ink); cursor: pointer; font-weight: 650; }
+.team-transcript p { max-height: 250px; overflow: auto; margin: 10px 0 0; white-space: pre-wrap; line-height: 1.55; }

@@ -56,11 +56,12 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
   const [cfg, setCfg] = useState(() => load(scopedKey('driftpost-stage3-cfg', userId), {}));
    const [overrides, setOverrides] = useState(() => load(scopedKey('driftpost-stage3-accounts', userId), {}));
    const pinnedBrandAccounts = initialSelection.pinnedAccounts;
-   // Video uploads go straight from the browser to Supabase. Meta can use
-   // that public URL; the server only downloads a copy when Facebook's API
+   // Video uploads go straight from the browser to Supabase. The server gives
+   // Meta a short-lived signed link and downloads a copy only when Facebook's API
    // specifically requires a multipart file.
    const [cloudProgress, setCloudProgress] = useState(null);
    const [cloudDone, setCloudDone] = useState(false);
+  const [mediaRestored, setMediaRestored] = useState(false);
   const [reviewed, setReviewed] = useState(() => load(scopedKey('driftpost-stage3-reviewed', userId), {}));
   const [tab, setTab] = useState('');
   const [results, setResults] = useState({});
@@ -82,6 +83,11 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
   const [schedErr, setSchedErr] = useState('');
   const [approvalLinks, setApprovalLinks] = useState([]);
   const [pubMsg, setPubMsg] = useState('');
+  const [teamWarning] = useState(() => load(scopedKey('driftpost-team-warning', userId), ''));
+  const [teamTranscript] = useState(() => {
+    try { return JSON.parse(sessionStorage.getItem(`driftpost-team-transcript:${userId}`) || '""'); }
+    catch { return ''; }
+  });
   const [connsError, setConnsError] = useState('');
   const [connsTick, setConnsTick] = useState(0);
   // Same-tick double clicks slip past state guards (state updates async), so
@@ -136,7 +142,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
            grant.path, grant.token, entries[index].raw, { contentType: grant.mimetype, upsert: false },
          );
          if (error) throw error;
-         output.push({ name: grant.name, path: grant.path, publicUrl: grant.publicUrl, mimetype: grant.mimetype, size: grant.size });
+         output.push({ name: grant.name, path: grant.path, mimetype: grant.mimetype, size: grant.size });
        }
        return output;
      })();
@@ -168,6 +174,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
          }
          return next;
        });
+       setMediaRestored(true);
      })();
    }, [mediaKey]);
 
@@ -177,7 +184,10 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
      (async () => {
        const type = load('driftpost-stage1-type', '');
        let selectedPlatforms = [];
-       if (type === 'platform_selection') selectedPlatforms = load('driftpost-stage1-platforms', []);
+       if (initialSelection.teamWorkflow) {
+         const teamGroup = initialSelection.groups?.find((item) => item.id === initialSelection.groupId);
+         selectedPlatforms = [...new Set(teamGroup?.platforms || [])];
+       } else if (type === 'platform_selection') selectedPlatforms = load('driftpost-stage1-platforms', []);
        else if (type === 'common_brand') {
          const selectedBrand = groupBrands(connections).find((item) => item.key === load('driftpost-stage1-brand', ''));
          selectedPlatforms = Object.keys(selectedBrand?.map || {});
@@ -214,7 +224,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
         if (cloudDone) return;
         const prev = load(cloudCacheKey, null);
         const curKey = mediaSignature(files);
-        if (prev?.filesKey === curKey && prev?.files?.length === files.length && prev.files.every((f) => f.publicUrl)) {
+        if (prev?.filesKey === curKey && prev?.files?.length === files.length && prev.files.every((f) => f.path)) {
           setCloudDone(true);
           return;
         }
@@ -238,7 +248,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
           setCloudDone(true);
         }
       })();
-    }, [files, cloudDone, cloudCacheKey, connections]);
+    }, [files, cloudDone, cloudCacheKey, connections, initialSelection]);
 
   // Stage 1 + 2 context drives everything.
   const s1 = useMemo(() => ({
@@ -247,6 +257,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
     emoji: load(scopedKey('driftpost-stage2-emoji', userId), 'medium'),
     length: load(scopedKey('driftpost-stage2-length', userId), 'medium'),
   }), []);
+  const isTeamWorkflow = !!s1.teamWorkflow;
   const brands = useMemo(() => groupBrands(connections), [connections]);
   const brand = brands.find((b) => b.key === s1.brandKey) || null;
   const connById = useMemo(() => Object.fromEntries(connections.map((c) => [c.id, c])), [connections]);
@@ -297,7 +308,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
     return '';
   })();
   const platforms = basePlatforms.filter((pid) => pid !== mirrorTarget);
-  const brandLabel = s1.type === 'common_brand' ? brand?.label || '' : '';
+  const brandLabel = isTeamWorkflow || s1.type === 'common_brand' ? brand?.label || '' : '';
 
   useEffect(() => {
     if (!platforms.includes(tab)) setTab(platforms[0] || '');
@@ -382,7 +393,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
     if (pid === 'instagram' && !files.some((f) => /^(image|video)\//.test(f.type))) return 'Instagram needs a photo or video';
     if (pid === 'instagram' && files.length > 10) return 'Instagram publishing supports up to 10 carousel slides. Remove extra slides or post them using Instagram directly.';
     if (pid === 'instagram' && Array.from(composeOutput(pid, v)).length > 2200) return 'caption plus hashtags exceeds Instagram’s 2,200 character limit';
-    if (pid === 'instagram' && !isGroupFlow && c.collabsEnabled && parseInstagramCollaborators(c.collabs).error) return parseInstagramCollaborators(c.collabs).error;
+    if (pid === 'instagram' && (!isGroupFlow || isTeamWorkflow) && c.collabsEnabled && parseInstagramCollaborators(c.collabs).error) return parseInstagramCollaborators(c.collabs).error;
     if (pid === 'youtube' && !files.some((f) => f.type.startsWith('video/')) && !files.length) return 'YouTube needs a video file, or a photo to convert into a Short';
     if (pid === 'youtube' && files.length > 1) return 'YouTube accepts one video per post';
     if (pid === 'youtube' && !v.title?.trim()) return 'add a title before posting to YouTube';
@@ -399,7 +410,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
     if (isGroupFlow ? !groupMemberIds(target).length : !accountFor(target)) return `no ${NAMES[target]} account is selected`;
     if (target === 'instagram' && !files.some((f) => /^(image|video)\//.test(f.type))) return 'Instagram needs a photo or video';
     if (target === 'instagram' && Array.from(mainText('facebook')).length > 2200) return 'the Instagram caption exceeds 2,200 characters';
-    if (target === 'instagram' && !isGroupFlow && cfgFor('instagram').collabsEnabled && parseInstagramCollaborators(cfgFor('instagram').collabs).error) return parseInstagramCollaborators(cfgFor('instagram').collabs).error;
+    if (target === 'instagram' && (!isGroupFlow || isTeamWorkflow) && cfgFor('instagram').collabsEnabled && parseInstagramCollaborators(cfgFor('instagram').collabs).error) return parseInstagramCollaborators(cfgFor('instagram').collabs).error;
     return '';
   };
   const onCfg = (pid, patch) => setCfg((c) => {
@@ -493,8 +504,8 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
       ig_alt: c.alt || '',
       ig_topics: c.topics || '',
       ig_partner: c.partner || '',
-      ig_collabs_enabled: !isGroupFlow && cfgFor('instagram').collabsEnabled ? '1' : '',
-      ig_collabs: !isGroupFlow && cfgFor('instagram').collabsEnabled
+      ig_collabs_enabled: (!isGroupFlow || isTeamWorkflow) && cfgFor('instagram').collabsEnabled ? '1' : '',
+      ig_collabs: (!isGroupFlow || isTeamWorkflow) && cfgFor('instagram').collabsEnabled
         ? parseInstagramCollaborators(cfgFor('instagram').collabs).usernames.join(',') : '',
       fb_connection_id: accountFor('facebook'),
       fb_message: mirrorTarget === 'facebook' && pid === 'instagram'
@@ -520,7 +531,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
      const uploaded = load(cloudCacheKey, null);
      const usePreuploaded = uploaded?.filesKey === mediaSignature(files)
        && uploaded?.files?.length === files.length
-       && uploaded.files.every((f) => f.publicUrl)
+       && uploaded.files.every((f) => f.path)
        && !files.some((f) => (f.type || f.raw?.type || '').startsWith('image/'));
      const form = new FormData();
      for (const [k, v] of Object.entries(body)) form.append(k, v);
@@ -544,7 +555,6 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
        body.hasPreuploadedMedia = '1';
        form.append('hasPreuploadedMedia', '1');
        metaUploads.forEach((f, i) => {
-         form.append('mediaUrl' + i, f.publicUrl);
          form.append('mediaPath' + i, f.path);
          form.append('mediaName' + i, f.name);
          form.append('mediaType' + i, f.mimetype || '');
@@ -1094,11 +1104,10 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
             && platformFiles.every((item) => (item.type || item.raw?.type || '').startsWith('video/'))
             && cachedDirectMedia?.filesKey === mediaSignature(files)
             && cachedDirectMedia.files?.length === platformFiles.length
-            && cachedDirectMedia.files.every((item) => item.path && item.publicUrl);
+            && cachedDirectMedia.files.every((item) => item.path);
           if (canScheduleStoredVideo) {
             postBody.hasPreuploadedMedia = '1';
             cachedDirectMedia.files.forEach((item, index) => {
-              postBody[`mediaUrl${index}`] = item.publicUrl;
               postBody[`mediaPath${index}`] = item.path;
               postBody[`mediaName${index}`] = item.name;
               postBody[`mediaType${index}`] = item.mimetype;
@@ -1149,6 +1158,13 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
   };
 
   const startNew = async () => {
+    try {
+      localStorage.removeItem(scopedKey('driftpost-team-workflow', userId));
+      localStorage.removeItem(scopedKey('driftpost-team-selection', userId));
+      localStorage.removeItem(scopedKey('driftpost-team-warning', userId));
+      sessionStorage.removeItem(`driftpost-team-auto-publish:${userId}`);
+      sessionStorage.removeItem(`driftpost-team-transcript:${userId}`);
+    } catch {}
     await resetPostState(session.user.id);
     onDone();
   };
@@ -1158,11 +1174,35 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
     // All accepted jobs now own their uploaded files server-side. Unmounting
     // this draft only drops its local monitor; it does not cancel the jobs.
     detachedPublish.current = true;
+    try {
+      localStorage.removeItem(scopedKey('driftpost-team-workflow', userId));
+      localStorage.removeItem(scopedKey('driftpost-team-selection', userId));
+      localStorage.removeItem(scopedKey('driftpost-team-warning', userId));
+      sessionStorage.removeItem(`driftpost-team-auto-publish:${userId}`);
+      sessionStorage.removeItem(`driftpost-team-transcript:${userId}`);
+    } catch {}
     await resetPostState(session.user.id);
     onDone({ backgroundPublish: batchProgressRef.current || batchQueue });
   };
 
   const allReviewed = effective.length > 0 && reviewedCount === effective.length;
+
+  // A team video submission explicitly opts into automatic publishing. Use
+  // the existing Stage 3 validation and publish queue, and consume the marker
+  // before dispatch so a refresh cannot submit the same batch twice.
+  const autoPublishStarted = useRef(false);
+  useEffect(() => {
+    if (!isTeamWorkflow || autoPublishStarted.current || !effective.length || !connections.length || !files.length || !mediaRestored || !allReviewed) return;
+    let requested = '';
+    try { requested = sessionStorage.getItem(`driftpost-team-auto-publish:${userId}`) || ''; } catch {}
+    if (!requested || requested !== s1.groupId) return;
+    const invalid = effective.map((pid) => invalidReason(pid)).find(Boolean);
+    if (invalid) return;
+    autoPublishStarted.current = true;
+    try { sessionStorage.removeItem(`driftpost-team-auto-publish:${userId}`); } catch {}
+    const timer = window.setTimeout(() => { void publishAll(); }, 900);
+    return () => window.clearTimeout(timer);
+  }, [isTeamWorkflow, effective.join(','), connections.length, files.length, mediaRestored, allReviewed, reviewed, outputs, cfg, s1.groupId]);
 
   return (
     <div className="stage3">
@@ -1177,6 +1217,8 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
           <p>Review your platform content before publishing.</p>
         </header>
         <ProgressStepper current={3} />
+        {isTeamWorkflow && teamWarning && <p className="team-analysis-warning" role="status">{teamWarning} Automatic publishing is paused; review the draft before publishing.</p>}
+        {isTeamWorkflow && teamTranscript && <details className="team-transcript"><summary>Review detected transcript{teamTranscript.length >= 5000 ? ' · first 5,000 characters' : ''}</summary><p>{teamTranscript}</p></details>}
         {connsError && !connections.length && (
           <div className="s3-work">
             <p className="s3-err" style={{ margin: 0 }}>{connsError} Nothing can post until accounts load.</p>
@@ -1250,7 +1292,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
                   onPostPhotoAsVideo={publishPhotoAsVideo}
                   encoding={encoding}
                   hideInstagramCrosspost={!!s1.crosspost}
-                  disableCollaborators={isGroupFlow}
+                  disableCollaborators={isGroupFlow && !isTeamWorkflow}
                   showInstagramCollaborators={tab === 'facebook' && mirrorTarget === 'instagram'}
                   instagramCollaborators={cfgFor('instagram').collabs || ''}
                   instagramCollaboratorsEnabled={!!cfgFor('instagram').collabsEnabled}

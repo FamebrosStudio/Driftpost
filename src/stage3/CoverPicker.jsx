@@ -6,7 +6,7 @@ const FORMATS = {
   instagram: { width: 720, height: 1280, label: '9:16' },
 };
 
-async function makeCover(source, platform, name) {
+export async function makeCover(source, platform, name) {
   const format = FORMATS[platform];
   const bitmap = await createImageBitmap(source);
   const canvas = document.createElement('canvas');

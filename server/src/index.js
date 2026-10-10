@@ -19,13 +19,14 @@ import { setVideoThumbnail, uploadVideoResumable, validAccessToken } from './you
 import { deleteFacebookPost, discoverInstagramAccount, exchangeMetaCode, getMetaPages, longLivedToken, metaAuthorizationUrl, metaBusinessLoginUrl, publishFacebook, publishInstagram, subscribeInstagramWebhooks } from './meta.js';
 import { createPkcePair, exchangeXCode, getXUser, xAuthorizationUrl } from './x.js';
 import { createXPost, deleteXPost, uploadXMedia, validXAccessToken } from './x-publish.js';
-import { generateCaptions } from './ai.js';
+import { generateCaptions, selectVideoCoverFrames } from './ai.js';
 import { uploadMediaFile, downloadMediaFile } from './media-io.js';
 import { scheduleIdentity } from './schedule-fields.js';
 import { deleteResultsStatus } from './delete-results.js';
 import { runAutomationAction } from './automation-events.js';
 import { eraseUserMedia } from './storage-cleanup.js';
 import { enabledInstagramCollaborators, instagramCaptionRequiredError, nonEmptyCaption } from './caption-guards.js';
+import { createTemporaryMediaUrl, isOwnedMediaPath } from './media-links.js';
 
 const required = ['FRONTEND_URL', 'SUPABASE_URL', 'SUPABASE_SECRET_KEY', 'TOKEN_ENCRYPTION_KEY', 'STATE_SIGNING_SECRET'];
 const missing = required.filter((n) => !process.env[n]);
@@ -35,6 +36,12 @@ const app = express();
 const port = Number(process.env.PORT || 10000);
 const BUCKET = process.env.MEDIA_BUCKET || 'driftpost-media';
 const MAX_UPLOAD_BYTES = 400 * 1024 * 1024;
+const MAX_UPLOAD_BATCH_BYTES = 2 * 1024 * 1024 * 1024;
+const ACCEPTED_MEDIA_TYPES = new Set([
+  'image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/avif', 'image/heic', 'image/heif', 'image/bmp',
+  'video/mp4', 'video/quicktime', 'video/webm', 'video/x-m4v', 'video/mpeg', 'video/3gpp',
+  'video/3gpp2', 'video/x-msvideo', 'video/ogg', 'video/x-matroska',
+]);
 const AI_ALLOWED_EMAILS = new Set([
   'famebros.studio@gmail.com',
   'kabirsayed.k@gmail.com',
@@ -145,35 +152,51 @@ app.post('/api/storage/upload', requireUser, parseStorageUpload, async (req, res
       }];
     } else {
       const raw = req.body?.files;
-      if (!Array.isArray(raw) || !raw.length) {
+      if (!Array.isArray(raw) || !raw.length || raw.length > 20) {
         return res.status(400).json({ error: 'No files to upload' });
       }
-      files = raw.map(({ name, mimetype, base64 }) => ({
-        name,
-        mimetype,
-        bytes: base64 ? Buffer.from(String(base64), 'base64') : null,
-      }));
+      files = raw.map((item) => {
+        const { name, mimetype, base64 } = item && typeof item === 'object' ? item : {};
+        const encoded = typeof base64 === 'string' ? base64 : '';
+        return { name, mimetype, bytes: encoded ? Buffer.from(encoded, 'base64') : null };
+      });
     }
     if (!files.length) {
       return res.status(400).json({ error: 'No files to upload' });
     }
+    const requestedBytes = files.reduce((total, item) => total + Number(item.bytes?.length || 0), Number(req.file?.size || 0));
+    if (requestedBytes > MAX_UPLOAD_BATCH_BYTES) return res.status(413).json({ error: 'A single upload batch cannot exceed 2 GB.' });
     const results = [];
     for (const { name, mimetype, bytes, path: filePath } of files) {
-      if (!name || (!bytes && !filePath)) { results.push({ name, error: 'missing name or file data' }); continue; }
-      const ext = path.extname(name).replace(/[^a-z0-9.]/gi, '').slice(1, 8)
-        || (String(mimetype || '').startsWith('video/') ? 'mp4' : 'jpg');
+      const normalizedType = String(mimetype || '').toLowerCase();
+      if (!name || (!bytes && !filePath) || !ACCEPTED_MEDIA_TYPES.has(normalizedType)) {
+        return res.status(400).json({ error: 'Only supported image and video files can be uploaded.' });
+      }
+      const byteLength = bytes?.length || (filePath ? Number(req.file?.size || 0) : 0);
+      if (!byteLength || byteLength > MAX_UPLOAD_BYTES) return res.status(413).json({ error: 'Each media file must be 400 MB or smaller.' });
+      const verified = bytes
+        ? normalizedType.startsWith('image/') ? imageBufferMatches(bytes) : videoBufferMatches(bytes, normalizedType)
+        : normalizedType.startsWith('image/') ? await magicIsImage(filePath) : await magicIsVideo(filePath, normalizedType);
+      if (!verified) return res.status(400).json({ error: 'The file content does not match its media type.' });
+      const ext = ({
+        'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'image/gif': 'gif', 'image/avif': 'avif',
+        'image/heic': 'heic', 'image/heif': 'heif', 'image/bmp': 'bmp', 'video/mp4': 'mp4',
+        'video/quicktime': 'mov', 'video/webm': 'webm', 'video/x-m4v': 'm4v', 'video/mpeg': 'mpeg',
+        'video/3gpp': '3gp', 'video/3gpp2': '3g2', 'video/x-msvideo': 'avi', 'video/ogg': 'ogv', 'video/x-matroska': 'mkv',
+      })[normalizedType];
       const key = `${req.user.id}/${crypto.randomUUID()}.${ext}`;
       const storage = supabase.storage.from(BUCKET);
       const { error: upErr } = filePath
-        ? await uploadMediaFile(storage, key, { path: filePath, mimetype }, { upsert: true })
-        : await storage.upload(key, bytes, { contentType: mimetype || 'application/octet-stream', upsert: true });
-      if (upErr) { results.push({ name, error: upErr.message }); continue; }
-      const { data } = supabase.storage.from(BUCKET).getPublicUrl(key);
-      results.push({ name, publicUrl: data.publicUrl });
+        ? await uploadMediaFile(storage, key, { path: filePath, mimetype: normalizedType }, { upsert: false })
+        : await storage.upload(key, bytes, { contentType: normalizedType, upsert: false });
+      if (upErr) { results.push({ name, error: 'Media storage upload failed.' }); continue; }
+      const temporaryUrl = await createTemporaryMediaUrl(supabase.storage.from(BUCKET), key);
+      results.push({ name, publicUrl: temporaryUrl });
     }
     res.json({ results });
   } catch (e) {
-    res.status(500).json({ error: e.message || 'Storage upload failed' });
+    console.error('[media-upload] failed:', String(e?.message || e).slice(0, 300));
+    res.status(500).json({ error: 'Media upload failed. Please try again.' });
   } finally {
     if (tempPath) await fs.unlink(tempPath).catch(() => {});
   }
@@ -270,7 +293,7 @@ app.post('/api/meta/webhook', express.raw({ type: 'application/json', limit: '1m
 // per-image analysis payload limit, not a posting/media-storage file limit.
 const aiImageUpload = multer({
   dest: path.join(os.tmpdir(), 'driftpost-ai-images'),
-  limits: { fileSize: MAX_UPLOAD_BYTES, files: 5, fields: 20, fieldSize: 16 * 1024 },
+  limits: { fileSize: MAX_UPLOAD_BYTES, files: 10, fields: 20, fieldSize: 16 * 1024 },
   fileFilter: (_req, file, cb) => cb(null,
     ['image/jpeg', 'image/png'].includes(file.mimetype) || /^video\//.test(file.mimetype)),
 });
@@ -353,6 +376,7 @@ const scheduleRequestLimit = limit({ windowMs: 60 * 1000, max: 30, ns: 'schedule
 // reviewed batch like an abusive request burst.
 const publishRequestBurstLimit = limit({ windowMs: 60 * 1000, max: 100, ns: 'publish-burst', key: (req) => `ip:${req.ip}` });
 const publishQueueLimit = limit({ windowMs: 15 * 60 * 1000, max: 100, ns: 'publish-queue', key: userKey });
+const mediaSignLimit = limit({ windowMs: 15 * 60 * 1000, max: 20, ns: 'media-sign', key: userKey });
 const aiLimit = limit({ windowMs: 60 * 60 * 1000, max: 30, ns: 'ai', key: userKey });
 const oauthLimit = limit({ windowMs: 60 * 1000, max: 20, ns: 'oauth', key: userKey });
 const connectionsLimit = limit({ windowMs: 60 * 1000, max: 60, ns: 'conn', key: userKey });
@@ -538,17 +562,28 @@ app.get('/api/music/search', requireUser, musicLimit, async (req, res) => {
 // from the browser to Supabase Storage instead of consuming Railway egress.
 // The service key stays on the API; the client receives permission for only
 // the individual object paths listed in this request.
-app.post('/api/storage/sign-uploads', requireUser, async (req, res) => {
+app.post('/api/storage/sign-uploads', requireUser, mediaSignLimit, async (req, res) => {
   const files = req.body?.files;
   if (!Array.isArray(files) || files.length < 1 || files.length > 20) {
     return res.status(400).json({ error: 'Choose between 1 and 20 media files.' });
+  }
+  let requestedBytes = 0;
+  for (const item of files) {
+    const size = Number(item?.size);
+    if (!Number.isFinite(size) || size < 1 || size > MAX_UPLOAD_BYTES) {
+      return res.status(400).json({ error: 'A media file has an invalid size (maximum 400 MB).' });
+    }
+    requestedBytes += size;
+  }
+  if (requestedBytes > MAX_UPLOAD_BATCH_BYTES) {
+    return res.status(413).json({ error: 'A single upload batch cannot exceed 2 GB. Split the media into smaller batches.' });
   }
   const results = [];
   for (const item of files) {
     const name = String(item?.name || '').slice(0, 240);
     const mimetype = String(item?.mimetype || '').toLowerCase();
     const size = Number(item?.size);
-    if (!name || !/^(image|video)\//.test(mimetype) || !Number.isFinite(size) || size < 1 || size > MAX_UPLOAD_BYTES) {
+    if (!name || !ACCEPTED_MEDIA_TYPES.has(mimetype) || !Number.isFinite(size) || size < 1 || size > MAX_UPLOAD_BYTES) {
       return res.status(400).json({ error: 'A media file has an invalid name, type, or size (maximum 400 MB).' });
     }
     const ext = path.extname(name).replace(/[^a-z0-9.]/gi, '').slice(1, 8)
@@ -559,8 +594,7 @@ app.post('/api/storage/sign-uploads', requireUser, async (req, res) => {
     if (error || !data?.token) {
       return res.status(502).json({ error: 'Could not prepare a direct media upload. Please retry.' });
     }
-    const { data: publicData } = storage.getPublicUrl(key);
-    results.push({ name, path: key, token: data.token, publicUrl: publicData.publicUrl, mimetype, size });
+    results.push({ name, path: key, token: data.token, mimetype, size });
   }
   res.json({ results });
 });
@@ -984,7 +1018,7 @@ function friendlySpeechWarning(error) {
 
 app.post('/api/ai/captions', requireUser, requireAiAccess, aiLimit, (req, res, next) => {
   if (req.is('multipart/form-data')) return aiImageUpload.fields([
-    { name: 'images', maxCount: 4 }, { name: 'video', maxCount: 1 },
+    { name: 'images', maxCount: 9 }, { name: 'video', maxCount: 1 },
   ])(req, res, next);
   next();
 }, async (req, res) => {
@@ -1069,7 +1103,7 @@ app.post('/api/ai/captions', requireUser, requireAiAccess, aiLimit, (req, res, n
     } catch {
       // Memory is best-effort; generation can continue if storage is unavailable.
     }
-    res.json({ ...out, captionMemoryStatus, transcriptLanguage, videoAnalysisWarning });
+    res.json({ ...out, captionMemoryStatus, transcriptLanguage, transcript, videoAnalysisWarning });
   } catch (e) {
     const msg = String(e.message || 'AI failed');
     const isBrandMismatch = /^This prompt names .+, but the selected account is .+\./i.test(msg);
@@ -1092,6 +1126,32 @@ app.post('/api/ai/captions', requireUser, requireAiAccess, aiLimit, (req, res, n
       console.error(`[ai] caption generation failed ref=${errorId} status=${code} category=${category}`);
     }
     res.status(code).json({ error: msg, ...(errorId ? { errorId } : {}) });
+  } finally {
+    await Promise.all(uploads.map((file) => fs.unlink(file.path).catch(() => {})));
+  }
+});
+
+// Select platform-aware cover frames for the private team video workflow.
+// Only the small sampled JPEGs are sent; the original video remains in the
+// existing publishing path and is never required by this endpoint.
+app.post('/api/ai/video-covers', requireUser, requireAiAccess, aiLimit, (req, res, next) => {
+  if (req.is('multipart/form-data')) return aiImageUpload.fields([{ name: 'images', maxCount: 8 }])(req, res, next);
+  next();
+}, async (req, res) => {
+  const uploads = req.files?.images || [];
+  try {
+    if (!uploads.length) return res.status(400).json({ error: 'Extract video frames before choosing a cover.' });
+    if (uploads.some((file) => file.size > 2 * 1024 * 1024)) return res.status(413).json({ error: 'Each sampled frame must be 2 MB or smaller.' });
+    const selection = await selectVideoCoverFrames(await Promise.all(uploads.map(async (file) => ({
+      name: file.originalname,
+      mimetype: file.mimetype,
+      base64: (await fs.readFile(file.path)).toString('base64'),
+    }))));
+    res.json({ selection });
+  } catch (error) {
+    const message = String(error?.message || 'AI could not choose a cover.');
+    const code = /credits/i.test(message) ? 402 : /configured/i.test(message) ? 503 : 502;
+    res.status(code).json({ error: message });
   } finally {
     await Promise.all(uploads.map((file) => fs.unlink(file.path).catch(() => {})));
   }
@@ -1456,8 +1516,43 @@ async function magicIsImage(filePath) {
     (head[0] === 0x89 && head[1] === 0x50 && head[2] === 0x4e && head[3] === 0x47) || // PNG
     (head[0] === 0x47 && head[1] === 0x49 && head[2] === 0x46) || // GIF
     (head.toString('ascii', 0, 4) === 'RIFF' && head.toString('ascii', 8, 12) === 'WEBP') || // WEBP
+    (head.toString('ascii', 4, 8) === 'ftyp' && /^(?:avif|avis|heic|heix|hevc|hevx|mif1|msf1)$/.test(head.toString('ascii', 8, 12))) || // AVIF/HEIF
     (head[0] === 0x42 && head[1] === 0x4d) // BMP
   );
+}
+
+function imageBufferMatches(bytes) {
+  const head = Buffer.from(bytes).subarray(0, 12);
+  return (head[0] === 0xff && head[1] === 0xd8 && head[2] === 0xff)
+    || (head[0] === 0x89 && head[1] === 0x50 && head[2] === 0x4e && head[3] === 0x47)
+    || head.toString('ascii', 0, 3) === 'GIF'
+    || (head.toString('ascii', 0, 4) === 'RIFF' && head.toString('ascii', 8, 12) === 'WEBP')
+    || (head.toString('ascii', 4, 8) === 'ftyp' && /^(?:avif|avis|heic|heix|hevc|hevx|mif1|msf1)$/.test(head.toString('ascii', 8, 12)))
+    || (head[0] === 0x42 && head[1] === 0x4d);
+}
+
+function videoBufferMatches(bytes, mimetype) {
+  const head = Buffer.from(bytes).subarray(0, 16);
+  const isIsoBmff = head.toString('ascii', 4, 8) === 'ftyp';
+  const isWebm = head[0] === 0x1a && head[1] === 0x45 && head[2] === 0xdf && head[3] === 0xa3;
+  const isOgg = head.toString('ascii', 0, 4) === 'OggS';
+  const isAvi = head.toString('ascii', 0, 4) === 'RIFF' && head.toString('ascii', 8, 12) === 'AVI ';
+  const isMpeg = head[0] === 0 && head[1] === 0 && head[2] === 1 && (head[3] === 0xba || head[3] === 0xb3);
+  if (['video/mp4', 'video/quicktime', 'video/x-m4v', 'video/3gpp', 'video/3gpp2'].includes(mimetype)) return isIsoBmff;
+  if (['video/webm', 'video/x-matroska'].includes(mimetype)) return isWebm;
+  if (mimetype === 'video/ogg') return isOgg;
+  if (mimetype === 'video/x-msvideo') return isAvi;
+  if (mimetype === 'video/mpeg') return isMpeg;
+  return false;
+}
+
+async function magicIsVideo(filePath, mimetype) {
+  const head = Buffer.alloc(16);
+  const fh = await fs.open(filePath, 'r').catch(() => null);
+  if (!fh) return false;
+  await fh.read(head, 0, head.length, 0).catch(() => {});
+  await fh.close().catch(() => {});
+  return videoBufferMatches(head, mimetype);
 }
 app.post('/api/publish', requireUser, publishRequestBurstLimit, publishQueueLimit, publishUpload, async (req, res) => {
   const platform = String(req.body.platform || '').slice(0, 32);
@@ -1495,8 +1590,9 @@ app.post('/api/publish', requireUser, publishRequestBurstLimit, publishQueueLimi
         await cleanup();
         return res.status(400).json({ error: 'Stored media reference is invalid. Re-upload the media and try again.' });
       }
-      const { data } = supabase.storage.from(BUCKET).getPublicUrl(objectPath);
-      req.body[`mediaUrl${index}`] = data.publicUrl;
+      // Mint a short-lived URL only when the publisher starts the job; never
+      // accept a browser-supplied URL as a media source.
+      delete req.body[`mediaUrl${index}`];
       req.body[`mediaName${index}`] = name;
       req.body[`mediaType${index}`] = mimetype;
       count++;
@@ -1911,14 +2007,19 @@ async function runPublish(job, conn, payload, body, userId) {
        // Pre-upload technique: the client uploaded media to
        // Supabase while reviewing captions. Skip the re-upload
        // here; download to disk only when Facebook needs a file,
-       // and hand the public URL straight to Instagram.
+       // and hand a temporary signed URL straight to Meta.
        // (Must be declared before isCarousel below — referencing it
        // earlier crashed every Facebook/Instagram publish.)
-       const preUploaded = (() => {
+       const preUploaded = await (async () => {
          if (body.hasPreuploadedMedia !== '1') return null;
          const out = [];
-         let i = 0;
-         while (true) { const u = body['mediaUrl' + i]; if (!u) break; out.push({ url: u, name: body['mediaName' + i] || ('media_' + i), mimetype: body['mediaType' + i] || '' }); i++; }
+         for (let i = 0; i < 20; i++) {
+           const objectPath = String(body['mediaPath' + i] || '');
+           if (!objectPath) break;
+           if (!isOwnedMediaPath(userId, objectPath)) throw new Error('Stored media reference is invalid. Re-upload the media and try again.');
+           const url = await createTemporaryMediaUrl(supabase.storage.from(BUCKET), objectPath);
+           out.push({ url, name: body['mediaName' + i] || ('media_' + i), mimetype: body['mediaType' + i] || '' });
+         }
          return out.length ? out : null;
        })();
        const isCarousel = (allFiles.length >= 2 && allFiles.every((f) => String(f.mimetype || '').startsWith('image/'))) || (preUploaded && preUploaded.length >= 2 && preUploaded.every((e) => String(e.mimetype || '').startsWith('image/')));
@@ -1927,34 +2028,34 @@ async function runPublish(job, conn, payload, body, userId) {
        let publicUrl = null;
        let publicUrls = [];
        if (preUploaded) { for (const e of preUploaded) { publicUrls.push(e.url); mediaList.push({ originalname: e.name, mimetype: e.mimetype || '', url: e.url }); } publicUrl = publicUrls[0] || null; }
-       const uploadOnePublic = async (f) => {
+       const uploadOneForMeta = async (f) => {
         const rawExt = path.extname(f.originalname || '');
         const safeExt = rawExt.replace(/[^a-z0-9.]/gi, '').slice(0, 8)
           || (String(f.mimetype || '').startsWith('video/') ? '.mp4' : '.jpg');
         const key = `${crypto.randomUUID()}${safeExt}`;
         const { error: upErr } = await uploadMediaFile(supabase.storage.from(BUCKET), key, f, { upsert: true });
-         if (upErr) throw new Error('Media upload failed (' + BUCKET + '): ' + (upErr.message || upErr) + '. Make sure the "' + BUCKET + '" bucket exists and is public.');
+         if (upErr) throw new Error('Media upload failed. Check that the private media bucket exists and accepts this file type.');
         temporaryStoragePaths.push(key);
-        const { data } = supabase.storage.from(BUCKET).getPublicUrl(key);
-        return { url: data.publicUrl, file: f };
+        const url = await createTemporaryMediaUrl(supabase.storage.from(BUCKET), key);
+        return { url, file: f };
       };
       const instagramPublicUrls = [];
       if (preUploaded && job.platform === 'facebook' && instagramFiles.length) {
         // A Facebook-originated image mirror has a different aspect-ratio
         // rendition for Instagram; use that variant rather than the FB URL.
         for (const f of instagramFiles) {
-          const up = await uploadOnePublic(f);
+          const up = await uploadOneForMeta(f);
           instagramPublicUrls.push(up.url);
         }
       } else if (preUploaded) {
         instagramPublicUrls.push(...preUploaded.map((item) => item.url));
       } else {
         for (const f of instagramFiles) {
-          const up = await uploadOnePublic(f);
+          const up = await uploadOneForMeta(f);
           instagramPublicUrls.push(up.url);
         }
       }
-      const instagramCoverUrl = coverFiles.instagram ? (await uploadOnePublic(coverFiles.instagram)).url : null;
+      const instagramCoverUrl = coverFiles.instagram ? (await uploadOneForMeta(coverFiles.instagram)).url : null;
       const facebookMediaList = [];
       for (const f of facebookFiles) {
         facebookMediaList.push({ ...f, originalname: f.originalname, mimetype: f.mimetype });
@@ -1963,14 +2064,14 @@ async function runPublish(job, conn, payload, body, userId) {
         // Upload every file once so carousel + mirrors share the same URLs.
         // Single-photo/video keeps the old `media`/`publicUrl` behaviour.
         for (const f of allFiles) {
-          const up = await uploadOnePublic(f);
+          const up = await uploadOneForMeta(f);
           publicUrls.push(up.url);
           mediaList.push({ ...f, originalname: f.originalname, mimetype: f.mimetype });
         }
          publicUrl = publicUrls[0] || null;
          media = mediaList[0] || null;
        }
-       // Both Meta APIs can fetch media from a public URL. Keep media as a
+       // Both Meta APIs can fetch media from a temporary signed URL. Keep media as a
        // URL reference for Facebook too; do not download it to Railway first.
        const needsFacebookFile = job.platform === 'facebook'
          || (allowCrossPost && String(body.ig_share_fb || '') === '1');
@@ -2219,6 +2320,7 @@ app.get('/api/schedules', requireUser, jobsLimit, async (req, res) => {
 // the content needed to make an approval decision; never expose the owner or
 // their platform credentials to the reviewer.
 app.get('/api/approvals/:id', strictBurstLimit, async (req, res) => {
+  res.set({ 'Cache-Control': 'no-store', 'Referrer-Policy': 'no-referrer' });
   if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(req.params.id)) return res.status(404).json({ error: 'Review link not found' });
   const { data: row, error } = await supabase.from('scheduled_posts').select('id, platform, scheduled_at, status, body, media')
     .eq('id', req.params.id).maybeSingle();
@@ -2234,6 +2336,7 @@ app.get('/api/approvals/:id', strictBurstLimit, async (req, res) => {
 });
 
 app.post('/api/approvals/:id', strictBurstLimit, async (req, res) => {
+  res.set({ 'Cache-Control': 'no-store', 'Referrer-Policy': 'no-referrer' });
   if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(req.params.id)) return res.status(404).json({ error: 'Review link not found' });
   const decision = req.body?.decision;
   const comment = typeof req.body?.comment === 'string' ? req.body.comment.trim().slice(0, 500) : '';
@@ -2243,7 +2346,7 @@ app.post('/api/approvals/:id', strictBurstLimit, async (req, res) => {
   if (decision === 'approved' && Date.parse(row.scheduled_at) < Date.now() + 60_000) return res.status(409).json({ error: 'The scheduled time has passed. Ask the owner to create a new review link.' });
   const body = { ...(row.body || {}), approval_status: decision, reviewed_at: new Date().toISOString(), approval_comment: comment };
   const update = supabase.from('scheduled_posts').update({ body, ...(decision === 'rejected' ? { status: 'cancelled' } : {}), updated_at: new Date().toISOString() })
-    .eq('id', row.id).eq('status', 'scheduled').select('id');
+    .eq('id', row.id).eq('status', 'scheduled').eq('body->>approval_status', 'pending').select('id');
   const { data: changed, error } = await update;
   if (error) return res.status(500).json({ error: 'Could not save this review.' });
   if (!changed?.length) return res.status(409).json({ error: 'The post changed while you were reviewing it. Refresh and try again.' });
@@ -2388,7 +2491,7 @@ app.post('/api/schedule', requireUser, strictBurstLimit, scheduleRequestLimit, m
         .replace(/[^a-z0-9.]/gi, '').slice(0, 8);
       const key = `${prefix}/${crypto.randomUUID()}${ext}`;
       const { error: upErr } = await uploadMediaFile(supabase.storage.from(BUCKET), key, f, { upsert: false });
-       if (upErr) throw new Error('Media upload failed (' + BUCKET + '): ' + (upErr.message || upErr) + '. Make sure the "' + BUCKET + '" bucket exists and is public.');
+       if (upErr) throw new Error('Media upload failed. Check that the private media bucket exists and accepts this file type.');
       stored.push({ path: key, mimetype: f.mimetype, name: f.originalname || key.split('/').pop() });
     }
     for (const f of instagramFiles) {
@@ -2413,7 +2516,7 @@ app.post('/api/schedule', requireUser, strictBurstLimit, scheduleRequestLimit, m
     if (thumbFile) {
       const key = `${prefix}/cover.jpg`;
       const { error: upErr } = await uploadMediaFile(supabase.storage.from(BUCKET), key, thumbFile, { upsert: false });
-      if (upErr) throw new Error('Cover upload failed. Create public bucket "' + BUCKET + '" in Supabase Storage.');
+      if (upErr) throw new Error('Cover upload failed. Check that the private media bucket exists.');
       thumbPath = key;
     }
     const { data, error } = await supabase.from('scheduled_posts').insert({
@@ -2598,9 +2701,8 @@ async function runDueSchedules() {
         const publishBody = { ...(row.body || {}) };
         if (hostedMetaVideo) {
           const item = row.media[0];
-          const { data } = supabase.storage.from(BUCKET).getPublicUrl(item.path);
           publishBody.hasPreuploadedMedia = '1';
-          publishBody.mediaUrl0 = data.publicUrl;
+          delete publishBody.mediaUrl0;
           publishBody.mediaPath0 = item.path;
           publishBody.mediaName0 = item.name || 'scheduled-video';
           publishBody.mediaType0 = item.mimetype || 'video/mp4';
