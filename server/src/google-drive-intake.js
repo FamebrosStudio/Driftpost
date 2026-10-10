@@ -15,7 +15,9 @@ const PLATFORMS = new Set(['youtube', 'instagram', 'facebook', 'x']);
 let intakeBusy = false;
 let outcomeBusy = false;
 let intakeActive = 0;
-const MAX_ACTIVE_INTAKE_JOBS = 2;
+// Keep a small bounded pool for CPU- and memory-heavy media analysis while
+// allowing the persistent database queue to grow independently.
+const MAX_ACTIVE_INTAKE_JOBS = 3;
 
 function parseDestination(fileName) {
   const title = String(fileName || '').split(/[\\/]/).at(-1).trim().replace(/\.[a-z0-9]{2,8}$/i, '')

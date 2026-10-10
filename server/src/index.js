@@ -456,9 +456,9 @@ function activeJobCount(userId) {
 // Bound simultaneous platform work across the whole Render instance. The
 // accepted jobs stay pollable in `queued` state while their disk-backed media
 // waits, avoiding both per-click serialization and an unbounded RAM spike.
-const MAX_ACTIVE_PUBLISHES = 2;
-const MAX_PENDING_PUBLISHES = 100;
-const MAX_USER_PENDING_PUBLISHES = 50;
+const MAX_ACTIVE_PUBLISHES = 3;
+const MAX_PENDING_PUBLISHES = 500;
+const MAX_USER_PENDING_PUBLISHES = 250;
 let activePublishes = 0;
 const publishQueue = [];
 function pumpPublishQueue() {
@@ -2362,7 +2362,22 @@ setInterval(() => {
 // body, and a lightweight worker re-assembles the upload when it is due.
 // Everything (tokens, connection) is validated at fire time again, so a
 // disconnected or revoked account fails loudly instead of silently.
-const SCHED_BATCH = 5;
+// Drain larger ready batches so a queue of 10+ posts does not wait through
+// several scheduler intervals before work even starts.
+const SCHED_BATCH = 20;
+
+async function runWithConcurrency(items, concurrency, worker) {
+  let next = 0;
+  const errors = [];
+  const count = Math.min(Math.max(1, concurrency), items.length);
+  await Promise.all(Array.from({ length: count }, async () => {
+    while (next < items.length) {
+      const item = items[next++];
+      try { await worker(item); } catch (error) { errors.push(error); }
+    }
+  }));
+  if (errors.length) throw errors[0];
+}
 
 function validateMedia(platform, files) {
   if (platform === 'instagram' && files.length > 10) return 'Instagram publishing supports up to 10 carousel slides.';
@@ -2721,16 +2736,18 @@ async function runDueSchedules() {
       ready.push(...rows.filter((row) => row.body?.approval_status !== 'pending').slice(0, SCHED_BATCH - ready.length));
       if (rows.length < scanPageSize) break;
     }
-    for (const row of ready) {
+    // Download and publish a small bounded number of due posts concurrently.
+    // This drains large queues faster without opening an unbounded media burst.
+    await runWithConcurrency(ready, MAX_ACTIVE_PUBLISHES, async (row) => {
       // Approval links pause the existing scheduled row until the reviewer
       // approves it. It remains visible/cancellable from the owner's calendar.
-      if (row.body?.approval_status === 'pending') continue;
+      if (row.body?.approval_status === 'pending') return;
       // Claim the row so a second instance/loop cannot double-post.
       const { data: claimed, error: claimError } = await supabase.from('scheduled_posts')
         .update({ status: 'publishing', updated_at: new Date().toISOString() })
         .eq('id', row.id).eq('status', 'scheduled').select();
       if (claimError) throw claimError;
-      if (!claimed || !claimed.length) continue;
+      if (!claimed || !claimed.length) return;
       scheduleWorkerHealth.lastClaimedCount += 1;
       console.info('[scheduler] claimed', row.platform, row.id);
       const { data: conn } = await supabase.from('platform_connections')
@@ -2868,7 +2885,7 @@ async function runDueSchedules() {
       } finally {
         clearInterval(leaseHeartbeat);
       }
-    }
+    });
     scheduleWorkerHealth.lastSuccessAt = new Date().toISOString();
     scheduleWorkerHealth.lastError = null;
   } catch (e) {
