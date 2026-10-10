@@ -978,3 +978,101 @@ select:disabled { opacity: 0.6; }
   .bg-publish-notice { max-height: min(58dvh, 440px); }
   .bg-publish-notice__account > div:first-child { align-items: flex-start; flex-direction: column; gap: 2px; }
 }
+
+/* Fluent-style edge light across every Driftpost console surface. */
+:is(.connect, .stage1, .stage2, .stage3, .hist, .ws, .team-video-page, .approval-page, .cg) :is(
+  .cn-card, .cn-brands, .cn-brand-row, .setup-card, .s1-modal, .ws-welcome,
+  .s2-sec, .s2-out, .s2-editor, .s2-video-editor-page, .s2-video-editor-workspace,
+  .s2-audio-track, .s2-clip-track, .s3-work, .s3-cover-picker, .s3-sched,
+  .s3-approval-choice, .hist-row, .hist-activity, .hist-delete-modal,
+  .hist-delete-option, .ws-panel, .ws-stat, .ws-metric-card, .approval-card,
+  .automation-account, .team-video-panel, .team-account-group, .team-account,
+  .team-file-field, .team-option, .team-video-job, .ws-campaign-account,
+  .bg-publish-notice, .bg-publish-notice__account, .cg-card
+) {
+  position: relative;
+  isolation: isolate;
+  transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease, background-color .2s ease;
+}
+
+:is(.connect, .stage1, .stage2, .stage3, .hist, .ws, .team-video-page, .approval-page, .cg) :is(
+  .cn-card, .cn-brands, .cn-brand-row, .setup-card, .s1-modal, .ws-welcome,
+  .s2-sec, .s2-out, .s2-editor, .s2-video-editor-page, .s2-video-editor-workspace,
+  .s2-audio-track, .s2-clip-track, .s3-work, .s3-cover-picker, .s3-sched,
+  .s3-approval-choice, .hist-row, .hist-activity, .hist-delete-modal,
+  .hist-delete-option, .ws-panel, .ws-stat, .ws-metric-card, .approval-card,
+  .automation-account, .team-video-panel, .team-account-group, .team-account,
+  .team-file-field, .team-option, .team-video-job, .ws-campaign-account,
+  .bg-publish-notice, .bg-publish-notice__account, .cg-card
+)::after,
+:is(.connect, .stage1, .stage2, .stage3, .hist, .ws, .team-video-page, .approval-page, .cg) button::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  box-sizing: border-box;
+  padding: 1px;
+  border-radius: inherit;
+  background: linear-gradient(115deg, #53d6c766 5%, #82caff99 32%, #a98aff99 58%, #ed9bdb77 77%, #53d6c766 100%);
+  background-size: 240% 240%;
+  opacity: 0;
+  pointer-events: none;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  transition: opacity .22s ease;
+}
+
+:is(.connect, .stage1, .stage2, .stage3, .hist, .ws, .team-video-page, .approval-page, .cg) button {
+  position: relative;
+  isolation: isolate;
+  transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease, background-color .18s ease, color .18s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  :is(.connect, .stage1, .stage2, .stage3, .hist, .ws, .team-video-page, .approval-page, .cg) :is(
+    .cn-card, .cn-brands, .cn-brand-row, .setup-card, .s1-modal, .ws-welcome,
+    .s2-sec, .s2-out, .s2-editor, .s2-video-editor-page, .s2-video-editor-workspace,
+    .s2-audio-track, .s2-clip-track, .s3-work, .s3-cover-picker, .s3-sched,
+    .s3-approval-choice, .hist-row, .hist-activity, .hist-delete-modal,
+    .hist-delete-option, .ws-panel, .ws-stat, .ws-metric-card, .approval-card,
+    .automation-account, .team-video-panel, .team-account-group, .team-account,
+    .team-file-field, .team-option, .team-video-job, .ws-campaign-account,
+    .bg-publish-notice, .bg-publish-notice__account, .cg-card
+  ):hover {
+    transform: translateY(-2px);
+    border-color: color-mix(in srgb, #75d9d0 48%, var(--line, #334155));
+    box-shadow: 0 0 0 1px #83c8ff20, 0 12px 30px #00000022;
+  }
+  :is(.connect, .stage1, .stage2, .stage3, .hist, .ws, .team-video-page, .approval-page, .cg) :is(
+    .cn-card, .cn-brands, .cn-brand-row, .setup-card, .s1-modal, .ws-welcome,
+    .s2-sec, .s2-out, .s2-editor, .s2-video-editor-page, .s2-video-editor-workspace,
+    .s2-audio-track, .s2-clip-track, .s3-work, .s3-cover-picker, .s3-sched,
+    .s3-approval-choice, .hist-row, .hist-activity, .hist-delete-modal,
+    .hist-delete-option, .ws-panel, .ws-stat, .ws-metric-card, .approval-card,
+    .automation-account, .team-video-panel, .team-account-group, .team-account,
+    .team-file-field, .team-option, .team-video-job, .ws-campaign-account,
+    .bg-publish-notice, .bg-publish-notice__account, .cg-card
+  ):hover::after,
+  :is(.connect, .stage1, .stage2, .stage3, .hist, .ws, .team-video-page, .approval-page, .cg) button:not(:disabled):hover::after {
+    opacity: 1;
+    animation: drift-fluent-rim 3.8s linear infinite;
+  }
+  :is(.connect, .stage1, .stage2, .stage3, .hist, .ws, .team-video-page, .approval-page, .cg) button:not(:disabled):hover {
+    transform: translateY(-1px);
+    box-shadow: 0 0 0 1px #91aaff28, 0 5px 18px #0000001c;
+  }
+}
+
+:is(.connect, .stage1, .stage2, .stage3, .hist, .ws, .team-video-page, .approval-page, .cg) :is(input, select, textarea) {
+  transition: border-color .18s ease, box-shadow .18s ease, background-color .18s ease;
+}
+:is(.connect, .stage1, .stage2, .stage3, .hist, .ws, .team-video-page, .approval-page, .cg) :is(input, select, textarea):focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--go, var(--acc, #63d4ca)) 45%, transparent);
+  outline-offset: 1px;
+}
+
+@keyframes drift-fluent-rim { from { background-position: 0% 50%; } to { background-position: 100% 50%; } }
+@media (prefers-reduced-motion: reduce) {
+  :is(.connect, .stage1, .stage2, .stage3, .hist, .ws, .team-video-page, .approval-page, .cg) :is(button, .cn-card, .cn-brands, .cn-brand-row, .setup-card, .s1-modal, .ws-welcome, .s2-sec, .s2-out, .s2-editor, .s2-video-editor-page, .s2-video-editor-workspace, .s2-audio-track, .s2-clip-track, .s3-work, .s3-cover-picker, .s3-sched, .s3-approval-choice, .hist-row, .hist-activity, .hist-delete-modal, .hist-delete-option, .ws-panel, .ws-stat, .ws-metric-card, .approval-card, .automation-account, .team-video-panel, .team-account-group, .team-account, .team-file-field, .team-option, .team-video-job, .ws-campaign-account, .bg-publish-notice, .bg-publish-notice__account, .cg-card) { animation: none !important; transition: none !important; transform: none !important; }
+}

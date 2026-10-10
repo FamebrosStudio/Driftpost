@@ -255,10 +255,12 @@
 .ws button:focus-visible { outline: 2px solid var(--go); outline-offset: 2px; }
 .ws-panel, .ws-stat, .ws-metric-card { transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease; }
 .ws button { transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease, background-color .18s ease, color .18s ease; }
+.ws-welcome { transition: border-color .2s ease, box-shadow .2s ease; }
 @keyframes ws-status-pulse { 50% { opacity: .45; box-shadow: 0 0 0 5px color-mix(in srgb, #e1a83c 9%, transparent); } }
 @media (hover: hover) and (pointer: fine) {
-  .ws-panel:hover, .ws-stat:hover, .ws-metric-card:hover { transform: translateY(-2px); border-color: color-mix(in srgb, var(--go) 42%, var(--line)); box-shadow: 0 0 0 1px color-mix(in srgb, var(--go) 18%, transparent), 0 12px 30px #00000012; }
-  .ws button:not(:disabled):hover { box-shadow: 0 0 0 2px color-mix(in srgb, var(--go) 24%, transparent); }
+  .ws-panel:hover, .ws-stat:hover, .ws-metric-card:hover { transform: translateY(-2px); border-color: color-mix(in srgb, var(--go) 42%, var(--line)); box-shadow: 0 0 0 1px color-mix(in srgb, #86baff 18%, transparent), 0 12px 30px #00000022; }
+  .ws button:not(:disabled):hover { box-shadow: 0 0 0 1px color-mix(in srgb, #91aaff 28%, transparent), 0 5px 18px #0000001c; }
+  .ws-welcome:hover { border-color: color-mix(in srgb, #8ca7ff 38%, var(--line)); box-shadow: 0 0 0 1px #8ca7ff22, 0 12px 30px #0000001c; }
 }
 @media (prefers-reduced-motion: reduce) { .ws-panel, .ws-stat, .ws-metric-card, .ws button, .ws-live-status > span.is-refreshing { animation: none !important; transition: none !important; transform: none !important; } }
 @media (min-width: 1600px) { .ws-main { width: min(1460px, 100%); padding-top: 54px; } .ws-welcome { min-height: 260px; } .ws-panel { padding: 24px; } }
