@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { api, groupBrands, PLATFORMS } from '../lib.js';
-import { isAiAccount, hasAiAccess } from '../ai-access.js';
+import { isAiAccount } from '../ai-access.js';
 import { requestCaptions, mapResponse } from '../stage2/ai.js';
 import { saveCaptionDraft, readStageSelection } from '../stage2/captionDraftScope.js';
 import { readVault, writeVault } from '../stage2/mediaVault.js';
@@ -81,7 +81,7 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut, onOpenRe
     if (!frames.length) throw new Error('Driftpost could not extract any video frames for cover selection.');
     const form = new FormData();
     frames.forEach((frame) => form.append('images', frame, frame.name));
-    const { selection } = await api('/api/ai/video-covers', token, { method: 'POST', body: form });
+    const { selection } = await api('/api/ai/video-covers', token, { method: 'POST', body: form, headers: { 'X-Driftpost-Team-Video': '1' } });
     const covers = { thumb: null, instagram: null, facebook: null };
     const mappings = [
       ['youtube', 'thumb'], ['instagram', 'instagram'], ['facebook', 'facebook'],
@@ -122,7 +122,7 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut, onOpenRe
   const submit = async (event) => {
     event.preventDefault();
     setError('');
-    if (!isAiAccount(session.user?.email) || !hasAiAccess(session)) return setError('This private team tool is not available for this account or browser.');
+    if (!isAiAccount(session.user?.email)) return setError('This private team tool is not available for this account.');
     if (!brand) return setError('Choose the brand this video belongs to.');
     if (!file || !file.type.startsWith('video/')) return setError('Choose a video file first.');
     if (file.size > 400 * 1024 * 1024) return setError('The video is larger than Driftpost’s 400 MB upload limit.');
@@ -144,6 +144,7 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut, onOpenRe
         files: [{ raw: snapshot.file, name: snapshot.file.name, type: snapshot.file.type }],
         analysis: 'analyze',
         frameCount: 8,
+        teamVideo: true,
         platforms: snapshot.platforms,
         tone: 'auto', emoji: 'medium', length: 'medium',
       });

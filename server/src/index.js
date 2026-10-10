@@ -438,6 +438,14 @@ function requireAiAccess(req, res, next) {
   next();
 }
 
+function requireAiTeamVideoAccess(req, res, next) {
+  if (req.get('X-Driftpost-Team-Video') === '1') {
+    if (!isAiAllowedUser(req.user)) return res.status(403).json({ error: 'Team video is unavailable for this account.' });
+    return next();
+  }
+  return requireAiAccess(req, res, next);
+}
+
 function activeJobCount(userId) {
   let n = 0;
   for (const j of jobs.values()) {
@@ -1016,7 +1024,7 @@ function friendlySpeechWarning(error) {
   return 'Speech analysis was unavailable, but your captions were still generated from the prompt and video frames. Try again later if you want the spoken audio included.';
 }
 
-app.post('/api/ai/captions', requireUser, requireAiAccess, aiLimit, (req, res, next) => {
+app.post('/api/ai/captions', requireUser, requireAiTeamVideoAccess, aiLimit, (req, res, next) => {
   if (req.is('multipart/form-data')) return aiImageUpload.fields([
     { name: 'images', maxCount: 9 }, { name: 'video', maxCount: 1 },
   ])(req, res, next);
@@ -1134,7 +1142,7 @@ app.post('/api/ai/captions', requireUser, requireAiAccess, aiLimit, (req, res, n
 // Select platform-aware cover frames for the private team video workflow.
 // Only the small sampled JPEGs are sent; the original video remains in the
 // existing publishing path and is never required by this endpoint.
-app.post('/api/ai/video-covers', requireUser, requireAiAccess, aiLimit, (req, res, next) => {
+app.post('/api/ai/video-covers', requireUser, requireAiTeamVideoAccess, aiLimit, (req, res, next) => {
   if (req.is('multipart/form-data')) return aiImageUpload.fields([{ name: 'images', maxCount: 8 }])(req, res, next);
   next();
 }, async (req, res) => {

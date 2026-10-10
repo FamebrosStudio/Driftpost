@@ -117,7 +117,7 @@ async function sampleVideo(file, count = 3) {
 
 // Shared Stage 2/3 caption generation: one request, per-platform answers.
 // Pass only:<platform> for a fast single-card regen (one card, ~1/3 tokens).
-export function requestCaptions(token, { brief, brand, files, tone, emoji, length, analysis = 'fast', only, platforms, frameCount = 3 }) {
+export function requestCaptions(token, { brief, brand, files, tone, emoji, length, analysis = 'fast', only, platforms, frameCount = 3, teamVideo = false }) {
   return (async () => {
     const entries = files || [];
     const analyzeMedia = analysis === 'analyze';
@@ -149,7 +149,11 @@ export function requestCaptions(token, { brief, brand, files, tone, emoji, lengt
     if (video) form.append('video', video.raw, video.name || 'video.mp4');
     body.image_count = form.getAll('images').length;
     for (const [key, value] of Object.entries(body)) form.append(key, String(value ?? ''));
-    const result = await api('/api/ai/captions', token, { method: 'POST', body: form });
+    const result = await api('/api/ai/captions', token, {
+      method: 'POST',
+      body: form,
+      ...(teamVideo ? { headers: { 'X-Driftpost-Team-Video': '1' } } : {}),
+    });
     // Keep extracted stills local for the private team flow's separate cover
     // decision. They are not serialized back from the API.
     return { ...result, videoFrames: frames };
