@@ -29,7 +29,7 @@ import { enabledInstagramCollaborators, instagramCaptionRequiredError, nonEmptyC
 import { createTemporaryMediaUrl, isOwnedMediaPath } from './media-links.js';
 import { canUsePrivateBrandData } from './brand-access.js';
 import { createTelegramIntakeRouter, registerTelegramWebhook } from './telegram-intake.js';
-import { startGoogleDriveIntake } from './google-drive-intake.js';
+import { getDriveReviewFile, startGoogleDriveIntake, streamDriveReviewFile } from './google-drive-intake.js';
 
 const required = ['FRONTEND_URL', 'SUPABASE_URL', 'SUPABASE_SECRET_KEY', 'TOKEN_ENCRYPTION_KEY', 'STATE_SIGNING_SECRET'];
 const missing = required.filter((n) => !process.env[n]);
@@ -1422,10 +1422,28 @@ app.post('/api/intake/drive/disconnect', requireUser, async (req, res) => {
 app.get('/api/intake/drive/jobs', requireUser, async (req, res) => {
   if (!canUsePrivateBrandData(req.user)) return res.status(403).json({ error: 'Private team access required.' });
   const { data, error } = await supabase.from('google_drive_video_jobs')
-    .select('id, file_name, account_name, platforms, status, error, result, created_at, updated_at')
+    .select('id, file_name, mime_type, account_name, platforms, status, error, result, created_at, updated_at')
     .eq('owner_user_id', req.user.id).order('created_at', { ascending: false }).limit(50);
   if (error) return res.status(503).json({ error: 'Drive intake jobs are not initialized yet. Apply the Google Drive intake migration, then retry.' });
   res.json({ jobs: data || [] });
+});
+
+app.get('/api/intake/drive/jobs/:jobId/media', requireUser, async (req, res) => {
+  if (!canUsePrivateBrandData(req.user)) return res.status(403).json({ error: 'Private team access required.' });
+  const { data: job, error } = await supabase.from('google_drive_video_jobs')
+    .select('id, drive_file_id, owner_user_id, status, file_name, result')
+    .eq('id', req.params.jobId).eq('owner_user_id', req.user.id).maybeSingle();
+  if (error) return res.status(503).json({ error: 'Could not load this private review item.' });
+  if (!job) return res.status(404).json({ error: 'Review item not found.' });
+  if (job.status !== 'failed' || !job.result?.review) return res.status(409).json({ error: 'This video is not waiting for human review.' });
+  try {
+    const upstream = await getDriveReviewFile(supabase, job);
+    res.setHeader('Content-Disposition', `inline; filename="${String(job.file_name || 'review-video.mp4').replace(/[\r\n"\\]/g, '_').slice(0, 180)}"`);
+    streamDriveReviewFile(upstream, res);
+  } catch (mediaError) {
+    if (!res.headersSent) res.status(502).json({ error: String(mediaError?.message || 'Could not load this video for review.').slice(0, 300) });
+    else res.destroy(mediaError);
+  }
 });
 
 app.post('/api/oauth/youtube/start', requireUser, oauthLimit, (req, res) => {

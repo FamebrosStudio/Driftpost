@@ -91,7 +91,25 @@
 .drive-job-status.completed { color: var(--go); }
 .drive-job-status.failed, .drive-job-status.partial { color: #e07e72; }
 .drive-intake-jobs .drive-job-error { grid-column: 1 / -1; color: #e07e72; }
+.drive-intake-jobs .drive-job-needs-review { border-color: color-mix(in srgb, #e2a84d 58%, var(--line)); background: color-mix(in srgb, #e2a84d 5%, var(--panel)); }
+.drive-intake-jobs .drive-job-needs-review .drive-job-status { color: #e2a84d; }
+.drive-intake-jobs .drive-job-review-reason { grid-column: 1 / -1; color: #e2a84d; line-height: 1.5; }
+.drive-intake-jobs .drive-job-review-button { justify-self: start; min-height: 32px; padding: 0 11px; border: 1px solid color-mix(in srgb, #e2a84d 65%, var(--line)); border-radius: 7px; background: color-mix(in srgb, #e2a84d 12%, var(--panel)); color: var(--ink); font: inherit; font-size: 10px; font-weight: 750; cursor: pointer; }
+.drive-intake-jobs .drive-job-review-button:hover:not(:disabled) { border-color: #e2a84d; box-shadow: 0 0 0 2px color-mix(in srgb, #e2a84d 18%, transparent); }
+.drive-intake-jobs .drive-job-review-button:disabled { opacity: .6; cursor: wait; }
+.team-video-review-panel { display: grid; grid-template-columns: minmax(0, 1fr) minmax(220px, 36%); align-items: center; gap: 18px; margin: 0 0 15px; padding: 17px; border: 1px solid color-mix(in srgb, #e2a84d 58%, var(--line)); border-radius: 12px; background: color-mix(in srgb, #e2a84d 6%, var(--panel)); }
+.team-video-review-panel > div { display: grid; gap: 6px; }
+.team-video-review-panel b { color: #e2a84d; font-size: 13px; }
+.team-video-review-panel p { margin: 0; color: var(--ink); font-size: 12px; line-height: 1.5; }
+.team-video-review-panel small { color: var(--muted); font-size: 10px; line-height: 1.5; }
+.team-video-review-panel details { padding: 8px 0; color: var(--muted); font-size: 10px; }
+.team-video-review-panel summary { cursor: pointer; font-weight: 700; }
+.team-video-review-panel details p { padding-top: 6px; white-space: pre-wrap; }
+.team-video-review-panel button { justify-self: start; min-height: 31px; padding: 0 10px; border: 1px solid var(--line); border-radius: 7px; background: var(--panel); color: var(--muted); font: inherit; font-size: 10px; cursor: pointer; }
+.team-video-review-panel button:hover { color: var(--ink); border-color: var(--line-hard); }
+.team-video-review-panel video { display: block; width: 100%; max-height: 260px; border: 1px solid var(--line); border-radius: 8px; background: #050608; }
 .ws-team-entry { margin-left: 8px; }
 @media (max-width: 820px) { .team-options-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 650px) { .team-options-grid { grid-template-columns: 1fr; } .team-video-job { align-items: flex-start; flex-direction: column; } .team-video-job button { width: 100%; min-height: 42px; } .team-video-actions { align-items: stretch; flex-direction: column; } .team-video-actions button { width: 100%; min-height: 48px; } .ws-team-entry { margin: 8px 0 0; } }
+@media (max-width: 650px) { .team-video-review-panel { grid-template-columns: 1fr; } .team-video-review-panel video { max-height: 360px; } }
 @media (max-width: 760px) { .ws-nav { overflow-x: auto; } .ws-topbar { gap: 12px; } }

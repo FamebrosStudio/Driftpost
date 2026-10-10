@@ -8,7 +8,7 @@ import { promisify } from 'node:util';
 import { transcribeVideo } from './video-analysis.js';
 import { generateCaptions, selectVideoCoverFrames } from './ai.js';
 import { uploadMediaFile } from './media-io.js';
-import { resolveBrand } from './brand-memory/index.js';
+import { getBrandById, resolveBrand } from './brand-memory/index.js';
 import { canUsePrivateBrandData } from './brand-access.js';
 
 const execFileAsync = promisify(execFile);
@@ -142,14 +142,26 @@ export async function processIntakeJob(supabase, job, options = {}) {
   if (authError || !canUsePrivateBrandData(authResult?.user)) throw new Error('The configured publishing account is not approved for the private video workflow.');
   const accountName = clean(job.account_name);
   if (accountName.length < 2) throw new Error('Add the destination in the video caption, for example: Account: Famebros Studio.');
-  const brandHit = resolveBrand(accountName, 400);
-  if (!brandHit || brandHit.score < 400) throw new Error(`Could not safely match “${accountName}” to one saved brand profile. Check the account name and send it again.`);
+  const savedBrand = job.result?.brand_id ? getBrandById(job.result.brand_id) : null;
+  let brandHit = job.result?.generic_account_target ? null : (savedBrand ? { brand: savedBrand, score: 1000 } : resolveBrand(accountName, 400));
+  const directConnectionIds = Array.isArray(job.result?.destination_connection_ids) ? job.result.destination_connection_ids : [];
   const { data: rawConnections, error: connectionError } = await supabase.from('platform_connections')
     .select('id, user_id, platform, platform_account_id, account_name, encrypted_tokens')
     .eq('user_id', ownerId);
   if (connectionError) throw new Error('Could not read the configured Driftpost publishing accounts.');
+  const directDestinations = directConnectionIds.length
+    ? (rawConnections || []).filter((item) => directConnectionIds.includes(item.id))
+    : [];
+  if (!brandHit && directDestinations.length === directConnectionIds.length && directDestinations.length) {
+    // Use video/transcript and account label only; never borrow a similarly named client's private facts.
+    brandHit = { brand: { id: null, name: accountName }, score: 400 };
+  }
+  if (!brandHit || brandHit.score < 400) throw new Error(`Could not safely match "${accountName}" to a saved brand profile or an exact connected account. Check the account name and send it again.`);
+  if (directConnectionIds.length && directDestinations.length !== directConnectionIds.length) throw new Error('One or more selected connected accounts are no longer available. Check the account and retry.');
   const requestedPlatforms = Array.isArray(job.platforms) ? job.platforms : [];
-  const routing = options.resolveDestinations
+  const routing = directDestinations.length
+    ? { destinations: directDestinations, unresolved: [] }
+    : options.resolveDestinations
     ? options.resolveDestinations(brandHit.brand, rawConnections, requestedPlatforms)
     : { destinations: matchConnections(rawConnections, accountName).filter((item) => !requestedPlatforms.length || requestedPlatforms.includes(item.platform)), unresolved: [] };
   if (routing.unresolved?.length) throw new Error(`Account mapping needs review: ${routing.unresolved.join('; ')}.`);
@@ -165,14 +177,42 @@ export async function processIntakeJob(supabase, job, options = {}) {
     let transcript = '';
     let speechWarning = '';
     try { transcript = (await transcribeVideo(videoPath, path.basename(videoPath), job.mime_type || 'video/mp4')).text || ''; }
-    catch (error) { speechWarning = 'Speech transcription was unavailable; captions use the video frames and saved brand profile.'; console.warn('[telegram-intake] transcription unavailable:', String(error?.message || error).slice(0, 220)); }
+    catch (error) { speechWarning = brandHit.brand.id ? 'Speech transcription was unavailable; captions use the video frames and saved brand profile.' : 'Speech transcription was unavailable; captions use the video frames only.'; console.warn('[telegram-intake] transcription unavailable:', String(error?.message || error).slice(0, 220)); }
     const platforms = [...new Set(destinations.map((item) => item.platform))];
+    if (options.assessBrand && brandHit.brand.id) {
+      let assessment;
+      try { assessment = await options.assessBrand(brandHit.brand, frames, transcript); }
+      catch (error) {
+        assessment = { verdict: 'uncertain', confidence: 0, reason: `Automatic verification could not finish: ${String(error?.message || error).slice(0, 350)}` };
+      }
+      if (assessment?.verdict !== 'match') {
+        const review = {
+          verdict: assessment?.verdict || 'uncertain',
+          confidence: Number.isFinite(assessment?.confidence) ? assessment.confidence : 0,
+          reason: String(assessment?.reason || 'The AI could not confirm this video belongs to the selected brand.').slice(0, 500),
+          transcript_excerpt: String(transcript || '').slice(0, 2500),
+          checked_at: new Date().toISOString(),
+        };
+        const { error: reviewError } = await supabase.from(table).update({
+          // Store this as the existing terminal `failed` status for compatibility
+          // with databases that have not applied the optional review migration.
+          // The private review object distinguishes a held job from a real failure.
+          status: 'failed',
+          error: review.reason,
+          result: { ...(job.result || {}), brand_id: brandHit.brand.id, review },
+          updated_at: new Date().toISOString(),
+        }).eq('id', job.id).eq('status', 'processing');
+        if (reviewError) throw new Error('The brand review was triggered, but Driftpost could not save the review item.');
+        await notify(`Human review needed for ${brandHit.brand.name}: ${review.reason}`);
+        return { needsReview: true, assessment: review };
+      }
+    }
     const generated = await generateCaptions(
       `Create accurate, platform-specific captions for the video sent to the ${brandHit.brand.name} account. Describe only what is visible or spoken.`,
       {
-        brand: brandHit.brand.name,
+        brand: brandHit.brand.id ? brandHit.brand.name : '',
         brandId: brandHit.brand.id,
-        allowPrivateBrandData: true,
+        allowPrivateBrandData: !!brandHit.brand.id,
         assetHint: `Video duration ${Math.round(duration)} seconds.`,
         goal: 'enquiries', tone: 'auto', emoji: 'medium', length: 'medium',
         transcript,

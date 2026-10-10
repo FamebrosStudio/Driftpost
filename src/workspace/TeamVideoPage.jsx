@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { api, matchesSearchText, PLATFORMS } from '../lib.js';
+import { api, apiRequestUrl, matchesSearchText, PLATFORMS } from '../lib.js';
 import { isAiAccount } from '../ai-access.js';
 import { requestCaptions, mapResponse } from '../stage2/ai.js';
 import { saveCaptionDraft, readStageSelection } from '../stage2/captionDraftScope.js';
@@ -43,6 +43,8 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut, onOpenRe
   const [driveState, setDriveState] = useState({ loading: true, connected: false, folder_url: '', google_email: '', error: '' });
   const [driveBusy, setDriveBusy] = useState(false);
   const [driveJobs, setDriveJobs] = useState([]);
+  const [reviewLoadingId, setReviewLoadingId] = useState('');
+  const [activeDriveReview, setActiveDriveReview] = useState(null);
   const [connectionsLoading, setConnectionsLoading] = useState(true);
   const [loadError, setLoadError] = useState('');
   const [brandOptions, setBrandOptions] = useState([]);
@@ -72,6 +74,14 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut, onOpenRe
   const [pendingCoverCount, setPendingCoverCount] = useState(0);
   const activeJobs = jobs.filter((job) => job.status === 'analyzing').length;
   const [error, setError] = useState('');
+  const [videoPreviewUrl, setVideoPreviewUrl] = useState('');
+
+  useEffect(() => {
+    if (!file || !activeDriveReview) { setVideoPreviewUrl(''); return undefined; }
+    const url = URL.createObjectURL(file);
+    setVideoPreviewUrl(url);
+    return () => URL.revokeObjectURL(url);
+  }, [file, activeDriveReview]);
 
   useEffect(() => {
     try { localStorage.setItem(SCOPED('driftpost-team-video-jobs', userId), JSON.stringify(jobs.map(({ id, brand, status, message, createdAt, autoPublish, coverWarning, brandKey, accountIds, platforms, brief, crosspost, instagramStory, collaborators, warning, group, outputs, cfg, transcript }) => ({ id, brand, status, message, createdAt, autoPublish, coverWarning, brandKey, accountIds, platforms, brief, crosspost, instagramStory, collaborators, warning, group, outputs, cfg, transcript })))); } catch {}
@@ -100,6 +110,49 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut, onOpenRe
       setDriveState((old) => ({ ...old, error: e.message || 'Could not start Google Drive connection.' }));
       setDriveBusy(false);
     }
+  };
+
+  const loadDriveReview = async (job) => {
+    if (reviewLoadingId) return;
+    setReviewLoadingId(job.id);
+    setError('');
+    try {
+      const response = await fetch(apiRequestUrl(`/api/intake/drive/jobs/${encodeURIComponent(job.id)}/media`), {
+        headers: { Authorization: `Bearer ${session.access_token}` },
+      });
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data.error || 'Could not load this video for review.');
+      }
+      const blob = await response.blob();
+      if (!blob.size || blob.size > 400 * 1024 * 1024) throw new Error('This review video is empty or larger than the 400 MB limit.');
+      const mediaFile = new File([blob], job.file_name || 'drive-review.mp4', { type: job.mime_type || blob.type || 'video/mp4' });
+      const profileKey = String(job.result?.brand_id || '');
+      const selectedBrand = brands.find((item) => item.key === profileKey)
+        || brands.find((item) => item.label.toLowerCase() === String(job.account_name || '').toLowerCase());
+      if (!selectedBrand) throw new Error('The saved brand profile is unavailable. Reload the brand list before reviewing this video.');
+      const profileRecord = brandOptions.find((item) => item.id === selectedBrand.key);
+      const savedIds = Array.isArray(job.result?.destination_connection_ids) && job.result.destination_connection_ids.length
+        ? job.result.destination_connection_ids
+        : Object.values(profileRecord?.map || {});
+      const ids = [...new Set(savedIds)].filter((id) => connections.some((account) => account.id === id));
+      setBrandKey(selectedBrand.key);
+      setSelectedIds(ids);
+      setConfirmedAccountIds(ids);
+      setFile(mediaFile);
+      setYoutubeThumb(null);
+      setInstagramCover(null);
+      setFacebookCover(null);
+      setInstagramStory(false);
+      setCrosspost(false);
+      setCollaborators('');
+      setAutoPublish(false);
+      setBrief('Human review: the automatic brand check flagged this video. Confirm the correct brand and destination details before posting.');
+      setActiveDriveReview(job);
+      setError('');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch (e) { setError(e.message || 'Could not open the human review item.'); }
+    finally { setReviewLoadingId(''); }
   };
 
   useEffect(() => {
@@ -352,9 +405,10 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut, onOpenRe
         <div className="team-video-section-title"><span>↗</span><div><h2>Editor video drop-off</h2><p>Connect the private team Drive once. Editors upload into the shared folder; Driftpost checks it every 30 seconds.</p></div></div>
         {driveState.connected ? <div className="drive-intake-ready"><b>Drive connected · {driveState.google_email}</b><a href={driveState.folder_url} target="_blank" rel="noreferrer">Open Driftpost Video Intake folder ↗</a></div>
           : <div className="drive-intake-connect"><p>{driveState.loading ? 'Checking Google Drive setup…' : driveState.error || 'Connect the Famebros Drive account to turn on automatic video intake.'}</p><button type="button" onClick={connectDrive} disabled={driveBusy || driveState.loading}>{driveBusy ? 'Opening Google…' : 'Connect Google Drive'}</button></div>}
-        <small className="drive-intake-naming">Editor step: name the video with the exact saved brand profile, for example <code>Cocos Inn Resort.mp4</code>. Driftpost will match that profile to its connected platform accounts and select those destinations automatically. If one brand has an unclear account match, the video is held for review instead of being sent to the wrong account. Video files over 400 MB are rejected.</small>
-        {!!driveJobs.length && <div className="drive-intake-jobs" aria-live="polite"><b>Recent Drive videos</b>{driveJobs.slice(0, 8).map((job) => <div key={job.id}><span><strong>{job.file_name}</strong><small>{job.account_name} · {(job.platforms || []).join(', ') || 'Destination needs correction'}</small></span><em className={`drive-job-status ${job.status}`}>{job.status}</em>{job.error && <small className="drive-job-error">{job.error}</small>}</div>)}</div>}
+        <small className="drive-intake-naming">Editor step: name the video with its saved brand name, a saved alias, or a connected social handle, for example <code>@mahalaxmi.jewellers.kurla.mp4</code>. Short names and small typos are understood when they identify one brand clearly. Driftpost selects the connected platform accounts for that brand automatically. If a name could mean multiple brands or accounts, the video waits for review instead of going to the wrong place. Video files over 400 MB are rejected.</small>
+        {!!driveJobs.length && <div className="drive-intake-jobs" aria-live="polite"><b>Recent Drive videos · private team queue</b>{driveJobs.slice(0, 12).map((job) => <div key={job.id} className={!!job.result?.review ? 'drive-job-needs-review' : ''}><span><strong>{job.file_name}</strong><small>{job.account_name} · {(job.platforms || []).join(', ') || 'Destination needs correction'}</small></span><em className={`drive-job-status ${job.status}`}>{job.result?.review ? 'human review' : job.status.replace('_', ' ')}</em>{!!job.result?.review && <><small className="drive-job-review-reason">AI review: {job.result?.review?.reason || job.error || 'The video needs a team member to confirm its brand.'}</small><button type="button" className="drive-job-review-button" onClick={() => loadDriveReview(job)} disabled={!!reviewLoadingId || connectionsLoading || brandLoading}>{reviewLoadingId === job.id ? 'Loading video…' : 'Review and edit'}</button></>}{job.error && !job.result?.review && <small className="drive-job-error">{job.error}</small>}</div>)}</div>}
       </section>
+      {activeDriveReview && <section className="team-video-review-panel" aria-live="polite"><div><b>Human review required</b><p>{activeDriveReview.result?.review?.reason || activeDriveReview.error || 'AI could not confidently verify that this video matches the selected brand.'}</p><small>Check the video, change the brand or accounts if needed, then edit the captions and publishing options in the review composer before posting.</small>{activeDriveReview.result?.review?.transcript_excerpt && <details><summary>Review detected speech</summary><p>{activeDriveReview.result.review.transcript_excerpt}</p></details>}<button type="button" onClick={() => { setActiveDriveReview(null); setFile(null); }}>Close review item</button></div>{videoPreviewUrl && <video controls playsInline preload="metadata" src={videoPreviewUrl} />}</section>}
       <form className="team-video-form" onSubmit={submit}>
         <section className="team-video-panel">
           <div className="team-video-section-title"><span>01</span><div><h2>Choose the brand and video</h2><p>The selected brand controls the facts, voice, and caption rules.</p></div></div>

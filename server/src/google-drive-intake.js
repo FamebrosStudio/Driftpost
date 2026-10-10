@@ -1,9 +1,10 @@
 import fs from 'node:fs';
+import { Readable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
 import { decryptJson, encryptJson } from './crypto.js';
 import { processIntakeJob } from './telegram-intake.js';
-import { resolveBrand } from './brand-memory/index.js';
-import { mapBrandDestinations } from './brand-routing.js';
+import { assessVideoBrandMatch } from './ai.js';
+import { mapBrandDestinations, matchDriveAccounts, resolveDriveBrand } from './brand-routing.js';
 
 const TABLE = 'google_drive_video_jobs';
 const CONNECTIONS = 'google_drive_intake_connections';
@@ -65,19 +66,26 @@ async function enqueueFiles(supabase, connection, files) {
   for (const file of files) {
     const size = Number(file.size) || 0;
     const parsed = parseDestination(file.name);
-    const brandHit = resolveBrand(parsed.accountName, 400);
-    const routing = brandHit ? mapBrandDestinations(brandHit.brand, ownedConnections || [], parsed.platforms) : { destinations: [], unresolved: [] };
+    const brandHit = resolveDriveBrand(parsed.accountName);
+    const directMatch = brandHit.brand ? { destinations: [], ambiguous: false } : matchDriveAccounts(parsed.accountName, ownedConnections || []);
+    const routing = brandHit.brand
+      ? mapBrandDestinations(brandHit.brand, ownedConnections || [], parsed.platforms)
+      : { destinations: directMatch.destinations.filter((item) => !parsed.platforms.length || parsed.platforms.includes(item.platform)), unresolved: [] };
     const autoPlatforms = [...new Set((routing.destinations || []).map((item) => item.platform))];
     const platforms = parsed.platforms.length ? parsed.platforms : autoPlatforms;
     const missingRequested = parsed.platforms.filter((platform) => !autoPlatforms.includes(platform));
-    const routeError = !brandHit
-      ? `Could not match “${parsed.accountName || 'this filename'}” to one saved brand profile. Rename the video to the exact saved brand name.`
+    const routeError = !brandHit.brand && !routing.destinations.length
+      ? (directMatch.ambiguous
+        ? `The name "${parsed.accountName}" matches multiple connected accounts. Add the full account name or platform handle so Driftpost can route it safely.`
+        : brandHit.ambiguous
+          ? `The name "${parsed.accountName}" matches multiple brands (${brandHit.candidates.join(', ')}). Add a distinctive handle, location, or full brand name so Driftpost can route it safely.`
+          : `Could not match "${parsed.accountName || 'this filename'}" to a saved brand or connected account. Try the full name, a saved alias, or a social handle.`)
       : routing.unresolved?.length
         ? `Account mapping needs review: ${routing.unresolved.join('; ')}.`
         : missingRequested.length
-          ? `No connected ${missingRequested.join(', ')} account clearly matches ${brandHit.brand.name}.`
+          ? `No connected ${missingRequested.join(', ')} account clearly matches ${brandHit.brand?.name || parsed.accountName}.`
         : !routing.destinations?.length
-          ? `No connected platform account clearly matches ${brandHit.brand.name}. Check the saved account names and brand mapping.`
+          ? `No connected platform account clearly matches ${brandHit.brand?.name || parsed.accountName}. Check the saved account names and brand mapping.`
           : '';
     const errorMessage = size > MAX_VIDEO_BYTES
       ? 'Video is larger than Driftpost’s 400 MB limit.'
@@ -91,6 +99,10 @@ async function enqueueFiles(supabase, connection, files) {
       file_size: size,
       account_name: brandHit?.brand?.name || parsed.accountName,
       platforms,
+      result: routing.destinations.length ? {
+        ...(brandHit.brand ? { brand_id: brandHit.brand.id } : { generic_account_target: true }),
+        destination_connection_ids: routing.destinations.map((item) => item.id),
+      } : {},
       status: errorMessage ? 'failed' : 'queued',
       error: errorMessage || null,
     });
@@ -131,6 +143,7 @@ async function processQueued(supabase) {
         intakeKey: 'google_drive_intake_job_id',
         sourcePrefix: 'drive',
         resolveDestinations: (brand, connections, platforms) => mapBrandDestinations(brand, connections, platforms),
+        assessBrand: (brand, frames, transcript) => assessVideoBrandMatch(brand, frames, transcript),
         download: (current, destination) => downloadDriveVideo(supabase, current, destination),
         notify: async () => {},
       });
@@ -142,6 +155,27 @@ async function processQueued(supabase) {
   } catch (error) {
     console.error('[drive-intake] worker failed:', String(error?.message || error).slice(0, 250));
   } finally { intakeBusy = false; }
+}
+
+export async function getDriveReviewFile(supabase, job) {
+  const { data: connection, error } = await supabase.from(CONNECTIONS).select('*')
+    .eq('user_id', job.owner_user_id).eq('status', 'connected').maybeSingle();
+  if (error || !connection) throw new Error('The private Drive connection is unavailable. Reconnect Drive in Driftpost.');
+  const accessToken = await tokenFor(supabase, connection);
+  const response = await fetch(`https://www.googleapis.com/drive/v3/files/${encodeURIComponent(job.drive_file_id)}?alt=media`, {
+    headers: { Authorization: `Bearer ${accessToken}` }, signal: AbortSignal.timeout(15 * 60 * 1000),
+  });
+  if (!response.ok || !response.body) throw new Error('Google Drive could not load this video for review. Check the file and retry.');
+  return response;
+}
+
+export function streamDriveReviewFile(upstream, res) {
+  res.status(200);
+  res.setHeader('Content-Type', upstream.headers.get('content-type') || 'video/mp4');
+  const length = upstream.headers.get('content-length');
+  if (length) res.setHeader('Content-Length', length);
+  res.setHeader('Cache-Control', 'private, no-store');
+  Readable.fromWeb(upstream.body).on('error', (error) => res.destroy(error)).pipe(res);
 }
 
 async function checkPublishOutcomes(supabase) {
