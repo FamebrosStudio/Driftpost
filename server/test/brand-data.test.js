@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { loadBrands, fullPack, deepPack, getFullBrand, deepFooter, getDeepForCompact, getDeepBrand } from '../src/brand-memory/index.js';
+import { loadBrands, fullPack, deepPack, getFullBrand, deepFooter, getDeepForCompact, getDeepBrand, ensureAutoBrand } from '../src/brand-memory/index.js';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const memoryDir = path.join(here, '..', 'src', 'brand-memory');
@@ -137,6 +137,11 @@ test('legacy MAP and Luxxe context includes approved facts and uncertainty witho
   assert.match(luxxe, /nail studio Powai/i);
   assert.match(luxxe, /not_resolved/i);
   assert.match(luxxe, /Confirmed official Instagram page/i);
+});
+
+test('a business name in a one-off brief cannot create persistent brand memory', () => {
+  assert.equal(ensureAutoBrand({ brandParam: '', brief: 'XYZ Salon shows a new haircut' }), null);
+  assert.equal(ensureAutoBrand({ brandParam: '   ', brief: 'ABC Jewellers gold ring' }), null);
 });
 
 test('all checked-in brand JSON remains valid UTF-8 text', () => {

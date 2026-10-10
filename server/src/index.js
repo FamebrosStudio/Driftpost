@@ -27,6 +27,7 @@ import { runAutomationAction } from './automation-events.js';
 import { eraseUserMedia } from './storage-cleanup.js';
 import { enabledInstagramCollaborators, instagramCaptionRequiredError, nonEmptyCaption } from './caption-guards.js';
 import { createTemporaryMediaUrl, isOwnedMediaPath } from './media-links.js';
+import { canUsePrivateBrandData } from './brand-access.js';
 
 const required = ['FRONTEND_URL', 'SUPABASE_URL', 'SUPABASE_SECRET_KEY', 'TOKEN_ENCRYPTION_KEY', 'STATE_SIGNING_SECRET'];
 const missing = required.filter((n) => !process.env[n]);
@@ -41,10 +42,6 @@ const ACCEPTED_MEDIA_TYPES = new Set([
   'image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/avif', 'image/heic', 'image/heif', 'image/bmp',
   'video/mp4', 'video/quicktime', 'video/webm', 'video/x-m4v', 'video/mpeg', 'video/3gpp',
   'video/3gpp2', 'video/x-msvideo', 'video/ogg', 'video/x-matroska',
-]);
-const AI_ALLOWED_EMAILS = new Set([
-  'famebros.studio@gmail.com',
-  'kabirsayed.k@gmail.com',
 ]);
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SECRET_KEY, { auth: { persistSession: false, autoRefreshToken: false } });
 const jobs = new Map();
@@ -390,8 +387,7 @@ const callbackLimit = limit({ windowMs: 60 * 1000, max: 30, ns: 'cb', key: (req)
 const aiUnlockLimit = limit({ windowMs: 15 * 60 * 1000, max: 5, ns: 'ai-unlock', key: userKey });
 
 function isAiAllowedUser(user) {
-  const email = String(user?.email || '').trim().toLowerCase();
-  return !!user?.email_confirmed_at && AI_ALLOWED_EMAILS.has(email);
+  return canUsePrivateBrandData(user);
 }
 
 function aiGrantKey() {
@@ -1052,16 +1048,24 @@ app.post('/api/ai/captions', requireUser, requireAiTeamVideoAccess, aiLimit, (re
         console.warn('[ai] video transcription failed:', String(error?.message || error).slice(0, 500));
       }
     }
-    const brandLabel = String(req.body?.brand || '');
+    const privateBrandAccess = canUsePrivateBrandData(req.user);
+    const requestedBrandId = String(req.body?.brand_id || '').slice(0, 160);
+    // Defense in depth: even if generic AI access is later opened to other
+    // accounts, private catalogue IDs/labels must never be resolved for them.
+    if (requestedBrandId && !privateBrandAccess) {
+      return res.status(403).json({ error: 'Saved brand profiles are unavailable for this account. Remove the brand selection to generate a general caption.' });
+    }
+    const brandLabel = privateBrandAccess ? String(req.body?.brand || '') : '';
     // Resolved once and reused: the brand's confirmed contacts are the
     // allow-list that stops PII scrubbing from deleting a public business
     // phone number out of a caption footer.
     let brandRecord = null;
     try {
       const mem = await import('./brand-memory/index.js');
-      const brandId = String(req.body?.brand_id || '').slice(0, 160);
-      brandRecord = (brandId ? mem.getBrandById(brandId) : null)
-        || mem.resolveBrand(brandLabel || req.body?.summary || '', 20)?.brand || null;
+      if (privateBrandAccess && (requestedBrandId || brandLabel.trim())) {
+        brandRecord = (requestedBrandId ? mem.getBrandById(requestedBrandId) : null)
+          || (!requestedBrandId ? mem.resolveBrand(brandLabel, 20)?.brand : null);
+      }
     } catch { /* brand lookup is optional here */ }
     // What this user has already approved for this brand, so each generation
     // starts closer to their voice than the last one did.
@@ -1072,7 +1076,8 @@ app.post('/api/ai/captions', requireUser, requireAiTeamVideoAccess, aiLimit, (re
     });
     const out = await generateCaptions(req.body?.summary, {
       brand: brandLabel,
-      brandId: String(req.body?.brand_id || '').slice(0, 160),
+      brandId: privateBrandAccess ? requestedBrandId : '',
+      allowPrivateBrandData: privateBrandAccess,
       assetHint: req.body?.asset_description || req.body?.assetHint,
       goal: req.body?.goal,
       trends: req.body?.trends === true || req.body?.trends === '1' || req.body?.trends === 1,
@@ -1303,6 +1308,9 @@ app.post('/api/ai/feedback', requireUser, requireAiAccess, burstLimit, async (re
 
 // Brand memory — all local, zero LLM tokens.
 app.get('/api/ai/brands', requireUser, burstLimit, async (req, res) => {
+  if (!canUsePrivateBrandData(req.user)) {
+    return res.status(403).json({ error: 'Saved brand profiles are unavailable for this account.' });
+  }
   try {
     const { searchBrands } = await import('./brand-memory/index.js');
     const requested = Number.parseInt(String(req.query?.limit || '8'), 10);

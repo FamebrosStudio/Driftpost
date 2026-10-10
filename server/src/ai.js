@@ -375,7 +375,10 @@ export async function generateCaptions(summary, opts = {}) {
   const brief = String(summary || '').trim().slice(0, 1200);
   const transcript = String(opts.transcript || '').trim().slice(0, 5000);
   if (brief.length < 3) throw new Error('Write a short summary first (a few words about the post)');
-  const brandQuery = String(opts.brand || brief).slice(0, 160);
+  // Direct callers must opt in explicitly after the API has authenticated an
+  // approved account. A prompt or client-supplied label is never authority.
+  const mayUsePrivateBrandData = opts.allowPrivateBrandData === true;
+  const brandQuery = mayUsePrivateBrandData ? String(opts.brand || '').slice(0, 160) : '';
   const assetHint = String(opts.assetHint || '').slice(0, 200);
   const goal = String(opts.goal || '').slice(0, 40);
   const maxVisualSamples = opts.video_frame_analysis === true || String(opts.video_frame_analysis || '') === '1' ? 8 : 4;
@@ -393,24 +396,29 @@ export async function generateCaptions(summary, opts = {}) {
   const requestedPlatforms = requestedCaptionPlatforms(onlyValue, opts.platforms);
 
   // Local resolve — 0 tokens. Dynamic import keeps cold start fast.
-  // Explicit brand picks match loosely (20); bare-brief matches need 50+ so
-  // a weak word overlap can never inject another brand's phone/footer.
+  // A saved brand ID is authoritative. A brand label may resolve by name;
+  // never infer a saved brand from an unbranded post topic.
   const mem = await import('./brand-memory/index.js');
-  const selectedBrand = opts.brandId ? mem.getBrandById(opts.brandId) : null;
-  if (opts.brandId && !selectedBrand) throw new Error('The selected brand profile is no longer available. Reload the brand list and try again.');
-  const hit = selectedBrand ? { brand: selectedBrand, score: 1000 } : mem.resolveBrand(brandQuery, opts.brand ? 20 : 50);
+  const requestedBrandId = mayUsePrivateBrandData ? String(opts.brandId || '') : '';
+  const selectedBrand = requestedBrandId ? mem.getBrandById(requestedBrandId) : null;
+  if (requestedBrandId && !selectedBrand) throw new Error('The selected brand profile is no longer available. Reload the brand list and try again.');
+  const hit = selectedBrand
+    ? { brand: selectedBrand, score: 1000 }
+    : (brandQuery.trim() ? mem.resolveBrand(brandQuery, 20) : null);
   let brand = hit?.brand || null;
-  const briefBrand = mem.resolveBrand(brief, 50)?.brand || null;
+  // Only check for a conflicting brand when one was explicitly selected;
+  // unbranded prompts must not query or implicitly load private profiles.
+  const briefBrand = brand ? mem.resolveBrand(brief, 50)?.brand || null : null;
   if (brand && briefBrand && briefBrand.id !== brand.id) {
     throw new Error(`This prompt names ${briefBrand.name}, but the selected account is ${brand.name}. Select the matching brand account before generating so the caption cannot be written for the wrong business.`);
   }
   let autoNew = null;
-  if (!brand && String(opts.brand || '').trim()) {
+  if (mayUsePrivateBrandData && !brand && brandQuery.trim()) {
     // Only an explicitly supplied brand label may create an unknown profile.
     // A creator's one-off topic or named subject must not silently become a
     // persistent brand with inherited agency footers and future hashtags.
     try {
-      const found = mem.ensureAutoBrand({ brandParam: opts.brand, brief, assetHint });
+      const found = mem.ensureAutoBrand({ brandParam: brandQuery, brief, assetHint });
       if (found) {
         brand = found.brand;
         autoNew = found;
