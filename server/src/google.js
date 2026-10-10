@@ -19,6 +19,33 @@ export function youtubeAuthorizationUrl(state) {
   return `${AUTH_URL}?${params}`;
 }
 
+export function driveIntakeAuthorizationUrl(state) {
+  const params = new URLSearchParams({
+    client_id: process.env.GOOGLE_CLIENT_ID,
+    redirect_uri: process.env.GOOGLE_REDIRECT_URI,
+    response_type: 'code',
+    access_type: 'offline',
+    prompt: 'consent',
+    include_granted_scopes: 'true',
+    scope: [
+      'openid',
+      'email',
+      'https://www.googleapis.com/auth/drive.readonly',
+    ].join(' '),
+    state,
+  });
+  return `${AUTH_URL}?${params}`;
+}
+
+export async function getGoogleIdentity(accessToken) {
+  const res = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  });
+  const data = await res.json();
+  if (!res.ok || !data.email) throw new Error(data.error?.message || 'Could not verify the Google account.');
+  return { email: String(data.email).trim().toLowerCase(), verified: data.verified_email === true };
+}
+
 export async function exchangeGoogleCode(code) {
   const res = await fetch(TOKEN_URL, {
     method: 'POST',

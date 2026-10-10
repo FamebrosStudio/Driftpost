@@ -118,21 +118,24 @@ function matchConnections(connections, accountName) {
   return matches;
 }
 
-async function processIntakeJob(supabase, job) {
-  const ownerId = process.env.TELEGRAM_DRIFTPOST_USER_ID;
-  if (!ownerId || job.owner_user_id !== ownerId) throw new Error('The Driftpost publishing account is not configured.');
+export async function processIntakeJob(supabase, job, options = {}) {
+  const ownerId = job.owner_user_id;
+  const table = options.table || 'telegram_video_jobs';
+  const intakeKey = options.intakeKey || 'telegram_intake_job_id';
+  const notify = options.notify || ((message) => reply(job.chat_id, message, job.message_id));
+  if (!ownerId) throw new Error('The Driftpost publishing account is not configured.');
   // A worker can restart after inserting publish rows but before updating the
   // inbox row. Detect that commit before retrying analysis so a Telegram retry
   // can never create a duplicate social post.
   const { data: alreadyQueued, error: queuedLookupError } = await supabase.from('scheduled_posts')
-    .select('id, platform').eq('user_id', ownerId).contains('body', { telegram_intake_job_id: job.id }).limit(25);
+    .select('id, platform').eq('user_id', ownerId).contains('body', { [intakeKey]: job.id }).limit(25);
   if (queuedLookupError) throw new Error('Could not safely check whether this video is already queued.');
   if (alreadyQueued?.length) {
-    const { error: updateError } = await supabase.from('telegram_video_jobs').update({
+    const { error: updateError } = await supabase.from(table).update({
       status: 'publishing', result: { ...(job.result || {}), destinations: alreadyQueued }, updated_at: new Date().toISOString(),
     }).eq('id', job.id);
     if (updateError) console.error('[telegram-intake] could not reconcile queued publish rows:', updateError.message);
-    await reply(job.chat_id, `This video is already queued for ${alreadyQueued.length} destination${alreadyQueued.length === 1 ? '' : 's'}. I will send the result when publishing finishes.`, job.message_id);
+    await notify(`This video is already queued for ${alreadyQueued.length} destination${alreadyQueued.length === 1 ? '' : 's'}. I will send the result when publishing finishes.`);
     return;
   }
   const { data: authResult, error: authError } = await supabase.auth.admin.getUserById(ownerId);
@@ -145,14 +148,15 @@ async function processIntakeJob(supabase, job) {
     .select('id, user_id, platform, platform_account_id, account_name, encrypted_tokens')
     .eq('user_id', ownerId);
   if (connectionError) throw new Error('Could not read the configured Driftpost publishing accounts.');
-  const destinations = matchConnections(rawConnections, accountName);
+  const requestedPlatforms = Array.isArray(job.platforms) ? job.platforms : [];
+  const destinations = matchConnections(rawConnections, accountName).filter((item) => !requestedPlatforms.length || requestedPlatforms.includes(item.platform));
   if (!destinations.length) throw new Error(`“${accountName}” does not exactly match a connected account. Send the connected account name or handle.`);
 
   const directory = await fs.mkdtemp(path.join(os.tmpdir(), 'driftpost-telegram-'));
   const videoPath = path.join(directory, path.basename(job.file_name || 'incoming-video.mp4').replace(/[^a-z0-9._-]/gi, '_').slice(-140));
   const storedPaths = [];
   try {
-    const byteSize = await getTelegramVideo(job.telegram_file_id, videoPath);
+    const byteSize = options.download ? await options.download(job, videoPath) : await getTelegramVideo(job.telegram_file_id, videoPath);
     const { frames, duration } = await sampleFrames(videoPath, directory);
     let transcript = '';
     let speechWarning = '';
@@ -183,7 +187,8 @@ async function processIntakeJob(supabase, job) {
       covers[platform] = await makePlatformCover(frames[selected].path, platform, directory);
     }
 
-    const videoKey = `scheduled/${ownerId}/telegram-${job.id}/video${path.extname(videoPath) || '.mp4'}`;
+    const sourcePrefix = options.sourcePrefix || 'telegram';
+    const videoKey = `scheduled/${ownerId}/${sourcePrefix}-${job.id}/video${path.extname(videoPath) || '.mp4'}`;
     const { error: videoUploadError } = await uploadMediaFile(supabase.storage.from(process.env.MEDIA_BUCKET || 'driftpost-media'), videoKey, {
       path: videoPath, mimetype: job.mime_type || 'video/mp4',
     }, { contentType: job.mime_type || 'video/mp4', upsert: true });
@@ -192,7 +197,7 @@ async function processIntakeJob(supabase, job) {
     const storedCovers = {};
     let thumbPath = null;
     for (const [platform, cover] of Object.entries(covers)) {
-      const key = `scheduled/${ownerId}/telegram-${job.id}/${platform}-cover.jpg`;
+      const key = `scheduled/${ownerId}/${sourcePrefix}-${job.id}/${platform}-cover.jpg`;
       const { error } = await uploadMediaFile(supabase.storage.from(process.env.MEDIA_BUCKET || 'driftpost-media'), key, cover, { contentType: 'image/jpeg', upsert: true });
       if (error) throw new Error(`Could not save the ${platform} cover.`);
       storedPaths.push(key);
@@ -203,7 +208,7 @@ async function processIntakeJob(supabase, job) {
     const byPlatform = captions;
     const rows = destinations.map((connection) => {
       const body = {
-        text: '', skip_crosspost: '1', telegram_intake_job_id: job.id,
+        text: '', skip_crosspost: '1', [intakeKey]: job.id,
         ai_generated: '1', yt_privacy: 'public',
         yt_thumbnail_mimetype: 'image/jpeg',
         driftpost_covers: storedCovers,
@@ -238,7 +243,7 @@ async function processIntakeJob(supabase, job) {
     if (rows.length > 25) throw new Error('This account name matched too many destinations. Refine the connected account names before sending.');
     const { data: scheduled, error: scheduleError } = await supabase.from('scheduled_posts').insert(rows).select('id, platform');
     if (scheduleError || !scheduled || scheduled.length !== rows.length) throw new Error('The video was prepared, but Driftpost could not add every destination to its publishing queue.');
-    const { error: intakeUpdateError } = await supabase.from('telegram_video_jobs').update({
+    const { error: intakeUpdateError } = await supabase.from(table).update({
       status: 'publishing',
       result: { brand: brandHit.brand.name, destinations: scheduled, transcript: !!transcript, speechWarning },
       updated_at: new Date().toISOString(),

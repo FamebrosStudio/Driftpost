@@ -71,6 +71,26 @@
 .team-video-actions button:not(:disabled):hover { filter: brightness(1.07); transform: translateY(-1px); }
 .team-video-actions button:disabled { opacity: .5; cursor: not-allowed; }
 .team-video-actions small { color: var(--faint); font-size: 10px; }
+.drive-intake-panel { margin: 18px 0; border-color: color-mix(in srgb, var(--go) 28%, var(--line)); }
+.drive-intake-connect, .drive-intake-ready { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+.drive-intake-connect p, .drive-intake-ready b { margin: 0; font-size: 12px; color: var(--muted); }
+.drive-intake-ready b { color: var(--go); }
+.drive-intake-connect button { min-height: 38px; padding: 0 14px; border: 0; border-radius: 8px; background: var(--go); color: #fff; font-weight: 700; cursor: pointer; }
+.drive-intake-connect button:disabled { opacity: .55; cursor: wait; }
+.drive-intake-ready a { color: var(--go); font-size: 12px; font-weight: 700; text-decoration: none; }
+.drive-intake-ready a:hover { text-decoration: underline; }
+.drive-intake-naming { display: block; margin-top: 14px; color: var(--faint); font-size: 10px; line-height: 1.6; }
+.drive-intake-naming code { color: var(--ink); white-space: normal; }
+.drive-intake-jobs { display: grid; gap: 7px; margin-top: 16px; padding-top: 13px; border-top: 1px solid var(--line); }
+.drive-intake-jobs > b { font-size: 11px; }
+.drive-intake-jobs > div { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 4px 12px; padding: 9px 10px; border: 1px solid var(--line); border-radius: 8px; background: color-mix(in srgb, var(--bg) 60%, transparent); }
+.drive-intake-jobs > div > span { display: grid; gap: 3px; min-width: 0; }
+.drive-intake-jobs strong { overflow: hidden; color: var(--ink); font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
+.drive-intake-jobs small { color: var(--faint); font-size: 9px; }
+.drive-intake-jobs em { font-size: 9px; font-style: normal; font-weight: 800; text-transform: capitalize; }
+.drive-job-status.completed { color: var(--go); }
+.drive-job-status.failed, .drive-job-status.partial { color: #e07e72; }
+.drive-intake-jobs .drive-job-error { grid-column: 1 / -1; color: #e07e72; }
 .ws-team-entry { margin-left: 8px; }
 @media (max-width: 820px) { .team-options-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 650px) { .team-options-grid { grid-template-columns: 1fr; } .team-video-job { align-items: flex-start; flex-direction: column; } .team-video-job button { width: 100%; min-height: 42px; } .team-video-actions { align-items: stretch; flex-direction: column; } .team-video-actions button { width: 100%; min-height: 48px; } .ws-team-entry { margin: 8px 0 0; } }

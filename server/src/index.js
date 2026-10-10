@@ -12,7 +12,7 @@ import path from 'node:path';
 import { Readable } from 'node:stream';
 import { createClient } from '@supabase/supabase-js';
 import { decryptJson, encryptJson, signState, verifyState } from './crypto.js';
-import { exchangeGoogleCode, getYouTubeChannel, youtubeAuthorizationUrl } from './google.js';
+import { driveIntakeAuthorizationUrl, exchangeGoogleCode, getGoogleIdentity, getYouTubeChannel, youtubeAuthorizationUrl } from './google.js';
 import { learnedVoice, markLatestUsed, markUsed, recordGeneration } from './captionMemory.js';
 import { consentState, forgetUser, hasPersonalisationConsent, recordConsent, POLICY_VERSION, PURPOSES } from './consent.js';
 import { setVideoThumbnail, uploadVideoResumable, validAccessToken } from './youtube-upload.js';
@@ -29,6 +29,7 @@ import { enabledInstagramCollaborators, instagramCaptionRequiredError, nonEmptyC
 import { createTemporaryMediaUrl, isOwnedMediaPath } from './media-links.js';
 import { canUsePrivateBrandData } from './brand-access.js';
 import { createTelegramIntakeRouter, registerTelegramWebhook } from './telegram-intake.js';
+import { startGoogleDriveIntake } from './google-drive-intake.js';
 
 const required = ['FRONTEND_URL', 'SUPABASE_URL', 'SUPABASE_SECRET_KEY', 'TOKEN_ENCRYPTION_KEY', 'STATE_SIGNING_SECRET'];
 const missing = required.filter((n) => !process.env[n]);
@@ -1389,6 +1390,44 @@ function burnState(state) {
 }
 
 // --- OAuth: YouTube (Google) ---
+app.get('/api/intake/drive/status', requireUser, async (req, res) => {
+  if (!canUsePrivateBrandData(req.user)) return res.status(403).json({ error: 'Private team access required.' });
+  const { data, error } = await supabase.from('google_drive_intake_connections')
+    .select('google_email, drive_folder_id, status, updated_at').eq('user_id', req.user.id).maybeSingle();
+  if (error) return res.status(503).json({ error: 'Drive intake is not initialized yet. Apply the Google Drive intake migration, then retry.' });
+  res.json({ configured: true, connected: data?.status === 'connected', google_email: data?.google_email || null,
+    folder_id: data?.drive_folder_id || process.env.DRIFTPOST_DRIVE_FOLDER_ID || null,
+    folder_url: data?.drive_folder_id ? `https://drive.google.com/drive/folders/${encodeURIComponent(data.drive_folder_id)}` : null,
+    updated_at: data?.updated_at || null });
+});
+
+app.post('/api/intake/drive/connect', requireUser, oauthLimit, async (req, res) => {
+  if (!canUsePrivateBrandData(req.user)) return res.status(403).json({ error: 'Private team access required.' });
+  if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET || !process.env.GOOGLE_REDIRECT_URI) {
+    return res.status(503).json({ error: 'Google OAuth is not configured on the Driftpost server.' });
+  }
+  const folderId = String(process.env.DRIFTPOST_DRIVE_FOLDER_ID || '').trim();
+  if (!folderId) return res.status(503).json({ error: 'Set DRIFTPOST_DRIVE_FOLDER_ID on the Driftpost API first.' });
+  const state = signState({ purpose: 'google-drive-intake', userId: req.user.id, nonce: crypto.randomUUID(), exp: Date.now() + 10 * 60 * 1000 });
+  res.json({ url: driveIntakeAuthorizationUrl(state) });
+});
+
+app.post('/api/intake/drive/disconnect', requireUser, async (req, res) => {
+  if (!canUsePrivateBrandData(req.user)) return res.status(403).json({ error: 'Private team access required.' });
+  const { error } = await supabase.from('google_drive_intake_connections').update({ status: 'disconnected', encrypted_tokens: null, updated_at: new Date().toISOString() }).eq('user_id', req.user.id);
+  if (error) return res.status(503).json({ error: 'Could not disconnect Drive intake.' });
+  res.json({ ok: true });
+});
+
+app.get('/api/intake/drive/jobs', requireUser, async (req, res) => {
+  if (!canUsePrivateBrandData(req.user)) return res.status(403).json({ error: 'Private team access required.' });
+  const { data, error } = await supabase.from('google_drive_video_jobs')
+    .select('id, file_name, account_name, platforms, status, error, result, created_at, updated_at')
+    .eq('owner_user_id', req.user.id).order('created_at', { ascending: false }).limit(50);
+  if (error) return res.status(503).json({ error: 'Drive intake jobs are not initialized yet. Apply the Google Drive intake migration, then retry.' });
+  res.json({ jobs: data || [] });
+});
+
 app.post('/api/oauth/youtube/start', requireUser, oauthLimit, (req, res) => {
   if (!process.env.GOOGLE_CLIENT_ID) return res.status(503).json({ error: 'YouTube OAuth not configured' });
   res.json({ url: youtubeAuthorizationUrl(signState({ userId: req.user.id, nonce: crypto.randomUUID(), exp: Date.now() + 10 * 60 * 1000 })) });
@@ -1401,6 +1440,25 @@ app.get('/api/oauth/youtube/callback', callbackLimit, async (req, res) => {
     const state = verifyState(req.query.state);
     burnState(state);
     const tokens = await exchangeGoogleCode(String(req.query.code || ''));
+    if (state.purpose === 'google-drive-intake') {
+      const identity = await getGoogleIdentity(tokens.access_token);
+      if (!identity.verified || identity.email !== 'famebros.studio@gmail.com') {
+        throw new Error('Connect the Drive owned by famebros.studio@gmail.com.');
+      }
+      if (!tokens.refresh_token) throw new Error('Google did not return a refresh token. Remove Driftpost access from your Google account and connect again.');
+      const folderId = String(process.env.DRIFTPOST_DRIVE_FOLDER_ID || '').trim();
+      const { error: saveError } = await supabase.from('google_drive_intake_connections').upsert({
+        user_id: state.userId,
+        google_email: identity.email,
+        drive_folder_id: folderId,
+        encrypted_tokens: encryptJson({ access_token: tokens.access_token, refresh_token: tokens.refresh_token }),
+        token_expires_at: tokens.expires_in ? new Date(Date.now() + tokens.expires_in * 1000).toISOString() : null,
+        status: 'connected', updated_at: new Date().toISOString(),
+      }, { onConflict: 'user_id' });
+      if (saveError) throw saveError;
+      back.searchParams.set('connected', 'google-drive-intake');
+      return res.redirect(back.toString());
+    }
     const ch = await getYouTubeChannel(tokens.access_token);
     const { error } = await supabase.from('platform_connections').upsert({
       user_id: state.userId, platform: 'youtube', platform_account_id: ch.id,
@@ -2818,6 +2876,7 @@ app.use((err, _req, res, _next) => {
 });
 app.listen(port, '0.0.0.0', () => {
   console.log(`Driftpost API on :${port}`);
+  startGoogleDriveIntake(supabase);
   void registerTelegramWebhook();
   setInterval(() => { void registerTelegramWebhook(); }, 60_000).unref();
 });

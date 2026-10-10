@@ -40,6 +40,9 @@ function TeamCoverField({ title, value, setValue, platform, setError, setBusy })
 export default function TeamVideoPage({ session, onNavigate, onSignOut, onOpenReview }) {
   const userId = session.user.id;
   const [connections, setConnections] = useState([]);
+  const [driveState, setDriveState] = useState({ loading: true, connected: false, folder_url: '', google_email: '', error: '' });
+  const [driveBusy, setDriveBusy] = useState(false);
+  const [driveJobs, setDriveJobs] = useState([]);
   const [connectionsLoading, setConnectionsLoading] = useState(true);
   const [loadError, setLoadError] = useState('');
   const [brandOptions, setBrandOptions] = useState([]);
@@ -73,6 +76,31 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut, onOpenRe
   useEffect(() => {
     try { localStorage.setItem(SCOPED('driftpost-team-video-jobs', userId), JSON.stringify(jobs.map(({ id, brand, status, message, createdAt, autoPublish, coverWarning, brandKey, accountIds, platforms, brief, crosspost, instagramStory, collaborators, warning, group, outputs, cfg, transcript }) => ({ id, brand, status, message, createdAt, autoPublish, coverWarning, brandKey, accountIds, platforms, brief, crosspost, instagramStory, collaborators, warning, group, outputs, cfg, transcript })))); } catch {}
   }, [jobs, userId]);
+
+  useEffect(() => {
+    let active = true;
+    const refresh = () => {
+      api('/api/intake/drive/status', session.access_token)
+        .then((data) => { if (active) setDriveState({ ...data, loading: false, error: '' }); })
+        .catch((e) => { if (active) setDriveState((old) => ({ ...old, loading: false, error: e.message || 'Could not check the Drive connection.' })); });
+      api('/api/intake/drive/jobs', session.access_token).then((data) => { if (active) setDriveJobs(data.jobs || []); }).catch(() => {});
+    };
+    refresh();
+    const timer = window.setInterval(refresh, 15_000);
+    return () => { active = false; window.clearInterval(timer); };
+  }, [session.access_token]);
+
+  const connectDrive = async () => {
+    setDriveBusy(true);
+    setDriveState((old) => ({ ...old, error: '' }));
+    try {
+      const { url } = await api('/api/intake/drive/connect', session.access_token, { method: 'POST' });
+      window.location.assign(url);
+    } catch (e) {
+      setDriveState((old) => ({ ...old, error: e.message || 'Could not start Google Drive connection.' }));
+      setDriveBusy(false);
+    }
+  };
 
   useEffect(() => {
     let active = true;
@@ -320,6 +348,13 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut, onOpenRe
       <header className="team-video-heading"><span>PRIVATE TEAM WORKFLOW</span><h1>Send one video. Prepare every destination.</h1><p>Driftpost reads the video and speech, writes for the selected brand, then uses the same platform review and publishing system as the regular workspace.</p></header>
       {!isAiAccount(session.user?.email) && <div className="team-video-alert" role="alert">This private workflow is only available to approved team accounts.</div>}
       {(loadError || brandLoadError) && <div className="team-video-alert" role="alert">{loadError || brandLoadError} <button type="button" onClick={() => setRetryTick((tick) => tick + 1)} disabled={connectionsLoading || brandLoading}>Retry loading</button></div>}
+      <section className="team-video-panel drive-intake-panel">
+        <div className="team-video-section-title"><span>↗</span><div><h2>Editor video drop-off</h2><p>Connect the private team Drive once. Editors upload into the shared folder; Driftpost checks it every 30 seconds.</p></div></div>
+        {driveState.connected ? <div className="drive-intake-ready"><b>Drive connected · {driveState.google_email}</b><a href={driveState.folder_url} target="_blank" rel="noreferrer">Open Driftpost Video Intake folder ↗</a></div>
+          : <div className="drive-intake-connect"><p>{driveState.loading ? 'Checking Google Drive setup…' : driveState.error || 'Connect the Famebros Drive account to turn on automatic video intake.'}</p><button type="button" onClick={connectDrive} disabled={driveBusy || driveState.loading}>{driveBusy ? 'Opening Google…' : 'Connect Google Drive'}</button></div>}
+        <small className="drive-intake-naming">File name format: <code>Exact account name -- instagram,facebook -- Campaign title.mp4</code>. Use only the selected destinations. Video files over 400 MB are rejected.</small>
+        {!!driveJobs.length && <div className="drive-intake-jobs" aria-live="polite"><b>Recent Drive videos</b>{driveJobs.slice(0, 8).map((job) => <div key={job.id}><span><strong>{job.file_name}</strong><small>{job.account_name} · {(job.platforms || []).join(', ') || 'Destination needs correction'}</small></span><em className={`drive-job-status ${job.status}`}>{job.status}</em>{job.error && <small className="drive-job-error">{job.error}</small>}</div>)}</div>}
+      </section>
       <form className="team-video-form" onSubmit={submit}>
         <section className="team-video-panel">
           <div className="team-video-section-title"><span>01</span><div><h2>Choose the brand and video</h2><p>The selected brand controls the facts, voice, and caption rules.</p></div></div>
