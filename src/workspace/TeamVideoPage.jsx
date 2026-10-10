@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { api, PLATFORMS } from '../lib.js';
+import { api, matchesSearchText, PLATFORMS } from '../lib.js';
 import { isAiAccount } from '../ai-access.js';
 import { requestCaptions, mapResponse } from '../stage2/ai.js';
 import { saveCaptionDraft, readStageSelection } from '../stage2/captionDraftScope.js';
@@ -78,10 +78,7 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut, onOpenRe
   const chosen = useMemo(() => connections.filter((item) => selectedIds.includes(item.id)), [connections, selectedIds]);
   const selectedPlatforms = useMemo(() => [...new Set(chosen.map((item) => item.platform))], [chosen]);
   const filteredConnections = useMemo(() => {
-    const query = accountSearch.trim().toLocaleLowerCase();
-    if (!query) return connections;
-    return connections.filter((item) => [item.account_name, item.username, item.handle, item.platform_account_id, item.platform, PLATFORM_LABELS[item.platform]]
-      .some((value) => String(value || '').toLocaleLowerCase().includes(query)));
+    return connections.filter((item) => matchesSearchText(accountSearch, item.account_name, item.username, item.handle, item.platform_account_id, item.platform, PLATFORM_LABELS[item.platform]));
   }, [connections, accountSearch]);
   const accountBrand = (account) => {
     if (!brand) return true;

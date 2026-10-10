@@ -98,6 +98,19 @@ export const normalizeSearchText = (s) => String(s || '')
   .replace(/[^a-z0-9]+/g, ' ')
   .replace(/\s+/g, ' ')
   .trim();
+
+// Shared forgiving search for names, handles, and platform labels. Every
+// query word may appear in any order, and punctuation such as @ and . is
+// treated the same in both the query and the connected-account value.
+export function matchesSearchText(query, ...values) {
+  const needle = normalizeSearchText(query);
+  if (!needle) return true;
+  const entries = values.flat(Infinity).map(normalizeSearchText).filter(Boolean);
+  const terms = needle.split(' ').filter(Boolean);
+  if (terms.every((term) => entries.some((entry) => entry.includes(term)))) return true;
+  const compactNeedle = needle.replace(/\s/g, '');
+  return !!compactNeedle && entries.some((entry) => entry.replace(/\s/g, '').includes(compactNeedle));
+}
 const norm = normalizeSearchText;
 
 export function isActiveBrand(accountName) {

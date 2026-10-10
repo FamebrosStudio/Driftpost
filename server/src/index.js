@@ -918,7 +918,7 @@ app.put('/api/automations/instagram/:connectionId', requireUser, strictBurstLimi
 app.get('/api/analytics/accounts', requireUser, connectionsLimit, burstLimit, async (req, res) => {
   try {
     const { data: connections, error } = await supabase.from('platform_connections')
-      .select('id, platform, platform_account_id, account_name, encrypted_tokens')
+      .select('id, platform, platform_account_id, account_name, encrypted_tokens, token_expires_at')
       .eq('user_id', req.user.id);
     if (error) return res.status(500).json({ error: 'Could not load connected accounts' });
     const results = await Promise.all((connections || []).map(async (connection) => {
@@ -927,6 +927,7 @@ app.get('/api/analytics/accounts', requireUser, connectionsLimit, burstLimit, as
         const accessToken = tokens.access_token;
         let metrics = {};
         if (connection.platform === 'youtube') {
+          const accessToken = await validAccessToken(supabase, connection);
           const params = new URLSearchParams({ part: 'statistics', id: connection.platform_account_id });
           const response = await fetch(`https://www.googleapis.com/youtube/v3/channels?${params}`, {
             headers: { Authorization: `Bearer ${accessToken}` }, signal: AbortSignal.timeout(15000),
@@ -951,6 +952,7 @@ app.get('/api/analytics/accounts', requireUser, connectionsLimit, burstLimit, as
           if (!response.ok) throw new Error(payload.error?.message || 'Facebook could not return Page analytics');
           metrics = { followers: Number(payload.followers_count ?? payload.fan_count ?? 0) };
         } else if (connection.platform === 'x') {
+          const accessToken = await validXAccessToken(supabase, connection);
           const params = new URLSearchParams({ 'user.fields': 'public_metrics' });
           const response = await fetch(`https://api.x.com/2/users/${encodeURIComponent(connection.platform_account_id)}?${params}`, {
             headers: { Authorization: `Bearer ${accessToken}` }, signal: AbortSignal.timeout(15000),

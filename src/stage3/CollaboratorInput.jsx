@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { matchesSearchText } from '../lib.js';
 import { searchInstagramCollaborators } from '../lib.js';
 
 const compact = (n) => {
@@ -45,7 +46,7 @@ export default function CollaboratorInput({ value, onChange, accounts = [], toke
 
   const local = useMemo(() => [...new Map(accounts
     .map((account) => ({ account, username: String(account.account_name || '').replace(/^@/, '').trim() }))
-    .filter(({ account, username }) => username && (username.toLowerCase().includes(String(value || '').replace(/^@/, '').toLowerCase()) || String(account.platform_account_id || '').includes(String(value || '').trim())))
+    .filter(({ account, username }) => username && matchesSearchText(value, username, account.account_name, account.platform_account_id))
     .map((match) => [match.username.toLowerCase(), match])).values()], [accounts, value]);
 
   const handles = useMemo(() => splitHandles(value), [value]);

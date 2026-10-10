@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import BrandIcon from '../brand.jsx';
-import { api, PLATFORMS, normalizeSearchText } from '../lib.js';
+import { api, PLATFORMS, matchesSearchText } from '../lib.js';
 import { logDisconnect } from '../history/log.js';
 
 // Swipe-left row (touch): drag an account left to reveal Disconnect.
@@ -100,7 +100,7 @@ export default function GroupBuilder({ connections, token, onConnectionsChange, 
     if (wasOn) setIds((s) => s.filter((id) => byId[id]?.platform !== pid));
   };
   const visible = (plats.length ? connections.filter((c) => plats.includes(c.platform)) : connections)
-    .filter((c) => !normalizeSearchText(accountSearch) || normalizeSearchText(c.account_name).includes(normalizeSearchText(accountSearch)));
+    .filter((c) => matchesSearchText(accountSearch, c.account_name, c.username, c.handle, c.platform_account_id, c.platform));
   const disconnect = async (c) => {
     if (!window.confirm(`Disconnect ${c.account_name} (${c.platform})? It moves to History and can be reconnected anytime.`)) return;
     setDisBusy(c.id);
@@ -148,7 +148,7 @@ export default function GroupBuilder({ connections, token, onConnectionsChange, 
         <div className="s1-cols">
           <div className="s1-col">
             <h4>Available accounts{plats.length ? ` · ${visible.length} on selected platforms` : ''}</h4>
-            {connections.length > 4 && <input className="s1-search" value={accountSearch} onChange={(e) => setAccountSearch(e.target.value)} placeholder="Search accounts" aria-label="Search accounts" />}
+            {connections.length > 0 && <input className="s1-search" type="search" value={accountSearch} onChange={(e) => setAccountSearch(e.target.value)} placeholder="Search accounts" aria-label="Search accounts" />}
             {!connections.length && <p className="s1-empty">No accounts connected yet.</p>}
             {plats.length > 0 && !visible.length && !accountSearch && <p className="s1-empty">No accounts on the selected platforms.</p>}
             {connections.length > 0 && accountSearch && !visible.length && <p className="s1-empty">No accounts match that search.</p>}

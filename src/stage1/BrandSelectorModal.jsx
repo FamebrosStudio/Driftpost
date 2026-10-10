@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import BrandIcon from '../brand.jsx';
-import { normalizeSearchText } from '../lib.js';
+import { matchesSearchText } from '../lib.js';
 
 const ORDER = ['instagram', 'facebook', 'youtube', 'x'];
 
@@ -13,11 +13,10 @@ export default function BrandSelectorModal({ brands, connections, activeKey, onP
     return () => window.removeEventListener('keydown', h);
   }, [onClose]);
 
-  const needle = normalizeSearchText(q);
   const accountNames = new Map((connections || []).map((c) => [c.id, c.account_name || '']));
-  const list = needle ? brands.filter((b) => {
+  const list = q.trim() ? brands.filter((b) => {
     const names = [b.label, ...Object.values(b.map || {}).map((id) => accountNames.get(id) || '')];
-    return names.some((name) => normalizeSearchText(name).includes(needle));
+    return matchesSearchText(q, names);
   }) : brands;
 
   return (

@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { api, groupBrands, normalizeSearchText, PLATFORMS } from '../lib.js';
+import { api, groupBrands, matchesSearchText, PLATFORMS } from '../lib.js';
 import BrandIcon from '../brand.jsx';
 import './connect.css';
 
@@ -79,9 +79,10 @@ export default function ConnectPage({ session, onContinue, onHistory, onSignOut,
   };
 
   const listFor = (pid) => {
-    const needle = normalizeSearchText(accountSearch[pid] || '');
-    return connections.filter((c) => c.platform === pid && (!needle || normalizeSearchText(c.account_name).includes(needle)));
+    const query = accountSearch[pid] || '';
+    return connections.filter((c) => c.platform === pid && matchesSearchText(query, c.account_name, c.username, c.handle, c.platform_account_id, pLabel(pid)));
   };
+  const pLabel = (pid) => PLATFORMS.find((platform) => platform.id === pid)?.name || pid;
   const brands = useMemo(() => groupBrands(connections), [connections]);
   const total = connections.length;
 
@@ -130,17 +131,18 @@ export default function ConnectPage({ session, onContinue, onHistory, onSignOut,
               {PLATFORMS.map((p) => {
                 const list = listFor(p.id);
                 const accountCount = connections.filter((c) => c.platform === p.id).length;
+                const searchingAccounts = !!String(accountSearch[p.id] || '').trim();
                 return (
                   <div key={p.id} className={list.length ? 'cn-card linked' : 'cn-card'}>
                     <div className="cn-card-head">
                       <span className="cn-ic"><BrandIcon id={p.id} size={18} /></span>
                       <span>
                         <b>{p.name}</b>
-                        <small>{list.length ? `${list.length} connected` : 'Not connected'}</small>
+                          <small>{searchingAccounts ? `${list.length} match${list.length === 1 ? '' : 'es'} of ${accountCount}` : accountCount ? `${accountCount} connected` : 'Not connected'}</small>
                       </span>
                     </div>
                     <p className="cn-hint">{HINTS[p.id]}</p>
-                    {accountCount > 3 && <input className="cn-search" value={accountSearch[p.id] || ''} onChange={(e) => setAccountSearch((s) => ({ ...s, [p.id]: e.target.value }))} placeholder={`Search ${p.name} accounts`} aria-label={`Search ${p.name} accounts`} />}
+                    {accountCount > 0 && <input className="cn-search" type="search" value={accountSearch[p.id] || ''} onChange={(e) => setAccountSearch((s) => ({ ...s, [p.id]: e.target.value }))} placeholder={`Search ${p.name} accounts`} aria-label={`Search ${p.name} accounts`} />}
                     <div className="cn-list">
                       {list.length ? list.map((c) => (
                         <div key={c.id} className="cn-acct">
