@@ -7,7 +7,12 @@ export function isOwnedMediaPath(userId, value) {
   const objectPath = String(value || '');
   if (!new RegExp(`^${UUID}$`, 'i').test(id)) return false;
   const safeFilename = '[A-Za-z0-9][A-Za-z0-9._-]{0,119}';
-  return new RegExp(`^(?:${id}/${UUID}\\.[A-Za-z0-9]{1,8}|scheduled/${id}/${UUID}/${safeFilename})$`, 'i').test(objectPath);
+  // Intake media is stored under a source-qualified job folder (for example
+  // scheduled/<owner>/drive-<job UUID>/video.mp4). Keep that folder strictly
+  // scoped to known intake sources and a UUID so stored references cannot
+  // escape the authenticated user's storage prefix.
+  const jobFolder = `(?:${UUID}|(?:drive|telegram)-${UUID})`;
+  return new RegExp(`^(?:${id}/${UUID}\\.[A-Za-z0-9]{1,8}|scheduled/${id}/${jobFolder}/${safeFilename})$`, 'i').test(objectPath);
 }
 
 export async function createTemporaryMediaUrl(storage, objectPath, expiresIn = SIGNED_MEDIA_TTL_SECONDS) {
