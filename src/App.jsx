@@ -114,7 +114,7 @@ const PUB_CONTENT = {
   about: {
     kicker: 'What is Drift Post',
     title: 'One screen for every audience you own.',
-    intro: 'Driftpost is a publishing workspace for people who run many brands — agencies, studios and creators. Pick a brand, tailor content for YouTube, Instagram, Facebook and X, then publish or plan it from one place.',
+    intro: 'Driftpost is a social publishing workspace built and operated by Famebros Studio for agencies, studios and creators. Pick a brand, tailor content for YouTube, Instagram, Facebook and X, then publish or plan it from one place.',
     sections: [
       { h: 'Brand-first, not platform-first', p: 'Agencies think in clients: Velvet Salon, SK Furniture, Sarang Hospital. Driftpost groups every connected account under its brand and auto-matches the same brand across YouTube, Instagram, Facebook and X.' },
       { h: 'Tools for the platforms you use', p: 'Set YouTube titles and thumbnails, Instagram captions and alt text, Facebook links and buttons, and X polls and reply controls. Each platform keeps its own content and media settings.' },
@@ -187,6 +187,7 @@ const PUB_CONTENT = {
       { h: 'Your rights', p: 'Access, correct, withdraw consent or erase your data at any time. Withdrawing personalisation consent stops all storage immediately and deletes what was already stored; the app continues to work unchanged. Deleting your account erases your account, connected accounts, publish history, stored captions and consent records. Full erasure is completed within 7 days. Contact, and our privacy contact: famebros.studio@gmail.com. You may also complain to your local data protection authority, including the Data Protection Board of India.' },
       { h: 'What we never do', p: 'No resale or renting of data, no advertising profiles, and no posting without your instruction. A scheduled post publishes only after you choose its account and future time. We do not sell or trade raw prompt logs to data brokers.' },
       { h: 'Platform data', p: 'Publishing uses the official YouTube, Meta, and X APIs under permissions you grant. Each platform applies its own privacy policy to content you publish there.' },
+      { h: 'Google Drive data for optional team intake', p: 'If a team member connects Google Drive, Driftpost requests read-only Drive access to scan the specific intake folder configured for the team and download new video or image files placed there. We use the file names and media only to identify the intended brand, analyze the content, prepare platform-specific captions, and publish to the connected social accounts selected for that brand. Media may be sent to our AI provider for analysis and to the selected social platforms for publishing. Drive OAuth tokens are encrypted on our server. Disconnecting Drive stops future intake and removes the stored Drive tokens. Driftpost does not use Google user data to train AI models.' },
     ],
   },
   terms: {
@@ -386,9 +387,9 @@ function Landing({ onEnter, session, pubPage, setPubPage }) {
       </nav>
       {pubPage === 'home' ? <>
       <header className="landing-in">
-        <div className="landing-kicker">One workspace. Four platforms.</div>
+        <div className="landing-kicker">A Famebros Studio product · One workspace. Four platforms.</div>
         <h1><SpotLine text="Post once." /><br /><SpotLine text="Everywhere." /></h1>
-        <p>Schedule and publish social media posts across Instagram, Facebook, YouTube and X. Manage multiple brands and accounts in one workspace, with content tailored to each platform.</p>
+        <p>Schedule and publish social media posts across Instagram, Facebook, YouTube and X. Manage multiple brands and accounts in one workspace, with content tailored to each platform. Optional Google Drive intake reads media from a connected team folder to prepare posts for the accounts you select.</p>
         <div className="landing-cta">
           <button className="skew-btn grad" onClick={onEnter}><span>{session ? 'Enter console' : 'Get started free ’'}</span></button>
         </div>
@@ -439,8 +440,8 @@ function Landing({ onEnter, session, pubPage, setPubPage }) {
         <h2>Plan and publish from one workspace.</h2>
         <button className="skew-btn grad" onClick={onEnter}><span>{session ? 'Enter console' : 'Start free ’'}</span></button>
         <div className="land-fine">
-          <span>Free while in beta · Your logins never leave the platforms · © {new Date().getFullYear()} Driftpost</span>
-          <span className="land-legal"><button className="link" onClick={() => setPubPage('terms')}>Terms</button> · <button className="link" onClick={() => setPubPage('privacy')}>Privacy</button> · <button className="link" onClick={() => setPubPage('cookies')}>Cookies</button> · <button className="link" onClick={() => setPubPage('acceptable-use')}>Acceptable Use</button> · <button className="link" onClick={() => setPubPage('ai-disclaimer')}>AI Disclaimer</button> · <button className="link" onClick={() => setPubPage('platforms-disclaimer')}>Platforms</button> · <button className="link" onClick={() => setPubPage('copyright')}>Copyright</button> · <button className="link" onClick={() => setPubPage('refunds')}>Refunds</button> · <button className="link" onClick={() => setPubPage('data-deletion')}>Data Deletion</button> · <button className="link" onClick={() => setPubPage('security')}>Security</button> · <button className="link" onClick={() => setPubPage('contact')}>Contact</button></span>
+          <span>Free while in beta · Your logins never leave the platforms · © {new Date().getFullYear()} Driftpost · Made by Famebros Studio</span>
+          <span className="land-legal"><button className="link" onClick={() => setPubPage('terms')}>Terms</button> · <a className="link" href="/privacy">Privacy Policy</a> · <button className="link" onClick={() => setPubPage('cookies')}>Cookies</button> · <button className="link" onClick={() => setPubPage('acceptable-use')}>Acceptable Use</button> · <button className="link" onClick={() => setPubPage('ai-disclaimer')}>AI Disclaimer</button> · <button className="link" onClick={() => setPubPage('platforms-disclaimer')}>Platforms</button> · <button className="link" onClick={() => setPubPage('copyright')}>Copyright</button> · <button className="link" onClick={() => setPubPage('refunds')}>Refunds</button> · <button className="link" onClick={() => setPubPage('data-deletion')}>Data Deletion</button> · <button className="link" onClick={() => setPubPage('security')}>Security</button> · <button className="link" onClick={() => setPubPage('contact')}>Contact</button></span>
         </div>
       </footer>
     </div>
