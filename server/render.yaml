@@ -52,3 +52,17 @@ services:
         value: grok-4.20-0309-non-reasoning
       - key: MEDIA_BUCKET
         value: driftpost-media
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false
+      - key: TELEGRAM_WEBHOOK_SECRET
+        sync: false
+      - key: TELEGRAM_WEBHOOK_URL
+        sync: false
+      - key: TELEGRAM_BOT_API_URL
+        sync: false
+      - key: TELEGRAM_ALLOWED_CHAT_IDS
+        sync: false
+      - key: TELEGRAM_ALLOWED_USER_IDS
+        sync: false
+      - key: TELEGRAM_DRIFTPOST_USER_ID
+        sync: false

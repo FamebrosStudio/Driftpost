@@ -1,0 +1,416 @@
+import crypto from 'node:crypto';
+import express from 'express';
+import fs from 'node:fs/promises';
+import os from 'node:os';
+import path from 'node:path';
+import { execFile } from 'node:child_process';
+import { promisify } from 'node:util';
+import { transcribeVideo } from './video-analysis.js';
+import { generateCaptions, selectVideoCoverFrames } from './ai.js';
+import { uploadMediaFile } from './media-io.js';
+import { resolveBrand } from './brand-memory/index.js';
+import { canUsePrivateBrandData } from './brand-access.js';
+
+const execFileAsync = promisify(execFile);
+const MAX_VIDEO_BYTES = 400 * 1024 * 1024;
+const TELEGRAM_HOSTED_DOWNLOAD_BYTES = 20 * 1024 * 1024;
+const PLATFORMS = new Set(['youtube', 'instagram', 'facebook', 'x']);
+const clean = (value) => String(value || '').trim();
+const normalize = (value) => clean(value).toLowerCase().replace(/^@/, '').replace(/[^\p{L}\p{N}]+/gu, '');
+
+function botBase() {
+  return String(process.env.TELEGRAM_BOT_API_URL || 'https://api.telegram.org').replace(/\/$/, '');
+}
+
+async function telegram(method, payload, { timeout = 20_000 } = {}) {
+  const token = process.env.TELEGRAM_BOT_TOKEN;
+  if (!token) throw new Error('Telegram intake is not configured.');
+  const response = await fetch(`${botBase()}/bot${token}/${method}`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify(payload),
+    signal: AbortSignal.timeout(timeout),
+  });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok || !data.ok) throw new Error(data.description || `Telegram ${method} failed.`);
+  return data.result;
+}
+
+async function reply(chatId, text, replyToMessageId) {
+  try {
+    await telegram('sendMessage', {
+      chat_id: chatId,
+      text: String(text).slice(0, 4000),
+      ...(replyToMessageId ? { reply_to_message_id: replyToMessageId, allow_sending_without_reply: true } : {}),
+    });
+  } catch (error) {
+    console.warn('[telegram-intake] reply failed:', String(error?.message || error).slice(0, 180));
+  }
+}
+
+function parseVideoMessage(message) {
+  const video = message.video || (message.document?.mime_type?.startsWith('video/') ? message.document : null);
+  if (!video?.file_id) return null;
+  const text = clean(message.caption || message.caption_entities?.map((entity) => entity.text).join(' '));
+  const account = text.match(/^(?:account|brand|post\s+to)\s*:\s*(.+)$/im)?.[1]?.trim() || text.split(/\r?\n/).map(clean).find(Boolean) || '';
+  return {
+    fileId: video.file_id,
+    fileSize: Number(video.file_size) || 0,
+    fileName: clean(message.document?.file_name) || `telegram-${message.message_id}.mp4`,
+    mimeType: clean(message.document?.mime_type) || 'video/mp4',
+    accountName: account.slice(0, 180),
+  };
+}
+
+async function getTelegramVideo(fileId, destination) {
+  const info = await telegram('getFile', { file_id: fileId }, { timeout: 45_000 });
+  if (!info?.file_path || (Number(info.file_size) || 0) > MAX_VIDEO_BYTES) throw new Error('This video is larger than Driftpost’s 400 MB limit.');
+  const response = await fetch(`${botBase()}/file/bot${process.env.TELEGRAM_BOT_TOKEN}/${info.file_path}`, {
+    signal: AbortSignal.timeout(15 * 60 * 1000),
+  });
+  if (!response.ok || !response.body) throw new Error('Telegram could not provide the uploaded video. Please send it again.');
+  const { pipeline } = await import('node:stream/promises');
+  const { createWriteStream } = await import('node:fs');
+  await pipeline(response.body, createWriteStream(destination, { flags: 'wx' }));
+  const stat = await fs.stat(destination);
+  if (!stat.size || stat.size > MAX_VIDEO_BYTES) throw new Error('The received video is empty or larger than 400 MB.');
+  return stat.size;
+}
+
+async function sampleFrames(videoPath, directory) {
+  const { stdout } = await execFileAsync('ffprobe', [
+    '-v', 'error', '-show_entries', 'format=duration', '-of', 'default=noprint_wrappers=1:nokey=1', videoPath,
+  ], { timeout: 60_000, maxBuffer: 1024 * 1024 });
+  const duration = Number(stdout.trim());
+  if (!Number.isFinite(duration) || duration <= 0) throw new Error('The video duration could not be read. Send an MP4, MOV, or WebM video.');
+  const count = Math.min(8, Math.max(4, Math.ceil(duration / 6)));
+  const frames = [];
+  for (let index = 0; index < count; index++) {
+    const seconds = Math.min(Math.max(0, duration - 0.1), duration * ((index + 0.5) / count));
+    const output = path.join(directory, `frame-${index}.jpg`);
+    await execFileAsync('ffmpeg', [
+      '-hide_banner', '-loglevel', 'error', '-y', '-ss', String(seconds), '-i', videoPath,
+      '-frames:v', '1', '-vf', 'scale=1024:1024:force_original_aspect_ratio=decrease', '-q:v', '4', output,
+    ], { timeout: 90_000, maxBuffer: 2 * 1024 * 1024 });
+    const stat = await fs.stat(output).catch(() => null);
+    if (stat?.size) frames.push({ path: output, name: `frame-${index}.jpg`, mimetype: 'image/jpeg', base64: (await fs.readFile(output)).toString('base64') });
+  }
+  if (frames.length < 2) throw new Error('Could not extract enough readable frames from this video.');
+  return { frames, duration };
+}
+
+async function makePlatformCover(framePath, platform, directory) {
+  const dimensions = platform === 'instagram' ? '720:1280' : '1280:720';
+  const destination = path.join(directory, `cover-${platform}.jpg`);
+  await execFileAsync('ffmpeg', [
+    '-hide_banner', '-loglevel', 'error', '-y', '-i', framePath,
+    '-vf', `split=2[bg][fg];[bg]scale=${dimensions}:force_original_aspect_ratio=increase,crop=${dimensions},boxblur=20:10,eq=brightness=-0.2[bg];[fg]scale=${dimensions}:force_original_aspect_ratio=decrease[fg];[bg][fg]overlay=(W-w)/2:(H-h)/2`,
+    '-frames:v', '1', '-q:v', '3', destination,
+  ], { timeout: 90_000, maxBuffer: 2 * 1024 * 1024 });
+  const stat = await fs.stat(destination);
+  if (!stat.size || stat.size > 5 * 1024 * 1024) throw new Error(`Could not prepare a valid ${platform} cover.`);
+  return { path: destination, mimetype: 'image/jpeg', originalname: `ai-cover-${platform}.jpg`, size: stat.size };
+}
+
+function matchConnections(connections, accountName) {
+  const query = normalize(accountName);
+  const matches = (connections || []).filter((item) => PLATFORMS.has(item.platform) && normalize(item.account_name) === query);
+  return matches;
+}
+
+async function processIntakeJob(supabase, job) {
+  const ownerId = process.env.TELEGRAM_DRIFTPOST_USER_ID;
+  if (!ownerId || job.owner_user_id !== ownerId) throw new Error('The Driftpost publishing account is not configured.');
+  // A worker can restart after inserting publish rows but before updating the
+  // inbox row. Detect that commit before retrying analysis so a Telegram retry
+  // can never create a duplicate social post.
+  const { data: alreadyQueued, error: queuedLookupError } = await supabase.from('scheduled_posts')
+    .select('id, platform').eq('user_id', ownerId).contains('body', { telegram_intake_job_id: job.id }).limit(25);
+  if (queuedLookupError) throw new Error('Could not safely check whether this video is already queued.');
+  if (alreadyQueued?.length) {
+    const { error: updateError } = await supabase.from('telegram_video_jobs').update({
+      status: 'publishing', result: { ...(job.result || {}), destinations: alreadyQueued }, updated_at: new Date().toISOString(),
+    }).eq('id', job.id);
+    if (updateError) console.error('[telegram-intake] could not reconcile queued publish rows:', updateError.message);
+    await reply(job.chat_id, `This video is already queued for ${alreadyQueued.length} destination${alreadyQueued.length === 1 ? '' : 's'}. I will send the result when publishing finishes.`, job.message_id);
+    return;
+  }
+  const { data: authResult, error: authError } = await supabase.auth.admin.getUserById(ownerId);
+  if (authError || !canUsePrivateBrandData(authResult?.user)) throw new Error('The configured publishing account is not approved for the private video workflow.');
+  const accountName = clean(job.account_name);
+  if (accountName.length < 2) throw new Error('Add the destination in the video caption, for example: Account: Famebros Studio.');
+  const brandHit = resolveBrand(accountName, 20);
+  if (!brandHit || brandHit.score < 400) throw new Error(`Could not safely match “${accountName}” to one saved brand profile. Check the account name and send it again.`);
+  const { data: rawConnections, error: connectionError } = await supabase.from('platform_connections')
+    .select('id, user_id, platform, platform_account_id, account_name, encrypted_tokens')
+    .eq('user_id', ownerId);
+  if (connectionError) throw new Error('Could not read the configured Driftpost publishing accounts.');
+  const destinations = matchConnections(rawConnections, accountName);
+  if (!destinations.length) throw new Error(`“${accountName}” does not exactly match a connected account. Send the connected account name or handle.`);
+
+  const directory = await fs.mkdtemp(path.join(os.tmpdir(), 'driftpost-telegram-'));
+  const videoPath = path.join(directory, path.basename(job.file_name || 'incoming-video.mp4').replace(/[^a-z0-9._-]/gi, '_').slice(-140));
+  const storedPaths = [];
+  try {
+    const byteSize = await getTelegramVideo(job.telegram_file_id, videoPath);
+    const { frames, duration } = await sampleFrames(videoPath, directory);
+    let transcript = '';
+    let speechWarning = '';
+    try { transcript = (await transcribeVideo(videoPath, path.basename(videoPath), job.mime_type || 'video/mp4')).text || ''; }
+    catch (error) { speechWarning = 'Speech transcription was unavailable; captions use the video frames and saved brand profile.'; console.warn('[telegram-intake] transcription unavailable:', String(error?.message || error).slice(0, 220)); }
+    const platforms = [...new Set(destinations.map((item) => item.platform))];
+    const generated = await generateCaptions(
+      `Create accurate, platform-specific captions for the video sent to the ${brandHit.brand.name} account. Describe only what is visible or spoken.`,
+      {
+        brand: brandHit.brand.name,
+        brandId: brandHit.brand.id,
+        allowPrivateBrandData: true,
+        assetHint: `Video duration ${Math.round(duration)} seconds.`,
+        goal: 'enquiries', tone: 'auto', emoji: 'medium', length: 'medium',
+        transcript,
+        platforms,
+        video_frame_analysis: true,
+        images: frames.map(({ name, mimetype, base64 }) => ({ name, mimetype, base64 })),
+      },
+    );
+    const captions = generated.captions || generated;
+    const coverSelection = await selectVideoCoverFrames(frames.map(({ name, mimetype, base64 }) => ({ name, mimetype, base64 })));
+    const covers = {};
+    for (const platform of platforms) {
+      if (!['youtube', 'instagram', 'facebook'].includes(platform)) continue;
+      const selected = Number(coverSelection?.[platform]);
+      if (!Number.isInteger(selected) || !frames[selected]) throw new Error(`AI could not select a safe ${platform} cover frame.`);
+      covers[platform] = await makePlatformCover(frames[selected].path, platform, directory);
+    }
+
+    const videoKey = `scheduled/${ownerId}/telegram-${job.id}/video${path.extname(videoPath) || '.mp4'}`;
+    const { error: videoUploadError } = await uploadMediaFile(supabase.storage.from(process.env.MEDIA_BUCKET || 'driftpost-media'), videoKey, {
+      path: videoPath, mimetype: job.mime_type || 'video/mp4',
+    }, { contentType: job.mime_type || 'video/mp4', upsert: true });
+    if (videoUploadError) throw new Error('Could not save the video for automatic publishing.');
+    storedPaths.push(videoKey);
+    const storedCovers = {};
+    let thumbPath = null;
+    for (const [platform, cover] of Object.entries(covers)) {
+      const key = `scheduled/${ownerId}/telegram-${job.id}/${platform}-cover.jpg`;
+      const { error } = await uploadMediaFile(supabase.storage.from(process.env.MEDIA_BUCKET || 'driftpost-media'), key, cover, { contentType: 'image/jpeg', upsert: true });
+      if (error) throw new Error(`Could not save the ${platform} cover.`);
+      storedPaths.push(key);
+      if (platform === 'youtube') thumbPath = key;
+      else storedCovers[platform] = { path: key, name: path.basename(key), mimetype: 'image/jpeg' };
+    }
+
+    const byPlatform = captions;
+    const rows = destinations.map((connection) => {
+      const body = {
+        text: '', skip_crosspost: '1', telegram_intake_job_id: job.id,
+        ai_generated: '1', yt_privacy: 'public',
+        yt_thumbnail_mimetype: 'image/jpeg',
+        driftpost_covers: storedCovers,
+      };
+      if (connection.platform === 'instagram') {
+        body.ig_caption = String(byPlatform.instagram?.caption || '').trim();
+        body.text = body.ig_caption;
+      } else if (connection.platform === 'facebook') {
+        body.fb_message = String(byPlatform.facebook?.message || '').trim();
+        body.text = body.fb_message;
+      } else if (connection.platform === 'youtube') {
+        body.yt_title = String(byPlatform.youtube?.title || '').slice(0, 100).trim();
+        body.yt_description = String(byPlatform.youtube?.description || '').trim();
+        body.yt_tags = Array.isArray(byPlatform.youtube?.tags) ? byPlatform.youtube.tags.join(', ') : String(byPlatform.youtube?.tags || '');
+        body.text = body.yt_description;
+      } else {
+        body.x_text = Array.from(String(byPlatform.x?.text || '')).slice(0, 280).join('').trim();
+        body.text = body.x_text;
+      }
+      if (!body.text || (connection.platform === 'youtube' && !body.yt_title)) throw new Error(`AI did not return a complete ${connection.platform} caption.`);
+      return {
+        user_id: ownerId,
+        platform: connection.platform,
+        connection_id: connection.id,
+        scheduled_at: new Date(Date.now() - 2000).toISOString(),
+        status: 'scheduled',
+        body,
+        media: [{ path: videoKey, mimetype: job.mime_type || 'video/mp4', name: path.basename(videoPath) }],
+        thumb_path: connection.platform === 'youtube' ? thumbPath : null,
+      };
+    });
+    if (rows.length > 25) throw new Error('This account name matched too many destinations. Refine the connected account names before sending.');
+    const { data: scheduled, error: scheduleError } = await supabase.from('scheduled_posts').insert(rows).select('id, platform');
+    if (scheduleError || !scheduled || scheduled.length !== rows.length) throw new Error('The video was prepared, but Driftpost could not add every destination to its publishing queue.');
+    const { error: intakeUpdateError } = await supabase.from('telegram_video_jobs').update({
+      status: 'publishing',
+      result: { brand: brandHit.brand.name, destinations: scheduled, transcript: !!transcript, speechWarning },
+      updated_at: new Date().toISOString(),
+    }).eq('id', job.id);
+    if (intakeUpdateError) console.error('[telegram-intake] queued posts but could not update intake status:', intakeUpdateError.message);
+    await reply(job.chat_id, `✅ Video processed for ${brandHit.brand.name}. AI selected the cover and queued ${scheduled.length} destination${scheduled.length === 1 ? '' : 's'} for automatic publishing.${speechWarning ? `\n\nNote: ${speechWarning}` : ''}`, job.message_id);
+  } catch (error) {
+    await supabase.storage.from(process.env.MEDIA_BUCKET || 'driftpost-media').remove(storedPaths).catch(() => {});
+    throw error;
+  } finally {
+    await fs.rm(directory, { recursive: true, force: true }).catch(() => {});
+  }
+}
+
+export function createTelegramIntakeRouter(supabase) {
+  const router = express.Router();
+  const configuredChatIds = new Set(String(process.env.TELEGRAM_ALLOWED_CHAT_IDS || '').split(',').map((id) => id.trim()).filter(Boolean));
+  const configuredSenderIds = new Set(String(process.env.TELEGRAM_ALLOWED_USER_IDS || '').split(',').map((id) => id.trim()).filter(Boolean));
+  const ownerId = String(process.env.TELEGRAM_DRIFTPOST_USER_ID || '');
+  let workerRunning = false;
+  let outcomeCheckRunning = false;
+
+  router.post('/webhook', async (req, res) => {
+    const expectedSecret = String(process.env.TELEGRAM_WEBHOOK_SECRET || '');
+    const providedSecret = String(req.get('X-Telegram-Bot-Api-Secret-Token') || '');
+    if (!expectedSecret || providedSecret.length !== expectedSecret.length
+      || !crypto.timingSafeEqual(Buffer.from(providedSecret), Buffer.from(expectedSecret))) return res.sendStatus(403);
+    const update = req.body || {};
+    const message = update.message || update.channel_post;
+    if (!message) return res.sendStatus(200);
+    const chatId = String(message.chat?.id || '');
+    const senderId = String(message.from?.id || '');
+    if (!configuredChatIds.has(chatId) || !configuredSenderIds.has(senderId)) {
+      await reply(chatId, 'This intake chat is not authorized to submit Driftpost videos.', message.message_id);
+      return res.sendStatus(200);
+    }
+    const incoming = parseVideoMessage(message);
+    if (!incoming) {
+      await reply(chatId, 'Send one video with its destination account name in the caption, for example:\nAccount: Famebros Studio', message.message_id);
+      return res.sendStatus(200);
+    }
+    if (incoming.fileSize > MAX_VIDEO_BYTES) {
+      await reply(chatId, 'This video is over Driftpost’s 400 MB limit. Send a smaller export.', message.message_id);
+      return res.sendStatus(200);
+    }
+    if (incoming.fileSize > TELEGRAM_HOSTED_DOWNLOAD_BYTES
+      && (!process.env.TELEGRAM_BOT_API_URL || /api\.telegram\.org/i.test(process.env.TELEGRAM_BOT_API_URL))) {
+      await reply(chatId, 'This video is larger than Telegram’s hosted bot download limit. The admin must finish connecting Driftpost’s private Telegram file server before large videos can be submitted.', message.message_id);
+      return res.sendStatus(200);
+    }
+    if (!ownerId) {
+      await reply(chatId, 'The Driftpost intake has not been configured yet. Ask the admin to finish setup.', message.message_id);
+      return res.sendStatus(200);
+    }
+    const id = crypto.randomUUID();
+    const { error } = await supabase.from('telegram_video_jobs').insert({
+      id,
+      update_id: String(update.update_id || ''),
+      owner_user_id: ownerId,
+      chat_id: chatId,
+      sender_id: senderId,
+      message_id: String(message.message_id || ''),
+      telegram_file_id: incoming.fileId,
+      file_name: incoming.fileName,
+      mime_type: incoming.mimeType,
+      file_size: incoming.fileSize,
+      account_name: incoming.accountName,
+      status: 'queued',
+    });
+    if (error) {
+      if (/duplicate|unique/i.test(error.message || '')) return res.sendStatus(200);
+      console.error('[telegram-intake] could not queue incoming video:', error.message);
+      return res.sendStatus(503);
+    }
+    await reply(chatId, `📥 Received ${incoming.fileName}. ${incoming.accountName ? `Preparing automatic post for “${incoming.accountName}”.` : 'Tell me the destination with a caption such as “Account: Famebros Studio”.'}`, message.message_id);
+    res.sendStatus(200);
+  });
+
+  const runWorker = async () => {
+    if (workerRunning || !process.env.TELEGRAM_BOT_TOKEN || !ownerId) return;
+    workerRunning = true;
+    try {
+      const staleBefore = new Date(Date.now() - 30 * 60 * 1000).toISOString();
+      await supabase.from('telegram_video_jobs').update({ status: 'queued', updated_at: new Date().toISOString() })
+        .eq('status', 'processing').lt('updated_at', staleBefore);
+      const { data: pending, error } = await supabase.from('telegram_video_jobs').select('*').eq('status', 'queued').order('created_at', { ascending: true }).limit(1);
+      if (error || !pending?.length) return;
+      const job = pending[0];
+      const { data: claimed, error: claimError } = await supabase.from('telegram_video_jobs')
+        .update({ status: 'processing', updated_at: new Date().toISOString() })
+        .eq('id', job.id).eq('status', 'queued').select().maybeSingle();
+      if (claimError || !claimed) return;
+      await reply(job.chat_id, `🎬 Starting video analysis for ${job.account_name || 'the selected account'}…`, job.message_id);
+      const heartbeat = setInterval(() => {
+        void supabase.from('telegram_video_jobs').update({ updated_at: new Date().toISOString() })
+          .eq('id', job.id).eq('status', 'processing').then(({ error: heartbeatError }) => {
+            if (heartbeatError) console.warn('[telegram-intake] heartbeat failed:', heartbeatError.message);
+          }).catch((error) => console.warn('[telegram-intake] heartbeat failed:', error?.message || error));
+      }, 60_000);
+      heartbeat.unref();
+      try {
+        await processIntakeJob(supabase, claimed);
+      } catch (error) {
+        const message = String(error?.message || 'Could not prepare the automatic post.').slice(0, 800);
+        await supabase.from('telegram_video_jobs').update({ status: 'failed', error: message, updated_at: new Date().toISOString() }).eq('id', job.id);
+        await reply(job.chat_id, `⚠️ Video not published: ${message}`, job.message_id);
+        console.error('[telegram-intake] job failed:', job.id, message);
+      } finally {
+        clearInterval(heartbeat);
+      }
+    } catch (error) {
+      console.error('[telegram-intake] worker error:', String(error?.message || error).slice(0, 250));
+    } finally {
+      workerRunning = false;
+    }
+  };
+  const checkOutcomes = async () => {
+    if (outcomeCheckRunning || !process.env.TELEGRAM_BOT_TOKEN || !ownerId) return;
+    outcomeCheckRunning = true;
+    try {
+      const { data: active, error } = await supabase.from('telegram_video_jobs').select('id, chat_id, message_id, result')
+        .eq('status', 'publishing').order('created_at', { ascending: true }).limit(10);
+      if (error || !active?.length) return;
+      for (const intake of active) {
+        const schedules = Array.isArray(intake.result?.destinations) ? intake.result.destinations : [];
+        if (!schedules.length) continue;
+        const { data: rows, error: rowError } = await supabase.from('scheduled_posts').select('id, platform, status, result_url, error')
+          .in('id', schedules.map((item) => item.id));
+        if (rowError || !rows || rows.length !== schedules.length || rows.some((row) => ['scheduled', 'publishing'].includes(row.status))) continue;
+        const published = rows.filter((row) => row.status === 'published');
+        const failed = rows.filter((row) => row.status !== 'published');
+        const links = published.filter((row) => row.result_url).map((row) => `${row.platform}: ${row.result_url}`);
+        const speechWarning = intake.result?.speechWarning;
+        const summary = `${published.length} destination${published.length === 1 ? '' : 's'} published; ${failed.length} failed.`;
+        await reply(intake.chat_id, `${published.length && !failed.length ? '✅' : published.length ? '⚠️' : '❌'} ${summary}${links.length ? `\n${links.join('\n')}` : ''}${failed.length ? `\n${failed.map((row) => `${row.platform}: ${row.error || 'Publishing failed'}`).join('\n')}` : ''}${speechWarning ? `\n\n${speechWarning}` : ''}`, intake.message_id);
+        await supabase.from('telegram_video_jobs').update({ status: failed.length ? 'partial' : 'completed', updated_at: new Date().toISOString() }).eq('id', intake.id).eq('status', 'publishing');
+      }
+    } catch (error) {
+      console.error('[telegram-intake] outcome check failed:', String(error?.message || error).slice(0, 200));
+    } finally {
+      outcomeCheckRunning = false;
+    }
+  };
+  setInterval(() => { void runWorker(); }, 3000).unref();
+  setInterval(() => { void checkOutcomes(); }, 15_000).unref();
+  setTimeout(() => { void runWorker(); }, 1000).unref();
+  return router;
+}
+
+let telegramWebhookReady = false;
+let telegramWebhookRegistering = false;
+export async function registerTelegramWebhook() {
+  if (telegramWebhookReady) return true;
+  const url = clean(process.env.TELEGRAM_WEBHOOK_URL);
+  const secret = clean(process.env.TELEGRAM_WEBHOOK_SECRET);
+  if (!process.env.TELEGRAM_BOT_TOKEN || !url || !secret) return false;
+  if (telegramWebhookRegistering) return false;
+  telegramWebhookRegistering = true;
+  try {
+    await telegram('setWebhook', {
+      url,
+      secret_token: secret,
+      allowed_updates: ['message', 'channel_post'],
+      drop_pending_updates: false,
+    });
+    telegramWebhookReady = true;
+    console.info('[telegram-intake] webhook registered');
+    return true;
+  } catch (error) {
+    console.error('[telegram-intake] webhook registration failed:', String(error?.message || error).slice(0, 250));
+    return false;
+  } finally {
+    telegramWebhookRegistering = false;
+  }
+}

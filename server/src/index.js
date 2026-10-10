@@ -28,6 +28,7 @@ import { eraseUserMedia } from './storage-cleanup.js';
 import { enabledInstagramCollaborators, instagramCaptionRequiredError, nonEmptyCaption } from './caption-guards.js';
 import { createTemporaryMediaUrl, isOwnedMediaPath } from './media-links.js';
 import { canUsePrivateBrandData } from './brand-access.js';
+import { createTelegramIntakeRouter, registerTelegramWebhook } from './telegram-intake.js';
 
 const required = ['FRONTEND_URL', 'SUPABASE_URL', 'SUPABASE_SECRET_KEY', 'TOKEN_ENCRYPTION_KEY', 'STATE_SIGNING_SECRET'];
 const missing = required.filter((n) => !process.env[n]);
@@ -297,6 +298,7 @@ const aiImageUpload = multer({
 
 app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: false, limit: '1mb' }));
+app.use('/api/intake/telegram', createTelegramIntakeRouter(supabase));
 
 async function requireUser(req, res, next) {
   const token = req.headers.authorization?.replace(/^Bearer\s+/i, '');
@@ -2814,4 +2816,8 @@ app.use((err, _req, res, _next) => {
   }
   res.status(500).json({ error: 'Server error' });
 });
-app.listen(port, '0.0.0.0', () => console.log(`Driftpost API on :${port}`));
+app.listen(port, '0.0.0.0', () => {
+  console.log(`Driftpost API on :${port}`);
+  void registerTelegramWebhook();
+  setInterval(() => { void registerTelegramWebhook(); }, 60_000).unref();
+});
