@@ -51,7 +51,19 @@
   .hist, .hist * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }
 @media (max-width: 520px) {
-  .hist-delete-modal { padding: 18px; }
+  .hist-in { padding: 10px 12px 36px; }
+  .hist-heading { margin: 5px 0 16px; }
+  .hist-heading h1 { font-size: 27px; }
+  .hist-tabs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; }
+  .hist-tab { min-width: 0; min-height: 42px; padding: 8px 5px; font-size: 11px; }
+  .hist-row { align-items: flex-start; gap: 8px; padding: 10px; }
+  .hist-body { flex-basis: calc(100% - 48px); }
+  .hist-row > .hist-mini { flex: 1 1 calc(50% - 8px); min-height: 42px; white-space: normal; }
+  .hist-activity { padding: 12px 10px; }
+  .hist-activity-head { align-items: flex-start; }
+  .hist-delete-modal { width: 100%; max-height: 90dvh; padding: 18px 14px calc(env(safe-area-inset-bottom) + 14px); border-radius: 18px 18px 0 0; }
+  .hist-modal-backdrop { align-items: flex-end; padding: 0; }
+  .hist-delete-modal { padding: 18px 14px calc(env(safe-area-inset-bottom) + 14px); }
   .hist-delete-actions { flex-direction: column-reverse; }
   .hist-delete-actions button { width: 100%; }
 }

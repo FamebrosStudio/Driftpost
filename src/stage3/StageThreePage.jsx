@@ -308,7 +308,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
     return '';
   })();
   const platforms = basePlatforms.filter((pid) => pid !== mirrorTarget);
-  const brandLabel = isTeamWorkflow || s1.type === 'common_brand' ? brand?.label || '' : '';
+  const brandLabel = isTeamWorkflow ? s1.teamBrandLabel || brand?.label || '' : s1.type === 'common_brand' ? brand?.label || '' : '';
 
   useEffect(() => {
     if (!platforms.includes(tab)) setTab(platforms[0] || '');

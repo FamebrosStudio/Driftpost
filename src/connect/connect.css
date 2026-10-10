@@ -106,3 +106,27 @@
 @media (prefers-reduced-motion: reduce) {
   .connect, .connect *, .cn-bar, .cn-bar * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }
+@media (max-width: 600px) {
+  .connect-in { padding: 10px 12px calc(142px + env(safe-area-inset-bottom)); }
+  .cn-top { gap: 8px; }
+  .cn-head { text-align: left; padding-top: 8px; }
+  .cn-head h1 { margin-top: 12px; font-size: clamp(27px, 8vw, 34px); }
+  .cn-head p { margin-left: 0; margin-right: 0; font-size: 13.5px; }
+  .cn-strip { justify-content: flex-start; margin-top: 16px; }
+  .cn-step { min-height: 38px; padding-inline: 10px; font-size: 11px; }
+  .cn-summary { justify-content: flex-start; }
+  .cn-grid { gap: 10px; margin-top: 15px; }
+  .cn-card, .cn-brands { padding: 15px 13px; border-radius: 15px !important; }
+  .cn-search { min-height: 44px; font-size: 16px; }
+  .cn-acct { align-items: flex-start; padding: 10px; }
+  .cn-acct > div { min-width: 0; }
+  .cn-drop { min-height: 42px; padding-inline: 10px; }
+  .cn-connect { min-height: 46px; }
+  .cn-bar { padding: 9px 12px calc(env(safe-area-inset-bottom) + 9px); }
+  .cn-next { width: 100%; min-height: 48px; }
+  .welcome-in { padding: 10px 14px 0; }
+  .welcome-head { text-align: left; }
+  .welcome-head h1 { margin-top: 12px; font-size: clamp(27px, 8vw, 34px); }
+  .welcome-head p { margin-left: 0; margin-right: 0; }
+  .welcome-steps { justify-content: flex-start; }
+}

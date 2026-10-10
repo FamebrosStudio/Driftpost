@@ -125,6 +125,20 @@ test('AI caption packs exclude agency billing and operational scope notes', () =
   assert.match(synthetic, /Use only supplied product facts/);
 });
 
+test('legacy MAP and Luxxe context includes approved facts and uncertainty without inventing contacts', () => {
+  const map = fullPack(loadBrands().find((brand) => brand.id === 'map_clothing'));
+  assert.match(map, /APPROVED FACTS.*Never funny/i);
+  assert.match(map, /mens clothing/i);
+  assert.match(map, /SOURCE PROVENANCE.*data\.txt/i);
+  assert.doesNotMatch(map, /\+91|\b\d{10}\b|Address:/i);
+
+  const luxxe = fullPack(loadBrands().find((brand) => brand.id === 'luxxe_nail_studio'));
+  assert.match(luxxe, /Only transformation content is listed/i);
+  assert.match(luxxe, /nail studio Powai/i);
+  assert.match(luxxe, /not_resolved/i);
+  assert.match(luxxe, /Confirmed official Instagram page/i);
+});
+
 test('all checked-in brand JSON remains valid UTF-8 text', () => {
   const brokenUtf8 = /(?:\u00c3.|\u00f0\u0178|\u00e2(?:\u20ac|\u0153|\u2122)|\u00e0[\u00a4\u00a5]|\u00ef\u00bf\u00bd)/u;
   const jsonFiles = (directory) => fs.readdirSync(directory, { withFileTypes: true })

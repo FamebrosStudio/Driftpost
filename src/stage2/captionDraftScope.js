@@ -27,6 +27,7 @@ export function readStageSelection(userId) {
       ...selection,
       type: 'existing_groups',
       brandKey: teamSelection.brandKey || '',
+      teamBrandLabel: teamSelection.brandLabel || '',
       groups: [teamSelection.group],
       groupId: teamSelection.group.id,
       platforms: [],
@@ -40,6 +41,7 @@ function selectionFingerprint(selection) {
   return JSON.stringify({
     type: selection.type || '',
     brandKey: selection.brandKey || '',
+    teamBrandLabel: selection.teamBrandLabel || '',
     platforms: [...(selection.platforms || [])].sort(),
     groups: (selection.groups || []).map((group) => ({
       id: group.id || '',

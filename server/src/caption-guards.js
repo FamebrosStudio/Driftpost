@@ -41,6 +41,37 @@ export function safeBrandHashtags({ candidates = [], brand, brief, otherBrands =
   return result.slice(0, max);
 }
 
+const GENERIC_TAG_STOP_WORDS = new Set([
+  'about', 'after', 'again', 'also', 'because', 'before', 'caption', 'content',
+  'create', 'facebook', 'from', 'give', 'ideas', 'instagram', 'make', 'more',
+  'need', 'only', 'please', 'post', 'reel', 'share', 'short', 'should', 'some',
+  'something', 'that', 'this', 'through', 'today', 'using', 'video', 'want',
+  'what', 'with', 'write', 'youtube', 'your', 'for', 'the', 'and', 'but', 'one',
+]);
+
+// For people who are not using a saved brand profile, retain only model tags
+// that can be traced to a meaningful word in their actual brief. If nothing
+// fits, return fewer tags instead of decorating the post with unrelated ones.
+export function safeTopicHashtags({ candidates = [], brief = '', max = 3 }) {
+  const topicWords = new Set(words(brief)
+    .filter((word) => !GENERIC_TAG_STOP_WORDS.has(word) && !/^\d+$/.test(word)));
+  if (!topicWords.size) return [];
+  const clean = (value) => String(value || '').replace(/^#+/, '').replace(/[^A-Za-z0-9_]/g, '').slice(0, 40);
+  const result = [];
+  const seen = new Set();
+  for (const candidate of candidates) {
+    const tag = clean(candidate);
+    const key = tag.toLowerCase();
+    if (!tag || seen.has(key)) continue;
+    const compactTag = compact(tag).replace(/\s+/g, '');
+    if (![...topicWords].some((word) => compactTag.includes(word))) continue;
+    seen.add(key);
+    result.push(tag);
+    if (result.length >= max) break;
+  }
+  return result;
+}
+
 export function topicRelevantPhrases(candidates = [], brief, max = 8) {
   const seen = new Set();
   return candidates.map((value) => String(value || '').trim())

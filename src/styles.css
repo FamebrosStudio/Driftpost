@@ -947,3 +947,34 @@ select:disabled { opacity: 0.6; }
 .shell.liquid .prog i, .shell.liquid .progress-loader .progress { background: var(--grad); }
 .shell.liquid .foot { border-color: var(--line); }
 .shell.liquid .tour-card .skew-btn, .shell.liquid .editor-card .skew-btn { border-radius: 12px !important; }
+
+/* Shared phone baseline across sign-in, marketing, workspace and editor. */
+@media (max-width: 600px) {
+  html { -webkit-text-size-adjust: 100%; }
+  body { min-width: 320px; }
+  button, [role="button"], input[type="checkbox"], input[type="radio"] { touch-action: manipulation; }
+  button:not(.ck):not(.swatch) { min-height: 40px; }
+  input:not([type="checkbox"]):not([type="radio"]), select, textarea { max-width: 100%; }
+  .auth-wrap { padding-left: 14px; padding-right: 14px; }
+  .auth-card { padding: 26px 20px; border-radius: 16px !important; }
+  .auth-card h1 { font-size: 24px; }
+  .app-error { padding: 14px; }
+  .app-error-card { padding: 24px 18px; }
+  .page { padding: 14px 12px calc(34px + env(safe-area-inset-bottom)); }
+  .top { gap: 9px; padding: 10px 12px; }
+  .top h1 { font-size: 12px; letter-spacing: .8px; }
+  .top p { font-size: 11px; }
+  .pill { max-width: 42vw; overflow: hidden; text-overflow: ellipsis; padding: 5px 7px; font-size: 9px; }
+  .menu-btn { min-width: 42px; min-height: 42px; }
+  .card { padding: 15px; }
+  .land-nav { position: relative; gap: 8px; }
+  .land-nav .skew-btn { min-height: 44px; }
+  .land-links { gap: 2px; }
+  .land-links button { min-height: 40px; padding-inline: 8px; font-size: 10px; letter-spacing: .8px; }
+  .doc-wrap { padding: 28px 16px 24px; }
+  .doc-title { font-size: clamp(29px, 9vw, 42px); }
+  .land-foot { padding: 42px 16px 28px; }
+  .land-foot h2 { font-size: clamp(28px, 8vw, 40px); }
+  .bg-publish-notice { max-height: min(58dvh, 440px); }
+  .bg-publish-notice__account > div:first-child { align-items: flex-start; flex-direction: column; gap: 2px; }
+}

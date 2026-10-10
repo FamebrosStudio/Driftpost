@@ -1057,7 +1057,9 @@ app.post('/api/ai/captions', requireUser, requireAiTeamVideoAccess, aiLimit, (re
     let brandRecord = null;
     try {
       const mem = await import('./brand-memory/index.js');
-      brandRecord = mem.resolveBrand(brandLabel || req.body?.summary || '', 20)?.brand || null;
+      const brandId = String(req.body?.brand_id || '').slice(0, 160);
+      brandRecord = (brandId ? mem.getBrandById(brandId) : null)
+        || mem.resolveBrand(brandLabel || req.body?.summary || '', 20)?.brand || null;
     } catch { /* brand lookup is optional here */ }
     // What this user has already approved for this brand, so each generation
     // starts closer to their voice than the last one did.
@@ -1068,6 +1070,7 @@ app.post('/api/ai/captions', requireUser, requireAiTeamVideoAccess, aiLimit, (re
     });
     const out = await generateCaptions(req.body?.summary, {
       brand: brandLabel,
+      brandId: String(req.body?.brand_id || '').slice(0, 160),
       assetHint: req.body?.asset_description || req.body?.assetHint,
       goal: req.body?.goal,
       trends: req.body?.trends === true || req.body?.trends === '1' || req.body?.trends === 1,
@@ -1300,7 +1303,9 @@ app.post('/api/ai/feedback', requireUser, requireAiAccess, burstLimit, async (re
 app.get('/api/ai/brands', requireUser, burstLimit, async (req, res) => {
   try {
     const { searchBrands } = await import('./brand-memory/index.js');
-    res.json({ brands: searchBrands(req.query?.q, 8) });
+    const requested = Number.parseInt(String(req.query?.limit || '8'), 10);
+    const count = Number.isFinite(requested) ? Math.max(1, Math.min(200, requested)) : 8;
+    res.json({ brands: searchBrands(req.query?.q, count) });
   } catch (e) {
     res.status(500).json({ error: 'Brand lookup failed' });
   }

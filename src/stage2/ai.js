@@ -117,7 +117,7 @@ async function sampleVideo(file, count = 3) {
 
 // Shared Stage 2/3 caption generation: one request, per-platform answers.
 // Pass only:<platform> for a fast single-card regen (one card, ~1/3 tokens).
-export function requestCaptions(token, { brief, brand, files, tone, emoji, length, analysis = 'fast', only, platforms, frameCount = 3, teamVideo = false }) {
+export function requestCaptions(token, { brief, brand, brandId, files, tone, emoji, length, analysis = 'fast', only, platforms, frameCount = 3, teamVideo = false }) {
   return (async () => {
     const entries = files || [];
     const analyzeMedia = analysis === 'analyze';
@@ -131,6 +131,7 @@ export function requestCaptions(token, { brief, brand, files, tone, emoji, lengt
     const body = {
       summary: String(brief || '').trim() || (selected.length ? 'Write a caption grounded in the visible subject and details in the attached media.' : ''),
       brand: brand || '',
+      ...(brandId ? { brand_id: brandId } : {}),
       asset_description: analyzeMedia && entries.length ? `${entries.length} selected media file(s)${video ? '; video frames sampled across the full clip' : ''}` : '',
       image_count: 0,
       goal: 'enquiries',

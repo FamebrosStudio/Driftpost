@@ -297,3 +297,40 @@
 }
 
 @media (min-width: 1280px) { .s2-editor { width: min(1320px, 100%); } }
+
+/* Phone-first composer and media editor refinements. */
+@media (max-width: 600px) {
+  .stage2-in { padding: 10px 12px calc(152px + env(safe-area-inset-bottom)); }
+  .s2-top { gap: 8px; }
+  .s2-head { text-align: left; padding-top: 8px; }
+  .s2-head h1 { margin-top: 12px; font-size: clamp(27px, 8vw, 34px); }
+  .s2-head p { margin-left: 0; margin-right: 0; font-size: 13.5px; }
+  .s2-progress { margin-top: 18px; }
+  .s2-step small { font-size: 10px; }
+  .s2-sec { padding: 15px 13px; margin-top: 12px; border-radius: 15px !important; }
+  .s2-sec > h2 { font-size: 16px; }
+  .s2-sec > .sub { font-size: 12.5px; }
+  .s2-sec-head { align-items: center; }
+  .s2-drop { min-height: 112px; padding: 20px 12px; }
+  .s2-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .s2-out-grid { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+  .s2-out { padding: 13px; }
+  .s2-out-acts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .s2-out-acts button { min-height: 44px; }
+  .s2-settings { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
+  .s2-setting select, .s2-prompt textarea, .s2-epidemic input { font-size: 16px; }
+  .s2-continue-bar { padding: 10px 12px calc(env(safe-area-inset-bottom) + 10px); }
+  .s2-continue-btn { width: 100%; min-height: 48px; }
+  .s2-overlay { align-items: flex-end; padding: 0; }
+  .s2-editor, .s2-video-editor-page { width: 100%; max-width: none; max-height: 94dvh; overflow-y: auto; padding: 18px 14px calc(env(safe-area-inset-bottom) + 16px); border-radius: 18px 18px 0 0 !important; }
+  .s2-ed-cols { grid-template-columns: minmax(0, 1fr); }
+  .s2-editor .s2-ed-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .s2-editor .s2-ed-btns button, .s2-video-editor-page button { min-height: 44px; }
+  .s2-epidemic form { grid-template-columns: minmax(0, 1fr); }
+  .s2-epidemic form button { width: 100%; }
+}
+
+@media (max-width: 380px) {
+  .s2-settings { grid-template-columns: minmax(0, 1fr); }
+  .s2-grid { grid-template-columns: minmax(0, 1fr); }
+}

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { enabledInstagramCollaborators, instagramCaptionRequiredError, nonEmptyCaption, safeBrandHashtags, topicRelevantPhrases } from '../src/caption-guards.js';
+import { enabledInstagramCollaborators, instagramCaptionRequiredError, nonEmptyCaption, safeBrandHashtags, safeTopicHashtags, topicRelevantPhrases } from '../src/caption-guards.js';
 import { loadCaptionDraft, saveCaptionDraft } from '../../src/stage2/captionDraftScope.js';
 
 const selected = {
@@ -42,6 +42,17 @@ test('no unrelated hashtags or SEO phrases are invented to fill a quota', () => 
     candidates: ['bridalwear', 'goldjewellery', 'luxxesalon'],
   }), ['KanchanMalaJewellers']);
   assert.deepEqual(topicRelevantPhrases(['bridal lehenga', 'gold ring', 'hair spa'], 'gold ring close-up'), ['gold ring']);
+});
+
+test('unbranded creator captions keep only hashtags grounded in the user brief', () => {
+  assert.deepEqual(safeTopicHashtags({
+    brief: 'A gold ring with floral engraving, make an Instagram reel',
+    candidates: ['#goldring', '#floralEngraving', '#viral', '#instagramgrowth', '#fashion'],
+  }), ['goldring', 'floralEngraving']);
+  assert.deepEqual(safeTopicHashtags({
+    brief: 'A quiet day in my life',
+    candidates: ['#viral', '#foryou', '#trending'],
+  }), []);
 });
 
 test('collaborator handles are ignored unless the post explicitly opts in', () => {

@@ -89,6 +89,12 @@ export function getFullBrand(brandId) {
   }
 }
 
+export function getBrandById(brandId) {
+  const id = String(brandId || '').trim();
+  if (!id) return null;
+  return loadBrands().find((brand) => brand.id === id) || null;
+}
+
 // Full per-brand record: every phone, address, footer, fact, CTA, keyword,
 // genre rule and example. This is what the AI reads before writing.
 export function fullPack(brand) {
@@ -100,6 +106,15 @@ export function fullPack(brand) {
   if (!full) return brandPack(brand);
   const mem = loadMemory().brands?.[brand.id];
   const cd = full.caption_direction || {};
+  const approvedFacts = (full.approved_facts || []).map((fact) => {
+    if (typeof fact === 'string') return fact;
+    if (!fact || typeof fact !== 'object') return '';
+    return [fact.text, fact.status && fact.status !== 'confirmed' ? `(${fact.status})` : '']
+      .filter(Boolean).join(' ');
+  }).filter(Boolean);
+  const sources = (Array.isArray(full.sources) ? full.sources : [])
+    .map((source) => typeof source === 'string' ? source : source?.title || source?.name || '')
+    .filter(Boolean);
   const lines = [
     `BRAND: ${full.name} (${full.category || 'local brand'}${full.location ? `, ${full.location}` : ''})`,
     full.content_genres?.length ? `Genres: ${full.content_genres.join(', ')}` : null,
@@ -107,6 +122,7 @@ export function fullPack(brand) {
     cd.language ? `Language: ${cd.language}` : null,
     cd.focus?.length ? `Focus: ${cd.focus.join('; ')}` : null,
     cd.avoid?.length ? `Never: ${cd.avoid.join('; ')}` : null,
+    approvedFacts.length ? `APPROVED FACTS (use only when the post makes them relevant): ${approvedFacts.join('; ')}` : null,
     (cd.cta_options || brand.cta || []).length ? `CTA pick one (reword, don't copy): ${(cd.cta_options || brand.cta).join(' / ')}` : null,
     full.approved_facts?.length ? `Facts: ${full.approved_facts.map((f) => (typeof f === 'string' ? f : f.text)).join('; ')}` : null,
     full.mandatory_copy?.length ? `Must include word-for-word: ${full.mandatory_copy.join('; ')}` : null,
@@ -118,7 +134,9 @@ export function fullPack(brand) {
     full.keyword_bank?.length ? `SEO keywords: ${full.keyword_bank.join(', ')}` : null,
     full.example?.body ? `Style example (match this energy, never copy facts):\n${String(full.example.body).slice(0, 500)}` : (brand.ex ? `Style example: ${brand.ex}` : null),
     full.instagram?.handle ? `IG handle: ${full.instagram.handle}` : null,
+    full.instagram?.status ? `IG handle status: ${full.instagram.status} (never present an unverified handle as official)` : null,
     full.readiness === 'needs_brand_identity' ? 'Identity incomplete: if the brief lacks product/subject, ask ONE short question instead of inventing.' : null,
+    sources.length ? `SOURCE PROVENANCE (internal context; do not repeat): ${sources.join('; ')}` : null,
     !isBlank(full.missing_details) ? `STILL UNKNOWN (never invent): ${cap(fmt(full.missing_details), 700)}` : null,
     !isBlank(full.always_exclude_from_captions) ? `ALWAYS EXCLUDE:\n${cap(fmt(full.always_exclude_from_captions, true), 600)}` : null,
     typeof full.footer_policy === 'string' ? `Footer policy: ${full.footer_policy}` : null,
@@ -406,7 +424,9 @@ const HANDLED = new Set([
 // Only the rules that stop it describing things the photo does not show are kept.
 const VISUAL_KEEP = /rule|integrity|fidelity|accessib|restriction|prohibit|forbidden|^focus$|overall_direction|^style$|layout|palette|colours?$/i;
 
-// Pack built from the Specific-brands deep format, budgeted to ~1.8k tokens.
+// Pack the selected Specific-brands profile in priority order. The team flow
+// passes the exact selected brand ID, so its research is available to captions
+// instead of trying to infer a client from a social account's page name.
 // Precedence: owner correction > master instruction > safety > identity >
 // writing > content > facts > CTAs > inputs > examples.
 export function deepPack(deep, brand) {
@@ -518,8 +538,10 @@ export function deepPack(deep, brand) {
     ...T(3, mem?.recent?.length ? `Approved voice — same energy, new words, never copy exactly: ${mem.recent.slice(-3).join(' | ').slice(0, 200)}` : null),
   ];
 
-  // Fill by priority, always keeping tier 0 whole.
-  const LIMIT = 14000;
+  // Caption prompts can support a substantially larger researched profile.
+  // Retain far more brand-specific evidence before dropping lower-priority
+  // sections; otherwise detailed records were truncated at roughly 14 KB.
+  const LIMIT = 48000;
   let total = 0;
   const kept = [];
   let dropped = 0;
@@ -715,9 +737,8 @@ export function learnBrand(brandId, { assetHint, finalCaption, correction } = {}
 }
 
 // --- Auto-onboarding: unknown brands get stored + upgraded, zero LLM tokens.
-// Trigger: explicit brand label (picked/typed) that matches nothing, or a
-// business-type name inside the brief ("XYZ Salon", "ABC Jewellers").
-// Generic prompts ("diwali offer") never create brands.
+// Trigger: explicit brand label (picked/typed) that matches nothing. Topics,
+// creator names and one-off post briefs never create persistent brand records.
 const BIZ_WORDS = /(salon|lounge|studio|clinic|jewellers|jewels|clothing|apparel|boutique|furniture|interior|resort|hotel|motors|garage|hospital|dental|school|classes|footwear|sneakers|saree|tailor|dryfruits|bakery|cafe|restaurant|fitness|gym|spa|nails|tattoo|photography|decor|mart|store|bakers|cakes)/i;
 
 export function slugify(name) {
@@ -750,6 +771,8 @@ function candidateFromBrief(brief) {
 // then upgrades topics/phones/hints on every later sighting. All local, free.
 export function ensureAutoBrand({ brandParam, brief, assetHint }) {
   let name = String(brandParam || '').trim().slice(0, 60);
+  // Defense in depth: never create a persistent profile from a post topic.
+  if (!name) return null;
   let via = 'label';
   if (!name) {
     name = candidateFromBrief(brief);

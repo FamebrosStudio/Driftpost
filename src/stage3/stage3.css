@@ -255,6 +255,32 @@
 @media (prefers-reduced-motion: reduce) {
   .stage3, .stage3 *, .s3-light, .s3-light *, .s3-pub, .s3-pub * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }
+
+/* Compact review/publish flow for one-handed phone use. */
+@media (max-width: 600px) {
+  .stage3-in { padding: 10px 12px calc(230px + env(safe-area-inset-bottom)); }
+  .s3-top { gap: 8px; }
+  .s3-head { text-align: left; padding-top: 8px; }
+  .s3-head h1 { margin-top: 12px; font-size: clamp(27px, 8vw, 34px); }
+  .s3-head p { margin-left: 0; margin-right: 0; font-size: 13.5px; }
+  .s3-progress { margin-top: 18px; }
+  .s3-step small { font-size: 10px; }
+  .s3-tabs { flex-wrap: nowrap; overflow-x: auto; margin: 16px -12px 0; padding: 0 12px 6px; scrollbar-width: none; }
+  .s3-tabs::-webkit-scrollbar { display: none; }
+  .s3-tab { flex: 0 0 auto; min-height: 42px; padding: 9px 13px; }
+  .s3-work { padding: 15px 12px; margin-top: 10px; border-radius: 15px !important; }
+  .s3-work-head b { font-size: 15px; }
+  .s3-cols { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .s3-fields, .s3-field textarea { min-width: 0; }
+  .s3-field input, .s3-field textarea, .s3-field select { font-size: 16px; }
+  .s3-acts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .s3-acts button { min-width: 0; min-height: 44px; }
+  .s3-pub { padding: 9px 12px calc(env(safe-area-inset-bottom) + 9px); gap: 7px; }
+  .s3-pub-row, .s3-postall, .s3-schedall { width: 100%; }
+  .s3-pub-row { justify-content: space-between; }
+  .s3-postall, .s3-schedall { min-height: 46px; padding: 11px; font-size: 13px; }
+  .s3-pub-hint { max-width: 100%; font-size: 10.5px; text-align: center; }
+}
 .team-analysis-warning { margin: 12px 0; padding: 12px 14px; border: 1px solid color-mix(in srgb, #e6a23c 55%, var(--line)); border-radius: 8px; background: color-mix(in srgb, #e6a23c 8%, var(--panel)); color: var(--ink); font-size: 11px; line-height: 1.55; }
 .team-transcript { margin: 10px 0 15px; padding: 11px 13px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); color: var(--muted); font-size: 11px; }
 .team-transcript summary { color: var(--ink); cursor: pointer; font-weight: 650; }

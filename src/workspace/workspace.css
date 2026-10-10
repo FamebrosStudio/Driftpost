@@ -291,4 +291,31 @@
   .ws-insight { align-items: flex-start; flex-wrap: wrap; }
   .ws-insight .ws-text-button { margin-left: 45px; }
 }
+@media (max-width: 520px) {
+  .ws-topbar { position: sticky; top: 0; z-index: 20; background: var(--bg); }
+  .ws-nav { overscroll-behavior-x: contain; scroll-snap-type: x proximity; }
+  .ws-nav button { flex: 0 0 auto; min-height: 44px; scroll-snap-align: start; }
+  .ws-main { padding: 20px 12px calc(28px + env(safe-area-inset-bottom)); }
+  .ws-heading h1 { font-size: clamp(25px, 7vw, 32px); line-height: 1.12; overflow-wrap: anywhere; }
+  .ws-heading p { line-height: 1.55; }
+  .ws-welcome { min-height: 0; padding: 20px 16px; }
+  .ws-welcome h2 { max-width: 13ch; font-size: clamp(25px, 8vw, 34px); }
+  .ws-welcome-art { opacity: .22; }
+  .ws-welcome .ws-primary, .ws-welcome .ws-secondary { min-height: 44px; }
+  .ws-stat-grid { gap: 8px; }
+  .ws-stat { min-height: 128px; padding: 12px 10px; }
+  .ws-stat > strong { font-size: clamp(22px, 7vw, 29px); }
+  .ws-stat > button { min-height: 34px; }
+  .ws-panel { padding: 13px 11px; }
+  .ws-calendar-panel { overflow-x: auto; }
+  .ws-calendar-grid { min-width: 0; }
+  .ws-day { min-width: 0; }
+  .ws-day-panel { padding: 13px; }
+  .automation-grid { gap: 10px; }
+  .automation-field input, .automation-field textarea, .automation-field select,
+  .ws-campaign-field input, .ws-campaign-field textarea, .ws-campaign-field select { font-size: 16px; }
+  .ws-campaign-actions { display: grid; grid-template-columns: 1fr; }
+  .ws-campaign-actions button { width: 100%; min-height: 44px; }
+  .approval-card { width: calc(100vw - 24px); padding: 18px 14px; }
+}
 @media (prefers-reduced-motion: reduce) { .ws *, .ws *::before, .ws *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; } }

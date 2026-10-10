@@ -12,8 +12,20 @@ export async function makeCover(source, platform, name) {
   const canvas = document.createElement('canvas');
   canvas.width = format.width;
   canvas.height = format.height;
-  const ctx = canvas.getContext('2d');
-  const scale = Math.max(canvas.width / bitmap.width, canvas.height / bitmap.height);
+  const ctx = canvas.getContext('2d', { alpha: false });
+  if (!ctx) { bitmap.close?.(); throw new Error('Could not prepare the cover image.'); }
+  // Use a soft, darkened backdrop to fill the platform canvas while keeping
+  // the complete supplied artwork legible in the foreground. This avoids
+  // cropping overlay text, logos, or a designed frame.
+  const fillScale = Math.max(canvas.width / bitmap.width, canvas.height / bitmap.height);
+  ctx.save();
+  ctx.filter = 'blur(28px)';
+  ctx.globalAlpha = 0.48;
+  ctx.drawImage(bitmap, (canvas.width - bitmap.width * fillScale) / 2, (canvas.height - bitmap.height * fillScale) / 2, bitmap.width * fillScale, bitmap.height * fillScale);
+  ctx.restore();
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.24)';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  const scale = Math.min(canvas.width / bitmap.width, canvas.height / bitmap.height);
   const width = bitmap.width * scale;
   const height = bitmap.height * scale;
   ctx.drawImage(bitmap, (canvas.width - width) / 2, (canvas.height - height) / 2, width, height);
