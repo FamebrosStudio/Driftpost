@@ -2,6 +2,8 @@ import fs from 'node:fs';
 import { pipeline } from 'node:stream/promises';
 import { decryptJson, encryptJson } from './crypto.js';
 import { processIntakeJob } from './telegram-intake.js';
+import { resolveBrand } from './brand-memory/index.js';
+import { mapBrandDestinations } from './brand-routing.js';
 
 const TABLE = 'google_drive_video_jobs';
 const CONNECTIONS = 'google_drive_intake_connections';
@@ -11,11 +13,16 @@ let intakeBusy = false;
 let outcomeBusy = false;
 
 function parseDestination(fileName) {
-  const parts = String(fileName || '').split(' -- ');
-  if (parts.length < 3) return { accountName: '', platforms: [] };
-  const accountName = parts[0].trim();
-  const platforms = [...new Set(parts[1].split(',').map((value) => value.trim().toLowerCase()).filter((value) => PLATFORMS.has(value)))];
-  return { accountName, platforms: platforms.length === parts[1].split(',').length ? platforms : [] };
+  const title = String(fileName || '').split(/[\\/]/).at(-1).trim().replace(/\.[a-z0-9]{2,8}$/i, '');
+  const parts = title.split(' -- ');
+  if (parts.length >= 3) {
+    const requested = parts[1].split(',').map((value) => value.trim().toLowerCase());
+    if (requested.length && requested.every((value) => PLATFORMS.has(value))) {
+      return { accountName: parts[0].trim(), platforms: [...new Set(requested)] };
+    }
+  }
+  // The editor-friendly default is just the saved brand name in the filename.
+  return { accountName: title, platforms: [] };
 }
 
 async function tokenFor(supabase, connection) {
@@ -51,9 +58,30 @@ async function listDriveFiles(accessToken, folderId, connectedAt) {
 }
 
 async function enqueueFiles(supabase, connection, files) {
+  const { data: ownedConnections, error: connectionsError } = await supabase.from('platform_connections')
+    .select('id, user_id, platform, platform_account_id, account_name, encrypted_tokens')
+    .eq('user_id', connection.user_id);
+  if (connectionsError) throw new Error('Could not read the connected publishing accounts.');
   for (const file of files) {
     const size = Number(file.size) || 0;
     const parsed = parseDestination(file.name);
+    const brandHit = resolveBrand(parsed.accountName, 400);
+    const routing = brandHit ? mapBrandDestinations(brandHit.brand, ownedConnections || [], parsed.platforms) : { destinations: [], unresolved: [] };
+    const autoPlatforms = [...new Set((routing.destinations || []).map((item) => item.platform))];
+    const platforms = parsed.platforms.length ? parsed.platforms : autoPlatforms;
+    const missingRequested = parsed.platforms.filter((platform) => !autoPlatforms.includes(platform));
+    const routeError = !brandHit
+      ? `Could not match “${parsed.accountName || 'this filename'}” to one saved brand profile. Rename the video to the exact saved brand name.`
+      : routing.unresolved?.length
+        ? `Account mapping needs review: ${routing.unresolved.join('; ')}.`
+        : missingRequested.length
+          ? `No connected ${missingRequested.join(', ')} account clearly matches ${brandHit.brand.name}.`
+        : !routing.destinations?.length
+          ? `No connected platform account clearly matches ${brandHit.brand.name}. Check the saved account names and brand mapping.`
+          : '';
+    const errorMessage = size > MAX_VIDEO_BYTES
+      ? 'Video is larger than Driftpost’s 400 MB limit.'
+      : routeError;
     const { error } = await supabase.from(TABLE).insert({
       drive_file_id: file.id,
       owner_user_id: connection.user_id,
@@ -61,10 +89,10 @@ async function enqueueFiles(supabase, connection, files) {
       file_name: file.name || 'incoming-video.mp4',
       mime_type: file.mimeType || 'video/mp4',
       file_size: size,
-      account_name: parsed.accountName,
-      platforms: parsed.platforms,
-      status: size > MAX_VIDEO_BYTES ? 'failed' : parsed.accountName.length < 2 || !parsed.platforms.length ? 'failed' : 'queued',
-      error: size > MAX_VIDEO_BYTES ? 'Video is larger than Driftpost’s 400 MB limit.' : parsed.accountName.length < 2 || !parsed.platforms.length ? 'Rename the file as Account Name -- instagram,facebook -- Campaign title.mp4.' : null,
+      account_name: brandHit?.brand?.name || parsed.accountName,
+      platforms,
+      status: errorMessage ? 'failed' : 'queued',
+      error: errorMessage || null,
     });
     if (error && !/duplicate|unique/i.test(error.message || '')) console.error('[drive-intake] could not queue file:', file.id, error.message);
   }
@@ -102,6 +130,7 @@ async function processQueued(supabase) {
         table: TABLE,
         intakeKey: 'google_drive_intake_job_id',
         sourcePrefix: 'drive',
+        resolveDestinations: (brand, connections, platforms) => mapBrandDestinations(brand, connections, platforms),
         download: (current, destination) => downloadDriveVideo(supabase, current, destination),
         notify: async () => {},
       });

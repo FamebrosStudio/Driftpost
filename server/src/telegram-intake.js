@@ -142,14 +142,18 @@ export async function processIntakeJob(supabase, job, options = {}) {
   if (authError || !canUsePrivateBrandData(authResult?.user)) throw new Error('The configured publishing account is not approved for the private video workflow.');
   const accountName = clean(job.account_name);
   if (accountName.length < 2) throw new Error('Add the destination in the video caption, for example: Account: Famebros Studio.');
-  const brandHit = resolveBrand(accountName, 20);
+  const brandHit = resolveBrand(accountName, 400);
   if (!brandHit || brandHit.score < 400) throw new Error(`Could not safely match “${accountName}” to one saved brand profile. Check the account name and send it again.`);
   const { data: rawConnections, error: connectionError } = await supabase.from('platform_connections')
     .select('id, user_id, platform, platform_account_id, account_name, encrypted_tokens')
     .eq('user_id', ownerId);
   if (connectionError) throw new Error('Could not read the configured Driftpost publishing accounts.');
   const requestedPlatforms = Array.isArray(job.platforms) ? job.platforms : [];
-  const destinations = matchConnections(rawConnections, accountName).filter((item) => !requestedPlatforms.length || requestedPlatforms.includes(item.platform));
+  const routing = options.resolveDestinations
+    ? options.resolveDestinations(brandHit.brand, rawConnections, requestedPlatforms)
+    : { destinations: matchConnections(rawConnections, accountName).filter((item) => !requestedPlatforms.length || requestedPlatforms.includes(item.platform)), unresolved: [] };
+  if (routing.unresolved?.length) throw new Error(`Account mapping needs review: ${routing.unresolved.join('; ')}.`);
+  const destinations = routing.destinations || [];
   if (!destinations.length) throw new Error(`“${accountName}” does not exactly match a connected account. Send the connected account name or handle.`);
 
   const directory = await fs.mkdtemp(path.join(os.tmpdir(), 'driftpost-telegram-'));
