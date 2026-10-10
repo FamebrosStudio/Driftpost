@@ -30,6 +30,7 @@
 .team-account:hover { border-color: var(--line-hard); }
 .team-account.selected { border-color: color-mix(in srgb, var(--go) 60%, var(--line)); background: color-mix(in srgb, var(--go) 9%, var(--bg)); }
 .team-account input, .team-option input { flex: 0 0 auto; margin: 2px 0 0; accent-color: var(--go); }
+.team-account input:disabled { cursor: not-allowed; opacity: .48; }
 .team-account > span, .team-option > span { display: grid; min-width: 0; gap: 4px; }
 .team-account b, .team-option b { font-size: 11px; overflow-wrap: anywhere; }
 .team-account small, .team-option small { color: var(--muted); font-size: 10px; line-height: 1.45; }

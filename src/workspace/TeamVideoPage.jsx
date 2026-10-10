@@ -276,21 +276,21 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut, onOpenRe
         <section className="team-video-panel">
           <div className="team-video-section-title"><span>02</span><div><h2>Select platforms and accounts</h2><p>Choose every destination. You can select multiple accounts on the same platform.</p></div></div>
           <label className="team-field team-account-search"><span>Search accounts across all platforms</span><input type="search" value={accountSearch} onChange={(event) => setAccountSearch(event.target.value)} placeholder="Search account name, handle, or platform" /><small>{filteredConnections.length} of {connections.length} connected accounts · YouTube, Instagram, Facebook, X</small></label>
-          {!brand ? <p className="team-video-empty">Choose a saved brand profile to load your connected accounts.</p> : !connections.length ? <p className="team-video-empty">No connected accounts are available. Connect accounts in Driftpost first.</p> : <div className="team-account-groups">{PLATFORMS.map(({ id, name }) => {
+          {!connections.length ? <p className="team-video-empty">No connected accounts are available. Connect accounts in Driftpost first.</p> : <div className="team-account-groups">{PLATFORMS.map(({ id, name }) => {
             const accounts = filteredConnections.filter((item) => item.platform === id);
             if (!accounts.length) return null;
             return <fieldset className="team-account-group" key={id}><legend>{name}</legend>{accounts.map((account) => {
               const matchesBrand = accountBrand(account);
               const confirmed = confirmedAccountIds.includes(account.id);
               return <div className={`team-account ${selectedIds.includes(account.id) ? 'selected' : ''}`} key={account.id}>
-                <input type="checkbox" checked={selectedIds.includes(account.id)} disabled={!matchesBrand && !confirmed} onChange={() => toggleAccount(account)} />
-                <span><b>{account.account_name || name}</b><small>{matchesBrand ? 'Matches this brand' : 'This account name does not clearly match the selected brand.'}</small>
-                  {!matchesBrand && <label className="team-account-confirm"><input type="checkbox" checked={confirmed} onChange={(event) => setConfirmedAccountIds((old) => event.target.checked ? [...old, account.id] : old.filter((item) => item !== account.id))} /><small>I confirm this account belongs to {brand.label}.</small></label>}
+                <input type="checkbox" checked={selectedIds.includes(account.id)} disabled={!brand || (!matchesBrand && !confirmed)} onChange={() => toggleAccount(account)} />
+                <span><b>{account.account_name || name}</b><small>{!brand ? 'Choose a brand profile above to enable this account.' : matchesBrand ? 'Matches this brand' : 'This account name does not clearly match the selected brand.'}</small>
+                  {brand && !matchesBrand && <label className="team-account-confirm"><input type="checkbox" checked={confirmed} onChange={(event) => setConfirmedAccountIds((old) => event.target.checked ? [...old, account.id] : old.filter((item) => item !== account.id))} /><small>I confirm this account belongs to {brand.label}.</small></label>}
                 </span>
               </div>;
             })}</fieldset>;
           })}</div>}
-          {brand && connections.length > 0 && !filteredConnections.length && <p className="team-video-empty">No connected accounts match “{accountSearch}”.</p>}
+          {connections.length > 0 && !filteredConnections.length && <p className="team-video-empty">No connected accounts match “{accountSearch}”.</p>}
           {chosen.length > 0 && <p className="team-selection-summary">{chosen.length} account{chosen.length === 1 ? '' : 's'} selected · {selectedPlatforms.map((pid) => PLATFORM_LABELS[pid]).join(', ')}</p>}
         </section>
 
