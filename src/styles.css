@@ -313,6 +313,12 @@ details.adv[open] > summary::before { content: "– "; }
 .login-form .skew-btn.grad, .login-form .skew-btn.submit { background: #7c6cf5; }
 [data-theme="light"] .login-form .skew-btn.grad, [data-theme="light"] .login-form .skew-btn.submit { background: #5b4fd6; }
 .login-form .skew-btn:disabled { opacity: 0.45; cursor: wait; }
+.login-form .user-profile { width: 100%; min-height: 51px; padding: 2px; border: 0; border-radius: 15px; cursor: pointer; transition: background-color .3s ease, box-shadow .3s ease, transform .2s ease; background: linear-gradient(to bottom right, #2e8eff 0%, rgba(46,142,255,0) 30%); background-color: rgba(46,142,255,.2); }
+.login-form .user-profile:hover, .login-form .user-profile:focus-visible { background-color: rgba(46,142,255,.7); box-shadow: 0 0 10px rgba(46,142,255,.5); outline: none; }
+.login-form .user-profile:active { transform: scale(.99); }
+.login-form .user-profile:disabled { opacity: .58; cursor: wait; transform: none; }
+.login-form .user-profile-inner { width: 100%; min-height: 47px; border-radius: 13px; background-color: #1a1a1a; display: flex; align-items: center; justify-content: center; gap: 12px; color: #fff; font-weight: 600; font: inherit; }
+.login-form .user-profile-inner svg { width: 24px; height: 24px; flex: 0 0 auto; fill: #fff; }
 @keyframes authUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
 @media (prefers-reduced-motion: reduce) {
   .auth-card { animation-duration: 0.01ms !important; }

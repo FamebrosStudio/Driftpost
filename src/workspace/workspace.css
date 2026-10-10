@@ -367,3 +367,12 @@
   .approval-card { width: calc(100vw - 24px); padding: 18px 14px; }
 }
 @media (prefers-reduced-motion: reduce) { .ws *, .ws *::before, .ws *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+.ws-create-mode { max-width: 1120px; }
+.ws-create-mode-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; margin: 28px 0 20px; }
+.ws-create-mode-card { min-height: 230px; display: flex; flex-direction: column; align-items: flex-start; gap: 14px; padding: 26px; text-align: left; color: var(--ink); background: var(--panel, var(--bg)); border: 1px solid var(--line); border-radius: 14px; cursor: pointer; transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease, background 180ms ease; }
+.ws-create-mode-card:hover, .ws-create-mode-card:focus-visible { transform: translateY(-3px); border-color: var(--go); box-shadow: 0 12px 32px #0004, 0 0 0 1px color-mix(in srgb, var(--go) 30%, transparent); outline: none; }
+.ws-create-mode-card strong { font-size: 1.35rem; }
+.ws-create-mode-card > span:not(.ws-eyebrow) { max-width: 52ch; color: var(--muted); line-height: 1.6; }
+.ws-create-mode-card i { margin-top: auto; color: var(--go); font-style: normal; font-weight: 700; }
+.ws-create-mode-card--advanced { background: linear-gradient(145deg, color-mix(in srgb, var(--go) 8%, var(--panel, var(--bg))), var(--panel, var(--bg)) 64%); }
+@media (max-width: 720px) { .ws-create-mode-grid { grid-template-columns: 1fr; } .ws-create-mode-card { min-height: 190px; padding: 22px; } }

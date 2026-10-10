@@ -497,7 +497,7 @@ function Auth({ mode, setMode, onBack, markFresh }) {
         <h1>{mode === 'login' ? 'Welcome back.' : 'Start posting.'}</h1>
         <p>One calm composer for YouTube, Instagram, Facebook and X. No noise.</p>
         <form className="login-form" onSubmit={submit}>
-          <button className="skew-btn ghost" type="button" disabled={busy} onClick={google}><span>{mode === 'login' ? 'Continue with Google' : 'Sign up with Google'}</span></button>
+          <button className="user-profile" type="button" disabled={busy} onClick={google}><span className="user-profile-inner"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.7 9.5 24 9.5Z"/><path d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.88c-.58 2.96-2.25 5.47-4.73 7.16l7.63 5.92c4.45-4.1 7.2-10.14 7.2-17.55Z"/><path d="M10.55 28.59a14.49 14.49 0 0 1 0-9.18l-7.98-6.19a23.94 23.94 0 0 0 0 21.56l7.98-6.19Z"/><path d="M24 48c6.47 0 11.91-2.13 15.88-5.8l-7.63-5.92c-2.12 1.43-4.83 2.28-8.25 2.28-6.3 0-11.57-4.22-13.46-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48Z"/></svg>{mode === 'login' ? 'Continue with Google' : 'Sign up with Google'}</span></button>
           <div className="input-span"><span className="label">Email address</span><input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" /></div>
           <div className="input-span"><span className="label">Password</span><input type="password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="At least 6 characters" /></div>
           {mode === 'signup' && (
@@ -505,7 +505,7 @@ function Auth({ mode, setMode, onBack, markFresh }) {
           )}
           {error && <div className="alert err">{error}</div>}
           {info && <div className="banner">{info}</div>}
-          <button className="skew-btn grad submit" disabled={busy}><span>{busy ? 'Please wait…' : mode === 'login' ? 'Sign in' : 'Create account'}</span></button>
+          <button className="user-profile" disabled={busy}><span className="user-profile-inner"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10Zm0 2c-4.42 0-8 2.24-8 5v2h16v-2c0-2.76-3.58-5-8-5Z"/></svg>{busy ? 'Please wait…' : mode === 'login' ? 'Sign in' : 'Create account'}</span></button>
         </form>
         <p className="note" style={{ textAlign: 'center' }}>
           {mode === 'login' ? 'New here?' : 'Have an account?'}{' '}

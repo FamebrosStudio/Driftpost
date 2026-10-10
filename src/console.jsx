@@ -7,6 +7,7 @@ import PageLoading from './PageLoading.jsx';
 import { WorkspaceNav, DashboardPage, CalendarPage, AnalyticsPage } from './workspace/Workspace.jsx';
 import AutomationsPage from './workspace/AutomationsPage.jsx';
 import TeamVideoPage from './workspace/TeamVideoPage.jsx';
+import { isAiAccount } from './ai-access.js';
 
 const HistoryPage = lazy(() => import('./history/HistoryPage.jsx'));
 
@@ -54,6 +55,7 @@ export default function Console({ session, onSwitchAccount, onSignOut }) {
   void onSwitchAccount;
   const [stage, setStage] = useState(loadStage);
   const [view, setView] = useState('home');
+  const [createModePicker, setCreateModePicker] = useState(false);
   const [backgroundPublishNotice, setBackgroundPublishNotice] = useState(null);
   // Stages are strings everywhere ('connect' | '1' | '2' | '3') so the
   // state and localStorage can never drift apart on a number/string mismatch.
@@ -69,15 +71,31 @@ export default function Console({ session, onSwitchAccount, onSignOut }) {
   const navigate = (next) => {
     try { window.scrollTo(0, 0); } catch {}
     if (next === 'create') {
+      if (isAiAccount(session.user?.email)) {
+        setCreateModePicker(true);
+        setView('choose-create-mode');
+        return;
+      }
       setView('create');
       if (stage === 'connect') go('1');
       return;
     }
+    if (next === 'team-video' && !isAiAccount(session.user?.email)) {
+      setView('home');
+      return;
+    }
+    setCreateModePicker(false);
     setView(next);
+  };
+  const chooseBasic = () => {
+    setCreateModePicker(false);
+    setView('create');
+    if (stage === 'connect') go('1');
   };
   const openHistory = () => navigate('history');
   const withBackgroundNotice = (page) => <>{page}<BackgroundPublishNotice notice={backgroundPublishNotice} onDismiss={() => setBackgroundPublishNotice(null)} /></>;
-  if (view === 'team-video') return withBackgroundNotice(<TeamVideoPage session={session} onNavigate={navigate} onSignOut={onSignOut} onOpenReview={() => { setView('create'); go('3'); }} />);
+  if (view === 'team-video' && isAiAccount(session.user?.email)) return withBackgroundNotice(<TeamVideoPage session={session} onNavigate={navigate} onSignOut={onSignOut} onOpenReview={() => { setView('create'); go('3'); }} />);
+  if (view === 'choose-create-mode' && createModePicker && isAiAccount(session.user?.email)) return withBackgroundNotice(<div className="ws"><WorkspaceNav page="create" onNavigate={navigate} email={session.user?.email} onSignOut={onSignOut} /><main className="ws-main ws-create-mode"><div className="ws-heading"><div><span className="ws-eyebrow">Create a post</span><h1>Choose your workflow</h1><p>Pick the posting flow for this video. Your choice only affects this post.</p></div></div><div className="ws-create-mode-grid"><button type="button" className="ws-create-mode-card" onClick={chooseBasic}><span className="ws-eyebrow">BASIC</span><strong>Standard post</strong><span>Use the regular composer to choose accounts, add media, write captions, and review your post.</span><i>Continue to basic posting →</i></button><button type="button" className="ws-create-mode-card ws-create-mode-card--advanced" onClick={() => { setCreateModePicker(false); setView('team-video'); }}><span className="ws-eyebrow">ADVANCED</span><strong>Automated video workflow</strong><span>Send a video into the private team pipeline for video analysis, brand-aware content, covers, and publishing.</span><i>Open advanced workflow →</i></button></div><button type="button" className="ws-secondary" onClick={() => { setCreateModePicker(false); setView('home'); }}>Back to overview</button></main></div>);
   if (view === 'home') return withBackgroundNotice(<DashboardPage session={session} onNavigate={navigate} onCreate={() => navigate('create')} onSignOut={onSignOut} />);
   if (view === 'calendar') return withBackgroundNotice(<CalendarPage session={session} onNavigate={navigate} onCreate={(date) => {
     try { sessionStorage.setItem('driftpost-calendar-prefill', JSON.stringify({ date, createdAt: Date.now() })); } catch {}
