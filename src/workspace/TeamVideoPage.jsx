@@ -119,6 +119,30 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut, onOpenRe
     } catch (e) { setError(e.message || 'Could not open this video review.'); }
   };
 
+  const loadJobForRetry = async (job) => {
+    try {
+      const media = await readVault(`driftpost-team-video-job:${userId}:${job.id}`);
+      const video = media?.files?.find((entry) => entry.blob instanceof Blob);
+      if (!video) throw new Error('This failed attempt did not save its video. Choose the video again to retry.');
+      setBrandKey(job.brandKey || '');
+      setSelectedIds(job.accountIds || []);
+      setConfirmedAccountIds(job.accountIds || []);
+      setBrief(job.brief || '');
+      setCrosspost(!!job.crosspost);
+      setInstagramStory(!!job.instagramStory);
+      setCollaborators(job.collaborators || '');
+      setAutoPublish(!!job.autoPublish);
+      setFile(video.blob instanceof File ? video.blob : new File([video.blob], video.name || 'team-video.mp4', { type: video.type || 'video/mp4' }));
+      const thumb = media.thumb?.blob;
+      setYoutubeThumb(thumb instanceof Blob ? (thumb instanceof File ? thumb : new File([thumb], media.thumb.name || 'youtube-cover.jpg', { type: thumb.type || 'image/jpeg' })) : null);
+      const asFile = (entry, fallback) => entry?.blob instanceof Blob ? (entry.blob instanceof File ? entry.blob : new File([entry.blob], entry.name || fallback, { type: entry.blob.type || 'image/jpeg' })) : null;
+      setInstagramCover(asFile(media.coverMap?.instagram, 'instagram-cover.jpg'));
+      setFacebookCover(asFile(media.coverMap?.facebook, 'facebook-cover.jpg'));
+      setError('Video and settings restored. Submit again to retry this analysis.');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch (e) { setError(e.message || 'Could not restore this failed job.'); }
+  };
+
   const submit = async (event) => {
     event.preventDefault();
     setError('');
@@ -136,8 +160,18 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut, onOpenRe
       brief: brief.trim(), crosspost, instagramStory, collaborators: collaborators.trim(), autoPublish,
       manualCovers: { thumb: youtubeThumb, instagram: instagramCover, facebook: facebookCover },
     };
-    setJobs((current) => [{ id, brand: brand.label, status: 'analyzing', message: snapshot.message, createdAt: snapshot.createdAt, autoPublish }, ...current]);
+    setJobs((current) => [{ id, brand: brand.label, status: 'analyzing', message: snapshot.message, createdAt: snapshot.createdAt, autoPublish, brandKey, accountIds: snapshot.accountIds, platforms: snapshot.platforms, brief: snapshot.brief, crosspost, instagramStory, collaborators: snapshot.collaborators }, ...current]);
     try {
+      await writeVault(`driftpost-team-video-job:${userId}:${id}`, {
+        files: [{ name: file.name, size: file.size, type: file.type, blob: file }],
+        thumb: youtubeThumb ? { name: youtubeThumb.name, blob: youtubeThumb } : null,
+        coverMap: {
+          instagram: instagramCover ? { name: instagramCover.name, blob: instagramCover } : {},
+          facebook: facebookCover ? { name: facebookCover.name, blob: facebookCover } : {},
+        },
+      });
+      const sourceSaved = await readVault(`driftpost-team-video-job:${userId}:${id}`);
+      if (!sourceSaved?.files?.some((entry) => entry.blob instanceof Blob)) throw new Error('This browser could not save the video for retry. Free some browser storage and retry.');
       const generated = await requestCaptions(session.access_token, {
         brief: snapshot.brief,
         brand: snapshot.brand,
@@ -249,7 +283,7 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut, onOpenRe
         {error && <p className="team-video-error" role="alert">{error}</p>}
         <div className="team-video-actions"><button type="submit" disabled={activeJobs >= 3 || !connections.length || !brand || !file || !selectedIds.length}>{activeJobs >= 3 ? 'Three analyses already running' : autoPublish ? 'Analyze and publish' : 'Analyze and review'}</button><small>{activeJobs ? `${activeJobs} analysis${activeJobs === 1 ? '' : 'es'} running. You can start up to 3 at once.` : 'The original post creation flow is unchanged.'}</small></div>
       </form>
-      {!!jobs.length && <section className="team-video-jobs" aria-label="Video processing jobs"><div className="team-video-section-title"><span>↻</span><div><h2>Video processing jobs</h2><p>Each job keeps its own accounts, captions, covers, and video while other analyses run.</p></div></div>{jobs.map((job) => <article className="team-video-job" key={job.id}><div><b>{job.brand || 'Team video'}</b><small>{job.message || (job.status === 'ready' ? 'Ready to review.' : job.status)}</small>{job.warning && <small className="team-job-warning">{job.warning} Automatic publishing is paused until reviewed.</small>}{job.coverWarning && <small className="team-job-warning">{job.coverWarning} Automatic publishing is paused.</small>}</div>{job.status === 'ready' && <button type="button" onClick={() => openJob(job)}>{job.autoPublish && !job.warning && !job.coverWarning ? 'Open review · publish' : 'Open review'}</button>}</article>)}</section>}
+      {!!jobs.length && <section className="team-video-jobs" aria-label="Video processing jobs"><div className="team-video-section-title"><span>↻</span><div><h2>Video processing jobs</h2><p>Each job keeps its own accounts, captions, covers, and video while other analyses run.</p></div></div>{jobs.map((job) => <article className="team-video-job" key={job.id}><div><b>{job.brand || 'Team video'}</b><small>{job.message || (job.status === 'ready' ? 'Ready to review.' : job.status)}</small>{job.warning && <small className="team-job-warning">{job.warning} Automatic publishing is paused until reviewed.</small>}{job.coverWarning && <small className="team-job-warning">{job.coverWarning} Automatic publishing is paused.</small>}</div>{job.status === 'ready' && <button type="button" onClick={() => openJob(job)}>{job.autoPublish && !job.warning && !job.coverWarning ? 'Open review · publish' : 'Open review'}</button>}{job.status === 'failed' && <button type="button" onClick={() => loadJobForRetry(job)}>Load to retry</button>}</article>)}</section>}
     </main>
   </div>;
 }
