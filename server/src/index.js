@@ -473,8 +473,8 @@ function activeJobCount(userId) {
 // accepted jobs stay pollable in `queued` state while their disk-backed media
 // waits, avoiding both per-click serialization and an unbounded RAM spike.
 const MAX_ACTIVE_PUBLISHES = 3;
-const MAX_PENDING_PUBLISHES = 500;
-const MAX_USER_PENDING_PUBLISHES = 250;
+const MAX_PENDING_PUBLISHES = 100;
+const MAX_USER_PENDING_PUBLISHES = 50;
 let activePublishes = 0;
 const publishQueue = [];
 function pumpPublishQueue() {
