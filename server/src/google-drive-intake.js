@@ -14,19 +14,23 @@ const MAX_CAROUSEL_IMAGES = 10;
 const PLATFORMS = new Set(['youtube', 'instagram', 'facebook', 'x']);
 let intakeBusy = false;
 let outcomeBusy = false;
+let intakeActive = 0;
+const MAX_ACTIVE_INTAKE_JOBS = 2;
 
 function parseDestination(fileName) {
   const title = String(fileName || '').split(/[\\/]/).at(-1).trim().replace(/\.[a-z0-9]{2,8}$/i, '')
     .replace(/\s*[-_ ]+(?:slide[-_ ]*)?\d{1,2}$/i, '').trim();
   const parts = title.split(' -- ');
-  if (parts.length >= 3) {
+  if (parts.length >= 2) {
     const requested = parts[1].split(',').map((value) => value.trim().toLowerCase());
     if (requested.length && requested.every((value) => PLATFORMS.has(value))) {
-      return { accountName: parts[0].trim(), platforms: [...new Set(requested)] };
+      const accountNames = parts[0].split(',').map((value) => value.trim().replace(/^@/, '')).filter(Boolean);
+      return { accountName: accountNames.join(', '), accountNames, platforms: [...new Set(requested)] };
     }
   }
   // The editor-friendly default is just the saved brand name in the filename.
-  return { accountName: title, platforms: [] };
+  const accountNames = title.split(',').map((value) => value.trim().replace(/^@/, '')).filter(Boolean);
+  return { accountName: accountNames.join(', '), accountNames, platforms: [] };
 }
 
 async function tokenFor(supabase, connection) {
@@ -82,9 +86,12 @@ async function enqueueFiles(supabase, connection, files) {
   const groups = new Map();
   for (const file of imageFiles) {
     const parsed = parseDestination(file.name);
-    const hit = resolveDriveBrand(parsed.accountName);
-    const key = `${hit.brand?.id || parsed.accountName.toLowerCase()}|${parsed.platforms.join(',')}`;
-    const group = groups.get(key) || { parsed, brand: hit, files: [] };
+    const targetKey = parsed.accountNames.map((name) => {
+      const hit = resolveDriveBrand(name);
+      return hit.brand?.id || name.toLowerCase().trim();
+    }).sort().join('|');
+    const key = `${targetKey}|${parsed.platforms.join(',')}`;
+    const group = groups.get(key) || { parsed, files: [] };
     group.files.push(file);
     groups.set(key, group);
   }
@@ -101,30 +108,59 @@ async function enqueueFiles(supabase, connection, files) {
     const file = batchFiles[0];
     const size = batchFiles.reduce((sum, item) => sum + (Number(item.size) || 0), 0);
     const parsed = batch.parsed;
-    const brandHit = resolveDriveBrand(parsed.accountName);
-    const directMatch = brandHit.brand ? { destinations: [], ambiguous: false } : matchDriveAccounts(parsed.accountName, ownedConnections || []);
-    const routing = brandHit.brand
-      ? mapBrandDestinations(brandHit.brand, ownedConnections || [], parsed.platforms)
-      : { destinations: directMatch.destinations.filter((item) => !parsed.platforms.length || parsed.platforms.includes(item.platform)), unresolved: [] };
-    const resolvedDestinations = batch.kind === 'image'
-      ? (routing.destinations || []).filter((item) => ['instagram', 'facebook', 'x'].includes(item.platform))
-      : (routing.destinations || []);
+    const accountNames = parsed.accountNames.length ? parsed.accountNames : [parsed.accountName];
+    const targetErrors = [];
+    const targetsByKey = new Map();
+    const requestedNames = accountNames.slice(0, 10);
+    if (!accountNames.length) targetErrors.push('Add at least one brand or account name before the file extension.');
+    if (accountNames.length > 10) targetErrors.push('Use up to 10 comma-separated account names per upload.');
+    for (const requestedName of requestedNames) {
+      const brandHit = resolveDriveBrand(requestedName);
+      const directMatch = matchDriveAccounts(requestedName, ownedConnections || []);
+      if (brandHit.ambiguous) {
+        targetErrors.push(`"${requestedName}" matches multiple brands (${brandHit.candidates.join(', ')}). Add a branch, location, or full name.`);
+        continue;
+      }
+      let routing = brandHit.brand
+        ? mapBrandDestinations(brandHit.brand, ownedConnections || [], parsed.platforms)
+        : { destinations: directMatch.destinations.filter((item) => !parsed.platforms.length || parsed.platforms.includes(item.platform)), unresolved: [] };
+      // If a saved profile exists but has no platform mapping, an exact
+      // connected account label can still identify the destination while the
+      // profile remains the exclusive source for caption facts.
+      if (brandHit.brand && !routing.destinations.length && !routing.unresolved?.length && directMatch.destinations.length) {
+        routing = { destinations: directMatch.destinations.filter((item) => !parsed.platforms.length || parsed.platforms.includes(item.platform)), unresolved: [] };
+      }
+      if (directMatch.ambiguous && !routing.destinations.length) {
+        targetErrors.push(`"${requestedName}" matches multiple connected accounts. Add the full account name or handle.`);
+        continue;
+      }
+      if (routing.unresolved?.length) {
+        targetErrors.push(`Account mapping needs review for "${requestedName}": ${routing.unresolved.join('; ')}.`);
+        continue;
+      }
+      let destinations = [...(routing.destinations || [])];
+      if (batch.kind === 'image') destinations = destinations.filter((item) => ['instagram', 'facebook', 'x'].includes(item.platform));
+      if (!destinations.length) {
+        targetErrors.push(`No connected publishing account matched "${requestedName}"${batch.kind === 'image' ? ' on Instagram, Facebook, or X' : ''}.`);
+        continue;
+      }
+      const key = brandHit.brand ? `brand:${brandHit.brand.id}` : `accounts:${destinations.map((item) => item.id).sort().join('|')}`;
+      const target = targetsByKey.get(key) || { brand: brandHit.brand || null, destinations: [] };
+      target.destinations.push(...destinations);
+      targetsByKey.set(key, target);
+    }
+    const targetBrands = [...targetsByKey.values()].map((target) => ({
+      brand_id: target.brand?.id || null,
+      brand_name: target.brand?.name || accountNames.find((name) => matchDriveAccounts(name, target.destinations).destinations.length) || parsed.accountName,
+      destination_connection_ids: [...new Set(target.destinations.map((item) => item.id))],
+    }));
+    let resolvedDestinations = [...new Map([...targetsByKey.values()].flatMap((target) => target.destinations).map((item) => [item.id, item])).values()];
+    if (batch.kind === 'image') resolvedDestinations = resolvedDestinations.filter((item) => ['instagram', 'facebook', 'x'].includes(item.platform));
     const autoPlatforms = [...new Set(resolvedDestinations.map((item) => item.platform))];
-    const platforms = batch.kind === 'image' ? autoPlatforms : parsed.platforms.length ? parsed.platforms : autoPlatforms;
     const missingRequested = parsed.platforms.filter((platform) => !autoPlatforms.includes(platform));
-    const routeError = !brandHit.brand && !routing.destinations.length
-      ? (directMatch.ambiguous
-        ? `The name "${parsed.accountName}" matches multiple connected accounts. Add the full account name or platform handle so Driftpost can route it safely.`
-        : brandHit.ambiguous
-          ? `The name "${parsed.accountName}" matches multiple brands (${brandHit.candidates.join(', ')}). Add a distinctive handle, location, or full brand name so Driftpost can route it safely.`
-          : `Could not match "${parsed.accountName || 'this filename'}" to a saved brand or connected account. Try the full name, a saved alias, or a social handle.`)
-      : routing.unresolved?.length
-        ? `Account mapping needs review: ${routing.unresolved.join('; ')}.`
-        : missingRequested.length
-          ? `No connected ${missingRequested.join(', ')} account clearly matches ${brandHit.brand?.name || parsed.accountName}.`
-      : !resolvedDestinations.length
-          ? `No connected platform account clearly matches ${brandHit.brand?.name || parsed.accountName}. Check the saved account names and brand mapping.`
-          : '';
+    const routeError = targetErrors[0]
+      || (missingRequested.length ? `No selected account is connected on ${missingRequested.join(', ')}.` : '')
+      || (!resolvedDestinations.length ? `No connected platform account clearly matches ${parsed.accountName}. Check the saved account names and brand mapping.` : '');
     const unsupported = batch.kind === 'image' && batchFiles.some((item) => !['image/jpeg', 'image/png'].includes(item.mimeType));
     const imageLimit = autoPlatforms.includes('instagram') ? 8 * 1024 * 1024 : MAX_IMAGE_BYTES;
     const errorMessage = batch.kind === 'image' && batchFiles.length > MAX_CAROUSEL_IMAGES
@@ -135,7 +171,7 @@ async function enqueueFiles(supabase, connection, files) {
           ? 'Drive carousels currently accept JPEG and PNG images.'
       : batch.kind === 'video' && size > MAX_VIDEO_BYTES
       ? 'Video is larger than Driftpost’s 400 MB limit.'
-      : batch.kind === 'image' && (routing.destinations || []).some((item) => item.platform === 'youtube') && !resolvedDestinations.length
+      : batch.kind === 'image' && !resolvedDestinations.length && [...targetsByKey.values()].some((target) => target.destinations.some((item) => item.platform === 'youtube'))
       ? 'YouTube cannot publish photo carousels. Connect Instagram, Facebook, or X for this brand.'
         : routeError;
     const { error } = await supabase.from(TABLE).insert({
@@ -145,10 +181,12 @@ async function enqueueFiles(supabase, connection, files) {
       file_name: batch.kind === 'image' ? `${parsed.accountName} · ${batchFiles.length} image carousel` : file.name || 'incoming-video.mp4',
       mime_type: batch.kind === 'image' ? 'image/carousel' : file.mimeType || 'video/mp4',
       file_size: size,
-      account_name: brandHit?.brand?.name || parsed.accountName,
-      platforms,
+      account_name: parsed.accountName,
+      platforms: autoPlatforms,
       result: {
-        ...(brandHit.brand ? { brand_id: brandHit.brand.id } : directMatch.destinations.length ? { generic_account_target: true } : {}),
+        target_brands: targetBrands,
+        ...(targetBrands.length === 1 && targetBrands[0].brand_id ? { brand_id: targetBrands[0].brand_id } : {}),
+        ...(targetBrands.length === 1 && !targetBrands[0].brand_id ? { generic_account_target: true } : {}),
         destination_connection_ids: resolvedDestinations.map((item) => item.id),
         ...(batch.kind === 'image' ? { media_kind: 'carousel', source_drive_files: batchFiles.map((item) => ({ id: item.id, name: item.name, mime_type: item.mimeType, size: Number(item.size) || 0 })) } : {}),
       },
@@ -194,38 +232,50 @@ async function downloadDriveCarousel(supabase, job, directory) {
   return media;
 }
 
+async function runClaimedIntakeJob(supabase, job) {
+  const heartbeat = setInterval(() => { void supabase.from(TABLE).update({ updated_at: new Date().toISOString() }).eq('id', job.id).eq('status', 'processing'); }, 60_000);
+  heartbeat.unref();
+  try {
+    await processIntakeJob(supabase, job, {
+      table: TABLE,
+      intakeKey: 'google_drive_intake_job_id',
+      sourcePrefix: 'drive',
+      resolveDestinations: (brand, connections, platforms) => mapBrandDestinations(brand, connections, platforms),
+      assessBrand: (brand, frames, transcript) => assessVideoBrandMatch(brand, frames, transcript),
+      download: (current, destination) => downloadDriveVideo(supabase, current, destination),
+      downloadMedia: (current, directory) => downloadDriveCarousel(supabase, current, directory),
+      progress: async (stage, detail) => {
+        await supabase.from(TABLE).update({ result: { ...(job.result || {}), progress: { stage, detail, updated_at: new Date().toISOString() } }, updated_at: new Date().toISOString() }).eq('id', job.id).eq('status', 'processing');
+      },
+      notify: async () => {},
+    });
+  } catch (error) {
+    const message = String(error?.message || 'Could not prepare the automatic post.').slice(0, 800);
+    await supabase.from(TABLE).update({ status: 'failed', error: message, updated_at: new Date().toISOString() }).eq('id', job.id);
+    console.error('[drive-intake] job failed:', job.id, message);
+  } finally {
+    clearInterval(heartbeat);
+    intakeActive = Math.max(0, intakeActive - 1);
+    void processQueued(supabase);
+  }
+}
+
 async function processQueued(supabase) {
-  if (intakeBusy) return;
+  if (intakeBusy || intakeActive >= MAX_ACTIVE_INTAKE_JOBS) return;
   intakeBusy = true;
   try {
     const staleBefore = new Date(Date.now() - 30 * 60 * 1000).toISOString();
     await supabase.from(TABLE).update({ status: 'queued', updated_at: new Date().toISOString() }).eq('status', 'processing').lt('updated_at', staleBefore);
-    const { data: pending, error } = await supabase.from(TABLE).select('*').eq('status', 'queued').order('created_at', { ascending: true }).limit(1);
-    if (error || !pending?.length) return;
-    const job = pending[0];
-    const { data: claimed, error: claimError } = await supabase.from(TABLE).update({ status: 'processing', updated_at: new Date().toISOString() }).eq('id', job.id).eq('status', 'queued').select().maybeSingle();
-    if (claimError || !claimed) return;
-    const heartbeat = setInterval(() => { void supabase.from(TABLE).update({ updated_at: new Date().toISOString() }).eq('id', job.id).eq('status', 'processing'); }, 60_000);
-    heartbeat.unref();
-    try {
-      await processIntakeJob(supabase, claimed, {
-        table: TABLE,
-        intakeKey: 'google_drive_intake_job_id',
-        sourcePrefix: 'drive',
-        resolveDestinations: (brand, connections, platforms) => mapBrandDestinations(brand, connections, platforms),
-        assessBrand: (brand, frames, transcript) => assessVideoBrandMatch(brand, frames, transcript),
-        download: (current, destination) => downloadDriveVideo(supabase, current, destination),
-        downloadMedia: (current, directory) => downloadDriveCarousel(supabase, current, directory),
-        progress: async (stage, detail) => {
-          await supabase.from(TABLE).update({ result: { ...(claimed.result || {}), progress: { stage, detail, updated_at: new Date().toISOString() } }, updated_at: new Date().toISOString() }).eq('id', claimed.id).eq('status', 'processing');
-        },
-        notify: async () => {},
-      });
-    } catch (error) {
-      const message = String(error?.message || 'Could not prepare the automatic post.').slice(0, 800);
-      await supabase.from(TABLE).update({ status: 'failed', error: message, updated_at: new Date().toISOString() }).eq('id', job.id);
-      console.error('[drive-intake] job failed:', job.id, message);
-    } finally { clearInterval(heartbeat); }
+    const slots = MAX_ACTIVE_INTAKE_JOBS - intakeActive;
+    const { data: pending, error } = await supabase.from(TABLE).select('*').eq('status', 'queued').order('created_at', { ascending: true }).limit(slots);
+    if (error) throw error;
+    for (const job of pending || []) {
+      const { data: claimed, error: claimError } = await supabase.from(TABLE).update({ status: 'processing', updated_at: new Date().toISOString() }).eq('id', job.id).eq('status', 'queued').select().maybeSingle();
+      if (claimError) { console.error('[drive-intake] could not claim job:', job.id, claimError.message); continue; }
+      if (!claimed) continue;
+      intakeActive += 1;
+      void runClaimedIntakeJob(supabase, claimed);
+    }
   } catch (error) {
     console.error('[drive-intake] worker failed:', String(error?.message || error).slice(0, 250));
   } finally { intakeBusy = false; }
@@ -311,7 +361,7 @@ export function startGoogleDriveIntake(supabase) {
     catch (error) { console.error('[drive-intake] scan error:', String(error?.message || error).slice(0, 250)); }
     finally { scanBusy = false; }
   };
-  setInterval(scan, 30_000).unref();
+  setInterval(scan, 10_000).unref();
   setInterval(() => { void processQueued(supabase); }, 5_000).unref();
   setInterval(() => { void checkPublishOutcomes(supabase); }, 15_000).unref();
   setTimeout(scan, 2_000).unref();

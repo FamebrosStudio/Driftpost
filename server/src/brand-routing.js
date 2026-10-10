@@ -32,7 +32,9 @@ function profileAliases(brand) {
   const deep = getDeepForCompact(brand) || {};
   const social = deep.social_media || {};
   const names = [brand.name, brand.id?.replace(/_/g, ' '), ...(brand.aliases || []), brand.ig,
-    deep.brand_name, deep.public_name, deep.alternate_public_identity,
+    deep.brand_name, deep.public_name, deep.alternate_public_name, deep.alternate_public_identity,
+    deep.branch_name ? `${deep.brand_name || brand.name} ${deep.branch_name}` : '',
+    deep.branch_name && deep.business?.city ? `${deep.brand_name || brand.name} ${deep.branch_name} ${deep.business.city}` : '',
     social.facebook_name, social.youtube_name, social.x_name,
     social.instagram_handle, social.facebook_handle, social.youtube_handle, social.x_handle,
   ];

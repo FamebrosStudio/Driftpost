@@ -144,30 +144,43 @@ export async function processIntakeJob(supabase, job, options = {}) {
   if (authError || !canUsePrivateBrandData(authResult?.user)) throw new Error('The configured publishing account is not approved for the private video workflow.');
   const accountName = clean(job.account_name);
   if (accountName.length < 2) throw new Error('Add the destination in the video caption, for example: Account: Famebros Studio.');
-  const savedBrand = job.result?.brand_id ? getBrandById(job.result.brand_id) : null;
-  let brandHit = job.result?.generic_account_target ? null : (savedBrand ? { brand: savedBrand, score: 1000 } : resolveBrand(accountName, 400));
   const directConnectionIds = Array.isArray(job.result?.destination_connection_ids) ? job.result.destination_connection_ids : [];
   const { data: rawConnections, error: connectionError } = await supabase.from('platform_connections')
     .select('id, user_id, platform, platform_account_id, account_name, encrypted_tokens')
     .eq('user_id', ownerId);
   if (connectionError) throw new Error('Could not read the configured Driftpost publishing accounts.');
-  const directDestinations = directConnectionIds.length
-    ? (rawConnections || []).filter((item) => directConnectionIds.includes(item.id))
-    : [];
-  if (!brandHit && directDestinations.length === directConnectionIds.length && directDestinations.length) {
-    // Use video/transcript and account label only; never borrow a similarly named client's private facts.
-    brandHit = { brand: { id: null, name: accountName }, score: 400 };
-  }
-  if (!brandHit || brandHit.score < 400) throw new Error(`Could not safely match "${accountName}" to a saved brand profile or an exact connected account. Check the account name and send it again.`);
-  if (directConnectionIds.length && directDestinations.length !== directConnectionIds.length) throw new Error('One or more selected connected accounts are no longer available. Check the account and retry.');
   const requestedPlatforms = Array.isArray(job.platforms) ? job.platforms : [];
-  const routing = directDestinations.length
-    ? { destinations: directDestinations, unresolved: [] }
-    : options.resolveDestinations
-    ? options.resolveDestinations(brandHit.brand, rawConnections, requestedPlatforms)
-    : { destinations: matchConnections(rawConnections, accountName).filter((item) => !requestedPlatforms.length || requestedPlatforms.includes(item.platform)), unresolved: [] };
-  if (routing.unresolved?.length) throw new Error(`Account mapping needs review: ${routing.unresolved.join('; ')}.`);
-  const destinations = routing.destinations || [];
+  const configuredTargets = Array.isArray(job.result?.target_brands) && job.result.target_brands.length ? job.result.target_brands : null;
+  let targetGroups = [];
+  if (configuredTargets) {
+    targetGroups = configuredTargets.map((target) => {
+      const ids = Array.isArray(target.destination_connection_ids) ? target.destination_connection_ids : [];
+      const matched = (rawConnections || []).filter((item) => ids.includes(item.id));
+      if (!ids.length || matched.length !== ids.length) throw new Error(`One or more connected accounts for "${target.brand_name || accountName}" are no longer available. Reconnect them and resend.`);
+      const brand = target.brand_id ? getBrandById(target.brand_id) : null;
+      if (target.brand_id && !brand) throw new Error(`The saved brand profile for "${target.brand_name || accountName}" is missing. Refresh the brand data and resend.`);
+      return { brand: brand || { id: null, name: target.brand_name || accountName }, name: target.brand_name || brand?.name || accountName, destinations: matched };
+    });
+  } else {
+    const savedBrand = job.result?.brand_id ? getBrandById(job.result.brand_id) : null;
+    let brandHit = job.result?.generic_account_target ? null : (savedBrand ? { brand: savedBrand, score: 1000 } : resolveBrand(accountName, 400));
+    const directDestinations = directConnectionIds.length ? (rawConnections || []).filter((item) => directConnectionIds.includes(item.id)) : [];
+    if (directConnectionIds.length && directDestinations.length !== directConnectionIds.length) throw new Error('One or more selected connected accounts are no longer available. Check the account and retry.');
+    if (!brandHit && directDestinations.length) brandHit = { brand: { id: null, name: accountName }, score: 400 };
+    if (!brandHit || brandHit.score < 400) throw new Error(`Could not safely match "${accountName}" to a saved brand profile or an exact connected account. Check the account name and retry.`);
+    const routing = directDestinations.length
+      ? { destinations: directDestinations, unresolved: [] }
+      : options.resolveDestinations
+      ? options.resolveDestinations(brandHit.brand, rawConnections, requestedPlatforms)
+      : { destinations: matchConnections(rawConnections, accountName).filter((item) => !requestedPlatforms.length || requestedPlatforms.includes(item.platform)), unresolved: [] };
+    if (routing.unresolved?.length) throw new Error(`Account mapping needs review: ${routing.unresolved.join('; ')}.`);
+    targetGroups = [{ brand: brandHit.brand?.id ? brandHit.brand : { id: null, name: brandHit.brand?.name || accountName }, name: brandHit.brand?.name || accountName, destinations: routing.destinations || [] }];
+  }
+  const destinations = [...new Map(targetGroups.flatMap((target) => target.destinations).map((item) => [item.id, item])).values()];
+  for (const destination of destinations) {
+    const owners = new Set(targetGroups.filter((target) => target.destinations.some((item) => item.id === destination.id)).map((target) => target.brand?.id || `generic:${target.name}`));
+    if (owners.size > 1) throw new Error(`The connected account "${destination.account_name}" maps to more than one requested brand. Send separate files for those brands so captions cannot mix their data.`);
+  }
   if (!destinations.length) throw new Error(`“${accountName}” does not exactly match a connected account. Send the connected account name or handle.`);
 
   const directory = await fs.mkdtemp(path.join(os.tmpdir(), 'driftpost-telegram-'));
@@ -178,6 +191,7 @@ export async function processIntakeJob(supabase, job, options = {}) {
     let mediaFiles;
     let frames;
     let duration = 0;
+    let transcriptWork = Promise.resolve({ text: '', warning: '' });
     if (isCarousel && options.downloadMedia) {
       mediaFiles = await options.downloadMedia(job, directory);
       if (!mediaFiles.length || mediaFiles.length > 10) throw new Error('A carousel needs between 1 and 10 supported images.');
@@ -186,64 +200,76 @@ export async function processIntakeJob(supabase, job, options = {}) {
       const byteSize = options.download ? await options.download(job, videoPath) : await getTelegramVideo(job.telegram_file_id, videoPath);
       mediaFiles = [{ path: videoPath, name: path.basename(videoPath), mimetype: job.mime_type || 'video/mp4', size: byteSize }];
       await progress('analyzing', 'Extracting video frames');
+      // Start speech transcription while FFmpeg samples frames. These are
+      // independent operations on the same downloaded video.
+      transcriptWork = transcribeVideo(videoPath, path.basename(videoPath), job.mime_type || 'video/mp4')
+        .then((result) => ({ text: result.text || '', warning: '' }))
+        .catch((error) => {
+          console.warn('[telegram-intake] transcription unavailable:', String(error?.message || error).slice(0, 220));
+          return { text: '', warning: targetGroups.some((target) => target.brand?.id)
+            ? 'Speech transcription was unavailable; captions use the video frames and saved brand profiles.'
+            : 'Speech transcription was unavailable; captions use the video frames only.' };
+        });
       const sampled = await sampleFrames(videoPath, directory);
       frames = sampled.frames;
       duration = sampled.duration;
     }
     await progress('analyzing', isCarousel ? `Analyzing ${mediaFiles.length} carousel images` : 'Analyzing frames and speech');
-    let transcript = '';
-    let speechWarning = '';
-    try { if (!isCarousel) transcript = (await transcribeVideo(videoPath, path.basename(videoPath), job.mime_type || 'video/mp4')).text || ''; }
-    catch (error) { speechWarning = brandHit.brand.id ? 'Speech transcription was unavailable; captions use the video frames and saved brand profile.' : 'Speech transcription was unavailable; captions use the video frames only.'; console.warn('[telegram-intake] transcription unavailable:', String(error?.message || error).slice(0, 220)); }
+    const { text: transcript, warning: speechWarning } = await transcriptWork;
     const supportedDestinations = isCarousel ? destinations.filter((item) => ['instagram', 'facebook', 'x'].includes(item.platform)) : destinations;
     if (isCarousel && !supportedDestinations.length) throw new Error('Photo carousels can publish to Instagram, Facebook, or X. This brand has no connected photo destination.');
     if (isCarousel && destinations.some((item) => item.platform === 'x') && mediaFiles.length > 4) throw new Error('X supports up to 4 photos per post. Reduce this carousel to 4 images or remove X from the selected destinations.');
     const platforms = [...new Set(supportedDestinations.map((item) => item.platform))];
-    if (options.assessBrand && brandHit.brand.id) {
-      let assessment;
-      try { assessment = await options.assessBrand(brandHit.brand, frames, transcript); }
-      catch (error) {
-        assessment = { verdict: 'uncertain', confidence: 0, reason: `Automatic verification could not finish: ${String(error?.message || error).slice(0, 350)}` };
-      }
-      if (assessment?.verdict !== 'match') {
-        const review = {
-          verdict: assessment?.verdict || 'uncertain',
-          confidence: Number.isFinite(assessment?.confidence) ? assessment.confidence : 0,
-          reason: String(assessment?.reason || 'The AI could not confirm this video belongs to the selected brand.').slice(0, 500),
-          transcript_excerpt: String(transcript || '').slice(0, 2500),
-          checked_at: new Date().toISOString(),
-        };
-        const { error: reviewError } = await supabase.from(table).update({
-          // Store this as the existing terminal `failed` status for compatibility
-          // with databases that have not applied the optional review migration.
-          // The private review object distinguishes a held job from a real failure.
-          status: 'failed',
-          error: review.reason,
-          result: { ...(job.result || {}), brand_id: brandHit.brand.id, review },
-          updated_at: new Date().toISOString(),
-        }).eq('id', job.id).eq('status', 'processing');
-        if (reviewError) throw new Error('The brand review was triggered, but Driftpost could not save the review item.');
-        await notify(`Human review needed for ${brandHit.brand.name}: ${review.reason}`);
-        return { needsReview: true, assessment: review };
-      }
-    }
-    const generated = await generateCaptions(
-      `Create accurate, platform-specific captions for the ${isCarousel ? 'photo carousel' : 'video'} sent to the ${brandHit.brand.name} account. Describe only what is visible or spoken.`,
-      {
-        brand: brandHit.brand.id ? brandHit.brand.name : '',
-        brandId: brandHit.brand.id,
-        allowPrivateBrandData: !!brandHit.brand.id,
-        assetHint: isCarousel ? `A carousel of ${mediaFiles.length} images, ordered by filename.` : `Video duration ${Math.round(duration)} seconds.`,
-        goal: 'enquiries', tone: 'auto', emoji: 'medium', length: 'medium',
-        transcript,
-        platforms,
-        video_frame_analysis: true,
-        images: frames.map(({ name, mimetype, base64 }) => ({ name, mimetype, base64 })),
-      },
-    );
-    const captions = generated.captions || generated;
     await progress('preparing', 'Writing platform captions and preparing media');
-    const coverSelection = isCarousel ? {} : await selectVideoCoverFrames(frames.map(({ name, mimetype, base64 }) => ({ name, mimetype, base64 })));
+    const frameImages = frames.map(({ name, mimetype, base64 }) => ({ name, mimetype, base64 }));
+    const brandTargets = targetGroups.filter((target) => target.brand?.id);
+    const [assessments, coverSelection] = await Promise.all([
+      options.assessBrand
+        ? Promise.all(brandTargets.map(async (target) => {
+          try { return { target, assessment: await options.assessBrand(target.brand, frames, transcript) }; }
+          catch (error) { return { target, assessment: { verdict: 'uncertain', confidence: 0, reason: `Automatic verification could not finish: ${String(error?.message || error).slice(0, 350)}` } }; }
+        }))
+        : Promise.resolve([]),
+      isCarousel || !platforms.some((platform) => ['youtube', 'instagram', 'facebook'].includes(platform))
+        ? Promise.resolve({})
+        : selectVideoCoverFrames(frameImages),
+    ]);
+    const failedAssessments = assessments.filter(({ assessment }) => assessment?.verdict !== 'match');
+    if (failedAssessments.length) {
+      const reviews = failedAssessments.map(({ target, assessment }) => ({
+        brand_id: target.brand.id,
+        brand_name: target.brand.name,
+        verdict: assessment?.verdict || 'uncertain',
+        confidence: Number.isFinite(assessment?.confidence) ? assessment.confidence : 0,
+        reason: String(assessment?.reason || 'The AI could not confirm this video belongs to the selected brand.').slice(0, 500),
+      }));
+      const review = { ...reviews[0], reason: reviews.map((item) => `${item.brand_name}: ${item.reason}`).join(' | ').slice(0, 500), transcript_excerpt: String(transcript || '').slice(0, 2500), checked_at: new Date().toISOString() };
+      const { error: reviewError } = await supabase.from(table).update({
+        status: 'failed', error: review.reason,
+        result: { ...(job.result || {}), brand_id: reviews[0].brand_id, review, brand_reviews: reviews },
+        updated_at: new Date().toISOString(),
+      }).eq('id', job.id).eq('status', 'processing');
+      if (reviewError) throw new Error('The brand review was triggered, but Driftpost could not save the review item.');
+      await notify(`Human review needed for ${reviews.map((item) => item.brand_name).join(', ')}: ${review.reason}`);
+      return { needsReview: true, assessments: reviews };
+    }
+    // Each brand gets captions from its own complete saved profile. Generate
+    // those independent caption sets concurrently without mixing brand facts.
+    const captionTargets = await Promise.all(targetGroups.map(async (target) => {
+      const targetPlatforms = [...new Set(target.destinations.filter((item) => supportedDestinations.some((dest) => dest.id === item.id)).map((item) => item.platform))];
+      const generated = await generateCaptions(
+        `Create accurate, platform-specific captions for the ${isCarousel ? 'photo carousel' : 'video'} sent to the ${target.name} account. Describe only what is visible or spoken.`,
+        {
+          brand: target.brand?.id ? target.brand.name : '',
+          brandId: target.brand?.id || '',
+          allowPrivateBrandData: !!target.brand?.id,
+          assetHint: isCarousel ? `A carousel of ${mediaFiles.length} images, ordered by filename.` : `Video duration ${Math.round(duration)} seconds.`,
+          goal: 'enquiries', tone: 'auto', emoji: 'medium', length: 'medium',
+          transcript, platforms: targetPlatforms, video_frame_analysis: true, images: frameImages,
+        },
+      );
+      return { ...target, captions: generated.captions || generated };
+    }));
     const covers = {};
     for (const platform of platforms) {
       if (!['youtube', 'instagram', 'facebook'].includes(platform)) continue;
@@ -253,7 +279,6 @@ export async function processIntakeJob(supabase, job, options = {}) {
     }
 
     const sourcePrefix = options.sourcePrefix || 'telegram';
-    const videoKey = `scheduled/${ownerId}/${sourcePrefix}-${job.id}/video${path.extname(videoPath) || '.mp4'}`;
     const storedMedia = [];
     for (let index = 0; index < mediaFiles.length; index++) {
       let item = mediaFiles[index];
@@ -283,9 +308,10 @@ export async function processIntakeJob(supabase, job, options = {}) {
       else storedCovers[platform] = { path: key, name: path.basename(key), mimetype: 'image/jpeg' };
     }
 
-    const byPlatform = captions;
     await progress('queueing', `Adding ${storedMedia.length} ${isCarousel ? 'images' : 'video'} to the publishing queue`);
     const rows = supportedDestinations.map((connection) => {
+      const captionTarget = captionTargets.find((target) => target.destinations.some((item) => item.id === connection.id));
+      const byPlatform = captionTarget?.captions || {};
       const body = {
         text: '', skip_crosspost: '1', [intakeKey]: job.id,
         ai_generated: '1', yt_privacy: 'public',
@@ -324,11 +350,11 @@ export async function processIntakeJob(supabase, job, options = {}) {
     if (scheduleError || !scheduled || scheduled.length !== rows.length) throw new Error('The video was prepared, but Driftpost could not add every destination to its publishing queue.');
     const { error: intakeUpdateError } = await supabase.from(table).update({
       status: 'publishing',
-      result: { ...(job.result || {}), brand: brandHit.brand.name, destinations: scheduled, transcript: !!transcript, speechWarning, media_kind: isCarousel ? 'carousel' : 'video', progress: { stage: 'publishing', detail: `Queued to ${scheduled.length} destination${scheduled.length === 1 ? '' : 's'}`, updated_at: new Date().toISOString() } },
+      result: { ...(job.result || {}), brand: targetGroups.map((target) => target.name).join(', '), brands: targetGroups.map((target) => ({ id: target.brand?.id || null, name: target.name })), destinations: scheduled, transcript: !!transcript, speechWarning, media_kind: isCarousel ? 'carousel' : 'video', progress: { stage: 'publishing', detail: `Queued to ${scheduled.length} destination${scheduled.length === 1 ? '' : 's'}`, updated_at: new Date().toISOString() } },
       updated_at: new Date().toISOString(),
     }).eq('id', job.id);
     if (intakeUpdateError) console.error('[telegram-intake] queued posts but could not update intake status:', intakeUpdateError.message);
-    await reply(job.chat_id, `✅ ${isCarousel ? `${mediaFiles.length}-image carousel` : 'Video'} processed for ${brandHit.brand.name}. Queued ${scheduled.length} destination${scheduled.length === 1 ? '' : 's'} for automatic publishing.${speechWarning ? `\n\nNote: ${speechWarning}` : ''}`, job.message_id);
+    await notify(`✅ ${isCarousel ? `${mediaFiles.length}-image carousel` : 'Video'} processed for ${targetGroups.map((target) => target.name).join(', ')}. Queued ${scheduled.length} destination${scheduled.length === 1 ? '' : 's'} for automatic publishing.${speechWarning ? `\n\nNote: ${speechWarning}` : ''}`);
   } catch (error) {
     await supabase.storage.from(process.env.MEDIA_BUCKET || 'driftpost-media').remove(storedPaths).catch(() => {});
     throw error;

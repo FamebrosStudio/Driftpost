@@ -789,11 +789,20 @@ export async function assessVideoBrandMatch(brand, images = [], transcript = '')
   const usable = images.filter((im) => im && ['image/jpeg', 'image/png'].includes(im.mimetype)
     && typeof im.base64 === 'string' && im.base64.length <= 3_000_000).slice(0, 6);
   if (!usable.length) throw new Error('No readable frames were available for brand verification.');
+  const memory = await import('./brand-memory/index.js');
+  const deep = memory.getDeepForCompact?.(brand) || memory.getDeepBrand?.(brand?.id) || null;
+  const social = deep?.social_media || {};
+  const category = deep?.business?.category || deep?.business?.industry || brand?.cat;
+  const location = [deep?.business?.branch, deep?.business?.city, brand?.loc].filter(Boolean).join(', ');
   const identity = [
     `Brand: ${String(brand?.name || '').slice(0, 100)}`,
-    brand?.cat ? `Known category: ${String(brand.cat).slice(0, 120)}` : '',
-    brand?.loc ? `Known branch/location: ${String(brand.loc).slice(0, 100)}` : '',
+    deep?.alternate_public_name ? `Also known as: ${String(deep.alternate_public_name).slice(0, 120)}` : '',
+    deep?.branch_name ? `Branch: ${String(deep.branch_name).slice(0, 100)}` : '',
+    category ? `Known category: ${String(category).slice(0, 120)}` : '',
+    location ? `Known location: ${String(location).slice(0, 140)}` : '',
     brand?.ig ? `Known account handle: ${String(brand.ig).slice(0, 100)}` : '',
+    social.instagram_handle ? `Official Instagram: ${String(social.instagram_handle).slice(0, 100)}` : '',
+    social.facebook_name ? `Official Facebook page: ${String(social.facebook_name).slice(0, 100)}` : '',
   ].filter(Boolean).join('\n');
   const { text } = await callChat({
     model: process.env.XAI_MODEL || 'grok-4.20-0309-non-reasoning',
