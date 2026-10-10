@@ -36,6 +36,12 @@ export function hasAiAccess(session) {
   return isAiAccount(session?.user?.email) && !!readAiGrant(session?.user?.id);
 }
 
+// General caption writing is available to every signed-in user. Private saved
+// brand records and team automation still use the stricter checks above.
+export function canGenerateCaptions(session) {
+  return Boolean(session?.user?.id);
+}
+
 export function readAiGrantForAccessToken(token) {
   try {
     const part = String(token || '').split('.')[1];

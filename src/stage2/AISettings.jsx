@@ -41,7 +41,7 @@ export default function AISettings({ tone, setTone, emoji, setEmoji, length, set
           <option value="fast">Fast captions</option>
           <option value="analyze">Analyze photo + video</option>
         </select>
-        {analysis === 'analyze' && <small className="s2-analysis-note">Reads up to 4 photos, or 1 photo plus frames from the first video and its speech. This can take longer.</small>}
+        {analysis === 'analyze' && <small className="s2-analysis-note">Reads up to 4 photos, or 1 photo plus 6 sampled video frames and speech. This can take longer.</small>}
         {analysis === 'fast' && <small className="s2-analysis-note">Fast mode uses your prompt without scanning attached media.</small>}
       </div>
     </div>

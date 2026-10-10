@@ -378,6 +378,7 @@ const publishRequestBurstLimit = limit({ windowMs: 60 * 1000, max: 100, ns: 'pub
 const publishQueueLimit = limit({ windowMs: 15 * 60 * 1000, max: 100, ns: 'publish-queue', key: userKey });
 const mediaSignLimit = limit({ windowMs: 15 * 60 * 1000, max: 20, ns: 'media-sign', key: userKey });
 const aiLimit = limit({ windowMs: 60 * 60 * 1000, max: 30, ns: 'ai', key: userKey });
+const publicCaptionLimit = limit({ windowMs: 60 * 60 * 1000, max: 10, ns: 'caption-public', key: userKey });
 const oauthLimit = limit({ windowMs: 60 * 1000, max: 20, ns: 'oauth', key: userKey });
 const connectionsLimit = limit({ windowMs: 60 * 1000, max: 60, ns: 'conn', key: userKey });
 const musicLimit = limit({ windowMs: 60 * 1000, max: 30, ns: 'music', key: userKey });
@@ -443,6 +444,21 @@ function requireAiTeamVideoAccess(req, res, next) {
     return next();
   }
   return requireAiAccess(req, res, next);
+}
+
+function requireCaptionAiAccess(req, res, next) {
+  // The private automation bypass is limited to the approved team accounts.
+  if (req.get('X-Driftpost-Team-Video') === '1') {
+    if (!isAiAllowedUser(req.user)) return res.status(403).json({ error: 'Team video is unavailable for this account.' });
+    return aiLimit(req, res, next);
+  }
+  // Team users retain their existing device-unlock flow. Other signed-in
+  // users receive generic captioning only, with a lower per-user quota.
+  if (isAiAllowedUser(req.user)) {
+    if (!hasValidAiDeviceGrant(req)) return res.status(403).json({ error: 'AI access must be unlocked on this browser.' });
+    return aiLimit(req, res, next);
+  }
+  return publicCaptionLimit(req, res, next);
 }
 
 function activeJobCount(userId) {
@@ -1025,7 +1041,7 @@ function friendlySpeechWarning(error) {
   return 'Speech analysis was unavailable, but your captions were still generated from the prompt and video frames. Try again later if you want the spoken audio included.';
 }
 
-app.post('/api/ai/captions', requireUser, requireAiTeamVideoAccess, aiLimit, (req, res, next) => {
+app.post('/api/ai/captions', requireUser, requireCaptionAiAccess, (req, res, next) => {
   if (req.is('multipart/form-data')) return aiImageUpload.fields([
     { name: 'images', maxCount: 9 }, { name: 'video', maxCount: 1 },
   ])(req, res, next);
@@ -1055,10 +1071,10 @@ app.post('/api/ai/captions', requireUser, requireAiTeamVideoAccess, aiLimit, (re
     const requestedBrandId = String(req.body?.brand_id || '').slice(0, 160);
     // Defense in depth: even if generic AI access is later opened to other
     // accounts, private catalogue IDs/labels must never be resolved for them.
-    if (requestedBrandId && !privateBrandAccess) {
-      return res.status(403).json({ error: 'Saved brand profiles are unavailable for this account. Remove the brand selection to generate a general caption.' });
-    }
-    const brandLabel = privateBrandAccess ? String(req.body?.brand || '') : '';
+    const submittedBrandLabel = String(req.body?.brand || '').slice(0, 160);
+    // Non-team users may use a supplied brand/project name as a plain label,
+    // but cannot resolve private catalogue IDs, facts, contacts or voice data.
+    const brandLabel = privateBrandAccess ? submittedBrandLabel : '';
     // Resolved once and reused: the brand's confirmed contacts are the
     // allow-list that stops PII scrubbing from deleting a public business
     // phone number out of a caption footer.
@@ -1082,6 +1098,7 @@ app.post('/api/ai/captions', requireUser, requireAiTeamVideoAccess, aiLimit, (re
       brandId: privateBrandAccess ? requestedBrandId : '',
       allowPrivateBrandData: privateBrandAccess,
       assetHint: req.body?.asset_description || req.body?.assetHint,
+      creatorContext: privateBrandAccess ? '' : submittedBrandLabel,
       goal: req.body?.goal,
       trends: req.body?.trends === true || req.body?.trends === '1' || req.body?.trends === 1,
       tone: req.body?.tone,

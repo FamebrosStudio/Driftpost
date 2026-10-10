@@ -117,7 +117,7 @@ async function sampleVideo(file, count = 3) {
 
 // Shared Stage 2/3 caption generation: one request, per-platform answers.
 // Pass only:<platform> for a fast single-card regen (one card, ~1/3 tokens).
-export function requestCaptions(token, { brief, brand, brandId, files, tone, emoji, length, analysis = 'fast', only, platforms, frameCount = 3, teamVideo = false }) {
+export function requestCaptions(token, { brief, brand, brandId, files, tone, emoji, length, analysis = 'fast', only, platforms, frameCount = 6, teamVideo = false }) {
   return (async () => {
     const entries = files || [];
     const analyzeMedia = analysis === 'analyze';

@@ -14,7 +14,7 @@ import ScheduleModal from './ScheduleModal.jsx';
 import MediaPreview from './MediaPreview.jsx';
 import './stage3.css';
 import { WorkspaceNav } from '../workspace/Workspace.jsx';
-import { hasAiAccess } from '../ai-access.js';
+import { canGenerateCaptions, hasAiAccess } from '../ai-access.js';
 import { getSupabase } from '../session.js';
 import { loadCaptionDraft, readStageSelection, saveCaptionDraft } from '../stage2/captionDraftScope.js';
 
@@ -46,7 +46,8 @@ const NAMES = { instagram: 'Instagram', facebook: 'Facebook', youtube: 'YouTube'
 export default function StageThreePage({ session, onBack, onSignOut, onNavigate, onDone, onBackgroundProgress }) {
   const userId = session.user.id;
   const initialSelection = useMemo(() => readStageSelection(userId), [userId]);
-  const canUseAi = hasAiAccess(session);
+  const canUseAi = canGenerateCaptions(session);
+  const canUsePrivateAi = hasAiAccess(session);
   const [connections, setConnections] = useState([]);
   const [files, setFiles] = useState([]);
   const [thumb, setThumb] = useState(null);
@@ -452,7 +453,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
   // reference so the next generation for the same brand writes closer to it.
   const onReviewed = (pid) => {
     if (detachedPublish.current) return;
-    if (canUseAi) approveCaption(session.access_token, { brand: brandLabel, platform: pid, caption: composeOutput(pid, outputs[pid] || {}) }).catch(() => {});
+    if (canUsePrivateAi) approveCaption(session.access_token, { brand: brandLabel, platform: pid, caption: composeOutput(pid, outputs[pid] || {}) }).catch(() => {});
     setReviewed((r) => { const n = { ...r, [pid]: true }; save(scopedKey('driftpost-stage3-reviewed', userId), n); return n; });
   };
 
