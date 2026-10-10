@@ -1076,3 +1076,67 @@ select:disabled { opacity: 0.6; }
 @media (prefers-reduced-motion: reduce) {
   :is(.connect, .stage1, .stage2, .stage3, .hist, .ws, .team-video-page, .approval-page, .cg) :is(button, .cn-card, .cn-brands, .cn-brand-row, .setup-card, .s1-modal, .ws-welcome, .s2-sec, .s2-out, .s2-editor, .s2-video-editor-page, .s2-video-editor-workspace, .s2-audio-track, .s2-clip-track, .s3-work, .s3-cover-picker, .s3-sched, .s3-approval-choice, .hist-row, .hist-activity, .hist-delete-modal, .hist-delete-option, .ws-panel, .ws-stat, .ws-metric-card, .approval-card, .automation-account, .team-video-panel, .team-account-group, .team-account, .team-file-field, .team-option, .team-video-job, .ws-campaign-account, .bg-publish-notice, .bg-publish-notice__account, .cg-card) { animation: none !important; transition: none !important; transform: none !important; }
 }
+
+/* Animated Windows-style checkbox treatment, shared by every Driftpost page. */
+input[type="checkbox"] {
+  -webkit-appearance: none;
+  appearance: none;
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  box-sizing: border-box;
+  width: 22px;
+  min-width: 22px;
+  height: 22px;
+  min-height: 22px;
+  margin: 2px 5px 0 0;
+  padding: 0;
+  flex: 0 0 22px;
+  overflow: hidden;
+  border: 2px solid color-mix(in srgb, var(--ink, #fff) 82%, transparent);
+  border-radius: 7px;
+  background: transparent;
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--ink, #fff) 18%, transparent);
+  accent-color: transparent;
+  cursor: pointer;
+  transition: border-color 300ms ease, box-shadow 300ms ease, background-color 300ms ease;
+}
+input[type="checkbox"]::before {
+  content: "";
+  position: absolute;
+  top: -38px;
+  left: -38px;
+  z-index: 0;
+  width: 44px;
+  height: 44px;
+  background: var(--ink, #fff);
+  transform: rotate(45deg);
+  transition: top 300ms ease, left 300ms ease;
+  pointer-events: none;
+}
+input[type="checkbox"]::after {
+  content: "";
+  position: relative;
+  z-index: 1;
+  width: 5px;
+  height: 9px;
+  margin-top: -2px;
+  border-right: 2px solid var(--bg, #10141b);
+  border-bottom: 2px solid var(--bg, #10141b);
+  opacity: 0;
+  transform: rotate(45deg) scale(.65);
+  transition: opacity 180ms ease, transform 300ms ease;
+  pointer-events: none;
+}
+input[type="checkbox"]:checked {
+  border-color: var(--ink, #fff);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--go, #10b981) 28%, transparent);
+}
+input[type="checkbox"]:checked::before { top: -7px; left: -7px; }
+input[type="checkbox"]:checked::after { opacity: 1; transform: rotate(45deg) scale(1); }
+input[type="checkbox"]:focus-visible { outline: 2px solid var(--go, #10b981); outline-offset: 3px; }
+input[type="checkbox"]:disabled { cursor: not-allowed; opacity: .48; }
+input[type="checkbox"]:disabled::before { transition: none; }
+@media (prefers-reduced-motion: reduce) {
+  input[type="checkbox"], input[type="checkbox"]::before, input[type="checkbox"]::after { transition: none !important; }
+}

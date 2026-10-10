@@ -1,18 +1,20 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { api, matchesSearchText, PLATFORMS } from '../lib.js';
 import { isAiAccount } from '../ai-access.js';
 import { requestCaptions, mapResponse } from '../stage2/ai.js';
 import { saveCaptionDraft, readStageSelection } from '../stage2/captionDraftScope.js';
 import { readVault, writeVault } from '../stage2/mediaVault.js';
 import { makeCover } from '../stage3/CoverPicker.jsx';
+import { parseInstagramCollaborators } from '../stage3/instagramCollaborators.js';
 import { WorkspaceNav } from './Workspace.jsx';
 import './team-video.css';
 
 const PLATFORM_LABELS = Object.fromEntries(PLATFORMS.map(({ id, name }) => [id, name]));
 const SCOPED = (key, userId) => `${key}:${userId}`;
 
-function TeamCoverField({ title, value, setValue, platform, setError }) {
+function TeamCoverField({ title, value, setValue, platform, setError, setBusy }) {
   const [previewUrl, setPreviewUrl] = useState('');
+  const [processing, setProcessing] = useState(false);
   useEffect(() => {
     if (!value) { setPreviewUrl(''); return undefined; }
     const url = URL.createObjectURL(value);
@@ -21,12 +23,15 @@ function TeamCoverField({ title, value, setValue, platform, setError }) {
   }, [value]);
 
   return <div className="team-file-field">
-    <label><span>{title}</span><input type="file" accept="image/jpeg,image/png,image/webp" onChange={async (event) => {
+    <label><span>{title}</span><input type="file" accept="image/jpeg,image/png,image/webp" disabled={processing} onChange={async (event) => {
       const source = event.target.files?.[0] || null;
       event.target.value = '';
       if (!source) return;
+      setProcessing(true);
+      setBusy(true);
       try { setValue((await makeCover(source, platform, source.name)).raw); setError(''); }
       catch (e) { setError(e.message || 'Could not prepare that image.'); }
+      finally { setProcessing(false); setBusy(false); }
     }} /></label>
     {value ? <div className="team-cover-preview"><img src={previewUrl} alt={`${title} preview`} /><div><b>{value.name}</b><small>{(value.size / 1024 / 1024).toFixed(1)} MB · prepared as JPEG</small></div><button type="button" aria-label={`Remove ${title.toLowerCase()}`} onClick={() => setValue(null)}>Remove</button></div> : <small>AI selects a frame from your video. Upload a custom cover to override it.</small>}
   </div>;
@@ -35,6 +40,7 @@ function TeamCoverField({ title, value, setValue, platform, setError }) {
 export default function TeamVideoPage({ session, onNavigate, onSignOut, onOpenReview }) {
   const userId = session.user.id;
   const [connections, setConnections] = useState([]);
+  const [connectionsLoading, setConnectionsLoading] = useState(true);
   const [loadError, setLoadError] = useState('');
   const [brandOptions, setBrandOptions] = useState([]);
   const [brandLoading, setBrandLoading] = useState(true);
@@ -55,6 +61,12 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut, onOpenRe
   const [jobs, setJobs] = useState(() => {
     try { return JSON.parse(localStorage.getItem(SCOPED('driftpost-team-video-jobs', userId)) || '[]').map((job) => job.status === 'analyzing' ? { ...job, status: 'failed', message: 'Analysis stopped when this page was closed. Submit the video again.' } : job); } catch { return []; }
   });
+  // React state updates are asynchronous. Keep a synchronous reservation so
+  // rapid double-clicks or parallel submissions cannot exceed the job cap.
+  const activeJobIds = useRef(new Set());
+  const pendingCoverIds = useRef(new Set());
+  const [retryTick, setRetryTick] = useState(0);
+  const [pendingCoverCount, setPendingCoverCount] = useState(0);
   const activeJobs = jobs.filter((job) => job.status === 'analyzing').length;
   const [error, setError] = useState('');
 
@@ -64,14 +76,19 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut, onOpenRe
 
   useEffect(() => {
     let active = true;
+    setConnectionsLoading(true);
+    setBrandLoading(true);
+    setLoadError('');
+    setBrandLoadError('');
     api('/api/connections', session.access_token)
       .then((data) => { if (active) { setConnections(data.connections || []); setLoadError(''); } })
-      .catch((e) => { if (active) setLoadError(e.message || 'Could not load connected accounts.'); });
+      .catch((e) => { if (active) setLoadError(e.message || 'Could not load connected accounts.'); })
+      .finally(() => { if (active) setConnectionsLoading(false); });
     api('/api/ai/brands?limit=200', session.access_token)
       .then((data) => { if (active) { setBrandOptions(data.brands || []); setBrandLoadError(''); setBrandLoading(false); } })
       .catch((e) => { if (active) { setBrandLoadError(e.message || 'Could not load the saved brand profiles.'); setBrandLoading(false); } });
     return () => { active = false; };
-  }, [session.access_token]);
+  }, [session.access_token, retryTick]);
 
   const brands = useMemo(() => brandOptions.map((item) => ({ key: item.id, label: item.name })), [brandOptions]);
   const brand = brands.find((item) => item.key === brandKey) || null;
@@ -86,8 +103,9 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut, onOpenRe
     if (mapped === account.id) return true;
     // An editor may deliberately select a second page/channel for the same
     // brand. Keep this explicit in the UI rather than silently guessing.
-    return String(account.account_name || '').toLowerCase().includes(String(brand.label || '').toLowerCase())
-      || String(brand.label || '').toLowerCase().includes(String(account.account_name || '').toLowerCase());
+    const accountName = String(account.account_name || '').trim().toLowerCase();
+    const brandName = String(brand.label || '').trim().toLowerCase();
+    return !!accountName && !!brandName && (accountName.includes(brandName) || brandName.includes(accountName));
   };
 
   const toggleAccount = (account) => {
@@ -98,14 +116,24 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut, onOpenRe
     setBrandKey(key);
     setSelectedIds([]);
     setConfirmedAccountIds([]);
+    setCrosspost(false);
     setInstagramStory(false);
     setCollaborators('');
   };
   const selectVideo = (video) => {
+    if (!video) return;
+    if (!video.type?.startsWith('video/')) { setError('Choose a video file.'); return; }
+    if (video.size > 400 * 1024 * 1024) { setError('The video is larger than Driftpost’s 400 MB upload limit.'); return; }
     setFile(video);
     setYoutubeThumb(null);
     setInstagramCover(null);
     setFacebookCover(null);
+    setError('');
+  };
+  const setCoverBusy = (key, busy) => {
+    if (busy) pendingCoverIds.current.add(key);
+    else pendingCoverIds.current.delete(key);
+    setPendingCoverCount(pendingCoverIds.current.size);
   };
 
   const chooseAiCovers = async (token, frames, platforms, videoName) => {
@@ -131,10 +159,24 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut, onOpenRe
       const media = await readVault(`driftpost-team-video-job:${userId}:${job.id}`);
       if (!media?.files?.some((entry) => entry.blob instanceof Blob)) throw new Error('This job’s saved video is unavailable. Analyze the video again.');
       const group = job.group;
+      if (!group?.id || !Array.isArray(group.accountIds) || !group.accountIds.length || !Array.isArray(group.platforms) || !group.platforms.length) {
+        throw new Error('This job is missing its saved destinations. Load it to retry with the accounts selected again.');
+      }
+      if (!job.outputs || !job.cfg) throw new Error('This job is missing its generated captions or publishing options. Load it to retry.');
+      const stageMediaKey = `driftpost-stage2-media:${userId}`;
+      await writeVault(stageMediaKey, media);
+      const stagedMedia = await readVault(stageMediaKey);
+      if (!stagedMedia?.files?.some((entry) => entry.blob instanceof Blob)) {
+        throw new Error('This browser could not restore the video for publishing. Free browser storage and try opening the job again.');
+      }
       localStorage.setItem(SCOPED('driftpost-team-workflow', userId), 'true');
       localStorage.setItem(SCOPED('driftpost-team-selection', userId), JSON.stringify({ brandKey: job.brandKey, brandLabel: job.brand, group }));
       localStorage.setItem(SCOPED('driftpost-stage2-crosspost', userId), JSON.stringify(job.crosspost));
       localStorage.setItem(SCOPED('driftpost-stage2-brief', userId), JSON.stringify(job.brief));
+      localStorage.setItem(SCOPED('driftpost-stage2-analysis', userId), JSON.stringify('analyze'));
+      localStorage.setItem(SCOPED('driftpost-stage2-tone', userId), JSON.stringify('auto'));
+      localStorage.setItem(SCOPED('driftpost-stage2-emoji', userId), JSON.stringify('medium'));
+      localStorage.setItem(SCOPED('driftpost-stage2-length', userId), JSON.stringify('medium'));
       localStorage.setItem(SCOPED('driftpost-team-warning', userId), JSON.stringify(job.warning || job.coverWarning || ''));
       sessionStorage.setItem(`driftpost-team-transcript:${userId}`, JSON.stringify(job.transcript || ''));
       const selection = readStageSelection(userId);
@@ -143,7 +185,6 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut, onOpenRe
       localStorage.setItem(SCOPED('driftpost-stage3-accounts', userId), JSON.stringify({}));
       const autoReady = job.autoPublish && !job.warning && !job.coverWarning;
       localStorage.setItem(SCOPED('driftpost-stage3-reviewed', userId), JSON.stringify(Object.fromEntries(group.platforms.map((pid) => [pid, autoReady]))));
-      await writeVault(`driftpost-stage2-media:${userId}`, media);
       if (autoReady) sessionStorage.setItem(`driftpost-team-auto-publish:${userId}`, group.id);
       else sessionStorage.removeItem(`driftpost-team-auto-publish:${userId}`);
       onOpenReview();
@@ -183,8 +224,16 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut, onOpenRe
     if (file.size > 400 * 1024 * 1024) return setError('The video is larger than Driftpost’s 400 MB upload limit.');
     if (!chosen.length) return setError('Choose at least one account to publish to.');
     if (crosspost && !(selectedPlatforms.includes('instagram') && selectedPlatforms.includes('facebook'))) return setError('Cross-posting needs at least one selected Instagram and Facebook account.');
+    if (instagramStory && !selectedPlatforms.includes('instagram')) return setError('Select an Instagram account to publish a Story.');
+    if (collaborators && selectedPlatforms.includes('instagram')) {
+      const validation = parseInstagramCollaborators(collaborators);
+      if (validation.error) return setError(validation.error);
+    }
+    if (pendingCoverIds.current.size) return setError('Wait for the selected cover image to finish preparing.');
+    if (activeJobIds.current.size >= 3) return setError('Three analyses are already running. Wait for one to finish before starting another.');
 
     const id = `team-video-${crypto.randomUUID()}`;
+    activeJobIds.current.add(id);
     const snapshot = {
       id, createdAt: Date.now(), status: 'analyzing', message: 'Extracting frames and transcribing speech…',
       file, brandKey, brand: brand.label, accountIds: chosen.map((item) => item.id), platforms: [...selectedPlatforms],
@@ -252,10 +301,16 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut, onOpenRe
       if (!savedMedia?.files?.some((entry) => entry.blob instanceof Blob)) {
         throw new Error('This browser could not save the video for the publishing step. Free some browser storage and retry.');
       }
+      const coverMissing = (coverMap.thumb && !(savedMedia.thumb?.blob instanceof Blob))
+        || (coverMap.instagram && !(savedMedia.coverMap?.instagram?.blob instanceof Blob))
+        || (coverMap.facebook && !(savedMedia.coverMap?.facebook?.blob instanceof Blob));
+      if (coverMissing) throw new Error('This browser could not save one or more selected covers. Free browser storage and retry.');
       const job = { ...snapshot, status: 'ready', message: 'Analysis and cover selection complete.', group, outputs, cfg, transcript: generated.transcript || '', warning: generated.videoAnalysisWarning || '', coverWarning };
       setJobs((current) => [job, ...current.filter((item) => item.id !== id)]);
     } catch (e) {
       setJobs((current) => current.map((job) => job.id === id ? { ...job, status: 'failed', message: e.message || 'Could not prepare this video.' } : job));
+    } finally {
+      activeJobIds.current.delete(id);
     }
   };
 
@@ -264,19 +319,19 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut, onOpenRe
     <main className="team-video-main">
       <header className="team-video-heading"><span>PRIVATE TEAM WORKFLOW</span><h1>Send one video. Prepare every destination.</h1><p>Driftpost reads the video and speech, writes for the selected brand, then uses the same platform review and publishing system as the regular workspace.</p></header>
       {!isAiAccount(session.user?.email) && <div className="team-video-alert" role="alert">This private workflow is only available to approved team accounts.</div>}
-      {loadError && <div className="team-video-alert" role="alert">{loadError} <button type="button" onClick={() => window.location.reload()}>Retry</button></div>}
+      {(loadError || brandLoadError) && <div className="team-video-alert" role="alert">{loadError || brandLoadError} <button type="button" onClick={() => setRetryTick((tick) => tick + 1)} disabled={connectionsLoading || brandLoading}>Retry loading</button></div>}
       <form className="team-video-form" onSubmit={submit}>
         <section className="team-video-panel">
           <div className="team-video-section-title"><span>01</span><div><h2>Choose the brand and video</h2><p>The selected brand controls the facts, voice, and caption rules.</p></div></div>
-          <label className="team-field"><span>Brand profile</span><select value={brandKey} onChange={(event) => selectBrand(event.target.value)} required><option value="">{brandLoading ? 'Loading saved brand profiles…' : 'Choose a saved brand profile'}</option>{brands.map((item) => <option key={item.key} value={item.key}>{item.label}</option>)}</select>{brandLoadError && <small role="alert">{brandLoadError}</small>}</label>
-          <label className="team-video-drop" onDragOver={(event) => event.preventDefault()} onDrop={(event) => { event.preventDefault(); const dropped = event.dataTransfer.files?.[0]; if (dropped?.type.startsWith('video/')) { selectVideo(dropped); setError(''); } else if (dropped) setError('Choose a video file.'); }}><span className="team-video-drop-mark">↑</span><b>{file ? file.name : 'Choose or drop a video'}</b><small>{file ? `${(file.size / 1024 / 1024).toFixed(1)} MB · ${file.type || 'video'}` : 'MP4, MOV, WebM · up to 400 MB'}</small><input type="file" accept="video/*" onChange={(event) => { selectVideo(event.target.files?.[0] || null); setError(''); }} /></label>
+          <label className="team-field"><span>Brand profile</span><select value={brandKey} onChange={(event) => selectBrand(event.target.value)} required disabled={brandLoading || !!brandLoadError}><option value="">{brandLoading ? 'Loading saved brand profiles…' : brandLoadError ? 'Brand profiles unavailable' : 'Choose a saved brand profile'}</option>{brands.map((item) => <option key={item.key} value={item.key}>{item.label}</option>)}</select></label>
+          <label className="team-video-drop" onDragOver={(event) => event.preventDefault()} onDrop={(event) => { event.preventDefault(); const dropped = event.dataTransfer.files?.[0]; if (dropped) selectVideo(dropped); }}><span className="team-video-drop-mark">↑</span><b>{file ? file.name : 'Choose or drop a video'}</b><small>{file ? `${(file.size / 1024 / 1024).toFixed(1)} MB · ${file.type || 'video'}` : 'MP4, MOV, WebM · up to 400 MB'}</small><input type="file" accept="video/*" onChange={(event) => { const input = event.currentTarget; selectVideo(input.files?.[0] || null); input.value = ''; }} /></label>
           <label className="team-field"><span>Optional editor note</span><textarea value={brief} onChange={(event) => setBrief(event.target.value)} rows={3} maxLength={2000} placeholder="Campaign context, key message, or anything the video does not make clear." /></label>
         </section>
 
         <section className="team-video-panel">
           <div className="team-video-section-title"><span>02</span><div><h2>Select platforms and accounts</h2><p>Choose every destination. You can select multiple accounts on the same platform.</p></div></div>
           <label className="team-field team-account-search"><span>Search accounts across all platforms</span><input type="search" value={accountSearch} onChange={(event) => setAccountSearch(event.target.value)} placeholder="Search account name, handle, or platform" /><small>{filteredConnections.length} of {connections.length} connected accounts · YouTube, Instagram, Facebook, X</small></label>
-          {!connections.length ? <p className="team-video-empty">No connected accounts are available. Connect accounts in Driftpost first.</p> : <div className="team-account-groups">{PLATFORMS.map(({ id, name }) => {
+          {connectionsLoading ? <p className="team-video-empty">Loading connected accounts…</p> : !connections.length ? <p className="team-video-empty">No connected accounts are available. Connect accounts in Driftpost first.</p> : <div className="team-account-groups">{PLATFORMS.map(({ id, name }) => {
             const accounts = filteredConnections.filter((item) => item.platform === id);
             if (!accounts.length) return null;
             return <fieldset className="team-account-group" key={id}><legend>{name}</legend>{accounts.map((account) => {
@@ -297,17 +352,17 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut, onOpenRe
         <section className="team-video-panel">
           <div className="team-video-section-title"><span>03</span><div><h2>Destination options</h2><p>Only settings supported by the selected platforms are enabled.</p></div></div>
           <div className="team-options-grid">
-            {file && file.type.startsWith('video/') && <TeamCoverField title="YouTube thumbnail" value={youtubeThumb} setValue={setYoutubeThumb} platform="youtube" setError={setError} />}
-            {file && file.type.startsWith('video/') && <TeamCoverField title="Instagram Reel cover" value={instagramCover} setValue={setInstagramCover} platform="instagram" setError={setError} />}
-            {file && file.type.startsWith('video/') && <TeamCoverField title="Facebook video cover" value={facebookCover} setValue={setFacebookCover} platform="facebook" setError={setError} />}
+            {file && selectedPlatforms.includes('youtube') && <TeamCoverField title="YouTube thumbnail" value={youtubeThumb} setValue={setYoutubeThumb} platform="youtube" setError={setError} setBusy={(busy) => setCoverBusy('youtube', busy)} />}
+            {file && selectedPlatforms.includes('instagram') && <TeamCoverField title="Instagram Reel cover" value={instagramCover} setValue={setInstagramCover} platform="instagram" setError={setError} setBusy={(busy) => setCoverBusy('instagram', busy)} />}
+            {file && selectedPlatforms.includes('facebook') && <TeamCoverField title="Facebook video cover" value={facebookCover} setValue={setFacebookCover} platform="facebook" setError={setError} setBusy={(busy) => setCoverBusy('facebook', busy)} />}
             {selectedPlatforms.includes('instagram') && <label className="team-option"><input type="checkbox" checked={instagramStory} onChange={(event) => setInstagramStory(event.target.checked)} /><span><b>Also publish as an Instagram Story</b><small>Stories expire after 24 hours and use the selected Instagram account(s).</small></span></label>}
-            {selectedPlatforms.includes('instagram') && <label className="team-field"><span>Instagram collaborators (up to 3)</span><input value={collaborators} onChange={(event) => setCollaborators(event.target.value)} placeholder="handles separated by commas" /><small>Meta must accept each handle and the account must have collaborator access.</small></label>}
+            {selectedPlatforms.includes('instagram') && <label className="team-field"><span>Instagram collaborators (up to 3)</span><input value={collaborators} onChange={(event) => setCollaborators(event.target.value)} placeholder="handles separated by commas" aria-invalid={!!collaborators && !!parseInstagramCollaborators(collaborators).error} /><small>{parseInstagramCollaborators(collaborators).error || 'Meta must accept each handle and the account must have collaborator access.'}</small></label>}
             {selectedPlatforms.includes('instagram') && selectedPlatforms.includes('facebook') && <label className="team-option"><input type="checkbox" checked={crosspost} onChange={(event) => setCrosspost(event.target.checked)} /><span><b>Cross-post Instagram to Facebook</b><small>Use the selected Facebook accounts as the mirrored destination.</small></span></label>}
           </div>
           <label className="team-option team-auto"><input type="checkbox" checked={autoPublish} onChange={(event) => setAutoPublish(event.target.checked)} /><span><b>Auto-publish this job</b><small>After analysis, open its job card to start publishing. Driftpost runs destination validation and reports each account’s result. Turn this off to review drafts before posting.</small></span></label>
         </section>
         {error && <p className="team-video-error" role="alert">{error}</p>}
-        <div className="team-video-actions"><button type="submit" disabled={activeJobs >= 3 || !connections.length || !brand || !file || !selectedIds.length}>{activeJobs >= 3 ? 'Three analyses already running' : autoPublish ? 'Analyze and publish' : 'Analyze and review'}</button><small>{activeJobs ? `${activeJobs} analysis${activeJobs === 1 ? '' : 'es'} running. You can start up to 3 at once.` : 'The original post creation flow is unchanged.'}</small></div>
+        <div className="team-video-actions"><button type="submit" disabled={activeJobs >= 3 || pendingCoverCount > 0 || connectionsLoading || !connections.length || !brand || !file || !chosen.length}>{pendingCoverCount ? 'Preparing cover…' : activeJobs >= 3 ? 'Three analyses already running' : autoPublish ? 'Analyze and publish' : 'Analyze and review'}</button><small>{activeJobs ? `${activeJobs} analysis${activeJobs === 1 ? '' : 'es'} running. You can start up to 3 at once.` : 'The original post creation flow is unchanged.'}</small></div>
       </form>
       {!!jobs.length && <section className="team-video-jobs" aria-label="Video processing jobs"><div className="team-video-section-title"><span>↻</span><div><h2>Video processing jobs</h2><p>Each job keeps its own accounts, captions, covers, and video while other analyses run.</p></div></div>{jobs.map((job) => <article className="team-video-job" key={job.id}><div><b>{job.brand || 'Team video'}</b><small>{job.message || (job.status === 'ready' ? 'Ready to review.' : job.status)}</small>{job.warning && <small className="team-job-warning">{job.warning} Automatic publishing is paused until reviewed.</small>}{job.coverWarning && <small className="team-job-warning">{job.coverWarning} Automatic publishing is paused.</small>}</div>{job.status === 'ready' && <button type="button" onClick={() => openJob(job)}>{job.autoPublish && !job.warning && !job.coverWarning ? 'Open review · publish' : 'Open review'}</button>}{job.status === 'failed' && <button type="button" onClick={() => loadJobForRetry(job)}>Load to retry</button>}</article>)}</section>}
     </main>
