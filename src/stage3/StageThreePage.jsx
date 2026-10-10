@@ -16,6 +16,7 @@ import './stage3.css';
 import { WorkspaceNav } from '../workspace/Workspace.jsx';
 import { hasAiAccess } from '../ai-access.js';
 import { getSupabase } from '../session.js';
+import { loadCaptionDraft, readStageSelection, saveCaptionDraft } from '../stage2/captionDraftScope.js';
 
 function load(key, fallback) {
   try {
@@ -44,16 +45,17 @@ const NAMES = { instagram: 'Instagram', facebook: 'Facebook', youtube: 'YouTube'
 
 export default function StageThreePage({ session, onBack, onSignOut, onNavigate, onDone, onBackgroundProgress }) {
   const userId = session.user.id;
+  const initialSelection = useMemo(() => readStageSelection(userId), [userId]);
   const canUseAi = hasAiAccess(session);
   const [connections, setConnections] = useState([]);
   const [files, setFiles] = useState([]);
   const [thumb, setThumb] = useState(null);
   const [coverMap, setCoverMap] = useState({ instagram: null, facebook: null });
   const coverEditsRef = useRef({ thumb: false, instagram: false, facebook: false });
-  const [outputs, setOutputs] = useState(() => load(scopedKey('driftpost-stage2-outputs', userId), {}));
+  const [outputs, setOutputs] = useState(() => loadCaptionDraft(userId, initialSelection));
   const [cfg, setCfg] = useState(() => load(scopedKey('driftpost-stage3-cfg', userId), {}));
    const [overrides, setOverrides] = useState(() => load(scopedKey('driftpost-stage3-accounts', userId), {}));
-   const pinnedBrandAccounts = load('driftpost-stage1-brand-accounts', {});
+   const pinnedBrandAccounts = initialSelection.pinnedAccounts;
    // Video uploads go straight from the browser to Supabase. Meta can use
    // that public URL; the server only downloads a copy when Facebook's API
    // specifically requires a multipart file.
@@ -240,12 +242,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
 
   // Stage 1 + 2 context drives everything.
   const s1 = useMemo(() => ({
-    type: load('driftpost-stage1-type', ''),
-    brandKey: load('driftpost-stage1-brand', ''),
-    platforms: load('driftpost-stage1-platforms', []),
-    groups: load('driftpost-groups', []),
-    groupId: load('driftpost-stage1-group', ''),
-    crosspost: load('driftpost-stage2-crosspost', false),
+    ...initialSelection,
     tone: load(scopedKey('driftpost-stage2-tone', userId), 'auto'),
     emoji: load(scopedKey('driftpost-stage2-emoji', userId), 'medium'),
     length: load(scopedKey('driftpost-stage2-length', userId), 'medium'),
@@ -357,7 +354,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
   };
   const reviewedCount = effective.filter((pid) => reviewed[pid] || results[pid]?.state === 'completed').length;
 
-  const onValues = (pid, v) => setOutputs((o) => { const n = { ...o, [pid]: v }; save(scopedKey('driftpost-stage2-outputs', userId), n); return n; });
+  const onValues = (pid, v) => setOutputs((o) => { const n = { ...o, [pid]: v }; saveCaptionDraft(userId, s1, n); return n; });
   // One card's validity, mirroring the Workspace checks — Publish All and
   // Schedule refuse invalid cards instead of failing mid-flight.
   // allowGreyed: a greyed-out card is still validated when another card's
@@ -385,7 +382,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
     if (pid === 'instagram' && !files.some((f) => /^(image|video)\//.test(f.type))) return 'Instagram needs a photo or video';
     if (pid === 'instagram' && files.length > 10) return 'Instagram publishing supports up to 10 carousel slides. Remove extra slides or post them using Instagram directly.';
     if (pid === 'instagram' && Array.from(composeOutput(pid, v)).length > 2200) return 'caption plus hashtags exceeds Instagram’s 2,200 character limit';
-    if (pid === 'instagram' && parseInstagramCollaborators(c.collabs).error) return parseInstagramCollaborators(c.collabs).error;
+    if (pid === 'instagram' && !isGroupFlow && c.collabsEnabled && parseInstagramCollaborators(c.collabs).error) return parseInstagramCollaborators(c.collabs).error;
     if (pid === 'youtube' && !files.some((f) => f.type.startsWith('video/')) && !files.length) return 'YouTube needs a video file, or a photo to convert into a Short';
     if (pid === 'youtube' && files.length > 1) return 'YouTube accepts one video per post';
     if (pid === 'youtube' && !v.title?.trim()) return 'add a title before posting to YouTube';
@@ -402,7 +399,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
     if (isGroupFlow ? !groupMemberIds(target).length : !accountFor(target)) return `no ${NAMES[target]} account is selected`;
     if (target === 'instagram' && !files.some((f) => /^(image|video)\//.test(f.type))) return 'Instagram needs a photo or video';
     if (target === 'instagram' && Array.from(mainText('facebook')).length > 2200) return 'the Instagram caption exceeds 2,200 characters';
-    if (target === 'instagram' && parseInstagramCollaborators(cfgFor('instagram').collabs).error) return parseInstagramCollaborators(cfgFor('instagram').collabs).error;
+    if (target === 'instagram' && !isGroupFlow && cfgFor('instagram').collabsEnabled && parseInstagramCollaborators(cfgFor('instagram').collabs).error) return parseInstagramCollaborators(cfgFor('instagram').collabs).error;
     return '';
   };
   const onCfg = (pid, patch) => setCfg((c) => {
@@ -412,7 +409,16 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
     save(scopedKey('driftpost-stage3-cfg', userId), n);
     return n;
   });
-  const onAccount = (pid, id) => setOverrides((o) => { const n = { ...o, [pid]: id }; save(scopedKey('driftpost-stage3-accounts', userId), n); return n; });
+  const onAccount = (pid, id) => {
+    setOverrides((o) => { const n = { ...o, [pid]: id }; save(scopedKey('driftpost-stage3-accounts', userId), n); return n; });
+    if (pid === 'instagram' && id !== accountFor('instagram')) {
+      setCfg((current) => {
+        const n = { ...current, instagram: { ...DEFAULT_CFG.instagram, ...(current.instagram || {}), collabs: '', collabsEnabled: false } };
+        save(scopedKey('driftpost-stage3-cfg', userId), n);
+        return n;
+      });
+    }
+  };
   const onThumb = (t) => {
     coverEditsRef.current.thumb = true;
     setThumb(t);
@@ -481,13 +487,15 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
       yt_privacy: c.privacy || 'private',
       yt_category: c.category || '',
       yt_kids: c.kids || '',
-      ig_caption: composeOutput('instagram', v),
+      ig_caption: mainText('instagram'),
       ig_share_fb: (mirrorTarget === 'facebook' && pid === 'instagram') ? '1' : '',
       ig_post_story: c.story ? '1' : '',
       ig_alt: c.alt || '',
       ig_topics: c.topics || '',
       ig_partner: c.partner || '',
-      ig_collabs: parseInstagramCollaborators(cfgFor('instagram').collabs).usernames.join(','),
+      ig_collabs_enabled: !isGroupFlow && cfgFor('instagram').collabsEnabled ? '1' : '',
+      ig_collabs: !isGroupFlow && cfgFor('instagram').collabsEnabled
+        ? parseInstagramCollaborators(cfgFor('instagram').collabs).usernames.join(',') : '',
       fb_connection_id: accountFor('facebook'),
       fb_message: mirrorTarget === 'facebook' && pid === 'instagram'
         ? mainText('instagram')
@@ -1242,9 +1250,12 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
                   onPostPhotoAsVideo={publishPhotoAsVideo}
                   encoding={encoding}
                   hideInstagramCrosspost={!!s1.crosspost}
+                  disableCollaborators={isGroupFlow}
                   showInstagramCollaborators={tab === 'facebook' && mirrorTarget === 'instagram'}
                   instagramCollaborators={cfgFor('instagram').collabs || ''}
+                  instagramCollaboratorsEnabled={!!cfgFor('instagram').collabsEnabled}
                   onInstagramCollaborators={(value) => onCfg('instagram', { collabs: value })}
+                  onInstagramCollaboratorsEnabled={(value) => onCfg('instagram', { collabsEnabled: value })}
                   onRegen={canUseAi ? regenOne : undefined}
                   onSchedule={(pid) => { setTab(pid); setSchedOpen(true); }}
                 />

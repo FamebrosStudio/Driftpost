@@ -27,9 +27,12 @@ export default function Workspace({
   onPost, onRegen, onSchedule,
   onPostPhotoAsVideo, encoding,
   hideInstagramCrosspost = false,
+  disableCollaborators = false,
   showInstagramCollaborators = false,
   instagramCollaborators = '',
+  instagramCollaboratorsEnabled = false,
   onInstagramCollaborators,
+  onInstagramCollaboratorsEnabled,
   instagramAccounts = [],
   instagramLookupId = '',
   token = '',
@@ -139,9 +142,14 @@ export default function Workspace({
               <div className="s3-adv-in">
                 <Field label="Topics · up to 3"><input value={cfg.topics || ''} onChange={(e) => setCfg({ topics: e.target.value })} placeholder="bridal, mumbai" /></Field>
                 <Field label="Business partner"><input value={cfg.partner || ''} onChange={(e) => setCfg({ partner: e.target.value })} placeholder="brand handle, no @ needed" /></Field>
-                <Field label="Collaborators · up to 3"><CollaboratorInput value={cfg.collabs} onChange={(value) => setCfg({ collabs: value })} accounts={instagramAccounts} token={token} connectionId={instagramLookupId} /></Field>
-                <p className="s3-subnote">Start typing any Instagram username — connected accounts appear instantly, and Driftpost checks the rest with Instagram. Each person must accept the invite in Instagram.</p>
-                {!!cfg.collabs && !!parseInstagramCollaborators(cfg.collabs).error && <p className="s3-err">{parseInstagramCollaborators(cfg.collabs).error}</p>}
+                {disableCollaborators ? <p className="s3-subnote">Collaborator invitations are disabled for group publishing so one account’s invite cannot be sent to every account.</p> : <>
+                  <label className="s3-check"><input type="checkbox" checked={!!cfg.collabsEnabled} onChange={(e) => setCfg({ collabsEnabled: e.target.checked, ...(e.target.checked ? {} : { collabs: '' }) })} /><span>Send collaborator invitations<small>Off by default. Invites are sent only when you enable this for this post.</small></span></label>
+                  {cfg.collabsEnabled && <>
+                    <Field label="Collaborators · up to 3"><CollaboratorInput value={cfg.collabs} onChange={(value) => setCfg({ collabs: value })} accounts={instagramAccounts} token={token} connectionId={instagramLookupId} /></Field>
+                    <p className="s3-subnote">Each invited person must accept in Instagram.</p>
+                    {!!cfg.collabs && !!parseInstagramCollaborators(cfg.collabs).error && <p className="s3-err">{parseInstagramCollaborators(cfg.collabs).error}</p>}
+                  </>}
+                </>}
                 <Field label="Alt text (accessibility)"><input value={cfg.alt || ''} maxLength={500} onChange={(e) => setCfg({ alt: e.target.value })} placeholder="Describe the photo in one line" /></Field>
               </div>
             </details>
@@ -154,9 +162,14 @@ export default function Workspace({
             <Field label="Website link · optional"><input value={cfg.link || ''} onChange={(e) => setCfg({ link: e.target.value })} placeholder="https://your-website.com/offer" /></Field>
             <label className="s3-check"><input type="checkbox" checked={!!cfg.syndIg} onChange={(e) => setCfg({ syndIg: e.target.checked })} /><span>Also post on Instagram<small>Instagram is published once and removed from the Stage 3 platform list.</small></span></label>
             {showInstagramCollaborators && <div className="s3-mirror-collabs">
-              <Field label="Instagram collaborators · up to 3"><CollaboratorInput value={instagramCollaborators} onChange={(value) => onInstagramCollaborators?.(value)} accounts={instagramAccounts} token={token} connectionId={instagramLookupId} /></Field>
-              <p className="s3-subnote">Start typing any Instagram username — connected accounts appear instantly, and Driftpost checks the rest with Instagram.</p>
-              {!!instagramCollaborators && !!parseInstagramCollaborators(instagramCollaborators).error && <p className="s3-err">{parseInstagramCollaborators(instagramCollaborators).error}</p>}
+              {disableCollaborators ? <p className="s3-subnote">Collaborator invitations are disabled for group publishing to prevent sending the same invite to multiple accounts.</p> : <>
+                <label className="s3-check"><input type="checkbox" checked={instagramCollaboratorsEnabled} onChange={(e) => onInstagramCollaboratorsEnabled?.(e.target.checked)} /><span>Send Instagram collaborator invitations<small>Off by default. Enable only when you intend to invite these users.</small></span></label>
+                {instagramCollaboratorsEnabled && <>
+                  <Field label="Instagram collaborators · up to 3"><CollaboratorInput value={instagramCollaborators} onChange={(value) => onInstagramCollaborators?.(value)} accounts={instagramAccounts} token={token} connectionId={instagramLookupId} /></Field>
+                  <p className="s3-subnote">Each invited person must accept in Instagram.</p>
+                  {!!instagramCollaborators && !!parseInstagramCollaborators(instagramCollaborators).error && <p className="s3-err">{parseInstagramCollaborators(instagramCollaborators).error}</p>}
+                </>}
+              </>}
             </div>}
             <details className="s3-adv">
               <summary>More options (button, audience…)</summary>

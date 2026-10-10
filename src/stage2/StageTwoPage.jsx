@@ -15,6 +15,7 @@ import PageLoading from '../PageLoading.jsx';
 import './stage2.css';
 import { WorkspaceNav } from '../workspace/Workspace.jsx';
 import { hasAiAccess } from '../ai-access.js';
+import { loadCaptionDraft, readStageSelection, saveCaptionDraft } from './captionDraftScope.js';
 
 const MediaEditor = lazy(() => import('./MediaEditor.jsx'));
 
@@ -36,6 +37,7 @@ const scopedKey = (key, userId) => `${key}:${userId}`;
 
 export default function StageTwoPage({ session, onBack, onSignOut, onNavigate, onNext }) {
   const userId = session.user.id;
+  const initialSelection = useMemo(() => readStageSelection(userId), [userId]);
   const canUseAi = hasAiAccess(session);
   const [connections, setConnections] = useState([]);
   const [files, setFiles] = useState([]);
@@ -44,12 +46,13 @@ export default function StageTwoPage({ session, onBack, onSignOut, onNavigate, o
   const [emoji, setEmoji] = useState(() => load(scopedKey('driftpost-stage2-emoji', userId), 'medium'));
   const [length, setLength] = useState(() => load(scopedKey('driftpost-stage2-length', userId), 'medium'));
   const [analysis, setAnalysis] = useState(() => load(scopedKey('driftpost-stage2-analysis', userId), 'fast'));
-  const [outputs, setOutputs] = useState(() => load(scopedKey('driftpost-stage2-outputs', userId), {}));
+  const [outputs, setOutputs] = useState(() => loadCaptionDraft(userId, initialSelection));
   const [busy, setBusy] = useState(false);
   const [aiMsg, setAiMsg] = useState('');
   const [aiMsgKind, setAiMsgKind] = useState('ok');
   const say = (msg, kind = 'ok') => { setAiMsg(msg); setAiMsgKind(kind); };
-  const [crosspost, setCrosspost] = useState(() => load('driftpost-stage2-crosspost', false));
+  const crosspostKey = scopedKey('driftpost-stage2-crosspost', userId);
+  const [crosspost, setCrosspost] = useState(() => initialSelection.crosspost);
   const [editing, setEditing] = useState(-1);
   const [saveTick, setSaveTick] = useState(false);
 
@@ -96,13 +99,7 @@ export default function StageTwoPage({ session, onBack, onSignOut, onNavigate, o
   useEffect(() => { save(scopedKey('driftpost-stage2-analysis', userId), analysis); }, [analysis, userId]);
 
   // Stage 1 selections drive everything here.
-  const s1 = useMemo(() => ({
-    type: load('driftpost-stage1-type', ''),
-    brandKey: load('driftpost-stage1-brand', ''),
-    platforms: load('driftpost-stage1-platforms', []),
-    groups: load('driftpost-groups', []),
-    groupId: load('driftpost-stage1-group', ''),
-  }), []);
+  const s1 = initialSelection;
   const brands = useMemo(() => groupBrands(connections), [connections]);
   const brand = brands.find((b) => b.key === s1.brandKey) || null;
   const connById = useMemo(() => Object.fromEntries(connections.map((c) => [c.id, c])), [connections]);
@@ -132,7 +129,11 @@ export default function StageTwoPage({ session, onBack, onSignOut, onNavigate, o
   // Cross-post ON: Facebook auto-posts via Instagram — hide its card so
   // nobody tunes (or double-posts) it.
   const targetPlatforms = crosspostOn ? basePlatforms.filter((pid) => pid !== 'facebook') : basePlatforms;
-  const setCrosspostSaved = (v) => { setCrosspost(v); save('driftpost-stage2-crosspost', v); };
+  const setCrosspostSaved = (v) => {
+    setCrosspost(v);
+    save(crosspostKey, !!v);
+    saveCaptionDraft(userId, { ...s1, crosspost: !!v }, outputs);
+  };
   const brandLabel = s1.type === 'common_brand' ? brand?.label || '' : '';
 
   const addFiles = (list) => {
@@ -180,7 +181,7 @@ export default function StageTwoPage({ session, onBack, onSignOut, onNavigate, o
     setOutputs((prev) => {
       const next = { ...prev };
       pids.forEach((pid) => { next[pid] = mapped[pid]; });
-      save(scopedKey('driftpost-stage2-outputs', userId), next);
+      saveCaptionDraft(userId, { ...s1, crosspost }, next);
       return next;
     });
   };
@@ -242,7 +243,7 @@ export default function StageTwoPage({ session, onBack, onSignOut, onNavigate, o
   };
 
   const saveOutput = (pid, values) => {
-    setOutputs((o) => { const n = { ...o, [pid]: values }; save(scopedKey('driftpost-stage2-outputs', userId), n); return n; });
+    setOutputs((o) => { const n = { ...o, [pid]: values }; saveCaptionDraft(userId, { ...s1, crosspost }, n); return n; });
   };
 
   const hasOutputs = targetPlatforms.some((pid) => {

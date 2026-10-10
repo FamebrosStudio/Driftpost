@@ -25,6 +25,7 @@ import { scheduleIdentity } from './schedule-fields.js';
 import { deleteResultsStatus } from './delete-results.js';
 import { runAutomationAction } from './automation-events.js';
 import { eraseUserMedia } from './storage-cleanup.js';
+import { enabledInstagramCollaborators, instagramCaptionRequiredError, nonEmptyCaption } from './caption-guards.js';
 
 const required = ['FRONTEND_URL', 'SUPABASE_URL', 'SUPABASE_SECRET_KEY', 'TOKEN_ENCRYPTION_KEY', 'STATE_SIGNING_SECRET'];
 const missing = required.filter((n) => !process.env[n]);
@@ -86,7 +87,7 @@ function parseInstagramCollaborators(raw) {
 function instagramCollaboratorError(platform, body = {}) {
   const targetsInstagram = platform === 'instagram'
     || (platform === 'facebook' && String(body.fb_synd_ig || '') === '1');
-  return targetsInstagram ? parseInstagramCollaborators(body.ig_collabs).error : '';
+  return targetsInstagram ? enabledInstagramCollaborators(body, parseInstagramCollaborators).error : '';
 }
 
 const upload = multer({
@@ -1522,6 +1523,11 @@ app.post('/api/publish', requireUser, publishRequestBurstLimit, publishQueueLimi
     await cleanup();
     return res.status(400).json({ error: collaboratorError });
   }
+  const captionError = instagramCaptionRequiredError(platform, req.body);
+  if (captionError) {
+    await cleanup();
+    return res.status(400).json({ error: captionError });
+  }
   for (const cover of Object.values(coverFiles).filter(Boolean)) {
     if (cover.mimetype !== 'image/jpeg' || cover.size > 5 * 1024 * 1024 || !(await magicIsImage(cover.path))) {
       await cleanup();
@@ -1791,6 +1797,8 @@ async function runPublish(job, conn, payload, body, userId) {
       // job message live so the UI never looks frozen.
       const onStage = (msg) => { job.message = msg; };
       const fallbackText = String(body.text || '').trim();
+    const captionError = instagramCaptionRequiredError(job.platform, body);
+    if (captionError) throw new Error(captionError);
     // skip_crosspost=1 is sent by "Post to all" so one tap never double-posts
     // via IG->FB and FB->IG mirrors at the same time.
     const allowCrossPost = String(body.skip_crosspost || '') !== '1';
@@ -1882,7 +1890,7 @@ async function runPublish(job, conn, payload, body, userId) {
       const tokens = dec(conn.encrypted_tokens);
       const pageToken = tokens.access_token;
       const pageId = tokens.page_id || conn.platform_account_id;
-      const igCollabs = parseInstagramCollaborators(body.ig_collabs).usernames;
+      const igCollabs = enabledInstagramCollaborators(body, parseInstagramCollaborators).usernames;
       const otherConn = async (platform, id, linkedPageId = null) => {
         const matchesPage = (candidate) => {
           if (!candidate || !linkedPageId) return !!candidate;
@@ -1978,13 +1986,13 @@ async function runPublish(job, conn, payload, body, userId) {
         if (isCarousel) {
           out = await meta.publishFacebookCarousel({
             pageId: conn.platform_account_id, pageToken,
-            text: String(body.fb_message ?? fallbackText),
+                  text: nonEmptyCaption(body.fb_message, fallbackText),
             mediaList,
           });
         } else {
           out = await publishFacebook({
             pageId: conn.platform_account_id, pageToken,
-            text: String(body.fb_message ?? fallbackText),
+            text: nonEmptyCaption(body.fb_message, fallbackText),
             link,
             linkMeta: {
               name: String(body.fb_link_name || '').trim() || null,
@@ -2021,7 +2029,7 @@ async function runPublish(job, conn, payload, body, userId) {
               if (isCarousel) {
                 const mirror = await meta.publishInstagramCarousel({
                   igUserId: igConn.platform_account_id, pageToken: igTokens.access_token,
-                  caption: String(body.fb_message ?? fallbackText),
+                  caption: nonEmptyCaption(body.fb_message, fallbackText),
                   collabs: igCollaboratorUsernames,
                   mediaUrls: igUrls,
                 });
@@ -2029,7 +2037,7 @@ async function runPublish(job, conn, payload, body, userId) {
               } else {
                 const mirror = await meta.publishInstagram({
                   igUserId: igConn.platform_account_id, pageToken: igTokens.access_token,
-                  caption: String(body.fb_message ?? fallbackText),
+                  caption: nonEmptyCaption(body.fb_message, fallbackText),
                   collabs: igCollaboratorUsernames,
                   mediaUrl: igUrls[0] || publicUrl, isVideo: !!(file?.mimetype || mediaList[0]?.mimetype || '').startsWith('video/'),
                   coverUrl: instagramCoverUrl,
@@ -2048,7 +2056,7 @@ async function runPublish(job, conn, payload, body, userId) {
       } else {
         const igId = conn.platform_account_id;
         // Topics ride along as hashtags; partner mention rides as an @mention.
-        let caption = String(body.ig_caption ?? fallbackText);
+        let caption = nonEmptyCaption(body.ig_caption, fallbackText);
         const topics = splitTags(body.ig_topics).slice(0, 3).map((t) => `#${t}`);
         if (topics.length) caption = `${caption}\n\n${topics.join(' ')}`.trim();
         const partner = String(body.ig_partner || '').trim().replace(/^@+/, '');
@@ -2295,6 +2303,11 @@ app.post('/api/schedule', requireUser, strictBurstLimit, scheduleRequestLimit, m
   if (collaboratorError) {
     await cleanupTmp();
     return res.status(400).json({ error: collaboratorError });
+  }
+  const captionError = instagramCaptionRequiredError(platform, req.body);
+  if (captionError) {
+    await cleanupTmp();
+    return res.status(400).json({ error: captionError });
   }
   const when = Date.parse(req.body.scheduled_at || '');
   if (!Number.isFinite(when)) {

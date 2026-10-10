@@ -142,3 +142,25 @@ test('all checked-in brand JSON remains valid UTF-8 text', () => {
     assert.equal(containsBrokenText(data), false, `${path.relative(memoryDir, filename)} contains broken text encoding`);
   }
 });
+
+test('brand keyword and hashtag banks do not contain another active brand identity', () => {
+  const brands = loadBrands();
+  const normalize = (value) => String(value || '').replace(/^#+|^@/g, '').replace(/[^a-z0-9]/gi, '').toLowerCase();
+  for (const brand of brands) {
+    const full = getFullBrand(brand.id);
+    const deep = getDeepForCompact(brand);
+    const candidates = [
+      ...(brand.kw || []),
+      ...(full?.keyword_bank || []),
+      ...(Array.isArray(deep?.seo_keyword_bank) ? deep.seo_keyword_bank : []),
+      ...Object.values(deep?.suggested_hashtag_bank || {}).flatMap((value) => Array.isArray(value) ? value : typeof value === 'string' ? [value] : []),
+    ].map(normalize).filter(Boolean);
+    for (const other of brands) {
+      if (other.id === brand.id) continue;
+      const otherNames = [other.name, ...(other.aliases || []), other.ig].map(normalize).filter((name) => name.length >= 8);
+      for (const name of otherNames) {
+        assert.ok(!candidates.includes(name), `${brand.id} has another brand's identity in a keyword/hashtag bank: ${other.id}`);
+      }
+    }
+  }
+});

@@ -4,6 +4,7 @@
 // brands.compact.json (resolver index), memory.json (learned owner corrections).
 // Per request we resolve locally (0 tokens) and inject ONE brand's FULL record
 // (~800 tokens) — never the whole file. Owner corrections in memory.json win.
+import { safeBrandHashtags, topicRelevantPhrases } from './caption-guards.js';
 const CHAT_URL = 'https://api.x.ai/v1/chat/completions';
 
 // Static prefix — keep byte-identical across deploys for cache hits.
@@ -71,7 +72,7 @@ const SINGLE_SPECS = {
   youtube: `
 PLATFORM: YOUTUBE only (search) — title <=100 chars and accurately describe the post; include brand/service/confirmed location only when natural. Description = concise, useful copy with relevant search terms, one CTA at most, and brand footer lines. Tags = up to 8 relevant lowercase terms; do not pad.`,
   instagram: `
-PLATFORM: INSTAGRAM only (discovery) — write a specific hook, one useful supported detail and a suitable CTA if one fits. Keep the body concise. Never open with a phone number or address. The server appends the selected brand footer, exactly 3 relevant hashtags, and SEO phrase bracket.`,
+PLATFORM: INSTAGRAM only (discovery) — write a specific hook, one useful supported detail and a suitable CTA if one fits. Keep the body concise. Never open with a phone number or address. The server appends the selected brand footer, up to 3 topic-relevant hashtags, and only topic-supported SEO phrases.`,
   facebook: `
 PLATFORM: FACEBOOK only (social/conversational, NO bracket) — write a distinct, natural post. The server appends the selected brand footer and up to 2 hashtags. Never include the SEO phrase bracket.`,
   x: `
@@ -553,19 +554,19 @@ export async function generateCaptions(summary, opts = {}) {
     const normalizeLine = (value) => String(value || '').toLowerCase().normalize('NFKD')
       .replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9@+]+/g, ' ').replace(/\s+/g, ' ').trim();
     const footerKeys = new Set(footerLines.map(normalizeLine).filter(Boolean));
-    const kwBank = deep?.seo_keyword_bank?.length
+    const kwBank = Array.isArray(deep?.seo_keyword_bank) && deep.seo_keyword_bank.length
       ? deep.seo_keyword_bank
-      : full?.keyword_bank?.length
+      : Array.isArray(full?.keyword_bank) && full.keyword_bank.length
         ? full.keyword_bank
-        : brand.kw || [];
+        : Array.isArray(brand.kw) ? brand.kw : [];
     // Shade/service words from THIS brief lead the bracket: "honey brown" +
     // "hair" = "honey brown hair". Whole words only, never cut fragments.
     const shadeHit = brief.match(/honey(?:\s+[a-z]+){0,2}|balayage|blonde|burgundy|caramel|keratin|smoothening|bridal|ombre/i);
     const shadePhrase = shadeHit ? `${shadeHit[0].trim().toLowerCase().split(/\s+/).slice(0, 2).join(' ')} hair`.replace(' hair hair', ' hair') : '';
-    const bracketPhrases = [
+    const bracketPhrases = topicRelevantPhrases([
       ...(shadePhrase ? [shadePhrase] : []),
       ...kwBank,
-    ].filter((v, i, a) => v && a.indexOf(v) === i).slice(0, 8);
+    ], brief, 8);
     const kwLine = bracketPhrases.length >= 5 ? `[${bracketPhrases.join(', ')}]` : '';
     // Strip anything footer-like the model invented: footer-emoji lines,
     // agency lines, brand-name-only lines, hashtag lines, old brackets.
@@ -573,21 +574,11 @@ export async function generateCaptions(summary, opts = {}) {
     // the user named in the brief, and @famebrosstudio survive as @mentions;
     // every other @handle is deleted. Other brands' #tags are dropped and our
     // own brand tag is forced first.
-    const ownTag = brand.name.replace(/[^A-Za-z0-9]/g, '');
     const ownHandle = String(deep?.social_media?.instagram_handle || brand.ig || '').replace(/^@/, '').toLowerCase();
     const briefHandles = new Set([...String(brief || '').matchAll(/@([\w.]+)/g)].map((m) => m[1].toLowerCase()));
-    const otherTokens = new Set();
+    const otherBrands = [];
     try {
-      for (const b of mem.loadBrands()) {
-        if (b.id === brand.id) continue;
-        const add = (s) => {
-          const t = String(s || '').replace(/^@/, '').replace(/[^a-z0-9]/gi, '').toLowerCase();
-          if (t.length > 3) otherTokens.add(t);
-        };
-        add(b.name);
-        (b.aliases || []).forEach(add);
-        add(b.ig);
-      }
+      otherBrands.push(...mem.loadBrands());
     } catch {}
     const nameRe = new RegExp(`^${brand.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*$`, 'i');
     const stripToBody = (s) => s
@@ -617,49 +608,20 @@ export async function generateCaptions(summary, opts = {}) {
       .trim();
     // Hashtags are rebuilt from the selected brand's facts and topic bank.
     // Sanitize model output, drop other brands, and force the selected brand first.
-    igTags = igTags
-      .map((t) => String(t).replace(/^#+/, '').replace(/[^A-Za-z0-9_]/g, ''))
-      .filter((t) => t && !otherTokens.has(t.toLowerCase()));
-    if (!igTags.some((t) => String(t).toLowerCase() === ownTag.toLowerCase())) {
-      igTags.unshift(ownTag);
-    }
-    if (!igTags.length && kwBank.length) {
-      igTags = [brand.name.replace(/[^A-Za-z0-9]/g, ''), ...kwBank.slice(1, 3).map((k) => k.replace(/[^A-Za-z0-9]/g, ''))].filter(Boolean).slice(0, 3);
-    }
-    igTags = igTags.slice(0, 3);
-    while (igTags.length < 3 && kwBank.length) {
-      const extra = kwBank[igTags.length]?.replace(/[^A-Za-z0-9]/g, '');
-      if (!extra || igTags.includes(extra)) break;
-      igTags.push(extra);
-    }
-    if (igTags.length < 3) {
-      const suggested = Array.isArray(deep?.suggested_hashtag_bank) ? deep.suggested_hashtag_bank : [];
-      const categoryTag = String(deep?.business?.category || brand.cat || '').split(/\s+/).filter(Boolean).pop() || '';
-      const fallbackTags = [...suggested, ...kwBank, categoryTag, 'ProductDetails']
-        .map((value) => String(value || '').replace(/^#+/, '').replace(/[^A-Za-z0-9]/g, ''))
-        .filter(Boolean);
-      for (const candidate of fallbackTags) {
-        if (igTags.length >= 3) break;
-        if (!igTags.some((t) => t.toLowerCase() === candidate.toLowerCase()) && !otherTokens.has(candidate.toLowerCase())) {
-          igTags.push(candidate);
-        }
-      }
-    }
-    // Add a location hashtag only when the selected brand record establishes
-    // one. Unknown branches never get a guessed city tag.
-    const locTag = (() => {
-      const fromBank = deep?.suggested_hashtag_bank?.location?.[0]?.replace(/^#+/, '').trim();
-      if (fromBank) return fromBank;
-      const loc = String(brand.loc || deep?.business?.location_area || '');
-      const city = loc.split(',').pop()?.trim().split(' ')[0] || '';
-      const catWord = String(deep?.business?.category || brand.cat || 'Salon').split(' ').pop() || 'Salon';
-      if (city.length > 2) return `${city}${catWord}`.replace(/[^A-Za-z0-9]/g, '');
-      return '';
-    })();
-    const locKey = locTag.replace(/[^a-z]/gi, '').slice(0, 5).toLowerCase();
-    if (locTag && locKey.length > 2 && !igTags.some((t) => t.toLowerCase().includes(locKey))) {
-      igTags[2] = locTag;
-    }
+    const suggestedBank = deep?.suggested_hashtag_bank;
+    const suggested = Array.isArray(suggestedBank)
+      ? suggestedBank
+      : suggestedBank && typeof suggestedBank === 'object'
+        ? Object.entries(suggestedBank)
+          .filter(([key, value]) => key !== 'rule' && key !== 'conditional' && (Array.isArray(value) || typeof value === 'string'))
+          .flatMap(([, value]) => Array.isArray(value) ? value : [value])
+        : [];
+    igTags = safeBrandHashtags({
+      candidates: [...igTags, ...kwBank, ...suggested],
+      brand,
+      brief,
+      otherBrands,
+    });
     const hashLine = igTags.length ? igTags.map((t) => `#${t}`).join(' ') : '';
     igCap = enforceCleanFirstLine(moveLeadingContactToEnd(`${dedupeRepeatedSentences(stripToBody(igCap))}\n\n${footer}${hashLine ? `\n\n${hashLine}` : ''}${kwLine ? `\n\n${kwLine}` : ''}`));
     igCap = clean(igCap, 2200);

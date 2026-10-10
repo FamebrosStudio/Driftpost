@@ -310,7 +310,7 @@ const HOUSE_CRAFT = `HOUSE CRAFT STANDARD:
 
 const HOUSE_STRUCTURE = `HOUSE STRUCTURE (when the record gives no format of its own):
 - 2 to 4 sentence body: hook line, then supporting detail, then one concrete call to action.
-- Blank line before the footer, then the footer exactly as given, then exactly 3 hashtags (brand + topic + location), then one [square bracket] of 5 to 8 comma-separated search phrases.`;
+- Blank line before the footer, then the footer exactly as given, then up to 3 relevant hashtags (brand + current-topic tags only), then one [square bracket] of 5 to 8 topic-supported comma-separated search phrases when available.`;
 
 const HOUSE_VOICE = `HOUSE VOICE (when the record gives no voice of its own):
 - Warm and human, like a good store owner recommending something, not a press release.
@@ -497,7 +497,7 @@ export function deepPack(deep, brand) {
     ...T(2, cap(fmt(deep.established_content_knowledge, true), 1500)),
     ...T(2, cta.length ? `CTAs (pick one, reword): ${cta.join(' / ')}` : null),
     ...T(2, (deep.suggested_hooks || []).length ? `Hook angles (vary, don't repeat): ${deep.suggested_hooks.slice(0, 5).join(' / ')}` : null),
-    ...T(2, tags.length ? `Hashtag bank (pick exactly 3): ${tags.join(' ')}` : null),
+    ...T(2, tags.length ? `Hashtag bank (pick only tags that fit the current brief; no unrelated filler): ${tags.join(' ')}` : null),
     ...T(2, deep.suggested_hashtag_bank?.conditional ? `Tag conditions: ${Object.entries(deep.suggested_hashtag_bank.conditional).map(([t, r]) => `${t} ${r}`).join('; ')}` : null),
     ...T(2, campaignTags.length ? `Campaign-only tags (use ONLY when that offer/campaign is active): ${campaignTags.join(' ')}` : null),
     ...T(2, typeof deep.suggested_hashtag_bank?.rule === 'string' ? `Tag rule: ${deep.suggested_hashtag_bank.rule}` : null),
@@ -686,7 +686,7 @@ export function breakdownBlock(parsed) {
 export function globalBrandRules() {
   return [
     'Write a specific hook and one useful detail when available. Use at most one fitting CTA. Follow user-selected length, tone and emoji settings. No em dash.',
-    'Instagram only: append the selected brand footer, then exactly 3 relevant hashtags, then the SEO phrase bracket. Other platforms follow their own format. Never reuse another brand footer. Celebrate an offer only when the current brief confirms one; never invent offer terms.',
+    'Instagram only: append the selected brand footer, then up to 3 relevant hashtags (never pad with unrelated tags), then only SEO phrases supported by the current brief. Other platforms follow their own format. Never reuse another brand footer. Celebrate an offer only when the current brief confirms one; never invent offer terms.',
     'MAP Clothing + Carrara never funny. Luxxe = transformation only. Rajlaxmi Sangli = Marathi. Hazel: no mithai word. Smietz: include 35 years experience + 96045 23931.',
     'Never invent phone/address/price/offers/results/quotes. Omit unknown optionals; ask only if essential.',
   ].join('\n');
@@ -793,7 +793,7 @@ export function ensureAutoBrand({ brandParam, brief, assetHint }) {
       business: { category: entry.cat, location_area: '' },
       contact: { phone_display: null, full_address: null },
       social_media: {},
-      master_brand_instruction: `Write as ${name}. Warm, vivid, human voice. Hook + supporting detail + concrete CTA, 2+ sentences. Append the agency footer, exactly 3 hashtags, one SEO bracket. Never invent phone, address, prices or offers.`,
+      master_brand_instruction: `Write as ${name}. Warm, vivid, human voice. Hook + supporting detail + concrete CTA, 2+ sentences. Append the agency footer, up to 3 relevant hashtags, one SEO bracket only when supported by the current topic. Never invent phone, address, prices or offers.`,
       fixed_footer: { lines: ['💫 Managed by: @famebrosstudio'] },
       seo_keyword_bank: [name],
       cta_bank: { booking: [], save: ['Save this for later.'] },

@@ -313,7 +313,7 @@ export const moveSchedule = (token, id, when) => api(`/api/schedules/${id}`, tok
 
 // Fresh start after posting: wipes the finished post's content (media,
 // prompt, outputs, per-card review/account choices, done flags) and returns
-// to Stage 1. Account setup, groups, style prefs, cross-post choice and the
+// to Stage 1. Account setup, groups, style prefs and the user-scoped cross-post choice
 // AI answer cache survive. Only the given user's media vault entry is
 // dropped — never the whole vault (shared browsers hold several users).
 export async function resetPostState(userId) {
