@@ -958,15 +958,28 @@ function extractResponsesText(data) {
   if (typeof data?.output_text === 'string' && data.output_text.trim()) return data.output_text;
   const out = Array.isArray(data?.output) ? data.output : [];
   const chunks = [];
+  const finalChunks = [];
   for (const item of out) {
     const content = Array.isArray(item?.content) ? item.content : [];
     for (const c of content) {
-      if (typeof c?.text === 'string' && c.text.trim()) chunks.push(c.text);
-      else if (typeof c?.output_text === 'string' && c.output_text.trim()) chunks.push(c.output_text);
+      const type = String(c?.type || '');
+      // Reasoning blocks are not the answer: mixing them into the JSON can
+      // corrupt the payload the parser reads.
+      if (/reasoning/i.test(type)) continue;
+      if (typeof c?.text === 'string' && c.text.trim()) {
+        chunks.push(c.text);
+        if (!type || /output_text|^text$/i.test(type)) finalChunks.push(c.text);
+      } else if (typeof c?.output_text === 'string' && c.output_text.trim()) {
+        chunks.push(c.output_text);
+        finalChunks.push(c.output_text);
+      }
     }
-    if (typeof item?.text === 'string' && item.text.trim()) chunks.push(item.text);
+    if (typeof item?.text === 'string' && item.text.trim()) {
+      chunks.push(item.text);
+      if (!item?.type || /message/i.test(String(item.type))) finalChunks.push(item.text);
+    }
   }
-  return chunks.join('\n');
+  return (finalChunks.length ? finalChunks : chunks).join('\n');
 }
 
 async function callResponsesWithSearch({ provider = resolveProvider(), model, systemText, userMsg, maxTokens = 950 }) {
