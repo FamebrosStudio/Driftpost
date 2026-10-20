@@ -1,17 +1,48 @@
 import fs from 'node:fs';
 import { Readable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
+import { execFile } from 'node:child_process';
+import { promisify } from 'node:util';
 import { decryptJson, encryptJson } from './crypto.js';
 import { processIntakeJob } from './telegram-intake.js';
 import { assessVideoBrandMatch } from './ai.js';
 import { mapBrandDestinations, matchDriveAccounts, resolveDriveBrand } from './brand-routing.js';
 
+const execFileAsync = promisify(execFile);
 const TABLE = 'google_drive_video_jobs';
 const CONNECTIONS = 'google_drive_intake_connections';
 const MAX_VIDEO_BYTES = 400 * 1024 * 1024;
 const MAX_IMAGE_BYTES = 10 * 1024 * 1024;
+const INSTAGRAM_IMAGE_BYTES = 8 * 1024 * 1024;
 const MAX_CAROUSEL_IMAGES = 10;
 const PLATFORMS = new Set(['youtube', 'instagram', 'facebook', 'x']);
+
+// Photo carousels accept the photo formats editors actually upload. JPEG and
+// PNG are published as they are; every other accepted format is converted to
+// JPEG with ffmpeg before publishing.
+export const CAROUSEL_IMAGE_MIME_TYPES = Object.freeze([
+  'image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/avif', 'image/heic', 'image/heif',
+]);
+const NATIVE_CAROUSEL_MIME_TYPES = new Set(['image/jpeg', 'image/jpg', 'image/png']);
+const ACCEPTED_FORMAT_LABEL = 'JPEG, PNG, WebP, AVIF, HEIC, and HEIF';
+const IMAGE_EXTENSIONS = {
+  'image/jpeg': '.jpg', 'image/jpg': '.jpg', 'image/png': '.png', 'image/webp': '.webp',
+  'image/avif': '.avif', 'image/heic': '.heic', 'image/heif': '.heif',
+};
+const IMAGE_FORMAT_LABELS = {
+  'image/jpeg': 'JPEG', 'image/jpg': 'JPEG', 'image/png': 'PNG', 'image/webp': 'WebP',
+  'image/avif': 'AVIF', 'image/heic': 'HEIC', 'image/heif': 'HEIF',
+};
+
+// Google Drive marks repeated uploads with a duplicate marker (" (2)",
+// " copy", " - Copy") and editors add ordering numbers (" 01", " slide 1").
+// None of that belongs to the account name, so it is removed before routing.
+const UPLOAD_MARKER_PATTERNS = [
+  /\s*\(\s*\d{1,3}\s*\)\s*$/,              // (2), (3), (12)
+  /\s*\(\s*copy\s*\)\s*$/i,                 // (copy)
+  /\s*[-_ ]+copy\s*$/i,                     // copy, - Copy, _copy
+  /\s*[-_ ]+(?:slide[-_ ]*)?\d{1,2}\s*$/i,  // 01, -01, _01, slide 1, - slide 2
+];
 let intakeBusy = false;
 let outcomeBusy = false;
 let intakeActive = 0;
@@ -19,20 +50,80 @@ let intakeActive = 0;
 // database queue accepts more jobs and drains as slots free up.
 const MAX_ACTIVE_INTAKE_JOBS = 2;
 
-function parseDestination(fileName) {
-  const title = String(fileName || '').split(/[\\/]/).at(-1).trim().replace(/\.[a-z0-9]{2,8}$/i, '')
-    .replace(/\s*[-_ ]+(?:slide[-_ ]*)?\d{1,2}$/i, '').trim();
+// Removes Drive duplicate markers and editor ordering numbers from a filename
+// fragment. Pure: the same input always produces the same output.
+export function stripUploadMarkers(value) {
+  let title = String(value || '').trim();
+  for (let pass = 0; pass < UPLOAD_MARKER_PATTERNS.length * 2; pass += 1) {
+    const next = UPLOAD_MARKER_PATTERNS.reduce((current, pattern) => current.replace(pattern, ''), title).trim();
+    if (next === title) break;
+    title = next;
+  }
+  return title;
+}
+
+export function parseDestination(fileName) {
+  const base = String(fileName || '').split(/[\\/]/).at(-1).trim().replace(/\.[a-z0-9]{2,8}$/i, '').trim();
+  const title = stripUploadMarkers(base);
   const parts = title.split(' -- ');
   if (parts.length >= 2) {
     const requested = parts[1].split(',').map((value) => value.trim().toLowerCase());
     if (requested.length && requested.every((value) => PLATFORMS.has(value))) {
-      const accountNames = parts[0].split(',').map((value) => value.trim().replace(/^@/, '')).filter(Boolean);
+      const accountNames = stripUploadMarkers(parts[0]).split(',').map((value) => value.trim().replace(/^@/, '')).filter(Boolean);
       return { accountName: accountNames.join(', '), accountNames, platforms: [...new Set(requested)] };
     }
   }
   // The editor-friendly default is just the saved brand name in the filename.
   const accountNames = title.split(',').map((value) => value.trim().replace(/^@/, '')).filter(Boolean);
   return { accountName: accountNames.join(', '), accountNames, platforms: [] };
+}
+
+// The single source of truth for the photo formats a Drive carousel accepts.
+export function isAcceptedCarouselImageType(mimeType) {
+  return CAROUSEL_IMAGE_MIME_TYPES.includes(String(mimeType || '').trim().toLowerCase());
+}
+
+// Formats that must be transcoded to JPEG before they can be published.
+export function needsJpegConversion(mimeType) {
+  const mime = String(mimeType || '').trim().toLowerCase();
+  return isAcceptedCarouselImageType(mime) && !NATIVE_CAROUSEL_MIME_TYPES.has(mime);
+}
+
+// Instagram caps carousel images at 8 MB; the other destinations allow 10 MB.
+export function carouselImageLimitBytes(platforms = []) {
+  const names = (Array.isArray(platforms) ? platforms : [platforms])
+    .map((value) => String(value || '').trim().toLowerCase()).filter(Boolean);
+  return names.includes('instagram') ? INSTAGRAM_IMAGE_BYTES : MAX_IMAGE_BYTES;
+}
+
+export function formatMegabytes(bytes) {
+  const value = Number(bytes || 0) / 1024 / 1024;
+  if (!Number.isFinite(value) || value <= 0) return '0';
+  const rounded = Math.round(value * 10) / 10;
+  return Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(1);
+}
+
+function normalizeImageMime(mimeType) {
+  const mime = String(mimeType || '').trim().toLowerCase();
+  return mime === 'image/jpg' ? 'image/jpeg' : mime;
+}
+
+// Older intake rows can miss the stored MIME type; the file extension is a
+// safe fallback for the formats the carousel accepts.
+function mimeFromFileName(name) {
+  const extension = String(name || '').split('.').pop()?.toLowerCase() || '';
+  return {
+    jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png', webp: 'image/webp',
+    avif: 'image/avif', heic: 'image/heic', heif: 'image/heif',
+  }[extension] || '';
+}
+
+function imageExtensionFor(mimeType) {
+  return IMAGE_EXTENSIONS[normalizeImageMime(mimeType)] || '.img';
+}
+
+function imageFormatLabel(mimeType) {
+  return IMAGE_FORMAT_LABELS[normalizeImageMime(mimeType)] || String(mimeType || 'unknown').replace(/^image\//, '').toUpperCase() || 'unknown';
 }
 
 async function tokenFor(supabase, connection) {
@@ -163,14 +254,15 @@ async function enqueueFiles(supabase, connection, files) {
     const routeError = targetErrors[0]
       || (missingRequested.length ? `No selected account is connected on ${missingRequested.join(', ')}.` : '')
       || (!resolvedDestinations.length ? `No connected platform account clearly matches ${parsed.accountName}. Check the saved account names and brand mapping.` : '');
-    const unsupported = batch.kind === 'image' && batchFiles.some((item) => !['image/jpeg', 'image/png'].includes(item.mimeType));
-    const imageLimit = autoPlatforms.includes('instagram') ? 8 * 1024 * 1024 : MAX_IMAGE_BYTES;
+    const unsupportedImage = batch.kind === 'image' ? batchFiles.find((item) => !isAcceptedCarouselImageType(item.mimeType)) : null;
+    const imageLimit = carouselImageLimitBytes(autoPlatforms);
+    const oversizedImage = batch.kind === 'image' ? batchFiles.find((item) => Number(item.size) > imageLimit) : null;
     const errorMessage = batch.kind === 'image' && batchFiles.length > MAX_CAROUSEL_IMAGES
       ? 'A carousel can contain up to 10 images. Split this upload into smaller batches.'
-      : batch.kind === 'image' && batchFiles.some((item) => Number(item.size) > imageLimit)
-        ? `Each carousel image must be ${imageLimit / 1024 / 1024} MB or smaller for its connected platforms.`
-        : unsupported
-          ? 'Drive carousels currently accept JPEG and PNG images.'
+      : oversizedImage
+        ? `"${oversizedImage.name}" is ${formatMegabytes(Number(oversizedImage.size))} MB. Each carousel image must be ${formatMegabytes(imageLimit)} MB or smaller for its connected platforms.`
+        : unsupportedImage
+          ? `Drive carousels accept ${ACCEPTED_FORMAT_LABEL} images. "${unsupportedImage.name}" is not a supported image format.`
       : batch.kind === 'video' && size > MAX_VIDEO_BYTES
       ? 'Video is larger than Driftpost’s 400 MB limit.'
       : batch.kind === 'image' && !resolvedDestinations.length && [...targetsByKey.values()].some((target) => target.destinations.some((item) => item.platform === 'youtube'))
@@ -213,23 +305,79 @@ async function downloadDriveVideo(supabase, job, destination) {
   return stat.size;
 }
 
+// The platforms this job will publish to. The job row keeps the resolved
+// platform list, and the destination connection ids confirm it.
+async function jobDestinationPlatforms(supabase, job) {
+  const platforms = new Set((Array.isArray(job.platforms) ? job.platforms : [])
+    .map((value) => String(value || '').trim().toLowerCase()).filter(Boolean));
+  const connectionIds = Array.isArray(job.result?.destination_connection_ids)
+    ? job.result.destination_connection_ids.filter(Boolean) : [];
+  if (connectionIds.length) {
+    try {
+      const { data, error } = await supabase.from('platform_connections').select('id, platform').in('id', connectionIds);
+      if (error) throw error;
+      for (const row of data || []) {
+        const platform = String(row?.platform || '').trim().toLowerCase();
+        if (platform) platforms.add(platform);
+      }
+    } catch (error) {
+      console.warn('[drive-intake] could not read the destination platforms:', String(error?.message || error).slice(0, 160));
+    }
+  }
+  return [...platforms];
+}
+
+// ffmpeg turns the extra photo formats into a JPEG the publishing pipeline
+// can upload everywhere.
+async function convertImageToJpeg(sourcePath, destinationPath) {
+  await execFileAsync('ffmpeg', [
+    '-hide_banner', '-loglevel', 'error', '-y', '-i', sourcePath,
+    '-frames:v', '1', '-q:v', '2', destinationPath,
+  ], { timeout: 60_000, maxBuffer: 1024 * 1024 });
+}
+
 async function downloadDriveCarousel(supabase, job, directory) {
   const { data: connection, error } = await supabase.from(CONNECTIONS).select('*').eq('user_id', job.owner_user_id).eq('status', 'connected').maybeSingle();
   if (error || !connection) throw new Error('The Drive connection is unavailable. Reconnect Drive in Driftpost.');
   const accessToken = await tokenFor(supabase, connection);
   const files = job.result?.source_drive_files || [];
+  const limitBytes = carouselImageLimitBytes(await jobDestinationPlatforms(supabase, job));
   const media = [];
   for (let index = 0; index < files.length; index++) {
     const item = files[index];
+    const mime = normalizeImageMime(item.mime_type) || mimeFromFileName(item.name);
+    if (!isAcceptedCarouselImageType(mime)) {
+      throw new Error(`Carousel image ${index + 1} ("${item.name}") is not a supported image format. Drive carousels accept ${ACCEPTED_FORMAT_LABEL} images.`);
+    }
     const response = await fetch(`https://www.googleapis.com/drive/v3/files/${encodeURIComponent(item.id)}?alt=media`, {
       headers: { Authorization: `Bearer ${accessToken}` }, signal: AbortSignal.timeout(120_000),
     });
     if (!response.ok || !response.body) throw new Error(`Google Drive could not download carousel image ${index + 1}.`);
-    const destination = `${directory}/source-${String(index + 1).padStart(2, '0')}${item.mime_type === 'image/png' ? '.png' : '.jpg'}`;
-    await pipeline(response.body, fs.createWriteStream(destination, { flags: 'wx' }));
-    const stat = await fs.promises.stat(destination);
-    if (!stat.size || stat.size > MAX_IMAGE_BYTES) throw new Error(`Carousel image ${index + 1} is empty or larger than 10 MB.`);
-    media.push({ path: destination, name: item.name, mimetype: item.mime_type, size: stat.size });
+    const stem = `${directory}/source-${String(index + 1).padStart(2, '0')}`;
+    const sourcePath = `${stem}${imageExtensionFor(mime)}`;
+    await pipeline(response.body, fs.createWriteStream(sourcePath, { flags: 'wx' }));
+    let mediaPath = sourcePath;
+    let mediaMime = mime;
+    let stat = await fs.promises.stat(sourcePath);
+    if (!stat.size) throw new Error(`Carousel image ${index + 1} ("${item.name}") is empty.`);
+    if (needsJpegConversion(mime)) {
+      const convertedPath = `${stem}-converted.jpg`;
+      try {
+        await convertImageToJpeg(sourcePath, convertedPath);
+      } catch {
+        throw new Error(`Could not convert "${item.name}" (${imageFormatLabel(mime)}) to JPEG. Install ffmpeg on the Driftpost server or upload a JPEG or PNG copy of this image.`);
+      }
+      const convertedStat = await fs.promises.stat(convertedPath);
+      if (!convertedStat.size) throw new Error(`Could not convert "${item.name}" (${imageFormatLabel(mime)}) to JPEG. Install ffmpeg on the Driftpost server or upload a JPEG or PNG copy of this image.`);
+      mediaPath = convertedPath;
+      mediaMime = 'image/jpeg';
+      stat = convertedStat;
+      await fs.promises.rm(sourcePath, { force: true }).catch(() => {});
+    }
+    if (stat.size > limitBytes) {
+      throw new Error(`Carousel image ${index + 1} ("${item.name}") is ${formatMegabytes(stat.size)} MB. The limit is ${formatMegabytes(limitBytes)} MB for the connected platforms.`);
+    }
+    media.push({ path: mediaPath, name: item.name, mimetype: mediaMime, size: stat.size });
   }
   return media;
 }

@@ -1146,7 +1146,10 @@ app.post('/api/ai/captions', requireUser, requireCaptionAiAccess, (req, res, nex
     const msg = String(e.message || 'AI failed');
     const isBrandMismatch = /^This prompt names .+, but the selected account is .+\./i.test(msg);
     const isBriefValidation = /^Write a short summary first/i.test(msg);
-    const validation = /^caption quality check:\s*(instagram|facebook|youtube|x) (has no useful caption body|mentions another brand|title is missing or too long|exceeds 280 characters)/i.exec(msg);
+    // Quality issues are user-fixable (rewrite the draft), so they answer 422
+    // instead of a generic 500. The platform slot may name two platforms when
+    // two cards came back as near-duplicates.
+    const validation = /^caption quality check:\s*(instagram|facebook|youtube|x)(?: and (?:instagram|facebook|youtube|x))? (has no useful caption body|mentions another brand|title is missing or too long|exceeds 280 characters|uses filler phrase|captions are nearly identical)/i.exec(msg);
     const code = /credits/i.test(msg) ? 402
       : /configured/i.test(msg) ? 503
         : isBrandMismatch ? 409
@@ -1157,7 +1160,7 @@ app.post('/api/ai/captions', requireUser, requireCaptionAiAccess, (req, res, nex
     // captions, or account tokens. The reference is safe to show the user.
     const errorId = code >= 500 ? crypto.randomUUID().slice(0, 8) : null;
     if (errorId) {
-      const category = validation ? `caption_validation_${validation[1].toLowerCase()}_${/mentions another brand/i.test(validation[2]) ? 'brand' : /title|exceeds/i.test(validation[2]) ? 'format' : 'empty'}`
+      const category = validation ? `caption_validation_${validation[1].toLowerCase()}_${/mentions another brand/i.test(validation[2]) ? 'brand' : /title|exceeds/i.test(validation[2]) ? 'format' : /filler/i.test(validation[2]) ? 'filler' : /nearly identical/i.test(validation[2]) ? 'duplicate' : 'empty'}`
         : /xai|provider|model/i.test(msg) ? 'provider'
         : /json|unreadable|empty answer/i.test(msg) ? 'response_format'
           : /caption quality check/i.test(msg) ? 'caption_validation' : 'internal';

@@ -29,8 +29,9 @@ SUPABASE_URL=https://your-project.supabase.co
 SUPABASE_SECRET_KEY=sb_secret_your_key
 TOKEN_ENCRYPTION_KEY=your_base64_32byte_key
 STATE_SIGNING_SECRET=your_random_string
-XAI_API_KEY=your_xai_api_key_here
-XAI_MODEL=grok-4
+OPENAI_API_KEY=your_openai_api_key_here
+OPENAI_MODEL=gpt-4.1
+AI_PROVIDER=openai
 MEDIA_BUCKET=driftpost-media
 PORT=10000
 FRONTEND_URL=http://localhost:5173
@@ -148,7 +149,9 @@ Brand dataset location: `C:\Users\faiza\Driftpost\server\src\brand-memory\brands
 
 ## Troubleshooting
 
-- **"AI is not configured"**: Set `XAI_API_KEY` in Driftpost `.env`
+- **"AI is not configured"**: Set `OPENAI_API_KEY` in Driftpost `.env` (and keep
+  `AI_PROVIDER=openai`). To run on xAI Grok instead, set `AI_PROVIDER=xai` with
+  `XAI_API_KEY` and `XAI_MODEL`.
 - **"Sign in required"**: Use correct Supabase token
 - **"Connection not found"**: Connect platforms in Driftpost first
 - **Video too large**: Max 400MB video, 10MB image

@@ -402,7 +402,7 @@ export function friendlyErrorMessage(message, { status = 0, action = 'complete t
   if (/^ai out of credits\b/i.test(text)) {
     return 'Caption generation is temporarily unavailable because the AI provider account has no credits. Please contact the Driftpost administrator.';
   }
-  if (/^ai failed:\s*xai error 400\b/i.test(text)) {
+  if (/^ai failed:\s*\w+ error 400\b/i.test(text)) {
     return 'The AI provider rejected this caption request. If you attached a video or photos, switch Media Analyzer to Fast and retry; if it continues, the server AI model configuration needs checking.';
   }
   if (status === 401 || /session expired|invalid jwt|token expired/i.test(lower)) {

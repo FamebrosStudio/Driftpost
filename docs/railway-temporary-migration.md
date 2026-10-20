@@ -39,8 +39,8 @@ Add the existing values for the integrations Driftpost uses:
 - Meta: `META_APP_ID`, `META_APP_SECRET`, `META_REDIRECT_URI`,
   `META_WEBHOOK_VERIFY_TOKEN`, `META_CONFIG_ID`, `META_FB_SCOPES`
 - X: `X_CLIENT_ID`, `X_CLIENT_SECRET`, `X_REDIRECT_URI`
-- AI/music, if enabled: `XAI_API_KEY`, `XAI_MODEL`,
-  `AI_UNLOCK_PASSPHRASE`, `EPIDEMIC_SOUND_API_KEY`
+- AI/music, if enabled: `AI_PROVIDER=openai`, `OPENAI_API_KEY`,
+  `OPENAI_MODEL`, `OPENAI_TRANSCRIBE_MODEL`, `EPIDEMIC_SOUND_API_KEY`
 - `MEDIA_BUCKET` — use the existing bucket name (normally `driftpost-media`)
 
 Do not manually set `PORT`; Railway supplies it. Do not paste placeholder values
