@@ -1,0 +1,18 @@
+{
+  "mcp": {
+    "servers": {
+      "driftpost": {
+        "type": "local",
+        "command": ["node", "C:\\PATH\\TO\\Osien-Stack\\mcp-server\\driftpost-server.js"],
+        "cwd": "C:\\PATH\\TO\\Osien-Stack",
+        "environment": {
+          "DRIFTPOST_API_URL": "https://driftpost-production.up.railway.app",
+          "DRIFTPOST_SUPABASE_URL": "{env:DRIFTPOST_SUPABASE_URL}",
+          "DRIFTPOST_SUPABASE_PUBLISHABLE_KEY": "{env:DRIFTPOST_SUPABASE_PUBLISHABLE_KEY}",
+          "DRIFTPOST_SESSION_FILE": "{env:DRIFTPOST_SESSION_FILE}",
+          "DRIFTPOST_AI_UNLOCK_PASSPHRASE": "{env:DRIFTPOST_AI_UNLOCK_PASSPHRASE}"
+        }
+      }
+    }
+  }
+}
