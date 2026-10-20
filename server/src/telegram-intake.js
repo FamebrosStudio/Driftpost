@@ -271,8 +271,7 @@ export async function processIntakeJob(supabase, job, options = {}) {
       return { ...target, captions: generated.captions || generated };
     }));
     const covers = {};
-    for (const platform of platforms) {
-      if (!['youtube', 'instagram', 'facebook'].includes(platform)) continue;
+    for (const platform of platformsNeedingGeneratedCovers(isCarousel, platforms)) {
       const selected = Number(coverSelection?.[platform]);
       if (!Number.isInteger(selected) || !frames[selected]) throw new Error(`AI could not select a safe ${platform} cover frame.`);
       covers[platform] = await makePlatformCover(frames[selected].path, platform, directory);
@@ -361,6 +360,11 @@ export async function processIntakeJob(supabase, job, options = {}) {
   } finally {
     await fs.rm(directory, { recursive: true, force: true }).catch(() => {});
   }
+}
+
+export function platformsNeedingGeneratedCovers(isCarousel, platforms) {
+  if (isCarousel) return [];
+  return [...new Set(platforms)].filter((platform) => ['youtube', 'instagram', 'facebook'].includes(platform));
 }
 
 export function createTelegramIntakeRouter(supabase) {

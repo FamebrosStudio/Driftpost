@@ -1439,7 +1439,7 @@ app.post('/api/intake/drive/disconnect', requireUser, async (req, res) => {
 app.get('/api/intake/drive/jobs', requireUser, async (req, res) => {
   if (!canUsePrivateBrandData(req.user)) return res.status(403).json({ error: 'Private team access required.' });
   const { data, error } = await supabase.from('google_drive_video_jobs')
-    .select('id, file_name, mime_type, account_name, platforms, status, error, result, created_at, updated_at')
+    .select('id, file_name, mime_type, file_size, account_name, platforms, status, error, result, created_at, updated_at')
     .eq('owner_user_id', req.user.id).order('created_at', { ascending: false }).limit(50);
   if (error) return res.status(503).json({ error: 'Drive intake jobs are not initialized yet. Apply the Google Drive intake migration, then retry.' });
   res.json({ jobs: data || [] });
@@ -1712,7 +1712,7 @@ app.post('/api/publish', requireUser, publishRequestBurstLimit, publishQueueLimi
       const [owner, filename, ...extra] = objectPath.split('/');
       const mimetype = String(req.body[`mediaType${index}`] || '').toLowerCase();
       const name = String(req.body[`mediaName${index}`] || `media_${index}`).slice(0, 240);
-      if (owner !== req.user.id || extra.length || !/^[0-9a-f-]{36}\.[a-z0-9]{1,8}$/i.test(filename || '')
+      if (owner !== req.user.id || extra.length || !isOwnedMediaPath(req.user.id, objectPath)
         || !/^(image|video)\/[a-z0-9.+-]+$/.test(mimetype)) {
         await cleanup();
         return res.status(400).json({ error: 'Stored media reference is invalid. Re-upload the media and try again.' });

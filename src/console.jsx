@@ -1,15 +1,21 @@
 import React, { lazy, Suspense, useState } from 'react';
-import ConnectPage from './connect/ConnectPage.jsx';
-import StageOnePage from './stage1/StageOnePage.jsx';
-import StageTwoPage from './stage2/StageTwoPage.jsx';
-import StageThreePage from './stage3/StageThreePage.jsx';
 import PageLoading from './PageLoading.jsx';
-import { WorkspaceNav, DashboardPage, CalendarPage, AnalyticsPage } from './workspace/Workspace.jsx';
-import AutomationsPage from './workspace/AutomationsPage.jsx';
-import TeamVideoPage from './workspace/TeamVideoPage.jsx';
 import { isAiAccount } from './ai-access.js';
 
+const ConnectPage = lazy(() => import('./connect/ConnectPage.jsx'));
+const StageOnePage = lazy(() => import('./stage1/StageOnePage.jsx'));
+const StageTwoPage = lazy(() => import('./stage2/StageTwoPage.jsx'));
+const StageThreePage = lazy(() => import('./stage3/StageThreePage.jsx'));
+const WorkspaceNav = lazy(() => import('./workspace/Workspace.jsx').then((module) => ({ default: module.WorkspaceNav })));
+const DashboardPage = lazy(() => import('./workspace/Workspace.jsx').then((module) => ({ default: module.DashboardPage })));
+const CalendarPage = lazy(() => import('./workspace/Workspace.jsx').then((module) => ({ default: module.CalendarPage })));
+const AnalyticsPage = lazy(() => import('./workspace/Workspace.jsx').then((module) => ({ default: module.AnalyticsPage })));
+const AutomationsPage = lazy(() => import('./workspace/AutomationsPage.jsx'));
+const TeamVideoPage = lazy(() => import('./workspace/TeamVideoPage.jsx'));
 const HistoryPage = lazy(() => import('./history/HistoryPage.jsx'));
+const loadPage = (element, label = 'Loading workspace…') => (
+  <Suspense fallback={<PageLoading label={label} />}>{element}</Suspense>
+);
 
 // Console entry — Overview, Calendar, Analytics and History surround the
 // existing create flow. A draft stage is persisted so refresh stays safe.
@@ -94,29 +100,29 @@ export default function Console({ session, onSwitchAccount, onSignOut }) {
   };
   const openHistory = () => navigate('history');
   const withBackgroundNotice = (page) => <>{page}<BackgroundPublishNotice notice={backgroundPublishNotice} onDismiss={() => setBackgroundPublishNotice(null)} /></>;
-  if (view === 'team-video' && isAiAccount(session.user?.email)) return withBackgroundNotice(<TeamVideoPage session={session} onNavigate={navigate} onSignOut={onSignOut} onOpenReview={() => { setView('create'); go('3'); }} />);
+  if (view === 'team-video' && isAiAccount(session.user?.email)) return withBackgroundNotice(loadPage(<TeamVideoPage session={session} onNavigate={navigate} onSignOut={onSignOut} onOpenReview={() => { setView('create'); go('3'); }} />));
   if (view === 'choose-create-mode' && createModePicker && isAiAccount(session.user?.email)) return withBackgroundNotice(<div className="ws"><WorkspaceNav page="create" onNavigate={navigate} email={session.user?.email} onSignOut={onSignOut} /><main className="ws-main ws-create-mode"><div className="ws-heading"><div><span className="ws-eyebrow">Create a post</span><h1>Choose your workflow</h1><p>Pick the posting flow for this video. Your choice only affects this post.</p></div></div><div className="ws-create-mode-grid"><button type="button" className="ws-create-mode-card" onClick={chooseBasic}><span className="ws-eyebrow">BASIC</span><strong>Standard post</strong><span>Use the regular composer to choose accounts, add media, write captions, and review your post.</span><i>Continue to basic posting →</i></button><button type="button" className="ws-create-mode-card ws-create-mode-card--advanced" onClick={() => { setCreateModePicker(false); setView('team-video'); }}><span className="ws-eyebrow">ADVANCED</span><strong>Automated video workflow</strong><span>Send a video into the private team pipeline for video analysis, brand-aware content, covers, and publishing.</span><i>Open advanced workflow →</i></button></div><button type="button" className="ws-secondary" onClick={() => { setCreateModePicker(false); setView('home'); }}>Back to overview</button></main></div>);
-  if (view === 'home') return withBackgroundNotice(<DashboardPage session={session} onNavigate={navigate} onCreate={() => navigate('create')} onSignOut={onSignOut} />);
-  if (view === 'calendar') return withBackgroundNotice(<CalendarPage session={session} onNavigate={navigate} onCreate={(date) => {
+  if (view === 'home') return withBackgroundNotice(loadPage(<DashboardPage session={session} onNavigate={navigate} onCreate={() => navigate('create')} onSignOut={onSignOut} />));
+  if (view === 'calendar') return withBackgroundNotice(loadPage(<CalendarPage session={session} onNavigate={navigate} onCreate={(date) => {
     try { sessionStorage.setItem('driftpost-calendar-prefill', JSON.stringify({ date, createdAt: Date.now() })); } catch {}
     navigate('create');
-  }} onSignOut={onSignOut} />);
-  if (view === 'analytics') return withBackgroundNotice(<AnalyticsPage session={session} onNavigate={navigate} onSignOut={onSignOut} />);
-  if (view === 'automations') return withBackgroundNotice(<AutomationsPage session={session} onNavigate={navigate} onSignOut={onSignOut} />);
+  }} onSignOut={onSignOut} />));
+  if (view === 'analytics') return withBackgroundNotice(loadPage(<AnalyticsPage session={session} onNavigate={navigate} onSignOut={onSignOut} />));
+  if (view === 'automations') return withBackgroundNotice(loadPage(<AutomationsPage session={session} onNavigate={navigate} onSignOut={onSignOut} />));
   if (view === 'history') return withBackgroundNotice(
     <Suspense fallback={<PageLoading label="Loading History…" />}>
       <HistoryPage session={session} onNavigate={navigate} onSignOut={onSignOut} />
     </Suspense>
   );
-  if (view === 'accounts') return withBackgroundNotice(<><WorkspaceNav page="accounts" onNavigate={navigate} email={session.user?.email} onSignOut={onSignOut} /><ConnectPage session={session} onContinue={() => navigate('create')} onHistory={openHistory} onSignOut={onSignOut} embedded /></>);
+  if (view === 'accounts') return withBackgroundNotice(loadPage(<><WorkspaceNav page="accounts" onNavigate={navigate} email={session.user?.email} onSignOut={onSignOut} /><ConnectPage session={session} onContinue={() => navigate('create')} onHistory={openHistory} onSignOut={onSignOut} embedded /></>));
   if (stage === '3') {
-    return withBackgroundNotice(<StageThreePage session={session} onBack={() => go(2)} onNavigate={navigate} onSignOut={onSignOut} onDone={(result) => {
+    return withBackgroundNotice(loadPage(<StageThreePage session={session} onBack={() => go(2)} onNavigate={navigate} onSignOut={onSignOut} onDone={(result) => {
       if (result?.backgroundPublish) setBackgroundPublishNotice(result.backgroundPublish);
       go(1);
-    }} onBackgroundProgress={(progress) => setBackgroundPublishNotice((current) => current?.id === progress.id ? progress : current)} />);
+    }} onBackgroundProgress={(progress) => setBackgroundPublishNotice((current) => current?.id === progress.id ? progress : current)} />));
   }
   if (stage === '2') {
-    return withBackgroundNotice(<StageTwoPage session={session} onBack={() => {
+    return withBackgroundNotice(loadPage(<StageTwoPage session={session} onBack={() => {
       try {
         localStorage.removeItem(`driftpost-team-workflow:${session.user.id}`);
         localStorage.removeItem(`driftpost-team-selection:${session.user.id}`);
@@ -125,10 +131,10 @@ export default function Console({ session, onSwitchAccount, onSignOut }) {
         sessionStorage.removeItem(`driftpost-team-transcript:${session.user.id}`);
       } catch {}
       go(1);
-    }} onNavigate={navigate} onSignOut={onSignOut} onNext={() => go(3)} />);
+    }} onNavigate={navigate} onSignOut={onSignOut} onNext={() => go(3)} />));
   }
   if (stage === '1') {
-    return withBackgroundNotice(<StageOnePage session={session} onNext={() => go(2)} onNavigate={navigate} onSignOut={onSignOut} />);
+    return withBackgroundNotice(loadPage(<StageOnePage session={session} onNext={() => go(2)} onNavigate={navigate} onSignOut={onSignOut} />));
   }
-  return withBackgroundNotice(<ConnectPage session={session} onContinue={() => go(1)} onHistory={openHistory} onSignOut={onSignOut} />);
+  return withBackgroundNotice(loadPage(<ConnectPage session={session} onContinue={() => go(1)} onHistory={openHistory} onSignOut={onSignOut} />));
 }

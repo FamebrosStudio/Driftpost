@@ -526,11 +526,11 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
     return body;
   };
 
-   const buildForm = async (pid, { connectionId = null, skipCrossPost = false, mediaOverride = null } = {}) => {
+   const buildForm = async (pid, { connectionId = null, skipCrossPost = false, mediaOverride = null, forceMultipart = false } = {}) => {
      const body = bodyFor(pid, { skipCrossPost });
      if (connectionId) body.connection_id = connectionId;
      const uploaded = load(cloudCacheKey, null);
-     const usePreuploaded = uploaded?.filesKey === mediaSignature(files)
+     const usePreuploaded = !forceMultipart && uploaded?.filesKey === mediaSignature(files)
        && uploaded?.files?.length === files.length
        && uploaded.files.every((f) => f.path)
        && !files.some((f) => (f.type || f.raw?.type || '').startsWith('image/'));
@@ -546,7 +546,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
      let metaUploads = null;
      if ((pid === 'facebook' || pid === 'instagram') && sourceMedia.length && !mediaOverride) {
        if (usePreuploaded) metaUploads = uploaded.files;
-       else {
+       else if (!forceMultipart) {
          const preparedMedia = pid === 'instagram' ? (igMedia || sourceMedia) : (fbMedia || sourceMedia);
          try { metaUploads = await uploadDirectMetaMedia(preparedMedia.slice(0, 20)); }
          catch { /* fall back to the established multipart upload path */ }
@@ -637,21 +637,31 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
     };
     let res; let data; let refreshedToken;
     try {
-      ({ res, data, refreshedToken } = await withPublishSlot(async () => {
-        const form = await buildForm(pid, { connectionId, skipCrossPost, mediaOverride });
-        if (connectionId) form.set('connection_id', connectionId);
-        const hasPre = form.has('hasPreuploadedMedia');
-        return fetchWithAuth(`${apiUrl}/api/publish`, session.access_token, {
-          method: 'POST',
-          body: form,
+       ({ res, data, refreshedToken } = await withPublishSlot(async () => {
+         let form = await buildForm(pid, { connectionId, skipCrossPost, mediaOverride });
+         if (connectionId) form.set('connection_id', connectionId);
+         const submit = (requestForm) => fetchWithAuth(`${apiUrl}/api/publish`, session.access_token, {
+           method: 'POST',
+           body: requestForm,
           // Limit simultaneous browser uploads, then let every accepted job
           // poll independently while the server's bounded worker queue runs.
           onUploadProgress: (f) => {
-            const pct = Math.round(1 + f * 14);
-            report({ ...(out[key] || {}), state: 'uploading', progress: pct, message: hasPre ? `Preparing media… ${pct}%` : `Uploading ${pct}%…` });
-          },
-        });
-      }));
+             const pct = Math.round(1 + f * 14);
+             report({ ...(out[key] || {}), state: 'uploading', progress: pct, message: requestForm.has('hasPreuploadedMedia') ? `Preparing media… ${pct}%` : `Uploading ${pct}%…` });
+           },
+         });
+         let result = await submit(form);
+         if (!result.res.ok && form.has('hasPreuploadedMedia')
+           && /stored media reference is invalid/i.test(String(result.data?.error || ''))) {
+           // Stale browser upload grants/paths are safe to retry because this
+           // validation happens before a publish job is accepted.
+           try { localStorage.removeItem(cloudCacheKey); } catch {}
+           form = await buildForm(pid, { connectionId, skipCrossPost, mediaOverride, forceMultipart: true });
+           if (connectionId) form.set('connection_id', connectionId);
+           result = await submit(form);
+         }
+         return result;
+       }));
       if (!res.ok) {
         markSubmitted(false);
         throw new Error(friendlyErrorMessage(data.error || 'Publish failed', { status: res.status, action: 'publish this post' }));
