@@ -568,7 +568,7 @@ export async function generateCaptions(summary, opts = {}) {
   const learnedBlock = opts.learned ? `\n\n${String(opts.learned).slice(0, 1800)}` : '';
 
   const trendBlock = trends && brand
-    ? `\nLIVE SEO: use live search results for 2026 trending keywords/hashtags around "${brand.cat || 'local business'}" in ${brand.loc || 'Mumbai'}. Blend 1-2 trending tags into YT tags + IG hashtags only if genuinely relevant; keep brand hashtag first.`
+    ? `\nLIVE SEO: use live search results for 2026 trending keywords/hashtags around "${brand.cat || 'the selected brand'}"${brand.loc ? ` in the confirmed location "${brand.loc}"` : ''}. Do not infer a location. Blend 1-2 trending tags into YT tags + IG hashtags only if genuinely relevant; keep the brand hashtag first when it fits the topic.`
     : trends
       ? `\nLIVE SEO: use live search results for 2026 trending keywords/hashtags for this post topic. Blend only genuinely relevant ones.`
       : '';
@@ -683,10 +683,11 @@ export async function generateCaptions(summary, opts = {}) {
   // BODY. Footer, hashtags and bracket are rebuilt deterministically from the
   // stored brand record — never patched. Fake footers can't survive this.
   let ytTags = tags(parsed.youtube?.tags).slice(0, 8);
-  let igCap = stripPhones(clean(parsed.instagram?.caption, 2200));
+  let igCap = stripPhones(dedupeRepeatedSentences(clean(parsed.instagram?.caption, 2200)));
   let igTags = tags(parsed.instagram?.hashtags);
-  let fbMsg = stripPhones(clean(parsed.facebook?.message, 2000));
-  let ytDesc = stripPhones(clean(parsed.youtube?.description, 2000));
+  let fbMsg = stripPhones(dedupeRepeatedSentences(clean(parsed.facebook?.message, 2000)));
+  let ytDesc = stripPhones(dedupeRepeatedSentences(clean(parsed.youtube?.description, 2000)));
+  let xText = stripPhones(dedupeRepeatedSentences(clean(parsed.x?.text, 280)));
   if (brand) {
     let deep = null;
     let full = null;
@@ -809,6 +810,22 @@ export async function generateCaptions(summary, opts = {}) {
     ytTags = topicRelevantPhrases([...ytTags, ...sigWords], brief, 8).map((tag) => tag.toLowerCase());
   }
 
+  // X has no appended footer or SEO bracket. Keep only topic-supported tags
+  // and remove footer-like lines even if the model ignores its platform spec.
+  const xCandidates = [...xText.matchAll(/#([A-Za-z0-9_]+)/g)].map((match) => match[1]);
+  const xTags = safeTopicHashtags({ candidates: xCandidates, brief, max: 2 });
+  xText = xText
+    .replace(/\[[^\]]*\]/g, ' ')
+    .replace(/#[A-Za-z0-9_]+/g, '')
+    .split('\n')
+    .filter((line) => !/managed by|(?:📍|📞|🎥)|\b(?:address|phone)\s*:/i.test(line))
+    .join('\n')
+    .replace(/\s{2,}/g, ' ')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+  if (xTags.length) xText = `${xText}${xText ? ' ' : ''}${xTags.map((tag) => `#${tag}`).join(' ')}`;
+  xText = clean(xText, 280);
+
   // Zero-LLM memory upgrade: record that this brand was used + asset hint.
   let fromMemory = '';
   if (brand) {
@@ -830,7 +847,7 @@ export async function generateCaptions(summary, opts = {}) {
         hashtags: igTags,
       },
       facebook: { message: fbMsg },
-      x: { text: stripPhones(clean(parsed.x?.text, 280)) },
+      x: { text: xText },
     },
     brand_id: brand?.id || null,
     fromMemory,
