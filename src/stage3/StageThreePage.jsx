@@ -887,8 +887,17 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
     }
   };
 
+  const publishTargets = isGroupFlow
+    ? effective
+    : [...new Set(effective.flatMap(coveredPids))];
+  const publishTargetsLabel = publishTargets.map((pid) => NAMES[pid]).join(', ');
+
   const publishAll = async () => {
-    const targets = effective.filter((pid) => (isGroupFlow ? groupMemberIds(pid).length > 0 : accountFor(pid)));
+    // Mirror mode hides its destination tab because a single-card Post can
+    // publish there as a secondary action. Post All needs an independent job
+    // for every selected platform so a secondary API failure cannot be
+    // reported as a successful all-platform batch.
+    const targets = publishTargets.filter((pid) => (isGroupFlow ? groupMemberIds(pid).length > 0 : accountFor(pid)));
     setPubMsg('');
     // Never die silently: every early exit explains itself on the button bar.
     if (!targets.length) {
@@ -1018,10 +1027,9 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
         try {
           if (isGroupFlow) await runGroup(pid, out, { mediaOverride: mo, onSubmitted, onPublishProgress, onPublishFinished });
           else await runOne(pid, out, {
-            skipCrossPost: isGroupFlow || !(
-              (pid === 'instagram' && mirrorTarget === 'facebook') ||
-              (pid === 'facebook' && mirrorTarget === 'instagram')
-            ),
+            // Destinations covered by mirror mode are separate targets above;
+            // disable the backend's secondary mirror to prevent duplicates.
+            skipCrossPost: true,
             mediaOverride: mo,
             onSubmitted,
             onPublishProgress,
@@ -1326,7 +1334,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
                 disabled={!effective.length || !allReviewed || Object.values(busy).some(Boolean)}
                 title={!allReviewed ? 'Click Reviewed on every platform first' : 'Post to all reviewed platforms'}
               >
-                {!effective.length ? 'Nothing to post' : allReviewed ? `Post to all (${effective.map((p) => NAMES[p]).join(', ')})` : `Review remaining platforms (${reviewedCount}/${effective.length})`}
+                {!effective.length ? 'Nothing to post' : allReviewed ? `Post to all (${publishTargetsLabel})` : `Review remaining platforms (${reviewedCount}/${effective.length})`}
               </button>
               <button
                 type="button"
