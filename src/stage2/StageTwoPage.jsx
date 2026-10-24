@@ -285,7 +285,7 @@ export default function StageTwoPage({ session, onBack, onSignOut, onNavigate, o
         <section className="s2-sec" aria-label={canUseAi ? 'Write prompt' : 'Write content'}>
           <h2>{canUseAi ? 'Write prompt' : 'Write your content'}</h2>
           {canUseAi ? <>
-          <p className="sub">Tell AI what to create{brandLabel ? ` for ${brandLabel}` : ''}. Add your audience, goal and any facts it should use; each platform gets its own version.</p>
+          <p className="sub">Tell AI what to create for @example. Add your audience, goal and any facts it should use; each platform gets its own version.</p>
           <PromptBuilder
             brief={brief} setBrief={setBrief}
             tone={tone} setTone={setTone} emoji={emoji} setEmoji={setEmoji} length={length} setLength={setLength}
