@@ -340,7 +340,30 @@ export function extractJson(text) {
 }
 
 function clean(value, max) {
-  return String(value || '').trim().slice(0, max);
+  return Array.from(String(value || '').trim()).slice(0, max).join('');
+}
+
+// Keep canonical footers and hashtags intact when platform limits are reached.
+// Trim the model-written body first and clip by Unicode code point so emoji
+// and non-Latin text are never left as broken surrogate halves.
+function fitCaption(body, suffix, max, platform) {
+  const ending = String(suffix || '').trim();
+  const endingLength = Array.from(ending).length;
+  if (endingLength > max) throw new Error(`caption quality check: ${platform.toLowerCase()} footer and metadata exceed ${max} characters. Shorten the saved footer and try again.`);
+  const separator = ending ? '\n\n' : '';
+  const room = Math.max(0, max - endingLength - Array.from(separator).length);
+  const source = String(body || '').trim();
+  const sourceChars = Array.from(source);
+  let fittedBody = source;
+  if (sourceChars.length > room) {
+    const bodyRoom = Math.max(0, room - 1);
+    let clipped = sourceChars.slice(0, bodyRoom).join('');
+    const lastSpace = Math.max(clipped.lastIndexOf(' '), clipped.lastIndexOf('\n'));
+    if (lastSpace > Math.floor(bodyRoom * 0.7)) clipped = clipped.slice(0, lastSpace);
+    fittedBody = clipped.trimEnd();
+    if (room > 0 && fittedBody) fittedBody += '…';
+  }
+  return `${fittedBody}${separator}${ending}`.trim();
 }
 
 // Repeated sentences and repeated CTA lines are the classic "the AI wrote it
@@ -775,15 +798,15 @@ export async function generateCaptions(summary, opts = {}) {
       otherBrands,
     });
     const hashLine = igTags.length ? igTags.map((t) => `#${t}`).join(' ') : '';
-    igCap = enforceCleanFirstLine(moveLeadingContactToEnd(`${dedupeRepeatedSentences(stripToBody(igCap))}\n\n${footer}${hashLine ? `\n\n${hashLine}` : ''}${kwLine ? `\n\n${kwLine}` : ''}`));
-    igCap = clean(igCap, 2200);
+    const igBody = enforceCleanFirstLine(moveLeadingContactToEnd(dedupeRepeatedSentences(stripToBody(igCap))));
+    igCap = fitCaption(igBody, `${footer}${hashLine ? `\n\n${hashLine}` : ''}${kwLine ? `\n\n${kwLine}` : ''}`, 2200, 'Instagram');
     // Facebook: body + footer + max 2 hashtags, never the bracket
     const fbTags = igTags.slice(0, 2).map((t) => `#${t}`).join(' ');
-    fbMsg = enforceCleanFirstLine(moveLeadingContactToEnd(`${dedupeRepeatedSentences(stripToBody(fbMsg))}\n\n${footer}${fbTags ? `\n\n${fbTags}` : ''}`));
-    fbMsg = clean(fbMsg, 2000);
+    const fbBody = enforceCleanFirstLine(moveLeadingContactToEnd(dedupeRepeatedSentences(stripToBody(fbMsg))));
+    fbMsg = fitCaption(fbBody, `${footer}${fbTags ? `\n\n${fbTags}` : ''}`, 2000, 'Facebook');
     // YouTube: body + footer
-    ytDesc = enforceCleanFirstLine(moveLeadingContactToEnd(`${dedupeRepeatedSentences(stripToBody(ytDesc))}\n\n${footer}`));
-    ytDesc = clean(ytDesc, 2000);
+    const ytBody = enforceCleanFirstLine(moveLeadingContactToEnd(dedupeRepeatedSentences(stripToBody(ytDesc))));
+    ytDesc = fitCaption(ytBody, footer, 2000, 'YouTube');
     if (!ytTags.length && kwBank.length) {
       ytTags = kwBank.map((k) => k.toLowerCase().replace(/[^a-z0-9 ]/g, '').trim().replace(/\s+/g, ' ')).filter(Boolean).slice(0, 8);
     }
@@ -804,9 +827,8 @@ export async function generateCaptions(summary, opts = {}) {
       .join('\n')
       .replace(/\n{3,}/g, '\n\n')
       .trim();
-    igCap = cleanUnbrandedBody(igCap);
-    if (hashLine) igCap = `${igCap}\n\n${hashLine}`;
-    igCap = clean(igCap, 2200);
+    const igBody = cleanUnbrandedBody(igCap);
+    igCap = fitCaption(igBody, hashLine, 2200, 'Instagram');
     ytTags = topicRelevantPhrases([...ytTags, ...sigWords], brief, 8).map((tag) => tag.toLowerCase());
   }
 
@@ -823,8 +845,7 @@ export async function generateCaptions(summary, opts = {}) {
     .replace(/\s{2,}/g, ' ')
     .replace(/\n{3,}/g, '\n\n')
     .trim();
-  if (xTags.length) xText = `${xText}${xText ? ' ' : ''}${xTags.map((tag) => `#${tag}`).join(' ')}`;
-  xText = clean(xText, 280);
+  xText = fitCaption(xText, xTags.map((tag) => `#${tag}`).join(' '), 280, 'X').replace(/\n\n/g, ' ');
 
   // Zero-LLM memory upgrade: record that this brand was used + asset hint.
   let fromMemory = '';
@@ -835,10 +856,11 @@ export async function generateCaptions(summary, opts = {}) {
     } catch {}
   }
 
+  const youtubeTitle = enforceCleanFirstLine(stripPhones(clean(parsed.youtube?.title, 100)));
   const out = {
     captions: {
       youtube: {
-        title: enforceCleanFirstLine(stripPhones(clean(parsed.youtube?.title, 100))),
+        title: youtubeTitle,
         description: ytDesc,
         tags: ytTags,
       },
@@ -856,6 +878,22 @@ export async function generateCaptions(summary, opts = {}) {
     trends,
     usage: usage || undefined,
   };
+  // Recheck after every deterministic cleanup step. This catches regressions
+  // where sanitizing a footer, link, hashtag, or phone number erases the body
+  // or where metadata pushes a finished caption past the platform limit.
+  const finalLimits = { youtube: 2000, instagram: 2200, facebook: 2000, x: 280 };
+  for (const platform of requestedPlatforms) {
+    const body = out.captions[platform]?.[MAIN_KEY[platform]] || '';
+    if (visibleBodyLen(body, brand?.name) < { youtube: 24, instagram: 28, facebook: 20, x: 12 }[platform]) {
+      throw new Error(`caption quality check: ${platform} has no useful caption body after cleanup`);
+    }
+    if (Array.from(body).length > finalLimits[platform]) {
+      throw new Error(`caption quality check: ${platform} exceeds ${finalLimits[platform]} characters after cleanup`);
+    }
+  }
+  if (requestedPlatforms.includes('youtube') && (!youtubeTitle || Array.from(youtubeTitle).length > 100)) {
+    throw new Error('caption quality check: youtube title is missing or too long after cleanup');
+  }
   return out;
 }
 

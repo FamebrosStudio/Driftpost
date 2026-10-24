@@ -1276,7 +1276,7 @@ app.post('/api/ai/captions', requireUser, requireCaptionAiAccess, (req, res, nex
     // Quality issues are user-fixable (rewrite the draft), so they answer 422
     // instead of a generic 500. The platform slot may name two platforms when
     // two cards came back as near-duplicates.
-    const validation = /^caption quality check:\s*(instagram|facebook|youtube|x)(?: and (?:instagram|facebook|youtube|x))? (has no useful caption body|mentions another brand|title is missing or too long|exceeds 280 characters|uses filler phrase|captions are nearly identical)/i.exec(msg);
+    const validation = /^caption quality check:\s*(instagram|facebook|youtube|x)(?: and (?:instagram|facebook|youtube|x))? (has no useful caption body|mentions another brand|title is missing or too long|footer and metadata exceed \d+ characters|exceeds \d+ characters|uses filler phrase|captions are nearly identical)/i.exec(msg);
     const code = /credits/i.test(msg) ? 402
       : /configured/i.test(msg) ? 503
         : isBrandMismatch ? 409
