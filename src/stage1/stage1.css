@@ -13,7 +13,7 @@
 [data-theme="light"] .stage1 { --acc: #5b4fd6; --acc-soft: #5b4fd614; }
 .stage1-in { max-width: 880px; margin: 0 auto; padding: 16px 20px 130px; min-width: 0; overflow-x: clip; }
 .s1-step { min-width: 0; }
-.s1-step .progress-step-button { display: block; width: 100%; padding: 0; border: 0; background: transparent; color: inherit; font: inherit; }
+.s1-step .progress-step-button { position: relative; z-index: 2; display: block; width: 100%; padding: 0; border: 0; background: transparent; color: inherit; font: inherit; }
 .s1-step .progress-step-button:disabled { opacity: 1; cursor: default; }
 .s1-step .progress-step-button:not(:disabled) { cursor: pointer; }
 .s1-step .progress-step-button:focus-visible { outline: 2px solid var(--acc); outline-offset: 3px; border-radius: 4px; }
