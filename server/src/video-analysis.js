@@ -28,6 +28,7 @@ async function transcribeWithXai(provider, filePath, originalName, mimeType) {
     method: 'POST',
     headers: { Authorization: `Bearer ${provider.apiKey}` },
     body: form,
+    signal: AbortSignal.timeout(10 * 60 * 1000),
   });
   const data = await response.json().catch(() => ({}));
   if (!response.ok) throw new Error(data.error?.message || data.error || `Video transcription failed (${response.status})`);
@@ -60,6 +61,7 @@ async function transcribeWithOpenAI(provider, filePath, originalName) {
       method: 'POST',
       headers: { Authorization: `Bearer ${provider.apiKey}` },
       body: form,
+      signal: AbortSignal.timeout(10 * 60 * 1000),
     });
     const data = await response.json().catch(() => ({}));
     if (!response.ok) {

@@ -2171,8 +2171,8 @@ async function runPublish(job, conn, payload, body, userId) {
       const signedUrl = await createTemporaryMediaUrl(supabase.storage.from(BUCKET), objectPath);
       const extension = path.extname(name).replace(/[^a-z0-9.]/gi, '').slice(0, 8) || '.mp4';
       const localPath = path.join(os.tmpdir(), `driftpost-mcp-publish-${crypto.randomUUID()}${extension}`);
-      await downloadMediaFile(signedUrl, localPath);
       downloadedMediaPaths.push(localPath);
+      await downloadMediaFile(signedUrl, localPath, { maxBytes: MAX_UPLOAD_BYTES, expectedSize: declaredSize });
       const actualSize = (await fs.stat(localPath)).size;
       if (actualSize !== declaredSize || actualSize > MAX_UPLOAD_BYTES || !(await magicIsVideo(localPath, mimetype))) {
         throw new Error('Stored media failed video validation. Re-upload the original video and try again.');
@@ -2792,19 +2792,19 @@ app.post('/api/schedule', requireUser, strictBurstLimit, scheduleRequestLimit, m
       const key = `${prefix}/${crypto.randomUUID()}${ext}`;
       const { error: upErr } = await uploadMediaFile(supabase.storage.from(BUCKET), key, f, { upsert: false });
        if (upErr) throw new Error('Media upload failed. Check that the private media bucket exists and accepts this file type.');
-      stored.push({ path: key, mimetype: f.mimetype, name: f.originalname || key.split('/').pop() });
+      stored.push({ path: key, mimetype: f.mimetype, name: f.originalname || key.split('/').pop(), size: f.size });
     }
     for (const f of instagramFiles) {
       const key = `${prefix}/instagram-${crypto.randomUUID()}.jpg`;
       const { error: upErr } = await uploadMediaFile(supabase.storage.from(BUCKET), key, f, { contentType: 'image/jpeg', upsert: false });
       if (upErr) throw new Error('Instagram media upload failed (' + BUCKET + '): ' + (upErr.message || upErr));
-      storedInstagram.push({ path: key, mimetype: 'image/jpeg', name: f.originalname || key.split('/').pop() });
+      storedInstagram.push({ path: key, mimetype: 'image/jpeg', name: f.originalname || key.split('/').pop(), size: f.size });
     }
     for (const f of facebookFiles) {
       const key = `${prefix}/facebook-${crypto.randomUUID()}.jpg`;
       const { error: upErr } = await uploadMediaFile(supabase.storage.from(BUCKET), key, f, { contentType: 'image/jpeg', upsert: false });
       if (upErr) throw new Error('Facebook media upload failed (' + BUCKET + '): ' + (upErr.message || upErr));
-      storedFacebook.push({ path: key, mimetype: 'image/jpeg', name: f.originalname || key.split('/').pop() });
+      storedFacebook.push({ path: key, mimetype: 'image/jpeg', name: f.originalname || key.split('/').pop(), size: f.size });
     }
     for (const [platformName, f] of Object.entries(coverFiles)) {
       if (!f) continue;
@@ -2969,7 +2969,12 @@ async function runDueSchedules() {
           const tmp = path.join(os.tmpdir(), `${prefix}-${crypto.randomUUID()}${path.extname(media.path) || '.jpg'}`);
           downloadedPaths.push(tmp);
           try {
-            await downloadMediaFile(signed.signedUrl, tmp);
+            const maxBytes = String(media.mimetype || '').startsWith('video/') ? MAX_UPLOAD_BYTES
+              : /cover/i.test(prefix) ? 50 * 1024 * 1024 : 10 * 1024 * 1024;
+            await downloadMediaFile(signed.signedUrl, tmp, {
+              maxBytes,
+              ...(Number.isSafeInteger(media.size) && media.size > 0 ? { expectedSize: media.size } : {}),
+            });
             const stat = await fs.stat(tmp);
             return { path: tmp, mimetype: media.mimetype || 'image/jpeg', originalname: media.name || 'media', size: stat.size };
           } catch (error) {

@@ -24,6 +24,7 @@ export async function validAccessToken(supabase, connection) {
       refresh_token: tokens.refresh_token,
       grant_type: 'refresh_token',
     }),
+    signal: AbortSignal.timeout(30000),
   });
   const r = await res.json();
   if (!res.ok) throw new Error(r.error_description || 'Unable to refresh YouTube authorization');
@@ -60,12 +61,13 @@ export async function uploadVideoResumable({ accessToken, file, metadata, onProg
       'X-Upload-Content-Type': file.mimetype,
     },
     body: JSON.stringify({ snippet, status }),
+    signal: AbortSignal.timeout(30000),
   });
   if (!init.ok) throw await gerr(init, 'Unable to start YouTube upload');
   const url = init.headers.get('location');
   if (!url) throw new Error('YouTube did not return an upload session');
   const h = await fs.open(file.path, 'r');
-  let offset = 0; let video;
+  let offset = 0; let video; let noProgressResponses = 0;
   try {
     while (offset < file.size) {
       const len = Math.min(CHUNK, file.size - offset);
@@ -77,8 +79,23 @@ export async function uploadVideoResumable({ accessToken, file, metadata, onProg
         method: 'PUT', redirect: 'manual',
         headers: { 'Content-Type': file.mimetype, 'Content-Length': String(bytesRead), 'Content-Range': `bytes ${offset}-${end}/${file.size}` },
         body: bytesRead === buf.length ? buf : buf.subarray(0, bytesRead),
+        signal: AbortSignal.timeout(120000),
       });
-      if (res.status === 308) { offset += bytesRead; onProgress(Math.min(99, Math.round((offset / file.size) * 100))); continue; }
+      if (res.status === 308) {
+        const range = res.headers.get('range');
+        const match = range && /^bytes=0-(\d+)$/i.exec(range);
+        if (range && !match) throw new Error('YouTube returned an invalid resumable upload position. Retry the upload.');
+        const acknowledged = match ? Number(match[1]) + 1 : 0;
+        if (!Number.isSafeInteger(acknowledged) || acknowledged > file.size) {
+          throw new Error('YouTube returned an invalid resumable upload position. Retry the upload.');
+        }
+        if (acknowledged === offset) noProgressResponses += 1;
+        else noProgressResponses = 0;
+        if (noProgressResponses >= 4) throw new Error('YouTube is not accepting video data. Retry the upload in a moment.');
+        offset = acknowledged;
+        onProgress(Math.min(99, Math.round((offset / file.size) * 100)));
+        continue;
+      }
       if (!res.ok) throw await gerr(res, 'YouTube upload failed');
       video = await res.json(); offset = file.size; onProgress(100);
     }
@@ -101,6 +118,7 @@ export async function setVideoThumbnail({ accessToken, videoId, file }) {
       headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': file.mimetype, 'Content-Length': String(file.size) },
       body: stream,
       duplex: 'half',
+      signal: AbortSignal.timeout(120000),
     });
   } finally { stream.destroy(); }
   if (!res.ok) throw await gerr(res, 'YouTube could not set this video cover');

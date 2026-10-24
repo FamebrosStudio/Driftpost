@@ -180,7 +180,7 @@ export function mapResponse(data) {
   const igTags = [...new Set(rawTags.map((t) => String(t).replace(/^#+/, '').trim()).filter(Boolean))].map((t) => `#${t}`).join(' ');
   const igCaption = String(c.instagram?.caption || '').split('\n')
     .filter((line) => !igTags || !/^\s*(?:#[\p{L}\p{N}_]+\s*)+$/u.test(line)).join('\n').replace(/\n{3,}/g, '\n\n').trim();
-  const xText = typeof c.x?.text === 'string' ? c.x.text.slice(0, 280) : '';
+  const xText = typeof c.x?.text === 'string' ? Array.from(c.x.text).slice(0, 280).join('') : '';
   return {
     instagram: { caption: igCaption, hashtags: igTags },
     facebook: { message: c.facebook?.message || '' },

@@ -24,6 +24,7 @@ export async function validXAccessToken(supabase, connection) {
     method: 'POST',
     headers: { Authorization: clientAuthorization(), 'Content-Type': 'application/x-www-form-urlencoded' },
     body: new URLSearchParams({ refresh_token: tokens.refresh_token, grant_type: 'refresh_token' }),
+    signal: AbortSignal.timeout(30000),
   });
   const refreshed = await response.json();
   if (!response.ok) throw new Error(refreshed.error_description || refreshed.error || 'Unable to refresh X authorization');
@@ -42,6 +43,7 @@ async function uploadImage(accessToken, file) {
     method: 'POST',
     headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({ media: bytes.toString('base64'), media_type: file.mimetype, media_category: 'tweet_image' }),
+    signal: AbortSignal.timeout(120000),
   });
   if (!response.ok) throw await xError(response, 'X image upload failed');
   const body = await response.json();
@@ -50,10 +52,16 @@ async function uploadImage(accessToken, file) {
 
 async function waitForXMedia(accessToken, mediaId, processingInfo, onProgress) {
   let info = processingInfo;
+  const deadline = Date.now() + 15 * 60 * 1000;
   while (info && !['succeeded', 'failed'].includes(info.state)) {
-    await new Promise((r) => setTimeout(r, Math.max(1, info.check_after_secs || 2) * 1000));
+    if (Date.now() >= deadline) throw new Error('X is still processing this media after 15 minutes. Check the X account before retrying.');
+    const delaySeconds = Math.min(30, Math.max(1, Number(info.check_after_secs) || 2));
+    await new Promise((r) => setTimeout(r, delaySeconds * 1000));
+    if (Date.now() >= deadline) throw new Error('X is still processing this media after 15 minutes. Check the X account before retrying.');
     const params = new URLSearchParams({ command: 'STATUS', media_id: mediaId });
-    const response = await fetch(`${MEDIA_URL}?${params}`, { headers: { Authorization: `Bearer ${accessToken}` } });
+    const response = await fetch(`${MEDIA_URL}?${params}`, {
+      headers: { Authorization: `Bearer ${accessToken}` }, signal: AbortSignal.timeout(15000),
+    });
     if (!response.ok) throw await xError(response, 'Unable to read X media status');
     const body = await response.json();
     info = body.data?.processing_info || body.processing_info;
@@ -69,7 +77,7 @@ async function uploadChunkedMedia(accessToken, file, onProgress) {
   init.append('media_type', file.mimetype);
   init.append('total_bytes', String(file.size));
   init.append('media_category', category);
-  const initRes = await fetch(MEDIA_URL, { method: 'POST', headers: { Authorization: `Bearer ${accessToken}` }, body: init });
+  const initRes = await fetch(MEDIA_URL, { method: 'POST', headers: { Authorization: `Bearer ${accessToken}` }, body: init, signal: AbortSignal.timeout(30000) });
   if (!initRes.ok) throw await xError(initRes, 'Unable to start X media upload');
   const initBody = await initRes.json();
   const mediaId = initBody.data?.id || initBody.media_id_string;
@@ -87,7 +95,7 @@ async function uploadChunkedMedia(accessToken, file, onProgress) {
       append.append('media_id', String(mediaId));
       append.append('segment_index', String(segment));
       append.append('media', new Blob([buffer.subarray(0, bytesRead)], { type: file.mimetype }), file.originalname);
-      const appendRes = await fetch(MEDIA_URL, { method: 'POST', headers: { Authorization: `Bearer ${accessToken}` }, body: append });
+      const appendRes = await fetch(MEDIA_URL, { method: 'POST', headers: { Authorization: `Bearer ${accessToken}` }, body: append, signal: AbortSignal.timeout(120000) });
       if (!appendRes.ok) throw await xError(appendRes, 'X media chunk failed');
       offset += bytesRead; segment += 1;
       onProgress(Math.min(95, Math.round((offset / file.size) * 95)));
@@ -96,7 +104,7 @@ async function uploadChunkedMedia(accessToken, file, onProgress) {
   const finalize = new FormData();
   finalize.append('command', 'FINALIZE');
   finalize.append('media_id', String(mediaId));
-  const finRes = await fetch(MEDIA_URL, { method: 'POST', headers: { Authorization: `Bearer ${accessToken}` }, body: finalize });
+  const finRes = await fetch(MEDIA_URL, { method: 'POST', headers: { Authorization: `Bearer ${accessToken}` }, body: finalize, signal: AbortSignal.timeout(30000) });
   if (!finRes.ok) throw await xError(finRes, 'Unable to finalize X media');
   const finBody = await finRes.json();
   await waitForXMedia(accessToken, String(mediaId), finBody.data?.processing_info || finBody.processing_info, (p) => onProgress(Math.min(99, 95 + Math.round(p * 0.04))));
@@ -125,6 +133,7 @@ export async function createXPost(accessToken, text, mediaId, replySettings, pol
       ...(['following', 'mentionedUsers'].includes(replySettings) ? { reply_settings: replySettings } : {}),
       ...(poll ? { poll } : {}),
     }),
+    signal: AbortSignal.timeout(30000),
   });
   if (!response.ok) throw await xError(response, 'X post failed');
   const body = await response.json();
@@ -135,6 +144,7 @@ export async function createXPost(accessToken, text, mediaId, replySettings, pol
 export async function deleteXPost(accessToken, postId) {
   const response = await fetch(`https://api.x.com/2/tweets/${encodeURIComponent(postId)}`, {
     method: 'DELETE', headers: { Authorization: `Bearer ${accessToken}` },
+    signal: AbortSignal.timeout(30000),
   });
   if (!response.ok) throw await xError(response, 'X could not delete this post');
   const body = await response.json();

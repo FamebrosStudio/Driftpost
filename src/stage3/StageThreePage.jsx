@@ -72,6 +72,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
   const batchProgressRef = useRef(null);
   const [batchQueue, setBatchQueue] = useState(null);
   const [regen, setRegen] = useState('');
+  const [regenErr, setRegenErr] = useState('');
   const [brief] = useState(() => load(scopedKey('driftpost-stage2-brief', userId), ''));
   const [analysisMode] = useState(() => load(scopedKey('driftpost-stage2-analysis', userId), 'fast'));
   const [success, setSuccess] = useState(null);
@@ -460,6 +461,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
   const regenOne = async (pid) => {
     if (!canUseAi || busy[pid] || regen || (!brief.trim() && !(analysisMode === 'analyze' && files.length))) return;
     setRegen(pid);
+    setRegenErr('');
     try {
       const data = await requestCaptions(session.access_token, {
         brief, brand: brandLabel, files,
@@ -470,7 +472,9 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
       const mapped = mapResponse(data);
       onValues(pid, mapped[pid]);
       logCaptions({ userId, brand: brandLabel, entries: [{ platform: pid, text: composeOutput(pid, mapped[pid]) }] });
-    } catch {}
+    } catch (error) {
+      setRegenErr(friendlyErrorMessage(error) || 'Could not regenerate this caption. Please try again.');
+    }
     setRegen('');
   };
 
@@ -1272,6 +1276,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
         ) : (
           <>
             <PlatformTabs platforms={platforms} tab={tab} setTab={setTab} statusOf={statusOf} greyed={greyed} />
+            {regenErr && <p className="s3-err" role="alert">{regenErr}</p>}
             {tab && (
               <div key={tab} className="s3-cols" style={{ marginTop: 14 }}>
                 <MediaPreview files={files} />

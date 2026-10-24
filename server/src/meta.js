@@ -59,7 +59,7 @@ export async function exchangeMetaCode(code) {
     redirect_uri: process.env.META_REDIRECT_URI,
     code,
   });
-  const res = await fetch(`${GRAPH}/oauth/access_token?${p}`);
+  const res = await fetch(`${GRAPH}/oauth/access_token?${p}`, { signal: AbortSignal.timeout(30000) });
   const data = await res.json();
   if (!res.ok) throw new Error(data.error?.message || 'Meta token exchange failed');
   return data; // { access_token, expires_in }
@@ -72,7 +72,7 @@ export async function longLivedToken(shortToken) {
     client_secret: process.env.META_APP_SECRET,
     fb_exchange_token: shortToken,
   });
-  const res = await fetch(`${GRAPH}/oauth/access_token?${p}`);
+  const res = await fetch(`${GRAPH}/oauth/access_token?${p}`, { signal: AbortSignal.timeout(30000) });
   const data = await res.json();
   if (!res.ok) throw new Error(data.error?.message || 'Unable to extend Meta token');
   return data;
@@ -132,7 +132,7 @@ export async function publishFacebook({ pageId, pageToken, text, link, linkMeta,
     if (media.url) form.append('file_url', media.url);
     else form.append('source', await mediaBlob(media), media.originalname);
     if (cover?.path) form.append('thumb', await mediaBlob(cover), cover.originalname || 'cover.jpg');
-    const res = await fetch(`${GRAPH}/${pageId}/videos?access_token=${encodeURIComponent(pageToken)}`, { method: 'POST', body: form });
+    const res = await fetch(`${GRAPH}/${pageId}/videos?access_token=${encodeURIComponent(pageToken)}`, { method: 'POST', body: form, signal: AbortSignal.timeout(15 * 60 * 1000) });
     const data = await res.json();
     if (!res.ok) throw await graphError(res, 'Facebook video failed', data);
     return { id: data.id, url: `https://www.facebook.com/${pageId}/videos/${data.id}` };
@@ -142,7 +142,7 @@ export async function publishFacebook({ pageId, pageToken, text, link, linkMeta,
     form.append('caption', text || '');
     if (media.url) form.append('url', media.url);
     else form.append('source', await mediaBlob(media), media.originalname);
-    const res = await fetch(`${GRAPH}/${pageId}/photos?access_token=${encodeURIComponent(pageToken)}`, { method: 'POST', body: form });
+    const res = await fetch(`${GRAPH}/${pageId}/photos?access_token=${encodeURIComponent(pageToken)}`, { method: 'POST', body: form, signal: AbortSignal.timeout(5 * 60 * 1000) });
     const data = await res.json();
     if (!res.ok) throw await graphError(res, 'Facebook photo failed', data);
     return { id: data.id, url: `https://www.facebook.com/photo.php?fbid=${data.id}` };
@@ -164,6 +164,7 @@ export async function publishFacebook({ pageId, pageToken, text, link, linkMeta,
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(feedBody),
+    signal: AbortSignal.timeout(30000),
   });
   const data = await res.json();
   if (!res.ok) throw new Error(data.error?.message || 'Facebook post failed');
@@ -171,7 +172,7 @@ export async function publishFacebook({ pageId, pageToken, text, link, linkMeta,
 }
 
 export async function deleteFacebookPost({ postId, pageToken }) {
-  const response = await fetch(`${GRAPH}/${encodeURIComponent(postId)}?access_token=${encodeURIComponent(pageToken)}`, { method: 'DELETE' });
+  const response = await fetch(`${GRAPH}/${encodeURIComponent(postId)}?access_token=${encodeURIComponent(pageToken)}`, { method: 'DELETE', signal: AbortSignal.timeout(30000) });
   const data = await response.json().catch(() => ({}));
   if (!response.ok || data.success !== true) {
     throw new Error(data.error?.message || 'Facebook could not delete this post. Check that the Page connection has permission and the post is still available.');
@@ -276,7 +277,7 @@ export async function publishInstagramCarousel({ igUserId, pageToken, caption, c
   const childIds = [];
   for (const url of urls) {
     const cRes = await fetch(`${GRAPH}/${igUserId}/media`, {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, signal: AbortSignal.timeout(30000),
       body: JSON.stringify({ image_url: url, is_carousel_item: true, access_token: pageToken }),
     });
     const c = await cRes.json();
@@ -285,7 +286,7 @@ export async function publishInstagramCarousel({ igUserId, pageToken, caption, c
     childIds.push(c.id);
   }
   const pRes = await fetch(`${GRAPH}/${igUserId}/media`, {
-    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    method: 'POST', headers: { 'Content-Type': 'application/json' }, signal: AbortSignal.timeout(30000),
     body: JSON.stringify({
       media_type: 'CAROUSEL',
       children: childIds.join(','),
@@ -299,7 +300,7 @@ export async function publishInstagramCarousel({ igUserId, pageToken, caption, c
   if (!pRes.ok) throw new Error(parent.error?.message || 'Instagram carousel container failed');
   await waitForInstagramContainer({ id: parent.id, pageToken, label: 'carousel' });
   const pub = await fetch(`${GRAPH}/${igUserId}/media_publish`, {
-    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    method: 'POST', headers: { 'Content-Type': 'application/json' }, signal: AbortSignal.timeout(30000),
     body: JSON.stringify({ creation_id: parent.id, access_token: pageToken }),
   });
   const published = await pub.json();
@@ -406,7 +407,7 @@ export async function publishFacebookCarousel({ pageId, pageToken, text, mediaLi
     form.append('published', 'false');
     if (m.url) form.append('url', m.url);
     else form.append('source', await mediaBlob(m), m.originalname || 'photo.jpg');
-    const res = await fetch(`${GRAPH}/${pageId}/photos?access_token=${encodeURIComponent(pageToken)}`, { method: 'POST', body: form });
+    const res = await fetch(`${GRAPH}/${pageId}/photos?access_token=${encodeURIComponent(pageToken)}`, { method: 'POST', body: form, signal: AbortSignal.timeout(5 * 60 * 1000) });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error?.message || 'Facebook photo upload failed');
     attached.push({ media_fbid: data.id });
@@ -414,6 +415,7 @@ export async function publishFacebookCarousel({ pageId, pageToken, text, mediaLi
   const res = await fetch(`${GRAPH}/${pageId}/feed`, {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ message: text || '', attached_media: attached, access_token: pageToken }),
+    signal: AbortSignal.timeout(30000),
   });
   const data = await res.json();
   if (!res.ok) throw new Error(data.error?.message || 'Facebook carousel post failed');

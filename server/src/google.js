@@ -40,6 +40,7 @@ export function driveIntakeAuthorizationUrl(state) {
 export async function getGoogleIdentity(accessToken) {
   const res = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
     headers: { Authorization: `Bearer ${accessToken}` },
+    signal: AbortSignal.timeout(15000),
   });
   const data = await res.json();
   if (!res.ok || !data.email) throw new Error(data.error?.message || 'Could not verify the Google account.');
@@ -57,6 +58,7 @@ export async function exchangeGoogleCode(code) {
       redirect_uri: process.env.GOOGLE_REDIRECT_URI,
       grant_type: 'authorization_code',
     }),
+    signal: AbortSignal.timeout(30000),
   });
   const data = await res.json();
   if (!res.ok) throw new Error(data.error_description || data.error || 'Google token exchange failed');
@@ -66,6 +68,7 @@ export async function exchangeGoogleCode(code) {
 export async function getYouTubeChannel(accessToken) {
   const res = await fetch('https://www.googleapis.com/youtube/v3/channels?part=id,snippet&mine=true', {
     headers: { Authorization: `Bearer ${accessToken}` },
+    signal: AbortSignal.timeout(20000),
   });
   const data = await res.json();
   if (!res.ok) throw new Error(data.error?.message || 'Unable to read YouTube channel');

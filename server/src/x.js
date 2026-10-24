@@ -31,6 +31,7 @@ export async function exchangeXCode(code, verifier) {
     method: 'POST',
     headers: { Authorization: clientAuthorization(), 'Content-Type': 'application/x-www-form-urlencoded' },
     body: new URLSearchParams({ code, grant_type: 'authorization_code', redirect_uri: process.env.X_REDIRECT_URI, code_verifier: verifier }),
+    signal: AbortSignal.timeout(30000),
   });
   const data = await response.json();
   if (!response.ok) throw new Error(data.error_description || data.error || 'X token exchange failed');
@@ -40,6 +41,7 @@ export async function exchangeXCode(code, verifier) {
 export async function getXUser(accessToken) {
   const response = await fetch('https://api.x.com/2/users/me?user.fields=name,username,profile_image_url', {
     headers: { Authorization: `Bearer ${accessToken}` },
+    signal: AbortSignal.timeout(20000),
   });
   const body = await response.json();
   if (!response.ok) throw new Error(body.detail || body.errors?.[0]?.message || body.title || 'Unable to read X account');

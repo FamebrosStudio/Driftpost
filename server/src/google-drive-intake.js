@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import { Readable } from 'node:stream';
+import { Transform } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
@@ -134,6 +135,7 @@ async function tokenFor(supabase, connection) {
   const response = await fetch('https://oauth2.googleapis.com/token', {
     method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: new URLSearchParams({ client_id: process.env.GOOGLE_CLIENT_ID, client_secret: process.env.GOOGLE_CLIENT_SECRET, refresh_token: tokens.refresh_token, grant_type: 'refresh_token' }),
+    signal: AbortSignal.timeout(30000),
   });
   const renewed = await response.json().catch(() => ({}));
   if (!response.ok || !renewed.access_token) throw new Error('Google Drive access expired. Reconnect Drive in Driftpost.');
@@ -299,9 +301,13 @@ async function downloadDriveVideo(supabase, job, destination) {
     headers: { Authorization: `Bearer ${accessToken}` }, signal: AbortSignal.timeout(15 * 60 * 1000),
   });
   if (!response.ok || !response.body) throw new Error('Google Drive could not download this video. Check the file and retry.');
-  await pipeline(response.body, fs.createWriteStream(destination, { flags: 'wx' }));
+  let received = 0;
+  await pipeline(response.body, new Transform({ transform(chunk, _encoding, callback) {
+    received += chunk.length;
+    callback(received > MAX_VIDEO_BYTES ? new Error('Google Drive video exceeds the 400 MB limit.') : null, received <= MAX_VIDEO_BYTES ? chunk : undefined);
+  } }), fs.createWriteStream(destination, { flags: 'wx' }));
   const stat = await fs.promises.stat(destination);
-  if (!stat.size || stat.size > MAX_VIDEO_BYTES) throw new Error('The received video is empty or larger than 400 MB.');
+  if (!stat.size) throw new Error('The received video is empty.');
   return stat.size;
 }
 
@@ -355,7 +361,11 @@ async function downloadDriveCarousel(supabase, job, directory) {
     if (!response.ok || !response.body) throw new Error(`Google Drive could not download carousel image ${index + 1}.`);
     const stem = `${directory}/source-${String(index + 1).padStart(2, '0')}`;
     const sourcePath = `${stem}${imageExtensionFor(mime)}`;
-    await pipeline(response.body, fs.createWriteStream(sourcePath, { flags: 'wx' }));
+    let received = 0;
+    await pipeline(response.body, new Transform({ transform(chunk, _encoding, callback) {
+      received += chunk.length;
+      callback(received > limitBytes ? new Error(`Carousel image ${index + 1} exceeds the ${Math.floor(limitBytes / (1024 * 1024))} MB limit.`) : null, received <= limitBytes ? chunk : undefined);
+    } }), fs.createWriteStream(sourcePath, { flags: 'wx' }));
     let mediaPath = sourcePath;
     let mediaMime = mime;
     let stat = await fs.promises.stat(sourcePath);
