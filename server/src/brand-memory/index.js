@@ -124,7 +124,6 @@ export function fullPack(brand) {
     cd.avoid?.length ? `Never: ${cd.avoid.join('; ')}` : null,
     approvedFacts.length ? `APPROVED FACTS (use only when the post makes them relevant): ${approvedFacts.join('; ')}` : null,
     (cd.cta_options || brand.cta || []).length ? `CTA pick one (reword, don't copy): ${(cd.cta_options || brand.cta).join(' / ')}` : null,
-    full.approved_facts?.length ? `Facts: ${full.approved_facts.map((f) => (typeof f === 'string' ? f : f.text)).join('; ')}` : null,
     full.mandatory_copy?.length ? `Must include word-for-word: ${full.mandatory_copy.join('; ')}` : null,
     full.contacts?.phone?.length ? `Phone: ${full.contacts.phone.join(' / ')}` : null,
     full.contacts?.address ? `Address: ${full.contacts.address}` : null,
@@ -270,28 +269,44 @@ export function deepBrandIds() {
 // .primary_phone_display | .customer_care_display.
 export function deepFooter(deep) {
   const ff = deep?.fixed_footer;
+  let lines = [];
   if (ff) {
-    if (ff.prefer_group_footer && ff.group_footer_lines?.length) return ff.group_footer_lines;
-    if (ff.lines?.length) return ff.lines;
-    if (ff.full_lines?.length) return ff.full_lines;
-    const only = Object.keys(ff).filter((k) => k.endsWith('_only_lines') && Array.isArray(ff[k]) && ff[k].length);
-    if (only.length) return ff[only[0]];
+    if (ff.prefer_group_footer && ff.group_footer_lines?.length) lines = ff.group_footer_lines;
+    else if (ff.lines?.length) lines = ff.lines;
+    else if (ff.full_lines?.length) lines = ff.full_lines;
+    else if (ff.standard_lines?.length) lines = ff.standard_lines;
+    else {
+      const only = Object.keys(ff).filter((k) => k.endsWith('_only_lines') && Array.isArray(ff[k]) && ff[k].length);
+      if (only.length) lines = ff[only[0]];
+    }
     // Public-figure format: compact designation + social + agency (routine captions).
-    if (typeof ff.compact_designation_line === 'string' && ff.compact_designation_line.trim()) {
-      return [ff.compact_designation_line.trim(), ff.social_line, ff.agency_line].filter((l) => typeof l === 'string' && l.trim());
+    if (!lines.length && typeof ff.compact_designation_line === 'string' && ff.compact_designation_line.trim()) {
+      lines = [ff.compact_designation_line.trim(), ff.social_line, ff.agency_line].filter((l) => typeof l === 'string' && l.trim());
     }
     // Multi-footer brands: the *general* footer is the brand-wide default
     // (campaign/showroom footers apply only to those posts).
-    const general = Object.keys(ff).find((k) => /general/i.test(k) && k.endsWith('_lines') && Array.isArray(ff[k]) && ff[k].length);
-    if (general) return ff[general];
+    if (!lines.length) {
+      const general = Object.keys(ff).find((k) => /general/i.test(k) && k.endsWith('_lines') && Array.isArray(ff[k]) && ff[k].length);
+      if (general) lines = ff[general];
+    }
   }
-  if (deep?.footer_policy?.confirmed_footer_lines?.length) return deep.footer_policy.confirmed_footer_lines;
+  if (!lines.length && deep?.footer_policy?.confirmed_footer_lines?.length) lines = deep.footer_policy.confirmed_footer_lines;
   // Last resort: first *_lines array present (never usage/rules strings).
-  if (ff) {
+  if (!lines.length && ff) {
     const any = Object.keys(ff).find((k) => k.endsWith('_lines') && Array.isArray(ff[k]) && ff[k].length);
-    if (any) return ff[any];
+    if (any) lines = ff[any];
   }
-  return [];
+  // Draft/temporary footer text is not publishable just because it lives in a
+  // field named `fixed_footer`. Keep only an explicit agency credit in that
+  // case; the post-specific CTA belongs in the generated body.
+  if (/\b(?:temporary|provisional|draft|placeholder)\b|replace .* after confirmation/i.test(String(ff?.status || ''))) {
+    const agency = String(deep?.social_media?.agency_credit_default || '').trim().toLowerCase();
+    return lines.filter((line) => {
+      const value = String(line || '').trim().toLowerCase();
+      return value && (value === agency || /managed\s+by\s*:?\s*@famebrosstudio\b/i.test(value));
+    });
+  }
+  return lines;
 }
 
 export function deepPhone(deep) {
@@ -708,8 +723,8 @@ export function breakdownBlock(parsed) {
 export function globalBrandRules() {
   return [
     'Write a specific hook and one useful detail when available. Use at most one fitting CTA. Follow user-selected length, tone and emoji settings. No em dash.',
-    'Instagram only: append the selected brand footer, then up to 3 relevant hashtags (never pad with unrelated tags), then only SEO phrases supported by the current brief. Other platforms follow their own format. Never reuse another brand footer. Celebrate an offer only when the current brief confirms one; never invent offer terms.',
-    'MAP Clothing + Carrara never funny. Luxxe = transformation only. Rajlaxmi Sangli = Marathi. Hazel: no mithai word. Smietz: include 35 years experience + 96045 23931.',
+    'Use only the selected brand profile for brand-specific rules, facts, language and restrictions. Never apply another client\'s mandatory copy, phone number, claims, tone or campaign rule.',
+    'The server appends approved brand footers and formats Instagram hashtags/search phrases. Keep footer and metadata text out of the caption body. Celebrate an offer only when the current brief confirms it; never invent offer terms.',
     'Never invent phone/address/price/offers/results/quotes. Omit unknown optionals; ask only if essential.',
   ].join('\n');
 }
