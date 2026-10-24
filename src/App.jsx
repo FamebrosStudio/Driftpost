@@ -175,13 +175,13 @@ const PUB_CONTENT = {
     title: 'Your data stays yours.',
     intro: 'Last updated September 2026. Driftpost publishes to your accounts — it does not sell, rent, or share your data with anyone.',
     sections: [
-      { h: 'What we store', p: 'Login email (Supabase Auth); connected social accounts (names and IDs); AES-256-GCM encrypted OAuth access/refresh tokens; captions, prompts and AI briefs you submit; uploaded media in transit (Instagram copies via your private Supabase storage bucket); publish history (platform, time, URL); IP, device and browser data in hosting access logs for security and diagnostics; support messages. Billing data, if paid plans ever launch, is handled by our payment provider — we never store card numbers.' },
+      { h: 'What we store', p: 'Login email (Supabase Auth); connected social accounts (names and IDs); AES-256-GCM encrypted OAuth access/refresh tokens; captions, prompts and AI briefs you submit; Osien Stack MCP connection token hashes, granted scopes and expiry (the bearer token is shown once and stored locally by Osien); uploaded media temporarily stored for publishing and scheduled posts (including Instagram copies in your Supabase storage bucket); publish history (platform, time, URL); IP, device and browser data in hosting access logs for security and diagnostics; support messages. Billing data, if paid plans ever launch, is handled by our payment provider — we never store card numbers.' },
       { h: 'Why each item exists', p: 'Email identifies your account. Account IDs route your posts. Tokens let the official platform APIs publish as you. Prompts and media are the content you asked us to publish. Logs keep the service secure and diagnose failures.' },
       { h: 'Two separate purposes', p: 'PURPOSE A — SERVICE (required, not optional): we process your prompts, attached media and connected-account details in order to generate and publish your posts. This is the product, and we do not retain your prompts under this purpose. PURPOSE B — PERSONALISATION (optional, off by default): only if you actively tick the box do we store your prompts and generated captions, so that future posts for the same brand match your own voice. If you decline, every feature keeps working and nothing is stored.' },
       { h: 'What "personalisation" does and does not do', p: 'It is retrieval, not training. We do not fine-tune, retrain or modify any model, and we do not send your data to anyone to train one. When you have opted in, a small number of captions you previously approved are shown back to the AI as style examples for your account only, so the writing matches your voice. They are never used for another user.' },
       { h: 'What we remove before storing', p: 'Before anything is saved under Purpose B we strip email addresses, phone numbers, long digit sequences, and anything resembling a password, token or API key. A confirmed business phone number or address that belongs to a brand record is deliberately kept, because it is part of the published post rather than your personal data.' },
       { h: 'Proving your consent', p: 'Every decision you make is recorded in an append-only log with the exact version of this notice you were shown, so we can demonstrate what you agreed to and when. Revoking consent adds a new record; it does not erase the history of the earlier decision.' },
-      { h: 'Social tokens are secrets', p: 'Tokens are encrypted at rest, held server-side only, never placed in frontend code, logs, analytics or this repo, and never shown in any dashboard. Disconnecting an account deletes its tokens immediately.' },
+      { h: 'Social tokens are secrets', p: 'Social tokens are encrypted at rest, held server-side only, never placed in frontend code, logs, analytics or this repo, and never shown in any dashboard. MCP bearer tokens are stored as hashes on Driftpost and can be revoked. Disconnecting an account deletes its tokens immediately.' },
       { h: 'AI processing and third-party transfer', p: 'Caption text you submit is transmitted to our AI provider (OpenAI) and to the social platforms you connect, solely to fulfil your generation and publishing requests. Those processors act on our instructions under their own terms and privacy policies. We do not use your content to train shared AI models. Do not paste passwords, OTPs or other secrets into the AI writer.' },
       { h: 'Your content stays yours', p: 'You keep full ownership of uploads and captions. You grant Driftpost only the limited licence to store, process and transmit them to platforms you chose. We claim no ownership over client brand content.' },
       { h: 'Your rights', p: 'Access, correct, withdraw consent or erase your data at any time. Withdrawing personalisation consent stops all storage immediately and deletes what was already stored; the app continues to work unchanged. Deleting your account erases your account, connected accounts, publish history, stored captions and consent records. Full erasure is completed within 7 days. Contact, and our privacy contact: famebros.studio@gmail.com. You may also complain to your local data protection authority, including the Data Protection Board of India.' },
@@ -288,7 +288,7 @@ const PUB_CONTENT = {
     intro: 'Plain claims only — everything below describes controls that actually exist in Driftpost today.',
     sections: [
       { h: 'Your passwords stay yours', p: 'Connections happen through official OAuth only. Driftpost will never ask for your social-media password, OTP, UPI PIN or card PIN. Anyone asking is a scammer — report to famebros.studio@gmail.com.' },
-      { h: 'Tokens locked down', p: 'Social OAuth tokens are AES-256-GCM encrypted, stored server-side, never in frontend code, logs, analytics or this repo, and never displayed in any dashboard. In transit everything runs over HTTPS.' },
+      { h: 'Tokens locked down', p: 'Social OAuth tokens are AES-256-GCM encrypted, stored server-side, never in frontend code, logs, analytics or this repo, and never displayed in any dashboard. Osien Stack MCP tokens are hashed server-side, scoped and revocable; the bearer token is stored locally by Osien. In transit everything runs over HTTPS.' },
       { h: 'Isolation', p: 'Row-level security confines every query to your own user ID. Brand A can never read Brand B. Brand knowledge lives per brand and never leaks across them.' },
       { h: 'Abuse guards', p: 'Rate limits on AI generation, OAuth, publishing and account-data endpoints; signed OAuth state; upload type and size validation.' },
       { h: 'Your content', p: 'Your uploads and captions remain yours; our licence is limited to delivering the service. AI briefs are processed by OpenAI to draft captions and are not used to train shared models.' },
@@ -448,7 +448,7 @@ function Landing({ onEnter, session, pubPage, setPubPage }) {
   );
 }
 
-function Auth({ mode, setMode, onBack, markFresh }) {
+function Auth({ mode, setMode, onBack, markFresh, returnTo }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [busy, setBusy] = useState(false);
@@ -466,7 +466,7 @@ function Auth({ mode, setMode, onBack, markFresh }) {
       if (!client) { setError(friendlyAuthError('Supabase is not configured', mode === 'login' ? 'sign in' : 'create your account')); return; }
       const res = mode === 'login'
         ? await client.auth.signInWithPassword({ email, password })
-        : await client.auth.signUp({ email, password, options: { emailRedirectTo: window.location.origin, data: { tos_accepted_at: new Date().toISOString(), tos_version: TOS_VERSION, privacy_version: TOS_VERSION } } });
+        : await client.auth.signUp({ email, password, options: { emailRedirectTo: returnTo || window.location.origin, data: { tos_accepted_at: new Date().toISOString(), tos_version: TOS_VERSION, privacy_version: TOS_VERSION } } });
       if (res?.error) setError(friendlyAuthError(res.error, mode === 'login' ? 'sign in' : 'create your account'));
       else if (mode === 'signup' && !res?.data?.session) setInfo('Check your inbox to confirm your email, then sign in.');
       else { pokeSession(); markFresh?.(); }
@@ -483,7 +483,7 @@ function Auth({ mode, setMode, onBack, markFresh }) {
       if (!client) { setError(friendlyAuthError('Supabase is not configured', mode === 'login' ? 'sign in' : 'create your account')); return; }
       markFresh?.();
       const { error } = await client.auth.signInWithOAuth({
-        provider: 'google', options: { redirectTo: window.location.origin, queryParams: { prompt: 'select_account' } }
+        provider: 'google', options: { redirectTo: returnTo || window.location.origin, queryParams: { prompt: 'select_account' } }
       });
       if (error) setError(friendlyAuthError(error, mode === 'login' ? 'sign in' : 'create your account'));
     } catch (cause) {
@@ -513,6 +513,50 @@ function Auth({ mode, setMode, onBack, markFresh }) {
           <button className="link" onClick={() => { setMode(mode === 'login' ? 'signup' : 'login'); setError(''); setInfo(''); }}>{mode === 'login' ? 'Create account' : 'Sign in'}</button>
           {' · '}<button className="link" onClick={onBack}>← Back</button>
         </p>
+      </div>
+    </div>
+  );
+}
+
+function readMcpUserCode() {
+  if (typeof window === 'undefined') return '';
+  const [route, query = ''] = String(window.location.hash || '').replace(/^#\/?/, '').split('?');
+  if (route !== 'mcp-connect') return '';
+  return String(new URLSearchParams(query).get('user_code') || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 8);
+}
+
+function McpDeviceAuthorization({ userCode, session }) {
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+  const [approved, setApproved] = useState(false);
+  const approve = async () => {
+    setBusy(true); setError('');
+    try {
+      const response = await fetch(apiRequestUrl('/api/mcp/device/authorize'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session.access_token}` },
+        body: JSON.stringify({ user_code: userCode }),
+      });
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(payload.error || 'Could not approve this connection.');
+      setApproved(true);
+    } catch (cause) { setError(cause.message || 'Could not approve this connection.'); }
+    finally { setBusy(false); }
+  };
+  return (
+    <div className="auth-wrap">
+      <div className="auth-card">
+        <div className="brand"><img className="logo-img logo-d" src="/logo-dark.png" width="1984" height="512" decoding="async" alt="Driftpost" /><img className="logo-img logo-l" src="/logo-light.png" width="1908" height="512" decoding="async" alt="Driftpost" /></div>
+        <h1>{approved ? 'Osien Stack is connected.' : 'Connect Osien Stack'}</h1>
+        {approved ? (
+          <p>Authorization approved. Return to your AI assistant; it will finish connecting automatically.</p>
+        ) : <>
+          <p>Allow Osien Stack on this device to view your connected accounts, upload media, publish and schedule posts. Your platform passwords and provider app credentials stay with Driftpost.</p>
+          <div className="banner" style={{ textAlign: 'center', fontSize: 22, letterSpacing: 4, fontWeight: 700 }}>{userCode.slice(0, 4)}-{userCode.slice(4)}</div>
+          {error && <div className="alert err">{error}</div>}
+          <button className="user-profile" disabled={busy || userCode.length !== 8} onClick={approve}><span className="user-profile-inner">{busy ? 'Approving…' : 'Authorize Osien Stack'}</span></button>
+          <p className="note">Only approve this code if you started the connection from your own Osien Stack MCP.</p>
+        </>}
       </div>
     </div>
   );
@@ -588,6 +632,12 @@ export default function App() {
   useEffect(() => { window.scrollTo(0, 0); }, [pubPage]);
 
   const keepConnectivity = (page) => <>{page}{!online ? <OfflinePage onRetry={retry} checking={checking} /> : !serverReady && <ServerStartingPage />}</>;
+  const mcpUserCode = readMcpUserCode();
+  if (mcpUserCode) {
+    const returnTo = `${window.location.origin}/#/mcp-connect?user_code=${encodeURIComponent(mcpUserCode)}`;
+    if (!session) return keepConnectivity(<Auth mode="login" setMode={setMode} onBack={() => { window.location.hash = ''; setEntry('landing'); }} returnTo={returnTo} />);
+    return keepConnectivity(<McpDeviceAuthorization userCode={mcpUserCode} session={session} />);
+  }
   if (approvalId) return keepConnectivity(<ApprovalPage id={approvalId} />);
   if (unknownRoute) return keepConnectivity(<NotFoundPage onHome={() => { setUnknownRoute(false); setPubPage('home'); setEntry('landing'); }} onEnter={session ? () => { setUnknownRoute(false); setEntry('console'); } : null} />);
 
@@ -610,4 +660,3 @@ export default function App() {
     </Suspense>,
   );
 }
-

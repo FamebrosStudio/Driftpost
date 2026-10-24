@@ -25,7 +25,7 @@ npm run dev   # http://localhost:10000
 2. **Auth → Providers → enable Email + Google.**
    - Google: create OAuth client in Google Cloud Console, paste client ID/secret into Supabase Auth → Google provider.
    - Supabase → Auth → URL Configuration → add `http://localhost:5173` and your prod URL to Redirect URLs.
-3. **SQL Editor → run every migration** in `supabase/migrations/` in numeric order (`001` through `009`).
+3. **SQL Editor → run every migration** in `supabase/migrations/` in numeric order (`001` through `015`).
 4. **Storage → create public bucket** named `driftpost-media` (required for Instagram: API uploads the reel/photo there to get a public URL for Meta).
 5. **Google Cloud (YouTube):** APIs & Services → enable *YouTube Data API v3* → OAuth consent screen (External) → scopes `youtube.upload`, `youtube.readonly` → Credentials → Web app → redirect URI = `http://localhost:10000/api/oauth/youtube/callback` (add prod URL later). Copy ID/secret into `server/.env` as `GOOGLE_*`.
 6. **Meta (Facebook + Instagram):** developers.facebook.com → Create App (Business) → add *Facebook Login* → Valid OAuth redirect = `http://localhost:10000/api/oauth/meta/callback`. You need:
@@ -98,3 +98,7 @@ Railway is now the live API host. For the exact service setup, required variable
 and cutover steps, see [docs/railway-temporary-migration.md](docs/railway-temporary-migration.md).
 The frontend stays on Vercel and Supabase remains the persistent
 database/auth/media store.
+
+## Osien Stack MCP
+
+Osien Stack connects without asking users for OAuth client IDs, client secrets, API keys, or social passwords. It uses the Driftpost production API by default; set `DRIFTPOST_API_URL` only when self-hosting. The user signs in to Driftpost in a browser and approves Osien, then links social profiles through Driftpost's provider OAuth. Tokens are hashed on Driftpost, and the scoped MCP bearer token is stored in Osien's owner-only config file. Migration `015_mcp_device_authorization.sql` creates the device and access-token tables.

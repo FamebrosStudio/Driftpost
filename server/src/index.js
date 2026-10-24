@@ -9,7 +9,9 @@ import { transcribeVideo } from './video-analysis.js';
 import os from 'node:os';
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { Readable } from 'node:stream';
+import { Readable, Transform } from 'node:stream';
+import { pipeline } from 'node:stream/promises';
+import { createWriteStream } from 'node:fs';
 import { createClient } from '@supabase/supabase-js';
 import { decryptJson, encryptJson, signState, verifyState } from './crypto.js';
 import { driveIntakeAuthorizationUrl, exchangeGoogleCode, getGoogleIdentity, getYouTubeChannel, youtubeAuthorizationUrl } from './google.js';
@@ -30,6 +32,7 @@ import { createTemporaryMediaUrl, isOwnedMediaPath } from './media-links.js';
 import { canUsePrivateBrandData } from './brand-access.js';
 import { createTelegramIntakeRouter, registerTelegramWebhook } from './telegram-intake.js';
 import { getDriveReviewFile, startGoogleDriveIntake, streamDriveReviewFile } from './google-drive-intake.js';
+import { authorizeMcpDevice, createMcpDeviceAuthorization, findMcpAccessToken, pollMcpDeviceAuthorization } from './mcp-auth.js';
 
 const required = ['FRONTEND_URL', 'SUPABASE_URL', 'SUPABASE_SECRET_KEY', 'TOKEN_ENCRYPTION_KEY', 'STATE_SIGNING_SECRET'];
 const missing = required.filter((n) => !process.env[n]);
@@ -305,6 +308,22 @@ async function requireUser(req, res, next) {
   const token = req.headers.authorization?.replace(/^Bearer\s+/i, '');
   if (!token) return res.status(401).json({ error: 'Sign in required' });
   if (token.length > 4096) return res.status(401).json({ error: 'Sign in required' });
+  if (token.startsWith('dpm_')) {
+    try {
+      const session = await findMcpAccessToken(supabase, token);
+      if (!session) return res.status(401).json({ error: 'MCP authorization expired or revoked. Reconnect Driftpost from Osien Stack.' });
+      const requiredScope = mcpScopeForRequest(req);
+      if (!requiredScope || !session.scopes.includes(requiredScope)) {
+        return res.status(403).json({ error: 'This Driftpost MCP connection is not allowed to perform that action.' });
+      }
+      req.user = { id: session.user_id };
+      req.mcpToken = session;
+      return next();
+    } catch (e) {
+      console.error('[mcp auth] token lookup failed:', e?.message || e);
+      return res.status(503).json({ error: 'Login service unreachable — try again in a minute.' });
+    }
+  }
   try {
     let data;
     let error;
@@ -332,6 +351,24 @@ async function requireUser(req, res, next) {
     console.error('[auth] getUser threw:', e?.message || e);
     return res.status(503).json({ error: 'Login service unreachable — try again in a minute.' });
   }
+}
+
+// MCP tokens are deliberately narrower than a normal Driftpost login. If a
+// route is not listed here, the token cannot call it even though its owner can.
+function mcpScopeForRequest(req) {
+  const method = String(req.method || '').toUpperCase();
+  const route = String(req.path || '');
+  if (method === 'GET' && route === '/api/connections') return 'accounts:read';
+  if (method === 'DELETE' && /^\/api\/connections\/[^/]+$/.test(route)) return 'accounts:manage';
+  if (method === 'POST' && /^\/api\/oauth\/(youtube|facebook|instagram|x)\/start$/.test(route)) return 'accounts:connect';
+  if (method === 'PUT' && route === '/api/mcp/media') return 'media:upload';
+  if (method === 'POST' && route === '/api/publish') return 'posts:publish';
+  if (method === 'GET' && /^\/api\/jobs\/[^/]+$/.test(route)) return 'posts:read';
+  if (method === 'GET' && route === '/api/schedules') return 'posts:read';
+  if (method === 'POST' && route === '/api/schedule') return 'posts:schedule';
+  if (method === 'DELETE' && /^\/api\/schedules\/[^/]+$/.test(route)) return 'posts:schedule';
+  if (method === 'DELETE' && route === '/api/mcp/token') return 'mcp:revoke';
+  return null;
 }
 
 // --- Abuse guards: in-memory sliding-window limits (single instance) ---
@@ -388,6 +425,96 @@ const musicPreviewResourceLimit = limit({ windowMs: 60 * 1000, max: 1200, ns: 'm
 const igLookupLimit = limit({ windowMs: 60 * 1000, max: 120, ns: 'iglookup', key: userKey });
 const jobsLimit = limit({ windowMs: 60 * 1000, max: 180, ns: 'jobs', key: userKey });
 const callbackLimit = limit({ windowMs: 60 * 1000, max: 30, ns: 'cb', key: (req) => `ip:${req.ip}` });
+
+// Device authorization keeps social provider credentials and OAuth callbacks
+// on Driftpost. The MCP receives only a scoped, revocable user token after the
+// user signs in here and approves the one-time code.
+app.post('/api/mcp/device/start', strictBurstLimit, async (_req, res) => {
+  try {
+    await supabase.from('mcp_device_authorizations').delete().lt('expires_at', new Date().toISOString());
+    const device = await createMcpDeviceAuthorization(supabase);
+    res.set('Cache-Control', 'no-store').json(device);
+  } catch (error) {
+    console.error('[mcp auth] device start failed:', error?.message || error);
+    res.status(503).json({ error: 'Could not start Driftpost authorization. Try again shortly.' });
+  }
+});
+app.post('/api/mcp/device/authorize', requireUser, strictBurstLimit, async (req, res) => {
+  try {
+    const result = await authorizeMcpDevice(supabase, req.body?.user_code, req.user.id);
+    if (!result.ok) return res.status(result.status).json({ error: result.error });
+    res.set('Cache-Control', 'no-store').json({ authorized: true });
+  } catch (error) {
+    console.error('[mcp auth] device approval failed:', error?.message || error);
+    res.status(503).json({ error: 'Could not approve this connection. Try again shortly.' });
+  }
+});
+app.post('/api/mcp/device/token', strictBurstLimit, async (req, res) => {
+  try {
+    const result = await pollMcpDeviceAuthorization(supabase, req.body?.device_code);
+    if (!result.ok) return res.status(result.status).set('Cache-Control', 'no-store').json({ error: result.error });
+    res.set('Cache-Control', 'no-store').json(result);
+  } catch (error) {
+    console.error('[mcp auth] device token exchange failed:', error?.message || error);
+    res.status(503).json({ error: 'Could not complete Driftpost authorization. Try again shortly.' });
+  }
+});
+app.delete('/api/mcp/token', requireUser, strictBurstLimit, async (req, res) => {
+  if (!req.mcpToken?.id) return res.status(400).json({ error: 'Disconnect this MCP session from Osien Stack.' });
+  const { error } = await supabase.from('mcp_access_tokens').update({ revoked_at: new Date().toISOString() })
+    .eq('id', req.mcpToken.id).eq('user_id', req.user.id).is('revoked_at', null);
+  if (error) return res.status(500).json({ error: 'Could not revoke the Driftpost MCP session.' });
+  res.json({ revoked: true });
+});
+
+// Stream a video into the user's private bucket without buffering it in either
+// the MCP process or this API. Publishing and scheduling reuse the validated
+// owner-scoped object path returned here.
+app.put('/api/mcp/media', requireUser, strictBurstLimit, async (req, res) => {
+  const size = Number(req.headers['content-length']);
+  const mimetype = String(req.headers['content-type'] || '').toLowerCase();
+  if (!Number.isSafeInteger(size) || size < 1 || size > MAX_UPLOAD_BYTES) {
+    return res.status(size > MAX_UPLOAD_BYTES ? 413 : 400).json({ error: 'Video must be between 1 byte and 400 MB.' });
+  }
+  if (!mimetype.startsWith('video/') || !ACCEPTED_MEDIA_TYPES.has(mimetype)) {
+    return res.status(400).json({ error: 'Choose a supported video file.' });
+  }
+  let originalname = String(req.headers['x-file-name'] || 'video.mp4');
+  try { originalname = decodeURIComponent(originalname); } catch { return res.status(400).json({ error: 'Video filename is invalid.' }); }
+  originalname = originalname.split(/[\\/]/).pop().replace(/[\r\n\0]/g, '').slice(0, 180);
+  const ext = path.extname(originalname).replace(/[^a-z0-9.]/gi, '').slice(1, 8).toLowerCase()
+    || ({ 'video/quicktime': 'mov', 'video/webm': 'webm', 'video/x-m4v': 'm4v' }[mimetype] || 'mp4');
+  const tempPath = path.join(os.tmpdir(), `driftpost-mcp-${crypto.randomUUID()}.${ext}`);
+  let observedSize = 0;
+  let prefix = Buffer.alloc(0);
+  let objectPath = null;
+  const guard = new Transform({
+    transform(chunk, _encoding, done) {
+      observedSize += chunk.length;
+      if (observedSize > size || observedSize > MAX_UPLOAD_BYTES) return done(new Error('Uploaded video exceeded its declared size.'));
+      if (prefix.length < 16) prefix = Buffer.concat([prefix, chunk.subarray(0, 16 - prefix.length)]);
+      done(null, chunk);
+    },
+  });
+  try {
+    await pipeline(req, guard, createWriteStream(tempPath, { flags: 'wx' }));
+    if (observedSize !== size || !videoBufferMatches(prefix, mimetype)) {
+      return res.status(400).json({ error: 'The uploaded file does not match its declared video type.' });
+    }
+    objectPath = `${req.user.id}/${crypto.randomUUID()}.${ext}`;
+    const { error } = await uploadMediaFile(supabase.storage.from(BUCKET), objectPath, {
+      path: tempPath, size, mimetype, originalname,
+    }, { upsert: false });
+    if (error) throw error;
+    res.status(201).json({ path: objectPath, name: originalname, mimetype, size });
+  } catch (error) {
+    if (objectPath) await supabase.storage.from(BUCKET).remove([objectPath]).catch(() => {});
+    console.error('[mcp media] upload failed:', error?.message || error);
+    if (!res.headersSent) res.status(502).json({ error: 'Driftpost could not store the video. Retry the upload.' });
+  } finally {
+    await fs.unlink(tempPath).catch(() => {});
+  }
+});
 const aiUnlockLimit = limit({ windowMs: 15 * 60 * 1000, max: 5, ns: 'ai-unlock', key: userKey });
 
 function isAiAllowedUser(user) {
@@ -1699,14 +1826,13 @@ app.post('/api/publish', requireUser, publishRequestBurstLimit, publishQueueLimi
     await cleanup();
     return res.status(400).json({ error: 'Pick YouTube, Instagram, Facebook or X' });
   }
-  // Hosted media references are accepted only for Meta publishing and only
-  // for random object keys inside the authenticated user's storage folder.
-  // Derive public URLs on the server; never let clients make Meta fetch an
-  // arbitrary URL on their behalf.
+  // Hosted media references must point to random object keys inside the
+  // authenticated user's private storage folder. Meta gets short-lived URLs;
+  // YouTube and X download the same object to a bounded local temp file.
   if (req.body.hasPreuploadedMedia === '1') {
-    if (!['instagram', 'facebook'].includes(platform) || files.length) {
+    if (files.length) {
       await cleanup();
-      return res.status(400).json({ error: 'Stored media can only be used directly for Instagram or Facebook posts.' });
+      return res.status(400).json({ error: 'Stored media must not be combined with another file upload.' });
     }
     let count = 0;
     for (let index = 0; index < 20; index++) {
@@ -1715,8 +1841,10 @@ app.post('/api/publish', requireUser, publishRequestBurstLimit, publishQueueLimi
       const [owner, filename, ...extra] = objectPath.split('/');
       const mimetype = String(req.body[`mediaType${index}`] || '').toLowerCase();
       const name = String(req.body[`mediaName${index}`] || `media_${index}`).slice(0, 240);
+      const size = Number(req.body[`mediaSize${index}`]);
       if (owner !== req.user.id || extra.length || !isOwnedMediaPath(req.user.id, objectPath)
-        || !/^(image|video)\/[a-z0-9.+-]+$/.test(mimetype)) {
+        || !/^(image|video)\/[a-z0-9.+-]+$/.test(mimetype)
+        || (mimetype.startsWith('video/') && (!Number.isSafeInteger(size) || size < 1 || size > MAX_UPLOAD_BYTES))) {
         await cleanup();
         return res.status(400).json({ error: 'Stored media reference is invalid. Re-upload the media and try again.' });
       }
@@ -1738,6 +1866,10 @@ app.post('/api/publish', requireUser, publishRequestBurstLimit, publishQueueLimi
     if (platform === 'facebook' && count > 20) {
       await cleanup();
       return res.status(400).json({ error: 'Facebook allows up to 20 photos per carousel.' });
+    }
+    if (['youtube', 'x'].includes(platform) && (count !== 1 || !String(req.body.mediaType0 || '').startsWith('video/'))) {
+      await cleanup();
+      return res.status(400).json({ error: `${platform === 'youtube' ? 'YouTube needs' : 'X needs'} one video.` });
     }
     if (count > 1 && req.body.mediaType0?.startsWith('video/')) {
       await cleanup();
@@ -2008,7 +2140,7 @@ async function runPublish(job, conn, payload, body, userId) {
   const instagramFiles = payload?.instagramFiles || [];
   const facebookFiles = payload?.facebookFiles || [];
   const coverFiles = payload?.coverFiles || {};
-  const file = files[0] || null;
+  let file = files[0] || null;
   const allFiles = files;
   const temporaryStoragePaths = [];
   const downloadedMediaPaths = [];
@@ -2025,6 +2157,29 @@ async function runPublish(job, conn, payload, body, userId) {
       const fallbackText = String(body.text || '').trim();
     const captionError = instagramCaptionRequiredError(job.platform, body);
     if (captionError) throw new Error(captionError);
+    // YouTube and X need file streams, while Meta can consume short-lived
+    // signed URLs. Keep provider upload bytes on disk for large videos.
+    if (body.hasPreuploadedMedia === '1' && ['youtube', 'x'].includes(job.platform)) {
+      const objectPath = String(body.mediaPath0 || '');
+      const mimetype = String(body.mediaType0 || '').toLowerCase();
+      const declaredSize = Number(body.mediaSize0);
+      const name = String(body.mediaName0 || 'video.mp4').slice(0, 240);
+      if (!isOwnedMediaPath(userId, objectPath) || !mimetype.startsWith('video/')
+        || !Number.isSafeInteger(declaredSize) || declaredSize < 1 || declaredSize > MAX_UPLOAD_BYTES) {
+        throw new Error('Stored video reference is invalid. Re-upload the video and try again.');
+      }
+      const signedUrl = await createTemporaryMediaUrl(supabase.storage.from(BUCKET), objectPath);
+      const extension = path.extname(name).replace(/[^a-z0-9.]/gi, '').slice(0, 8) || '.mp4';
+      const localPath = path.join(os.tmpdir(), `driftpost-mcp-publish-${crypto.randomUUID()}${extension}`);
+      await downloadMediaFile(signedUrl, localPath);
+      downloadedMediaPaths.push(localPath);
+      const actualSize = (await fs.stat(localPath)).size;
+      if (actualSize !== declaredSize || actualSize > MAX_UPLOAD_BYTES || !(await magicIsVideo(localPath, mimetype))) {
+        throw new Error('Stored media failed video validation. Re-upload the original video and try again.');
+      }
+      files.push({ path: localPath, size: actualSize, mimetype, originalname: name });
+      file = files[0];
+    }
     // skip_crosspost=1 is sent by "Post to all" so one tap never double-posts
     // via IG->FB and FB->IG mirrors at the same time.
     const allowCrossPost = String(body.skip_crosspost || '') !== '1';
@@ -2524,9 +2679,9 @@ app.post('/api/schedule', requireUser, strictBurstLimit, scheduleRequestLimit, m
   }
   const directStored = [];
   if (req.body.hasPreuploadedMedia === '1') {
-    if (!['instagram', 'facebook'].includes(platform) || files.length) {
+    if (files.length) {
       await cleanupTmp();
-      return res.status(400).json({ error: 'Stored media can only be scheduled directly for Instagram or Facebook.' });
+      return res.status(400).json({ error: 'Stored media must not be combined with another file upload.' });
     }
     for (let index = 0; index < 10; index++) {
       const objectPath = String(req.body[`mediaPath${index}`] || '');
