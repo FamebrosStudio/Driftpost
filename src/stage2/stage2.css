@@ -108,7 +108,7 @@
 .s2-out-head { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
 .s2-out-head b { font-size: 14px; }
 .s2-field { margin-bottom: 10px; }
-.s2-field > span { display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--faint); margin-bottom: 5px; }
+.s2-field > span, .s2-field > label { display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--faint); margin-bottom: 5px; }
 .s2-field p { margin: 0; font-size: 13.5px; line-height: 1.65; white-space: pre-wrap; overflow-wrap: break-word; color: var(--ink); }
 .s2-field textarea, .s2-field input { width: 100%; background: var(--input); border: 1.5px solid var(--line-hard); border-radius: 10px; padding: 10px 12px; color: var(--ink); font-size: 13.5px; line-height: 1.6; outline: none; font-family: inherit; }
 .s2-field textarea { min-height: 90px; resize: vertical; }
@@ -117,6 +117,8 @@
 .s2-out-acts button { flex: 1 1 110px; min-width: 0; border: 1px solid var(--line-hard); background: var(--panel); color: var(--ink); border-radius: 10px; padding: 10px 6px; font-size: 12.5px; font-weight: 700; cursor: pointer; white-space: nowrap; }
 .s2-out-acts button:hover { border-color: var(--acc); color: var(--acc); }
 .s2-out-acts button:disabled { opacity: 0.45; cursor: wait; }
+.s2-copy-status { display: block; min-height: 18px; margin-top: 7px; color: var(--muted); font-size: 12px; line-height: 1.5; }
+.s2-copy-status.err { color: var(--danger); }
 .s2-xcount { font-size: 11.5px; color: var(--faint); margin-top: 4px; }
 .s2-xcount.over { color: var(--danger, #e5484d); font-weight: 700; }
 
@@ -318,7 +320,7 @@
   .s2-out-acts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
   .s2-out-acts button { min-height: 44px; }
   .s2-settings { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
-  .s2-setting select, .s2-prompt textarea, .s2-epidemic input { font-size: 16px; }
+  .s2-setting select, .s2-prompt, .s2-epidemic input { font-size: 16px; }
   .s2-continue-bar { padding: 10px 12px calc(env(safe-area-inset-bottom) + 10px); }
   .s2-continue-btn { width: 100%; min-height: 48px; }
   .s2-overlay { align-items: flex-end; padding: 0; }

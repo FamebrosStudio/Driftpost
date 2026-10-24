@@ -35,16 +35,20 @@ export default function PlatformOutputCard({ pid, values, onSave, regenning, reg
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(values);
   const [copied, setCopied] = useState(false);
+  const [copyError, setCopyError] = useState('');
   const fields = FIELDS[pid] || [];
 
   const startEdit = () => { setDraft(values); setEditing(true); };
   const saveEdit = () => { onSave(pid, draft); setEditing(false); };
   const copy = async () => {
+    setCopyError('');
     try {
       await navigator.clipboard.writeText(composeOutput(pid, editing ? draft : values));
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
-    } catch {}
+    } catch {
+      setCopyError('Clipboard access failed. Select the text and copy it manually.');
+    }
   };
   const xLen = pid === 'x' ? Array.from(((editing ? draft : values).text || '')).length : 0;
 
@@ -56,12 +60,12 @@ export default function PlatformOutputCard({ pid, values, onSave, regenning, reg
       </div>
       {fields.map((f) => (
         <div key={f.k} className="s2-field">
-          <span>{f.label}</span>
+          {editing ? <label htmlFor={`s2-output-${pid}-${f.k}`}>{f.label}</label> : <span>{f.label}</span>}
           {editing ? (
             f.ta ? (
-              <textarea value={draft[f.k] || ''} maxLength={f.maxLength} onChange={(e) => setDraft({ ...draft, [f.k]: e.target.value })} />
+              <textarea id={`s2-output-${pid}-${f.k}`} value={draft[f.k] || ''} maxLength={f.maxLength} onChange={(e) => setDraft({ ...draft, [f.k]: e.target.value })} />
             ) : (
-              <input value={draft[f.k] || ''} maxLength={f.maxLength} onChange={(e) => setDraft({ ...draft, [f.k]: e.target.value })} />
+              <input id={`s2-output-${pid}-${f.k}`} value={draft[f.k] || ''} maxLength={f.maxLength} onChange={(e) => setDraft({ ...draft, [f.k]: e.target.value })} />
             )
           ) : (
             <p>{values[f.k] || '—'}</p>
@@ -80,6 +84,7 @@ export default function PlatformOutputCard({ pid, values, onSave, regenning, reg
           {regenning ? '…' : 'Regen'}
         </button>}
       </div>
+      {(copied || copyError) && <small className={`s2-copy-status${copyError ? ' err' : ''}`} role="status">{copyError || 'Copied to clipboard.'}</small>}
     </div>
   );
 }
