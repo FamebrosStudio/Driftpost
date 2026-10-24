@@ -35,7 +35,7 @@ const scopedKey = (key, userId) => `${key}:${userId}`;
 
 
 
-export default function StageTwoPage({ session, onBack, onSignOut, onNavigate, onNext }) {
+export default function StageTwoPage({ session, onBack, onSignOut, onNavigate, onNext, onStep }) {
   const userId = session.user.id;
   const initialSelection = useMemo(() => readStageSelection(userId), [userId]);
   const canUseAi = canGenerateCaptions(session);
@@ -270,7 +270,7 @@ export default function StageTwoPage({ session, onBack, onSignOut, onNavigate, o
           <h1>Create Your Content</h1>
           <p>{canUseAi ? 'Upload your media, customize your format and let AI create platform-ready content.' : 'Upload your media and prepare platform-ready drafts to review before posting.'}</p>
         </header>
-        <ProgressStepper current={2} />
+        <ProgressStepper current={2} onStep={onStep} />
 
         <section className="s2-sec" aria-label="Add media">
           <div className="s2-sec-head">

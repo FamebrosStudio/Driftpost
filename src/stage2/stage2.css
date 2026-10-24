@@ -26,6 +26,10 @@
 .s2-progress { margin: 26px auto 6px; max-width: 560px; animation: s2Up 0.5s 0.08s ease both; }
 .s2-progress ol { list-style: none; display: flex; margin: 0; padding: 0; }
 .s2-step { flex: 1; min-width: 0; text-align: center; position: relative; font-size: 11.5px; color: var(--faint); }
+.s2-step .progress-step-button { display: block; width: 100%; padding: 0; border: 0; background: transparent; color: inherit; font: inherit; }
+.s2-step .progress-step-button:disabled { opacity: 1; cursor: default; }
+.s2-step .progress-step-button:not(:disabled) { cursor: pointer; }
+.s2-step .progress-step-button:focus-visible { outline: 2px solid var(--acc); outline-offset: 3px; border-radius: 4px; }
 .s2-step .dot { width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid var(--line-hard); display: inline-grid; place-items: center; font-size: 11px; font-weight: 700; background: var(--panel); position: relative; z-index: 1; }
 .s2-step.cur .dot { border-color: var(--acc); color: var(--acc); box-shadow: 0 0 0 4px var(--acc-soft); }
 .s2-step.done .dot { background: var(--acc); border-color: var(--acc); color: var(--acc-ink); }

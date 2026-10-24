@@ -43,7 +43,7 @@ const DEFAULT_CFG = {
 };
 const NAMES = { instagram: 'Instagram', facebook: 'Facebook', youtube: 'YouTube', x: 'X' };
 
-export default function StageThreePage({ session, onBack, onSignOut, onNavigate, onDone, onBackgroundProgress }) {
+export default function StageThreePage({ session, onBack, onSignOut, onNavigate, onDone, onBackgroundProgress, onStep }) {
   const userId = session.user.id;
   const initialSelection = useMemo(() => readStageSelection(userId), [userId]);
   const canUseAi = canGenerateCaptions(session);
@@ -1239,7 +1239,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
           <h1>Review &amp; Finalize Your Content</h1>
           <p>Review your platform content before publishing.</p>
         </header>
-        <ProgressStepper current={3} />
+        <ProgressStepper current={3} onStep={onStep} />
         {isTeamWorkflow && teamWarning && <p className="team-analysis-warning" role="status">{teamWarning} Automatic publishing is paused; review the draft before publishing.</p>}
         {isTeamWorkflow && teamTranscript && <details className="team-transcript"><summary>Review detected transcript{teamTranscript.length >= 5000 ? ' · first 5,000 characters' : ''}</summary><p>{teamTranscript}</p></details>}
         {connsError && !connections.length && (

@@ -83,7 +83,7 @@ export default function Console({ session, onSwitchAccount, onSignOut }) {
         return;
       }
       setView('create');
-      if (stage === 'connect') go('1');
+      go('1');
       return;
     }
     if (next === 'team-video' && !isAiAccount(session.user?.email)) {
@@ -96,7 +96,7 @@ export default function Console({ session, onSwitchAccount, onSignOut }) {
   const chooseBasic = () => {
     setCreateModePicker(false);
     setView('create');
-    if (stage === 'connect') go('1');
+    go('1');
   };
   const openHistory = () => navigate('history');
   const withBackgroundNotice = (page) => <>{page}<BackgroundPublishNotice notice={backgroundPublishNotice} onDismiss={() => setBackgroundPublishNotice(null)} /></>;
@@ -116,7 +116,7 @@ export default function Console({ session, onSwitchAccount, onSignOut }) {
   );
   if (view === 'accounts') return withBackgroundNotice(loadPage(<><WorkspaceNav page="accounts" onNavigate={navigate} email={session.user?.email} onSignOut={onSignOut} /><ConnectPage session={session} onContinue={() => navigate('create')} onHistory={openHistory} onSignOut={onSignOut} embedded /></>));
   if (stage === '3') {
-    return withBackgroundNotice(loadPage(<StageThreePage session={session} onBack={() => go(2)} onNavigate={navigate} onSignOut={onSignOut} onDone={(result) => {
+    return withBackgroundNotice(loadPage(<StageThreePage session={session} onBack={() => go(2)} onStep={(step) => go(step)} onNavigate={navigate} onSignOut={onSignOut} onDone={(result) => {
       if (result?.backgroundPublish) setBackgroundPublishNotice(result.backgroundPublish);
       go(1);
     }} onBackgroundProgress={(progress) => setBackgroundPublishNotice((current) => current?.id === progress.id ? progress : current)} />));
@@ -131,7 +131,7 @@ export default function Console({ session, onSwitchAccount, onSignOut }) {
         sessionStorage.removeItem(`driftpost-team-transcript:${session.user.id}`);
       } catch {}
       go(1);
-    }} onNavigate={navigate} onSignOut={onSignOut} onNext={() => go(3)} />));
+    }} onStep={(step) => go(step)} onNavigate={navigate} onSignOut={onSignOut} onNext={() => go(3)} />));
   }
   if (stage === '1') {
     return withBackgroundNotice(loadPage(<StageOnePage session={session} onNext={() => go(2)} onNavigate={navigate} onSignOut={onSignOut} />));
