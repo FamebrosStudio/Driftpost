@@ -9,6 +9,40 @@ function matchesTopic(candidate, brief) {
   return words(brief).some((word) => tag.includes(word));
 }
 
+const TOPIC_CONCEPTS = [
+  ['footwear', 'shoe', 'shoes', 'sneaker', 'sneakers', 'trainer', 'trainers', 'boot', 'boots', 'sandal', 'sandals', 'heel', 'heels', 'loafer', 'loafers', 'slipper', 'slippers'],
+  ['jewelry', 'jewellery', 'jewel', 'jewels', 'jeweler', 'jeweller', 'gold', 'silver', 'ring', 'rings', 'necklace', 'necklaces', 'earring', 'earrings', 'bracelet', 'bracelets'],
+  ['salon', 'hair', 'haircut', 'haircuts', 'hairstyle', 'hairstyles', 'hairstyling', 'color', 'colour', 'balayage', 'keratin', 'beauty', 'makeup'],
+  ['furniture', 'sofa', 'sofas', 'couch', 'couches', 'chair', 'chairs', 'table', 'tables', 'wardrobe', 'bed', 'beds', 'interior'],
+  ['restaurant', 'food', 'dish', 'dishes', 'meal', 'meals', 'menu', 'cafe', 'café', 'bakery', 'cake', 'cakes', 'dessert', 'desserts', 'recipe', 'recipes'],
+  ['astronomy', 'space', 'cosmos', 'universe', 'planet', 'planets', 'star', 'stars', 'galaxy', 'galaxies', 'blackhole', 'astrophysics', 'orbit', 'orbits'],
+  ['school', 'education', 'student', 'students', 'classroom', 'teacher', 'teachers', 'learning', 'lesson', 'lessons', 'curriculum'],
+  ['clinic', 'medical', 'health', 'healthcare', 'doctor', 'doctors', 'patient', 'patients', 'treatment', 'therapy', 'wellness'],
+  ['car', 'cars', 'automotive', 'vehicle', 'vehicles', 'motorcycle', 'motorcycles', 'bike', 'bikes', 'garage', 'dealer', 'dealership'],
+  ['travel', 'tourism', 'hotel', 'resort', 'beach', 'holiday', 'vacation', 'tour', 'tours', 'destination', 'destinations'],
+];
+const TOPIC_CONCEPT_BY_WORD = new Map(TOPIC_CONCEPTS.flatMap((group) => group.map((word) => [word, group[0]])));
+const GENERIC_BRAND_TERMS = new Set(['brand', 'business', 'collection', 'design', 'local', 'new', 'official', 'shop', 'store', 'style', 'styling', 'today']);
+
+function topicConcepts(value) {
+  return words(value).map((word) => TOPIC_CONCEPT_BY_WORD.get(word) || word)
+    .filter((word) => !GENERIC_BRAND_TERMS.has(word));
+}
+
+// A selected profile may contribute its voice, CTA, footer and brand tag only
+// when the brief is actually about its identity/category/products. This keeps
+// an unrelated prompt (for example, black holes for a footwear account) from
+// inheriting that account's marketing copy.
+export function brandTopicRelevant({ brand, brief, extraTerms = [] }) {
+  if (!brand) return false;
+  const topic = new Set(topicConcepts(brief));
+  if (!topic.size) return false;
+  const profile = topicConcepts([
+    brand.name, brand.cat, ...(brand.aliases || []), ...(brand.kw || []), ...extraTerms,
+  ].join(' '));
+  return profile.some((concept) => topic.has(concept));
+}
+
 function isAnotherBrand(candidate, brand, otherBrands = []) {
   const tag = compact(candidate).replace(/\s+/g, '');
   const own = new Set([brand?.name, ...(brand?.aliases || []), brand?.ig]
@@ -21,11 +55,13 @@ function isAnotherBrand(candidate, brand, otherBrands = []) {
   });
 }
 
-// The selected brand tag is safe by identity. Every other hashtag must be
-// supported by the current brief; broad historical keyword banks never pad
-// an unrelated post. Return up to three rather than inventing filler tags.
+// Add the selected brand tag only when the current topic fits that brand.
+// Every other hashtag must be supported by the brief; broad historical
+// keyword banks never pad an unrelated post.
 export function safeBrandHashtags({ candidates = [], brand, brief, otherBrands = [], max = 3 }) {
-  const ownTag = String(brand?.name || '').replace(/[^A-Za-z0-9]/g, '');
+  const ownTag = brandTopicRelevant({ brand, brief })
+    ? String(brand?.name || '').replace(/[^A-Za-z0-9]/g, '')
+    : '';
   const clean = (value) => String(value || '').replace(/^#+/, '').replace(/[^A-Za-z0-9_]/g, '');
   const result = ownTag ? [ownTag] : [];
   const seen = new Set(result.map((tag) => tag.toLowerCase()));

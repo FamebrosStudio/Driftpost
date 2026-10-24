@@ -8,6 +8,7 @@
 import {
   captionBodiesNearlyIdentical,
   captionFillerIssues,
+  brandTopicRelevant,
   safeBrandHashtags,
   safeTopicHashtags,
   topicRelevantPhrases,
@@ -25,6 +26,7 @@ const GLOBAL_SYSTEM = `You are Driftpost's social copywriter for businesses, ind
 Always reply with ONE valid JSON object, no markdown, no commentary:
 {"youtube":{"title":"<=100 chars","description":"SEO description","tags":["up to 8 lowercase tags, no #"]},"instagram":{"caption":"ready-to-copy IG caption","hashtags":["up to 10, no #"]},"facebook":{"message":"ready-to-copy FB post"},"x":{"text":"<=280 chars"}}
 CRITICAL: when a saved brand is selected, write only for that brand and use only its verified record. When no saved brand is selected, treat the user as a creator/project owner: use only the supplied brief and media, and do not add an agency identity, business assumptions, footer, contact details or saved-brand facts. A name in a one-off brief is not permission to infer its category or history. Never transfer facts or voice between accounts. All requested platform texts must be meaningfully distinct and native to their platform.
+When a selected brand has no clear connection to the subject, keep the copy focused on the user's actual topic and omit brand-specific claims, CTAs, hashtags and footer lines. Never add a brand hashtag just to fill a slot.
 QUALITY BAR: create finished copy with a clear angle, natural rhythm, and useful specificity. For each platform, independently choose the strongest truthful detail and native format; do not just paraphrase the same sentence. Avoid canned hooks, filler, keyword stuffing, empty superlatives, fake urgency, and generic engagement bait. Do not invent product features, sizes, prices, stock, addresses, phone numbers, results, credentials, or delivery promises. Omit unknown facts. Use one natural CTA at most; omit it if none fits. Silently edit for repetition, unsupported details, awkward phrasing, and platform fit.
 For independent creators and users without a saved brand, make strong captions from their supplied context: use their stated identity, project, audience, goal, and tone when provided; otherwise write an inclusive, context-neutral caption around the real subject. Never force a business voice or pretend to know their niche. Give creators a memorable angle without making up a backstory.
 Rules: concrete everyday language, audience-aware only when the audience is given, business-safe, no em dash. Hashtags must be relevant to the actual post, factual, and lowercase without spaces. Do not force hashtags, a CTA, or search keywords when they add no value.
@@ -537,6 +539,11 @@ export async function generateCaptions(summary, opts = {}) {
         autoNew = found;
       }
     } catch {}
+  }
+  if (brand && !brandTopicRelevant({ brand, brief })) {
+    console.info(`[ai] omitted unrelated brand context for topic: ${brand.id}`);
+    brand = null;
+    autoNew = null;
   }
   // FULL record: every phone/address/footer/fact/keyword/example for this brand.
   const pack = brand ? mem.fullPack(brand) : '';
