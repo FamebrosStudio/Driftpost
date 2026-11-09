@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 import BrandIcon from '../brand.jsx';
 
 // Per-platform editable fields.
+// Instagram has no separate hashtags field: the server keeps hashtags above
+// the [keywords] bracket inside the caption itself, so the caption box is the
+// single source of truth for what publishes.
 const FIELDS = {
   instagram: [
     { k: 'caption', label: 'Caption', ta: true, maxLength: 2200 },
-    { k: 'hashtags', label: 'Hashtags', ta: false, maxLength: 500 },
   ],
   facebook: [{ k: 'message', label: 'Post copy', ta: true }],
   youtube: [
@@ -19,14 +21,9 @@ const NAMES = { instagram: 'Instagram', facebook: 'Facebook', youtube: 'YouTube'
 
 export function composeOutput(pid, v) {
   if (pid === 'youtube') return [v.title, v.description, v.tags ? `Tags: ${v.tags}` : ''].filter(Boolean).join('\n\n');
-  if (pid === 'instagram') {
-    const caption = v.caption || '';
-    const existing = new Set((caption.match(/#[\p{L}\p{N}_]+/gu) || []).map((t) => t.toLowerCase()));
-    const tags = String(v.hashtags || '').split(/[,\s]+/).filter(Boolean)
-      .map((t) => `#${t.replace(/^#+/, '')}`)
-      .filter((t) => { const key = t.toLowerCase(); if (existing.has(key)) return false; existing.add(key); return true; });
-    return [caption, tags.join(' ')].filter(Boolean).join('\n\n');
-  }
+  // Instagram caption already ends with footer → hashtags → [keywords] in
+  // that order (see server/src/ai.js). Do not append anything below it.
+  if (pid === 'instagram') return v.caption || '';
   if (pid === 'facebook') return v.message || '';
   return v.text || '';
 }

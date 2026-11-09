@@ -394,7 +394,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
     if (pid === 'facebook' && !v.message?.trim() && !c.link?.trim() && !files.length) return 'add post text, a website link, or media';
     if (pid === 'instagram' && !files.some((f) => /^(image|video)\//.test(f.type))) return 'Instagram needs a photo or video';
     if (pid === 'instagram' && files.length > 10) return 'Instagram publishing supports up to 10 carousel slides. Remove extra slides or post them using Instagram directly.';
-    if (pid === 'instagram' && Array.from(composeOutput(pid, v)).length > 2200) return 'caption plus hashtags exceeds Instagram’s 2,200 character limit';
+    if (pid === 'instagram' && Array.from(composeOutput(pid, v)).length > 2200) return 'caption exceeds Instagram’s 2,200 character limit';
     if (pid === 'instagram' && (!isGroupFlow || isTeamWorkflow) && c.collabsEnabled && parseInstagramCollaborators(c.collabs).error) return parseInstagramCollaborators(c.collabs).error;
     if (pid === 'youtube' && !files.some((f) => f.type.startsWith('video/')) && !files.length) return 'YouTube needs a video file, or a photo to convert into a Short';
     if (pid === 'youtube' && files.length > 1) return 'YouTube accepts one video per post';

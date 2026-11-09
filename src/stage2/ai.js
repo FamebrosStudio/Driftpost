@@ -176,13 +176,14 @@ export function approveCaption(token, { brand, platform, caption }) {
 export function mapResponse(data) {
   const c = data.captions || data;
   const ytTags = Array.isArray(c.youtube?.tags) ? c.youtube.tags.join(', ') : (c.youtube?.tags || '');
-  const rawTags = Array.isArray(c.instagram?.hashtags) ? c.instagram.hashtags : String(c.instagram?.hashtags || '').split(/[,\s]+/);
-  const igTags = [...new Set(rawTags.map((t) => String(t).replace(/^#+/, '').trim()).filter(Boolean))].map((t) => `#${t}`).join(' ');
-  const igCaption = String(c.instagram?.caption || '').split('\n')
-    .filter((line) => !igTags || !/^\s*(?:#[\p{L}\p{N}_]+\s*)+$/u.test(line)).join('\n').replace(/\n{3,}/g, '\n\n').trim();
+  // Server already assembles Instagram as:
+  //   caption body → footer → hashtags → [seo keywords]
+  // Keep the caption verbatim so hashtags stay ABOVE the [keywords] bracket.
+  // There is intentionally no separate hashtags field anymore.
+  const igCaption = String(c.instagram?.caption || '').replace(/\n{3,}/g, '\n\n').trim();
   const xText = typeof c.x?.text === 'string' ? Array.from(c.x.text).slice(0, 280).join('') : '';
   return {
-    instagram: { caption: igCaption, hashtags: igTags },
+    instagram: { caption: igCaption },
     facebook: { message: c.facebook?.message || '' },
     youtube: { title: c.youtube?.title || '', description: c.youtube?.description || '', tags: ytTags },
     x: { text: xText },

@@ -76,7 +76,7 @@ export default function Workspace({
   else if (pid === 'facebook' && cfg.cta && !cfg.link?.trim()) error = 'A button needs a website link above.';
   else if (pid === 'facebook' && !values.message?.trim() && !cfg.link?.trim() && !files.length) error = 'Add post text, a website link, or media.';
   else if (pid === 'instagram' && !files.some((f) => /^(image|video)\//.test(f.type))) error = 'Instagram needs a photo or video.';
-  else if (pid === 'instagram' && Array.from(composeOutput(pid, values)).length > 2200) error = 'Caption plus hashtags is over Instagram’s 2,200 character limit.';
+  else if (pid === 'instagram' && Array.from(composeOutput(pid, values)).length > 2200) error = 'Caption is over Instagram’s 2,200 character limit.';
   else if (pid === 'youtube' && !hasVideo && !files.length) error = 'YouTube needs a video file, or a photo to convert into a Short.';
   else if (pid === 'youtube' && files.length > 1) error = 'YouTube accepts one video per post.';
   else if (pid === 'youtube' && !values.title?.trim()) error = 'Add a title before posting to YouTube.';
@@ -134,7 +134,6 @@ export default function Workspace({
             <CoverPicker platform="instagram" files={files} cover={thumb} onChange={onThumb} />
             {mirrorPlatform === 'facebook' && <CoverPicker platform="facebook" files={files} cover={mirrorCover} onChange={onMirrorCover} />}
             <Field label="Caption"><textarea value={values.caption || ''} onChange={(e) => set('caption', e.target.value)} placeholder="Write the caption…" /></Field>
-            <Field label="Hashtags"><input value={values.hashtags || ''} onChange={(e) => set('hashtags', e.target.value)} placeholder="#brand #fashion" /></Field>
             {!hideInstagramCrosspost && <label className="s3-check"><input type="checkbox" checked={!!cfg.shareFb} onChange={(e) => setCfg({ shareFb: e.target.checked })} /><span>Also post on Facebook<small>Facebook is published once and removed from the Stage 3 platform list.</small></span></label>}
             <label className="s3-check"><input type="checkbox" checked={!!cfg.story} onChange={(e) => setCfg({ story: e.target.checked })} /><span>Also post as Story (24h)<small>Same media as a story, in one tap.</small></span></label>
             <details className="s3-adv">
