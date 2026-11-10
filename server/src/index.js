@@ -252,8 +252,16 @@ app.post('/api/meta/webhook', express.raw({ type: 'application/json', limit: '1m
               connection_id: connection.id,
               event_type: 'comment',
             }, async () => {
-              if (field === 'private_reply' && platform === 'instagram') {
-                await sendInstagramPrivateReply({ pageId: tokens.page_id, commentId, message, accessToken: token });
+              if (field === 'private_reply') {
+                // Meta's Page Send API handles comment-triggered private replies
+                // for both Instagram and Facebook. The legacy `private_replies`
+                // comment edge is rejected for current Page integrations.
+                await sendInstagramPrivateReply({
+                  pageId: platform === 'instagram' ? tokens.page_id : igId,
+                  commentId,
+                  message,
+                  accessToken: token,
+                });
                 return;
               }
               const response = await fetch(`https://graph.facebook.com/v21.0/${encodeURIComponent(commentId)}/${edge}`, {
