@@ -224,6 +224,12 @@ app.post('/api/meta/webhook', express.raw({ type: 'application/json', limit: '1m
       if (!['instagram', 'page'].includes(payload.object)) continue;
       const platform = payload.object === 'page' ? 'facebook' : 'instagram';
       const igId = String(entry.id || '');
+      console.info('[meta automation] webhook entry received', {
+        platform,
+        accountSuffix: igId.slice(-4),
+        changes: entry.changes?.length || 0,
+        messages: entry.messaging?.length || 0,
+      });
       const { data: connections, error: connectionsError } = await supabase.from('platform_connections')
         .select('*').eq('platform', platform).eq('platform_account_id', igId);
       if (connectionsError) throw connectionsError;
@@ -233,12 +239,16 @@ app.post('/api/meta/webhook', express.raw({ type: 'application/json', limit: '1m
           .select('rules, enabled').eq('connection_id', connection.id).eq('user_id', connection.user_id).maybeSingle();
         if (automationError) throw automationError;
         if (!automation?.enabled) {
-          console.info('[meta automation] account automation is paused', { platform, connection: connection.id.slice(0, 8) });
+          console.info('[meta automation] account automation is paused', { platform, accountSuffix: igId.slice(-4), connection: connection.id.slice(0, 8) });
           continue;
         }
+        console.info('[meta automation] active account matched webhook', { platform, accountSuffix: igId.slice(-4), connection: connection.id.slice(0, 8) });
         const tokens = decryptJson(connection.encrypted_tokens);
         const token = tokens?.access_token;
-        if (!token) continue;
+        if (!token) {
+          console.info('[meta automation] active connection has no access token', { platform, accountSuffix: igId.slice(-4), connection: connection.id.slice(0, 8) });
+          continue;
+        }
         const rules = automation.rules || {};
         for (const change of entry.changes || []) {
           const comment = automationComment(platform, change, igId);
