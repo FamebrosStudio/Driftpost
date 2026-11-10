@@ -19,7 +19,14 @@ export default function ConnectPage({ session, onContinue, onHistory, onSignOut,
   const [msg, setMsg] = useState('');
   const [msgKind, setMsgKind] = useState('ok');
   const [accountSearch, setAccountSearch] = useState({});
+  const [config, setConfig] = useState(null);
   const say = (m, k = 'ok') => { setMsg(m); setMsgKind(k); };
+
+  useEffect(() => {
+    api('/api/config', session.access_token)
+      .then((d) => setConfig(d))
+      .catch(() => setConfig(null));
+  }, [session.access_token]);
 
   useEffect(() => { document.title = 'Connect accounts · Driftpost'; }, []);
 
@@ -112,6 +119,11 @@ export default function ConnectPage({ session, onContinue, onHistory, onSignOut,
 
         {msg && <div className={msgKind === 'err' ? 'cn-msg err' : 'cn-msg ok'}>{msg}{msgKind === 'err' && <div style={{ marginTop: 8 }}><button type="button" className="cn-connect ghost" style={{ width: 'auto', marginTop: 0, padding: '9px 18px' }} onClick={load}>Retry</button></div>}</div>}
 
+        {config && !config.meta && (
+          <div className="cn-msg err" style={{ marginTop: 12 }}>
+            Meta (Facebook/Instagram) is not configured on the API yet. The administrator must set META_APP_ID, META_APP_SECRET and META_REDIRECT_URI (and META_CONFIG_ID for Instagram) in the API environment, then redeploy. YouTube and X still work.
+          </div>
+        )}
         {loading ? (
           <div className="cn-empty" style={{ marginTop: 22 }}>Loading your accounts…</div>
         ) : (

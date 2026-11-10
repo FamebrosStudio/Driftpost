@@ -22,6 +22,7 @@ import { deleteFacebookPost, discoverInstagramAccount, exchangeMetaCode, getMeta
 import { createPkcePair, exchangeXCode, getXUser, xAuthorizationUrl } from './x.js';
 import { createXPost, deleteXPost, uploadXMedia, validXAccessToken } from './x-publish.js';
 import { generateCaptions, selectVideoCoverFrames } from './ai.js';
+import { resolveProvider } from './ai-provider.js';
 import { uploadMediaFile, downloadMediaFile } from './media-io.js';
 import { scheduleIdentity } from './schedule-fields.js';
 import { deleteResultsStatus } from './delete-results.js';
@@ -654,6 +655,22 @@ app.get('/health', (_req, res) => res.set('Cache-Control', 'no-store').json({
     lastClaimedCount: scheduleWorkerHealth.lastClaimedCount,
     lastError: scheduleWorkerHealth.lastError,
   },
+}));
+
+// Public (unauthenticated) configuration status. Booleans only — never secrets.
+// Lets admins/users diagnose why a platform (especially Meta) won't connect
+// without exposing keys. Used by the Connect page and uptime checks.
+app.get('/api/config', (_req, res) => res.set('Cache-Control', 'no-store').json({
+  youtube: !!(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET && process.env.GOOGLE_REDIRECT_URI),
+  meta: !!(process.env.META_APP_ID && process.env.META_APP_SECRET && process.env.META_REDIRECT_URI),
+  metaWebhooks: !!(process.env.META_WEBHOOK_VERIFY_TOKEN && process.env.META_APP_SECRET),
+  metaBusinessLogin: !!process.env.META_CONFIG_ID,
+  x: !!(process.env.X_CLIENT_ID && process.env.X_CLIENT_SECRET && process.env.X_REDIRECT_URI),
+  ai: !!resolveProvider().hasKey,
+  aiProvider: resolveProvider().id,
+  supabase: !!(process.env.SUPABASE_URL && process.env.SUPABASE_SECRET_KEY),
+  telegram: !!process.env.TELEGRAM_BOT_TOKEN,
+  drive: !!(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET),
 }));
 
 // Epidemic Sound catalog access stays on the server so the provider key is
@@ -1649,12 +1666,16 @@ app.get('/api/oauth/youtube/callback', callbackLimit, async (req, res) => {
 
 // --- OAuth: Meta (Facebook: regular Login / Instagram: Login for Business) ---
 app.post('/api/oauth/facebook/start', requireUser, oauthLimit, (req, res) => {
-  if (!process.env.META_APP_ID) return res.status(503).json({ error: 'Meta OAuth not configured' });
+  if (!process.env.META_APP_ID || !process.env.META_APP_SECRET || !process.env.META_REDIRECT_URI) {
+    return res.status(503).json({ error: 'Meta/Facebook is not configured on the API yet. Set META_APP_ID, META_APP_SECRET and META_REDIRECT_URI in the API environment, then redeploy.' });
+  }
   res.json({ url: metaAuthorizationUrl(signState({ userId: req.user.id, nonce: crypto.randomUUID(), exp: Date.now() + 10 * 60 * 1000 })) });
 });
 app.post('/api/oauth/instagram/start', requireUser, oauthLimit, (req, res) => {
-  if (!process.env.META_APP_ID) return res.status(503).json({ error: 'Meta OAuth not configured' });
-  if (!process.env.META_CONFIG_ID) return res.status(503).json({ error: 'Instagram needs a Business Login configuration ID (META_CONFIG_ID)' });
+  if (!process.env.META_APP_ID || !process.env.META_APP_SECRET || !process.env.META_REDIRECT_URI) {
+    return res.status(503).json({ error: 'Meta/Instagram is not configured on the API yet. Set META_APP_ID, META_APP_SECRET and META_REDIRECT_URI in the API environment, then redeploy.' });
+  }
+  if (!process.env.META_CONFIG_ID) return res.status(503).json({ error: 'Instagram needs a Business Login configuration ID (META_CONFIG_ID). Create a Facebook Login for Business configuration in Meta and set META_CONFIG_ID on the API.' });
   res.json({ url: metaBusinessLoginUrl(signState({ userId: req.user.id, nonce: crypto.randomUUID(), exp: Date.now() + 10 * 60 * 1000 })) });
 });
 
