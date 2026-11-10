@@ -103,3 +103,18 @@ database/auth/media store.
 ## Osien Stack MCP
 
 Osien Stack connects without asking users for OAuth client IDs, client secrets, API keys, or social passwords. It uses the Driftpost production API by default; set `DRIFTPOST_API_URL` only when self-hosting. The user signs in to Driftpost in a browser and approves Osien, then links social profiles through Driftpost's provider OAuth. Tokens are hashed on Driftpost, and the scoped MCP bearer token is stored in Osien's owner-only config file. Migration `015_mcp_device_authorization.sql` creates the device and access-token tables.
+
+## Instagram and Facebook automatic replies
+
+The Auto DM screen supports Instagram professional accounts and Facebook Pages. Select a platform and account, add comment/public/private reply and incoming-message rules, then save. An empty comment keyword matches any new comment. Facebook ignores comment edits, removals, Page-authored comments and nested comment replies.
+
+Both platforms use the existing connection-keyed automation and event tables (`instagram_automations` and `instagram_automation_events`) for compatibility; no schema migration is required. Each request checks the authenticated owner and connection platform. Webhook signatures and per-action deduplication apply to both platforms.
+
+Meta configuration:
+- Instagram object: `comments`, `messages`; Page object: `feed`, `messages`, `messaging_postbacks`, using the API callback `/api/meta/webhook`.
+- Instagram comment private replies use the linked Page's `/messages` endpoint with `recipient.comment_id`. Required permissions include `instagram_manage_comments` and `pages_messaging` for Facebook Login.
+- Facebook automation needs `pages_manage_metadata`, `pages_manage_engagement`, and `pages_messaging`, in addition to Page discovery/read permissions. Add Messenger to the app use cases and select the permissions in the Business Login configuration. Reconnect to grant new permissions.
+- Facebook connect uses `META_FB_CONFIG_ID` when set, otherwise the shared `META_CONFIG_ID`. Without either, it retains legacy Facebook Login. Instagram uses `META_CONFIG_ID`.
+- Other business owners need Meta Advanced Access/App Review and any required business/access verification. Publishing the app alone does not approve permissions. Do not represent a role-account test as proof of public onboarding or submit invented review evidence.
+
+Verification on 2026-11-10: the owner confirmed Instagram inbound DM, public comment reply and comment-triggered private reply from live events. Facebook automation requires its own live Page test after subscription and permission setup.

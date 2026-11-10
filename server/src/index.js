@@ -18,7 +18,7 @@ import { driveIntakeAuthorizationUrl, exchangeGoogleCode, getGoogleIdentity, get
 import { learnedVoice, markLatestUsed, markUsed, recordGeneration } from './captionMemory.js';
 import { consentState, forgetUser, hasPersonalisationConsent, recordConsent, POLICY_VERSION, PURPOSES } from './consent.js';
 import { setVideoThumbnail, uploadVideoResumable, validAccessToken } from './youtube-upload.js';
-import { deleteFacebookPost, discoverInstagramAccount, exchangeMetaCode, getMetaPages, longLivedToken, metaAuthorizationUrl, metaBusinessLoginUrl, publishFacebook, publishInstagram, subscribeInstagramWebhooks, sendInstagramPrivateReply } from './meta.js';
+import { deleteFacebookPost, discoverInstagramAccount, exchangeMetaCode, getMetaPages, longLivedToken, metaAuthorizationUrl, metaBusinessLoginUrl, publishFacebook, publishInstagram, subscribeInstagramWebhooks, sendInstagramPrivateReply, subscribeFacebookWebhooks } from './meta.js';
 import { createPkcePair, exchangeXCode, getXUser, xAuthorizationUrl } from './x.js';
 import { createXPost, deleteXPost, uploadXMedia, validXAccessToken } from './x-publish.js';
 import { generateCaptions, selectVideoCoverFrames } from './ai.js';
@@ -27,6 +27,7 @@ import { uploadMediaFile, downloadMediaFile } from './media-io.js';
 import { scheduleIdentity } from './schedule-fields.js';
 import { deleteResultsStatus } from './delete-results.js';
 import { runAutomationAction } from './automation-events.js';
+import { automationComment, commentReplyEdge, incomingMessageReply } from './meta-automation-payloads.js';
 import { eraseUserMedia } from './storage-cleanup.js';
 import { enabledInstagramCollaborators, instagramCaptionRequiredError, nonEmptyCaption } from './caption-guards.js';
 import { createTemporaryMediaUrl, isOwnedMediaPath } from './media-links.js';
@@ -204,7 +205,7 @@ app.post('/api/storage/upload', requireUser, parseStorageUpload, async (req, res
     if (tempPath) await fs.unlink(tempPath).catch(() => {});
   }
 });
-// Verified public webhook for Instagram comment and inbound-message events.
+// Verified Meta webhook for Instagram and Facebook Page comment/message events.
 app.get('/api/meta/webhook', (req, res) => {
   if (process.env.META_WEBHOOK_VERIFY_TOKEN && req.query['hub.mode'] === 'subscribe' && req.query['hub.verify_token'] === process.env.META_WEBHOOK_VERIFY_TOKEN) return res.status(200).type('text/plain').send(req.query['hub.challenge'] || '');
   res.sendStatus(403);
@@ -220,9 +221,11 @@ app.post('/api/meta/webhook', express.raw({ type: 'application/json', limit: '1m
   try { payload = JSON.parse(req.body.toString('utf8')); } catch { return res.sendStatus(400); }
   try {
     for (const entry of payload.entry || []) {
+      if (!['instagram', 'page'].includes(payload.object)) continue;
+      const platform = payload.object === 'page' ? 'facebook' : 'instagram';
       const igId = String(entry.id || '');
       const { data: connections, error: connectionsError } = await supabase.from('platform_connections')
-        .select('*').eq('platform', 'instagram').eq('platform_account_id', igId);
+        .select('*').eq('platform', platform).eq('platform_account_id', igId);
       if (connectionsError) throw connectionsError;
       for (const connection of connections || []) {
         const { data: automation, error: automationError } = await supabase.from('instagram_automations')
@@ -234,14 +237,13 @@ app.post('/api/meta/webhook', express.raw({ type: 'application/json', limit: '1m
         if (!token) continue;
         const rules = automation.rules || {};
         for (const change of entry.changes || []) {
-          if (change.field !== 'comments') continue;
-          const comment = change.value || {};
-          const commentId = String(comment.id || '');
-          const commentText = String(comment.text || '');
-          if (!commentId || String(comment.from?.id || '') === igId) continue;
+          const comment = automationComment(platform, change, igId);
+          if (!comment) continue;
+          const commentId = comment.id;
+          const commentText = comment.text;
           const keyword = String(rules.comment_keyword || '').trim().toLowerCase();
           if (!rules.comment_enabled || (keyword && !commentText.toLowerCase().includes(keyword))) continue;
-          for (const [field, edge] of [['public_reply', 'replies'], ['private_reply', 'private_replies']]) {
+          for (const [field, edge] of [['public_reply', commentReplyEdge(platform)], ['private_reply', 'private_replies']]) {
             const message = String(rules[field] || '').trim();
             if (!message) continue;
             await runAutomationAction(supabase, {
@@ -250,7 +252,7 @@ app.post('/api/meta/webhook', express.raw({ type: 'application/json', limit: '1m
               connection_id: connection.id,
               event_type: 'comment',
             }, async () => {
-              if (field === 'private_reply') {
+              if (field === 'private_reply' && platform === 'instagram') {
                 await sendInstagramPrivateReply({ pageId: tokens.page_id, commentId, message, accessToken: token });
                 return;
               }
@@ -280,7 +282,7 @@ app.post('/api/meta/webhook', express.raw({ type: 'application/json', limit: '1m
           }, async () => {
             const response = await fetch(`https://graph.facebook.com/v21.0/${encodeURIComponent(igId)}/messages`, {
               method: 'POST', headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ recipient: { id: senderId }, message: { text: String(replyText).slice(0, 1000) }, access_token: token }),
+              body: JSON.stringify({ ...incomingMessageReply(platform, senderId, replyText), access_token: token }),
               signal: AbortSignal.timeout(12000),
             });
             if (!response.ok) throw new Error(`DM reply failed: ${(await response.json().catch(() => ({}))).error?.message || response.status}`);
@@ -290,7 +292,7 @@ app.post('/api/meta/webhook', express.raw({ type: 'application/json', limit: '1m
     }
     return res.sendStatus(200);
   } catch (error) {
-    console.error('[instagram automation] webhook processing failed:', error?.message || error);
+    console.error('[meta automation] webhook processing failed:', error?.message || error);
     // A non-2xx response asks Meta to retry. Successful individual actions
     // remain deduplicated; only the failed action's claim is released.
     return res.sendStatus(500);
@@ -1031,20 +1033,24 @@ app.get('/api/instagram/collaborators', requireUser, connectionsLimit, igLookupL
   });
 });
 
-app.get('/api/automations/instagram', requireUser, connectionsLimit, burstLimit, async (req, res) => {
-  const { data: connections, error: connectionError } = await supabase.from('platform_connections').select('id, account_name').eq('user_id', req.user.id).eq('platform', 'instagram');
-  if (connectionError) return res.status(500).json({ error: 'Could not load Instagram accounts' });
+app.get('/api/automations/:platform', requireUser, connectionsLimit, burstLimit, async (req, res) => {
+  const platform = req.params.platform;
+  if (!['instagram', 'facebook'].includes(platform)) return res.status(404).json({ error: 'Unsupported automation platform' });
+  const { data: connections, error: connectionError } = await supabase.from('platform_connections').select('id, account_name').eq('user_id', req.user.id).eq('platform', platform);
+  if (connectionError) return res.status(500).json({ error: 'Could not load connected accounts' });
   const { data: saved, error } = await supabase.from('instagram_automations').select('connection_id, enabled, rules').eq('user_id', req.user.id);
   if (error) return res.status(500).json({ error: 'Automation storage is not ready. Apply the latest Supabase migrations.' });
   const byId = new Map((saved || []).map((row) => [row.connection_id, row]));
   res.json({ accounts: (connections || []).map((account) => ({ id: account.id, name: account.account_name, enabled: !!byId.get(account.id)?.enabled, rules: byId.get(account.id)?.rules || {} })), webhook_ready: !!(process.env.META_WEBHOOK_VERIFY_TOKEN && process.env.META_APP_SECRET) });
 });
 
-app.put('/api/automations/instagram/:connectionId', requireUser, strictBurstLimit, async (req, res) => {
+app.put('/api/automations/:platform/:connectionId', requireUser, strictBurstLimit, async (req, res) => {
+  const platform = req.params.platform;
+  if (!['instagram', 'facebook'].includes(platform)) return res.status(404).json({ error: 'Unsupported automation platform' });
   const { data: connection } = await supabase.from('platform_connections')
     .select('id, platform_account_id, encrypted_tokens')
-    .eq('id', req.params.connectionId).eq('user_id', req.user.id).eq('platform', 'instagram').maybeSingle();
-  if (!connection) return res.status(404).json({ error: 'Instagram account not found' });
+    .eq('id', req.params.connectionId).eq('user_id', req.user.id).eq('platform', platform).maybeSingle();
+  if (!connection) return res.status(404).json({ error: 'Connected account not found' });
   const input = req.body || {};
   const rules = {
     comment_enabled: input.comment_enabled === true,
@@ -1065,13 +1071,17 @@ app.put('/api/automations/instagram/:connectionId', requireUser, strictBurstLimi
     }
     try {
       const tokens = decryptJson(connection.encrypted_tokens);
-      await subscribeInstagramWebhooks({ igUserId: connection.platform_account_id, pageId: tokens.page_id, accessToken: tokens.access_token });
+      if (platform === 'facebook') {
+        await subscribeFacebookWebhooks({ pageId: connection.platform_account_id, accessToken: tokens.access_token, comments: rules.comment_enabled, messages: !!(rules.dm_keyword || rules.default_reply || rules.private_reply) });
+      } else {
+        await subscribeInstagramWebhooks({ igUserId: connection.platform_account_id, pageId: tokens.page_id, accessToken: tokens.access_token });
+      }
     } catch (error) {
-      return res.status(502).json({ error: `Could not subscribe this Instagram account to Meta webhooks: ${error.message || 'check account permissions and reconnect it'}` });
+      return res.status(502).json({ error: `Could not subscribe this account to Meta webhooks: ${error.message || 'check account permissions and reconnect it'}` });
     }
   }
   const { error } = await supabase.from('instagram_automations').upsert({ connection_id: connection.id, user_id: req.user.id, enabled, rules, updated_at: new Date().toISOString() }, { onConflict: 'connection_id' });
-  if (error) return res.status(500).json({ error: 'Could not save Instagram automation. Apply the latest Supabase migrations.' });
+  if (error) return res.status(500).json({ error: 'Could not save automation. Apply the latest Supabase migrations.' });
   res.json({ ok: true, enabled, rules });
 });
 
@@ -1674,7 +1684,8 @@ app.post('/api/oauth/facebook/start', requireUser, oauthLimit, (req, res) => {
   if (!process.env.META_APP_ID || !process.env.META_APP_SECRET || !process.env.META_REDIRECT_URI) {
     return res.status(503).json({ error: 'Meta/Facebook is not configured on the API yet. Set META_APP_ID, META_APP_SECRET and META_REDIRECT_URI in the API environment, then redeploy.' });
   }
-  res.json({ url: metaAuthorizationUrl(signState({ userId: req.user.id, nonce: crypto.randomUUID(), exp: Date.now() + 10 * 60 * 1000 })) });
+  const state = signState({ userId: req.user.id, nonce: crypto.randomUUID(), exp: Date.now() + 10 * 60 * 1000 });
+  res.json({ url: process.env.META_FB_CONFIG_ID || process.env.META_CONFIG_ID ? metaBusinessLoginUrl(state, 'facebook') : metaAuthorizationUrl(state) });
 });
 app.post('/api/oauth/instagram/start', requireUser, oauthLimit, (req, res) => {
   if (!process.env.META_APP_ID || !process.env.META_APP_SECRET || !process.env.META_REDIRECT_URI) {

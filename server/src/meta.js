@@ -36,6 +36,20 @@ export async function subscribeInstagramWebhooks({ igUserId, pageId, accessToken
   return { fields: ['comments', 'messages'] };
 }
 
+export async function subscribeFacebookWebhooks({ pageId, accessToken, comments, messages, fetchImpl = fetch }) {
+  if (!pageId || !accessToken) throw new Error('Reconnect Facebook before enabling automation.');
+  const fields = [...(comments ? ['feed'] : []), ...(messages ? ['messages', 'messaging_postbacks'] : [])];
+  if (!fields.length) throw new Error('Enable a comment or message rule.');
+  const response = await fetchImpl(`${GRAPH}/${encodeURIComponent(pageId)}/subscribed_apps`, {
+    method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({ subscribed_fields: fields.join(','), access_token: accessToken }),
+    signal: AbortSignal.timeout(12000),
+  });
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok || payload.success !== true) throw new Error(payload.error?.message || 'Meta did not subscribe this Facebook Page.');
+  return { fields };
+}
+
 export async function sendInstagramPrivateReply({ pageId, commentId, message, accessToken, fetchImpl = fetch }) {
   if (!pageId || !commentId) throw new Error('Reconnect Instagram to restore the linked Page for private replies.');
   const response = await fetchImpl(`${GRAPH}/${encodeURIComponent(pageId)}/messages`, {
@@ -59,11 +73,11 @@ export function metaAuthorizationUrl(state) {
   return `https://www.facebook.com/v21.0/dialog/oauth?${p}`;
 }
 
-export function metaBusinessLoginUrl(state) {
+export function metaBusinessLoginUrl(state, platform = 'instagram') {
   const p = new URLSearchParams({
     client_id: process.env.META_APP_ID,
     redirect_uri: process.env.META_REDIRECT_URI,
-    config_id: process.env.META_CONFIG_ID,
+    config_id: platform === 'facebook' ? process.env.META_FB_CONFIG_ID || process.env.META_CONFIG_ID : process.env.META_CONFIG_ID,
     response_type: 'code',
     state,
   });

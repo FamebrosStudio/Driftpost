@@ -1,6 +1,6 @@
 ﻿import test from 'node:test';
 import assert from 'node:assert/strict';
-import { sendInstagramPrivateReply, metaAuthorizationUrl, publishFacebook, publishFacebookCarousel, resolveInstagramCollaboratorUsernames, subscribeInstagramWebhooks } from '../src/meta.js';
+import { subscribeFacebookWebhooks, metaBusinessLoginUrl, sendInstagramPrivateReply, metaAuthorizationUrl, publishFacebook, publishFacebookCarousel, resolveInstagramCollaboratorUsernames, subscribeInstagramWebhooks } from '../src/meta.js';
 
 test('Facebook login requests only the configured Facebook/Page consent scopes by default', () => {
   const url = new URL(metaAuthorizationUrl('signed-state'));
@@ -160,4 +160,22 @@ test('Instagram comment private replies use linked Page messages with a comment 
     assert.deepEqual(body.recipient, { comment_id: 'ig-comment' });
     assert.deepEqual(body.message, { text: 'Details' });
   });
+});
+
+test('Facebook automation subscribes Page feed and Messenger fields', async () => {
+  await withFetch([{ success: true }], async (requests) => {
+    await subscribeFacebookWebhooks({ pageId: 'page', accessToken: 'token', comments: true, messages: true });
+    assert.equal(requests[0].url, 'https://graph.facebook.com/v21.0/page/subscribed_apps');
+    assert.equal(requests[0].init.body.get('subscribed_fields'), 'feed,messages,messaging_postbacks');
+  });
+});
+test('Business Login for Facebook uses the dedicated configuration when present', () => {
+  const previous = process.env.META_FB_CONFIG_ID;
+  try {
+    process.env.META_FB_CONFIG_ID = 'facebook-config';
+    assert.equal(new URL(metaBusinessLoginUrl('state', 'facebook')).searchParams.get('config_id'), 'facebook-config');
+  } finally {
+    if (previous === undefined) delete process.env.META_FB_CONFIG_ID;
+    else process.env.META_FB_CONFIG_ID = previous;
+  }
 });
