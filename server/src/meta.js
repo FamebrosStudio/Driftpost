@@ -19,7 +19,7 @@ export async function subscribeInstagramWebhooks({ igUserId, pageId, accessToken
   // Page subscriptions reject the Instagram-only "comments" field.
   for (const [accountId, fields] of [
     [instagramId, 'comments,messages'],
-    [linkedPageId, 'feed,messages,messaging_postbacks'],
+    [linkedPageId, 'feed'],
   ]) {
     const body = new URLSearchParams({ subscribed_fields: fields, access_token: token });
     const response = await fetchImpl(`${GRAPH}/${encodeURIComponent(accountId)}/subscribed_apps`, {

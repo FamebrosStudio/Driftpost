@@ -97,7 +97,7 @@ test('Facebook Login automation subscribes the linked Page to comment and messag
     assert.deepEqual(result.fields, ['comments', 'messages']);
     assert.equal(requests[0].url, 'https://graph.facebook.com/v21.0/ig-account-1/subscribed_apps');
     assert.equal(requests[1].url, 'https://graph.facebook.com/v21.0/linked-page-1/subscribed_apps');
-    assert.equal(requests[1].init.body.get('subscribed_fields'), 'feed,messages,messaging_postbacks');
+    assert.equal(requests[1].init.body.get('subscribed_fields'), 'feed');
     assert.equal(requests[0].init.method, 'POST');
     assert.equal(requests[0].init.body.get('subscribed_fields'), 'comments,messages');
     assert.equal(requests[0].init.body.get('access_token'), 'page-token');
