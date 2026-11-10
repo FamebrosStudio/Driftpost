@@ -18,7 +18,7 @@ import { driveIntakeAuthorizationUrl, exchangeGoogleCode, getGoogleIdentity, get
 import { learnedVoice, markLatestUsed, markUsed, recordGeneration } from './captionMemory.js';
 import { consentState, forgetUser, hasPersonalisationConsent, recordConsent, POLICY_VERSION, PURPOSES } from './consent.js';
 import { setVideoThumbnail, uploadVideoResumable, validAccessToken } from './youtube-upload.js';
-import { deleteFacebookPost, discoverInstagramAccount, exchangeMetaCode, getMetaPages, longLivedToken, metaAuthorizationUrl, metaBusinessLoginUrl, publishFacebook, publishInstagram, subscribeInstagramWebhooks } from './meta.js';
+import { deleteFacebookPost, discoverInstagramAccount, exchangeMetaCode, getMetaPages, longLivedToken, metaAuthorizationUrl, metaBusinessLoginUrl, publishFacebook, publishInstagram, subscribeInstagramWebhooks, sendInstagramPrivateReply } from './meta.js';
 import { createPkcePair, exchangeXCode, getXUser, xAuthorizationUrl } from './x.js';
 import { createXPost, deleteXPost, uploadXMedia, validXAccessToken } from './x-publish.js';
 import { generateCaptions, selectVideoCoverFrames } from './ai.js';
@@ -229,7 +229,8 @@ app.post('/api/meta/webhook', express.raw({ type: 'application/json', limit: '1m
           .select('rules, enabled').eq('connection_id', connection.id).eq('user_id', connection.user_id).maybeSingle();
         if (automationError) throw automationError;
         if (!automation?.enabled) continue;
-        const token = decryptJson(connection.encrypted_tokens)?.access_token;
+        const tokens = decryptJson(connection.encrypted_tokens);
+        const token = tokens?.access_token;
         if (!token) continue;
         const rules = automation.rules || {};
         for (const change of entry.changes || []) {
@@ -249,6 +250,10 @@ app.post('/api/meta/webhook', express.raw({ type: 'application/json', limit: '1m
               connection_id: connection.id,
               event_type: 'comment',
             }, async () => {
+              if (field === 'private_reply') {
+                await sendInstagramPrivateReply({ pageId: tokens.page_id, commentId, message, accessToken: token });
+                return;
+              }
               const response = await fetch(`https://graph.facebook.com/v21.0/${encodeURIComponent(commentId)}/${edge}`, {
                 method: 'POST', headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ message: message.slice(0, 1000), access_token: token }),

@@ -36,6 +36,18 @@ export async function subscribeInstagramWebhooks({ igUserId, pageId, accessToken
   return { fields: ['comments', 'messages'] };
 }
 
+export async function sendInstagramPrivateReply({ pageId, commentId, message, accessToken, fetchImpl = fetch }) {
+  if (!pageId || !commentId) throw new Error('Reconnect Instagram to restore the linked Page for private replies.');
+  const response = await fetchImpl(`${GRAPH}/${encodeURIComponent(pageId)}/messages`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ recipient: { comment_id: String(commentId) }, message: { text: String(message).slice(0, 1000) }, access_token: accessToken }),
+    signal: AbortSignal.timeout(12000),
+  });
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(`private_reply failed: ${payload.error?.message || response.status}`);
+  return payload;
+}
+
 export function metaAuthorizationUrl(state) {
   const p = new URLSearchParams({
     client_id: process.env.META_APP_ID,

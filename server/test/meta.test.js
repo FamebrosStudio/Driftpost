@@ -1,6 +1,6 @@
 ﻿import test from 'node:test';
 import assert from 'node:assert/strict';
-import { metaAuthorizationUrl, publishFacebook, publishFacebookCarousel, resolveInstagramCollaboratorUsernames, subscribeInstagramWebhooks } from '../src/meta.js';
+import { sendInstagramPrivateReply, metaAuthorizationUrl, publishFacebook, publishFacebookCarousel, resolveInstagramCollaboratorUsernames, subscribeInstagramWebhooks } from '../src/meta.js';
 
 test('Facebook login requests only the configured Facebook/Page consent scopes by default', () => {
   const url = new URL(metaAuthorizationUrl('signed-state'));
@@ -150,4 +150,14 @@ test('Page subscription failure prevents reporting automation subscription succe
     },
   }), /Page permission denied/);
   assert.equal(calls, 2);
+});
+
+test('Instagram comment private replies use linked Page messages with a comment recipient', async () => {
+  await withFetch([{ recipient_id: 'customer', message_id: 'reply' }], async (requests) => {
+    await sendInstagramPrivateReply({ pageId: 'linked-page', commentId: 'ig-comment', message: 'Details', accessToken: 'page-token' });
+    assert.equal(requests[0].url, 'https://graph.facebook.com/v21.0/linked-page/messages');
+    const body = JSON.parse(requests[0].init.body);
+    assert.deepEqual(body.recipient, { comment_id: 'ig-comment' });
+    assert.deepEqual(body.message, { text: 'Details' });
+  });
 });
