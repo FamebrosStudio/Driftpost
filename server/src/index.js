@@ -227,11 +227,15 @@ app.post('/api/meta/webhook', express.raw({ type: 'application/json', limit: '1m
       const { data: connections, error: connectionsError } = await supabase.from('platform_connections')
         .select('*').eq('platform', platform).eq('platform_account_id', igId);
       if (connectionsError) throw connectionsError;
+      if (!connections?.length) console.info('[meta automation] webhook account is not connected', { platform, accountSuffix: igId.slice(-4) });
       for (const connection of connections || []) {
         const { data: automation, error: automationError } = await supabase.from('instagram_automations')
           .select('rules, enabled').eq('connection_id', connection.id).eq('user_id', connection.user_id).maybeSingle();
         if (automationError) throw automationError;
-        if (!automation?.enabled) continue;
+        if (!automation?.enabled) {
+          console.info('[meta automation] account automation is paused', { platform, connection: connection.id.slice(0, 8) });
+          continue;
+        }
         const tokens = decryptJson(connection.encrypted_tokens);
         const token = tokens?.access_token;
         if (!token) continue;
@@ -281,27 +285,60 @@ app.post('/api/meta/webhook', express.raw({ type: 'application/json', limit: '1m
           }
           if (actionErrors.length) throw actionErrors[0];
         }
+        if (!entry.messaging?.length) {
+          console.info('[meta automation] webhook has no inbound messages', { platform, connection: connection.id.slice(0, 8), changes: entry.changes?.length || 0 });
+        }
         for (const messaging of entry.messaging || []) {
           const event = messaging.message;
           const senderId = String(messaging.sender?.id || '');
           const messageId = String(event?.mid || '');
           const message = String(event?.text || '').trim();
-          if (!messageId || !senderId || !message || event?.is_echo || event?.is_deleted) continue;
+          if (!messageId || !senderId || !message || event?.is_echo || event?.is_deleted) {
+            console.info('[meta automation] inbound message ignored', {
+              platform,
+              connection: connection.id.slice(0, 8),
+              hasMessageId: !!messageId,
+              hasSender: !!senderId,
+              hasText: !!message,
+              isEcho: !!event?.is_echo,
+              isDeleted: !!event?.is_deleted,
+            });
+            continue;
+          }
           const keyword = String(rules.dm_keyword || '').trim().toLowerCase();
-          const replyText = keyword && message.toLowerCase().includes(keyword) ? rules.dm_reply : rules.default_reply;
-          if (!replyText) continue;
-          await runAutomationAction(supabase, {
+          const keywordMatched = !!keyword && message.toLowerCase().includes(keyword);
+          const replyText = keywordMatched ? rules.dm_reply : rules.default_reply;
+          if (!replyText) {
+            console.info('[meta automation] inbound message has no configured reply', {
+              platform,
+              connection: connection.id.slice(0, 8),
+              keywordConfigured: !!keyword,
+              keywordMatched,
+            });
+            continue;
+          }
+          const action = await runAutomationAction(supabase, {
             event_id: `message:${connection.id}:${messageId}`,
             user_id: connection.user_id,
             connection_id: connection.id,
             event_type: 'message',
           }, async () => {
-            const response = await fetch(`https://graph.facebook.com/v21.0/${encodeURIComponent(igId)}/messages`, {
+            // Instagram Messaging is delivered through the linked Facebook Page, so
+            // replies must be sent from the Page endpoint even though the webhook
+            // entry identifies the Instagram professional account.
+            const replyEndpointId = platform === 'instagram' ? (tokens.page_id || igId) : igId;
+            const response = await fetch(`https://graph.facebook.com/v21.0/${encodeURIComponent(replyEndpointId)}/messages`, {
               method: 'POST', headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ ...incomingMessageReply(platform, senderId, replyText), access_token: token }),
               signal: AbortSignal.timeout(12000),
             });
             if (!response.ok) throw new Error(`DM reply failed: ${(await response.json().catch(() => ({}))).error?.message || response.status}`);
+          });
+          console.info('[meta automation] inbound DM reply accepted by Meta', {
+            platform,
+            connection: connection.id.slice(0, 8),
+            replyRule: keywordMatched ? 'keyword' : 'default',
+            duplicate: action.duplicate,
           });
         }
       }
