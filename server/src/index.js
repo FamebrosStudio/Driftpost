@@ -1684,7 +1684,7 @@ app.post('/api/oauth/facebook/start', requireUser, oauthLimit, (req, res) => {
   if (!process.env.META_APP_ID || !process.env.META_APP_SECRET || !process.env.META_REDIRECT_URI) {
     return res.status(503).json({ error: 'Meta/Facebook is not configured on the API yet. Set META_APP_ID, META_APP_SECRET and META_REDIRECT_URI in the API environment, then redeploy.' });
   }
-  const state = signState({ userId: req.user.id, nonce: crypto.randomUUID(), exp: Date.now() + 10 * 60 * 1000 });
+  const state = signState({ userId: req.user.id, platform: 'facebook', nonce: crypto.randomUUID(), exp: Date.now() + 10 * 60 * 1000 });
   res.json({ url: process.env.META_FB_CONFIG_ID || process.env.META_CONFIG_ID ? metaBusinessLoginUrl(state, 'facebook') : metaAuthorizationUrl(state) });
 });
 app.post('/api/oauth/instagram/start', requireUser, oauthLimit, (req, res) => {
@@ -1704,7 +1704,7 @@ app.get('/api/oauth/meta/callback', callbackLimit, async (req, res) => {
     const short = await exchangeMetaCode(String(req.query.code || ''));
     const long = await longLivedToken(short.access_token);
     const userToken = long.access_token;
-    const pages = await getMetaPages(userToken);
+    const pages = await getMetaPages(userToken, { includeInstagram: state.platform !== 'facebook' });
     if (!pages.length) throw new Error('No Facebook Page found. Create a Page and link Instagram in Page Settings first.');
     let igCount = 0;
     for (const page of pages.slice(0, 200)) {

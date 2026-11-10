@@ -115,14 +115,15 @@ export async function longLivedToken(shortToken) {
   return data;
 }
 
-export async function getMetaPages(userToken) {
+export async function getMetaPages(userToken, { includeInstagram = true } = {}) {
   // 1) Personal assets.
   // 2) Business portfolio assets: /me/accounts can omit pages in a business
   //    portfolio. Walk both owned_pages and client_pages so agency-managed
   //    client pages are discoverable as well as pages owned by the portfolio.
   const auth = { headers: { Authorization: `Bearer ${userToken}` } };
   const all = [];
-  let url = `${GRAPH}/me/accounts?fields=id,name,tasks,access_token,instagram_business_account{id,username}&limit=100`;
+  const instagramFields = includeInstagram ? ',instagram_business_account{id,username}' : '';
+  let url = `${GRAPH}/me/accounts?fields=id,name,tasks,access_token${instagramFields}&limit=100`;
   for (let i = 0; i < 5 && url; i++) {
     const res = await fetch(url, { ...auth, signal: AbortSignal.timeout(30000) });
     const data = await res.json();
@@ -143,7 +144,7 @@ export async function getMetaPages(userToken) {
           for (const p of (pData.data || [])) {
             if (all.some((x) => x.id === p.id)) continue;
             try {
-              const dRes = await fetch(`${GRAPH}/${p.id}?fields=access_token,instagram_business_account{id,username}`, { ...auth, signal: AbortSignal.timeout(30000) });
+              const dRes = await fetch(`${GRAPH}/${p.id}?fields=access_token${instagramFields}`, { ...auth, signal: AbortSignal.timeout(30000) });
               const d = await dRes.json();
               if (dRes.ok && d.access_token) {
                 all.push({ id: p.id, name: p.name, access_token: d.access_token, instagram_business_account: d.instagram_business_account || null });
