@@ -1060,7 +1060,7 @@ app.put('/api/automations/instagram/:connectionId', requireUser, strictBurstLimi
     }
     try {
       const tokens = decryptJson(connection.encrypted_tokens);
-      await subscribeInstagramWebhooks({ pageId: tokens.page_id, accessToken: tokens.access_token });
+      await subscribeInstagramWebhooks({ igUserId: connection.platform_account_id, pageId: tokens.page_id, accessToken: tokens.access_token });
     } catch (error) {
       return res.status(502).json({ error: `Could not subscribe this Instagram account to Meta webhooks: ${error.message || 'check account permissions and reconnect it'}` });
     }

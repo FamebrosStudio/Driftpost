@@ -92,10 +92,12 @@ test('Facebook carousel rejects more than 20 photos without uploading any', asyn
 });
 
 test('Facebook Login automation subscribes the linked Page to comment and message webhooks', async () => {
-  await withFetch([{ success: true }], async (requests) => {
-    const result = await subscribeInstagramWebhooks({ pageId: 'linked-page-1', accessToken: 'page-token' });
+  await withFetch([{ success: true }, { success: true }], async (requests) => {
+    const result = await subscribeInstagramWebhooks({ igUserId: 'ig-account-1', pageId: 'linked-page-1', accessToken: 'page-token' });
     assert.deepEqual(result.fields, ['comments', 'messages']);
-    assert.equal(requests[0].url, 'https://graph.facebook.com/v21.0/linked-page-1/subscribed_apps');
+    assert.equal(requests[0].url, 'https://graph.facebook.com/v21.0/ig-account-1/subscribed_apps');
+    assert.equal(requests[1].url, 'https://graph.facebook.com/v21.0/linked-page-1/subscribed_apps');
+    assert.equal(requests[1].init.body.get('subscribed_fields'), 'feed,messages,messaging_postbacks');
     assert.equal(requests[0].init.method, 'POST');
     assert.equal(requests[0].init.body.get('subscribed_fields'), 'comments,messages');
     assert.equal(requests[0].init.body.get('access_token'), 'page-token');
@@ -104,7 +106,7 @@ test('Facebook Login automation subscribes the linked Page to comment and messag
 
 test('Instagram webhook subscription surfaces Meta permission failures', async () => {
   await assert.rejects(subscribeInstagramWebhooks({
-    pageId: 'linked-page-1', accessToken: 'page-token',
+    igUserId: 'ig-account-1', pageId: 'linked-page-1', accessToken: 'page-token',
     fetchImpl: async () => new Response(JSON.stringify({ error: { message: 'Permission denied' } }), { status: 403 }),
   }), /Permission denied/);
 });
@@ -136,4 +138,16 @@ test('Instagram collaborator username is preserved when account discovery is una
 
 test('Facebook Login subscription rejects a missing linked Page without sending a request', async () => {
   await assert.rejects(subscribeInstagramWebhooks({ accessToken: 'page-token', fetchImpl: async () => { throw new Error('unexpected request'); } }), /Reconnect/);
+});
+
+test('Page subscription failure prevents reporting automation subscription success', async () => {
+  let calls = 0;
+  await assert.rejects(subscribeInstagramWebhooks({
+    igUserId: 'ig-account-1', pageId: 'linked-page-1', accessToken: 'page-token',
+    fetchImpl: async () => {
+      calls += 1;
+      return new Response(JSON.stringify(calls === 1 ? { success: true } : { error: { message: 'Page permission denied' } }), { status: calls === 1 ? 200 : 403 });
+    },
+  }), /Page permission denied/);
+  assert.equal(calls, 2);
 });

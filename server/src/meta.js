@@ -10,21 +10,28 @@ const GRAPH = 'https://graph.facebook.com/v21.0';
 const FB_SCOPES = [...new Set((process.env.META_FB_SCOPES || 'pages_show_list,pages_read_engagement,pages_manage_posts,instagram_basic,instagram_content_publish,business_management')
   .split(',').map((s) => s.trim()).filter(Boolean))].join(',');
 
-export async function subscribeInstagramWebhooks({ pageId, accessToken, fetchImpl = fetch }) {
-  // Facebook Login subscriptions belong to the linked Page, not the IG user.
-  const accountId = String(pageId || '').trim();
+export async function subscribeInstagramWebhooks({ igUserId, pageId, accessToken, fetchImpl = fetch }) {
+  const instagramId = String(igUserId || '').trim();
+  const linkedPageId = String(pageId || '').trim();
   const token = String(accessToken || '').trim();
-  if (!accountId || !token) throw new Error('Reconnect the Instagram account before enabling Auto DM.');
-  const body = new URLSearchParams({ subscribed_fields: 'comments,messages', access_token: token });
-  const response = await fetchImpl(`${GRAPH}/${encodeURIComponent(accountId)}/subscribed_apps`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body,
-    signal: AbortSignal.timeout(12000),
-  });
-  const payload = await response.json().catch(() => ({}));
-  if (!response.ok || payload.success !== true) {
-    throw new Error(payload.error?.message || 'Meta did not subscribe this Instagram account to comment and message webhooks.');
+  if (!instagramId || !linkedPageId || !token) throw new Error('Reconnect the Instagram account before enabling Auto DM.');
+  // Instagram comment fields and legacy Page messaging use different edges.
+  // Page subscriptions reject the Instagram-only "comments" field.
+  for (const [accountId, fields] of [
+    [instagramId, 'comments,messages'],
+    [linkedPageId, 'feed,messages,messaging_postbacks'],
+  ]) {
+    const body = new URLSearchParams({ subscribed_fields: fields, access_token: token });
+    const response = await fetchImpl(`${GRAPH}/${encodeURIComponent(accountId)}/subscribed_apps`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body,
+      signal: AbortSignal.timeout(12000),
+    });
+    const payload = await response.json().catch(() => ({}));
+    if (!response.ok || payload.success !== true) {
+      throw new Error(payload.error?.message || 'Meta did not subscribe this Instagram account to comment and message webhooks.');
+    }
   }
   return { fields: ['comments', 'messages'] };
 }
