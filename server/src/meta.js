@@ -1,14 +1,18 @@
 import { mediaBlob } from './media-io.js';
 // Meta (Facebook + Instagram) via Graph API. No X/Twitter anywhere in Driftpost.
 const GRAPH = 'https://graph.facebook.com/v21.0';
-// Facebook connect uses regular Login with Page scopes (no review needed in dev).
-const FB_SCOPES = [...new Set(`${process.env.META_FB_SCOPES || 'pages_show_list,pages_read_engagement,pages_manage_posts,instagram_basic,instagram_content_publish,business_management'},instagram_manage_comments,instagram_manage_messages,instagram_manage_insights`.split(',').map((s) => s.trim()).filter(Boolean))].join(',');
-// Instagram connect uses Facebook Login for Business (config_id). Regular Login
-// rejects instagram_business_* scopes with "Invalid Scopes".
-const SCOPES = FB_SCOPES;
+// Keep ordinary Facebook/Page connection consent to the scopes needed for
+// account discovery and publishing. Messaging/comment permissions are
+// separately configured on Meta's Login for Business configuration used by
+// Instagram, rather than being silently requested for every Facebook login.
+// This does not bypass Meta app review: public users still need the app live
+// and each requested permission approved for Advanced Access.
+const FB_SCOPES = [...new Set((process.env.META_FB_SCOPES || 'pages_show_list,pages_read_engagement,pages_manage_posts,instagram_basic,instagram_content_publish,business_management')
+  .split(',').map((s) => s.trim()).filter(Boolean))].join(',');
 
-export async function subscribeInstagramWebhooks({ igUserId, accessToken, fetchImpl = fetch }) {
-  const accountId = String(igUserId || '').trim();
+export async function subscribeInstagramWebhooks({ pageId, accessToken, fetchImpl = fetch }) {
+  // Facebook Login subscriptions belong to the linked Page, not the IG user.
+  const accountId = String(pageId || '').trim();
   const token = String(accessToken || '').trim();
   if (!accountId || !token) throw new Error('Reconnect the Instagram account before enabling Auto DM.');
   const body = new URLSearchParams({ subscribed_fields: 'comments,messages', access_token: token });
@@ -30,7 +34,7 @@ export function metaAuthorizationUrl(state) {
     client_id: process.env.META_APP_ID,
     redirect_uri: process.env.META_REDIRECT_URI,
     response_type: 'code',
-    scope: SCOPES,
+    scope: FB_SCOPES,
     state,
   });
   return `https://www.facebook.com/v21.0/dialog/oauth?${p}`;

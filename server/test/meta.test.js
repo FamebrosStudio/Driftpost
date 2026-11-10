@@ -1,6 +1,13 @@
 ﻿import test from 'node:test';
 import assert from 'node:assert/strict';
-import { publishFacebook, publishFacebookCarousel, resolveInstagramCollaboratorUsernames, subscribeInstagramWebhooks } from '../src/meta.js';
+import { metaAuthorizationUrl, publishFacebook, publishFacebookCarousel, resolveInstagramCollaboratorUsernames, subscribeInstagramWebhooks } from '../src/meta.js';
+
+test('Facebook login requests only the configured Facebook/Page consent scopes by default', () => {
+  const url = new URL(metaAuthorizationUrl('signed-state'));
+  const scopes = new Set(url.searchParams.get('scope').split(','));
+  for (const scope of ['pages_show_list', 'pages_read_engagement', 'pages_manage_posts']) assert.ok(scopes.has(scope));
+  for (const scope of ['instagram_manage_comments', 'instagram_manage_messages', 'instagram_manage_insights']) assert.equal(scopes.has(scope), false);
+});
 
 async function withFetch(responses, run) {
   const original = globalThis.fetch;
@@ -84,11 +91,11 @@ test('Facebook carousel rejects more than 20 photos without uploading any', asyn
   });
 });
 
-test('enabling Instagram automation subscribes that account to comment and message webhooks', async () => {
+test('Facebook Login automation subscribes the linked Page to comment and message webhooks', async () => {
   await withFetch([{ success: true }], async (requests) => {
-    const result = await subscribeInstagramWebhooks({ igUserId: 'ig-account-1', accessToken: 'page-token' });
+    const result = await subscribeInstagramWebhooks({ pageId: 'linked-page-1', accessToken: 'page-token' });
     assert.deepEqual(result.fields, ['comments', 'messages']);
-    assert.equal(requests[0].url, 'https://graph.facebook.com/v21.0/ig-account-1/subscribed_apps');
+    assert.equal(requests[0].url, 'https://graph.facebook.com/v21.0/linked-page-1/subscribed_apps');
     assert.equal(requests[0].init.method, 'POST');
     assert.equal(requests[0].init.body.get('subscribed_fields'), 'comments,messages');
     assert.equal(requests[0].init.body.get('access_token'), 'page-token');
@@ -97,7 +104,7 @@ test('enabling Instagram automation subscribes that account to comment and messa
 
 test('Instagram webhook subscription surfaces Meta permission failures', async () => {
   await assert.rejects(subscribeInstagramWebhooks({
-    igUserId: 'ig-account-1', accessToken: 'page-token',
+    pageId: 'linked-page-1', accessToken: 'page-token',
     fetchImpl: async () => new Response(JSON.stringify({ error: { message: 'Permission denied' } }), { status: 403 }),
   }), /Permission denied/);
 });
@@ -125,4 +132,8 @@ test('Instagram collaborator username is preserved when account discovery is una
     });
     assert.deepEqual(result.usernames, ['mahalaxmi.jewellers.kurla']);
   });
+});
+
+test('Facebook Login subscription rejects a missing linked Page without sending a request', async () => {
+  await assert.rejects(subscribeInstagramWebhooks({ accessToken: 'page-token', fetchImpl: async () => { throw new Error('unexpected request'); } }), /Reconnect/);
 });
