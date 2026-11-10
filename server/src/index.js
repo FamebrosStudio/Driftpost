@@ -243,35 +243,43 @@ app.post('/api/meta/webhook', express.raw({ type: 'application/json', limit: '1m
           const commentText = comment.text;
           const keyword = String(rules.comment_keyword || '').trim().toLowerCase();
           if (!rules.comment_enabled || (keyword && !commentText.toLowerCase().includes(keyword))) continue;
-          for (const [field, edge] of [['public_reply', commentReplyEdge(platform)], ['private_reply', 'private_replies']]) {
+          const actionErrors = [];
+          for (const [field, edge] of [['private_reply', 'messages'], ['public_reply', commentReplyEdge(platform)]]) {
             const message = String(rules[field] || '').trim();
             if (!message) continue;
-            await runAutomationAction(supabase, {
-              event_id: `comment:${connection.id}:${commentId}:${field}`,
-              user_id: connection.user_id,
-              connection_id: connection.id,
-              event_type: 'comment',
-            }, async () => {
-              if (field === 'private_reply') {
-                // Meta's Page Send API handles comment-triggered private replies
-                // for both Instagram and Facebook. The legacy `private_replies`
-                // comment edge is rejected for current Page integrations.
-                await sendInstagramPrivateReply({
-                  pageId: platform === 'instagram' ? tokens.page_id : igId,
-                  commentId,
-                  message,
-                  accessToken: token,
+            try {
+              await runAutomationAction(supabase, {
+                event_id: `comment:${connection.id}:${commentId}:${field}`,
+                user_id: connection.user_id,
+                connection_id: connection.id,
+                event_type: 'comment',
+              }, async () => {
+                if (field === 'private_reply') {
+                  // Meta's Page Send API handles comment-triggered private replies
+                  // for both Instagram and Facebook. The legacy `private_replies`
+                  // comment edge is rejected for current Page integrations.
+                  await sendInstagramPrivateReply({
+                    pageId: platform === 'instagram' ? tokens.page_id : igId,
+                    commentId,
+                    message,
+                    accessToken: token,
+                  });
+                  return;
+                }
+                const response = await fetch(`https://graph.facebook.com/v21.0/${encodeURIComponent(commentId)}/${edge}`, {
+                  method: 'POST', headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ message: message.slice(0, 1000), access_token: token }),
+                  signal: AbortSignal.timeout(12000),
                 });
-                return;
-              }
-              const response = await fetch(`https://graph.facebook.com/v21.0/${encodeURIComponent(commentId)}/${edge}`, {
-                method: 'POST', headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: message.slice(0, 1000), access_token: token }),
-                signal: AbortSignal.timeout(12000),
+                if (!response.ok) throw new Error(`${field} failed: ${(await response.json().catch(() => ({}))).error?.message || response.status}`);
               });
-              if (!response.ok) throw new Error(`${field} failed: ${(await response.json().catch(() => ({}))).error?.message || response.status}`);
-            });
+            } catch (error) {
+              // A denied public reply must not prevent a comment-triggered private
+              // message (or vice versa). Keep the webhook retry for failed actions.
+              actionErrors.push(error);
+            }
           }
+          if (actionErrors.length) throw actionErrors[0];
         }
         for (const messaging of entry.messaging || []) {
           const event = messaging.message;
