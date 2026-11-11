@@ -19,7 +19,7 @@ test('a configured OpenAI key selects OpenAI without an explicit provider', () =
   const provider = resolveProvider({ OPENAI_API_KEY: 'o-key' });
   assert.equal(provider.id, 'openai');
   assert.equal(provider.apiKey, 'o-key');
-  assert.equal(provider.model, 'gpt-4.1');
+  assert.equal(provider.model, 'gpt-4.1-mini');
   assert.equal(provider.hasKey, true);
 });
 

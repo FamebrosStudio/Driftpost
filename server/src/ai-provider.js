@@ -12,7 +12,7 @@ const OPENAI = {
   label: 'OpenAI',
   apiKeyEnv: 'OPENAI_API_KEY',
   modelEnv: 'OPENAI_MODEL',
-  defaultModel: 'gpt-4.1',
+  defaultModel: 'gpt-4.1-mini',
   chatUrl: 'https://api.openai.com/v1/chat/completions',
   responsesUrl: 'https://api.openai.com/v1/responses',
   // OpenAI calls the live-search tool "web_search_preview"; xAI calls it
