@@ -21,7 +21,7 @@ import { setVideoThumbnail, uploadVideoResumable, validAccessToken } from './you
 import { deleteFacebookPost, discoverInstagramAccount, exchangeMetaCode, getMetaPages, longLivedToken, metaAuthorizationUrl, metaBusinessLoginUrl, publishFacebook, publishInstagram, subscribeInstagramWebhooks, sendInstagramPrivateReply, subscribeFacebookWebhooks } from './meta.js';
 import { createPkcePair, exchangeXCode, getXUser, xAuthorizationUrl } from './x.js';
 import { createXPost, deleteXPost, uploadXMedia, validXAccessToken } from './x-publish.js';
-import { generateCaptions, selectVideoCoverFrames } from './ai.js';
+import { generateCaptions } from './ai.js';
 import { resolveProvider } from './ai-provider.js';
 import { uploadMediaFile, downloadMediaFile } from './media-io.js';
 import { scheduleIdentity } from './schedule-fields.js';
@@ -1329,10 +1329,11 @@ app.post('/api/ai/captions', requireUser, requireCaptionAiAccess, (req, res, nex
       only: req.body?.only,
       learned,
       transcript,
-      images: await Promise.all(imageFiles.map(async (file) => ({
+      images: await Promise.all(imageFiles.map(async (file, index) => ({
         name: file.originalname,
         mimetype: file.mimetype,
         base64: (await fs.readFile(file.path)).toString('base64'),
+        detail: (Array.isArray(req.body?.image_details) ? req.body.image_details[index] : index === 0 ? req.body?.image_details : '') === 'low' ? 'low' : 'high',
       }))),
     });
     // Persist before returning so an immediate approve/publish action cannot
@@ -1389,32 +1390,6 @@ app.post('/api/ai/captions', requireUser, requireCaptionAiAccess, (req, res, nex
       console.error(`[ai] caption generation failed ref=${errorId} status=${code} category=${category}`);
     }
     res.status(code).json({ error: msg, ...(errorId ? { errorId } : {}) });
-  } finally {
-    await Promise.all(uploads.map((file) => fs.unlink(file.path).catch(() => {})));
-  }
-});
-
-// Select platform-aware cover frames for the private team video workflow.
-// Only the small sampled JPEGs are sent; the original video remains in the
-// existing publishing path and is never required by this endpoint.
-app.post('/api/ai/video-covers', requireUser, requireAiTeamVideoAccess, aiLimit, (req, res, next) => {
-  if (req.is('multipart/form-data')) return aiImageUpload.fields([{ name: 'images', maxCount: 8 }])(req, res, next);
-  next();
-}, async (req, res) => {
-  const uploads = req.files?.images || [];
-  try {
-    if (!uploads.length) return res.status(400).json({ error: 'Extract video frames before choosing a cover.' });
-    if (uploads.some((file) => file.size > 2 * 1024 * 1024)) return res.status(413).json({ error: 'Each sampled frame must be 2 MB or smaller.' });
-    const selection = await selectVideoCoverFrames(await Promise.all(uploads.map(async (file) => ({
-      name: file.originalname,
-      mimetype: file.mimetype,
-      base64: (await fs.readFile(file.path)).toString('base64'),
-    }))));
-    res.json({ selection });
-  } catch (error) {
-    const message = String(error?.message || 'AI could not choose a cover.');
-    const code = /credits/i.test(message) ? 402 : /configured/i.test(message) ? 503 : 502;
-    res.status(code).json({ error: message });
   } finally {
     await Promise.all(uploads.map((file) => fs.unlink(file.path).catch(() => {})));
   }

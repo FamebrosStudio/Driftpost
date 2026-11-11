@@ -6,7 +6,7 @@ import path from 'node:path';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { transcribeVideo } from './video-analysis.js';
-import { generateCaptions, selectVideoCoverFrames } from './ai.js';
+import { generateCaptions } from './ai.js';
 import { uploadMediaFile } from './media-io.js';
 import { getBrandById, resolveBrand } from './brand-memory/index.js';
 import { canUsePrivateBrandData } from './brand-access.js';
@@ -83,7 +83,7 @@ async function sampleFrames(videoPath, directory) {
   ], { timeout: 60_000, maxBuffer: 1024 * 1024 });
   const duration = Number(stdout.trim());
   if (!Number.isFinite(duration) || duration <= 0) throw new Error('The video duration could not be read. Send an MP4, MOV, or WebM video.');
-  const count = Math.min(8, Math.max(4, Math.ceil(duration / 6)));
+  const count = 3;
   const frames = [];
   for (let index = 0; index < count; index++) {
     const seconds = Math.min(Math.max(0, duration - 0.1), duration * ((index + 0.5) / count));
@@ -93,7 +93,7 @@ async function sampleFrames(videoPath, directory) {
       '-frames:v', '1', '-vf', 'scale=1024:1024:force_original_aspect_ratio=decrease', '-q:v', '4', output,
     ], { timeout: 90_000, maxBuffer: 2 * 1024 * 1024 });
     const stat = await fs.stat(output).catch(() => null);
-    if (stat?.size) frames.push({ path: output, name: `frame-${index}.jpg`, mimetype: 'image/jpeg', base64: (await fs.readFile(output)).toString('base64') });
+    if (stat?.size) frames.push({ path: output, name: `frame-${index}.jpg`, mimetype: 'image/jpeg', base64: (await fs.readFile(output)).toString('base64'), detail: 'low' });
   }
   if (frames.length < 2) throw new Error('Could not extract enough readable frames from this video.');
   return { frames, duration };
@@ -221,18 +221,15 @@ export async function processIntakeJob(supabase, job, options = {}) {
     if (isCarousel && destinations.some((item) => item.platform === 'x') && mediaFiles.length > 4) throw new Error('X supports up to 4 photos per post. Reduce this carousel to 4 images or remove X from the selected destinations.');
     const platforms = [...new Set(supportedDestinations.map((item) => item.platform))];
     await progress('preparing', 'Writing platform captions and preparing media');
-    const frameImages = frames.map(({ name, mimetype, base64 }) => ({ name, mimetype, base64 }));
+    const frameImages = frames.map(({ name, mimetype, base64, detail }) => ({ name, mimetype, base64, detail: detail || (isCarousel ? 'high' : 'low') }));
     const brandTargets = targetGroups.filter((target) => target.brand?.id);
-    const [assessments, coverSelection] = await Promise.all([
+    const assessments = await Promise.all([
       options.assessBrand
         ? Promise.all(brandTargets.map(async (target) => {
           try { return { target, assessment: await options.assessBrand(target.brand, frames, transcript) }; }
           catch (error) { return { target, assessment: { verdict: 'uncertain', confidence: 0, reason: `Automatic verification could not finish: ${String(error?.message || error).slice(0, 350)}` } }; }
         }))
         : Promise.resolve([]),
-      isCarousel || !platforms.some((platform) => ['youtube', 'instagram', 'facebook'].includes(platform))
-        ? Promise.resolve({})
-        : selectVideoCoverFrames(frameImages),
     ]);
     const failedAssessments = assessments.filter(({ assessment }) => assessment?.verdict !== 'match');
     if (failedAssessments.length) {
@@ -271,10 +268,10 @@ export async function processIntakeJob(supabase, job, options = {}) {
       return { ...target, captions: generated.captions || generated };
     }));
     const covers = {};
+    const defaultCoverFrame = frames[Math.floor(frames.length / 2)];
     for (const platform of platformsNeedingGeneratedCovers(isCarousel, platforms)) {
-      const selected = Number(coverSelection?.[platform]);
-      if (!Number.isInteger(selected) || !frames[selected]) throw new Error(`AI could not select a safe ${platform} cover frame.`);
-      covers[platform] = await makePlatformCover(frames[selected].path, platform, directory);
+      if (!defaultCoverFrame) throw new Error(`Could not select a default ${platform} cover frame.`);
+      covers[platform] = await makePlatformCover(defaultCoverFrame.path, platform, directory);
     }
 
     const sourcePrefix = options.sourcePrefix || 'telegram';

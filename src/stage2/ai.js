@@ -117,16 +117,18 @@ async function sampleVideo(file, count = 3) {
 
 // Shared Stage 2/3 caption generation: one request, per-platform answers.
 // Pass only:<platform> for a fast single-card regen (one card, ~1/3 tokens).
-export function requestCaptions(token, { brief, brand, brandId, files, tone, emoji, length, analysis = 'fast', only, platforms, frameCount = 6, teamVideo = false }) {
+export function requestCaptions(token, { brief, brand, brandId, files, tone, emoji, length, analysis = 'fast', only, platforms, frameCount = 3, teamVideo = false }) {
   return (async () => {
     const entries = files || [];
     const analyzeMedia = analysis === 'analyze';
     const photos = analyzeMedia ? entries.filter((f) => f?.raw?.type?.startsWith('image/')) : [];
     const video = analyzeMedia ? entries.find((f) => f?.raw?.type?.startsWith('video/')) : null;
-    const frames = video ? await sampleVideo(video.raw, Math.max(1, Math.min(8, Number(frameCount) || 3))) : [];
-    // Keep the standard composer light: three video moments plus one photo, or
-    // four photos. The video itself is sent once for speech transcription.
-    const selected = video ? [...photos.slice(0, 1), ...frames] : photos.slice(0, 4);
+    // Three evenly-spaced frames retain the clip's story arc without paying
+    // for redundant near-identical vision samples. Speech is still transcribed.
+    const frames = video ? await sampleVideo(video.raw, Math.max(1, Math.min(3, Number(frameCount) || 3))) : [];
+    // Preserve detail for user photos; sampled video frames use low-detail
+    // vision because their job is to establish scenes/motion, not read tiny text.
+    const selected = video ? [...photos.slice(0, 1), ...frames.map((frame) => ({ raw: frame, detail: 'low' }))] : photos.slice(0, 4);
     const form = new FormData();
     const body = {
       summary: String(brief || '').trim() || (selected.length ? 'Write a caption grounded in the visible subject and details in the attached media.' : ''),
@@ -142,8 +144,11 @@ export function requestCaptions(token, { brief, brand, brandId, files, tone, emo
         : {}),
       ...(video && Number(frameCount) > 3 ? { video_frame_analysis: '1' } : {}),
     };
-    const compacted = await Promise.all(selected.map((photo) => compactImage(photo?.raw || photo)));
-    compacted.filter(Boolean).forEach((file) => form.append('images', file, file.name));
+    const compacted = await Promise.all(selected.map(async (photo) => ({ file: await compactImage(photo?.raw || photo), detail: photo?.detail })));
+    compacted.filter(({ file }) => file).forEach(({ file, detail }) => {
+      form.append('images', file, file.name);
+      form.append('image_details', detail || 'high');
+    });
     if (selected.length && !form.getAll('images').length) {
       throw new Error('Could not prepare your selected photos for caption analysis. Try a JPG or PNG photo.');
     }

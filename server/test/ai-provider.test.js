@@ -85,8 +85,23 @@ test('image requests are sent as base64 image parts with a text part', () => {
   assert.equal(Array.isArray(parts), true);
   assert.equal(parts[0].type, 'image_url');
   assert.equal(parts[0].image_url.url, 'data:image/jpeg;base64,AAAA');
+  assert.equal(parts[0].image_url.detail, 'high');
   assert.equal(parts[1].type, 'text');
   assert.equal(parts[1].text, 'describe');
+});
+
+test('sampled video frames can request low-detail vision to reduce image-token usage', () => {
+  const provider = resolveProvider({ OPENAI_API_KEY: 'k' });
+  const body = buildChatBody({
+    provider, model: 'gpt-4.1-mini', systemText: 'sys', userMsg: 'caption', maxTokens: 100,
+    images: [{ mimetype: 'image/jpeg', base64: 'AAAA', detail: 'low' }],
+  });
+  assert.equal(body.messages[1].content[0].image_url.detail, 'low');
+});
+
+test('OpenAI transcription defaults to the mini transcription model', () => {
+  const provider = resolveProvider({ OPENAI_API_KEY: 'k' });
+  assert.equal(provider.config.transcribe.defaultModel, 'gpt-4o-mini-transcribe');
 });
 
 test('OpenAI live search uses the web_search_preview tool and instructions input', () => {

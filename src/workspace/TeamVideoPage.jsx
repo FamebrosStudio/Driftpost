@@ -227,20 +227,18 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut, onOpenRe
     setPendingCoverCount(pendingCoverIds.current.size);
   };
 
-  const chooseAiCovers = async (token, frames, platforms, videoName) => {
+  const chooseDefaultCovers = async (frames, platforms, videoName) => {
     if (!frames.length) throw new Error('Driftpost could not extract any video frames for cover selection.');
-    const form = new FormData();
-    frames.forEach((frame) => form.append('images', frame, frame.name));
-    const { selection } = await api('/api/ai/video-covers', token, { method: 'POST', body: form, headers: { 'X-Driftpost-Team-Video': '1' } });
+    // Pick the middle sampled frame deterministically. This avoids a separate
+    // model call; users can still upload a custom cover for any platform.
+    const frame = frames[Math.floor(frames.length / 2)];
     const covers = { thumb: null, instagram: null, facebook: null };
     const mappings = [
       ['youtube', 'thumb'], ['instagram', 'instagram'], ['facebook', 'facebook'],
     ];
     for (const [platform, key] of mappings) {
       if (!platforms.includes(platform)) continue;
-      const frame = frames[selection?.[platform]];
-      if (!frame) throw new Error(`AI did not return a valid ${platform} cover frame.`);
-      covers[key] = (await makeCover(frame, platform, `${videoName}-${platform}-ai-cover.jpg`)).raw;
+      covers[key] = (await makeCover(frame, platform, `${videoName}-${platform}-cover.jpg`)).raw;
     }
     return covers;
   };
@@ -349,7 +347,7 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut, onOpenRe
         brandId: snapshot.brandKey,
         files: [{ raw: snapshot.file, name: snapshot.file.name, type: snapshot.file.type }],
         analysis: 'analyze',
-        frameCount: 8,
+        frameCount: 3,
         teamVideo: true,
         platforms: snapshot.platforms,
         tone: 'auto', emoji: 'medium', length: 'medium',
@@ -367,8 +365,8 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut, onOpenRe
       const coverPlatforms = snapshot.platforms.filter((platform) => ['youtube', 'instagram', 'facebook'].includes(platform));
       const manualCoversComplete = coverPlatforms.every((platform) => snapshot.manualCovers[platform === 'youtube' ? 'thumb' : platform]);
       if (coverPlatforms.length && !manualCoversComplete) {
-        try { coverMap = await chooseAiCovers(session.access_token, generated.videoFrames || [], coverPlatforms, snapshot.file.name.replace(/\.[^.]+$/, '')); }
-        catch (coverError) { coverWarning = `AI cover selection needs review: ${coverError.message || 'cover analysis unavailable'}`; }
+        try { coverMap = await chooseDefaultCovers(generated.videoFrames || [], coverPlatforms, snapshot.file.name.replace(/\.[^.]+$/, '')); }
+        catch (coverError) { coverWarning = `Automatic cover preparation needs review: ${coverError.message || 'could not prepare a cover'}`; }
       }
       coverMap = {
         thumb: snapshot.manualCovers.thumb || coverMap.thumb,

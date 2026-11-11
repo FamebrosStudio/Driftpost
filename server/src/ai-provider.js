@@ -22,7 +22,7 @@ const OPENAI = {
   transcribe: {
     url: 'https://api.openai.com/v1/audio/transcriptions',
     modelEnv: 'OPENAI_TRANSCRIBE_MODEL',
-    defaultModel: 'gpt-4o-transcribe',
+    defaultModel: 'gpt-4o-mini-transcribe',
   },
 };
 
@@ -94,7 +94,7 @@ export function buildChatBody({ provider, model, systemText, userMsg, images = [
       { role: 'user', content: images.length ? [
         ...images.map((image) => ({
           type: 'image_url',
-          image_url: { url: `data:${image.mimetype};base64,${image.base64}`, detail: 'high' },
+          image_url: { url: `data:${image.mimetype};base64,${image.base64}`, detail: image.detail === 'low' ? 'low' : 'high' },
         })),
         { type: 'text', text: String(userMsg ?? '') },
       ] : String(userMsg ?? '') },
