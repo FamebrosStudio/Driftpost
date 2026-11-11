@@ -7,7 +7,7 @@ import { photoToVideo } from './photoVideo.js';
 import { instagramMediaFiles, facebookMediaFiles } from './instagramMedia.js';
 import { parseInstagramCollaborators } from './instagramCollaborators.js';
 import { logCaptions, logPost } from '../history/log.js';
-import ProgressStepper from './ProgressStepper.jsx';
+import ProgressSteps from '../ProgressSteps.jsx';
 import PlatformTabs from './PlatformTabs.jsx';
 import Workspace from './Workspace.jsx';
 import ScheduleModal from './ScheduleModal.jsx';
@@ -1239,7 +1239,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
           <h1>Review &amp; Finalize Your Content</h1>
           <p>Review your platform content before publishing.</p>
         </header>
-        <ProgressStepper current={3} onStep={onStep} />
+        <ProgressSteps current={3} onStep={onStep} />
         {isTeamWorkflow && teamWarning && <p className="team-analysis-warning" role="status">{teamWarning} Automatic publishing is paused; review the draft before publishing.</p>}
         {isTeamWorkflow && teamTranscript && <details className="team-transcript"><summary>Review detected transcript{teamTranscript.length >= 5000 ? ' · first 5,000 characters' : ''}</summary><p>{teamTranscript}</p></details>}
         {connsError && !connections.length && (

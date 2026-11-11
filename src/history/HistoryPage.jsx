@@ -363,7 +363,7 @@ export default function HistoryPage({ session, onNavigate, onSignOut }) {
     <WorkspaceNav page="history" onNavigate={onNavigate} email={session.user?.email} onSignOut={onSignOut} />
     <div className="hist">
       <div className="hist-in">
-        <div className="hist-heading"><h1>History</h1><p>{canUseAi ? 'Find published work, scheduled posts, saved captions and accounts.' : 'Find published work, scheduled posts and accounts.'}</p></div>
+        <div className="hist-heading"><h1>Publishing history</h1><p>{canUseAi ? 'Find published work, scheduled posts, saved captions and accounts.' : 'Find published work, scheduled posts and accounts.'}</p></div>
         <div className="hist-tabs" role="tablist" aria-label="History sections">
           {tabs.map((t) => (
             <button

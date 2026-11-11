@@ -2,7 +2,7 @@ import React, { Suspense, lazy, useEffect, useMemo, useState } from 'react';
 import { api, groupBrands } from '../lib.js';
 import BrandIcon from '../brand.jsx';
 import PageLoading from '../PageLoading.jsx';
-import ProgressIndicator from './ProgressIndicator.jsx';
+import ProgressSteps from '../ProgressSteps.jsx';
 import SetupCard from './SetupCard.jsx';
 import PlatformSelector from './PlatformSelector.jsx';
 import ExistingGroupSelector from './ExistingGroupSelector.jsx';
@@ -220,7 +220,7 @@ export default function StageOnePage({ session, onNext, onNavigate, onSignOut })
           <h1>How do you want to organize your accounts?</h1>
           <p>Choose the setup that works best for your workflow. You can change this later.</p>
         </header>
-        <ProgressIndicator current={1} />
+        <ProgressSteps current={1} />
         <p className="s1-ways">Two ways to set up — post for <b>one brand</b>, or bundle accounts into a <b>group</b>. Pick one.</p>
         {connsError && (
           <p className="s1-loaderr">{connsError} <button type="button" className="s1-mini" onClick={() => setReloadTick((t) => t + 1)}>Retry</button></p>

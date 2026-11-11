@@ -1,6 +1,6 @@
 import React, { Suspense, lazy, useEffect, useMemo, useRef, useState } from 'react';
 import { api, groupBrands, PLATFORMS } from '../lib.js';
-import ProgressStepper from './ProgressStepper.jsx';
+import ProgressSteps from '../ProgressSteps.jsx';
 import MediaUploader from './MediaUploader.jsx';
 import MediaGallery from './MediaGallery.jsx';
 import PromptBuilder from './PromptBuilder.jsx';
@@ -270,7 +270,7 @@ export default function StageTwoPage({ session, onBack, onSignOut, onNavigate, o
           <h1>Create Your Content</h1>
           <p>{canUseAi ? 'Upload your media, customize your format and let AI create platform-ready content.' : 'Upload your media and prepare platform-ready drafts to review before posting.'}</p>
         </header>
-        <ProgressStepper current={2} onStep={onStep} />
+        <ProgressSteps current={2} onStep={onStep} />
 
         <section className="s2-sec" aria-label="Add media">
           <div className="s2-sec-head">

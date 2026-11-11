@@ -8,7 +8,7 @@ import './workspace.css';
 
 const NAV = [
   ['home', 'Overview', 'home'], ['create', 'Create post', 'plus'], ['calendar', 'Calendar', 'calendar'],
-  ['analytics', 'Analytics', 'chart'], ['automations', 'Auto DM', 'sparkles'], ['history', 'History', 'clock'], ['accounts', 'Accounts', 'users'],
+  ['analytics', 'Analytics', 'chart'], ['automations', 'Automations', 'sparkles'], ['history', 'Publishing history', 'clock'], ['accounts', 'Connected accounts', 'users'],
 ];
 const platformName = (id) => PLATFORMS.find((p) => p.id === id)?.name || id;
 const localIso = (date) => new Date(date.getTime() - date.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
@@ -50,16 +50,25 @@ function Icon({ name, size = 16 }) {
 }
 
 export function WorkspaceNav({ page, onNavigate, email, onSignOut }) {
+  const [theme, setTheme] = useState(() => {
+    try { return localStorage.getItem('driftpost-console-theme') === 'light' ? 'light' : 'dark'; }
+    catch { return 'dark'; }
+  });
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    try { localStorage.setItem('driftpost-console-theme', theme); } catch {}
+  }, [theme]);
+  const navPage = page === 'connect' ? 'accounts' : page;
   return <header className="ws-topbar">
     <button type="button" className="ws-wordmark" onClick={() => onNavigate('home')} aria-label="Driftpost overview">
       <img className="logo-img logo-d" src="/logo-dark-620.png" srcSet="/logo-dark-620.png 620w, /logo-dark.png 1984w" sizes="168px" width="1984" height="512" decoding="async" alt="Driftpost" />
       <img className="logo-img logo-l" src="/logo-light.png" width="1908" height="512" decoding="async" alt="Driftpost" />
     </button>
     <nav className="ws-nav" aria-label="Main navigation">
-      {NAV.map(([id, label, icon]) => <button key={id} type="button" className={page === id ? 'active' : ''} onClick={() => onNavigate(id)}><span><Icon name={icon} size={16} /></span>{label}</button>)}
-      {isAiAccount(email) && <button type="button" className={page === 'team-video' ? 'active' : ''} onClick={() => onNavigate('team-video')}><span><Icon name="sparkles" size={16} /></span>Team video</button>}
+      {NAV.map(([id, label, icon]) => <button key={id} type="button" className={`${navPage === id ? 'active' : ''} ${id === 'create' ? 'ws-nav-create' : ''}`} aria-current={navPage === id ? 'page' : undefined} onClick={() => onNavigate(id)}><span><Icon name={icon} size={17} /></span>{label}</button>)}
+      {isAiAccount(email) && <button type="button" className={page === 'team-video' ? 'active' : ''} aria-current={page === 'team-video' ? 'page' : undefined} onClick={() => onNavigate('team-video')}><span><Icon name="sparkles" size={17} /></span>Team video</button>}
     </nav>
-    <div className="ws-user"><span className="ws-user-dot">{(email || 'U')[0].toUpperCase()}</span><span>{email || 'Workspace'}</span>{onSignOut && <button type="button" className="ws-signout" onClick={onSignOut}>Sign out</button>}</div>
+    <div className="ws-user"><span className="ws-user-dot">{(email || 'U')[0].toUpperCase()}</span><span className="ws-user-email">{email || 'Workspace'}</span><button type="button" className="ws-theme-toggle" onClick={() => setTheme((value) => value === 'dark' ? 'light' : 'dark')} aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} theme`} title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} theme`}>{theme === 'dark' ? '☼' : '◐'}<span>{theme === 'dark' ? 'Light mode' : 'Dark mode'}</span></button>{onSignOut && <button type="button" className="ws-signout" onClick={onSignOut}>Sign out</button>}</div>
   </header>;
 }
 
