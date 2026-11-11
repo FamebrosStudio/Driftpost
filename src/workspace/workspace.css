@@ -193,6 +193,7 @@
 .automation-account { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin-bottom: 14px; }
 .automation-account > label:first-child { display: flex; flex-direction: column; gap: 7px; min-width: min(320px, 100%); color: var(--muted); font-size: 11px; }
 .automation-account select { min-height: 38px; border: 1px solid var(--line-hard); padding: 0 10px; color: var(--ink); background: var(--bg); font: inherit; }
+.automation-account input[type="search"] { min-height: 36px; border: 1px solid var(--line-hard); padding: 0 10px; color: var(--ink); background: var(--bg); font: inherit; font-size: 11px; }
 .automation-toggle { display: flex; align-items: flex-start; gap: 9px; margin: 13px 0; cursor: pointer; }
 .automation-toggle input { margin: 2px 0 0; accent-color: var(--go); }
 .automation-toggle b, .automation-toggle small { display: block; }

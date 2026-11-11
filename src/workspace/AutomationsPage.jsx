@@ -11,6 +11,7 @@ export default function AutomationsPage({ session, onNavigate, onSignOut }) {
   const platformName = platform === 'facebook' ? 'Facebook' : 'Instagram';
   const [accounts, setAccounts] = useState([]);
   const [selected, setSelected] = useState('');
+  const [accountSearch, setAccountSearch] = useState('');
   const [enabled, setEnabled] = useState(false);
   const [rules, setRules] = useState(EMPTY);
   const [ready, setReady] = useState(false);
@@ -21,11 +22,11 @@ export default function AutomationsPage({ session, onNavigate, onSignOut }) {
 
   useEffect(() => {
     let active = true;
-    setLoading(true); setError(''); setMessage(''); setAccounts([]); setSelected('');
+    setLoading(true); setError(''); setMessage(''); setAccounts([]); setSelected(''); setAccountSearch('');
     api(`/api/automations/${platform}`, session.access_token)
       .then((data) => {
         if (!active) return;
-        const list = data.accounts || [];
+        const list = [...(data.accounts || [])].sort((a, b) => String(a.name || '').localeCompare(String(b.name || ''), undefined, { sensitivity: 'base', numeric: true }));
         setAccounts(list); setReady(!!data.webhook_ready);
         setSelected(list[0]?.id || '');
       })
@@ -51,6 +52,10 @@ export default function AutomationsPage({ session, onNavigate, onSignOut }) {
   }, [accounts, selected]);
 
   const set = (key, value) => setRules((current) => ({ ...current, [key]: value }));
+  const sortedAccounts = [...accounts].sort((a, b) => String(a.name || '').localeCompare(String(b.name || ''), undefined, { sensitivity: 'base', numeric: true }));
+  const matchingAccounts = sortedAccounts.filter((account) => String(account.name || '').toLocaleLowerCase().includes(accountSearch.trim().toLocaleLowerCase()));
+  const selectedAccount = accounts.find((account) => account.id === selected);
+  const selectedOutsideSearch = selectedAccount && accountSearch && !matchingAccounts.some((account) => account.id === selected);
   const save = async () => {
     if (!selected || saving) return;
     setSaving(true); setError(''); setMessage('');
@@ -68,14 +73,13 @@ export default function AutomationsPage({ session, onNavigate, onSignOut }) {
 
   return <div className="ws"><WorkspaceNav page="automations" onNavigate={onNavigate} email={session.user?.email} onSignOut={onSignOut} />
     <main className="ws-main"><div className="ws-heading"><div><span className="ws-eyebrow">{platformName} engagement</span><h1>Auto DM & replies</h1><p>Reply to comment keywords and inbound {platformName} messages automatically.</p></div><button className="ws-primary" disabled={!selected || saving} onClick={save}>{saving ? 'Saving…' : 'Save automation'}</button></div>
-      <section className="ws-panel automation-account"><label><span>Platform</span><select value={platform} disabled={saving} onChange={(e) => { setSelected(''); setAccounts([]); setLoading(true); setPlatform(e.target.value); }}><option value="instagram">Instagram</option><option value="facebook">Facebook</option></select></label></section>
+      <section className="ws-panel automation-account"><label><span>Platform</span><select value={platform} disabled={saving} onChange={(e) => { setSelected(''); setAccounts([]); setAccountSearch(''); setLoading(true); setPlatform(e.target.value); }}><option value="instagram">Instagram</option><option value="facebook">Facebook</option></select></label></section>
       {!ready && <section className="ws-panel automation-setup"><b>Connect your account to enable replies</b><p>Automatic replies need messaging and comment access from Meta. Reconnect your account after those permissions are enabled.</p></section>}
       {error && <p className="approval-error" role="alert">{error}</p>}{message && <p className="automation-saved" role="status">{message}</p>}
       {loading ? <div className="ws-inline-state">Loading {platformName} accounts…</div> : !accounts.length ? <section className="ws-panel ws-empty"><b>Connect {platform === 'facebook' ? 'a Facebook Page' : 'an Instagram professional account'}</b><small>Auto replies are available for connected {platformName} accounts.</small><button onClick={() => onNavigate('accounts')}>Open connected accounts</button></section> : <>
-        <section className="ws-panel automation-account"><label><span>{platformName} account</span><select value={selected} disabled={saving} onChange={(e) => setSelected(e.target.value)}>{accounts.map((item) => <option key={item.id} value={item.id}>{item.name} · replies {item.enabled ? 'ON' : 'PAUSED'}</option>)}</select></label><label className="automation-toggle"><input type="checkbox" checked={enabled} onChange={(e) => setEnabled(e.target.checked)} /><span><b>Automation is {enabled ? 'on' : 'paused'}</b><small>Pause instantly without deleting your reply rules.</small></span></label></section>
+        <section className="ws-panel automation-account"><label><span>{platformName} account</span><input type="search" value={accountSearch} onChange={(e) => setAccountSearch(e.target.value)} placeholder={`Search ${platformName} accounts`} aria-label={`Search ${platformName} accounts`} /><select value={selected} disabled={saving} onChange={(e) => setSelected(e.target.value)}>{selectedOutsideSearch && <optgroup label="Current selection"><option value={selected}>{selectedAccount.name} · replies {selectedAccount.enabled ? 'ON' : 'PAUSED'}</option></optgroup>}{matchingAccounts.map((item) => <option key={item.id} value={item.id}>{item.name} · replies {item.enabled ? 'ON' : 'PAUSED'}</option>)}</select></label><label className="automation-toggle"><input type="checkbox" checked={enabled} onChange={(e) => setEnabled(e.target.checked)} /><span><b>Automation is {enabled ? 'on' : 'paused'}</b><small>Pause instantly without deleting your reply rules.</small></span></label></section>
         <div className="automation-grid">
           <section className="ws-panel"><div className="automation-title"><span className="ws-icon"><BrandIcon id={platform} size={18} /></span><div><h2>Comment to DM</h2><p>Match a keyword in a post comment, then send a public reply, a private message, or both.</p></div></div>
-            <label className="automation-toggle"><input type="checkbox" checked={rules.comment_enabled} onChange={(e) => set('comment_enabled', e.target.checked)} /><span><b>Auto DM commenters</b><small>Send a private message when a comment matches the keyword.</small></span></label>
             <label className="automation-toggle"><input type="checkbox" checked={rules.public_reply_enabled} onChange={(e) => set('public_reply_enabled', e.target.checked)} /><span><b>Auto-reply publicly to comments</b><small>Post a reply under each matching comment. Turn this off to stop public replies.</small></span></label>
             {field('Comment keyword filter (optional)', 'comment_keyword', 'e.g. PRICE', 'Leave blank to match every new comment. This filter applies to both auto-DM and public replies.')}
             {field('Public comment reply', 'public_reply', 'Thanks for asking! Check your messages.', 'Optional. Appears under the comment.', true)}
@@ -83,6 +87,7 @@ export default function AutomationsPage({ session, onNavigate, onSignOut }) {
             {field('Private reply to the comment', 'private_reply', 'Here are the details you asked for…', 'Add a message here to DM the commenter. Meta allows one private reply per comment.', true)}
           </section>
           <section className="ws-panel"><div className="automation-title"><span className="ws-icon"><BrandIcon id={platform} size={18} /></span><div><h2>Reply to incoming DMs</h2><p>Send a saved reply when someone messages your connected {platformName} account.</p></div></div>
+            <label className="automation-toggle"><input type="checkbox" checked={rules.comment_enabled} onChange={(e) => set('comment_enabled', e.target.checked)} /><span><b>Auto DM commenters</b><small>Send a private message when a comment matches the keyword.</small></span></label>
             {field('DM keyword', 'dm_keyword', 'e.g. HOURS', 'Leave empty to use only the default reply.')}
             {field('Reply when keyword matches', 'dm_reply', 'We are open Monday to Saturday…', '', true)}
             {field('Default reply', 'default_reply', 'Thanks for messaging us. We will get back to you soon.', 'Sent for inbound messages when no keyword matches.', true)}
