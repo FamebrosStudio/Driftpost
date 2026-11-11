@@ -27,7 +27,7 @@ import { uploadMediaFile, downloadMediaFile } from './media-io.js';
 import { scheduleIdentity } from './schedule-fields.js';
 import { deleteResultsStatus } from './delete-results.js';
 import { runAutomationAction } from './automation-events.js';
-import { automationComment, commentReplyEdge, incomingMessageReply } from './meta-automation-payloads.js';
+import { automationComment, commentReplyEdge, incomingMessageReply, matchesAutomationKeyword } from './meta-automation-payloads.js';
 import { eraseUserMedia } from './storage-cleanup.js';
 import { enabledInstagramCollaborators, instagramCaptionRequiredError, nonEmptyCaption } from './caption-guards.js';
 import { createTemporaryMediaUrl, isOwnedMediaPath } from './media-links.js';
@@ -264,7 +264,7 @@ app.post('/api/meta/webhook', express.raw({ type: 'application/json', limit: '1m
           const commentId = comment.id;
           const commentText = comment.text;
           const keyword = String(rules.comment_keyword || '').trim().toLowerCase();
-          const keywordMatched = !keyword || commentText.toLowerCase().includes(keyword);
+          const keywordMatched = !keyword || matchesAutomationKeyword(commentText, keyword);
           if (!rules.comment_enabled || !keywordMatched) {
             console.info('[meta automation] comment did not match rule', {
               platform,
@@ -348,7 +348,7 @@ app.post('/api/meta/webhook', express.raw({ type: 'application/json', limit: '1m
             continue;
           }
           const keyword = String(rules.dm_keyword || '').trim().toLowerCase();
-          const keywordMatched = !!keyword && message.toLowerCase().includes(keyword);
+          const keywordMatched = matchesAutomationKeyword(message, keyword);
           const replyText = keywordMatched ? rules.dm_reply : rules.default_reply;
           if (!replyText) {
             console.info('[meta automation] inbound message has no configured reply', {

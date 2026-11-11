@@ -20,6 +20,16 @@ export function commentReplyEdge(platform) {
   return platform === 'facebook' ? 'comments' : 'replies';
 }
 
+const normalizeKeywordText = (value) => String(value || '').normalize('NFKD')
+  .replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
+
+export function matchesAutomationKeyword(text, configured) {
+  const normalizedText = normalizeKeywordText(text);
+  const keywords = String(configured || '').split(/[,;|\n]+/)
+    .map(normalizeKeywordText).filter(Boolean);
+  return !!normalizedText && keywords.some((keyword) => normalizedText.includes(keyword));
+}
+
 export function incomingMessageReply(platform, senderId, text) {
   return { recipient: { id: senderId }, message: { text: String(text).slice(0, 1000) }, ...(platform === 'facebook' ? { messaging_type: 'RESPONSE' } : {}) };
 }

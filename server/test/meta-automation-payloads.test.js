@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { automationComment, commentReplyEdge, incomingMessageReply } from '../src/meta-automation-payloads.js';
+import { automationComment, commentReplyEdge, incomingMessageReply, matchesAutomationKeyword } from '../src/meta-automation-payloads.js';
 
 const comment = { field: 'feed', value: { item: 'comment', verb: 'add', comment_id: 'post_comment', post_id: 'post', parent_id: 'post', from: { id: 'customer' }, message: 'PRICE' } };
 test('Facebook feed comments are normalized for matching and use the comment replies edge', () => {
@@ -22,4 +22,11 @@ test('Instagram parsing stays separate from Page feed parsing', () => {
 test('Messenger replies explicitly use RESPONSE while Instagram retains its existing message payload', () => {
   assert.deepEqual(incomingMessageReply('facebook', 'customer', 'Hello'), { recipient: { id: 'customer' }, message: { text: 'Hello' }, messaging_type: 'RESPONSE' });
   assert.equal('messaging_type' in incomingMessageReply('instagram', 'customer', 'Hello'), false);
+});
+
+test('automation keywords match case, punctuation, accents, and any configured alternative', () => {
+  assert.equal(matchesAutomationKeyword('PRICE, please!', 'price'), true);
+  assert.equal(matchesAutomationKeyword('I want the CAFÉ details', 'hours; cafe | price'), true);
+  assert.equal(matchesAutomationKeyword('Can you share the menu?', 'hours, price'), false);
+  assert.equal(matchesAutomationKeyword('Anything at all', ''), false);
 });
