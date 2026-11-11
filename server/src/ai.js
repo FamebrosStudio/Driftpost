@@ -25,7 +25,7 @@ import {
 // Static prefix — keep byte-identical across deploys for cache hits.
 const GLOBAL_SYSTEM = `You are Driftpost's social copywriter for businesses, independent creators, teams and personal projects. Write clear, distinctive, human copy that is ready to review and publish.
 Always reply with ONE valid JSON object, no markdown, no commentary:
-{"youtube":{"title":"<=100 chars","description":"SEO description","tags":["up to 8 lowercase tags, no #"]},"instagram":{"caption":"ready-to-copy IG caption","hashtags":["up to 10, no #"],"keywords":["up to 8 relevant SEO phrases"]},"facebook":{"message":"ready-to-copy FB post"},"x":{"text":"<=280 chars"}}
+{"youtube":{"title":"<=100 chars","description":"SEO description","tags":["up to 8 lowercase tags, no #"]},"instagram":{"caption":"ready-to-copy IG caption","hashtags":["up to 10, no #"],"keywords":["15 to 17 relevant SEO phrases for a saved brand"]},"facebook":{"message":"ready-to-copy FB post"},"x":{"text":"<=280 chars"}}
 CRITICAL: when a saved brand is selected, write only for that brand and use only its verified record. When no saved brand is selected, treat the user as a creator/project owner: use only the supplied brief and media, and do not add an agency identity, business assumptions, footer, contact details or saved-brand facts. A name in a one-off brief is not permission to infer its category or history. Never transfer facts or voice between accounts. All requested platform texts must be meaningfully distinct and native to their platform.
 When a selected brand has no clear connection to the subject, keep the copy focused on the user's actual topic and omit brand-specific claims, CTAs, hashtags and footer lines. Never add a brand hashtag just to fill a slot.
 QUALITY BAR: create finished copy with a clear angle, natural rhythm, and useful specificity. For each platform, independently choose the strongest truthful detail and native format; do not just paraphrase the same sentence. Avoid canned hooks, filler, keyword stuffing, empty superlatives, fake urgency, and generic engagement bait. Do not invent product features, sizes, prices, stock, addresses, phone numbers, results, credentials, or delivery promises. Omit unknown facts. Use one natural CTA at most; omit it if none fits. Silently edit for repetition, unsupported details, awkward phrasing, and platform fit.
@@ -82,7 +82,7 @@ HOUSE RULES (follow brand-specific requirements and user style choices):
 // output tokens, ~2-3x faster) instead of re-rolling all four platforms.
 const SINGLE_SHAPES = {
   youtube: '{"youtube":{"title":"<=100 chars","description":"SEO description","tags":["up to 8 lowercase tags, no #"]}}',
-  instagram: '{"instagram":{"caption":"ready-to-copy IG caption","hashtags":["up to 10, no #"],"keywords":["up to 8 relevant SEO phrases"]}}',
+  instagram: '{"instagram":{"caption":"ready-to-copy IG caption","hashtags":["up to 10, no #"],"keywords":["15 to 17 relevant SEO phrases for a saved brand"]}}',
   facebook: '{"facebook":{"message":"ready-to-copy FB post"}}',
   x: '{"x":{"text":"<=280 chars"}}',
 };
@@ -90,7 +90,7 @@ const SINGLE_SPECS = {
   youtube: `
 PLATFORM: YOUTUBE only (search) — title <=100 chars and accurately describe the post; include brand/service/confirmed location only when natural. Description = concise, useful copy with relevant search terms, one CTA at most, and brand footer lines. Tags = up to 8 relevant lowercase terms; do not pad.`,
   instagram: `
-PLATFORM: INSTAGRAM only (discovery) — write a specific hook, one useful supported detail and a suitable CTA if one fits. Keep the body concise. Never open with a phone number or address. Return up to 8 short SEO phrases in instagram.keywords when supported by the brief or verified brand profile. The server appends the selected brand footer, up to 3 topic-relevant hashtags, and topic-supported SEO phrases.`,
+PLATFORM: INSTAGRAM only (discovery) — write a specific hook, one useful supported detail and a suitable CTA if one fits. Keep the body concise. Never open with a phone number or address. For a saved brand, return 15 to 17 distinct short SEO phrases in instagram.keywords, selected for the post and grounded in the brief or that brand's verified profile. For an unbranded creator post, return only phrases supported by the brief. The server appends the selected brand footer, up to 3 topic-relevant hashtags, and topic-supported SEO phrases.`,
   facebook: `
 PLATFORM: FACEBOOK only (social/conversational, NO bracket) — write a distinct, natural post. The server appends the selected brand footer and up to 2 hashtags. Never include the SEO phrase bracket.`,
   x: `
@@ -576,7 +576,7 @@ export async function generateCaptions(summary, opts = {}) {
   const brandBlock = autoNew
     ? `\n\nNEW BRAND FILED: "${brand.name}" was unknown — a new record was created and will keep learning.\n${pack}\n${rules}\nContacts for a new brand are UNCONFIRMED: agency footer only, never print any phone/address at all — not from the brief, not invented. A number the user typed is not a verified brand number.`
     : brand
-      ? `\n\nBRAND LOCK: the selected brand is exactly "${brand.name}" (ID: ${brand.id}). Write only for this business. Similar names and shared categories are different businesses; never transfer their voice, products, facts, contacts or examples. Use only this selected brand's verified phone/address/footer. ${isGroupWide ? 'This brief clearly covers the full group; use the approved group footer.' : 'This is branch-specific; use only the selected branch footer.'} The profile is a reference, not a checklist: use a stored fact only when it directly supports this post. Treat examples as voice guidance only; never reuse their wording or assume their product, offer, result, price, stock, or campaign applies now. The server adds approved footer lines and formats hashtags/search metadata, so keep those out of the prose body. A CTA must fit the current post and use an available, confirmed action; omit it when none fits.\n${pack}\n${rules}`
+      ? `\n\nBRAND LOCK: the selected brand is exactly "${brand.name}" (ID: ${brand.id}). Write only for this business. Similar names and shared categories are different businesses; never transfer their voice, products, facts, contacts or examples. Use only this selected brand's verified phone/address/footer. ${isGroupWide ? 'This brief clearly covers the full group; use the approved group footer.' : 'This is branch-specific; use only the selected branch footer.'} For Instagram, provide 15 to 17 distinct, relevant SEO search phrases; use the brief plus this brand's verified local/category facts to build a useful set. Exclude terms that would imply an unconfirmed offer, finance product, eligibility, price or result. The profile is a reference, not a checklist: use a stored fact only when it directly supports this post. Treat examples as voice guidance only; never reuse their wording or assume their product, offer, result, price, stock, or campaign applies now. The server adds approved footer lines and formats hashtags/search metadata, so keep those out of the prose body. A CTA must fit the current post and use an available, confirmed action; omit it when none fits.\n${pack}\n${rules}`
       : `\n\nCREATOR / UNBRANDED MODE: write for the person, team, event, hobby, portfolio or project actually described. Use first person only when the brief implies it. Make the copy vivid and useful from specific supplied details, but do not invent identity, audience, location, expertise, results, affiliations or offers. Do not add a business/agency footer or keyword bracket. Suggest up to three hashtags only when each clearly matches a meaningful word or subject in the brief; fewer or none is better than irrelevant tags. A proper name is just a name unless the brief explains what it refers to.`;
 
   // What this user has already approved for this brand. Placed after the
@@ -695,6 +695,7 @@ export async function generateCaptions(summary, opts = {}) {
   if (lastErr) throw lastErr;
   const parsed = text;
   const tags = (arr) => (Array.isArray(arr) ? arr : []).map((t) => String(t || '').replace(/^#+/, '').trim()).filter(Boolean).slice(0, 10);
+  const seoPhrases = (arr) => (Array.isArray(arr) ? arr : []).map((phrase) => String(phrase || '').trim()).filter(Boolean).slice(0, 17);
 
   // Canonical assembly (zero extra LLM tokens): the model only supplies the
   // BODY. Footer, hashtags and bracket are rebuilt deterministically from the
@@ -733,19 +734,20 @@ export async function generateCaptions(summary, opts = {}) {
     const shadeHit = brief.match(/honey(?:\s+[a-z]+){0,2}|balayage|blonde|burgundy|caramel|keratin|smoothening|bridal|ombre/i);
     const shadePhrase = shadeHit ? `${shadeHit[0].trim().toLowerCase().split(/\s+/).slice(0, 2).join(' ')} hair`.replace(' hair hair', ' hair') : '';
     const financeTopic = /\b(?:emi|finance|financing|instalments?|installments?|loan|sip|savings?\s+plan)\b/i.test(brief);
-    const profileKeywords = kwBank.filter((phrase) => {
+    const seoPhraseAllowed = (phrase) => {
       const value = String(phrase || '');
       // Finance SEO can imply an active product or eligibility. Include it only
       // when this post's brief explicitly covers a current finance programme.
       if (/\b(?:emi|finance|financing|salary\s+slip|sip|savings?\s+plan|monthly\s+plan)\b/i.test(value) && !financeTopic) return false;
       if (/salary\s+slip/i.test(value) && !/salary\s+slip/i.test(brief)) return false;
       return true;
-    });
+    };
+    const profileKeywords = kwBank.filter(seoPhraseAllowed);
     const bracketPhrases = topicRelevantPhrases([
-      ...tags(parsed.instagram?.keywords),
+      ...seoPhrases(parsed.instagram?.keywords).filter(seoPhraseAllowed),
       ...(shadePhrase ? [shadePhrase] : []),
       ...profileKeywords,
-    ], brief, 8);
+    ], brief, 17);
     const kwLine = formatKeywordBracket(bracketPhrases);
     // Strip anything footer-like the model invented: footer-emoji lines,
     // agency lines, brand-name-only lines, hashtag lines, old brackets.

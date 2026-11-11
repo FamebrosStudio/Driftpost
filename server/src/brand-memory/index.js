@@ -507,6 +507,11 @@ export function deepPack(deep, brand, { groupWide = false } = {}) {
     .map(([k, v]) => `${human(k)}: ${fmt(v)}`)
     .filter((s) => !s.endsWith(': null'))
     .join('\n');
+  // SEO bracket volume is a product-wide preference for all saved brands;
+  // override older per-profile 5–8 phrase guidance in the prompt pack.
+  const captionFormat = deep.caption_format && typeof deep.caption_format === 'object'
+    ? { ...deep.caption_format, seo_keyword_count: '15 to 17 relevant phrases', seo_format: 'One square-bracketed list of 15 to 17 comma-separated relevant phrases' }
+    : null;
 
   // Priority tiers. Tier 0 is mandatory and is never dropped: without the
   // footer a caption is unusable, and the accuracy rules are the whole point
@@ -525,7 +530,7 @@ export function deepPack(deep, brand, { groupWide = false } = {}) {
     ...T(1, typeof deep.sources?.source_rule === 'string' ? `SOURCING: ${deep.sources.source_rule}` : null),
     ...T(1, (Array.isArray(rules) ? rules : []).length ? `SOURCING:\n${rules.slice(0, 4).map((r) => `- ${r}`).join('\n')}` : null),
     ...T(1, cap(fmt(deep.writing_direction, true), 1700)),
-    ...T(1, cap(fmt(deep.caption_format, true), 1300)),
+    ...T(1, cap(fmt(captionFormat, true), 1300)),
     ...T(1, !isBlank(deep.missing_information) ? `STILL UNKNOWN (never invent): ${cap(fmt(deep.missing_information), 800)}` : null),
     ...T(1, ppi.length ? `NEEDED INPUTS (omit any claim that depends on what is missing):\n${cap(ppi.join('\n'), 1100)}` : null),
     ...T(1, houseStyleFor(deep)),
