@@ -4,6 +4,7 @@ import {
   captionBodiesNearlyIdentical,
   captionFillerIssues,
   enabledInstagramCollaborators,
+  formatKeywordBracket,
   instagramCaptionRequiredError,
   nonEmptyCaption,
   safeBrandHashtags,
@@ -50,8 +51,14 @@ test('no unrelated hashtags or SEO phrases are invented to fill a quota', () => 
     brief: 'A behind-the-scenes video from today',
     otherBrands: other,
     candidates: ['bridalwear', 'goldjewellery', 'luxxesalon'],
-  }), ['KanchanMalaJewellers']);
+  }), []);
   assert.deepEqual(topicRelevantPhrases(['bridal lehenga', 'gold ring', 'hair spa'], 'gold ring close-up'), ['gold ring']);
+});
+
+test('keyword brackets are included for any nonempty set of relevant phrases', () => {
+  assert.equal(formatKeywordBracket(['gold ring']), '[gold ring]');
+  assert.equal(formatKeywordBracket(['gold ring', 'floral engraving']), '[gold ring, floral engraving]');
+  assert.equal(formatKeywordBracket([]), '');
 });
 
 test('unbranded creator captions keep only hashtags grounded in the user brief', () => {

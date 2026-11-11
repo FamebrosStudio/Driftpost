@@ -11,7 +11,7 @@ function matchesTopic(candidate, brief) {
 
 const TOPIC_CONCEPTS = [
   ['footwear', 'shoe', 'shoes', 'sneaker', 'sneakers', 'trainer', 'trainers', 'boot', 'boots', 'sandal', 'sandals', 'heel', 'heels', 'loafer', 'loafers', 'slipper', 'slippers'],
-  ['jewelry', 'jewellery', 'jewel', 'jewels', 'jeweler', 'jeweller', 'gold', 'silver', 'ring', 'rings', 'necklace', 'necklaces', 'earring', 'earrings', 'bracelet', 'bracelets'],
+  ['jewelry', 'jewellery', 'jewel', 'jewels', 'jeweler', 'jewelers', 'jeweller', 'jewellers', 'gold', 'silver', 'ring', 'rings', 'necklace', 'necklaces', 'earring', 'earrings', 'bracelet', 'bracelets'],
   ['salon', 'hair', 'haircut', 'haircuts', 'hairstyle', 'hairstyles', 'hairstyling', 'color', 'colour', 'balayage', 'keratin', 'beauty', 'makeup'],
   ['furniture', 'sofa', 'sofas', 'couch', 'couches', 'chair', 'chairs', 'table', 'tables', 'wardrobe', 'bed', 'beds', 'interior'],
   ['restaurant', 'food', 'dish', 'dishes', 'meal', 'meals', 'menu', 'cafe', 'café', 'bakery', 'cake', 'cakes', 'dessert', 'desserts', 'recipe', 'recipes'],
@@ -117,6 +117,11 @@ export function topicRelevantPhrases(candidates = [], brief, max = 8) {
       seen.add(key);
       return true;
     }).slice(0, max);
+}
+
+export function formatKeywordBracket(phrases = []) {
+  const values = Array.isArray(phrases) ? phrases.filter(Boolean) : [];
+  return values.length ? `[${values.join(', ')}]` : '';
 }
 
 // --- Deterministic caption quality gates -------------------------------------

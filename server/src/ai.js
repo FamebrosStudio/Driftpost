@@ -9,6 +9,7 @@ import {
   captionBodiesNearlyIdentical,
   captionFillerIssues,
   brandTopicRelevant,
+  formatKeywordBracket,
   safeBrandHashtags,
   safeTopicHashtags,
   topicRelevantPhrases,
@@ -723,7 +724,7 @@ export async function generateCaptions(summary, opts = {}) {
       ...(shadePhrase ? [shadePhrase] : []),
       ...kwBank,
     ], brief, 8);
-    const kwLine = bracketPhrases.length >= 5 ? `[${bracketPhrases.join(', ')}]` : '';
+    const kwLine = formatKeywordBracket(bracketPhrases);
     // Strip anything footer-like the model invented: footer-emoji lines,
     // agency lines, brand-name-only lines, hashtag lines, old brackets.
     // Plus cross-brand decontamination: only this brand's handle, handles
