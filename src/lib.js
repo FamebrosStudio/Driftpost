@@ -386,10 +386,7 @@ export function friendlyErrorMessage(message, { status = 0, action = 'complete t
   if (/^this prompt names .+, but the selected account is .+\./i.test(text)) {
     return `Your prompt mentions a different brand than the selected account. ${text}`;
   }
-  const captionQualityIssue = /^caption quality check:\s*(instagram|facebook|youtube|x) (has no useful caption body|mentions another brand|title is missing or too long|exceeds 280 characters)/i.exec(text);
-  if (captionQualityIssue?.[2].toLowerCase().startsWith('mentions another brand')) {
-    return `Generation stopped because the ${captionQualityIssue[1]} draft included another business name. Keep the prompt focused on the selected business, then generate again.`;
-  }
+  const captionQualityIssue = /^caption quality check:\s*(instagram|facebook|youtube|x) (has no useful caption body|title is missing or too long|exceeds 280 characters)/i.exec(text);
   if (captionQualityIssue) {
     if (/title is missing|exceeds 280/i.test(captionQualityIssue[2])) {
       return `The ${captionQualityIssue[1]} draft did not meet its platform limits. Try generating again with a shorter, clearer brief.`;

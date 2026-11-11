@@ -53,6 +53,14 @@ test('a clean platform body passes the caption quality check', () => {
   assert.equal(captionQualityIssue(draft, { platforms: ['instagram', 'facebook', 'youtube', 'x'], mem: memory }), '');
 });
 
+test('a mention of another registered business does not block an otherwise valid caption', () => {
+  const draft = structuredClone(valid);
+  draft.youtube.description = 'This collection draws inspiration from the work of another business, then makes the details its own. Explore the design and find a style that feels right for you.';
+  const brand = { id: 'selected', name: 'Selected Brand' };
+  const brands = { loadBrands: () => [brand, { id: 'other', name: 'Another Business' }] };
+  assert.equal(captionQualityIssue(draft, { platforms: ['youtube'], brand, mem: brands }), '');
+});
+
 test('near-identical platform bodies fail the caption quality check', () => {
   const draft = structuredClone(valid);
   draft.facebook.message = draft.instagram.caption;

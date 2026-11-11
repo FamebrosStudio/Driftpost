@@ -163,31 +163,15 @@ function visibleBodyLen(text, brandName) {
   return body.length;
 }
 
-// Reject empty platform cards and cross-brand contamination before canonical
-// footer assembly. One retry is allowed with direct feedback;
-// if the second answer is still defective, do not return a broken caption.
+// Reject empty platform cards before canonical footer assembly. One retry is
+// allowed with direct feedback; brand-name matching is intentionally not a
+// hard gate because legitimate captions can mention other businesses.
 //
 // This runs on the RAW model body (before the footer/hashtag assembly),
 // which is the only place the model words still exist.
-export function captionQualityIssue(parsed, { platforms, brand, mem }) {
+export function captionQualityIssue(parsed, { platforms, brand }) {
   const minLength = { youtube: 24, instagram: 28, facebook: 20, x: 12 };
   const requested = Array.isArray(platforms) ? platforms : [];
-  const ownNames = new Set([brand?.name, ...(brand?.aliases || [])]
-    .map((s) => String(s || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim()));
-  const otherNames = [];
-  if (brand) {
-    try {
-      for (const other of mem.loadBrands()) {
-        if (other.id === brand.id) continue;
-        for (const name of [other.name, ...(other.aliases || [])]) {
-          const value = String(name || '').trim();
-          const normalized = value.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
-          if (value.length >= 6 && !ownNames.has(normalized) && !otherNames.includes(value)) otherNames.push(value);
-        }
-      }
-    } catch {}
-  }
-  const escapeRe = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   for (const platform of requested) {
     if (platform === 'youtube') {
       const title = String(parsed?.youtube?.title || '').trim();
@@ -197,11 +181,6 @@ export function captionQualityIssue(parsed, { platforms, brand, mem }) {
     const text = String(parsed?.[platform]?.[key] || '').trim();
     if (visibleBodyLen(text, brand?.name) < minLength[platform]) return `${platform} has no useful caption body`;
     if (platform === 'x' && Array.from(text).length > 280) return 'x exceeds 280 characters';
-    for (const name of otherNames) {
-      if (new RegExp(`(^|[^A-Za-z0-9])${escapeRe(name)}($|[^A-Za-z0-9])`, 'i').test(text)) {
-        return `${platform} mentions another brand (${name})`;
-      }
-    }
     // Filler gate: AI slop never reaches the published card. The issue names
     // the platform and the phrase so the repair retry can fix that card.
     const filler = captionFillerIssues(text, { platform });
