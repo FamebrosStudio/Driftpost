@@ -21,11 +21,6 @@ export default function ProgressSteps({ current = 1, onStep }) {
           );
         })}
       </ol>
-      <div className="progress-steps__mobile" aria-live="polite">
-        <span>Step {step} of 3</span>
-        <strong>{STEPS[step - 1]}</strong>
-      </div>
-      <div className="progress-steps__track" aria-hidden="true"><i style={{ width: `${((step - 1) / 2) * 100}%` }} /></div>
     </nav>
   );
 }

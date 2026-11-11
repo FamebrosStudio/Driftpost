@@ -134,11 +134,9 @@ button { cursor: pointer; }
   .stage1 *, .stage2 *, .stage3 *, .progress-steps * { animation-duration: .01ms !important; transition-duration: .01ms !important; }
 }
 
-/* Crisp, low-noise console surfaces: keep the stage markers circular, make
-   everything else intentionally square, and use one muted mint accent. */
-.ws *, .hist-shell *, .connect *, .stage1 *, .stage2 *, .stage3 *, .team-video-page * { border-radius: 3px !important; }
-.progress-steps .progress-steps__number { border-radius: 50% !important; }
-.progress-steps .progress-steps__track, .progress-steps .progress-steps__track i { border-radius: 99px !important; }
+/* Hard-edged console geometry. The stage numbers remain circular on purpose. */
+#root .ws *, #root .hist-shell *, #root .connect *, #root .stage1 *, #root .stage2 *, #root .stage3 *, #root .team-video-page * { border-radius: 0 !important; }
+#root .progress-steps .progress-steps__number { border-radius: 50% !important; }
 .ws > .ws-topbar, .hist-shell > .ws-topbar { transition: width .24s cubic-bezier(.2,.75,.25,1), padding .24s ease; }
 .ws > .ws-main, .ws > .connect, .hist > .hist-in { transition: width .24s cubic-bezier(.2,.75,.25,1), margin-left .24s cubic-bezier(.2,.75,.25,1), padding .24s ease; }
 @supports selector(:has(*)) {
