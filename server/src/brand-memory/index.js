@@ -97,11 +97,11 @@ export function getBrandById(brandId) {
 
 // Full per-brand record: every phone, address, footer, fact, CTA, keyword,
 // genre rule and example. This is what the AI reads before writing.
-export function fullPack(brand) {
+export function fullPack(brand, { groupWide = false } = {}) {
   // Deep per-brand file (Specific-brands format) wins when present —
   // it carries master instruction, playbook, hooks, CTA/hashtag banks.
   const deep = brand?.id ? getDeepForCompact(brand) || getDeepBrand(brand.id) : null;
-  if (deep) return deepPack(deep, brand);
+  if (deep) return deepPack(deep, brand, { groupWide });
   const full = brand?.id ? getFullBrand(brand.id) : null;
   if (!full) return brandPack(brand);
   const mem = loadMemory().brands?.[brand.id];
@@ -267,17 +267,18 @@ export function deepBrandIds() {
 // .*general*lines (multi-footer brands: brand-wide default),
 // footer_policy.confirmed_footer_lines; contact.phone_display |
 // .primary_phone_display | .customer_care_display.
-export function deepFooter(deep) {
+export function deepFooter(deep, { groupWide = false } = {}) {
   const ff = deep?.fixed_footer;
   let lines = [];
   if (ff) {
-    if (ff.prefer_group_footer && ff.group_footer_lines?.length) lines = ff.group_footer_lines;
+    if (groupWide && ff.group_footer_lines?.length) lines = ff.group_footer_lines;
     else if (ff.lines?.length) lines = ff.lines;
     else if (ff.full_lines?.length) lines = ff.full_lines;
     else if (ff.standard_lines?.length) lines = ff.standard_lines;
     else {
       const only = Object.keys(ff).filter((k) => k.endsWith('_only_lines') && Array.isArray(ff[k]) && ff[k].length);
       if (only.length) lines = ff[only[0]];
+      else if (ff.prefer_group_footer && ff.group_footer_lines?.length) lines = ff.group_footer_lines;
     }
     // Public-figure format: compact designation + social + agency (routine captions).
     if (!lines.length && typeof ff.compact_designation_line === 'string' && ff.compact_designation_line.trim()) {
@@ -444,7 +445,7 @@ const VISUAL_KEEP = /rule|integrity|fidelity|accessib|restriction|prohibit|forbi
 // instead of trying to infer a client from a social account's page name.
 // Precedence: owner correction > master instruction > safety > identity >
 // writing > content > facts > CTAs > inputs > examples.
-export function deepPack(deep, brand) {
+export function deepPack(deep, brand, { groupWide = false } = {}) {
   const mem = loadMemory().brands?.[deep.brand_id];
   // CTA bank keys vary per file (booking/enquiry/visit/call/shop/...):
   // collect every array, skip the selection_rule note.
@@ -515,7 +516,7 @@ export function deepPack(deep, brand) {
     ...T(0, mem?.notes ? `OWNER CORRECTION (beats every other rule): ${String(mem.notes).slice(0, 300)}` : null),
     ...T(0, deep.master_brand_instruction ? `MASTER: ${deep.master_brand_instruction}` : null),
     ...T(0, !isBlank(deep.accuracy_rules) ? `NEVER:\n${cap(fmt(deep.accuracy_rules, true), 1500)}` : null),
-    ...T(0, deepFooter(deep).length ? `Footer (append exactly):\n${deepFooter(deep).join('\n')}` : null),
+    ...T(0, deepFooter(deep, { groupWide }).length ? `Footer (append exactly):\n${deepFooter(deep, { groupWide }).join('\n')}` : null),
     ...T(0, cap(fmt(deep.business, true), 700)),
     ...T(0, deepPhone(deep) ? `Phone: ${deepPhone(deep)}` : null),
     ...T(0, deepAddress(deep) ? `Address: ${deepAddress(deep)}` : null),
