@@ -11,7 +11,6 @@ const NAV = [
   ['analytics', 'Analytics', 'chart'], ['automations', 'Auto DM', 'sparkles'], ['history', 'History', 'clock'], ['accounts', 'Accounts', 'users'],
 ];
 const platformName = (id) => PLATFORMS.find((p) => p.id === id)?.name || id;
-const greetingName = (email) => (email || '').split('@')[0].split(/[._-]/)[0] || 'there';
 const localIso = (date) => new Date(date.getTime() - date.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
 
 function metricIssue(account) {
@@ -93,8 +92,9 @@ export function DashboardPage({ session, onNavigate, onCreate, onSignOut }) {
   }, [session.access_token]);
   const posts = useMemo(readPostLog, []);
   const upcoming = (schedules || []).filter((s) => s.status === 'scheduled').slice(0, 4);
-  return <PageFrame page="home" onNavigate={onNavigate} email={session.user?.email} onSignOut={onSignOut} eyebrow="Your workspace" title={`Good to see you, ${greetingName(session.user?.email)}.`} intro="A clear view of what’s going out and what needs your attention.">
-    <section className="ws-welcome"><div><span className="ws-eyebrow">Publishing workspace</span><h2>Make room for the work.</h2><p>Plan your next post, pick a client, and publish across your connected channels.</p><button className="ws-primary" onClick={onCreate}>Start a post <Icon name="arrowRight" size={15} /></button>{isAiAccount(session.user?.email) && <button className="ws-secondary ws-team-entry" onClick={() => onNavigate('team-video')}>Send a team video <Icon name="arrowRight" size={15} /></button>}</div><div className="ws-welcome-art" aria-hidden="true"><span><Icon name="sparkles" size={72} /></span><i /><b /></div></section>
+  const connectedPlatforms = PLATFORMS.filter((platform) => connections?.some((account) => account.platform === platform.id));
+  return <PageFrame page="home" onNavigate={onNavigate} email={session.user?.email} onSignOut={onSignOut} eyebrow="Publishing overview" title="Overview" intro="See what’s scheduled, check your connected channels, and plan what goes out next.">
+    <section className="ws-welcome"><div><span className="ws-eyebrow">Publishing desk</span><h2>One post, across your channels</h2><p>Choose your destinations, prepare a post, then publish now or schedule it.</p><button className="ws-primary" onClick={onCreate}>Create a post <Icon name="arrowRight" size={15} /></button>{isAiAccount(session.user?.email) && <button className="ws-secondary ws-team-entry" onClick={() => onNavigate('team-video')}>Send a team video <Icon name="arrowRight" size={15} /></button>}</div><div className="ws-welcome-route" aria-label={`${connectedPlatforms.length} connected publishing channels`}>{connectedPlatforms.length ? connectedPlatforms.map((platform, index) => <span className="ws-route-stop" key={platform.id} style={{ '--route-order': index }} title={platform.name}><BrandIcon id={platform.id} size={18} /><small>{platform.name}</small></span>) : <span className="ws-route-empty">Connect a channel to start publishing</span>}</div></section>
     <div className="ws-stat-grid">
       <article className="ws-stat"><span>Connected accounts</span><strong>{connections === null ? '—' : connections.length}</strong><small>{connections?.length ? 'Ready to publish' : 'Connect your first channel'}</small><button onClick={() => onNavigate('accounts')}>Manage accounts <Icon name="arrowRight" size={13} /></button></article>
       <article className="ws-stat"><span>Scheduled posts</span><strong>{schedules === null ? '—' : schedules.filter((s) => s.status === 'scheduled').length}</strong><small>Waiting in your calendar</small><button onClick={() => onNavigate('calendar')}>Open calendar <Icon name="arrowRight" size={13} /></button></article>

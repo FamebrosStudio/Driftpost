@@ -59,8 +59,7 @@
   --danger: #b91c1c;
   --ok: #047857;
 }
-* { box-sizing: border-box; }
-.landing *, .landing *::before, .landing *::after { border-radius: 0 !important; }
+* { box-sizing: border-box; border-radius: 0 !important; }
 * { scrollbar-width: thin; scrollbar-color: var(--line-hard) transparent; }
 *::-webkit-scrollbar { width: 8px; height: 8px; }
 *::-webkit-scrollbar-track { background: transparent; }

@@ -1,27 +1,24 @@
 .ws { min-height: 100vh; color: var(--ink); background: var(--bg); }
-/* Driftpost console polish: quiet ink surfaces, deliberate radii, and restrained motion. */
+/* Driftpost console polish: quiet ink surfaces, deliberate hierarchy, restrained motion. */
 .ws { --go: #55c7a2; --go-ink: #071a14; --line: #293241; --line-hard: #3a4658; --panel: #151b24; --panel2: #1d2632; --hover: #ffffff0a; }
-.ws button, .ws input, .ws textarea, .ws select, .ws article, .ws section, .ws .ws-icon, .ws .ws-user-dot, .ws .ws-day-number, .ws .ws-event, .ws .ws-metric-card, .ws .automation-setup, .ws .automation-saved, .ws .automation-account input, .ws .automation-account select, .ws .automation-toggle input, .ws .automation-field input, .ws .automation-field textarea, .ws .ws-campaign-account, .ws .ws-campaign-drop, .ws .ws-campaign-progress > div, .ws .ws-chart-track { border-radius: 8px !important; }
-.ws .ws-panel, .ws .ws-stat, .ws .ws-welcome, .ws .ws-metric-card, .ws .automation-grid > .ws-panel, .ws .ws-campaign-account { border-radius: 12px !important; }
+[data-theme="light"] .ws { --go: #047857; --go-ink: #ffffff; --line: #e0e5e9; --line-hard: #b8c2cc; --panel: #ffffff; --panel2: #f1f4f5; --hover: #0b17200a; }
 .ws :focus-visible { outline: 2px solid var(--go); outline-offset: 2px; }
 .ws .ws-eyebrow { text-transform: none; letter-spacing: .02em; font-size: 11px; font-weight: 500; }
 .ws .ws-heading h1 { font-weight: 500; letter-spacing: -.025em; }
 .ws .ws-welcome { background: var(--panel); }
-.ws .ws-welcome-art { opacity: .24; }
-.ws .ws-welcome-art::before, .ws .ws-welcome-art::after { display: none; }
-.ws .ws-welcome-art > span { color: var(--go); }
-.ws .ws-welcome-art > i, .ws .ws-welcome-art > b { border-color: var(--line-hard); background: var(--panel2); border-radius: 8px !important; }
+.ws .ws-welcome-route { position: relative; z-index: 1; display: flex; align-items: flex-start; justify-content: space-around; gap: 12px; width: min(44%, 460px); min-height: 92px; padding: 16px 4px 0; }
+.ws .ws-welcome-route::before { content: ''; position: absolute; top: 33px; left: 11%; right: 11%; height: 1px; background: var(--line-hard); }
+.ws .ws-route-stop { position: relative; display: grid; justify-items: center; gap: 8px; min-width: 48px; color: var(--muted); }
+.ws .ws-route-stop > svg { box-sizing: content-box; padding: 8px; border: 1px solid var(--line-hard); background: var(--panel); }
+.ws .ws-route-stop small { font-size: 11px; }
+.ws .ws-route-empty { align-self: center; color: var(--faint); font-size: 12px; }
 .ws .ws-stat, .ws .ws-panel, .ws .ws-metric-card { box-shadow: none; }
-.ws .ws-primary { color: var(--go-ink); background: var(--go); font-weight: 600; border-radius: 8px !important; }
-.ws .ws-secondary { border-color: var(--line); border-radius: 8px !important; }
+.ws .ws-primary { color: var(--go-ink); background: var(--go); font-weight: 600; }
+.ws .ws-secondary { border-color: var(--line); }
 .ws .ws-stat > strong, .ws .ws-metric-values b, .ws .ws-platform-row > b { font-variant-numeric: tabular-nums; }
-.ws .ws-live-status > span, .ws .ws-metric-summary i, .ws .ws-legend i { border-radius: 50% !important; box-shadow: none; }
+.ws .ws-live-status > span, .ws .ws-metric-summary i, .ws .ws-legend i { box-shadow: none; }
 .ws .ws-live-status > span.is-refreshing { animation: none; }
-.ws .automation-toggle input[type="checkbox"] { appearance: none; width: 34px; height: 20px; flex: 0 0 34px; margin: 0 4px 0 0; padding: 2px; border: 1px solid var(--line-hard); border-radius: 999px !important; background: var(--panel2); cursor: pointer; transition: background-color 160ms ease, border-color 160ms ease; }
-.ws .automation-toggle input[type="checkbox"]::before { content: ''; display: block; width: 14px; height: 14px; border-radius: 50% !important; background: var(--muted); transition: transform 160ms ease, background-color 160ms ease; }
-.ws .automation-toggle input[type="checkbox"]:checked { border-color: var(--go); background: var(--go); }
-.ws .automation-toggle input[type="checkbox"]:checked::before { background: var(--go-ink); transform: translateX(14px); }
-.ws .automation-toggle input[type="checkbox"]:focus-visible { outline: 2px solid var(--go); outline-offset: 2px; }
+.ws .automation-toggle input[type="checkbox"] { accent-color: var(--go); }
 .ws .ws-chart-track { background: repeating-linear-gradient(to top, transparent 0 47px, var(--line) 48px, transparent 49px); }
 .ws .ws-chart-track i { background: var(--go); transition: height 160ms ease; }
 .ws .ws-panel, .ws .ws-stat, .ws .ws-metric-card { transition: border-color 160ms ease, background-color 160ms ease; }
@@ -32,6 +29,7 @@
   .ws .ws-primary:hover { filter: brightness(1.06); transform: none; }
   .ws .ws-welcome:hover { box-shadow: none; border-color: var(--line-hard); }
 }
+@media (max-width: 680px) { .ws .ws-welcome-route { width: 100%; min-height: 76px; padding-top: 8px; } .ws .ws-welcome-route::before { top: 25px; } }
 .ws-calendar-heading-actions { display: flex; flex-wrap: wrap; gap: 8px; }
 .ws-campaign { margin-bottom: 16px; }
 .ws-campaign-intro { color: var(--muted); font-size: 13px; line-height: 1.6; margin: -4px 0 18px; }
