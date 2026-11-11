@@ -59,7 +59,8 @@
   --danger: #b91c1c;
   --ok: #047857;
 }
-* { box-sizing: border-box; border-radius: 0 !important; }
+* { box-sizing: border-box; }
+.landing *, .landing *::before, .landing *::after { border-radius: 0 !important; }
 * { scrollbar-width: thin; scrollbar-color: var(--line-hard) transparent; }
 *::-webkit-scrollbar { width: 8px; height: 8px; }
 *::-webkit-scrollbar-track { background: transparent; }
@@ -67,6 +68,7 @@
 *::-webkit-scrollbar-thumb:hover { background: var(--faint); }
 *::-webkit-scrollbar-corner { background: transparent; }
 body { margin: 0; background: radial-gradient(900px 420px at 85% -5%, #8b5cf614 0, transparent 60%), radial-gradient(700px 380px at 8% 110%, #3b82f610 0, transparent 55%), var(--bg); }
+body:has(.ws), body:has(.stage1), body:has(.stage2), body:has(.stage3), body:has(.team-video-page) { background: var(--bg); }
 #root { min-height: 100vh; }
 button, input, textarea, select { font: inherit; color: inherit; }
 button { cursor: pointer; }
