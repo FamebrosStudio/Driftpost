@@ -252,11 +252,35 @@ app.post('/api/meta/webhook', express.raw({ type: 'application/json', limit: '1m
         const rules = automation.rules || {};
         for (const change of entry.changes || []) {
           const comment = automationComment(platform, change, igId);
-          if (!comment) continue;
+          if (!comment) {
+            console.info('[meta automation] comment event ignored', {
+              platform,
+              connection: connection.id.slice(0, 8),
+              field: String(change.field || ''),
+              hasCommentId: !!(change.value?.id || change.value?.comment_id),
+            });
+            continue;
+          }
           const commentId = comment.id;
           const commentText = comment.text;
           const keyword = String(rules.comment_keyword || '').trim().toLowerCase();
-          if (!rules.comment_enabled || (keyword && !commentText.toLowerCase().includes(keyword))) continue;
+          const keywordMatched = !keyword || commentText.toLowerCase().includes(keyword);
+          if (!rules.comment_enabled || !keywordMatched) {
+            console.info('[meta automation] comment did not match rule', {
+              platform,
+              connection: connection.id.slice(0, 8),
+              commentEnabled: !!rules.comment_enabled,
+              keywordConfigured: !!keyword,
+              keywordMatched,
+            });
+            continue;
+          }
+          console.info('[meta automation] comment matched rule', {
+            platform,
+            connection: connection.id.slice(0, 8),
+            publicReplyConfigured: !!String(rules.public_reply || '').trim(),
+            privateReplyConfigured: !!String(rules.private_reply || '').trim(),
+          });
           const actionErrors = [];
           for (const [field, edge] of [['private_reply', 'messages'], ['public_reply', commentReplyEdge(platform)]]) {
             const message = String(rules[field] || '').trim();
@@ -278,6 +302,7 @@ app.post('/api/meta/webhook', express.raw({ type: 'application/json', limit: '1m
                     message,
                     accessToken: token,
                   });
+                  console.info('[meta automation] private comment reply accepted', { platform, connection: connection.id.slice(0, 8) });
                   return;
                 }
                 const response = await fetch(`https://graph.facebook.com/v21.0/${encodeURIComponent(commentId)}/${edge}`, {
@@ -286,10 +311,17 @@ app.post('/api/meta/webhook', express.raw({ type: 'application/json', limit: '1m
                   signal: AbortSignal.timeout(12000),
                 });
                 if (!response.ok) throw new Error(`${field} failed: ${(await response.json().catch(() => ({}))).error?.message || response.status}`);
+                console.info('[meta automation] public comment reply accepted', { platform, connection: connection.id.slice(0, 8) });
               });
             } catch (error) {
               // A denied public reply must not prevent a comment-triggered private
               // message (or vice versa). Keep the webhook retry for failed actions.
+              console.error('[meta automation] comment reply failed', {
+                platform,
+                connection: connection.id.slice(0, 8),
+                replyType: field,
+                error: String(error?.message || error).slice(0, 240),
+              });
               actionErrors.push(error);
             }
           }

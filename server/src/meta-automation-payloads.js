@@ -1,10 +1,11 @@
 // Normalize only new top-level comments. Ignore edits, removals and Page echoes.
 export function automationComment(platform, change, accountId) {
   if (platform === 'instagram') {
-    if (change.field !== 'comments') return null;
+    if (!['comments', 'live_comments'].includes(change.field)) return null;
     const value = change.value || {};
-    if (!value.id || String(value.from?.id || '') === String(accountId)) return null;
-    return { id: String(value.id), text: String(value.text || '') };
+    const id = value.id || value.comment_id;
+    if (!id || String(value.from?.id || '') === String(accountId)) return null;
+    return { id: String(id), text: String(value.text || value.message || '') };
   }
   if (platform !== 'facebook' || change.field !== 'feed') return null;
   const value = change.value || {};
@@ -12,7 +13,7 @@ export function automationComment(platform, change, accountId) {
   if (String(value.from?.id || '') === String(accountId)) return null;
   // A reply to a comment is not a new comment on the Page post.
   if (value.parent_id && value.post_id && String(value.parent_id) !== String(value.post_id)) return null;
-  return { id: String(value.comment_id), text: String(value.message || '') };
+  return { id: String(value.comment_id), text: String(value.message || value.text || '') };
 }
 
 export function commentReplyEdge(platform) {

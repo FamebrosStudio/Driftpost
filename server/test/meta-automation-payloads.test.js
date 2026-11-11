@@ -15,6 +15,7 @@ test('Facebook ignores own comments, nested replies, edits, removals and non-com
 });
 test('Instagram parsing stays separate from Page feed parsing', () => {
   assert.deepEqual(automationComment('instagram', { field: 'comments', value: { id: 'ig-comment', text: 'Hi', from: { id: 'customer' } } }, 'ig'), { id: 'ig-comment', text: 'Hi' });
+  assert.deepEqual(automationComment('instagram', { field: 'live_comments', value: { comment_id: 'live-comment', message: 'Hello', from: { id: 'customer' } } }, 'ig'), { id: 'live-comment', text: 'Hello' });
   assert.equal(automationComment('instagram', comment, 'ig'), null);
   assert.equal(automationComment('instagram', { field: 'comments', value: { id: 'echo', from: { id: 'ig' } } }, 'ig'), null);
 });
