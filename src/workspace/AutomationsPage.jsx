@@ -70,7 +70,8 @@ export default function AutomationsPage({ session, onNavigate, onSignOut }) {
             <label className="automation-toggle"><input type="checkbox" checked={rules.comment_enabled} onChange={(e) => set('comment_enabled', e.target.checked)} /><span><b>Enable comment trigger</b><small>Leave keyword empty to match any comment.</small></span></label>
             {field('Comment keyword', 'comment_keyword', 'e.g. PRICE', 'Matching ignores uppercase and lowercase.')}
             {field('Public comment reply', 'public_reply', 'Thanks for asking! Check your messages.', 'Optional. Appears under the comment.', true)}
-            {field('Private reply to the comment', 'private_reply', 'Here are the details you asked for…', 'Optional. Meta limits comment-triggered private replies.', true)}
+            {rules.comment_enabled && !rules.private_reply.trim() && <p className="automation-setup" role="status"><b>Comment DMs are not configured.</b> A public reply can still appear under the comment, but no private message will be sent until you add one below.</p>}
+            {field('Private reply to the comment', 'private_reply', 'Here are the details you asked for…', 'Add a message here to DM the commenter. Meta allows one private reply per comment.', true)}
           </section>
           <section className="ws-panel"><div className="automation-title"><span className="ws-icon"><BrandIcon id={platform} size={18} /></span><div><h2>Reply to incoming DMs</h2><p>Send a saved reply when someone messages your connected {platformName} account.</p></div></div>
             {field('DM keyword', 'dm_keyword', 'e.g. HOURS', 'Leave empty to use only the default reply.')}
