@@ -114,7 +114,7 @@ export default function Console({ session, onSwitchAccount, onSignOut }) {
       <HistoryPage session={session} onNavigate={navigate} onSignOut={onSignOut} />
     </Suspense>
   );
-  if (view === 'accounts') return withBackgroundNotice(loadPage(<><WorkspaceNav page="accounts" onNavigate={navigate} email={session.user?.email} onSignOut={onSignOut} /><ConnectPage session={session} onContinue={() => navigate('create')} onHistory={openHistory} onSignOut={onSignOut} embedded /></>));
+  if (view === 'accounts') return withBackgroundNotice(loadPage(<div className="ws"><WorkspaceNav page="accounts" onNavigate={navigate} email={session.user?.email} onSignOut={onSignOut} /><ConnectPage session={session} onContinue={() => navigate('create')} onHistory={openHistory} onSignOut={onSignOut} embedded /></div>));
   if (stage === '3') {
     return withBackgroundNotice(loadPage(<StageThreePage session={session} onBack={() => go(2)} onStep={(step) => go(step)} onNavigate={navigate} onSignOut={onSignOut} onDone={(result) => {
       if (result?.backgroundPublish) setBackgroundPublishNotice(result.backgroundPublish);

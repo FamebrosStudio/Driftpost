@@ -1,5 +1,11 @@
 .team-video-page { min-height: 100vh; color: var(--ink); background: radial-gradient(ellipse at 50% -24%, color-mix(in srgb, var(--go) 8%, transparent), transparent 58%), var(--bg); }
 .team-video-main { width: min(1040px, 100%); margin: 0 auto; padding: clamp(30px, 5vw, 62px) clamp(16px, 3vw, 30px) 72px; }
+.ws.team-video-page > .team-video-main { width: min(1280px, calc(100% - 244px)); margin: 0 0 0 244px; padding: 42px clamp(24px, 4vw, 68px) 60px; transition: width .24s cubic-bezier(.2,.75,.25,1), margin-left .24s cubic-bezier(.2,.75,.25,1); }
+.team-video-heading p { max-width: 72ch; font-size: 14px; line-height: 1.65; }
+.drive-intake-naming { max-width: 105ch; font-size: 12px; line-height: 1.65; }
+.team-video-section-title p { font-size: 12px; line-height: 1.55; }
+.ws:has(> .ws-topbar[data-collapsed="true"]) > .team-video-main { width: min(1440px, calc(100% - 76px)); margin-left: 76px; }
+@media (max-width: 760px) { .ws.team-video-page > .team-video-main { width: 100%; margin: 0; padding: 24px 16px calc(96px + env(safe-area-inset-bottom)); } }
 .team-video-heading { margin: 0 0 27px; }
 .team-video-heading > span { display: inline-flex; align-items: center; min-height: 26px; padding: 0 10px; border: 1px solid color-mix(in srgb, var(--go) 30%, var(--line)); border-radius: 999px; background: color-mix(in srgb, var(--go) 8%, var(--panel)); color: var(--go); font-size: 9px; font-weight: 800; letter-spacing: .14em; }
 .team-video-heading h1 { max-width: 740px; margin: 9px 0; font-size: clamp(26px, 4.8vw, 43px); line-height: 1.08; letter-spacing: -.045em; }

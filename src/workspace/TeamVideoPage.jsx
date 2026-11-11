@@ -403,7 +403,7 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut, onOpenRe
     }
   };
 
-  return <div className="team-video-page">
+  return <div className="ws team-video-page">
     <WorkspaceNav page="team-video" onNavigate={onNavigate} email={session.user?.email} onSignOut={onSignOut} />
     <main className="team-video-main">
       <header className="team-video-heading"><span>PRIVATE TEAM WORKFLOW</span><h1>Send one video. Prepare every destination.</h1><p>Driftpost reads the video and speech, writes for the selected brand, then uses the same platform review and publishing system as the regular workspace.</p></header>

@@ -66,3 +66,45 @@
   .recovery-footer { font-size: 8px; letter-spacing: .1em; }
 }
 @media (prefers-reduced-motion: reduce) { .recovery-page *, .recovery-page *::before, .recovery-page *::after { transition: none !important; animation: none !important; } }
+
+/* Server warm-up: intentionally quiet and direct. No ornamental grid or
+   competing gradients; the single moving bar communicates an unknown wait. */
+.recovery-starting {
+  --rec-bg: #111519;
+  --rec-line: #2c353d;
+  --rec-accent: #72cbb0;
+  padding: 24px clamp(20px, 5vw, 72px) 18px;
+  color: #eff3f2;
+  background: var(--rec-bg);
+}
+.recovery-starting::before { display: none; }
+.recovery-starting .recovery-top,
+.recovery-starting .recovery-footer { width: min(100%, 1280px); margin-right: auto; margin-left: auto; }
+.recovery-starting .recovery-brand img { width: min(148px, 38vw); }
+.recovery-starting .starting-header-status { display: inline-flex; align-items: center; gap: 9px; color: #98a49f; font: 500 12px/1.4 Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important; letter-spacing: 0 !important; }
+.recovery-starting .starting-header-status i { width: 7px; height: 7px; flex: 0 0 auto; background: var(--rec-accent); }
+.recovery-starting .starting-header-status b { color: #e6ece9; font-weight: 600; }
+.recovery-starting .recovery-content { display: flex; width: min(100%, 570px); flex-direction: column; align-items: center; justify-content: center; padding: 32px 0 42px; text-align: center; }
+.recovery-starting .recovery-kicker { margin: 0 0 16px; color: var(--rec-accent); font: 650 11px/1.4 Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; letter-spacing: .08em; text-transform: uppercase; }
+.recovery-starting .recovery-content h1 { max-width: 16ch; font-size: clamp(40px, 5.2vw, 56px); font-weight: 650; line-height: 1.04; letter-spacing: -.055em; }
+.recovery-starting .recovery-copy { max-width: 440px; margin: 18px auto 30px; color: #aab5b2; font-size: 15px; line-height: 1.7; }
+.recovery-starting .starting-progress { width: min(320px, 78vw); height: 3px; margin: 0 auto 15px; background: #293238; }
+.recovery-starting .starting-progress i { left: -38%; width: 38%; background: var(--rec-accent); box-shadow: none; animation: starting-progress 2s cubic-bezier(.55,.05,.35,.95) infinite; }
+.recovery-starting .starting-caption { gap: 9px; color: #d5dedb; font-size: 12px; font-weight: 550; }
+.recovery-starting .starting-live-dot { width: 7px; height: 7px; background: var(--rec-accent); box-shadow: none; }
+.recovery-starting .starting-footnote { margin-top: 15px; color: #7e8a86; font-size: 12px; line-height: 1.5; }
+.recovery-starting .recovery-footer { padding-top: 13px; border-color: #ffffff14; color: #87928e; font: 500 10px/1.5 Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; letter-spacing: .03em; }
+@media (max-width: 560px) {
+  .recovery-starting { padding: 18px 18px 14px; }
+  .recovery-starting .recovery-brand img { width: min(132px, 40vw); }
+  .recovery-starting .starting-header-status { gap: 6px; font-size: 10px !important; }
+  .recovery-starting .recovery-content { padding: 20px 0 28px; }
+  .recovery-starting .recovery-content h1 { font-size: clamp(37px, 10vw, 46px); }
+  .recovery-starting .recovery-copy { margin: 16px auto 25px; font-size: 14px; }
+  .recovery-starting .recovery-footer { font-size: 9px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .recovery-starting .starting-progress i,
+  .recovery-starting .starting-live-dot { animation: none !important; }
+  .recovery-starting .starting-progress i { left: 0; width: 55%; }
+}

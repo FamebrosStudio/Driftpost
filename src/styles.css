@@ -14,7 +14,7 @@
   --blue: #3b82f6;
   --sky: #38bdf8;
   --grad: linear-gradient(135deg, #10b981, #0ea5e9);
-  --go: #58c5a4;
+  --go: #61c7a7;
   --go-ink: #04150e;
   --warm: #f59e0b;
   --warm-bg: #f59e0b1f;
@@ -89,8 +89,12 @@ button { cursor: pointer; }
   background: color-mix(in srgb, var(--bg) 92%, transparent); backdrop-filter: blur(16px);
 }
 .stage1 > .ws-topbar .ws-wordmark, .stage2 > .ws-topbar .ws-wordmark, .stage3 > .ws-topbar .ws-wordmark { padding: 0; }
+.stage1 > .ws-topbar .ws-wordmark, .stage2 > .ws-topbar .ws-wordmark, .stage3 > .ws-topbar .ws-wordmark { align-self: flex-start; width: auto; overflow: hidden; }
 .stage1 > .ws-topbar .ws-nav, .stage2 > .ws-topbar .ws-nav, .stage3 > .ws-topbar .ws-nav { display: none; }
+.stage1 > .ws-topbar .ws-collapse-toggle, .stage2 > .ws-topbar .ws-collapse-toggle, .stage3 > .ws-topbar .ws-collapse-toggle { display: none; }
 .stage1 > .ws-topbar .ws-user, .stage2 > .ws-topbar .ws-user, .stage3 > .ws-topbar .ws-user { margin-left: auto; max-width: 320px; }
+.stage1 > .ws-topbar .ws-overview-link, .stage2 > .ws-topbar .ws-overview-link, .stage3 > .ws-topbar .ws-overview-link { display: inline-flex; min-height: 36px; align-items: center; gap: 8px; padding: 0 11px; border: 1px solid var(--line); background: transparent; color: var(--muted); font-size: 12px; text-decoration: none; }
+.stage1 > .ws-topbar .ws-overview-link:hover, .stage2 > .ws-topbar .ws-overview-link:hover, .stage3 > .ws-topbar .ws-overview-link:hover { border-color: var(--line-hard); background: var(--hover); color: var(--ink); }
 .stage1 .stage1-in { width: min(1120px, 100%); padding-top: 34px; }
 .stage2 .stage2-in { width: min(1280px, 100%); padding-top: 24px; }
 .stage3 .stage3-in { width: min(1440px, 100%); padding-top: 24px; }
@@ -128,6 +132,22 @@ button { cursor: pointer; }
 }
 @media (prefers-reduced-motion: reduce) {
   .stage1 *, .stage2 *, .stage3 *, .progress-steps * { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
+
+/* Crisp, low-noise console surfaces: keep the stage markers circular, make
+   everything else intentionally square, and use one muted mint accent. */
+.ws *, .hist-shell *, .connect *, .stage1 *, .stage2 *, .stage3 *, .team-video-page * { border-radius: 3px !important; }
+.progress-steps .progress-steps__number { border-radius: 50% !important; }
+.progress-steps .progress-steps__track, .progress-steps .progress-steps__track i { border-radius: 99px !important; }
+.ws > .ws-topbar, .hist-shell > .ws-topbar { transition: width .24s cubic-bezier(.2,.75,.25,1), padding .24s ease; }
+.ws > .ws-main, .ws > .connect, .hist > .hist-in { transition: width .24s cubic-bezier(.2,.75,.25,1), margin-left .24s cubic-bezier(.2,.75,.25,1), padding .24s ease; }
+@supports selector(:has(*)) {
+  .ws:has(> .ws-topbar[data-collapsed="true"]) > .ws-main,
+  .ws:has(> .ws-topbar[data-collapsed="true"]) > .connect,
+  .hist-shell:has(> .ws-topbar[data-collapsed="true"]) > .hist { transition: width .24s cubic-bezier(.2,.75,.25,1), margin-left .24s cubic-bezier(.2,.75,.25,1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ws > .ws-topbar, .hist-shell > .ws-topbar, .ws > .ws-main, .ws > .connect, .hist > .hist-in { transition: none !important; }
 }
 
 /* real logo swaps with console theme (landing always shows the white lockup) */

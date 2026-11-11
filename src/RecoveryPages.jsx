@@ -41,16 +41,16 @@ export function OfflinePage({ onRetry, checking }) {
 
 export function ServerStartingPage() {
   return <main className="recovery-page recovery-starting" role="status" aria-live="polite">
-    <header className="recovery-top"><span className="recovery-brand"><DriftpostLogo /></span><span>WORKSPACE INITIALIZING</span></header>
+    <header className="recovery-top"><span className="recovery-brand"><DriftpostLogo /></span><span className="starting-header-status"><i aria-hidden="true" />Server status <b>Starting</b></span></header>
     <section className="recovery-content">
-      <p className="recovery-kicker">A fresh workspace is on its way</p>
-      <h1>Driftpost is<br />getting ready.</h1>
-      <p className="recovery-copy">We’re connecting to the publishing server. This usually takes a few seconds after an update or a quiet period. This page will move on as soon as it’s ready.</p>
-      <div className="starting-progress" aria-label="Waiting for the Driftpost server"><i /></div>
-      <p className="starting-caption"><span className="starting-live-dot" /> Warming up the workspace <span className="starting-dots">•••</span></p>
-      <small className="starting-footnote">Keep this tab open — you’ll continue automatically.</small>
+      <p className="recovery-kicker">Preparing your workspace</p>
+      <h1>Your workspace<br />is almost ready.</h1>
+      <p className="recovery-copy">Driftpost is reconnecting to its publishing server. You’ll continue automatically as soon as it’s available.</p>
+      <div className="starting-progress" role="progressbar" aria-label="Checking server readiness" aria-valuetext="Waiting for the publishing server"><i /></div>
+      <p className="starting-caption"><span className="starting-live-dot" /> Connecting to publishing server</p>
+      <small className="starting-footnote">No action needed. Keep this tab open.</small>
     </section>
-    <footer className="recovery-footer"><span>DRIFTPOST</span><span>Good things take a moment.</span></footer>
+    <footer className="recovery-footer"><span>DRIFTPOST</span><span>We’ll continue automatically.</span></footer>
   </main>;
 }
 

@@ -1,16 +1,15 @@
 /* Connect Accounts hub — the page before Stage 1. Same minimal language
    as the stages: single accent, calm cards, safe-area aware. */
 .connect {
-  --acc: #7c6cf5;
-  --acc-ink: #ffffff;
-  --acc-soft: #7c6cf51f;
+  --acc: var(--go);
+  --acc-ink: #10231d;
+  --acc-soft: color-mix(in srgb, var(--go) 14%, transparent);
   min-height: 100vh;
   background: var(--bg);
   color: var(--ink);
   padding-top: env(safe-area-inset-top);
   padding-bottom: env(safe-area-inset-bottom);
 }
-[data-theme="light"] .connect { --acc: #5b4fd6; --acc-soft: #5b4fd614; }
 .connect-in { max-width: 980px; margin: 0 auto; padding: 16px 20px 140px; min-width: 0; }
 .cn-top { display: flex; align-items: center; justify-content: space-between; }
 .cn-top-right { display: flex; gap: 4px; }
