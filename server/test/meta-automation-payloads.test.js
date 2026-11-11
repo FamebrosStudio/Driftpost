@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { automationComment, commentReplyEdge, incomingMessageReply, matchesAutomationKeyword } from '../src/meta-automation-payloads.js';
+import { automationComment, commentReplyEdge, commentReplyModes, incomingMessageReply, matchesAutomationKeyword } from '../src/meta-automation-payloads.js';
 
 const comment = { field: 'feed', value: { item: 'comment', verb: 'add', comment_id: 'post_comment', post_id: 'post', parent_id: 'post', from: { id: 'customer' }, message: 'PRICE' } };
 test('Facebook feed comments are normalized for matching and use the comment replies edge', () => {
@@ -29,4 +29,10 @@ test('automation keywords match case, punctuation, accents, and any configured a
   assert.equal(matchesAutomationKeyword('I want the CAFÉ details', 'hours; cafe | price'), true);
   assert.equal(matchesAutomationKeyword('Can you share the menu?', 'hours, price'), false);
   assert.equal(matchesAutomationKeyword('Anything at all', ''), false);
+});
+
+test('private comment DMs and public comment replies can be enabled independently', () => {
+  assert.deepEqual(commentReplyModes({ comment_enabled: true, public_reply_enabled: false, private_reply: 'DM text', public_reply: 'Public text' }), { privateReplyEnabled: true, publicReplyEnabled: false });
+  assert.deepEqual(commentReplyModes({ comment_enabled: false, public_reply_enabled: true, public_reply: 'Public text' }), { privateReplyEnabled: false, publicReplyEnabled: true });
+  assert.deepEqual(commentReplyModes({ comment_enabled: true, public_reply: 'Legacy public', private_reply: '' }), { privateReplyEnabled: true, publicReplyEnabled: true });
 });

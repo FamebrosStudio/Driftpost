@@ -4,7 +4,7 @@ import { api } from '../lib.js';
 import { WorkspaceNav } from './Workspace.jsx';
 import './workspace.css';
 
-const EMPTY = { comment_enabled: false, comment_keyword: '', public_reply: '', private_reply: '', dm_keyword: '', dm_reply: '', default_reply: '' };
+const EMPTY = { comment_enabled: false, public_reply_enabled: false, comment_keyword: '', public_reply: '', private_reply: '', dm_keyword: '', dm_reply: '', default_reply: '' };
 
 export default function AutomationsPage({ session, onNavigate, onSignOut }) {
   const [platform, setPlatform] = useState('instagram');
@@ -38,7 +38,15 @@ export default function AutomationsPage({ session, onNavigate, onSignOut }) {
     const account = accounts.find((item) => item.id === selected);
     if (!account) return;
     setEnabled(account.enabled);
-    setRules({ ...EMPTY, ...(account.rules || {}) });
+    const savedRules = account.rules || {};
+    const loadedRules = { ...EMPTY, ...savedRules };
+    // Migrate the old combined comment trigger into independent switches in
+    // the UI without changing the user's former public/private reply behavior.
+    if (savedRules.public_reply_enabled === undefined && savedRules.comment_enabled) {
+      loadedRules.comment_enabled = !!String(savedRules.private_reply || '').trim();
+      loadedRules.public_reply_enabled = !!String(savedRules.public_reply || '').trim();
+    }
+    setRules(loadedRules);
     setMessage(''); setError('');
   }, [accounts, selected]);
 
@@ -67,8 +75,9 @@ export default function AutomationsPage({ session, onNavigate, onSignOut }) {
         <section className="ws-panel automation-account"><label><span>{platformName} account</span><select value={selected} disabled={saving} onChange={(e) => setSelected(e.target.value)}>{accounts.map((item) => <option key={item.id} value={item.id}>{item.name} · replies {item.enabled ? 'ON' : 'PAUSED'}</option>)}</select></label><label className="automation-toggle"><input type="checkbox" checked={enabled} onChange={(e) => setEnabled(e.target.checked)} /><span><b>Automation is {enabled ? 'on' : 'paused'}</b><small>Pause instantly without deleting your reply rules.</small></span></label></section>
         <div className="automation-grid">
           <section className="ws-panel"><div className="automation-title"><span className="ws-icon"><BrandIcon id={platform} size={18} /></span><div><h2>Comment to DM</h2><p>Match a keyword in a post comment, then send a public reply, a private message, or both.</p></div></div>
-            <label className="automation-toggle"><input type="checkbox" checked={rules.comment_enabled} onChange={(e) => set('comment_enabled', e.target.checked)} /><span><b>Enable comment trigger</b><small>Leave keyword empty to match any comment.</small></span></label>
-            {field('Comment keyword', 'comment_keyword', 'e.g. PRICE', 'Matching ignores uppercase and lowercase.')}
+            <label className="automation-toggle"><input type="checkbox" checked={rules.comment_enabled} onChange={(e) => set('comment_enabled', e.target.checked)} /><span><b>Auto DM commenters</b><small>Send a private message when a comment matches the keyword.</small></span></label>
+            <label className="automation-toggle"><input type="checkbox" checked={rules.public_reply_enabled} onChange={(e) => set('public_reply_enabled', e.target.checked)} /><span><b>Auto-reply publicly to comments</b><small>Post a reply under each matching comment. Turn this off to stop public replies.</small></span></label>
+            {field('Comment keyword filter (optional)', 'comment_keyword', 'e.g. PRICE', 'Leave blank to match every new comment. This filter applies to both auto-DM and public replies.')}
             {field('Public comment reply', 'public_reply', 'Thanks for asking! Check your messages.', 'Optional. Appears under the comment.', true)}
             {rules.comment_enabled && !rules.private_reply.trim() && <p className="automation-setup" role="status"><b>Comment DMs are not configured.</b> A public reply can still appear under the comment, but no private message will be sent until you add one below.</p>}
             {field('Private reply to the comment', 'private_reply', 'Here are the details you asked for…', 'Add a message here to DM the commenter. Meta allows one private reply per comment.', true)}

@@ -20,6 +20,16 @@ export function commentReplyEdge(platform) {
   return platform === 'facebook' ? 'comments' : 'replies';
 }
 
+export function commentReplyModes(rules = {}) {
+  const privateReplyEnabled = rules.comment_enabled === true;
+  // Existing rows predate the explicit public-reply toggle. Preserve their
+  // previous behavior until the user saves the new independent setting.
+  const publicReplyEnabled = rules.public_reply_enabled === undefined
+    ? privateReplyEnabled && !!String(rules.public_reply || '').trim()
+    : rules.public_reply_enabled === true;
+  return { privateReplyEnabled, publicReplyEnabled };
+}
+
 const normalizeKeywordText = (value) => String(value || '').normalize('NFKD')
   .replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
 

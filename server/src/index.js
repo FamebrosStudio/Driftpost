@@ -27,7 +27,7 @@ import { uploadMediaFile, downloadMediaFile } from './media-io.js';
 import { scheduleIdentity } from './schedule-fields.js';
 import { deleteResultsStatus } from './delete-results.js';
 import { runAutomationAction } from './automation-events.js';
-import { automationComment, commentReplyEdge, incomingMessageReply, matchesAutomationKeyword } from './meta-automation-payloads.js';
+import { automationComment, commentReplyEdge, commentReplyModes, incomingMessageReply, matchesAutomationKeyword } from './meta-automation-payloads.js';
 import { eraseUserMedia } from './storage-cleanup.js';
 import { enabledInstagramCollaborators, instagramCaptionRequiredError, nonEmptyCaption } from './caption-guards.js';
 import { createTemporaryMediaUrl, isOwnedMediaPath } from './media-links.js';
@@ -250,6 +250,7 @@ app.post('/api/meta/webhook', express.raw({ type: 'application/json', limit: '1m
           continue;
         }
         const rules = automation.rules || {};
+        const { privateReplyEnabled, publicReplyEnabled } = commentReplyModes(rules);
         for (const change of entry.changes || []) {
           const comment = automationComment(platform, change, igId);
           if (!comment) {
@@ -263,6 +264,7 @@ app.post('/api/meta/webhook', express.raw({ type: 'application/json', limit: '1m
           }
           const commentId = comment.id;
           const commentText = comment.text;
+          if (!privateReplyEnabled && !publicReplyEnabled) continue;
           const keyword = String(rules.comment_keyword || '').trim().toLowerCase();
           const keywordMatched = !keyword || matchesAutomationKeyword(commentText, keyword);
           if (!rules.comment_enabled || !keywordMatched) {
@@ -278,13 +280,15 @@ app.post('/api/meta/webhook', express.raw({ type: 'application/json', limit: '1m
           console.info('[meta automation] comment matched rule', {
             platform,
             connection: connection.id.slice(0, 8),
-            publicReplyConfigured: !!String(rules.public_reply || '').trim(),
-            privateReplyConfigured: !!String(rules.private_reply || '').trim(),
+            publicReplyEnabled: publicReplyEnabled && !!String(rules.public_reply || '').trim(),
+            privateReplyEnabled: privateReplyEnabled && !!String(rules.private_reply || '').trim(),
           });
           const actionErrors = [];
           for (const [field, edge] of [['private_reply', 'messages'], ['public_reply', commentReplyEdge(platform)]]) {
             const message = String(rules[field] || '').trim();
             if (!message) continue;
+            if (field === 'private_reply' && !privateReplyEnabled) continue;
+            if (field === 'public_reply' && !publicReplyEnabled) continue;
             try {
               await runAutomationAction(supabase, {
                 event_id: `comment:${connection.id}:${commentId}:${field}`,
@@ -1149,6 +1153,9 @@ app.put('/api/automations/:platform/:connectionId', requireUser, strictBurstLimi
   const input = req.body || {};
   const rules = {
     comment_enabled: input.comment_enabled === true,
+    public_reply_enabled: input.public_reply_enabled === undefined
+      ? input.comment_enabled === true && !!String(input.public_reply || '').trim()
+      : input.public_reply_enabled === true,
     comment_keyword: String(input.comment_keyword || '').trim().slice(0, 80),
     public_reply: String(input.public_reply || '').trim().slice(0, 1000),
     private_reply: String(input.private_reply || '').trim().slice(0, 1000),
@@ -1157,8 +1164,9 @@ app.put('/api/automations/:platform/:connectionId', requireUser, strictBurstLimi
     default_reply: String(input.default_reply || '').trim().slice(0, 1000),
   };
   const enabled = input.enabled === true;
-  if (enabled && !rules.comment_enabled && !rules.dm_keyword && !rules.default_reply) return res.status(400).json({ error: 'Add a comment or incoming-message rule before enabling automation.' });
-  if (rules.comment_enabled && !rules.public_reply && !rules.private_reply) return res.status(400).json({ error: 'Add a public reply or private message for comment automation.' });
+  if (enabled && !rules.comment_enabled && !rules.public_reply_enabled && !rules.dm_keyword && !rules.default_reply) return res.status(400).json({ error: 'Enable comment-to-DM, public comment replies, or an incoming-message rule before enabling automation.' });
+  if (rules.comment_enabled && !rules.private_reply) return res.status(400).json({ error: 'Add a private reply message or disable comment-to-DM.' });
+  if (rules.public_reply_enabled && !rules.public_reply) return res.status(400).json({ error: 'Add a public comment reply or disable public comment replies.' });
   if (rules.dm_keyword && !rules.dm_reply) return res.status(400).json({ error: 'Add a reply for the incoming-message keyword.' });
   if (enabled) {
     if (!process.env.META_WEBHOOK_VERIFY_TOKEN || !process.env.META_APP_SECRET) {
@@ -1167,7 +1175,7 @@ app.put('/api/automations/:platform/:connectionId', requireUser, strictBurstLimi
     try {
       const tokens = decryptJson(connection.encrypted_tokens);
       if (platform === 'facebook') {
-        await subscribeFacebookWebhooks({ pageId: connection.platform_account_id, accessToken: tokens.access_token, comments: rules.comment_enabled, messages: !!(rules.dm_keyword || rules.default_reply || rules.private_reply) });
+        await subscribeFacebookWebhooks({ pageId: connection.platform_account_id, accessToken: tokens.access_token, comments: rules.comment_enabled || rules.public_reply_enabled, messages: !!(rules.dm_keyword || rules.default_reply || rules.private_reply) });
       } else {
         await subscribeInstagramWebhooks({ igUserId: connection.platform_account_id, pageId: tokens.page_id, accessToken: tokens.access_token });
       }
