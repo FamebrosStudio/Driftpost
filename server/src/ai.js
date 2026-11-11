@@ -529,6 +529,7 @@ export async function generateCaptions(summary, opts = {}) {
   // never infer a saved brand from an unbranded post topic.
   const mem = await import('./brand-memory/index.js');
   const requestedBrandId = mayUsePrivateBrandData ? String(opts.brandId || '') : '';
+  const explicitBrandSelection = !!requestedBrandId || !!brandQuery.trim();
   const selectedBrand = requestedBrandId ? mem.getBrandById(requestedBrandId) : null;
   if (requestedBrandId && !selectedBrand) throw new Error('The selected brand profile is no longer available. Reload the brand list and try again.');
   const hit = selectedBrand
@@ -554,7 +555,7 @@ export async function generateCaptions(summary, opts = {}) {
       }
     } catch {}
   }
-  if (brand && !brandTopicRelevant({ brand, brief })) {
+  if (brand && !explicitBrandSelection && !brandTopicRelevant({ brand, brief })) {
     console.info(`[ai] omitted unrelated brand context for topic: ${brand.id}`);
     brand = null;
     autoNew = null;
@@ -729,6 +730,12 @@ export async function generateCaptions(summary, opts = {}) {
       : Array.isArray(full?.keyword_bank) && full.keyword_bank.length
         ? full.keyword_bank
         : Array.isArray(brand.kw) ? brand.kw : [];
+    // A brand selected in Stage 1 is explicit context, even when the brief is
+    // a testimonial or another format that doesn't repeat the product words.
+    // Let approved category/location facts ground its SEO and hashtag metadata.
+    const seoTopic = explicitBrandSelection
+      ? [brief, brand.name, brand.cat, brand.loc, deep?.business?.category, deep?.business?.branch, deep?.business?.city].filter(Boolean).join(' ')
+      : brief;
     // Shade/service words from THIS brief lead the bracket: "honey brown" +
     // "hair" = "honey brown hair". Whole words only, never cut fragments.
     const shadeHit = brief.match(/honey(?:\s+[a-z]+){0,2}|balayage|blonde|burgundy|caramel|keratin|smoothening|bridal|ombre/i);
@@ -747,7 +754,7 @@ export async function generateCaptions(summary, opts = {}) {
       ...seoPhrases(parsed.instagram?.keywords).filter(seoPhraseAllowed),
       ...(shadePhrase ? [shadePhrase] : []),
       ...profileKeywords,
-    ], brief, 17);
+    ], seoTopic, 17);
     const kwLine = formatKeywordBracket(bracketPhrases);
     // Strip anything footer-like the model invented: footer-emoji lines,
     // agency lines, brand-name-only lines, hashtag lines, old brackets.
@@ -800,7 +807,7 @@ export async function generateCaptions(summary, opts = {}) {
     igTags = safeBrandHashtags({
       candidates: [...igTags, ...kwBank, ...suggested],
       brand,
-      brief,
+      brief: seoTopic,
       otherBrands,
     });
     const hashLine = igTags.length ? igTags.map((t) => `#${t}`).join(' ') : '';
