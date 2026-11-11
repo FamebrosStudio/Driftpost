@@ -732,10 +732,19 @@ export async function generateCaptions(summary, opts = {}) {
     // "hair" = "honey brown hair". Whole words only, never cut fragments.
     const shadeHit = brief.match(/honey(?:\s+[a-z]+){0,2}|balayage|blonde|burgundy|caramel|keratin|smoothening|bridal|ombre/i);
     const shadePhrase = shadeHit ? `${shadeHit[0].trim().toLowerCase().split(/\s+/).slice(0, 2).join(' ')} hair`.replace(' hair hair', ' hair') : '';
+    const financeTopic = /\b(?:emi|finance|financing|instalments?|installments?|loan|sip|savings?\s+plan)\b/i.test(brief);
+    const profileKeywords = kwBank.filter((phrase) => {
+      const value = String(phrase || '');
+      // Finance SEO can imply an active product or eligibility. Include it only
+      // when this post's brief explicitly covers a current finance programme.
+      if (/\b(?:emi|finance|financing|salary\s+slip|sip|savings?\s+plan|monthly\s+plan)\b/i.test(value) && !financeTopic) return false;
+      if (/salary\s+slip/i.test(value) && !/salary\s+slip/i.test(brief)) return false;
+      return true;
+    });
     const bracketPhrases = topicRelevantPhrases([
       ...tags(parsed.instagram?.keywords),
       ...(shadePhrase ? [shadePhrase] : []),
-      ...kwBank,
+      ...profileKeywords,
     ], brief, 8);
     const kwLine = formatKeywordBracket(bracketPhrases);
     // Strip anything footer-like the model invented: footer-emoji lines,
