@@ -65,7 +65,11 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut, onOpenRe
   const [facebookCover, setFacebookCover] = useState(null);
   const [autoPublish, setAutoPublish] = useState(true);
   const [jobs, setJobs] = useState(() => {
-    try { return JSON.parse(localStorage.getItem(SCOPED('driftpost-team-video-jobs', userId)) || '[]').map((job) => job.status === 'analyzing' ? { ...job, status: 'failed', message: 'Analysis stopped when this page was closed. Submit the video again.' } : job); } catch { return []; }
+    try {
+      const saved = JSON.parse(localStorage.getItem(SCOPED('driftpost-team-video-jobs', userId)) || '[]');
+      if (!Array.isArray(saved)) return [];
+      return saved.filter((job) => job && typeof job === 'object').map((job) => job.status === 'analyzing' ? { ...job, status: 'failed', message: 'Analysis stopped when this page was closed. Submit the video again.' } : job);
+    } catch { return []; }
   });
   // React state updates are asynchronous. Keep a synchronous reservation so
   // rapid double-clicks or parallel submissions cannot exceed the job cap.
@@ -93,10 +97,10 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut, onOpenRe
   useEffect(() => {
     let active = true;
     const refresh = () => {
-      api('/api/intake/drive/status', session.access_token)
-        .then((data) => { if (active) setDriveState({ ...data, loading: false, error: '' }); })
-        .catch((e) => { if (active) setDriveState((old) => ({ ...old, loading: false, error: e.message || 'Could not check the Drive connection.' })); });
-      api('/api/intake/drive/jobs', session.access_token).then((data) => { if (active) setDriveJobs(data.jobs || []); }).catch(() => {});
+       api('/api/intake/drive/status', session.access_token)
+         .then((data) => { if (active) setDriveState({ ...(data && typeof data === 'object' ? data : {}), loading: false, error: '' }); })
+         .catch((e) => { if (active) setDriveState((old) => ({ ...old, loading: false, error: e.message || 'Could not check the Drive connection.' })); });
+       api('/api/intake/drive/jobs', session.access_token).then((data) => { if (active) setDriveJobs(Array.isArray(data?.jobs) ? data.jobs.filter((job) => job && typeof job === 'object') : []); }).catch(() => {});
     };
     refresh();
     const timer = window.setInterval(refresh, 5_000);
@@ -172,11 +176,11 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut, onOpenRe
     setLoadError('');
     setBrandLoadError('');
     api('/api/connections', session.access_token)
-      .then((data) => { if (active) { setConnections(data.connections || []); setLoadError(''); } })
+      .then((data) => { if (active) { setConnections(Array.isArray(data?.connections) ? data.connections.filter((item) => item && typeof item === 'object') : []); setLoadError(''); } })
       .catch((e) => { if (active) setLoadError(e.message || 'Could not load connected accounts.'); })
       .finally(() => { if (active) setConnectionsLoading(false); });
     api('/api/ai/brands?limit=200', session.access_token)
-      .then((data) => { if (active) { setBrandOptions(data.brands || []); setBrandLoadError(''); setBrandLoading(false); } })
+      .then((data) => { if (active) { setBrandOptions(Array.isArray(data?.brands) ? data.brands.filter((item) => item && typeof item === 'object') : []); setBrandLoadError(''); setBrandLoading(false); } })
       .catch((e) => { if (active) { setBrandLoadError(e.message || 'Could not load the saved brand profiles.'); setBrandLoading(false); } });
     return () => { active = false; };
   }, [session.access_token, retryTick]);
@@ -423,7 +427,7 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut, onOpenRe
           const timestamp = new Date(job.updated_at || job.created_at).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
           return <div key={job.id} className={!!job.result?.review ? 'drive-job-needs-review' : ''}>
             <span><strong>{job.file_name}</strong><small>{job.account_name} · {(job.platforms || []).join(', ') || 'Destination needs correction'} · {isCarousel ? `${job.result?.source_drive_files?.length || 'Photo'}-image carousel` : job.mime_type || 'Video'} · {(Number(job.file_size || 0) / 1024 / 1024).toFixed(1)} MB</small></span>
-           <em className={`drive-job-status ${job.status}`}>{job.result?.review ? 'needs correction' : job.status.replace('_', ' ')}</em>
+           <em className={`drive-job-status ${job.status || 'unknown'}`}>{job.result?.review ? 'needs correction' : String(job.status || 'unknown').replaceAll('_', ' ')}</em>
             <small className="drive-job-progress">{progress?.detail || (job.status === 'queued' ? 'Waiting for the intake worker…' : job.status === 'publishing' ? 'Publishing to selected accounts…' : job.status === 'completed' ? 'Published successfully.' : job.status === 'partial' ? 'Some accounts published; check the post history.' : job.status === 'failed' ? 'Needs attention.' : 'Preparing media…')} · Updated {timestamp}</small>
             {!!progress?.destinations?.length && <small className="drive-job-destinations">{progress.destinations.map((target) => `${target.platform} · ${target.account}: ${target.status}${target.error ? ` (${target.error})` : ''}`).join('  |  ')}</small>}
             {!!job.result?.source_drive_files?.length && <details className="drive-job-files"><summary>Carousel contents ({job.result.source_drive_files.length} images)</summary><small>{job.result.source_drive_files.map((item) => item.name).join(' · ')}</small></details>}
