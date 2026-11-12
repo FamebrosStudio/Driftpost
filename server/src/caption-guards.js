@@ -166,6 +166,10 @@ export const CAPTION_FILLER_PHRASES = [
   { label: 'comment below', re: /\bcomment below\b/i },
   { label: 'tag a friend', re: /\btag[\s-]a[\s-]friend\b/i },
   { label: 'link in bio', re: /\blink in bio\b/i },
+  { label: 'a feast for the senses', re: /\ba feast for (?:the )?senses\b/i },
+  { label: 'the perfect blend', re: /\bthe perfect blend\b/i },
+  { label: 'something for everyone', re: /\bsomething for everyone\b/i },
+  { label: 'where tradition meets modernity', re: /\bwhere tradition meets modernity\b/i },
 ];
 
 // Three or more of the same noise punctuation ("!!!", "???", "!?!").

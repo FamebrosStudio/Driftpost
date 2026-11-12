@@ -47,6 +47,17 @@ test('filler phrases in a platform body fail the caption quality check', () => {
   assert.match(issue, /game-changer/);
 });
 
+test('stock marketing clichés are caught for automatic caption repair', () => {
+  for (const [text, phrase] of [
+    ['A feast for the senses, made fresh every morning.', 'a feast for the senses'],
+    ['The perfect blend of comfort and style.', 'the perfect blend'],
+    ['There is something for everyone in this collection.', 'something for everyone'],
+    ['Where tradition meets modernity in every detail.', 'where tradition meets modernity'],
+  ]) {
+    assert.ok(captionFillerIssues(text).some((issue) => issue.includes(phrase)), `${phrase} should trigger the repair check`);
+  }
+});
+
 test('a clean platform body passes the caption quality check', () => {
   const draft = structuredClone(valid);
   assert.equal(captionQualityIssue(draft, { platforms: ['instagram'], mem: memory }), '');
