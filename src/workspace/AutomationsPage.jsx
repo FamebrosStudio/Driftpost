@@ -10,6 +10,8 @@ export default function AutomationsPage({ session, onNavigate, onSignOut }) {
   const [platform, setPlatform] = useState('instagram');
   const platformName = platform === 'facebook' ? 'Facebook' : platform === 'google-business' ? 'Google Business Profile' : 'Instagram';
   const [accounts, setAccounts] = useState([]);
+  const [googleConnections, setGoogleConnections] = useState([]);
+  const [refreshingConnection, setRefreshingConnection] = useState('');
   const [selected, setSelected] = useState('');
   const [accountSearch, setAccountSearch] = useState('');
   const [enabled, setEnabled] = useState(false);
@@ -17,22 +19,22 @@ export default function AutomationsPage({ session, onNavigate, onSignOut }) {
   const [ready, setReady] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState('');
-  const [message, setMessage] = useState('');
+  const [error, setError] = useState(() => new URLSearchParams(window.location.search).get('google_business_error') || '');
+  const [message, setMessage] = useState(() => new URLSearchParams(window.location.search).get('connected') === 'google-business' ? 'Google Business Profile account connected.' : '');
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    if (params.get('connected') === 'google-business') setMessage('Google Business Profile connected. Choose a location and configure its review replies.');
     if (params.get('oauth_error')) setError(`Google connection failed: ${params.get('oauth_error')}`);
-    if (params.has('connected') || params.has('oauth_error')) window.history.replaceState({}, '', window.location.pathname);
+    if (params.has('connected') || params.has('oauth_error') || params.has('google_business_error')) window.history.replaceState({}, '', window.location.pathname);
   }, []);
 
   useEffect(() => {
     let active = true;
-    setLoading(true); setError(''); setMessage(''); setAccounts([]); setSelected(''); setAccountSearch('');
+    setLoading(true); setAccounts([]); setSelected(''); setAccountSearch('');
     api(platform === 'google-business' ? '/api/automations/google-business' : `/api/automations/${platform}`, session.access_token)
       .then((data) => {
         if (!active) return;
+        setGoogleConnections(platform === 'google-business' ? (data.connections || []) : []);
         const list = [...(platform === 'google-business' ? (data.locations || []).map((item) => ({ ...item, name: item.location_name })) : (data.accounts || []))].sort((a, b) => String(a.name || '').localeCompare(String(b.name || ''), undefined, { sensitivity: 'base', numeric: true }));
         setAccounts(list); setReady(!!data.webhook_ready);
         setSelected(list[0]?.id || '');
@@ -79,12 +81,29 @@ export default function AutomationsPage({ session, onNavigate, onSignOut }) {
     finally { setSaving(false); }
   };
 
+  const refreshLocations = async (connectionId) => {
+    if (refreshingConnection) return;
+    setRefreshingConnection(connectionId); setError(''); setMessage('');
+    try {
+      const result = await api(`/api/automations/google-business/connections/${encodeURIComponent(connectionId)}/refresh`, session.access_token, { method: 'POST' });
+      const data = await api('/api/automations/google-business', session.access_token);
+      setGoogleConnections(data.connections || []);
+      const locations = (data.locations || []).map((item) => ({ ...item, name: item.location_name })).sort((a, b) => String(a.name || '').localeCompare(String(b.name || ''), undefined, { sensitivity: 'base', numeric: true }));
+      setAccounts(locations);
+      setSelected((current) => current && locations.some((item) => item.id === current) ? current : (locations[0]?.id || ''));
+      setMessage(result.count ? `Found ${result.count} business location${result.count === 1 ? '' : 's'}.` : 'Google account connected. No Business Profile locations are currently available for this account.');
+    } catch (e) { setError(e.message || 'Could not refresh Google business locations.'); }
+    finally { setRefreshingConnection(''); }
+  };
+
   const field = (label, key, placeholder, hint, multiline = false) => <label className="automation-field"><span>{label}</span>{multiline ? <textarea rows="3" maxLength={1000} value={rules[key]} onChange={(e) => set(key, e.target.value)} placeholder={placeholder} /> : <input maxLength={80} value={rules[key]} onChange={(e) => set(key, e.target.value)} placeholder={placeholder} />}{hint && <small>{hint}</small>}</label>;
 
   return <div className="ws"><WorkspaceNav page="automations" onNavigate={onNavigate} email={session.user?.email} onSignOut={onSignOut} />
     <main className="ws-main"><div className="ws-heading"><div><span className="ws-eyebrow">{platformName} engagement</span><h1>{platform === 'google-business' ? 'Review auto-replies' : 'Auto DM & replies'}</h1><p>{platform === 'google-business' ? 'Manage review reply rules separately for each connected business location.' : `Reply to comment keywords and inbound ${platformName} messages automatically.`}</p></div><button className="ws-primary" disabled={!selected || saving} onClick={save}>{saving ? 'Saving…' : 'Save automation'}</button></div>
-      <section className="ws-panel automation-account"><label><span>Platform</span><select value={platform} disabled={saving} onChange={(e) => { setSelected(''); setAccounts([]); setAccountSearch(''); setLoading(true); setPlatform(e.target.value); }}><option value="instagram">Instagram</option><option value="facebook">Facebook</option><option value="google-business">Google Business Profile reviews</option></select></label></section>
-      {platform === 'google-business' && <section className="ws-panel automation-setup"><b>Connect business locations</b><p>Connect any verified Google account that manages the business. Driftpost imports every location that account can manage; select a location below to configure its own independent reply automation. Google API approval and enablement are required.</p><button type="button" className="ws-primary" disabled={saving} onClick={() => api('/api/oauth/google-business/start', session.access_token, { method: 'POST' }).then((data) => { try { localStorage.setItem('driftpost-after-google-business-connect', 'automations'); } catch {} window.location.assign(data.url); }).catch((e) => setError(e.message || 'Could not start Google connection.'))}>Connect another Google business account</button></section>}
+       <section className="ws-panel automation-account"><label><span>Platform</span><select value={platform} disabled={saving} onChange={(e) => { setSelected(''); setAccounts([]); setGoogleConnections([]); setAccountSearch(''); setLoading(true); setError(''); setMessage(''); setPlatform(e.target.value); }}><option value="instagram">Instagram</option><option value="facebook">Facebook</option><option value="google-business">Google Business Profile reviews</option></select></label></section>
+       {platform === 'google-business' && <section className="ws-panel automation-setup"><b>Connect business locations</b><p>Connect any Google account that manages a Business Profile. Accounts remain connected even if Google temporarily prevents location discovery; use Retry to load locations again.</p><button type="button" className="ws-primary" disabled={saving} onClick={() => api('/api/oauth/google-business/start', session.access_token, { method: 'POST' }).then((data) => { try { localStorage.setItem('driftpost-after-google-business-connect', 'automations'); } catch {} window.location.assign(data.url); }).catch((e) => setError(e.message || 'Could not start Google connection.'))}>Connect another Google business account</button>
+         {googleConnections.map((connection) => <div key={connection.id} className="automation-google-connection"><div><b>{connection.google_email}</b><small>{connection.locations_count ? `${connection.locations_count} location${connection.locations_count === 1 ? '' : 's'} found` : 'No locations found yet'}{connection.locations_synced_at ? ` · Last checked ${new Date(connection.locations_synced_at).toLocaleString()}` : ''}</small>{connection.location_sync_error && <small className="approval-error" role="alert">{connection.location_sync_error}</small>}</div><button type="button" className="ws-secondary" disabled={!!refreshingConnection} onClick={() => refreshLocations(connection.id)}>{refreshingConnection === connection.id ? 'Checking…' : 'Retry location discovery'}</button></div>)}
+       </section>}
       {platform !== 'google-business' && !ready && <section className="ws-panel automation-setup"><b>Connect your account to enable replies</b><p>Automatic replies need messaging and comment access from Meta. Reconnect your account after those permissions are enabled.</p></section>}
       {error && <p className="approval-error" role="alert">{error}</p>}{message && <p className="automation-saved" role="status">{message}</p>}
       {loading ? <div className="ws-inline-state">Loading {platformName} accounts…</div> : !accounts.length ? <section className="ws-panel ws-empty"><b>{platform === 'google-business' ? 'No business locations connected yet' : `Connect ${platform === 'facebook' ? 'a Facebook Page' : 'an Instagram professional account'}`}</b><small>{platform === 'google-business' ? 'Connect a Google account above; all Business Profile locations it manages will appear here.' : `Auto replies are available for connected ${platformName} accounts.`}</small>{platform !== 'google-business' && <button onClick={() => onNavigate('accounts')}>Open connected accounts</button>}</section> : <>

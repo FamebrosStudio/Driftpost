@@ -42,8 +42,27 @@ export async function exchangeBusinessProfileCode(code) {
 async function businessRequest(url, accessToken, init = {}) {
   const res = await fetch(url, { ...init, headers: { Authorization: `Bearer ${accessToken}`, ...(init.body ? { 'Content-Type': 'application/json' } : {}), ...init.headers }, signal: AbortSignal.timeout(20000) });
   const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data.error?.message || `Google Business Profile API returned ${res.status}`);
+  if (!res.ok) {
+    const error = new Error(data.error?.message || `Google Business Profile API returned ${res.status}`);
+    error.status = res.status;
+    error.details = data.error;
+    throw error;
+  }
   return data;
+}
+
+export function businessProfileErrorMessage(error) {
+  const message = String(error?.message || error || 'Unknown Google Business Profile error').slice(0, 1200);
+  if (/quota exceeded|rate limit|requests per minute/i.test(message)) {
+    return `Google temporarily rate-limited location discovery. Your Google account is connected; wait a few minutes and retry. Google says: ${message}`;
+  }
+  if (/has not been used in project|api .*disabled|accessNotConfigured|service_disabled/i.test(message)) {
+    return `A required Google Business Profile API is disabled for the OAuth project. Enable the API named in Google's message, wait for it to propagate, then retry. Google says: ${message}`;
+  }
+  if (/permission denied|insufficient authentication scopes|not authorized/i.test(message)) {
+    return `This Google account does not have sufficient Business Profile access for location discovery. Check its manager/owner access and Google API approval. Google says: ${message}`;
+  }
+  return `Google account connected, but locations could not be loaded. Check Business Profile API approval and enabled APIs, then retry. Google says: ${message}`;
 }
 
 export async function listBusinessProfileLocations(accessToken) {

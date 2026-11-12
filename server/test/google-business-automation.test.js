@@ -1,6 +1,13 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { businessReviewRating, shouldAutoReplyToBusinessReview } from '../src/google.js';
+import { businessProfileErrorMessage, businessReviewRating, shouldAutoReplyToBusinessReview } from '../src/google.js';
+
+test('Google Business Profile location discovery errors explain quota, API and access failures', () => {
+  assert.match(businessProfileErrorMessage(new Error('Quota exceeded for Requests per minute')), /temporarily rate-limited/i);
+  assert.match(businessProfileErrorMessage(new Error('API has not been used in project or it is disabled')), /API is disabled/i);
+  assert.match(businessProfileErrorMessage(new Error('Permission denied for account')), /sufficient Business Profile access/i);
+  assert.match(businessProfileErrorMessage(new Error('unexpected error')), /Google account connected, but locations could not be loaded/i);
+});
 
 test('Google review star enum values normalize safely', () => {
   assert.equal(businessReviewRating('FIVE'), 5);

@@ -14,7 +14,7 @@ import { pipeline } from 'node:stream/promises';
 import { createWriteStream } from 'node:fs';
 import { createClient } from '@supabase/supabase-js';
 import { decryptJson, encryptJson, signState, verifyState } from './crypto.js';
-import { businessProfileAuthorizationUrl, driveIntakeAuthorizationUrl, exchangeBusinessProfileCode, exchangeGoogleCode, getGoogleIdentity, getYouTubeChannel, listBusinessProfileLocations, listBusinessReviews, refreshBusinessProfileToken, replyBusinessReview, shouldAutoReplyToBusinessReview, youtubeAuthorizationUrl } from './google.js';
+import { businessProfileAuthorizationUrl, businessProfileErrorMessage, driveIntakeAuthorizationUrl, exchangeBusinessProfileCode, exchangeGoogleCode, getGoogleIdentity, getYouTubeChannel, listBusinessProfileLocations, listBusinessReviews, refreshBusinessProfileToken, replyBusinessReview, shouldAutoReplyToBusinessReview, youtubeAuthorizationUrl } from './google.js';
 import { learnedVoice, markLatestUsed, markUsed, recordGeneration } from './captionMemory.js';
 import { consentState, forgetUser, hasPersonalisationConsent, recordConsent, POLICY_VERSION, PURPOSES } from './consent.js';
 import { setVideoThumbnail, uploadVideoResumable, validAccessToken } from './youtube-upload.js';
@@ -1194,6 +1194,44 @@ app.post('/api/oauth/google-business/start', requireUser, oauthLimit, (req, res)
   res.json({ url: businessProfileAuthorizationUrl(signState({ purpose: 'google-business-profile', userId: req.user.id, nonce: crypto.randomUUID(), exp: Date.now() + 10 * 60 * 1000 })) });
 });
 
+async function syncGoogleBusinessLocations(connectionId, userId) {
+  const { data: connection, error: connectionError } = await supabase.from('google_business_connections')
+    .select('id, encrypted_tokens, token_expires_at').eq('id', connectionId).eq('user_id', userId).maybeSingle();
+  if (connectionError) throw connectionError;
+  if (!connection) throw new Error('Google Business Profile connection not found.');
+
+  try {
+    let tokens = decryptJson(connection.encrypted_tokens);
+    const expiry = Date.parse(connection.token_expires_at || '');
+    if ((!tokens.access_token || (Number.isFinite(expiry) && expiry <= Date.now() + 60_000)) && tokens.refresh_token) {
+      const refreshed = await refreshBusinessProfileToken(tokens.refresh_token);
+      tokens = { ...tokens, access_token: refreshed.access_token };
+      const token_expires_at = refreshed.expires_in ? new Date(Date.now() + refreshed.expires_in * 1000).toISOString() : null;
+      const { error } = await supabase.from('google_business_connections').update({ encrypted_tokens: encryptJson(tokens), token_expires_at }).eq('id', connection.id).eq('user_id', userId);
+      if (error) throw error;
+    }
+    const locations = await listBusinessProfileLocations(tokens.access_token);
+    if (locations.length) {
+      const rows = locations.map((location) => ({
+        connection_id: connection.id, user_id: userId, account_id: location.account_id,
+        location_id: location.location_id, resource_name: location.resource_name,
+        location_name: location.title, address: location.address,
+        updated_at: new Date().toISOString(),
+      }));
+      const { error } = await supabase.from('google_business_locations').upsert(rows, { onConflict: 'connection_id,account_id,location_id' });
+      if (error) throw error;
+    }
+    const syncedAt = new Date().toISOString();
+    const { error: updateError } = await supabase.from('google_business_connections').update({ location_sync_error: null, locations_synced_at: syncedAt, locations_count: locations.length }).eq('id', connection.id).eq('user_id', userId);
+    if (updateError) throw updateError;
+    return { connection_id: connection.id, count: locations.length, synced_at: syncedAt };
+  } catch (error) {
+    const message = businessProfileErrorMessage(error);
+    await supabase.from('google_business_connections').update({ location_sync_error: message }).eq('id', connection.id).eq('user_id', userId);
+    throw new Error(message);
+  }
+}
+
 app.get('/api/oauth/google-business/callback', callbackLimit, async (req, res) => {
   const back = new URL(FRONTEND_HOME);
   try {
@@ -1205,23 +1243,32 @@ app.get('/api/oauth/google-business/callback', callbackLimit, async (req, res) =
     const identity = await getGoogleIdentity(tokens.access_token);
     if (!identity.verified) throw new Error('Use a verified Google account with access to the Business Profile locations.');
     if (!tokens.refresh_token) throw new Error('Google did not return offline access. Revoke Driftpost access in Google Account settings and connect again.');
-    const locations = await listBusinessProfileLocations(tokens.access_token);
-    if (!locations.length) throw new Error('No accessible Business Profile locations were found. Check location permissions and API access approval.');
     const { data: connection, error } = await supabase.from('google_business_connections').upsert({ user_id: state.userId, google_email: identity.email, encrypted_tokens: encryptJson({ access_token: tokens.access_token, refresh_token: tokens.refresh_token }), token_expires_at: tokens.expires_in ? new Date(Date.now() + tokens.expires_in * 1000).toISOString() : null, updated_at: new Date().toISOString() }, { onConflict: 'user_id,google_email' }).select('id').single();
     if (error) throw error;
-    for (const location of locations) {
-      const { error: locationError } = await supabase.from('google_business_locations').upsert({ connection_id: connection.id, user_id: state.userId, account_id: location.account_id, location_id: location.location_id, resource_name: location.resource_name, location_name: location.title, address: location.address, updated_at: new Date().toISOString() }, { onConflict: 'connection_id,account_id,location_id', ignoreDuplicates: false });
-      if (locationError) throw locationError;
-    }
     back.searchParams.set('connected', 'google-business');
+    try { await syncGoogleBusinessLocations(connection.id, state.userId); }
+    catch (syncError) { back.searchParams.set('google_business_error', String(syncError.message || 'Locations need to be retried.').slice(0, 1200)); }
   } catch (e) { back.searchParams.set('oauth_error', String(e.message || 'Google Business Profile connection failed').slice(0, 400)); }
   res.redirect(back.toString());
 });
 
 app.get('/api/automations/google-business', requireUser, connectionsLimit, burstLimit, async (req, res) => {
-  const { data, error } = await supabase.from('google_business_locations').select('id, location_name, address, enabled, rules, google_business_connections(google_email)').eq('user_id', req.user.id).order('location_name');
-  if (error) return res.status(500).json({ error: 'Google Business Profile storage is not ready. Apply migration 016_google_business_reviews.sql.' });
-  res.json({ locations: (data || []).map((item) => ({ ...item, google_email: item.google_business_connections?.google_email || '' })) });
+  const [{ data: locations, error: locationError }, { data: connections, error: connectionError }] = await Promise.all([
+    supabase.from('google_business_locations').select('id, connection_id, location_name, address, enabled, rules').eq('user_id', req.user.id).order('location_name'),
+    supabase.from('google_business_connections').select('id, google_email, locations_count, locations_synced_at, location_sync_error').eq('user_id', req.user.id).order('google_email'),
+  ]);
+  if (locationError || connectionError) return res.status(500).json({ error: 'Google Business Profile storage is not ready. Apply migrations 016 and 017.' });
+  res.json({ connections: connections || [], locations: locations || [] });
+});
+
+app.post('/api/automations/google-business/connections/:connectionId/refresh', requireUser, strictBurstLimit, async (req, res) => {
+  try {
+    const result = await syncGoogleBusinessLocations(req.params.connectionId, req.user.id);
+    res.json({ ok: true, ...result });
+  } catch (error) {
+    const status = /not found/i.test(String(error.message)) ? 404 : 502;
+    res.status(status).json({ error: String(error.message || 'Could not refresh business locations.').slice(0, 1200) });
+  }
 });
 
 app.put('/api/automations/google-business/:locationId', requireUser, strictBurstLimit, async (req, res) => {
