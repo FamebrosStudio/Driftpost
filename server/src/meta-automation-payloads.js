@@ -50,6 +50,16 @@ export function automationWebhookSubscriptions(rules = {}) {
   };
 }
 
+export function validateAutomationRules(enabled, rules = {}) {
+  if (enabled && !rules.comment_enabled && !rules.public_reply_enabled && !rules.dm_keyword && !rules.default_reply) {
+    return 'Enable comment-to-DM, public comment replies, or an incoming-message rule before enabling automation.';
+  }
+  if (rules.comment_enabled && !rules.private_reply) return 'Add a private reply message or disable comment-to-DM.';
+  if (rules.public_reply_enabled && !rules.public_reply) return 'Add a public comment reply or disable public comment replies.';
+  if (rules.dm_keyword && !rules.dm_reply) return 'Add a reply for the incoming-message keyword.';
+  return null;
+}
+
 const normalizeKeywordText = (value) => String(value || '').normalize('NFKD')
   .replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
 
@@ -59,6 +69,11 @@ export function matchesAutomationKeyword(text, configured) {
     .map(normalizeKeywordText).filter(Boolean);
   const searchableText = ` ${normalizedText} `;
   return !!normalizedText && keywords.some((keyword) => searchableText.includes(` ${keyword} `));
+}
+
+export function incomingMessageReplyText(rules = {}, text = '') {
+  const keyword = String(rules.dm_keyword || '').trim();
+  return keyword && matchesAutomationKeyword(text, keyword) ? rules.dm_reply : rules.default_reply;
 }
 
 export function incomingMessageReply(platform, senderId, text) {

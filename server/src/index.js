@@ -27,7 +27,7 @@ import { uploadMediaFile, downloadMediaFile } from './media-io.js';
 import { scheduleIdentity } from './schedule-fields.js';
 import { deleteResultsStatus } from './delete-results.js';
 import { runAutomationAction } from './automation-events.js';
-import { automationComment, automationWebhookSubscriptions, commentAutomationDecision, commentReplyEdge, commentReplyModes, incomingMessageReply } from './meta-automation-payloads.js';
+import { automationComment, automationWebhookSubscriptions, commentAutomationDecision, commentReplyEdge, commentReplyModes, incomingMessageReply, incomingMessageReplyText, validateAutomationRules } from './meta-automation-payloads.js';
 import { eraseUserMedia } from './storage-cleanup.js';
 import { enabledInstagramCollaborators, instagramCaptionRequiredError, nonEmptyCaption } from './caption-guards.js';
 import { createTemporaryMediaUrl, isOwnedMediaPath } from './media-links.js';
@@ -352,9 +352,9 @@ app.post('/api/meta/webhook', express.raw({ type: 'application/json', limit: '1m
             });
             continue;
           }
-          const keyword = String(rules.dm_keyword || '').trim().toLowerCase();
-          const keywordMatched = matchesAutomationKeyword(message, keyword);
-          const replyText = keywordMatched ? rules.dm_reply : rules.default_reply;
+          const keyword = String(rules.dm_keyword || '').trim();
+          const keywordMatched = !!keyword && matchesAutomationKeyword(message, keyword);
+          const replyText = incomingMessageReplyText(rules, message);
           if (!replyText) {
             console.info('[meta automation] inbound message has no configured reply', {
               platform,
@@ -1165,10 +1165,8 @@ app.put('/api/automations/:platform/:connectionId', requireUser, strictBurstLimi
     default_reply: String(input.default_reply || '').trim().slice(0, 1000),
   };
   const enabled = input.enabled === true;
-  if (enabled && !rules.comment_enabled && !rules.public_reply_enabled && !rules.dm_keyword && !rules.default_reply) return res.status(400).json({ error: 'Enable comment-to-DM, public comment replies, or an incoming-message rule before enabling automation.' });
-  if (rules.comment_enabled && !rules.private_reply) return res.status(400).json({ error: 'Add a private reply message or disable comment-to-DM.' });
-  if (rules.public_reply_enabled && !rules.public_reply) return res.status(400).json({ error: 'Add a public comment reply or disable public comment replies.' });
-  if (rules.dm_keyword && !rules.dm_reply) return res.status(400).json({ error: 'Add a reply for the incoming-message keyword.' });
+  const validationError = validateAutomationRules(enabled, rules);
+  if (validationError) return res.status(400).json({ error: validationError });
   if (enabled) {
     if (!process.env.META_WEBHOOK_VERIFY_TOKEN || !process.env.META_APP_SECRET) {
       return res.status(503).json({ error: 'Meta webhook setup is incomplete. Configure META_WEBHOOK_VERIFY_TOKEN and META_APP_SECRET on the API first.' });

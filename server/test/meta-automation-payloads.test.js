@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { automationComment, automationWebhookSubscriptions, commentAutomationDecision, commentReplyEdge, commentReplyModes, incomingMessageReply, matchesAutomationKeyword } from '../src/meta-automation-payloads.js';
+import { automationComment, automationWebhookSubscriptions, commentAutomationDecision, commentReplyEdge, commentReplyModes, incomingMessageReply, incomingMessageReplyText, matchesAutomationKeyword, validateAutomationRules } from '../src/meta-automation-payloads.js';
 
 const comment = { field: 'feed', value: { item: 'comment', verb: 'add', comment_id: 'post_comment', post_id: 'post', parent_id: 'post', from: { id: 'customer' }, message: 'PRICE' } };
 test('Facebook feed comments are normalized for matching and use the comment replies edge', () => {
@@ -51,4 +51,21 @@ test('webhook subscriptions follow enabled triggers rather than leftover reply t
   assert.deepEqual(automationWebhookSubscriptions({ comment_enabled: true, private_reply: 'Private reply' }), { comments: true, messages: false });
   assert.deepEqual(automationWebhookSubscriptions({ default_reply: 'Inbox reply' }), { comments: false, messages: true });
   assert.deepEqual(automationWebhookSubscriptions({}), { comments: false, messages: false });
+});
+
+test('automation validation blocks enabled rules with no action or missing reply text', () => {
+  assert.match(validateAutomationRules(true, {}), /Enable comment-to-DM/);
+  assert.match(validateAutomationRules(true, { public_reply_enabled: true }), /Add a public comment reply/);
+  assert.match(validateAutomationRules(false, { comment_enabled: true }), /Add a private reply message/);
+  assert.match(validateAutomationRules(true, { dm_keyword: 'price' }), /reply for the incoming-message keyword/);
+  assert.equal(validateAutomationRules(true, { public_reply_enabled: true, public_reply: 'Thanks' }), null);
+  assert.equal(validateAutomationRules(true, { dm_keyword: 'price', dm_reply: 'Details', default_reply: 'Hello' }), null);
+});
+
+test('incoming DM rules choose keyword reply on match and default reply otherwise', () => {
+  const rules = { dm_keyword: 'hours', dm_reply: 'We are open 9 to 5', default_reply: 'How can we help?' };
+  assert.equal(incomingMessageReplyText(rules, 'What are your HOURS?'), rules.dm_reply);
+  assert.equal(incomingMessageReplyText(rules, 'Where are you?'), rules.default_reply);
+  assert.equal(incomingMessageReplyText({ ...rules, dm_keyword: '' }, 'Hours?'), rules.default_reply);
+  assert.equal(incomingMessageReplyText({ ...rules, default_reply: '' }, 'Where are you?'), '');
 });
