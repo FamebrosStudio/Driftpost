@@ -47,18 +47,31 @@ async function businessRequest(url, accessToken, init = {}) {
 }
 
 export async function listBusinessProfileLocations(accessToken) {
-  const accountsData = await businessRequest('https://mybusinessaccountmanagement.googleapis.com/v1/accounts', accessToken);
   const result = [];
-  for (const account of (accountsData.accounts || []).slice(0, 100)) {
-    let pageToken = '';
-    do {
-      const params = new URLSearchParams({ readMask: 'name,title,storefrontAddress', pageSize: '100' });
-      if (pageToken) params.set('pageToken', pageToken);
-      const data = await businessRequest(`https://mybusinessbusinessinformation.googleapis.com/v1/${account.name}/locations?${params}`, accessToken);
-      for (const location of data.locations || []) result.push({ account_id: account.name.split('/').pop(), location_id: location.name?.split('/').pop(), resource_name: location.name, title: location.title || 'Business location', address: location.storefrontAddress?.addressLines?.join(', ') || '' });
-      pageToken = data.nextPageToken || '';
-    } while (pageToken && result.length < 500);
-  }
+  let accountsPageToken = '';
+  let accountCount = 0;
+  do {
+    const accountParams = new URLSearchParams({ pageSize: '20' });
+    if (accountsPageToken) accountParams.set('pageToken', accountsPageToken);
+    const accountsData = await businessRequest(`https://mybusinessaccountmanagement.googleapis.com/v1/accounts?${accountParams}`, accessToken);
+    for (const account of accountsData.accounts || []) {
+      if (!account.name || result.length >= 500) continue;
+      accountCount++;
+      let pageToken = '';
+      do {
+        const params = new URLSearchParams({ readMask: 'name,title,storefrontAddress', pageSize: '100' });
+        if (pageToken) params.set('pageToken', pageToken);
+        const data = await businessRequest(`https://mybusinessbusinessinformation.googleapis.com/v1/${account.name}/locations?${params}`, accessToken);
+        for (const location of data.locations || []) {
+          if (!location.name || result.length >= 500) continue;
+          result.push({ account_id: account.name.split('/').pop(), location_id: location.name.split('/').pop(), resource_name: location.name, title: location.title || 'Business location', address: location.storefrontAddress?.addressLines?.join(', ') || '' });
+        }
+        pageToken = result.length < 500 ? (data.nextPageToken || '') : '';
+      } while (pageToken);
+      if (result.length >= 500) break;
+    }
+    accountsPageToken = result.length < 500 ? (accountsData.nextPageToken || '') : '';
+  } while (accountsPageToken && accountCount < 500);
   return result;
 }
 
