@@ -22,7 +22,6 @@ import { deleteFacebookPost, discoverInstagramAccount, exchangeMetaCode, getMeta
 import { createPkcePair, exchangeXCode, getXUser, xAuthorizationUrl } from './x.js';
 import { createXPost, deleteXPost, uploadXMedia, validXAccessToken } from './x-publish.js';
 import { generateCaptions } from './ai.js';
-import { dailyCaptionLimitMessage, reserveDailyCaptionGenerations } from './daily-caption-cap.js';
 import { resolveProvider } from './ai-provider.js';
 import { uploadMediaFile, downloadMediaFile } from './media-io.js';
 import { scheduleIdentity } from './schedule-fields.js';
@@ -695,17 +694,6 @@ function requireCaptionAiAccess(req, res, next) {
     return aiLimit(req, res, next);
   }
   return publicCaptionLimit(req, res, next);
-}
-
-async function enforceDailyCaptionCap(_req, res, next) {
-  try {
-    const quota = await reserveDailyCaptionGenerations(supabase);
-    if (!quota.allowed) return res.status(429).json({ error: dailyCaptionLimitMessage, code: 'daily_caption_limit' });
-    next();
-  } catch (error) {
-    console.error('[ai] daily caption limit check failed:', String(error?.message || error).slice(0, 300));
-    res.status(503).json({ error: 'Caption generation is temporarily unavailable. Please try again shortly.' });
-  }
 }
 
 function activeJobCount(userId) {
@@ -1465,7 +1453,7 @@ function friendlySpeechWarning(error) {
   return 'Speech analysis was unavailable, but your captions were still generated from the prompt and video frames. Try again later if you want the spoken audio included.';
 }
 
-app.post('/api/ai/captions', requireUser, requireCaptionAiAccess, enforceDailyCaptionCap, (req, res, next) => {
+app.post('/api/ai/captions', requireUser, requireCaptionAiAccess, (req, res, next) => {
   if (req.is('multipart/form-data')) return aiImageUpload.fields([
     { name: 'images', maxCount: 9 }, { name: 'video', maxCount: 1 },
   ])(req, res, next);
