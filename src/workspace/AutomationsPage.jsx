@@ -35,6 +35,7 @@ export default function AutomationsPage({ session, onNavigate, onSignOut }) {
       .then((data) => {
         if (!active) return;
         setGoogleConnections(platform === 'google-business' ? (data.connections || []) : []);
+        if (platform === 'google-business' && (data.connections || []).length) setError('');
         const list = [...(platform === 'google-business' ? (data.locations || []).map((item) => ({ ...item, name: item.location_name })) : (data.accounts || []))].sort((a, b) => String(a.name || '').localeCompare(String(b.name || ''), undefined, { sensitivity: 'base', numeric: true }));
         setAccounts(list); setReady(!!data.webhook_ready);
         setSelected(list[0]?.id || '');
