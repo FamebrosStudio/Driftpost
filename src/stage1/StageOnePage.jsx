@@ -85,12 +85,16 @@ export default function StageOnePage({ session, onNext, onNavigate, onSignOut })
   }, [session, reloadTick]);
 
   const brands = useMemo(() => groupBrands(connections), [connections]);
-  const brand = brands.find((b) => b.key === brandKey) || null;
+  const brand = brands.find((b) => b.key === brandKey || b.keys?.includes(brandKey)) || null;
   useEffect(() => {
     // Clear a stale saved brand once accounts are known — including the
     // empty list (all disconnected), which the old guard never handled.
     if (!connsOk) return;
-    if (brandKey && !brands.some((b) => b.key === brandKey)) {
+    const resolved = brands.find((b) => b.key === brandKey || b.keys?.includes(brandKey));
+    if (resolved && resolved.key !== brandKey) {
+      setBrandKey(resolved.key);
+      save('driftpost-stage1-brand', resolved.key);
+    } else if (brandKey && !resolved) {
       setBrandKey('');
       save('driftpost-stage1-brand', '');
     }

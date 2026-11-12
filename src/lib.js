@@ -1,6 +1,7 @@
 import { getSupabase, pokeSession } from './session.js';
 import { buildScheduleForm } from './scheduleForm.js';
 import { AI_ACCESS_HEADER, readAiGrantForAccessToken } from './ai-access.js';
+import { mergeOverlappingBrandGroups } from './brandGroupMerge.js';
 
 const apiUrlRaw = import.meta.env.VITE_API_URL;
 export const apiUrl = apiUrlRaw?.replace(/\/$/, '') || '';
@@ -249,6 +250,10 @@ export function groupBrands(connections) {
   };
   tryMatch(90);
   tryMatch(30);
+  // Matching can create connected clusters transitively: a Facebook Page
+  // claims its Instagram, while that Instagram has already claimed YouTube.
+  // Merge the overlapping maps so the shared Instagram isn't shown twice.
+  mergeOverlappingBrandGroups(brands);
   // Dissolve hollow seeds: an anchor claimed by a stronger brand leaves
   // behind an empty single-account row — drop it so the account shows once,
   // under its real brand, with all linked platforms.

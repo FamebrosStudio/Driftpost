@@ -28,7 +28,7 @@ export default function BrandSelectorModal({ brands, connections, activeKey, onP
         {list.map((b) => {
           const plats = ORDER.filter((pid) => b.map[pid]);
           return (
-            <button key={b.key} type="button" onClick={() => onPick(b.key)} className={b.key === activeKey ? 's1-brand cur' : 's1-brand'}>
+            <button key={b.key} type="button" onClick={() => onPick(b.key)} className={b.key === activeKey || b.keys?.includes(activeKey) ? 's1-brand cur' : 's1-brand'}>
               <span className="bmeta">
                 <b>{b.label}</b>
                 <small>Connected Accounts: {plats.length}</small>
