@@ -10,6 +10,7 @@ import { generateCaptions } from './ai.js';
 import { uploadMediaFile } from './media-io.js';
 import { getBrandById, resolveBrand } from './brand-memory/index.js';
 import { canUsePrivateBrandData } from './brand-access.js';
+import { dailyCaptionLimitMessage, reserveDailyCaptionGenerations } from './daily-caption-cap.js';
 
 const execFileAsync = promisify(execFile);
 const MAX_VIDEO_BYTES = 400 * 1024 * 1024;
@@ -182,6 +183,9 @@ export async function processIntakeJob(supabase, job, options = {}) {
     if (owners.size > 1) throw new Error(`The connected account "${destination.account_name}" maps to more than one requested brand. Send separate files for those brands so captions cannot mix their data.`);
   }
   if (!destinations.length) throw new Error(`“${accountName}” does not exactly match a connected account. Send the connected account name or handle.`);
+
+  const captionQuota = await reserveDailyCaptionGenerations(supabase, targetGroups.length);
+  if (!captionQuota.allowed) throw new Error(dailyCaptionLimitMessage);
 
   const directory = await fs.mkdtemp(path.join(os.tmpdir(), 'driftpost-telegram-'));
   const videoPath = path.join(directory, path.basename(job.file_name || 'incoming-video.mp4').replace(/[^a-z0-9._-]/gi, '_').slice(-140));
