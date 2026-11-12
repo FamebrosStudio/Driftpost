@@ -125,6 +125,7 @@ export async function processIntakeJob(supabase, job, options = {}) {
   const notify = options.notify || ((message) => reply(job.chat_id, message, job.message_id));
   const progress = async (stage, detail = '') => { if (options.progress) await options.progress(stage, detail); };
   const isCarousel = job.result?.media_kind === 'carousel';
+  const needsBrandInference = job.result?.brand_resolution_required === true;
   if (!ownerId) throw new Error('The Driftpost publishing account is not configured.');
   // A worker can restart after inserting publish rows but before updating the
   // inbox row. Detect that commit before retrying analysis so a Telegram retry
@@ -143,7 +144,7 @@ export async function processIntakeJob(supabase, job, options = {}) {
   const { data: authResult, error: authError } = await supabase.auth.admin.getUserById(ownerId);
   if (authError || !canUsePrivateBrandData(authResult?.user)) throw new Error('The configured publishing account is not approved for the private video workflow.');
   const accountName = clean(job.account_name);
-  if (accountName.length < 2) throw new Error('Add the destination in the video caption, for example: Account: Famebros Studio.');
+  if (accountName.length < 2 && !needsBrandInference) throw new Error('Add the destination in the video caption, for example: Account: Famebros Studio.');
   const directConnectionIds = Array.isArray(job.result?.destination_connection_ids) ? job.result.destination_connection_ids : [];
   const { data: rawConnections, error: connectionError } = await supabase.from('platform_connections')
     .select('id, user_id, platform, platform_account_id, account_name, encrypted_tokens')
@@ -152,7 +153,12 @@ export async function processIntakeJob(supabase, job, options = {}) {
   const requestedPlatforms = Array.isArray(job.platforms) ? job.platforms : [];
   const configuredTargets = Array.isArray(job.result?.target_brands) && job.result.target_brands.length ? job.result.target_brands : null;
   let targetGroups = [];
-  if (configuredTargets) {
+  if (needsBrandInference) {
+    // The filename/account route is unresolved; do not guess a publishing
+    // destination. Continue only far enough to inspect the video and infer
+    // catalogue candidates for the review inbox.
+    targetGroups = [];
+  } else if (configuredTargets) {
     targetGroups = configuredTargets.map((target) => {
       const ids = Array.isArray(target.destination_connection_ids) ? target.destination_connection_ids : [];
       const matched = (rawConnections || []).filter((item) => ids.includes(item.id));
@@ -181,7 +187,7 @@ export async function processIntakeJob(supabase, job, options = {}) {
     const owners = new Set(targetGroups.filter((target) => target.destinations.some((item) => item.id === destination.id)).map((target) => target.brand?.id || `generic:${target.name}`));
     if (owners.size > 1) throw new Error(`The connected account "${destination.account_name}" maps to more than one requested brand. Send separate files for those brands so captions cannot mix their data.`);
   }
-  if (!destinations.length) throw new Error(`“${accountName}” does not exactly match a connected account. Send the connected account name or handle.`);
+  if (!destinations.length && !needsBrandInference) throw new Error(`“${accountName}” does not exactly match a connected account. Send the connected account name or handle.`);
 
   const directory = await fs.mkdtemp(path.join(os.tmpdir(), 'driftpost-telegram-'));
   const videoPath = path.join(directory, path.basename(job.file_name || 'incoming-video.mp4').replace(/[^a-z0-9._-]/gi, '_').slice(-140));
@@ -216,6 +222,29 @@ export async function processIntakeJob(supabase, job, options = {}) {
     }
     await progress('analyzing', isCarousel ? `Analyzing ${mediaFiles.length} carousel images` : 'Analyzing frames and speech');
     const { text: transcript, warning: speechWarning } = await transcriptWork;
+    if (needsBrandInference) {
+      let suggestedBrands = [];
+      try { suggestedBrands = await options.suggestBrands?.(frames, transcript, []) || []; }
+      catch (error) { console.warn('[intake] filename-mismatch brand inference failed:', String(error?.message || error).slice(0, 220)); }
+      const requestedNames = Array.isArray(job.result?.requested_brand_names) ? job.result.requested_brand_names : [];
+      const reason = requestedNames.length
+        ? `The filename destination “${requestedNames.join(', ')}” did not safely map to a connected brand/account. AI compared video evidence against the saved brand catalogue; verify the suggested brand and destination before sending.`
+        : 'The filename did not contain a usable brand/account name. AI compared video evidence against the saved brand catalogue; select the correct brand and destination before sending.';
+      const { error: reviewError } = await supabase.from(table).update({
+        status: 'review', error: reason,
+        result: {
+          ...(job.result || {}),
+          brand_reviews: [{ brand_id: '', brand_name: requestedNames.join(', ') || 'Unmapped filename', verdict: 'uncertain', confidence: 0, reason }],
+          suggested_brands: suggestedBrands,
+          transcript: !!transcript,
+          speechWarning,
+        },
+        updated_at: new Date().toISOString(),
+      }).eq('id', job.id).eq('status', 'processing');
+      if (reviewError) throw new Error('The filename could not be mapped, but Driftpost could not save the video for review.');
+      await notify(`⛔ Not posted: the video filename did not safely match a connected brand. ${suggestedBrands.length ? `AI suggested: ${suggestedBrands.map((item) => item.name).join(', ')}. ` : ''}Open Video review to choose the correct brand and accounts.`);
+      return { stopped: true, reason, suggestedBrands };
+    }
     const supportedDestinations = isCarousel ? destinations.filter((item) => ['instagram', 'facebook', 'x'].includes(item.platform)) : destinations;
     if (isCarousel && !supportedDestinations.length) throw new Error('Photo carousels can publish to Instagram, Facebook, or X. This brand has no connected photo destination.');
     if (isCarousel && destinations.some((item) => item.platform === 'x') && mediaFiles.length > 4) throw new Error('X supports up to 4 photos per post. Reduce this carousel to 4 images or remove X from the selected destinations.');
@@ -223,7 +252,8 @@ export async function processIntakeJob(supabase, job, options = {}) {
     await progress('preparing', 'Writing platform captions and preparing media');
     const frameImages = frames.map(({ name, mimetype, base64, detail }) => ({ name, mimetype, base64, detail: detail || (isCarousel ? 'high' : 'low') }));
     const brandTargets = targetGroups.filter((target) => target.brand?.id);
-    const assessments = options.assessBrand
+    const reviewApproval = job.result?.review_approval?.approved === true ? job.result.review_approval : null;
+    const assessments = options.assessBrand && !reviewApproval
       ? await Promise.all(brandTargets.map(async (target) => {
         try { return { target, assessment: await options.assessBrand(target.brand, frames, transcript) }; }
         catch (error) { return { target, assessment: { verdict: 'uncertain', confidence: 0, reason: `Automatic verification could not finish: ${String(error?.message || error).slice(0, 350)}` } }; }
@@ -239,9 +269,12 @@ export async function processIntakeJob(supabase, job, options = {}) {
         reason: String(assessment?.reason || 'The AI could not confirm this video belongs to the selected brand.').slice(0, 500),
       }));
       const reason = mismatches.map((item) => `${item.brand_name}: ${item.reason}`).join(' | ').slice(0, 500);
+      let suggestedBrands = [];
+      try { suggestedBrands = await options.suggestBrands?.(frames, transcript, mismatches.map((item) => item.brand_id)) || []; }
+      catch (error) { console.warn('[intake] alternative brand suggestions unavailable:', String(error?.message || error).slice(0, 220)); }
       const { error: reviewError } = await supabase.from(table).update({
-        status: 'failed', error: `Automatic brand check stopped this post to prevent publishing to the wrong account. ${reason} Correct the filename/account mapping and upload again.`,
-        result: { ...(job.result || {}), brand_reviews: mismatches },
+        status: 'review', error: `Automatic brand check stopped this post to prevent publishing to the wrong account. ${reason}`,
+        result: { ...(job.result || {}), brand_reviews: mismatches, suggested_brands: suggestedBrands },
         updated_at: new Date().toISOString(),
       }).eq('id', job.id).eq('status', 'processing');
       if (reviewError) throw new Error('Automatic brand verification stopped the post, but Driftpost could not save the result.');
@@ -250,7 +283,9 @@ export async function processIntakeJob(supabase, job, options = {}) {
     }
     // Each brand gets captions from its own complete saved profile. Generate
     // those independent caption sets concurrently without mixing brand facts.
-    const captionTargets = await Promise.all(targetGroups.map(async (target) => {
+    const captionTargets = reviewApproval
+      ? targetGroups.map((target) => ({ ...target, captions: reviewApproval.captions || {} }))
+      : await Promise.all(targetGroups.map(async (target) => {
       const targetPlatforms = [...new Set(target.destinations.filter((item) => supportedDestinations.some((dest) => dest.id === item.id)).map((item) => item.platform))];
       const generated = await generateCaptions(
         `Create accurate, platform-specific captions for the ${isCarousel ? 'photo carousel' : 'video'} sent to the ${target.name} account. Describe only what is visible or spoken.`,

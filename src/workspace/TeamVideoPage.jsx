@@ -77,7 +77,7 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut, onOpenRe
   const [error, setError] = useState('');
 
   useEffect(() => {
-    try { localStorage.setItem(SCOPED('driftpost-team-video-jobs', userId), JSON.stringify(jobs.map(({ id, brand, status, message, createdAt, autoPublish, coverWarning, brandKey, accountIds, platforms, brief, crosspost, instagramStory, collaborators, warning, group, outputs, cfg, transcript }) => ({ id, brand, status, message, createdAt, autoPublish, coverWarning, brandKey, accountIds, platforms, brief, crosspost, instagramStory, collaborators, warning, group, outputs, cfg, transcript })))); } catch {}
+    try { localStorage.setItem(SCOPED('driftpost-team-video-jobs', userId), JSON.stringify(jobs.map(({ id, file_name, brand, status, message, createdAt, autoPublish, coverWarning, brandKey, accountIds, platforms, brief, crosspost, instagramStory, collaborators, warning, group, outputs, cfg, transcript, brandReviews, brandSuggestions }) => ({ id, file_name, brand, status, message, createdAt, autoPublish, coverWarning, brandKey, accountIds, platforms, brief, crosspost, instagramStory, collaborators, warning, group, outputs, cfg, transcript, brandReviews, brandSuggestions })))); } catch {}
   }, [jobs, userId]);
 
   useEffect(() => {
@@ -272,7 +272,7 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut, onOpenRe
       brief: brief.trim(), crosspost, instagramStory, collaborators: collaborators.trim(), autoPublish,
       manualCovers: { thumb: youtubeThumb, instagram: instagramCover, facebook: facebookCover },
     };
-    setJobs((current) => [{ id, brand: brand.label, status: 'analyzing', message: snapshot.message, createdAt: snapshot.createdAt, autoPublish, brandKey, accountIds: snapshot.accountIds, platforms: snapshot.platforms, brief: snapshot.brief, crosspost, instagramStory, collaborators: snapshot.collaborators }, ...current]);
+    setJobs((current) => [{ id, file_name: file.name, brand: brand.label, status: 'analyzing', message: snapshot.message, createdAt: snapshot.createdAt, autoPublish, brandKey, accountIds: snapshot.accountIds, platforms: snapshot.platforms, brief: snapshot.brief, crosspost, instagramStory, collaborators: snapshot.collaborators }, ...current]);
     try {
       await writeVault(`driftpost-team-video-job:${userId}:${id}`, {
         files: [{ name: file.name, size: file.size, type: file.type, blob: file }],
@@ -342,7 +342,13 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut, onOpenRe
       setJobs((current) => [job, ...current.filter((item) => item.id !== id)]);
       if (job.autoPublish) await openJob(job);
     } catch (e) {
-      setJobs((current) => current.map((job) => job.id === id ? { ...job, status: 'failed', message: e.message || 'Could not prepare this video.' } : job));
+      const brandCheck = e.data?.brandCheck;
+      setJobs((current) => current.map((job) => job.id === id ? {
+        ...job,
+        status: brandCheck ? 'review' : 'failed',
+        message: brandCheck ? `AI stopped before publishing: ${brandCheck.reason || 'brand match is uncertain.'}` : (e.message || 'Could not prepare this video.'),
+        ...(brandCheck ? { brandReviews: [{ brand_id: snapshot.brandKey, brand_name: snapshot.brand, verdict: brandCheck.verdict, confidence: brandCheck.confidence, reason: brandCheck.reason || e.message }], brandSuggestions: e.data?.brandSuggestions || [] } : {}),
+      } : job));
     } finally {
       activeJobIds.current.delete(id);
     }
@@ -351,7 +357,7 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut, onOpenRe
   return <div className="ws team-video-page">
     <WorkspaceNav page="team-video" onNavigate={onNavigate} email={session.user?.email} onSignOut={onSignOut} />
     <main className="team-video-main">
-      <header className="team-video-heading"><span>PRIVATE TEAM WORKFLOW</span><h1>Send one video. Prepare every destination.</h1><p>Driftpost analyzes the video, writes for the selected brand, validates each destination, and automatically publishes when enabled.</p></header>
+      <header className="team-video-heading"><span>PRIVATE TEAM WORKFLOW</span><h1>Send one video. Prepare every destination.</h1><p>Driftpost analyzes the video, writes for the selected brand, validates each destination, and automatically publishes when enabled.</p><button type="button" className="team-review-refresh" onClick={() => onNavigate('team-video-review')}>Open stopped-video review</button></header>
       {!isAiAccount(session.user?.email) && <div className="team-video-alert" role="alert">This private workflow is only available to approved team accounts.</div>}
       {(loadError || brandLoadError) && <div className="team-video-alert" role="alert">{loadError || brandLoadError} <button type="button" onClick={() => setRetryTick((tick) => tick + 1)} disabled={connectionsLoading || brandLoading}>Retry loading</button></div>}
       <section className="team-video-panel drive-intake-panel">
@@ -365,11 +371,12 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut, onOpenRe
           const timestamp = new Date(job.updated_at || job.created_at).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
           return <div key={job.id} className={!!job.result?.review ? 'drive-job-needs-review' : ''}>
             <span><strong>{job.file_name}</strong><small>{job.account_name} · {(job.platforms || []).join(', ') || 'Destination needs correction'} · {isCarousel ? `${job.result?.source_drive_files?.length || 'Photo'}-image carousel` : job.mime_type || 'Video'} · {(Number(job.file_size || 0) / 1024 / 1024).toFixed(1)} MB</small></span>
-           <em className={`drive-job-status ${job.status || 'unknown'}`}>{job.result?.review ? 'needs correction' : String(job.status || 'unknown').replaceAll('_', ' ')}</em>
-            <small className="drive-job-progress">{progress?.detail || (job.status === 'queued' ? 'Waiting for the intake worker…' : job.status === 'publishing' ? 'Publishing to selected accounts…' : job.status === 'completed' ? 'Published successfully.' : job.status === 'partial' ? 'Some accounts published; check the post history.' : job.status === 'failed' ? 'Needs attention.' : 'Preparing media…')} · Updated {timestamp}</small>
+           <em className={`drive-job-status ${job.status || 'unknown'}`}>{job.result?.brand_reviews?.length ? 'brand decision needed' : job.result?.review ? 'needs correction' : String(job.status || 'unknown').replaceAll('_', ' ')}</em>
+             <small className="drive-job-progress">{progress?.detail || (job.status === 'queued' ? 'Waiting for the intake worker…' : job.status === 'publishing' ? 'Publishing to selected accounts…' : job.status === 'completed' ? 'Published successfully.' : job.status === 'partial' ? 'Some accounts published; check the post history.' : job.status === 'review' || job.result?.brand_reviews?.length ? 'Held before publishing. Open Video review to inspect the video and decide.' : job.status === 'failed' ? 'Needs attention.' : job.status === 'stopped' ? 'Stopped; this video was not published.' : 'Preparing media…')} · Updated {timestamp}</small>
             {!!progress?.destinations?.length && <small className="drive-job-destinations">{progress.destinations.map((target) => `${target.platform} · ${target.account}: ${target.status}${target.error ? ` (${target.error})` : ''}`).join('  |  ')}</small>}
             {!!job.result?.source_drive_files?.length && <details className="drive-job-files"><summary>Carousel contents ({job.result.source_drive_files.length} images)</summary><small>{job.result.source_drive_files.map((item) => item.name).join(' · ')}</small></details>}
-             {!!job.result?.review && <small className="drive-job-review-reason">Automatic check stopped this post to avoid sending it to the wrong brand. {job.result?.review?.reason || job.error || 'Correct the filename or account mapping and upload again.'}</small>}
+              {!!job.result?.brand_reviews?.length && <small className="drive-job-review-reason">Automatic check stopped this post to avoid sending it to the wrong brand. {job.result.brand_reviews.map((item) => `${item.brand_name}: ${item.reason}`).join(' · ')} <button type="button" onClick={() => onNavigate('team-video-review')}>Open review</button></small>}
+              {!!job.result?.review && <small className="drive-job-review-reason">Automatic check stopped this post to avoid sending it to the wrong brand. {job.result?.review?.reason || job.error || 'Correct the filename or account mapping and upload again.'}</small>}
             {job.error && !job.result?.review && <small className="drive-job-error">{job.error}</small>}
           </div>;
         }) : <p className="drive-job-empty">{driveState.connected ? 'No media has entered this inbox yet. Upload a video or image batch to the linked folder; videos appear within about 10 seconds. Carousel batches wait 90 seconds for all image uploads to finish.' : 'Connect the team Google Drive above before uploading. Without a linked Drive, new media cannot be detected or shown here.'}</p>}</div>
@@ -418,7 +425,7 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut, onOpenRe
         {error && <p className="team-video-error" role="alert">{error}</p>}
         <div className="team-video-actions"><button type="submit" disabled={activeJobs >= 3 || pendingCoverCount > 0 || connectionsLoading || !connections.length || !brand || !file || !chosen.length}>{pendingCoverCount ? 'Preparing cover…' : activeJobs >= 3 ? 'Three analyses already running' : autoPublish ? 'Analyze and publish' : 'Analyze and review'}</button><small>{activeJobs ? `${activeJobs} analysis${activeJobs === 1 ? '' : 'es'} running. You can start up to 3 at once.` : 'The original post creation flow is unchanged.'}</small></div>
       </form>
-       {!!jobs.length && <section className="team-video-jobs" aria-label="Video processing jobs"><div className="team-video-section-title"><span>↻</span><div><h2>Video processing jobs</h2><p>Each job keeps its own accounts, captions, covers, and video while other analyses run.</p></div></div>{jobs.map((job) => <article className="team-video-job" key={job.id}><div><b>{job.brand || 'Team video'}</b><small>{job.message || (job.status === 'ready' ? 'Draft ready.' : job.status)}</small>{job.warning && <small className="team-job-warning">{job.warning}</small>}{job.coverWarning && <small className="team-job-warning">{job.coverWarning}</small>}</div>{job.status === 'ready' && <button type="button" onClick={() => openJob(job)}>{job.autoPublish ? 'Open publishing status' : 'Open draft'}</button>}{job.status === 'failed' && <button type="button" onClick={() => loadJobForRetry(job)}>Load to retry</button>}</article>)}</section>}
+        {!!jobs.length && <section className="team-video-jobs" aria-label="Video processing jobs"><div className="team-video-section-title"><span>↻</span><div><h2>Video processing jobs</h2><p>Each job keeps its own accounts, captions, covers, and video while other analyses run.</p></div></div>{jobs.map((job) => <article className="team-video-job" key={job.id}><div><b>{job.brand || 'Team video'}</b><small>{job.message || (job.status === 'ready' ? 'Draft ready.' : job.status)}</small>{job.warning && <small className="team-job-warning">{job.warning}</small>}{job.coverWarning && <small className="team-job-warning">{job.coverWarning}</small>}</div>{job.status === 'ready' && <button type="button" onClick={() => openJob(job)}>{job.autoPublish ? 'Open publishing status' : 'Open draft'}</button>}{job.status === 'review' && <button type="button" onClick={() => onNavigate('team-video-review')}>Review video</button>}{job.status === 'failed' && <button type="button" onClick={() => loadJobForRetry(job)}>Load to retry</button>}</article>)}</section>}
     </main>
   </div>;
 }

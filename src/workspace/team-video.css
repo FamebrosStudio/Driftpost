@@ -10,6 +10,50 @@
 .team-video-section-title p { font-size: 12px; line-height: 1.55; }
 .ws:has(> .ws-topbar[data-collapsed="true"]) > .team-video-main { width: min(1440px, calc(100% - 76px)); margin-left: 76px; }
 @media (max-width: 760px) { .ws.team-video-page > .team-video-main { width: 100%; margin: 0; padding: 24px 16px calc(96px + env(safe-area-inset-bottom)); } }
+.team-review-refresh { margin-top: 13px; padding: 9px 13px; border: 1px solid var(--line-hard); border-radius: 9px; color: var(--ink); background: var(--panel); font: inherit; font-size: 12px; font-weight: 700; cursor: pointer; }
+.team-video-review-page { min-height: 100vh; color: var(--ink); background: radial-gradient(ellipse at 50% -24%, color-mix(in srgb, var(--go) 8%, transparent), transparent 58%), var(--bg); }
+.team-review-main { box-sizing: border-box; width: min(1440px, calc(100% - 244px)); margin-left: 244px; padding: 42px clamp(20px, 4vw, 64px) 70px; }
+.ws:has(> .ws-topbar[data-collapsed="true"]) > .team-review-main { width: min(1608px, calc(100% - 76px)); margin-left: 76px; }
+.team-review-heading { margin-bottom: 22px; }
+.team-review-heading > span, .team-review-title > div > span { color: var(--go); font-size: 9px; font-weight: 850; letter-spacing: .14em; }
+.team-review-heading h1 { margin: 8px 0; font-size: clamp(27px, 4vw, 42px); letter-spacing: -.04em; }
+.team-review-heading p { max-width: 72ch; margin: 0; color: var(--muted); font-size: 13px; line-height: 1.65; }
+.team-review-layout { display: grid; grid-template-columns: minmax(230px, .75fr) minmax(0, 1.65fr); gap: 16px; align-items: start; }
+.team-review-list, .team-review-detail { min-width: 0; padding: 16px; border: 1px solid var(--line); border-radius: 13px; background: color-mix(in srgb, var(--panel) 95%, transparent); }
+.team-review-list { display: grid; gap: 9px; max-height: calc(100vh - 220px); overflow-y: auto; }
+.team-review-job { display: grid; gap: 5px; width: 100%; padding: 12px; border: 1px solid var(--line); border-radius: 9px; background: var(--bg); color: var(--ink); text-align: left; cursor: pointer; }
+.team-review-job.active { border-color: var(--go); box-shadow: 0 0 0 2px color-mix(in srgb, var(--go) 14%, transparent); }
+.team-review-job b { overflow-wrap: anywhere; font-size: 12px; }
+.team-review-job small { color: var(--muted); font-size: 10px; line-height: 1.45; }
+.team-review-job .team-review-reason { color: var(--danger, #e66); }
+.team-review-empty { display: grid; gap: 8px; min-height: 190px; align-content: center; justify-items: center; color: var(--muted); text-align: center; font-size: 12px; }
+.team-review-empty b { color: var(--ink); }
+.team-review-detail { display: grid; gap: 14px; }
+.team-review-title, .team-review-caption-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.team-review-title h2 { margin: 5px 0 0; overflow-wrap: anywhere; font-size: 17px; }
+.team-review-reasons { padding: 10px 12px; border-left: 3px solid #e5a23a; border-radius: 7px; background: color-mix(in srgb, #e5a23a 8%, var(--panel)); color: var(--ink); font-size: 11px; line-height: 1.55; }
+.team-review-reasons p { margin: 3px 0; }
+.team-review-video { display: block; width: 100%; max-height: min(62vh, 560px); border-radius: 9px; background: #000; }
+.team-review-field { display: grid; gap: 6px; color: var(--muted); font-size: 11px; font-weight: 700; }
+.team-review-field select, .team-review-caption input, .team-review-caption textarea { box-sizing: border-box; width: 100%; border: 1px solid var(--line); border-radius: 8px; padding: 10px 11px; background: var(--bg); color: var(--ink); font: inherit; font-size: 12px; }
+.team-review-accounts { display: flex; flex-wrap: wrap; gap: 12px 18px; margin: 0; padding: 12px; border: 1px solid var(--line); border-radius: 9px; }
+.team-review-accounts legend { padding: 0 5px; color: var(--muted); font-size: 11px; font-weight: 700; }
+.team-review-accounts > div { display: grid; align-content: start; gap: 7px; min-width: 140px; font-size: 11px; }
+.team-review-accounts label { display: flex; align-items: center; gap: 7px; font-weight: 450; }
+.team-review-caption-head h3 { margin: 0 0 4px; font-size: 15px; }
+.team-review-caption-head p { margin: 0; color: var(--muted); font-size: 10px; }
+.team-review-caption-head button, .team-review-actions button { padding: 10px 13px; border: 1px solid var(--line-hard); border-radius: 8px; color: var(--ink); background: var(--panel); font: inherit; font-size: 11px; font-weight: 750; cursor: pointer; }
+.team-review-caption { display: grid; gap: 7px; }
+.team-review-caption > b { font-size: 11px; }
+.team-review-caption textarea { min-height: 94px; resize: vertical; line-height: 1.55; }
+.team-review-actions { display: flex; flex-wrap: wrap; gap: 8px; padding-top: 4px; }
+.team-review-actions .team-review-send { border-color: var(--go); color: var(--bg); background: var(--go); }
+.team-review-actions .team-review-stop { color: var(--danger, #e66); }
+.team-review-actions button:disabled, .team-review-caption-head button:disabled { opacity: .55; cursor: wait; }
+.team-review-error, .team-review-notice { padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; font-size: 12px; line-height: 1.5; }
+.team-review-error { color: var(--danger, #e66); }
+.team-review-notice { color: var(--go); }
+@media (max-width: 760px) { .team-review-main, .ws:has(> .ws-topbar[data-collapsed="true"]) > .team-review-main { width: 100%; margin: 0; padding: 24px 15px calc(90px + env(safe-area-inset-bottom)); } .team-review-layout { grid-template-columns: 1fr; } .team-review-list { max-height: 250px; } }
 .team-video-heading { margin: 0 0 27px; }
 .team-video-heading > span { display: inline-flex; align-items: center; min-height: 26px; padding: 0 10px; border: 1px solid color-mix(in srgb, var(--go) 30%, var(--line)); border-radius: 999px; background: color-mix(in srgb, var(--go) 8%, var(--panel)); color: var(--go); font-size: 9px; font-weight: 800; letter-spacing: .14em; }
 .team-video-heading h1 { max-width: 740px; margin: 9px 0; font-size: clamp(26px, 4.8vw, 43px); line-height: 1.08; letter-spacing: -.045em; }

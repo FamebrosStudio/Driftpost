@@ -543,6 +543,7 @@ export async function api(path, token, options = {}) {
         const action = path === '/api/ai/captions' ? 'generate captions' : path.startsWith('/api/publish') ? 'publish this post' : path.startsWith('/api/schedule') ? 'schedule this post' : 'complete this request';
         const err = new Error(friendlyErrorMessage(data.error || 'Request failed', { status: res.status, action }));
         err.status = res.status;
+        err.data = data;
         if (res.status >= 500 && data.errorId) {
           err.message = `${err.message} Reference: ${String(data.errorId).slice(0, 16)}.`;
         }

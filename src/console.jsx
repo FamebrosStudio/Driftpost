@@ -16,6 +16,7 @@ const CalendarPage = lazy(() => import('./workspace/Workspace.jsx').then((module
 const AnalyticsPage = lazy(() => import('./workspace/Workspace.jsx').then((module) => ({ default: module.AnalyticsPage })));
 const AutomationsPage = lazy(() => import('./workspace/AutomationsPage.jsx'));
 const TeamVideoPage = lazy(() => import('./workspace/TeamVideoPage.jsx'));
+const TeamVideoReviewPage = lazy(() => import('./workspace/TeamVideoReviewPage.jsx'));
 const HistoryPage = lazy(() => import('./history/HistoryPage.jsx'));
 const loadPage = (element, label = 'Loading workspace…') => (
   <Suspense fallback={<PageLoading label={label} />}>{element}</Suspense>
@@ -34,12 +35,12 @@ function loadStage() {
 const CONSOLE_PATHS = {
   '/': ['home', ''], '/console': ['home', ''], '/console/calendar': ['calendar', ''], '/console/analytics': ['analytics', ''],
   '/console/automations': ['automations', ''], '/console/history': ['history', ''],
-  '/console/accounts': ['accounts', ''], '/console/team-video': ['team-video', ''],
+  '/console/accounts': ['accounts', ''], '/console/team-video': ['team-video', ''], '/console/team-video/review': ['team-video-review', ''],
   '/console/create': ['create', '1'], '/console/create/1': ['create', '1'],
   '/console/create/2': ['create', '2'], '/console/create/3': ['create', '3'],
 };
 const consoleRoute = () => CONSOLE_PATHS[window.location.pathname.replace(/\/$/, '') || '/console'] || ['home', ''];
-const routeFor = (view, stage) => view === 'create' ? `/console/create/${stage || '1'}` : view === 'home' ? '/console' : `/console/${view}`;
+const routeFor = (view, stage) => view === 'create' ? `/console/create/${stage || '1'}` : view === 'home' ? '/console' : view === 'team-video-review' ? '/console/team-video/review' : `/console/${view}`;
 
 function BackgroundPublishNotice({ notice, onDismiss }) {
   if (!notice) return null;
@@ -139,6 +140,7 @@ export default function Console({ session, onSwitchAccount, onSignOut }) {
   const openHistory = () => navigate('history');
   const withBackgroundNotice = (page) => <>{page}<BackgroundPublishNotice notice={backgroundPublishNotice} onDismiss={() => setBackgroundPublishNotice(null)} /></>;
   if (view === 'team-video' && isAiAccount(session.user?.email)) return withBackgroundNotice(loadPage(<TeamVideoPage session={session} onNavigate={navigate} onSignOut={onSignOut} onOpenReview={() => { setView('create'); go('3'); }} />));
+  if (view === 'team-video-review' && isAiAccount(session.user?.email)) return withBackgroundNotice(loadPage(<TeamVideoReviewPage session={session} onNavigate={navigate} onSignOut={onSignOut} onOpenStageThree={() => { setView('create'); go('3'); }} />));
   if (view === 'choose-create-mode' && createModePicker && isAiAccount(session.user?.email)) return withBackgroundNotice(<div className="ws"><WorkspaceNav page="create" onNavigate={navigate} email={session.user?.email} onSignOut={onSignOut} /><main className="ws-main ws-create-mode"><div className="ws-heading"><div><span className="ws-eyebrow">Create a post</span><h1>Choose your workflow</h1><p>Pick the posting flow for this video. Your choice only affects this post.</p></div></div><div className="ws-create-mode-grid"><button type="button" className="ws-create-mode-card" onClick={chooseBasic}><span className="ws-eyebrow">BASIC</span><strong>Standard post</strong><span>Use the regular composer to choose accounts, add media, write captions, and review your post.</span><i>Continue to basic posting →</i></button><button type="button" className="ws-create-mode-card ws-create-mode-card--advanced" onClick={() => { setCreateModePicker(false); setView('team-video'); }}><span className="ws-eyebrow">ADVANCED</span><strong>Automated video workflow</strong><span>Send a video into the private team pipeline for video analysis, brand-aware content, covers, and publishing.</span><i>Open advanced workflow →</i></button></div><button type="button" className="ws-secondary" onClick={() => { setCreateModePicker(false); setView('home'); }}>Back to overview</button></main></div>);
   if (view === 'home') return withBackgroundNotice(loadPage(<DashboardPage session={session} onNavigate={navigate} onCreate={() => navigate('create')} onSignOut={onSignOut} />));
   if (view === 'calendar') return withBackgroundNotice(loadPage(<CalendarPage session={session} onNavigate={navigate} onCreate={(date) => {

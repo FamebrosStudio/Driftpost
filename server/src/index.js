@@ -21,7 +21,7 @@ import { setVideoThumbnail, uploadVideoResumable, validAccessToken } from './you
 import { deleteFacebookPost, discoverInstagramAccount, exchangeMetaCode, getMetaPages, longLivedToken, metaAuthorizationUrl, metaBusinessLoginUrl, publishFacebook, publishInstagram, subscribeInstagramWebhooks, sendInstagramPrivateReply, subscribeFacebookWebhooks } from './meta.js';
 import { createPkcePair, exchangeXCode, getXUser, xAuthorizationUrl } from './x.js';
 import { createXPost, deleteXPost, uploadXMedia, validXAccessToken } from './x-publish.js';
-import { assessVideoBrandMatch, chooseVideoCoverFrame, generateCaptions } from './ai.js';
+import { assessVideoBrandMatch, chooseVideoCoverFrame, generateCaptions, inferLikelyVideoBrands } from './ai.js';
 import { resolveProvider } from './ai-provider.js';
 import { uploadMediaFile, downloadMediaFile } from './media-io.js';
 import { scheduleIdentity } from './schedule-fields.js';
@@ -1510,9 +1510,15 @@ app.post('/api/ai/captions', requireUser, requireCaptionAiAccess, (req, res, nex
       try {
         const match = await assessVideoBrandMatch(brandRecord, verificationFrames, transcript);
         if (match.verdict !== 'match') {
+          let brandSuggestions = [];
+          if (req.get('X-Driftpost-Team-Video') === '1') {
+            try { brandSuggestions = await inferLikelyVideoBrands(verificationFrames, transcript, [brandRecord.id]); }
+            catch (suggestionError) { console.warn('[ai] video alternative brand search failed:', String(suggestionError?.message || suggestionError).slice(0, 250)); }
+          }
           return res.status(409).json({
             error: `Caption generation stopped: the video could not be confidently matched to Stage 1 brand “${brandRecord.name}”. ${match.reason} Go back to Stage 1, select the correct brand/account group, then try again.`,
             brandCheck: { verdict: match.verdict, confidence: match.confidence, reason: match.reason },
+            brandSuggestions,
           });
         }
       } catch (error) {
@@ -1872,6 +1878,59 @@ app.get('/api/intake/drive/jobs', requireUser, async (req, res) => {
   res.json({ jobs: data || [] });
 });
 
+app.post('/api/intake/drive/jobs/:jobId/review', requireUser, async (req, res) => {
+  if (!canUsePrivateBrandData(req.user)) return res.status(403).json({ error: 'Private team access required.' });
+  const jobId = String(req.params.jobId || '');
+  const { data: job, error: jobError } = await supabase.from('google_drive_video_jobs')
+    .select('id, owner_user_id, status, result, account_name')
+    .eq('id', jobId).eq('owner_user_id', req.user.id).maybeSingle();
+  if (jobError) return res.status(503).json({ error: 'Could not load this review item.' });
+  if (!job || !['review', 'failed'].includes(job.status) || !Array.isArray(job.result?.brand_reviews)) return res.status(409).json({ error: 'This item is no longer awaiting a brand decision.' });
+  const action = String(req.body?.action || '');
+  if (action === 'stop') {
+    const { error } = await supabase.from('google_drive_video_jobs').update({
+      status: 'stopped', error: null,
+      result: { ...job.result, review_decision: { action: 'stopped', user_id: req.user.id, decided_at: new Date().toISOString() } },
+      updated_at: new Date().toISOString(),
+    }).eq('id', job.id).eq('owner_user_id', req.user.id).in('status', ['review', 'failed']);
+    if (error) return res.status(503).json({ error: 'Could not stop this intake job.' });
+    return res.json({ ok: true, status: 'stopped' });
+  }
+  if (action !== 'send') return res.status(400).json({ error: 'Choose Send or Stop.' });
+
+  const brandId = String(req.body?.brand_id || '').slice(0, 160);
+  const connectionIds = [...new Set((Array.isArray(req.body?.connection_ids) ? req.body.connection_ids : []).map((id) => String(id || '')).filter(Boolean))];
+  if (!brandId || !connectionIds.length || connectionIds.length > 25) return res.status(400).json({ error: 'Choose a saved brand and at least one connected destination.' });
+  const { getBrandById } = await import('./brand-memory/index.js');
+  const brand = getBrandById(brandId);
+  if (!brand) return res.status(400).json({ error: 'That saved brand profile is no longer available. Refresh and choose another.' });
+  const { data: connections, error: connectionError } = await supabase.from('platform_connections')
+    .select('id, platform, account_name').eq('user_id', req.user.id).in('id', connectionIds);
+  if (connectionError) return res.status(503).json({ error: 'Could not verify the selected publishing accounts.' });
+  if (!connections || connections.length !== connectionIds.length) return res.status(400).json({ error: 'One or more selected accounts are unavailable or belong to another user.' });
+  const captions = req.body?.captions && typeof req.body.captions === 'object' ? req.body.captions : {};
+  const platforms = [...new Set(connections.map((item) => String(item.platform || '').toLowerCase()))];
+  if (platforms.some((platform) => !['youtube', 'instagram', 'facebook', 'x'].includes(platform))) return res.status(400).json({ error: 'A selected platform is not supported for this workflow.' });
+  for (const platform of platforms) {
+    const text = platform === 'instagram' ? captions.instagram?.caption
+      : platform === 'facebook' ? captions.facebook?.message
+        : platform === 'youtube' ? captions.youtube?.description : captions.x?.text;
+    if (!String(text || '').trim()) return res.status(400).json({ error: `Add a caption for ${platform} before sending.` });
+    if (platform === 'instagram' && String(text).length > 2200) return res.status(400).json({ error: 'Instagram captions must be 2,200 characters or fewer.' });
+    if (platform === 'x' && Array.from(String(text)).length > 280) return res.status(400).json({ error: 'X captions must be 280 characters or fewer.' });
+    if (platform === 'youtube' && (!String(captions.youtube?.title || '').trim() || String(captions.youtube.title).length > 100)) return res.status(400).json({ error: 'Add a YouTube title of 100 characters or fewer.' });
+  }
+  const reviewApproval = { approved: true, approved_by: req.user.id, approved_at: new Date().toISOString(), brand_id: brand.id, captions };
+  const target = { brand_id: brand.id, brand_name: brand.name, destination_connection_ids: connectionIds };
+  const { error: updateError } = await supabase.from('google_drive_video_jobs').update({
+    account_name: brand.name, platforms, status: 'queued', error: null,
+    result: { ...job.result, target_brands: [target], brand_id: brand.id, destination_connection_ids: connectionIds, review_approval: reviewApproval, review_decision: { action: 'send', user_id: req.user.id, decided_at: reviewApproval.approved_at } },
+    updated_at: new Date().toISOString(),
+  }).eq('id', job.id).eq('owner_user_id', req.user.id).in('status', ['review', 'failed']);
+  if (updateError) return res.status(503).json({ error: 'Could not queue this approved post. Retry once the service is available.' });
+  return res.json({ ok: true, status: 'queued' });
+});
+
 app.get('/api/intake/drive/jobs/:jobId/media', requireUser, async (req, res) => {
   if (!canUsePrivateBrandData(req.user)) return res.status(403).json({ error: 'Private team access required.' });
   const { data: job, error } = await supabase.from('google_drive_video_jobs')
@@ -1879,7 +1938,7 @@ app.get('/api/intake/drive/jobs/:jobId/media', requireUser, async (req, res) => 
     .eq('id', req.params.jobId).eq('owner_user_id', req.user.id).maybeSingle();
   if (error) return res.status(503).json({ error: 'Could not load this private review item.' });
   if (!job) return res.status(404).json({ error: 'Review item not found.' });
-  if (job.status !== 'failed' || !job.result?.review) return res.status(409).json({ error: 'This media is not waiting for human review.' });
+  if (!['review', 'failed'].includes(job.status) || !(job.result?.brand_reviews?.length || job.result?.review)) return res.status(409).json({ error: 'This media is not waiting for a brand decision.' });
   try {
     let mediaJob = job;
     let mediaName = job.file_name || 'review-video.mp4';

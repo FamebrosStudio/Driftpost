@@ -6,7 +6,7 @@ import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { decryptJson, encryptJson } from './crypto.js';
 import { processIntakeJob } from './telegram-intake.js';
-import { assessVideoBrandMatch } from './ai.js';
+import { assessVideoBrandMatch, inferLikelyVideoBrands } from './ai.js';
 import { mapBrandDestinations, matchDriveAccounts, resolveDriveBrand } from './brand-routing.js';
 
 const execFileAsync = promisify(execFile);
@@ -77,6 +77,10 @@ export function parseDestination(fileName) {
   // The editor-friendly default is just the saved brand name in the filename.
   const accountNames = title.split(',').map((value) => value.trim().replace(/^@/, '')).filter(Boolean);
   return { accountName: accountNames.join(', '), accountNames, platforms: [] };
+}
+
+export function shouldHoldForBrandInference({ kind, size, targetErrors = [], destinations = [] }) {
+  return kind === 'video' && Number(size) <= MAX_VIDEO_BYTES && (targetErrors.length > 0 || destinations.length === 0);
 }
 
 // The single source of truth for the photo formats a Drive carousel accepts.
@@ -270,6 +274,12 @@ async function enqueueFiles(supabase, connection, files) {
       : batch.kind === 'image' && !resolvedDestinations.length && [...targetsByKey.values()].some((target) => target.destinations.some((item) => item.platform === 'youtube'))
       ? 'YouTube cannot publish photo carousels. Connect Instagram, Facebook, or X for this brand.'
         : routeError;
+    // A video whose filename cannot be confidently mapped is still useful
+    // evidence: queue it for AI brand inference and explicit review instead
+    // of dropping it into an ordinary failed-job bucket.
+    const needsBrandInference = shouldHoldForBrandInference({
+      kind: batch.kind, size, targetErrors, destinations: resolvedDestinations,
+    }) && !(batch.kind === 'video' && size > MAX_VIDEO_BYTES);
     const { error } = await supabase.from(TABLE).insert({
       drive_file_id: file.id,
       owner_user_id: connection.user_id,
@@ -284,10 +294,11 @@ async function enqueueFiles(supabase, connection, files) {
         ...(targetBrands.length === 1 && targetBrands[0].brand_id ? { brand_id: targetBrands[0].brand_id } : {}),
         ...(targetBrands.length === 1 && !targetBrands[0].brand_id ? { generic_account_target: true } : {}),
         destination_connection_ids: resolvedDestinations.map((item) => item.id),
+        ...(needsBrandInference ? { brand_resolution_required: true, requested_brand_names: requestedNames } : {}),
         ...(batch.kind === 'image' ? { media_kind: 'carousel', source_drive_files: batchFiles.map((item) => ({ id: item.id, name: item.name, mime_type: item.mimeType, size: Number(item.size) || 0 })) } : {}),
       },
-      status: errorMessage ? 'failed' : 'queued',
-      error: errorMessage || null,
+      status: errorMessage && !needsBrandInference ? 'failed' : 'queued',
+      error: errorMessage && !needsBrandInference ? errorMessage : null,
     });
     if (error && !/duplicate|unique/i.test(error.message || '')) console.error('[drive-intake] could not queue file:', file.id, error.message);
   }
@@ -402,6 +413,7 @@ async function runClaimedIntakeJob(supabase, job) {
       sourcePrefix: 'drive',
       resolveDestinations: (brand, connections, platforms) => mapBrandDestinations(brand, connections, platforms),
       assessBrand: (brand, frames, transcript) => assessVideoBrandMatch(brand, frames, transcript),
+      suggestBrands: (frames, transcript, excludedIds) => inferLikelyVideoBrands(frames, transcript, excludedIds),
       download: (current, destination) => downloadDriveVideo(supabase, current, destination),
       downloadMedia: (current, directory) => downloadDriveCarousel(supabase, current, directory),
       progress: async (stage, detail) => {
