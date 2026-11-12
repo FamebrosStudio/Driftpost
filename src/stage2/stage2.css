@@ -114,7 +114,8 @@
 .s2-field { margin-bottom: 10px; }
 .s2-field > span, .s2-field > label { display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--faint); margin-bottom: 5px; }
 .s2-field p { margin: 0; font-size: 13.5px; line-height: 1.65; white-space: pre-wrap; overflow-wrap: break-word; color: var(--ink); }
-.s2-field textarea, .s2-field input { width: 100%; background: var(--input); border: 1.5px solid var(--line-hard); border-radius: 10px; padding: 10px 12px; color: var(--ink); font-size: 13.5px; line-height: 1.6; outline: none; font-family: inherit; }
+.s2-field textarea, .s2-field input { width: 100%; background: var(--input); border: 1.5px solid var(--line-hard); border-radius: 10px; padding: 10px 12px; color: var(--ink); font-size: 14px; line-height: 1.7; outline: none; font-family: inherit; }
+.s2-field textarea { text-align: left; white-space: pre-wrap; }
 .s2-field textarea { min-height: 90px; resize: vertical; }
 .s2-field textarea:focus, .s2-field input:focus { border-color: var(--acc); }
 .s2-out-acts { display: flex; gap: 8px; margin-top: 4px; flex-wrap: wrap; }

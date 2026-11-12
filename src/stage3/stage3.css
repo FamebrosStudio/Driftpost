@@ -86,7 +86,8 @@
 .s3-field { margin-bottom: 12px; min-width: 0; }
 .s3-field > span { display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--faint); margin-bottom: 5px; }
 .s3-field p { margin: 0; font-size: 13.5px; line-height: 1.65; white-space: pre-wrap; overflow-wrap: break-word; }
-.s3-field textarea, .s3-field input, .s3-field select { width: 100%; background: var(--input); border: 1.5px solid var(--line-hard); border-radius: 10px; padding: 10px 12px; color: var(--ink); font-size: 13.5px; line-height: 1.6; outline: none; font-family: inherit; }
+.s3-field textarea, .s3-field input, .s3-field select { width: 100%; background: var(--input); border: 1.5px solid var(--line-hard); border-radius: 10px; padding: 10px 12px; color: var(--ink); font-size: 14px; line-height: 1.7; outline: none; font-family: inherit; }
+.s3-field textarea { text-align: left; white-space: pre-wrap; }
 .s3-field textarea { min-height: 84px; resize: vertical; }
 .s3-field textarea:focus, .s3-field input:focus, .s3-field select:focus { border-color: var(--acc); box-shadow: 0 0 0 3px var(--acc-soft); }
 .s3-row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
