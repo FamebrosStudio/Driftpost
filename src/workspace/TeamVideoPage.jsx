@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { api, apiRequestUrl, matchesSearchText, PLATFORMS } from '../lib.js';
+import { api, matchesSearchText, PLATFORMS } from '../lib.js';
 import { isAiAccount } from '../ai-access.js';
 import { requestCaptions, mapResponse } from '../stage2/ai.js';
 import { saveCaptionDraft, readStageSelection } from '../stage2/captionDraftScope.js';
@@ -42,9 +42,6 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut, onOpenRe
   const [driveState, setDriveState] = useState({ loading: true, connected: false, folder_url: '', google_email: '', error: '' });
   const [driveBusy, setDriveBusy] = useState(false);
   const [driveJobs, setDriveJobs] = useState([]);
-  const [reviewLoadingId, setReviewLoadingId] = useState('');
-  const [activeDriveReview, setActiveDriveReview] = useState(null);
-  const [reviewImages, setReviewImages] = useState([]);
   const [connectionsLoading, setConnectionsLoading] = useState(true);
   const [loadError, setLoadError] = useState('');
   const [brandOptions, setBrandOptions] = useState([]);
@@ -78,16 +75,6 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut, onOpenRe
   const [pendingCoverCount, setPendingCoverCount] = useState(0);
   const activeJobs = jobs.filter((job) => job.status === 'analyzing').length;
   const [error, setError] = useState('');
-  const [videoPreviewUrl, setVideoPreviewUrl] = useState('');
-
-  useEffect(() => {
-    if (!file || !activeDriveReview) { setVideoPreviewUrl(''); return undefined; }
-    const url = URL.createObjectURL(file);
-    setVideoPreviewUrl(url);
-    return () => URL.revokeObjectURL(url);
-  }, [file, activeDriveReview]);
-
-  useEffect(() => () => reviewImages.forEach((item) => URL.revokeObjectURL(item.url)), [reviewImages]);
 
   useEffect(() => {
     try { localStorage.setItem(SCOPED('driftpost-team-video-jobs', userId), JSON.stringify(jobs.map(({ id, brand, status, message, createdAt, autoPublish, coverWarning, brandKey, accountIds, platforms, brief, crosspost, instagramStory, collaborators, warning, group, outputs, cfg, transcript }) => ({ id, brand, status, message, createdAt, autoPublish, coverWarning, brandKey, accountIds, platforms, brief, crosspost, instagramStory, collaborators, warning, group, outputs, cfg, transcript })))); } catch {}
@@ -116,56 +103,6 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut, onOpenRe
       setDriveState((old) => ({ ...old, error: e.message || 'Could not start Google Drive connection.' }));
       setDriveBusy(false);
     }
-  };
-
-  const loadDriveReview = async (job) => {
-    if (reviewLoadingId) return;
-    setReviewLoadingId(job.id);
-    setError('');
-    try {
-      const isCarousel = job.result?.media_kind === 'carousel';
-      const sourceFiles = job.result?.source_drive_files || [];
-      const reviewAssets = [];
-      const sources = isCarousel ? sourceFiles.map((item, index) => ({ item, index })) : [{ item: { name: job.file_name }, index: 0 }];
-      for (const { item, index } of sources) {
-        const suffix = isCarousel ? `?index=${index}` : '';
-        const response = await fetch(apiRequestUrl(`/api/intake/drive/jobs/${encodeURIComponent(job.id)}/media${suffix}`), { headers: { Authorization: `Bearer ${session.access_token}` } });
-        if (!response.ok) {
-          const data = await response.json().catch(() => ({}));
-          throw new Error(data.error || 'Could not load this media for review.');
-        }
-        const blob = await response.blob();
-        if (!blob.size || blob.size > (isCarousel ? 10 : 400) * 1024 * 1024) throw new Error(`Review media ${index + 1} is empty or too large.`);
-        reviewAssets.push({ item, blob });
-      }
-      const mediaFile = isCarousel ? null : new File([reviewAssets[0].blob], job.file_name || 'drive-review.mp4', { type: job.mime_type || reviewAssets[0].blob.type || 'video/mp4' });
-      const profileKey = String(job.result?.brand_id || '');
-      const selectedBrand = brands.find((item) => item.key === profileKey)
-        || brands.find((item) => item.label.toLowerCase() === String(job.account_name || '').toLowerCase());
-      if (!selectedBrand) throw new Error('The saved brand profile is unavailable. Reload the brand list before reviewing this video.');
-      const profileRecord = brandOptions.find((item) => item.id === selectedBrand.key);
-      const savedIds = Array.isArray(job.result?.destination_connection_ids) && job.result.destination_connection_ids.length
-        ? job.result.destination_connection_ids
-        : Object.values(profileRecord?.map || {});
-      const ids = [...new Set(savedIds)].filter((id) => connections.some((account) => account.id === id));
-      setBrandKey(selectedBrand.key);
-      setSelectedIds(ids);
-      setConfirmedAccountIds(ids);
-      setReviewImages((old) => { old.forEach((item) => URL.revokeObjectURL(item.url)); return isCarousel ? reviewAssets.map(({ item, blob }) => ({ name: item.name, url: URL.createObjectURL(blob) })) : []; });
-      setFile(mediaFile);
-      setYoutubeThumb(null);
-      setInstagramCover(null);
-      setFacebookCover(null);
-      setInstagramStory(false);
-      setCrosspost(false);
-      setCollaborators('');
-      setAutoPublish(false);
-      setBrief(`Human review: the automatic brand check flagged this ${isCarousel ? 'photo carousel' : 'video'}. Confirm the correct brand and destination details before posting.`);
-      setActiveDriveReview(job);
-      setError('');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    } catch (e) { setError(e.message || 'Could not open the human review item.'); }
-    finally { setReviewLoadingId(''); }
   };
 
   useEffect(() => {
@@ -371,7 +308,7 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut, onOpenRe
       const manualCoversComplete = coverPlatforms.every((platform) => snapshot.manualCovers[platform === 'youtube' ? 'thumb' : platform]);
       if (coverPlatforms.length && !manualCoversComplete) {
         try { coverMap = await chooseDefaultCovers(generated.videoFrames || [], coverPlatforms, snapshot.file.name.replace(/\.[^.]+$/, '')); }
-        catch (coverError) { coverWarning = `Automatic cover preparation needs review: ${coverError.message || 'could not prepare a cover'}`; }
+        catch (coverError) { coverWarning = `Automatic cover preparation failed; publishing will continue without an optional custom cover. ${coverError.message || 'Could not prepare a cover.'}`; }
       }
       coverMap = {
         thumb: snapshot.manualCovers.thumb || coverMap.thumb,
@@ -479,7 +416,7 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut, onOpenRe
         {error && <p className="team-video-error" role="alert">{error}</p>}
         <div className="team-video-actions"><button type="submit" disabled={activeJobs >= 3 || pendingCoverCount > 0 || connectionsLoading || !connections.length || !brand || !file || !chosen.length}>{pendingCoverCount ? 'Preparing cover…' : activeJobs >= 3 ? 'Three analyses already running' : autoPublish ? 'Analyze and publish' : 'Analyze and review'}</button><small>{activeJobs ? `${activeJobs} analysis${activeJobs === 1 ? '' : 'es'} running. You can start up to 3 at once.` : 'The original post creation flow is unchanged.'}</small></div>
       </form>
-       {!!jobs.length && <section className="team-video-jobs" aria-label="Video processing jobs"><div className="team-video-section-title"><span>↻</span><div><h2>Video processing jobs</h2><p>Each job keeps its own accounts, captions, covers, and video while other analyses run.</p></div></div>{jobs.map((job) => <article className="team-video-job" key={job.id}><div><b>{job.brand || 'Team video'}</b><small>{job.message || (job.status === 'ready' ? 'Draft ready.' : job.status)}</small>{job.warning && <small className="team-job-warning">{job.warning}</small>}{job.coverWarning && <small className="team-job-warning">{job.coverWarning} Publishing will continue without an optional custom cover.</small>}</div>{job.status === 'ready' && <button type="button" onClick={() => openJob(job)}>{job.autoPublish ? 'Open publishing status' : 'Open draft'}</button>}{job.status === 'failed' && <button type="button" onClick={() => loadJobForRetry(job)}>Load to retry</button>}</article>)}</section>}
+       {!!jobs.length && <section className="team-video-jobs" aria-label="Video processing jobs"><div className="team-video-section-title"><span>↻</span><div><h2>Video processing jobs</h2><p>Each job keeps its own accounts, captions, covers, and video while other analyses run.</p></div></div>{jobs.map((job) => <article className="team-video-job" key={job.id}><div><b>{job.brand || 'Team video'}</b><small>{job.message || (job.status === 'ready' ? 'Draft ready.' : job.status)}</small>{job.warning && <small className="team-job-warning">{job.warning}</small>}{job.coverWarning && <small className="team-job-warning">{job.coverWarning}</small>}</div>{job.status === 'ready' && <button type="button" onClick={() => openJob(job)}>{job.autoPublish ? 'Open publishing status' : 'Open draft'}</button>}{job.status === 'failed' && <button type="button" onClick={() => loadJobForRetry(job)}>Load to retry</button>}</article>)}</section>}
     </main>
   </div>;
 }

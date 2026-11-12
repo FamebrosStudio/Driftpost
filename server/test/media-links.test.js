@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createTemporaryMediaUrl, isOwnedMediaPath, SIGNED_MEDIA_TTL_SECONDS } from '../src/media-links.js';
+import { createTemporaryMediaUrl, isOwnedMediaPath, isValidPreuploadedMedia, SIGNED_MEDIA_TTL_SECONDS } from '../src/media-links.js';
 
 const userId = 'd8f7a451-81cf-4b88-8918-c9a5daec1ab0';
 
@@ -10,6 +10,14 @@ test('owned media paths accept only direct user uploads or scheduled files in th
   assert.equal(isOwnedMediaPath(userId, 'd8f7a451-81cf-4b88-8918-c9a5daec1ab2/d8f7a451-81cf-4b88-8918-c9a5daec1ab1.mp4'), false);
   assert.equal(isOwnedMediaPath(userId, `scheduled/${userId}/../other/clip.mp4`), false);
   assert.equal(isOwnedMediaPath(userId, `${userId}/nested/d8f7a451-81cf-4b88-8918-c9a5daec1ab1.mp4`), false);
+});
+
+test('preuploaded publishing accepts owned scheduled intake paths and rejects foreign or oversized media', () => {
+  const scheduledPath = `scheduled/${userId}/drive-d8f7a451-81cf-4b88-8918-c9a5daec1ab1/video.mp4`;
+  assert.equal(isValidPreuploadedMedia(userId, { path: scheduledPath, mimetype: 'video/mp4', size: 1024 }, 400 * 1024 * 1024), true);
+  assert.equal(isValidPreuploadedMedia(userId, { path: scheduledPath, mimetype: 'video/mp4', size: 0 }, 400 * 1024 * 1024), false);
+  assert.equal(isValidPreuploadedMedia(userId, { path: scheduledPath, mimetype: 'video/mp4', size: 500 * 1024 * 1024 }, 400 * 1024 * 1024), false);
+  assert.equal(isValidPreuploadedMedia(userId, { path: `scheduled/d8f7a451-81cf-4b88-8918-c9a5daec1ab2/drive-d8f7a451-81cf-4b88-8918-c9a5daec1ab1/video.mp4`, mimetype: 'video/mp4', size: 1024 }, 400 * 1024 * 1024), false);
 });
 
 test('temporary links are signed for a bounded lifetime and storage errors fail closed', async () => {

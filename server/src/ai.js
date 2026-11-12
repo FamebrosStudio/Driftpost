@@ -957,12 +957,21 @@ async function callChat({ provider = resolveProvider(), model, systemText, userM
 // Conservative mismatch screen for private video intake. It only routes away
 // from automation when there is clear contradictory evidence or the model is
 // unsure; missing logos/brand names alone are never proof of a wrong brand.
+export function selectBrandEvidenceFrames(images = [], maxFrames = 3) {
+  const valid = images.filter((image) => image && ['image/jpeg', 'image/png'].includes(image.mimetype)
+    && typeof image.base64 === 'string' && image.base64.length <= 3_000_000);
+  const count = Math.min(Math.max(1, Math.floor(maxFrames) || 3), valid.length);
+  if (!count) return [];
+  return Array.from({ length: count }, (_, index) => {
+    const sourceIndex = count === 1 ? Math.floor((valid.length - 1) / 2) : Math.round(index * (valid.length - 1) / (count - 1));
+    return { ...valid[sourceIndex], detail: 'low' };
+  });
+}
+
 export async function assessVideoBrandMatch(brand, images = [], transcript = '') {
   const provider = resolveProvider();
   if (!provider.hasKey) throw new Error(providerNotConfiguredMessage(provider));
-  const usable = images.filter((im) => im && ['image/jpeg', 'image/png'].includes(im.mimetype)
-    && typeof im.base64 === 'string' && im.base64.length <= 3_000_000).slice(0, 3)
-    .map((image) => ({ ...image, detail: 'low' }));
+  const usable = selectBrandEvidenceFrames(images, 3);
   if (!usable.length) throw new Error('No readable frames were available for brand verification.');
   const memory = await import('./brand-memory/index.js');
   const deep = memory.getDeepForCompact?.(brand) || memory.getDeepBrand?.(brand?.id) || null;

@@ -117,7 +117,7 @@ async function sampleVideo(file, count = 3) {
 
 // Shared Stage 2/3 caption generation: one request, per-platform answers.
 // Pass only:<platform> for a fast single-card regen (one card, ~1/3 tokens).
-export function requestCaptions(token, { brief, brand, brandId, files, tone, emoji, length, analysis = 'fast', only, platforms, frameCount = 3, teamVideo = false }) {
+export function requestCaptions(token, { brief, brand, brandId, files, tone, emoji, length, analysis = 'fast', only, platforms, frameCount = 8, teamVideo = false }) {
   return (async () => {
     const entries = files || [];
     // Video captions always use video evidence, even when the user left the
@@ -126,8 +126,8 @@ export function requestCaptions(token, { brief, brand, brandId, files, tone, emo
     const analyzeMedia = analysis === 'analyze' || entries.some((f) => f?.raw?.type?.startsWith('video/'));
     const photos = analyzeMedia ? entries.filter((f) => f?.raw?.type?.startsWith('image/')) : [];
     const video = analyzeMedia ? entries.find((f) => f?.raw?.type?.startsWith('video/')) : null;
-    // Three evenly-spaced frames retain the clip's story arc without paying
-    // for redundant near-identical vision samples. Speech is still transcribed.
+    // Sample throughout the full clip; server-side speech transcription uses
+    // the full audio track as a second independent source of evidence.
     const frames = video ? await sampleVideo(video.raw, Math.max(1, Math.min(8, Number(frameCount) || 8))) : [];
     // Preserve detail for user photos; sampled video frames use low-detail
     // vision because their job is to establish scenes/motion, not read tiny text.

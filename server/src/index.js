@@ -30,7 +30,7 @@ import { runAutomationAction } from './automation-events.js';
 import { automationComment, automationWebhookSubscriptions, commentAutomationDecision, commentReplyEdge, commentReplyModes, incomingMessageReply, incomingMessageReplyText, validateAutomationRules } from './meta-automation-payloads.js';
 import { eraseUserMedia } from './storage-cleanup.js';
 import { enabledInstagramCollaborators, instagramCaptionRequiredError, nonEmptyCaption } from './caption-guards.js';
-import { createTemporaryMediaUrl, isOwnedMediaPath } from './media-links.js';
+import { createTemporaryMediaUrl, isOwnedMediaPath, isValidPreuploadedMedia } from './media-links.js';
 import { canUsePrivateBrandData } from './brand-access.js';
 import { createTelegramIntakeRouter, registerTelegramWebhook } from './telegram-intake.js';
 import { getDriveReviewFile, startGoogleDriveIntake, streamDriveReviewFile } from './google-drive-intake.js';
@@ -2125,13 +2125,10 @@ app.post('/api/publish', requireUser, publishRequestBurstLimit, publishQueueLimi
     for (let index = 0; index < 20; index++) {
       const objectPath = String(req.body[`mediaPath${index}`] || '');
       if (!objectPath) break;
-      const [owner, filename, ...extra] = objectPath.split('/');
       const mimetype = String(req.body[`mediaType${index}`] || '').toLowerCase();
       const name = String(req.body[`mediaName${index}`] || `media_${index}`).slice(0, 240);
       const size = Number(req.body[`mediaSize${index}`]);
-      if (owner !== req.user.id || extra.length || !isOwnedMediaPath(req.user.id, objectPath)
-        || !/^(image|video)\/[a-z0-9.+-]+$/.test(mimetype)
-        || (mimetype.startsWith('video/') && (!Number.isSafeInteger(size) || size < 1 || size > MAX_UPLOAD_BYTES))) {
+      if (!isValidPreuploadedMedia(req.user.id, { path: objectPath, mimetype, size }, MAX_UPLOAD_BYTES)) {
         await cleanup();
         return res.status(400).json({ error: 'Stored media reference is invalid. Re-upload the media and try again.' });
       }

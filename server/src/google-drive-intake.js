@@ -230,7 +230,7 @@ async function enqueueFiles(supabase, connection, files) {
         continue;
       }
       if (routing.unresolved?.length) {
-        targetErrors.push(`Account mapping needs review for "${requestedName}": ${routing.unresolved.join('; ')}.`);
+        targetErrors.push(`Account mapping is ambiguous for "${requestedName}": ${routing.unresolved.join('; ')}. Correct the brand name or connected-account mapping and upload again.`);
         continue;
       }
       let destinations = [...(routing.destinations || [])];

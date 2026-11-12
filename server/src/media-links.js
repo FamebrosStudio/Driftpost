@@ -15,6 +15,14 @@ export function isOwnedMediaPath(userId, value) {
   return new RegExp(`^(?:${id}/${UUID}\\.[A-Za-z0-9]{1,8}|scheduled/${id}/${jobFolder}/${safeFilename})$`, 'i').test(objectPath);
 }
 
+export function isValidPreuploadedMedia(userId, { path, mimetype, size }, maxVideoBytes) {
+  const type = String(mimetype || '').toLowerCase();
+  if (!isOwnedMediaPath(userId, path) || !/^(image|video)\/[a-z0-9.+-]+$/.test(type)) return false;
+  if (!type.startsWith('video/')) return true;
+  const bytes = Number(size);
+  return Number.isSafeInteger(bytes) && bytes > 0 && bytes <= maxVideoBytes;
+}
+
 export async function createTemporaryMediaUrl(storage, objectPath, expiresIn = SIGNED_MEDIA_TTL_SECONDS) {
   const { data, error } = await storage.createSignedUrl(objectPath, expiresIn);
   if (error || !data?.signedUrl) throw new Error('Could not create a temporary media link. Please re-upload the media and try again.');

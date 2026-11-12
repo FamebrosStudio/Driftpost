@@ -173,7 +173,7 @@ export async function processIntakeJob(supabase, job, options = {}) {
       : options.resolveDestinations
       ? options.resolveDestinations(brandHit.brand, rawConnections, requestedPlatforms)
       : { destinations: matchConnections(rawConnections, accountName).filter((item) => !requestedPlatforms.length || requestedPlatforms.includes(item.platform)), unresolved: [] };
-    if (routing.unresolved?.length) throw new Error(`Account mapping needs review: ${routing.unresolved.join('; ')}.`);
+    if (routing.unresolved?.length) throw new Error(`Account mapping is ambiguous: ${routing.unresolved.join('; ')}. Correct the destination name and upload again.`);
     targetGroups = [{ brand: brandHit.brand?.id ? brandHit.brand : { id: null, name: brandHit.brand?.name || accountName }, name: brandHit.brand?.name || accountName, destinations: routing.destinations || [] }];
   }
   const destinations = [...new Map(targetGroups.flatMap((target) => target.destinations).map((item) => [item.id, item])).values()];

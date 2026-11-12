@@ -1225,7 +1225,11 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
     try { requested = sessionStorage.getItem(`driftpost-team-auto-publish:${userId}`) || ''; } catch {}
     if (!requested || requested !== s1.groupId) return;
     const invalid = effective.map((pid) => invalidReason(pid)).find(Boolean);
-    if (invalid) return;
+    if (invalid) {
+      try { sessionStorage.removeItem(`driftpost-team-auto-publish:${userId}`); } catch {}
+      setPubMsg(`Automatic publishing stopped before posting: ${invalid}. Correct the destination or post content, then retry.`);
+      return;
+    }
     autoPublishStarted.current = true;
     try { sessionStorage.removeItem(`driftpost-team-auto-publish:${userId}`); } catch {}
     const timer = window.setTimeout(() => { void publishAll(); }, 900);
