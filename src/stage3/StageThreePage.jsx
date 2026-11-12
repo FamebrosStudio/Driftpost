@@ -1284,7 +1284,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
             {regenErr && <p className="s3-err" role="alert">{regenErr}</p>}
             {tab && (
               <div key={tab} className="s3-cols" style={{ marginTop: 14 }}>
-                <MediaPreview files={files}>
+                <MediaPreview files={files} cover={tab === 'youtube' ? thumb : null}>
                   <div className="s3-media-tools">
                     <button
                       type="button"

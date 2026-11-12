@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 
 // Media preview: main file + count, click to zoom (lightbox with prev/next).
-export default function MediaPreview({ files, children }) {
+export default function MediaPreview({ files, cover, children }) {
   const [light, setLight] = useState(-1);
   const urls = useMemo(
     () => (files || []).map((f) => {
@@ -10,6 +10,11 @@ export default function MediaPreview({ files, children }) {
     }),
     [files]
   );
+  const coverUrl = useMemo(() => {
+    try { return cover?.raw ? URL.createObjectURL(cover.raw) : null; }
+    catch { return null; }
+  }, [cover]);
+  useEffect(() => () => { if (coverUrl) URL.revokeObjectURL(coverUrl); }, [coverUrl]);
   useEffect(() => () => {
     urls.forEach((u) => { try { if (u) URL.revokeObjectURL(u); } catch {} });
   }, [urls]);
@@ -30,7 +35,9 @@ export default function MediaPreview({ files, children }) {
   return (
       <div className="s3-media-column">
       <div className="s3-media" onClick={() => setLight(0)} title="Click to zoom">
-        {isVideo
+        {isVideo && coverUrl
+          ? <img src={coverUrl} alt="Selected video thumbnail" />
+          : isVideo
           ? (firstUrl ? <video src={firstUrl} preload="metadata" muted playsInline /> : null)
           : (firstUrl ? <img src={firstUrl} alt={first.name} /> : null)}
         <span className="zoom">Zoom +</span>
