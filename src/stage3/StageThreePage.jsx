@@ -12,6 +12,7 @@ import PlatformTabs from './PlatformTabs.jsx';
 import Workspace from './Workspace.jsx';
 import ScheduleModal from './ScheduleModal.jsx';
 import MediaPreview from './MediaPreview.jsx';
+import CoverPicker from './CoverPicker.jsx';
 import './stage3.css';
 import { WorkspaceNav } from '../workspace/Workspace.jsx';
 import { canGenerateCaptions, hasAiAccess } from '../ai-access.js';
@@ -1209,6 +1210,10 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
   };
 
   const allReviewed = effective.length > 0 && reviewedCount === effective.length;
+  const reviewAllPlatforms = () => {
+    if (allReviewed || Object.values(busy).some(Boolean)) return;
+    effective.forEach((pid) => onReviewed(pid));
+  };
 
   // A team video submission explicitly opts into automatic publishing. Use
   // the existing Stage 3 validation and publish queue, and consume the marker
@@ -1279,7 +1284,20 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
             {regenErr && <p className="s3-err" role="alert">{regenErr}</p>}
             {tab && (
               <div key={tab} className="s3-cols" style={{ marginTop: 14 }}>
-                <MediaPreview files={files} />
+                <MediaPreview files={files}>
+                  <div className="s3-media-tools">
+                    <button
+                      type="button"
+                      className={allReviewed ? 's3-review-all done' : 's3-review-all'}
+                      onClick={reviewAllPlatforms}
+                      disabled={!effective.length || allReviewed || Object.values(busy).some(Boolean)}
+                      title="Mark every selected platform as reviewed"
+                    >
+                      {allReviewed ? '✓ All platforms reviewed' : 'Review all platforms'}
+                    </button>
+                    {platforms.includes('youtube') && <CoverPicker platform="youtube" files={files} cover={thumb} onChange={onThumb} />}
+                  </div>
+                </MediaPreview>
                 <Workspace
                   pid={tab}
                   accounts={accountsFor(tab)}
@@ -1360,7 +1378,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
                 </button>
               )}
               {!allReviewed && effective.length > 0 && !schedMsg && !pubMsg && (
-                <p className="s3-pub-hint">Open each tab and press Reviewed ✓ — posting unlocks when all are seen.</p>
+                <p className="s3-pub-hint">Review platforms individually, or use “Review all platforms” beside the media preview.</p>
               )}
             </div>
           </>

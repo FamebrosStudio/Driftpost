@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 
 // Media preview: main file + count, click to zoom (lightbox with prev/next).
-export default function MediaPreview({ files }) {
+export default function MediaPreview({ files, children }) {
   const [light, setLight] = useState(-1);
   const urls = useMemo(
     () => (files || []).map((f) => {
@@ -21,14 +21,14 @@ export default function MediaPreview({ files }) {
   }, []);
 
   if (!files.length) {
-    return <p className="s3-media-cap">No media — add some in Stage 2 for a visual post, or publish text-only.</p>;
+    return <div className="s3-media-column"><p className="s3-media-cap">No media — add some in Stage 2 for a visual post, or publish text-only.</p>{children}</div>;
   }
   const first = files[0];
   const firstUrl = urls[0];
   const isVideo = first.type.startsWith('video/');
 
   return (
-    <div>
+      <div className="s3-media-column">
       <div className="s3-media" onClick={() => setLight(0)} title="Click to zoom">
         {isVideo
           ? (firstUrl ? <video src={firstUrl} preload="metadata" muted playsInline /> : null)
@@ -38,6 +38,7 @@ export default function MediaPreview({ files }) {
       <p className="s3-media-cap">
         {files.length > 1 ? `${files.length} files — first shown, all publish together.` : `${first.name} · ${first.size}`}
       </p>
+      {children}
       {light >= 0 && files[light] && (
         <div className="s3-light" onClick={() => setLight(-1)}>
           {files.length > 1 && (

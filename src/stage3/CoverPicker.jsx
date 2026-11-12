@@ -5,6 +5,10 @@ const FORMATS = {
   facebook: { width: 1280, height: 720, label: '16:9' },
   instagram: { width: 720, height: 1280, label: '9:16' },
 };
+const formatTime = (seconds = 0) => {
+  const value = Math.max(0, Math.floor(Number(seconds) || 0));
+  return `${Math.floor(value / 60)}:${String(value % 60).padStart(2, '0')}`;
+};
 
 export async function makeCover(source, platform, name) {
   const format = FORMATS[platform];
@@ -42,7 +46,9 @@ export default function CoverPicker({ platform, files = [], cover, onChange }) {
   const [time, setTime] = useState(0);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
+  const dragging = useRef(false);
   const videoFile = files.find((file) => (file.type || file.raw?.type || '').startsWith('video/'));
+  const timePercent = duration ? Math.max(0, Math.min(100, (time / duration) * 100)) : 0;
   const videoUrl = useMemo(() => {
     if (!videoFile?.raw) return '';
     try { return URL.createObjectURL(videoFile.raw); } catch { return ''; }
@@ -80,6 +86,30 @@ export default function CoverPicker({ platform, files = [], cover, onChange }) {
     finally { setBusy(false); }
   };
 
+  const seekTo = (seconds) => {
+    const next = Math.max(0, Math.min(duration || 0, Number(seconds) || 0));
+    setTime(next);
+    if (videoRef.current && Number.isFinite(next)) videoRef.current.currentTime = next;
+  };
+  const seekAtPointer = (event) => {
+    const bounds = event.currentTarget.getBoundingClientRect();
+    if (!bounds.width || !duration) return;
+    seekTo(((event.clientX - bounds.left) / bounds.width) * duration);
+  };
+  const onScrubberKeyDown = (event) => {
+    const step = event.shiftKey ? 1 : 0.1;
+    let next;
+    if (event.key === 'ArrowLeft' || event.key === 'ArrowDown') next = time - step;
+    else if (event.key === 'ArrowRight' || event.key === 'ArrowUp') next = time + step;
+    else if (event.key === 'PageDown') next = time - 5;
+    else if (event.key === 'PageUp') next = time + 5;
+    else if (event.key === 'Home') next = 0;
+    else if (event.key === 'End') next = duration;
+    else return;
+    event.preventDefault();
+    seekTo(next);
+  };
+
   const label = platform === 'instagram' ? 'Instagram Reel cover' : platform === 'facebook' ? 'Facebook video cover' : 'YouTube thumbnail';
   return <section className="s3-cover-picker" aria-label={label}>
     <div className="s3-cover-head"><b>{label}</b><small>{FORMATS[platform].label} · video posts</small></div>
@@ -90,7 +120,37 @@ export default function CoverPicker({ platform, files = [], cover, onChange }) {
     </div>
     {videoUrl && <div className="s3-frame-picker">
       <video ref={videoRef} src={videoUrl} preload="metadata" muted playsInline onLoadedMetadata={(event) => { const length = Number.isFinite(event.currentTarget.duration) ? event.currentTarget.duration : 0; setDuration(length); setTime((current) => Math.min(current, length)); }} />
-      <label><span>Choose a frame · {time.toFixed(1)}s</span><input type="range" min="0" max={duration || 0} step="0.1" value={Math.min(time, duration || 0)} onChange={(event) => { const next = Number(event.target.value); setTime(next); const video = videoRef.current; if (video && Number.isFinite(next)) video.currentTime = next; }} disabled={!duration || busy} /></label>
+      <div className="s3-frame-control">
+        <div className="s3-frame-time"><span>Choose a video frame</span><b>{formatTime(time)} <small>/ {formatTime(duration)}</small></b></div>
+        <div
+          className={`s3-frame-scrubber${duration && !busy ? '' : ' disabled'}`}
+          role="slider"
+          tabIndex={duration && !busy ? 0 : -1}
+          aria-label="Choose video frame for cover"
+          aria-valuemin={0}
+          aria-valuemax={Math.round(duration * 10) / 10}
+          aria-valuenow={Math.round(time * 10) / 10}
+          aria-valuetext={`${time.toFixed(1)} seconds`}
+          aria-disabled={!duration || busy}
+          onKeyDown={onScrubberKeyDown}
+          onPointerDown={(event) => {
+            if (!duration || busy) return;
+            dragging.current = true;
+            event.currentTarget.setPointerCapture?.(event.pointerId);
+            seekAtPointer(event);
+          }}
+          onPointerMove={(event) => { if (dragging.current) seekAtPointer(event); }}
+          onPointerUp={(event) => {
+            dragging.current = false;
+            if (event.currentTarget.hasPointerCapture?.(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId);
+          }}
+          onPointerCancel={() => { dragging.current = false; }}
+        >
+          <span className="s3-frame-track"><i style={{ width: `${timePercent}%` }} /></span>
+          <span className="s3-frame-knob" style={{ left: `${timePercent}%` }} />
+        </div>
+        <div className="s3-frame-scale"><span>Start</span><span>{formatTime(duration)}</span></div>
+      </div>
       <button type="button" className="s3-mini-btn" onClick={useFrame} disabled={!duration || busy}>Use selected frame</button>
     </div>}
     {!videoUrl && <small className="s3-subnote">Attach a video in Stage 2 to choose a frame. Uploaded covers are prepared as {FORMATS[platform].label} JPEGs.</small>}

@@ -204,7 +204,6 @@ export default function Workspace({
                 </select>
               </Field>
             </div>
-            <CoverPicker platform="youtube" files={files} cover={thumb} onChange={onThumb} />
             <details className="s3-adv">
               <summary>More options (category, kids…)</summary>
               <div className="s3-adv-in">
