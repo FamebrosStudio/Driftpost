@@ -30,6 +30,13 @@ export function commentReplyModes(rules = {}) {
   return { privateReplyEnabled, publicReplyEnabled };
 }
 
+export function matchesCommentAutomationRule(rules = {}, text = '') {
+  const { privateReplyEnabled, publicReplyEnabled } = commentReplyModes(rules);
+  const keyword = String(rules.comment_keyword || '').trim();
+  return (privateReplyEnabled || publicReplyEnabled)
+    && (!keyword || matchesAutomationKeyword(text, keyword));
+}
+
 const normalizeKeywordText = (value) => String(value || '').normalize('NFKD')
   .replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
 
