@@ -7,7 +7,6 @@ import { readVault, writeVault } from '../stage2/mediaVault.js';
 import { makeCover } from '../stage3/CoverPicker.jsx';
 import { parseInstagramCollaborators } from '../stage3/instagramCollaborators.js';
 import { WorkspaceNav } from './Workspace.jsx';
-import './team-video.css';
 
 const PLATFORM_LABELS = Object.fromEntries(PLATFORMS.map(({ id, name }) => [id, name]));
 const SCOPED = (key, userId) => `${key}:${userId}`;

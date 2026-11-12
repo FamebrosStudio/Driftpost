@@ -1,6 +1,10 @@
 import React, { lazy, Suspense, useEffect, useState } from 'react';
 import PageLoading from './PageLoading.jsx';
 import { isAiAccount } from './ai-access.js';
+// Load Team Video styles with the console shell instead of relying on a
+// nested lazy import's CSS preload, which can leave the page unstyled when
+// users open its deep link directly.
+import './workspace/team-video.css';
 
 const ConnectPage = lazy(() => import('./connect/ConnectPage.jsx'));
 const StageOnePage = lazy(() => import('./stage1/StageOnePage.jsx'));
