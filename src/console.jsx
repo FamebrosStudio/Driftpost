@@ -35,7 +35,7 @@ const CONSOLE_PATHS = {
   '/console/create/2': ['create', '2'], '/console/create/3': ['create', '3'],
 };
 const consoleRoute = () => CONSOLE_PATHS[window.location.pathname.replace(/\/$/, '') || '/console'] || ['home', ''];
-const routeFor = (view, stage) => view === 'create' ? `/console/create/${stage || '1'}` : view === 'home' ? '/' : `/console/${view}`;
+const routeFor = (view, stage) => view === 'create' ? `/console/create/${stage || '1'}` : view === 'home' ? '/console' : `/console/${view}`;
 
 function BackgroundPublishNotice({ notice, onDismiss }) {
   if (!notice) return null;
