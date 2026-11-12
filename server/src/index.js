@@ -21,7 +21,7 @@ import { setVideoThumbnail, uploadVideoResumable, validAccessToken } from './you
 import { deleteFacebookPost, discoverInstagramAccount, exchangeMetaCode, getMetaPages, longLivedToken, metaAuthorizationUrl, metaBusinessLoginUrl, publishFacebook, publishInstagram, subscribeInstagramWebhooks, sendInstagramPrivateReply, subscribeFacebookWebhooks } from './meta.js';
 import { createPkcePair, exchangeXCode, getXUser, xAuthorizationUrl } from './x.js';
 import { createXPost, deleteXPost, uploadXMedia, validXAccessToken } from './x-publish.js';
-import { generateCaptions } from './ai.js';
+import { assessVideoBrandMatch, generateCaptions } from './ai.js';
 import { resolveProvider } from './ai-provider.js';
 import { uploadMediaFile, downloadMediaFile } from './media-io.js';
 import { scheduleIdentity } from './schedule-fields.js';
@@ -1495,9 +1495,31 @@ app.post('/api/ai/captions', requireUser, requireCaptionAiAccess, (req, res, nex
       const mem = await import('./brand-memory/index.js');
       if (privateBrandAccess && (requestedBrandId || brandLabel.trim())) {
         brandRecord = (requestedBrandId ? mem.getBrandById(requestedBrandId) : null)
-          || (!requestedBrandId ? mem.resolveBrand(brandLabel, 20)?.brand : null);
+          || (brandLabel.trim() ? mem.resolveBrand(brandLabel, 20)?.brand : null);
       }
     } catch { /* brand lookup is optional here */ }
+    if (videoFile && privateBrandAccess && (requestedBrandId || brandLabel.trim())) {
+      if (!brandRecord) {
+        return res.status(409).json({ error: 'Choose a valid Stage 1 brand profile before generating captions for a video.' });
+      }
+      const verificationFrames = await Promise.all(imageFiles.slice(0, 8).map(async (file) => ({
+        name: file.originalname,
+        mimetype: file.mimetype,
+        base64: (await fs.readFile(file.path)).toString('base64'),
+      })));
+      try {
+        const match = await assessVideoBrandMatch(brandRecord, verificationFrames, transcript);
+        if (match.verdict !== 'match') {
+          return res.status(409).json({
+            error: `Caption generation stopped: the video could not be confidently matched to Stage 1 brand “${brandRecord.name}”. ${match.reason} Go back to Stage 1, select the correct brand/account group, then try again.`,
+            brandCheck: { verdict: match.verdict, confidence: match.confidence, reason: match.reason },
+          });
+        }
+      } catch (error) {
+        console.warn('[ai] video brand verification failed:', String(error?.message || error).slice(0, 350));
+        return res.status(503).json({ error: 'The video brand check could not complete, so captions were not generated. Retry when video analysis is available.' });
+      }
+    }
     // What this user has already approved for this brand, so each generation
     // starts closer to their voice than the last one did.
     const learned = await learnedVoice(supabase, {
@@ -1507,7 +1529,7 @@ app.post('/api/ai/captions', requireUser, requireCaptionAiAccess, (req, res, nex
     });
     const out = await generateCaptions(req.body?.summary, {
       brand: brandLabel,
-      brandId: privateBrandAccess ? requestedBrandId : '',
+      brandId: privateBrandAccess ? (brandRecord?.id || requestedBrandId) : '',
       allowPrivateBrandData: privateBrandAccess,
       assetHint: req.body?.asset_description || req.body?.assetHint,
       creatorContext: privateBrandAccess ? '' : submittedBrandLabel,

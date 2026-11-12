@@ -1245,7 +1245,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
           <p>Review your platform content before publishing.</p>
         </header>
         <ProgressSteps current={3} onStep={onStep} />
-        {isTeamWorkflow && teamWarning && <p className="team-analysis-warning" role="status">{teamWarning} Automatic publishing is paused; review the draft before publishing.</p>}
+        {isTeamWorkflow && teamWarning && <p className="team-analysis-warning" role="status">{teamWarning} Driftpost will continue with available video frames and without an optional custom cover where needed.</p>}
         {isTeamWorkflow && teamTranscript && <details className="team-transcript"><summary>Review detected transcript{teamTranscript.length >= 5000 ? ' · first 5,000 characters' : ''}</summary><p>{teamTranscript}</p></details>}
         {connsError && !connections.length && (
           <div className="s3-work">

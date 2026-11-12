@@ -120,12 +120,15 @@ async function sampleVideo(file, count = 3) {
 export function requestCaptions(token, { brief, brand, brandId, files, tone, emoji, length, analysis = 'fast', only, platforms, frameCount = 3, teamVideo = false }) {
   return (async () => {
     const entries = files || [];
-    const analyzeMedia = analysis === 'analyze';
+    // Video captions always use video evidence, even when the user left the
+    // optional deep-analysis toggle off. This is also required for the
+    // pre-generation brand safety check on the server.
+    const analyzeMedia = analysis === 'analyze' || entries.some((f) => f?.raw?.type?.startsWith('video/'));
     const photos = analyzeMedia ? entries.filter((f) => f?.raw?.type?.startsWith('image/')) : [];
     const video = analyzeMedia ? entries.find((f) => f?.raw?.type?.startsWith('video/')) : null;
     // Three evenly-spaced frames retain the clip's story arc without paying
     // for redundant near-identical vision samples. Speech is still transcribed.
-    const frames = video ? await sampleVideo(video.raw, Math.max(1, Math.min(3, Number(frameCount) || 3))) : [];
+    const frames = video ? await sampleVideo(video.raw, Math.max(1, Math.min(8, Number(frameCount) || 8))) : [];
     // Preserve detail for user photos; sampled video frames use low-detail
     // vision because their job is to establish scenes/motion, not read tiny text.
     const selected = video ? [...photos.slice(0, 1), ...frames.map((frame) => ({ raw: frame, detail: 'low' }))] : photos.slice(0, 4);
@@ -142,7 +145,7 @@ export function requestCaptions(token, { brief, brand, brandId, files, tone, emo
       ...(only ? { only } : Array.isArray(platforms) && platforms.length
         ? { only: JSON.stringify([...new Set(platforms)]) }
         : {}),
-      ...(video && Number(frameCount) > 3 ? { video_frame_analysis: '1' } : {}),
+      ...(video ? { video_frame_analysis: '1' } : {}),
     };
     const compacted = await Promise.all(selected.map(async (photo) => ({ file: await compactImage(photo?.raw || photo), detail: photo?.detail })));
     compacted.filter(({ file }) => file).forEach(({ file, detail }) => {

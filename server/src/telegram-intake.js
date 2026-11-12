@@ -223,32 +223,30 @@ export async function processIntakeJob(supabase, job, options = {}) {
     await progress('preparing', 'Writing platform captions and preparing media');
     const frameImages = frames.map(({ name, mimetype, base64, detail }) => ({ name, mimetype, base64, detail: detail || (isCarousel ? 'high' : 'low') }));
     const brandTargets = targetGroups.filter((target) => target.brand?.id);
-    const assessments = await Promise.all([
-      options.assessBrand
-        ? Promise.all(brandTargets.map(async (target) => {
-          try { return { target, assessment: await options.assessBrand(target.brand, frames, transcript) }; }
-          catch (error) { return { target, assessment: { verdict: 'uncertain', confidence: 0, reason: `Automatic verification could not finish: ${String(error?.message || error).slice(0, 350)}` } }; }
-        }))
-        : Promise.resolve([]),
-    ]);
+    const assessments = options.assessBrand
+      ? await Promise.all(brandTargets.map(async (target) => {
+        try { return { target, assessment: await options.assessBrand(target.brand, frames, transcript) }; }
+        catch (error) { return { target, assessment: { verdict: 'uncertain', confidence: 0, reason: `Automatic verification could not finish: ${String(error?.message || error).slice(0, 350)}` } }; }
+      }))
+      : [];
     const failedAssessments = assessments.filter(({ assessment }) => assessment?.verdict !== 'match');
     if (failedAssessments.length) {
-      const reviews = failedAssessments.map(({ target, assessment }) => ({
+      const mismatches = failedAssessments.map(({ target, assessment }) => ({
         brand_id: target.brand.id,
         brand_name: target.brand.name,
         verdict: assessment?.verdict || 'uncertain',
         confidence: Number.isFinite(assessment?.confidence) ? assessment.confidence : 0,
         reason: String(assessment?.reason || 'The AI could not confirm this video belongs to the selected brand.').slice(0, 500),
       }));
-      const review = { ...reviews[0], reason: reviews.map((item) => `${item.brand_name}: ${item.reason}`).join(' | ').slice(0, 500), transcript_excerpt: String(transcript || '').slice(0, 2500), checked_at: new Date().toISOString() };
+      const reason = mismatches.map((item) => `${item.brand_name}: ${item.reason}`).join(' | ').slice(0, 500);
       const { error: reviewError } = await supabase.from(table).update({
-        status: 'failed', error: review.reason,
-        result: { ...(job.result || {}), brand_id: reviews[0].brand_id, review, brand_reviews: reviews },
+        status: 'failed', error: `Automatic brand check stopped this post to prevent publishing to the wrong account. ${reason} Correct the filename/account mapping and upload again.`,
+        result: { ...(job.result || {}), brand_reviews: mismatches },
         updated_at: new Date().toISOString(),
       }).eq('id', job.id).eq('status', 'processing');
-      if (reviewError) throw new Error('The brand review was triggered, but Driftpost could not save the review item.');
-      await notify(`Human review needed for ${reviews.map((item) => item.brand_name).join(', ')}: ${review.reason}`);
-      return { needsReview: true, assessments: reviews };
+      if (reviewError) throw new Error('Automatic brand verification stopped the post, but Driftpost could not save the result.');
+      await notify(`⛔ Not posted: the automatic brand check found a mismatch. ${reason} Correct the filename/account mapping and upload again.`);
+      return { stopped: true, assessments: mismatches };
     }
     // Each brand gets captions from its own complete saved profile. Generate
     // those independent caption sets concurrently without mixing brand facts.
@@ -270,8 +268,13 @@ export async function processIntakeJob(supabase, job, options = {}) {
     const covers = {};
     const defaultCoverFrame = frames[Math.floor(frames.length / 2)];
     for (const platform of platformsNeedingGeneratedCovers(isCarousel, platforms)) {
-      if (!defaultCoverFrame) throw new Error(`Could not select a default ${platform} cover frame.`);
-      covers[platform] = await makePlatformCover(defaultCoverFrame.path, platform, directory);
+      if (!defaultCoverFrame) throw new Error(`Could not extract a cover frame for ${platform}.`);
+      let coverError;
+      for (const frame of [...frames].sort((a, b) => Math.abs(frames.indexOf(a) - Math.floor(frames.length / 2)) - Math.abs(frames.indexOf(b) - Math.floor(frames.length / 2)))) {
+        try { covers[platform] = await makePlatformCover(frame.path, platform, directory); break; }
+        catch (error) { coverError = error; }
+      }
+      if (!covers[platform]) throw new Error(`Could not prepare a ${platform} cover from any extracted frame. ${String(coverError?.message || '').slice(0, 160)} Re-export the video as MP4 and upload again.`);
     }
 
     const sourcePrefix = options.sourcePrefix || 'telegram';
