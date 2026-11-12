@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { selectBrandEvidenceFrames } from '../src/ai.js';
+import { parseVideoCoverChoice, selectBrandEvidenceFrames } from '../src/ai.js';
 
 test('brand verification samples the beginning, middle, and end of available video frames', () => {
   const images = Array.from({ length: 8 }, (_, index) => ({
@@ -18,4 +18,11 @@ test('brand verification ignores unreadable or oversized frame payloads', () => 
     { name: 'valid.png', mimetype: 'image/png', base64: 'valid' },
   ]);
   assert.deepEqual(selected.map((image) => image.name), ['valid.png']);
+});
+
+test('AI cover choice accepts only an in-range zero-based frame index', () => {
+  assert.equal(parseVideoCoverChoice('{"index":2}', 8), 2);
+  assert.equal(parseVideoCoverChoice('{"index":8}', 8), null);
+  assert.equal(parseVideoCoverChoice('{"index":-1}', 8), null);
+  assert.equal(parseVideoCoverChoice('not json', 8), null);
 });

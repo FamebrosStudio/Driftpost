@@ -167,11 +167,12 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut, onOpenRe
     setPendingCoverCount(pendingCoverIds.current.size);
   };
 
-  const chooseDefaultCovers = async (frames, platforms, videoName) => {
+  const chooseDefaultCovers = async (frames, platforms, videoName, selectedFrameIndex = null) => {
     if (!frames.length) throw new Error('Driftpost could not extract any video frames for cover selection.');
-    // Pick the middle sampled frame deterministically. This avoids a separate
-    // model call; users can still upload a custom cover for any platform.
-    const frame = frames[Math.floor(frames.length / 2)];
+    const frameIndex = Number.isInteger(selectedFrameIndex) && selectedFrameIndex >= 0 && selectedFrameIndex < frames.length
+      ? selectedFrameIndex
+      : Math.floor(frames.length / 2);
+    const frame = frames[frameIndex];
     const covers = { thumb: null, instagram: null, facebook: null };
     const mappings = [
       ['youtube', 'thumb'], ['instagram', 'instagram'], ['facebook', 'facebook'],
@@ -307,9 +308,10 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut, onOpenRe
       const coverPlatforms = snapshot.platforms.filter((platform) => ['youtube', 'instagram', 'facebook'].includes(platform));
       const manualCoversComplete = coverPlatforms.every((platform) => snapshot.manualCovers[platform === 'youtube' ? 'thumb' : platform]);
       if (coverPlatforms.length && !manualCoversComplete) {
-        try { coverMap = await chooseDefaultCovers(generated.videoFrames || [], coverPlatforms, snapshot.file.name.replace(/\.[^.]+$/, '')); }
+        try { coverMap = await chooseDefaultCovers(generated.videoFrames || [], coverPlatforms, snapshot.file.name.replace(/\.[^.]+$/, ''), generated.videoCoverFrameIndex); }
         catch (coverError) { coverWarning = `Automatic cover preparation failed; publishing will continue without an optional custom cover. ${coverError.message || 'Could not prepare a cover.'}`; }
       }
+      coverWarning = [coverWarning, generated.videoCoverSelectionWarning].filter(Boolean).join(' ');
       coverMap = {
         thumb: snapshot.manualCovers.thumb || coverMap.thumb,
         instagram: snapshot.manualCovers.instagram || coverMap.instagram,

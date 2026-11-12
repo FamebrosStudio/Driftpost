@@ -21,7 +21,7 @@ import { setVideoThumbnail, uploadVideoResumable, validAccessToken } from './you
 import { deleteFacebookPost, discoverInstagramAccount, exchangeMetaCode, getMetaPages, longLivedToken, metaAuthorizationUrl, metaBusinessLoginUrl, publishFacebook, publishInstagram, subscribeInstagramWebhooks, sendInstagramPrivateReply, subscribeFacebookWebhooks } from './meta.js';
 import { createPkcePair, exchangeXCode, getXUser, xAuthorizationUrl } from './x.js';
 import { createXPost, deleteXPost, uploadXMedia, validXAccessToken } from './x-publish.js';
-import { assessVideoBrandMatch, generateCaptions } from './ai.js';
+import { assessVideoBrandMatch, chooseVideoCoverFrame, generateCaptions } from './ai.js';
 import { resolveProvider } from './ai-provider.js';
 import { uploadMediaFile, downloadMediaFile } from './media-io.js';
 import { scheduleIdentity } from './schedule-fields.js';
@@ -1520,6 +1520,21 @@ app.post('/api/ai/captions', requireUser, requireCaptionAiAccess, (req, res, nex
         return res.status(503).json({ error: 'The video brand check could not complete, so captions were not generated. Retry when video analysis is available.' });
       }
     }
+    let videoCoverFrameIndex = null;
+    let videoCoverSelectionWarning = '';
+    if (videoFile && privateBrandAccess && imageFiles.length) {
+      try {
+        videoCoverFrameIndex = await chooseVideoCoverFrame(await Promise.all(imageFiles.slice(0, 8).map(async (file) => ({
+          name: file.originalname,
+          mimetype: file.mimetype,
+          base64: (await fs.readFile(file.path)).toString('base64'),
+        }))));
+        if (videoCoverFrameIndex === null) videoCoverSelectionWarning = 'AI could not select a cover frame; a balanced middle frame will be used.';
+      } catch (error) {
+        videoCoverSelectionWarning = 'AI cover selection was unavailable; a balanced middle frame will be used.';
+        console.warn('[ai] video cover selection failed:', String(error?.message || error).slice(0, 300));
+      }
+    }
     // What this user has already approved for this brand, so each generation
     // starts closer to their voice than the last one did.
     const learned = await learnedVoice(supabase, {
@@ -1576,7 +1591,7 @@ app.post('/api/ai/captions', requireUser, requireCaptionAiAccess, (req, res, nex
     } catch {
       // Memory is best-effort; generation can continue if storage is unavailable.
     }
-    res.json({ ...out, captionMemoryStatus, transcriptLanguage, transcript, videoAnalysisWarning });
+    res.json({ ...out, captionMemoryStatus, transcriptLanguage, transcript, videoAnalysisWarning, videoCoverFrameIndex, videoCoverSelectionWarning });
   } catch (e) {
     const msg = String(e.message || 'AI failed');
     const isBrandMismatch = /^This prompt names .+, but the selected account is .+\./i.test(msg);
