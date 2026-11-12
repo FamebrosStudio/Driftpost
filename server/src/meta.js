@@ -10,15 +10,17 @@ const GRAPH = 'https://graph.facebook.com/v21.0';
 const FB_SCOPES = [...new Set((process.env.META_FB_SCOPES || 'pages_show_list,pages_read_engagement,pages_manage_posts,instagram_basic,instagram_content_publish,business_management')
   .split(',').map((s) => s.trim()).filter(Boolean))].join(',');
 
-export async function subscribeInstagramWebhooks({ igUserId, pageId, accessToken, fetchImpl = fetch }) {
+export async function subscribeInstagramWebhooks({ igUserId, pageId, accessToken, comments = true, messages = true, fetchImpl = fetch }) {
   const instagramId = String(igUserId || '').trim();
   const linkedPageId = String(pageId || '').trim();
   const token = String(accessToken || '').trim();
   if (!instagramId || !linkedPageId || !token) throw new Error('Reconnect the Instagram account before enabling Auto DM.');
-  // Instagram comment fields and legacy Page messaging use different edges.
+  // Instagram account events and linked Page events use different fields.
   // Page subscriptions reject the Instagram-only "comments" field.
+  const instagramFields = [...(comments ? ['comments'] : []), ...(messages ? ['messages'] : [])];
+  if (!instagramFields.length) throw new Error('Enable a comment or message rule.');
   for (const [accountId, fields] of [
-    [instagramId, 'comments,messages'],
+    [instagramId, instagramFields.join(',')],
     [linkedPageId, 'feed'],
   ]) {
     const body = new URLSearchParams({ subscribed_fields: fields, access_token: token });
@@ -33,7 +35,7 @@ export async function subscribeInstagramWebhooks({ igUserId, pageId, accessToken
       throw new Error(payload.error?.message || 'Meta did not subscribe this Instagram account to comment and message webhooks.');
     }
   }
-  return { fields: ['comments', 'messages'] };
+  return { fields: instagramFields };
 }
 
 export async function subscribeFacebookWebhooks({ pageId, accessToken, comments, messages, fetchImpl = fetch }) {

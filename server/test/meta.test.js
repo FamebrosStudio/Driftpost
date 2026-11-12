@@ -104,6 +104,14 @@ test('Facebook Login automation subscribes the linked Page to comment and messag
   });
 });
 
+test('Instagram subscription can enable only the requested webhook field', async () => {
+  await withFetch([{ success: true }, { success: true }], async (requests) => {
+    const result = await subscribeInstagramWebhooks({ igUserId: 'ig-account-1', pageId: 'linked-page-1', accessToken: 'page-token', comments: true, messages: false });
+    assert.deepEqual(result.fields, ['comments']);
+    assert.equal(requests[0].init.body.get('subscribed_fields'), 'comments');
+  });
+});
+
 test('Instagram webhook subscription surfaces Meta permission failures', async () => {
   await assert.rejects(subscribeInstagramWebhooks({
     igUserId: 'ig-account-1', pageId: 'linked-page-1', accessToken: 'page-token',

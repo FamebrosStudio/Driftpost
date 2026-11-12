@@ -27,7 +27,7 @@ import { uploadMediaFile, downloadMediaFile } from './media-io.js';
 import { scheduleIdentity } from './schedule-fields.js';
 import { deleteResultsStatus } from './delete-results.js';
 import { runAutomationAction } from './automation-events.js';
-import { automationComment, commentReplyEdge, commentReplyModes, incomingMessageReply, matchesCommentAutomationRule } from './meta-automation-payloads.js';
+import { automationComment, automationWebhookSubscriptions, commentAutomationDecision, commentReplyEdge, commentReplyModes, incomingMessageReply } from './meta-automation-payloads.js';
 import { eraseUserMedia } from './storage-cleanup.js';
 import { enabledInstagramCollaborators, instagramCaptionRequiredError, nonEmptyCaption } from './caption-guards.js';
 import { createTemporaryMediaUrl, isOwnedMediaPath } from './media-links.js';
@@ -266,15 +266,15 @@ app.post('/api/meta/webhook', express.raw({ type: 'application/json', limit: '1m
           const commentText = comment.text;
           if (!privateReplyEnabled && !publicReplyEnabled) continue;
           const keyword = String(rules.comment_keyword || '').trim();
-          const keywordMatched = !keyword || matchesCommentAutomationRule({ ...rules, comment_keyword: keyword }, commentText);
-          if ((!privateReplyEnabled && !publicReplyEnabled) || !keywordMatched) {
+          const decision = commentAutomationDecision(rules, commentText);
+          if (!decision.shouldRun) {
             console.info('[meta automation] comment did not match rule', {
               platform,
               connection: connection.id.slice(0, 8),
-              privateReplyEnabled,
-              publicReplyEnabled,
+              privateReplyEnabled: decision.privateReplyEnabled,
+              publicReplyEnabled: decision.publicReplyEnabled,
               keywordConfigured: !!keyword,
-              keywordMatched,
+              keywordMatched: decision.keywordMatched,
             });
             continue;
           }
@@ -1175,10 +1175,11 @@ app.put('/api/automations/:platform/:connectionId', requireUser, strictBurstLimi
     }
     try {
       const tokens = decryptJson(connection.encrypted_tokens);
+      const subscriptions = automationWebhookSubscriptions(rules);
       if (platform === 'facebook') {
-        await subscribeFacebookWebhooks({ pageId: connection.platform_account_id, accessToken: tokens.access_token, comments: rules.comment_enabled || rules.public_reply_enabled, messages: !!(rules.dm_keyword || rules.default_reply || rules.private_reply) });
+        await subscribeFacebookWebhooks({ pageId: connection.platform_account_id, accessToken: tokens.access_token, ...subscriptions });
       } else {
-        await subscribeInstagramWebhooks({ igUserId: connection.platform_account_id, pageId: tokens.page_id, accessToken: tokens.access_token });
+        await subscribeInstagramWebhooks({ igUserId: connection.platform_account_id, pageId: tokens.page_id, accessToken: tokens.access_token, ...subscriptions });
       }
     } catch (error) {
       return res.status(502).json({ error: `Could not subscribe this account to Meta webhooks: ${error.message || 'check account permissions and reconnect it'}` });

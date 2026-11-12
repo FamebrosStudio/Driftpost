@@ -30,11 +30,24 @@ export function commentReplyModes(rules = {}) {
   return { privateReplyEnabled, publicReplyEnabled };
 }
 
-export function matchesCommentAutomationRule(rules = {}, text = '') {
+export function commentAutomationDecision(rules = {}, text = '') {
   const { privateReplyEnabled, publicReplyEnabled } = commentReplyModes(rules);
   const keyword = String(rules.comment_keyword || '').trim();
-  return (privateReplyEnabled || publicReplyEnabled)
-    && (!keyword || matchesAutomationKeyword(text, keyword));
+  const keywordMatched = !keyword || matchesAutomationKeyword(text, keyword);
+  return {
+    privateReplyEnabled,
+    publicReplyEnabled,
+    keywordMatched,
+    shouldRun: (privateReplyEnabled || publicReplyEnabled) && keywordMatched,
+  };
+}
+
+export function automationWebhookSubscriptions(rules = {}) {
+  const { privateReplyEnabled, publicReplyEnabled } = commentReplyModes(rules);
+  return {
+    comments: privateReplyEnabled || publicReplyEnabled,
+    messages: !!(String(rules.dm_keyword || '').trim() || String(rules.default_reply || '').trim()),
+  };
 }
 
 const normalizeKeywordText = (value) => String(value || '').normalize('NFKD')
@@ -44,7 +57,8 @@ export function matchesAutomationKeyword(text, configured) {
   const normalizedText = normalizeKeywordText(text);
   const keywords = String(configured || '').split(/[,;|\n]+/)
     .map(normalizeKeywordText).filter(Boolean);
-  return !!normalizedText && keywords.some((keyword) => normalizedText.includes(keyword));
+  const searchableText = ` ${normalizedText} `;
+  return !!normalizedText && keywords.some((keyword) => searchableText.includes(` ${keyword} `));
 }
 
 export function incomingMessageReply(platform, senderId, text) {

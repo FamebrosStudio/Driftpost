@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { automationComment, commentReplyEdge, commentReplyModes, incomingMessageReply, matchesAutomationKeyword, matchesCommentAutomationRule } from '../src/meta-automation-payloads.js';
+import { automationComment, automationWebhookSubscriptions, commentAutomationDecision, commentReplyEdge, commentReplyModes, incomingMessageReply, matchesAutomationKeyword } from '../src/meta-automation-payloads.js';
 
 const comment = { field: 'feed', value: { item: 'comment', verb: 'add', comment_id: 'post_comment', post_id: 'post', parent_id: 'post', from: { id: 'customer' }, message: 'PRICE' } };
 test('Facebook feed comments are normalized for matching and use the comment replies edge', () => {
@@ -28,6 +28,8 @@ test('automation keywords match case, punctuation, accents, and any configured a
   assert.equal(matchesAutomationKeyword('PRICE, please!', 'price'), true);
   assert.equal(matchesAutomationKeyword('I want the CAFÉ details', 'hours; cafe | price'), true);
   assert.equal(matchesAutomationKeyword('Can you share the menu?', 'hours, price'), false);
+  assert.equal(matchesAutomationKeyword('I love this apple pie', 'pp'), false);
+  assert.equal(matchesAutomationKeyword('PP details please', 'pp'), true);
   assert.equal(matchesAutomationKeyword('Anything at all', ''), false);
 });
 
@@ -38,8 +40,15 @@ test('private comment DMs and public comment replies can be enabled independentl
 });
 
 test('public-only comment rules run without enabling comment DMs', () => {
-  assert.equal(matchesCommentAutomationRule({ comment_enabled: false, public_reply_enabled: true, public_reply: 'Thanks!', comment_keyword: '' }, 'Any comment'), true);
-  assert.equal(matchesCommentAutomationRule({ comment_enabled: false, public_reply_enabled: true, public_reply: 'Thanks!', comment_keyword: 'price' }, 'PRICE please'), true);
-  assert.equal(matchesCommentAutomationRule({ comment_enabled: false, public_reply_enabled: true, public_reply: 'Thanks!', comment_keyword: 'price' }, 'Hours please'), false);
-  assert.equal(matchesCommentAutomationRule({ comment_enabled: false, public_reply_enabled: false, comment_keyword: '' }, 'Any comment'), false);
+  assert.equal(commentAutomationDecision({ comment_enabled: false, public_reply_enabled: true, public_reply: 'Thanks!', comment_keyword: '' }, 'Any comment').shouldRun, true);
+  assert.equal(commentAutomationDecision({ comment_enabled: false, public_reply_enabled: true, public_reply: 'Thanks!', comment_keyword: 'price' }, 'PRICE please').shouldRun, true);
+  assert.equal(commentAutomationDecision({ comment_enabled: false, public_reply_enabled: true, public_reply: 'Thanks!', comment_keyword: 'price' }, 'Hours please').shouldRun, false);
+  assert.deepEqual(commentAutomationDecision({ comment_enabled: false, public_reply_enabled: false, comment_keyword: '' }, 'Any comment'), { privateReplyEnabled: false, publicReplyEnabled: false, keywordMatched: true, shouldRun: false });
+});
+
+test('webhook subscriptions follow enabled triggers rather than leftover reply text', () => {
+  assert.deepEqual(automationWebhookSubscriptions({ public_reply_enabled: true, public_reply: 'Thanks', private_reply: 'Old DM text' }), { comments: true, messages: false });
+  assert.deepEqual(automationWebhookSubscriptions({ comment_enabled: true, private_reply: 'Private reply' }), { comments: true, messages: false });
+  assert.deepEqual(automationWebhookSubscriptions({ default_reply: 'Inbox reply' }), { comments: false, messages: true });
+  assert.deepEqual(automationWebhookSubscriptions({}), { comments: false, messages: false });
 });
