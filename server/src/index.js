@@ -1133,8 +1133,9 @@ app.get('/api/instagram/collaborators', requireUser, connectionsLimit, igLookupL
   });
 });
 
-app.get('/api/automations/:platform', requireUser, connectionsLimit, burstLimit, async (req, res) => {
+app.get('/api/automations/:platform', requireUser, connectionsLimit, burstLimit, async (req, res, next) => {
   const platform = req.params.platform;
+  if (platform === 'google-business') return next();
   if (!['instagram', 'facebook'].includes(platform)) return res.status(404).json({ error: 'Unsupported automation platform' });
   const { data: connections, error: connectionError } = await supabase.from('platform_connections').select('id, account_name').eq('user_id', req.user.id).eq('platform', platform);
   if (connectionError) return res.status(500).json({ error: 'Could not load connected accounts' });
@@ -1144,8 +1145,9 @@ app.get('/api/automations/:platform', requireUser, connectionsLimit, burstLimit,
   res.json({ accounts: (connections || []).map((account) => ({ id: account.id, name: account.account_name, enabled: !!byId.get(account.id)?.enabled, rules: byId.get(account.id)?.rules || {} })), webhook_ready: !!(process.env.META_WEBHOOK_VERIFY_TOKEN && process.env.META_APP_SECRET) });
 });
 
-app.put('/api/automations/:platform/:connectionId', requireUser, strictBurstLimit, async (req, res) => {
+app.put('/api/automations/:platform/:connectionId', requireUser, strictBurstLimit, async (req, res, next) => {
   const platform = req.params.platform;
+  if (platform === 'google-business') return next();
   if (!['instagram', 'facebook'].includes(platform)) return res.status(404).json({ error: 'Unsupported automation platform' });
   const { data: connection } = await supabase.from('platform_connections')
     .select('id, platform_account_id, encrypted_tokens')
