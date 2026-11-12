@@ -576,6 +576,7 @@ export default function App() {
     return Boolean(path && !PUB_PAGES.some((page) => page.id === path) && !/^approve\/[0-9a-f-]{36}$/i.test(path) && !/^console(?:\/|$)/.test(path));
   });
   const { online, checking, retry } = useConnectivity();
+  const signedInConsoleHome = Boolean(session && window.location.pathname === '/');
   const host = typeof window === 'undefined' ? '' : window.location.hostname;
   const monitorServer = Boolean(import.meta.env.PROD && host && !['localhost', '127.0.0.1', '::1'].includes(host));
   const serverReady = useServerReadiness(monitorServer, apiRequestUrl('/health'));
@@ -645,7 +646,7 @@ export default function App() {
 
   // Everyone lands on the landing page first; console is reached
   // by clicking "Enter console" from there.
-  if (entry === 'landing') return keepConnectivity(<Landing session={session} pubPage={pubPage} setPubPage={setPubPage} onEnter={() => session ? setEntry('console') : setEntry('auth')} />);
+  if (entry === 'landing' && !signedInConsoleHome) return keepConnectivity(<Landing session={session} pubPage={pubPage} setPubPage={setPubPage} onEnter={() => session ? setEntry('console') : setEntry('auth')} />);
   if (entry === 'auth') return keepConnectivity(<Auth mode={mode} setMode={setMode} onBack={() => setEntry('landing')} />);
   if (!session) return keepConnectivity(<Auth mode={mode} setMode={setMode} onBack={() => setEntry('landing')} />);
   // console
