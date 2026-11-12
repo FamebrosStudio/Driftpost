@@ -567,12 +567,13 @@ export default function App() {
   const readApprovalId = () => window.location.pathname.match(/^\/approve\/([0-9a-f-]{36})\/?$/i)?.[1] || '';
   const [approvalId, setApprovalId] = useState(() => typeof window !== 'undefined' ? readApprovalId() : '');
   const [mode, setMode] = useState('login');
-  const [entry, setEntry] = useState('landing');
+  const isConsolePath = () => /^\/console(?:\/|$)/.test(window.location.pathname);
+  const [entry, setEntry] = useState(() => typeof window !== 'undefined' && isConsolePath() ? 'console' : 'landing');
   const [pubPage, setPubPageState] = useState(() => (typeof window !== 'undefined' ? hashPage() : 'home'));
   const [unknownRoute, setUnknownRoute] = useState(() => {
     if (typeof window === 'undefined') return false;
     const path = window.location.pathname.replace(/^\/+|\/+$/g, '');
-    return Boolean(path && !PUB_PAGES.some((page) => page.id === path) && !/^approve\/[0-9a-f-]{36}$/i.test(path));
+    return Boolean(path && !PUB_PAGES.some((page) => page.id === path) && !/^approve\/[0-9a-f-]{36}$/i.test(path) && !/^console(?:\/|$)/.test(path));
   });
   const { online, checking, retry } = useConnectivity();
   const host = typeof window === 'undefined' ? '' : window.location.hostname;
@@ -588,7 +589,8 @@ export default function App() {
       const path = window.location.pathname.replace(/^\/+|\/+$/g, '');
       setApprovalId(readApprovalId());
       setPubPageState(pageFromUrl());
-      setUnknownRoute(Boolean(path && !PUB_PAGES.some((page) => page.id === path) && !/^approve\/[0-9a-f-]{36}$/i.test(path)));
+      setUnknownRoute(Boolean(path && !PUB_PAGES.some((page) => page.id === path) && !/^approve\/[0-9a-f-]{36}$/i.test(path) && !/^console(?:\/|$)/.test(path)));
+      if (/^\/console(?:\/|$)/.test(window.location.pathname)) setEntry('console');
     };
     window.addEventListener('popstate', onUrl);
     window.addEventListener('hashchange', onUrl);

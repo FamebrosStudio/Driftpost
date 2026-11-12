@@ -1,4 +1,4 @@
-import React, { lazy, Suspense, useState } from 'react';
+import React, { lazy, Suspense, useEffect, useState } from 'react';
 import PageLoading from './PageLoading.jsx';
 import { isAiAccount } from './ai-access.js';
 
@@ -26,6 +26,16 @@ function loadStage() {
     return 'connect';
   } catch { return 'connect'; }
 }
+
+const CONSOLE_PATHS = {
+  '/console': ['home', ''], '/console/calendar': ['calendar', ''], '/console/analytics': ['analytics', ''],
+  '/console/automations': ['automations', ''], '/console/history': ['history', ''],
+  '/console/accounts': ['accounts', ''], '/console/team-video': ['team-video', ''],
+  '/console/create': ['create', '1'], '/console/create/1': ['create', '1'],
+  '/console/create/2': ['create', '2'], '/console/create/3': ['create', '3'],
+};
+const consoleRoute = () => CONSOLE_PATHS[window.location.pathname.replace(/\/$/, '') || '/console'] || ['home', ''];
+const routeFor = (view, stage) => view === 'create' ? `/console/create/${stage || '1'}` : `/console/${view === 'home' ? '' : view}`;
 
 function BackgroundPublishNotice({ notice, onDismiss }) {
   if (!notice) return null;
@@ -59,8 +69,10 @@ function BackgroundPublishNotice({ notice, onDismiss }) {
 
 export default function Console({ session, onSwitchAccount, onSignOut }) {
   void onSwitchAccount;
-  const [stage, setStage] = useState(loadStage);
+  const initialRoute = consoleRoute();
+  const [stage, setStage] = useState(() => initialRoute[1] || loadStage());
   const [view, setView] = useState(() => {
+    if (initialRoute[0] !== 'home' || initialRoute[1]) return initialRoute[0];
     try {
       const destination = localStorage.getItem('driftpost-after-google-business-connect');
       if (destination === 'automations') { localStorage.removeItem('driftpost-after-google-business-connect'); return destination; }
@@ -69,6 +81,19 @@ export default function Console({ session, onSwitchAccount, onSignOut }) {
   });
   const [createModePicker, setCreateModePicker] = useState(false);
   const [backgroundPublishNotice, setBackgroundPublishNotice] = useState(null);
+  useEffect(() => {
+    const sync = () => {
+      const [nextView, nextStage] = consoleRoute();
+      setView(nextView);
+      if (nextStage) {
+        setStage(nextStage);
+        try { localStorage.setItem('driftpost-stage', nextStage); } catch {}
+      }
+      setCreateModePicker(false);
+    };
+    window.addEventListener('popstate', sync);
+    return () => window.removeEventListener('popstate', sync);
+  }, []);
   // Stages are strings everywhere ('connect' | '1' | '2' | '3') so the
   // state and localStorage can never drift apart on a number/string mismatch.
   const go = (next) => {
@@ -79,6 +104,7 @@ export default function Console({ session, onSwitchAccount, onSignOut }) {
       else localStorage.setItem('driftpost-stage', n);
     } catch {}
     try { window.scrollTo(0, 0); } catch {}
+    try { window.history.pushState({}, '', routeFor('create', n)); } catch {}
   };
   const navigate = (next) => {
     try { window.scrollTo(0, 0); } catch {}
@@ -86,6 +112,7 @@ export default function Console({ session, onSwitchAccount, onSignOut }) {
       if (isAiAccount(session.user?.email)) {
         setCreateModePicker(true);
         setView('choose-create-mode');
+        try { window.history.pushState({}, '', '/console/create'); } catch {}
         return;
       }
       setView('create');
@@ -98,6 +125,7 @@ export default function Console({ session, onSwitchAccount, onSignOut }) {
     }
     setCreateModePicker(false);
     setView(next);
+    try { window.history.pushState({}, '', routeFor(next, stage)); } catch {}
   };
   const chooseBasic = () => {
     setCreateModePicker(false);
