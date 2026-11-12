@@ -14,7 +14,7 @@ import { pipeline } from 'node:stream/promises';
 import { createWriteStream } from 'node:fs';
 import { createClient } from '@supabase/supabase-js';
 import { decryptJson, encryptJson, signState, verifyState } from './crypto.js';
-import { driveIntakeAuthorizationUrl, exchangeGoogleCode, getGoogleIdentity, getYouTubeChannel, youtubeAuthorizationUrl } from './google.js';
+import { businessProfileAuthorizationUrl, driveIntakeAuthorizationUrl, exchangeBusinessProfileCode, exchangeGoogleCode, getGoogleIdentity, getYouTubeChannel, listBusinessProfileLocations, listBusinessReviews, refreshBusinessProfileToken, replyBusinessReview, shouldAutoReplyToBusinessReview, youtubeAuthorizationUrl } from './google.js';
 import { learnedVoice, markLatestUsed, markUsed, recordGeneration } from './captionMemory.js';
 import { consentState, forgetUser, hasPersonalisationConsent, recordConsent, POLICY_VERSION, PURPOSES } from './consent.js';
 import { setVideoThumbnail, uploadVideoResumable, validAccessToken } from './youtube-upload.js';
@@ -1187,6 +1187,107 @@ app.put('/api/automations/:platform/:connectionId', requireUser, strictBurstLimi
   if (error) return res.status(500).json({ error: 'Could not save automation. Apply the latest Supabase migrations.' });
   res.json({ ok: true, enabled, rules });
 });
+
+app.post('/api/oauth/google-business/start', requireUser, oauthLimit, (req, res) => {
+  if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) return res.status(503).json({ error: 'Google OAuth is not configured on the API.' });
+  if (!process.env.GOOGLE_BUSINESS_REDIRECT_URI) return res.status(503).json({ error: 'Set GOOGLE_BUSINESS_REDIRECT_URI to the Google Business Profile callback URL /api/oauth/google-business/callback.' });
+  res.json({ url: businessProfileAuthorizationUrl(signState({ purpose: 'google-business-profile', userId: req.user.id, nonce: crypto.randomUUID(), exp: Date.now() + 10 * 60 * 1000 })) });
+});
+
+app.get('/api/oauth/google-business/callback', callbackLimit, async (req, res) => {
+  const back = new URL(FRONTEND_HOME);
+  try {
+    if (req.query.error) throw new Error(String(req.query.error_description || req.query.error));
+    const state = verifyState(req.query.state);
+    if (state.purpose !== 'google-business-profile' || !state.userId) throw new Error('Invalid Google Business Profile OAuth state.');
+    burnState(state);
+    const tokens = await exchangeBusinessProfileCode(String(req.query.code || ''));
+    const identity = await getGoogleIdentity(tokens.access_token);
+    if (!identity.verified) throw new Error('Use a verified Google account with access to the Business Profile locations.');
+    if (!tokens.refresh_token) throw new Error('Google did not return offline access. Revoke Driftpost access in Google Account settings and connect again.');
+    const locations = await listBusinessProfileLocations(tokens.access_token);
+    if (!locations.length) throw new Error('No accessible Business Profile locations were found. Check location permissions and API access approval.');
+    const { data: connection, error } = await supabase.from('google_business_connections').upsert({ user_id: state.userId, google_email: identity.email, encrypted_tokens: encryptJson({ access_token: tokens.access_token, refresh_token: tokens.refresh_token }), token_expires_at: tokens.expires_in ? new Date(Date.now() + tokens.expires_in * 1000).toISOString() : null, updated_at: new Date().toISOString() }, { onConflict: 'user_id,google_email' }).select('id').single();
+    if (error) throw error;
+    for (const location of locations) {
+      const { error: locationError } = await supabase.from('google_business_locations').upsert({ connection_id: connection.id, user_id: state.userId, account_id: location.account_id, location_id: location.location_id, resource_name: location.resource_name, location_name: location.title, address: location.address, updated_at: new Date().toISOString() }, { onConflict: 'connection_id,account_id,location_id', ignoreDuplicates: false });
+      if (locationError) throw locationError;
+    }
+    back.searchParams.set('connected', 'google-business');
+  } catch (e) { back.searchParams.set('oauth_error', String(e.message || 'Google Business Profile connection failed').slice(0, 400)); }
+  res.redirect(back.toString());
+});
+
+app.get('/api/automations/google-business', requireUser, connectionsLimit, burstLimit, async (req, res) => {
+  const { data, error } = await supabase.from('google_business_locations').select('id, location_name, address, enabled, rules, google_business_connections(google_email)').eq('user_id', req.user.id).order('location_name');
+  if (error) return res.status(500).json({ error: 'Google Business Profile storage is not ready. Apply migration 016_google_business_reviews.sql.' });
+  res.json({ locations: (data || []).map((item) => ({ ...item, google_email: item.google_business_connections?.google_email || '' })) });
+});
+
+app.put('/api/automations/google-business/:locationId', requireUser, strictBurstLimit, async (req, res) => {
+  const { data: location, error: lookupError } = await supabase.from('google_business_locations').select('id').eq('id', req.params.locationId).eq('user_id', req.user.id).maybeSingle();
+  if (lookupError || !location) return res.status(404).json({ error: 'Business Profile location not found.' });
+  const input = req.body || {};
+  const rules = { mode: input.mode === 'ai' ? 'ai' : 'template', reply_text: String(input.reply_text || '').trim().slice(0, 4000), minimum_rating: Math.max(1, Math.min(5, Number(input.minimum_rating) || 1)), only_without_reply: true };
+  const enabled = input.enabled === true;
+  if (enabled && rules.mode === 'template' && !rules.reply_text) return res.status(400).json({ error: 'Add a reply template before enabling automatic replies.' });
+  if (enabled && rules.mode === 'ai') return res.status(400).json({ error: 'AI review replies are not enabled yet. Choose a reviewed template instead.' });
+  const { error } = await supabase.from('google_business_locations').update({ enabled, rules, updated_at: new Date().toISOString() }).eq('id', location.id).eq('user_id', req.user.id);
+  if (error) return res.status(500).json({ error: 'Could not save the review automation.' });
+  res.json({ ok: true, enabled, rules });
+});
+
+let googleBusinessPollRunning = false;
+async function pollGoogleBusinessReviews() {
+  if (googleBusinessPollRunning) return;
+  googleBusinessPollRunning = true;
+  try {
+    const { data: locations, error } = await supabase.from('google_business_locations')
+      .select('id, user_id, account_id, location_id, enabled, rules, google_business_connections(id, encrypted_tokens)')
+      .eq('enabled', true).limit(500);
+    if (error) throw error;
+    for (const location of locations || []) {
+      const account = location.google_business_connections;
+      if (!account?.encrypted_tokens) continue;
+      try {
+        let tokens = decryptJson(account.encrypted_tokens);
+        let accessToken = tokens.access_token;
+        if (!accessToken || !location.account_id || !location.location_id) continue;
+        let reviews;
+        try { reviews = await listBusinessReviews(accessToken, location.account_id, location.location_id); }
+        catch (apiError) {
+          if (!tokens.refresh_token) throw apiError;
+          const refreshed = await refreshBusinessProfileToken(tokens.refresh_token);
+          tokens = { ...tokens, access_token: refreshed.access_token };
+          accessToken = refreshed.access_token;
+          await supabase.from('google_business_connections').update({ encrypted_tokens: encryptJson(tokens), token_expires_at: refreshed.expires_in ? new Date(Date.now() + refreshed.expires_in * 1000).toISOString() : null }).eq('id', account.id);
+          reviews = await listBusinessReviews(accessToken, location.account_id, location.location_id);
+        }
+        const rules = location.rules || {};
+        for (const review of reviews) {
+          if (!shouldAutoReplyToBusinessReview(review, rules)) continue;
+          const reply = String(rules.reply_text || '').trim();
+          if (!reply) continue;
+          const eventId = crypto.createHash('sha256').update(`${location.id}:${review.name}:${review.updateTime || review.createTime || ''}`).digest('hex');
+          const { error: claimError } = await supabase.from('google_business_review_events').insert({ event_id: eventId, user_id: location.user_id, location_row_id: location.id });
+          if (claimError?.code === '23505') continue;
+          if (claimError) throw claimError;
+          try {
+            const reviewId = String(review.name).split('/').pop();
+            await replyBusinessReview(accessToken, location.account_id, location.location_id, reviewId, reply);
+          } catch (replyError) {
+            await supabase.from('google_business_review_events').delete().eq('event_id', eventId);
+            throw replyError;
+          }
+        }
+      } catch (locationError) {
+        console.warn('[google business automation] location poll failed', { location: location.id, error: String(locationError.message || locationError).slice(0, 300) });
+      }
+    }
+  } catch (error) { console.error('[google business automation] poll failed', String(error.message || error).slice(0, 300)); }
+  finally { googleBusinessPollRunning = false; }
+}
+setInterval(() => { void pollGoogleBusinessReviews(); }, 5 * 60 * 1000).unref();
 
 // Read account-level metrics from the official platform APIs using the
 // already-connected account token. A platform may reject metrics if the

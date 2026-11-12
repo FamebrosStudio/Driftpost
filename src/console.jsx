@@ -60,7 +60,13 @@ function BackgroundPublishNotice({ notice, onDismiss }) {
 export default function Console({ session, onSwitchAccount, onSignOut }) {
   void onSwitchAccount;
   const [stage, setStage] = useState(loadStage);
-  const [view, setView] = useState('home');
+  const [view, setView] = useState(() => {
+    try {
+      const destination = localStorage.getItem('driftpost-after-google-business-connect');
+      if (destination === 'automations') { localStorage.removeItem('driftpost-after-google-business-connect'); return destination; }
+    } catch {}
+    return 'home';
+  });
   const [createModePicker, setCreateModePicker] = useState(false);
   const [backgroundPublishNotice, setBackgroundPublishNotice] = useState(null);
   // Stages are strings everywhere ('connect' | '1' | '2' | '3') so the

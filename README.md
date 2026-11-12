@@ -25,9 +25,10 @@ npm run dev   # http://localhost:10000
 2. **Auth → Providers → enable Email + Google.**
    - Google: create OAuth client in Google Cloud Console, paste client ID/secret into Supabase Auth → Google provider.
    - Supabase → Auth → URL Configuration → add `http://localhost:5173` and your prod URL to Redirect URLs.
-3. **SQL Editor → run every migration** in `supabase/migrations/` in numeric order (`001` through `015`).
+3. **SQL Editor → run every migration** in `supabase/migrations/` in numeric order (`001` through `016`).
 4. **Storage → create public bucket** named `driftpost-media` (required for Instagram: API uploads the reel/photo there to get a public URL for Meta).
 5. **Google Cloud (YouTube):** APIs & Services → enable *YouTube Data API v3* → OAuth consent screen (External) → scopes `youtube.upload`, `youtube.readonly` → Credentials → Web app → redirect URI = `http://localhost:10000/api/oauth/youtube/callback` (add prod URL later). Copy ID/secret into `server/.env` as `GOOGLE_*`.
+   - **Google Business Profile reviews:** request and receive Google Business Profile API access approval, then enable the required Business Profile APIs, including Business Information and Google My Business API. Add a separate OAuth redirect URI `http://localhost:10000/api/oauth/google-business/callback` and set `GOOGLE_BUSINESS_REDIRECT_URI` to it (production uses the same path on the Railway API). OAuth requests `business.manage`. In Automations, connect one or more Google accounts; each accessible business location appears separately and has its own reply template, minimum star rating, and on/off switch. Review automation polls every five minutes and skips reviews with an existing owner reply. Google controls API approval and eligibility.
 6. **Meta (Facebook + Instagram):** developers.facebook.com → Create App (Business) → add *Facebook Login* → Valid OAuth redirect = `http://localhost:10000/api/oauth/meta/callback`. You need:
    - a Facebook **Page**
    - an Instagram **Business/Creator account linked to that Page** (Page Settings → Linked accounts), otherwise Instagram connection will not appear — this is a Meta requirement, not a bug.
