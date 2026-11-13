@@ -1878,22 +1878,37 @@ app.get('/api/intake/drive/jobs', requireUser, async (req, res) => {
   res.json({ jobs: data || [] });
 });
 
+const LEGACY_BRAND_REVIEW_ERROR = 'Automatic brand verification stopped the post, but Driftpost could not save the result.';
+const hasBrandReviewData = (job) => !['stopped', 'send'].includes(job?.result?.review_decision?.action) && (
+  Array.isArray(job?.result?.brand_reviews) || (
+    job?.status === 'failed' && String(job?.error || '').includes(LEGACY_BRAND_REVIEW_ERROR)
+  )
+);
+
 app.post('/api/intake/drive/jobs/:jobId/review', requireUser, async (req, res) => {
   if (!canUsePrivateBrandData(req.user)) return res.status(403).json({ error: 'Private team access required.' });
   const jobId = String(req.params.jobId || '');
   const { data: job, error: jobError } = await supabase.from('google_drive_video_jobs')
-    .select('id, owner_user_id, status, result, account_name')
+    .select('id, owner_user_id, status, result, account_name, error')
     .eq('id', jobId).eq('owner_user_id', req.user.id).maybeSingle();
   if (jobError) return res.status(503).json({ error: 'Could not load this review item.' });
-  if (!job || !['review', 'failed'].includes(job.status) || !Array.isArray(job.result?.brand_reviews)) return res.status(409).json({ error: 'This item is no longer awaiting a brand decision.' });
+  if (!job || !['review', 'failed'].includes(job.status) || !hasBrandReviewData(job)) return res.status(409).json({ error: 'This item is no longer awaiting a brand decision.' });
   const action = String(req.body?.action || '');
   if (action === 'stop') {
-    const { error } = await supabase.from('google_drive_video_jobs').update({
+    const result = { ...job.result, review_decision: { action: 'stopped', user_id: req.user.id, decided_at: new Date().toISOString() } };
+    const update = await supabase.from('google_drive_video_jobs').update({
       status: 'stopped', error: null,
-      result: { ...job.result, review_decision: { action: 'stopped', user_id: req.user.id, decided_at: new Date().toISOString() } },
+      result,
       updated_at: new Date().toISOString(),
     }).eq('id', job.id).eq('owner_user_id', req.user.id).in('status', ['review', 'failed']);
-    if (error) return res.status(503).json({ error: 'Could not stop this intake job.' });
+    if (update.error) {
+      // Migration 015 adds `stopped`; remain functional on an older schema by
+      // storing the decision in the existing `failed` status instead.
+      const fallback = await supabase.from('google_drive_video_jobs').update({
+        status: 'failed', error: null, result, updated_at: new Date().toISOString(),
+      }).eq('id', job.id).eq('owner_user_id', req.user.id).in('status', ['review', 'failed']);
+      if (fallback.error) return res.status(503).json({ error: 'Could not stop this intake job.' });
+    }
     return res.json({ ok: true, status: 'stopped' });
   }
   if (action !== 'send') return res.status(400).json({ error: 'Choose Send or Stop.' });
@@ -1934,11 +1949,11 @@ app.post('/api/intake/drive/jobs/:jobId/review', requireUser, async (req, res) =
 app.get('/api/intake/drive/jobs/:jobId/media', requireUser, async (req, res) => {
   if (!canUsePrivateBrandData(req.user)) return res.status(403).json({ error: 'Private team access required.' });
   const { data: job, error } = await supabase.from('google_drive_video_jobs')
-    .select('id, drive_file_id, owner_user_id, status, file_name, result')
+    .select('id, drive_file_id, owner_user_id, status, file_name, result, error')
     .eq('id', req.params.jobId).eq('owner_user_id', req.user.id).maybeSingle();
   if (error) return res.status(503).json({ error: 'Could not load this private review item.' });
   if (!job) return res.status(404).json({ error: 'Review item not found.' });
-  if (!['review', 'failed'].includes(job.status) || !(job.result?.brand_reviews?.length || job.result?.review)) return res.status(409).json({ error: 'This media is not waiting for a brand decision.' });
+  if (!['review', 'failed'].includes(job.status) || !(hasBrandReviewData(job) || job.result?.review)) return res.status(409).json({ error: 'This media is not waiting for a brand decision.' });
   try {
     let mediaJob = job;
     let mediaName = job.file_name || 'review-video.mp4';

@@ -118,6 +118,30 @@ function matchConnections(connections, accountName) {
   return matches;
 }
 
+export async function saveBrandReview(supabase, table, job, reason, result) {
+  const reviewUpdate = await supabase.from(table).update({
+    status: 'review', error: reason, result, updated_at: new Date().toISOString(),
+  }).eq('id', job.id).eq('status', 'processing').select('id').maybeSingle();
+  if (!reviewUpdate.error && reviewUpdate.data) return 'review';
+
+  // Older deployments may not yet have migration 015's `review` status.
+  // Preserve the full review payload under the already-supported `failed`
+  // status so the inbox remains usable while the migration is pending.
+  if (reviewUpdate.error) {
+    console.warn('[intake] review status update failed; saving review payload as failed:', String(reviewUpdate.error.message || reviewUpdate.error).slice(0, 220));
+  }
+  const fallbackUpdate = await supabase.from(table).update({
+    status: 'failed',
+    error: `${reason} Review details were saved; apply migration 015 to enable the dedicated review status.`,
+    result,
+    updated_at: new Date().toISOString(),
+  }).eq('id', job.id).eq('status', 'processing').select('id').maybeSingle();
+  if (fallbackUpdate.error || !fallbackUpdate.data) {
+    throw new Error(`Brand verification stopped this post, but Driftpost could not save the review details${fallbackUpdate.error?.message ? `: ${String(fallbackUpdate.error.message).slice(0, 180)}` : '.'}`);
+  }
+  return 'failed';
+}
+
 export async function processIntakeJob(supabase, job, options = {}) {
   const ownerId = job.owner_user_id;
   const table = options.table || 'telegram_video_jobs';
@@ -230,18 +254,13 @@ export async function processIntakeJob(supabase, job, options = {}) {
       const reason = requestedNames.length
         ? `The filename destination “${requestedNames.join(', ')}” did not safely map to a connected brand/account. AI compared video evidence against the saved brand catalogue; verify the suggested brand and destination before sending.`
         : 'The filename did not contain a usable brand/account name. AI compared video evidence against the saved brand catalogue; select the correct brand and destination before sending.';
-      const { error: reviewError } = await supabase.from(table).update({
-        status: 'review', error: reason,
-        result: {
-          ...(job.result || {}),
-          brand_reviews: [{ brand_id: '', brand_name: requestedNames.join(', ') || 'Unmapped filename', verdict: 'uncertain', confidence: 0, reason }],
-          suggested_brands: suggestedBrands,
-          transcript: !!transcript,
-          speechWarning,
-        },
-        updated_at: new Date().toISOString(),
-      }).eq('id', job.id).eq('status', 'processing');
-      if (reviewError) throw new Error('The filename could not be mapped, but Driftpost could not save the video for review.');
+      await saveBrandReview(supabase, table, job, reason, {
+        ...(job.result || {}),
+        brand_reviews: [{ brand_id: '', brand_name: requestedNames.join(', ') || 'Unmapped filename', verdict: 'uncertain', confidence: 0, reason }],
+        suggested_brands: suggestedBrands,
+        transcript: !!transcript,
+        speechWarning,
+      });
       await notify(`⛔ Not posted: the video filename did not safely match a connected brand. ${suggestedBrands.length ? `AI suggested: ${suggestedBrands.map((item) => item.name).join(', ')}. ` : ''}Open Video review to choose the correct brand and accounts.`);
       return { stopped: true, reason, suggestedBrands };
     }
@@ -272,12 +291,9 @@ export async function processIntakeJob(supabase, job, options = {}) {
       let suggestedBrands = [];
       try { suggestedBrands = await options.suggestBrands?.(frames, transcript, mismatches.map((item) => item.brand_id)) || []; }
       catch (error) { console.warn('[intake] alternative brand suggestions unavailable:', String(error?.message || error).slice(0, 220)); }
-      const { error: reviewError } = await supabase.from(table).update({
-        status: 'review', error: `Automatic brand check stopped this post to prevent publishing to the wrong account. ${reason}`,
-        result: { ...(job.result || {}), brand_reviews: mismatches, suggested_brands: suggestedBrands },
-        updated_at: new Date().toISOString(),
-      }).eq('id', job.id).eq('status', 'processing');
-      if (reviewError) throw new Error('Automatic brand verification stopped the post, but Driftpost could not save the result.');
+      await saveBrandReview(supabase, table, job, `Automatic brand check stopped this post to prevent publishing to the wrong account. ${reason}`, {
+        ...(job.result || {}), brand_reviews: mismatches, suggested_brands: suggestedBrands,
+      });
       await notify(`⛔ Not posted: the automatic brand check found a mismatch. ${reason} Correct the filename/account mapping and upload again.`);
       return { stopped: true, assessments: mismatches };
     }

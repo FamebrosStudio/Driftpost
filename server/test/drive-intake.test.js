@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { platformsNeedingGeneratedCovers } from '../src/telegram-intake.js';
+import { platformsNeedingGeneratedCovers, saveBrandReview } from '../src/telegram-intake.js';
 import {
   CAROUSEL_IMAGE_MIME_TYPES,
   carouselImageLimitBytes,
@@ -18,6 +18,31 @@ test('video cover generation is limited to platforms that support selected cover
     platformsNeedingGeneratedCovers(false, ['facebook', 'x', 'instagram', 'facebook']),
     ['facebook', 'instagram'],
   );
+});
+
+test('brand review details survive deployments that have not applied the review-status migration', async () => {
+  const updates = [];
+  const supabase = {
+    from: () => ({
+      update(payload) {
+        updates.push(payload);
+        const query = {
+          eq() { return query; },
+          select() { return query; },
+          async maybeSingle() {
+            return payload.status === 'review'
+              ? { data: null, error: { message: 'status check constraint violation' } }
+              : { data: { id: 'held-job' }, error: null };
+          },
+        };
+        return query;
+      },
+    }),
+  };
+  const result = { brand_reviews: [{ brand_id: 'brand-1', reason: 'uncertain' }] };
+  assert.equal(await saveBrandReview(supabase, 'google_drive_video_jobs', { id: 'held-job' }, 'AI held this video.', result), 'failed');
+  assert.deepEqual(updates.map((update) => update.status), ['review', 'failed']);
+  assert.deepEqual(updates[1].result, result);
 });
 
 test('drive filenames with a duplicate upload marker resolve the account', () => {

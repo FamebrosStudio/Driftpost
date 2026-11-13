@@ -5,7 +5,11 @@ import { readStageSelection, saveCaptionDraft } from '../stage2/captionDraftScop
 import { readVault, writeVault } from '../stage2/mediaVault.js';
 import { WorkspaceNav } from './Workspace.jsx';
 
-const isHeld = (job) => job?.status === 'review' || (job?.status === 'failed' && Array.isArray(job?.result?.brand_reviews));
+const LEGACY_BRAND_REVIEW_ERROR = 'Automatic brand verification stopped the post, but Driftpost could not save the result.';
+const isHeld = (job) => !['stopped', 'send'].includes(job?.result?.review_decision?.action) && (
+  job?.status === 'review'
+  || (job?.status === 'failed' && (Array.isArray(job?.result?.brand_reviews) || String(job?.error || '').includes(LEGACY_BRAND_REVIEW_ERROR)))
+);
 const emptyCaptions = () => ({ instagram: { caption: '' }, facebook: { message: '' }, youtube: { title: '', description: '', tags: '' }, x: { text: '' } });
 
 export default function TeamVideoReviewPage({ session, onNavigate, onSignOut }) {
