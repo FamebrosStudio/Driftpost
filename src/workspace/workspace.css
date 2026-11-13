@@ -173,6 +173,17 @@
 .ws-analytics-stats { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 .ws-analytics-actions { display: flex; gap: 8px; }
 .ws-live-panel { margin-bottom: 14px; }
+.ws-account-picker { display: grid; grid-template-columns: 180px minmax(220px, 480px) minmax(0, 1fr); align-items: center; gap: 12px; margin-bottom: 12px; }
+.ws-account-picker > label { color: var(--muted); font-size: 11px; font-weight: 650; }
+.ws-account-picker select { width: 100%; min-height: 42px; padding: 0 12px; border: 1px solid var(--line-hard); border-radius: 8px; color: var(--ink); background: var(--bg); font: inherit; font-size: 11px; }
+.ws-account-picker select:focus-visible { border-color: var(--go); outline: 2px solid color-mix(in srgb, var(--go) 22%, transparent); outline-offset: 1px; }
+.ws-account-picker > p { margin: 0; color: var(--muted); font-size: 10px; }
+.ws-account-picker > p button { display: inline-flex; align-items: center; gap: 4px; border: 0; color: var(--go); background: transparent; font: inherit; font-weight: 700; cursor: pointer; }
+.ws-account-picker > p.ws-account-picker-error { grid-column: 2 / -1; color: var(--danger, #e5484d); }
+.ws-account-prompt { display: flex; align-items: center; gap: 12px; min-height: 105px; }
+.ws-account-prompt > div { min-width: 0; }
+.ws-account-prompt b { font-size: 12px; }
+.ws-account-prompt p { margin: 5px 0 0; color: var(--muted); font-size: 10px; line-height: 1.5; }
 .ws-top-content { margin-bottom: 14px; }
 .ws-top-content .ws-panel-head { align-items: flex-start; }
 .ws-top-content .ws-panel-head p { margin: 6px 0 0; color: var(--muted); font-size: 10px; line-height: 1.5; }
@@ -187,6 +198,14 @@
 .ws-content-copy small, .ws-content-interactions small { display: block; margin-top: 4px; color: var(--faint); font-size: 9px; }
 .ws-content-interactions { min-width: 78px; text-align: right; }
 .ws-content-interactions b { color: var(--ink); font-size: 16px; font-variant-numeric: tabular-nums; }
+.ws-content-breakdown { display: flex; grid-column: 3 / -1; flex-wrap: wrap; gap: 8px 18px; padding: 1px 0 2px; }
+.ws-content-breakdown span, .ws-analytics-interaction-summary span { display: flex; flex-direction: column; gap: 3px; }
+.ws-content-breakdown b { color: var(--ink); font-size: 10px; font-variant-numeric: tabular-nums; }
+.ws-content-breakdown small, .ws-analytics-interaction-summary small { color: var(--faint); font-size: 8px; }
+.ws-analytics-interaction-summary { display: flex; flex-wrap: wrap; gap: 16px 28px; }
+.ws-analytics-interaction-summary b { font-size: 20px; font-variant-numeric: tabular-nums; }
+.ws-selected-account-values { padding: 14px 0 2px; }
+.ws-selected-account-error { margin: 0; }
 .ws-content-open { display: inline-flex; align-items: center; gap: 5px; color: var(--go); font-size: 9px; font-weight: 650; text-decoration: none; white-space: nowrap; }
 .ws-content-open:hover { text-decoration: underline; }
 .ws-content-state { padding: 15px 0 2px; color: var(--muted); font-size: 11px; }
@@ -401,6 +420,9 @@
   .ws-upcoming-row > div small { max-width: 180px; }
   .ws-analytics-stats .ws-stat { min-height: 118px; }
   .ws-analytics-actions { flex-wrap: wrap; }
+  .ws-account-picker { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+  .ws-account-picker > p.ws-account-picker-error { grid-column: 1; }
+  .ws-account-prompt { align-items: flex-start; }
   .ws-top-content .ws-panel-head { align-items: stretch; flex-direction: column; gap: 12px; }
   .ws-content-period { align-self: flex-start; }
   .ws-account-details > summary { align-items: flex-start; padding: 14px 12px; }
@@ -441,7 +463,7 @@
   .ws-content-period { max-width: 100%; }
   .ws-content-period button { padding: 0 7px; font-size: 8px; }
   .ws-content-empty { align-items: flex-start; }
-  .ws-account-details > summary .ws-live-status { display: none; }
+  .ws-analytics-interaction-summary { gap: 14px 20px; }
   .ws-panel { padding: 13px 11px; }
   .ws-calendar-panel { overflow-x: auto; }
   .ws-calendar-grid { min-width: 0; }
