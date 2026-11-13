@@ -9,6 +9,7 @@
 #root .stage2,
 #root .stage3,
 #root .connect,
+#root .welcome,
 #root .team-video-page,
 #root .approval-page {
   --bg: #050709;
@@ -20,15 +21,18 @@
   --faint: #77858c;
   --line: #1b252b;
   --line-hard: #34434a;
-  --hover: #65dfff12;
-  --go: #62d9f3;
-  --go-ink: #061014;
-  --warm: #f0b66b;
-  --warm-bg: #f0b66b1a;
-  --cool: #62d9f3;
-  --cool-bg: #62d9f31a;
-  --accent-soft: #62d9f3;
-  --accent-ink: #061014;
+  --hover: #79c9ad12;
+  --go: #79c9ad;
+  --go-ink: #101714;
+  --acc: var(--go);
+  --acc-ink: var(--go-ink);
+  --acc-soft: #79c9ad1a;
+  --warm: #c8a478;
+  --warm-bg: #c8a4781a;
+  --cool: #79c9ad;
+  --cool-bg: #79c9ad1a;
+  --accent-soft: var(--go);
+  --accent-ink: var(--go-ink);
   --danger: #ff7777;
   --ok: #73d8ae;
   color: var(--ink);
@@ -42,6 +46,7 @@
 [data-theme="light"] #root .stage2,
 [data-theme="light"] #root .stage3,
 [data-theme="light"] #root .connect,
+[data-theme="light"] #root .welcome,
 [data-theme="light"] #root .team-video-page,
 [data-theme="light"] #root .approval-page {
   --bg: #f1f4f5;
@@ -53,15 +58,18 @@
   --faint: #697b82;
   --line: #d3dde0;
   --line-hard: #9eafb5;
-  --hover: #008cac12;
-  --go: #007e99;
+  --hover: #267c6312;
+  --go: #267c63;
   --go-ink: #ffffff;
-  --warm: #8e5010;
-  --warm-bg: #ad64101a;
-  --cool: #007e99;
-  --cool-bg: #007e9914;
-  --accent-soft: #007e99;
-  --accent-ink: #ffffff;
+  --acc: var(--go);
+  --acc-ink: var(--go-ink);
+  --acc-soft: #267c6318;
+  --warm: #805a2e;
+  --warm-bg: #805a2e18;
+  --cool: #267c63;
+  --cool-bg: #267c6314;
+  --accent-soft: var(--go);
+  --accent-ink: var(--go-ink);
   --danger: #b4232f;
   --ok: #087650;
 }
@@ -99,6 +107,7 @@
 #root .ws,
 #root .hist-shell,
 #root .connect,
+#root .welcome,
 #root .stage1,
 #root .stage2,
 #root .stage3,
@@ -110,11 +119,7 @@
 .ws {
   min-height: 100vh;
   min-width: 0;
-  background-image:
-    linear-gradient(to right, #82d5e608 1px, transparent 1px),
-    linear-gradient(to bottom, #82d5e608 1px, transparent 1px);
-  background-size: 48px 48px;
-  background-position: center top;
+  background-image: none;
 }
 
 #root .ws .ws-topbar,
@@ -163,11 +168,11 @@
 .s2-badge,
 .s3-badge {
   color: var(--go) !important;
-  font-family: var(--mono);
-  font-size: 10px !important;
+  font-family: inherit;
+  font-size: 11px !important;
   font-weight: 600;
-  letter-spacing: .16em !important;
-  text-transform: uppercase !important;
+  letter-spacing: .04em !important;
+  text-transform: none !important;
 }
 
 #root .ws .ws-heading h1,
@@ -206,19 +211,15 @@
 
 #root .ws .ws-welcome {
   min-height: 250px;
-  background:
-    radial-gradient(ellipse at 88% 70%, #06232d 0, transparent 42%),
-    linear-gradient(115deg, #090d10, #0a1014 66%, #0a151a) !important;
+  background: var(--panel) !important;
 }
 
 [data-theme="light"] #root .ws .ws-welcome {
-  background:
-    radial-gradient(ellipse at 88% 70%, #c9edf3 0, transparent 42%),
-    linear-gradient(115deg, #fbfcfc, #f2f7f8 68%, #eaf5f7) !important;
+  background: var(--panel) !important;
 }
 
 #root .ws .ws-welcome-art {
-  opacity: .36 !important;
+  display: none !important;
 }
 
 #root .ws .ws-stat {
@@ -229,6 +230,134 @@
 #root .ws .ws-stat > strong {
   color: var(--ink);
   font-variant-numeric: tabular-nums;
+}
+
+/* The workflow pages loaded on demand; pin their theme tokens here so their
+   legacy per-page defaults cannot leak purple into the shared interface. */
+#root :is(.connect, .welcome, .stage1, .stage2, .stage3) {
+  --acc: var(--go);
+  --acc-ink: var(--go-ink);
+  --acc-soft: color-mix(in srgb, var(--go) 13%, transparent);
+}
+
+#root :is(.connect, .welcome, .stage1, .stage2, .stage3) :is(
+  .cn-head h1, .welcome-head h1, .stage1-head h1, .s2-head h1, .s3-head h1
+) {
+  letter-spacing: -.04em;
+}
+
+#root :is(.connect, .welcome, .stage1, .stage2, .stage3) :is(
+  .cn-badge, .welcome-steps, .stage1-badge, .s2-badge, .s3-badge
+) {
+  letter-spacing: .04em;
+}
+
+#root :is(.stage1, .stage2, .stage3) :is(
+  .s1-step.cur .dot, .s2-step.cur .dot, .s3-step.cur .dot,
+  .s1-step.done .dot, .s2-step.done .dot, .s3-step.done .dot,
+  .s1-track i, .s2-track i, .s3-track i,
+  .s1-primary, .continue-btn, .s2-generate, .s2-done,
+  .s3-tab.on, .s3-review-all, .s3-acts button.go, .s3-postall
+) {
+  background-color: var(--go) !important;
+  border-color: var(--go) !important;
+  color: var(--go-ink) !important;
+}
+
+#root :is(.stage1, .stage2, .stage3) :is(
+  .s1-step.cur, .s2-step.cur, .s3-step.cur,
+  .s1-badge, .s2-badge, .s3-badge,
+  .s3-pill.work, .s3-link
+) {
+  color: var(--go) !important;
+}
+
+#root :is(.connect, .welcome, .stage1, .stage2, .stage3) :is(
+  input:not([type="checkbox"]):not([type="radio"]),
+  select, textarea
+) {
+  min-height: 42px;
+  border-color: var(--line-hard);
+  background-color: var(--input);
+  color: var(--ink);
+}
+
+#root :is(.connect, .welcome, .stage1, .stage2, .stage3) :is(
+  input:not([type="checkbox"]):not([type="radio"]),
+  select, textarea
+):focus-visible {
+  border-color: var(--go) !important;
+  outline: 2px solid color-mix(in srgb, var(--go) 28%, transparent);
+  outline-offset: 1px;
+  box-shadow: none !important;
+}
+
+#root :is(.connect, .welcome, .stage1, .stage2, .stage3) :is(
+  .setup-card, .cn-card, .cn-brands, .s2-sec, .s3-work
+) {
+  border-width: 1px;
+}
+
+#root :is(.ws, .hist-shell, .connect, .welcome, .stage1, .stage2, .stage3, .team-video-page, .approval-page) :is(
+  .ws-eyebrow, .cn-col h4, .s1-col h4, .s2-setting label, .s3-field > span
+) {
+  color: var(--muted) !important;
+  font-family: inherit !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+}
+
+#root :is(.connect, .welcome, .stage1, .stage2, .stage3) :is(
+  .s1-primary, .continue-btn, .cn-connect, .cn-next, .s2-generate, .s2-done,
+  .s3-review-all, .s3-acts button.go, .s3-postall
+) {
+  background: var(--go) !important;
+  border-color: var(--go) !important;
+  color: var(--go-ink) !important;
+  font-weight: 650 !important;
+  box-shadow: none !important;
+}
+
+#root :is(.connect, .welcome, .stage1, .stage2, .stage3) :is(
+  .s1-primary:disabled, .continue-btn:disabled, .cn-connect:disabled, .cn-next:disabled,
+  .s2-generate:disabled, .s2-done:disabled, .s3-review-all:disabled,
+  .s3-acts button.go:disabled, .s3-postall:disabled
+) {
+  opacity: .45;
+}
+
+#root :is(.connect, .welcome, .stage1, .stage2, .stage3) :is(
+  .cn-empty, .s1-drop, .s2-drop, .s3-grey-note
+) {
+  border-color: var(--line-hard);
+  background: color-mix(in srgb, var(--panel2) 72%, transparent);
+}
+
+#root .stage2 .s2-sec,
+#root .stage3 .s3-work,
+#root .stage1 .setup-card,
+#root .connect .cn-card {
+  padding: 20px;
+}
+
+#root .stage2 .s2-settings {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+@media (max-width: 600px) {
+  #root .stage2 .s2-settings {
+    grid-template-columns: 1fr;
+  }
+
+  #root .stage1 .setup-card,
+  #root .stage2 .s2-sec,
+  #root .stage3 .s3-work,
+  #root .connect .cn-card {
+    padding: 16px;
+  }
 }
 
 #root .ws .ws-primary,
@@ -418,48 +547,509 @@
   }
 }
 
-/* Console interactions are expressed through focus, selection, and status,
-   never pointer hover. Keep keyboard focus and functional state changes. */
-#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) :hover {
-  animation: none !important;
-  box-shadow: none !important;
-  filter: none !important;
-  text-decoration: none !important;
-  transform: none !important;
-  transition: none !important;
-}
-
-#root :is(.connect, .stage1, .stage2, .stage3, .hist, .ws, .team-video-page, .approval-page, .cg) :is(
-  .cn-card, .cn-brands, .cn-brand-row, .setup-card, .s1-modal, .ws-welcome,
-  .s2-sec, .s2-out, .s2-editor, .s2-video-editor-page, .s2-video-editor-workspace,
-  .s2-audio-track, .s2-clip-track, .s3-work, .s3-cover-picker, .s3-sched,
-  .s3-approval-choice, .hist-row, .hist-activity, .hist-delete-modal,
-  .hist-delete-option, .ws-panel, .ws-stat, .ws-metric-card, .approval-card,
-  .automation-account, .team-video-panel, .team-account-group, .team-account,
-  .team-file-field, .team-option, .team-video-job, .ws-campaign-account,
-  .bg-publish-notice, .bg-publish-notice__account, .cg-card
-) {
-  transition: none !important;
-}
-
-#root :is(.connect, .stage1, .stage2, .stage3, .hist, .ws, .team-video-page, .approval-page, .cg) :is(
-  .cn-card, .cn-brands, .cn-brand-row, .setup-card, .s1-modal, .ws-welcome,
-  .s2-sec, .s2-out, .s2-editor, .s2-video-editor-page, .s2-video-editor-workspace,
-  .s2-audio-track, .s2-clip-track, .s3-work, .s3-cover-picker, .s3-sched,
-  .s3-approval-choice, .hist-row, .hist-activity, .hist-delete-modal,
-  .hist-delete-option, .ws-panel, .ws-stat, .ws-metric-card, .approval-card,
-  .automation-account, .team-video-panel, .team-account-group, .team-account,
-  .team-file-field, .team-option, .team-video-job, .ws-campaign-account,
-  .bg-publish-notice, .bg-publish-notice__account, .cg-card
-)::after,
-#root :is(.connect, .stage1, .stage2, .stage3, .hist, .ws, .team-video-page, .approval-page, .cg) button::after {
-  content: none !important;
-  animation: none !important;
-  transition: none !important;
-}
-
+/* Intentional motion: quick feedback, gentle page entry, no decorative loops. */
 #root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) :is(
   a, button, input, select, textarea, [role="button"], [tabindex]
 ) {
-  transition: none !important;
+  transition: color 150ms ease, background-color 150ms ease,
+    border-color 150ms ease, opacity 150ms ease, transform 150ms ease;
+}
+
+#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) :is(button, [role="button"]):not(:disabled):active {
+  transform: scale(.985);
+}
+
+#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) :is(.ws-panel, .ws-stat, .ws-metric-card, .hist-row, .cn-card, .setup-card, .s2-sec, .s3-work, .team-video-panel, .approval-card) {
+  transition: border-color 180ms ease, background-color 180ms ease;
+}
+
+#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) :is(.ws-panel, .ws-stat, .ws-metric-card, .hist-row, .cn-card, .setup-card, .s2-sec, .s3-work, .team-video-panel, .approval-card):hover {
+  border-color: var(--line-hard) !important;
+}
+
+@keyframes console-page-enter {
+  from { opacity: 0; transform: translateY(9px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes console-control-enter {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+#root .ws-main,
+#root .hist-in,
+#root .team-video-main,
+#root .team-review-main,
+#root :is(.stage1-in, .stage2-in, .stage3-in) {
+  animation: console-page-enter 360ms cubic-bezier(.2, .7, .25, 1) both;
+}
+
+#root .ws-utility-dock { animation: console-control-enter 240ms ease-out both; }
+#root .ws .ws-stat { animation: console-page-enter 380ms cubic-bezier(.2, .7, .25, 1) both; }
+#root .ws .ws-stat:nth-child(2) { animation-delay: 45ms; }
+#root .ws .ws-stat:nth-child(3) { animation-delay: 90ms; }
+
+@media (prefers-reduced-motion: reduce) {
+  #root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) *,
+  #root .ws-main, #root .hist-in, #root .team-video-main, #root .team-review-main,
+  #root :is(.stage1-in, .stage2-in, .stage3-in) {
+    animation: none !important;
+    scroll-behavior: auto !important;
+    transition-duration: .01ms !important;
+  }
+}
+
+/* Desktop publishing desk: fixed rail, anchored content, no document overflow. */
+#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100vw;
+  min-width: 0;
+  height: 100dvh;
+  min-height: 0;
+  overflow: hidden;
+}
+
+#root :is(.ws, .hist-shell) > .ws-topbar,
+#root :is(.stage1, .stage2, .stage3) > .ws-topbar {
+  position: fixed !important;
+  inset: 0 auto 0 0 !important;
+  z-index: 35;
+  box-sizing: border-box;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  gap: 18px;
+  width: 244px !important;
+  min-width: 0;
+  height: 100dvh !important;
+  min-height: 0 !important;
+  padding: 22px 14px 14px !important;
+  overflow: hidden;
+  border: 0 !important;
+  border-right: 1px solid var(--line) !important;
+  background: var(--panel) !important;
+  backdrop-filter: none !important;
+  transition: width 240ms cubic-bezier(.2, .7, .25, 1), padding 200ms ease;
+}
+
+#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar[data-collapsed="true"] {
+  width: 76px !important;
+  align-items: center !important;
+  padding-right: 8px !important;
+  padding-left: 8px !important;
+}
+
+#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-wordmark {
+  width: 100%;
+  min-height: 42px;
+  align-self: stretch;
+  justify-content: flex-start;
+  overflow: hidden;
+  padding: 0 6px;
+}
+
+#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-wordmark img.logo-img {
+  width: 154px;
+  max-height: 40px;
+}
+
+#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar[data-collapsed="true"] .ws-wordmark {
+  width: 42px;
+  align-self: center;
+  padding: 0;
+}
+
+#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar[data-collapsed="true"] .ws-wordmark img.logo-img {
+  width: 42px;
+  height: 36px;
+  object-fit: cover;
+  object-position: left center;
+}
+
+#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-overview-link {
+  display: inline-flex;
+  min-height: 38px;
+  align-items: center;
+  gap: 8px;
+  padding: 0 10px;
+  border: 1px solid var(--line);
+  color: var(--muted);
+  background: transparent;
+  text-decoration: none;
+}
+
+#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-nav {
+  display: flex !important;
+  flex: 1 1 auto;
+  flex-basis: auto;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 3px;
+  min-width: 0;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 0;
+  scrollbar-width: none;
+}
+
+#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-nav::-webkit-scrollbar { display: none; }
+
+#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-nav button {
+  box-sizing: border-box;
+  display: flex;
+  flex: 0 0 auto;
+  justify-content: flex-start;
+  width: 100%;
+  min-width: 0;
+  min-height: 42px;
+  gap: 11px;
+  padding: 0 11px;
+  overflow: hidden;
+  border: 1px solid transparent;
+  color: var(--muted);
+  text-align: left;
+  white-space: nowrap;
+}
+
+#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-nav button.active {
+  border-color: var(--line);
+  border-left: 2px solid var(--go);
+  color: var(--ink);
+  background: var(--panel2);
+}
+
+#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-nav button.ws-nav-create {
+  margin: 0 0 7px;
+  border-color: var(--go);
+  color: var(--go-ink);
+  background: var(--go);
+}
+
+#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar[data-collapsed="true"] .ws-nav button {
+  justify-content: center;
+  padding: 0;
+}
+
+#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar[data-collapsed="true"] :is(.ws-nav-label, .ws-collapse-label, .ws-user-email) {
+  display: none !important;
+}
+
+#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-user {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  max-width: none;
+  min-width: 0;
+  margin-top: auto;
+  padding: 12px 5px 2px;
+  border-top: 1px solid var(--line);
+}
+
+#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-user-email {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-collapse-toggle {
+  display: inline-flex !important;
+  flex: 0 0 auto;
+  width: 100%;
+  min-height: 40px;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 9px;
+  margin-top: 0;
+  padding: 0 10px;
+  border: 1px solid var(--line-hard);
+  color: var(--muted);
+  background: transparent;
+}
+
+#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar[data-collapsed="true"] .ws-collapse-toggle {
+  width: 42px;
+  justify-content: center;
+  padding: 0;
+}
+
+#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-collapse-toggle > span:first-child {
+  width: 16px;
+  flex: 0 0 16px;
+  font-size: 19px;
+  line-height: 1;
+  text-align: center;
+}
+
+#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar[data-collapsed="true"] .ws-user {
+  justify-content: center;
+  padding-right: 0;
+  padding-left: 0;
+}
+
+#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar[data-collapsed="true"] .ws-user-dot {
+  width: 36px;
+  height: 36px;
+}
+
+#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-utility-dock {
+  position: fixed;
+  inset: 14px 18px auto auto;
+  z-index: 50;
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  border: 1px solid var(--line-hard);
+  background: var(--panel);
+  box-shadow: 0 8px 28px #00000018;
+  animation: console-control-enter 240ms ease-out both;
+}
+
+#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-utility-dock button {
+  min-height: 38px;
+  padding: 0 13px;
+  border: 0;
+  color: var(--muted);
+  background: transparent;
+  font: inherit;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-utility-dock button + button {
+  border-left: 1px solid var(--line);
+}
+
+#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-utility-dock button:hover:not(:disabled) {
+  color: var(--ink);
+  background: var(--panel2);
+}
+
+#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar[data-collapsed="true"] .ws-user-email {
+  display: none;
+}
+
+#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar[data-collapsed="true"] .ws-utility-dock .ws-theme-toggle > span[aria-hidden="true"] {
+  display: inline !important;
+}
+
+#root .ws > .ws-main,
+#root .ws > .connect,
+#root .hist-shell > .hist,
+#root .stage1-in,
+#root .stage2-in,
+#root .stage3-in,
+#root .team-video-main,
+#root .team-review-main {
+  box-sizing: border-box;
+  width: calc(100% - 244px);
+  height: 100dvh;
+  min-width: 0;
+  min-height: 0;
+  margin-left: 244px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  padding-top: 76px;
+  padding-bottom: 32px;
+}
+
+#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3):has(> .ws-topbar[data-collapsed="true"]) :is(.ws-main, .connect, .hist, .stage1-in, .stage2-in, .stage3-in, .team-video-main, .team-review-main) {
+  width: calc(100% - 76px);
+  margin-left: 76px;
+}
+
+#root .ws-main { padding-right: clamp(24px, 4vw, 64px); padding-left: clamp(24px, 4vw, 64px); }
+#root .hist-shell > .hist { height: 100dvh; overflow-y: auto; }
+#root .hist > .hist-in { box-sizing: border-box; width: 100%; max-width: 1320px; min-height: 100%; margin: 0 auto; padding: 76px clamp(24px, 4vw, 64px) 44px; }
+#root .stage1-in, #root .stage2-in, #root .stage3-in { max-width: none; margin-right: auto; margin-left: 244px; padding-right: clamp(24px, 4vw, 64px); padding-left: clamp(24px, 4vw, 64px); }
+#root :is(.stage1, .stage2, .stage3):has(> .ws-topbar[data-collapsed="true"]) :is(.stage1-in, .stage2-in, .stage3-in) { margin-left: 76px; }
+#root .ws.team-video-page > .team-video-main,
+#root .team-review-main { width: calc(100% - 244px); margin-left: 244px; padding-right: clamp(24px, 4vw, 64px); padding-left: clamp(24px, 4vw, 64px); }
+#root .ws:has(> .ws-topbar[data-collapsed="true"]) > .team-video-main,
+#root .ws:has(> .ws-topbar[data-collapsed="true"]) > .team-review-main { width: calc(100% - 76px); margin-left: 76px; }
+
+#root :is(.stage1, .stage2, .stage3) :is(.continue-bar, .s2-continue-bar, .s3-pub) {
+  left: 244px;
+}
+#root :is(.stage1, .stage2, .stage3):has(> .ws-topbar[data-collapsed="true"]) :is(.continue-bar, .s2-continue-bar, .s3-pub) {
+  left: 76px;
+}
+
+/* A quieter card system: clear hierarchy, crisp corners, no floating effects. */
+#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) :is(
+  .ws-panel, .ws-stat, .ws-metric-card, .hist-panel, .hist-row, .hist-activity,
+  .cn-card, .cn-brands, .setup-card, .s2-sec, .s2-work, .s3-work,
+  .team-video-panel, .team-review-list, .team-review-detail, .team-review-job,
+  .approval-card, .cg-card
+) {
+  border: 1px solid var(--line) !important;
+  border-radius: 0 !important;
+  background: var(--panel) !important;
+  box-shadow: none !important;
+}
+
+#root .ws .ws-stat-grid { gap: 12px; background: transparent; border: 0; }
+#root .ws .ws-stat {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(96px, auto);
+  grid-template-rows: auto 1fr auto;
+  align-items: start;
+  min-height: 166px;
+  padding: 18px 18px 16px;
+  border-top: 1px solid var(--line-hard) !important;
+  background: var(--panel) !important;
+}
+#root .ws .ws-stat > span { grid-column: 1 / -1; color: var(--muted); font-size: 12px; }
+#root .ws .ws-stat > strong { grid-column: 1; align-self: center; margin: 12px 0; font-size: clamp(34px, 3vw, 44px); line-height: .95; letter-spacing: -.06em; }
+#root .ws .ws-stat > small { grid-column: 2; align-self: center; margin: 0; color: var(--faint); font-size: 11px; text-align: right; }
+#root .ws .ws-stat > button {
+  grid-column: 1 / -1;
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 0;
+  padding: 13px 0 0;
+  border-top: 1px solid var(--line);
+  color: var(--ink);
+  text-align: left;
+}
+#root .ws .ws-welcome { min-height: 205px; padding: clamp(22px, 3vw, 34px); }
+#root .ws .ws-welcome h2 { max-width: 17ch; font-size: clamp(24px, 3vw, 34px); letter-spacing: -.05em; }
+#root .ws .ws-primary:hover, #root .ws .ws-secondary:hover {
+  filter: none !important;
+  transform: none !important;
+  border-color: var(--go) !important;
+}
+#root .team-video-page, #root .team-video-review-page { background: var(--bg) !important; }
+
+@media (max-width: 760px) {
+  #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar,
+  #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar[data-collapsed="true"] {
+    inset: auto 0 0 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 5px;
+    padding: 7px 8px max(8px, env(safe-area-inset-bottom)) !important;
+    border: 0 !important;
+    border-top: 1px solid var(--line) !important;
+    background: color-mix(in srgb, var(--panel) 97%, transparent) !important;
+    backdrop-filter: none !important;
+  }
+
+  #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-wordmark,
+  #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-overview-link,
+  #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-user {
+    display: none !important;
+  }
+
+  #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-nav {
+    display: grid !important;
+    order: 0;
+    flex: none;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-auto-rows: 48px;
+    gap: 2px;
+    width: 100%;
+    max-height: 98px;
+    overflow: hidden;
+  }
+
+  #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-nav button,
+  #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar[data-collapsed="true"] .ws-nav button {
+    flex: none;
+    flex-direction: row;
+    justify-content: flex-start;
+    min-width: 0;
+    min-height: 44px;
+    gap: 6px;
+    padding: 0 6px;
+    font-size: 10px;
+  }
+
+  #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-nav-label {
+    display: block !important;
+    min-width: 0;
+    max-width: none;
+    overflow: hidden;
+    font-size: 9px;
+    line-height: 1.15;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-nav-label::after { content: none !important; }
+
+  #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-collapse-toggle,
+  #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar[data-collapsed="true"] .ws-collapse-toggle {
+    order: 1;
+    align-self: center;
+    width: auto;
+    min-height: 28px;
+    justify-content: center;
+    margin: 0;
+    padding: 0 12px;
+    border: 0;
+    border-top: 1px solid var(--line);
+    font-size: 10px;
+  }
+
+  #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar[data-collapsed="true"] .ws-collapse-label { display: inline !important; }
+
+  #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-utility-dock {
+    inset: 10px 10px auto auto;
+  }
+
+  #root .ws > .ws-main,
+  #root .ws > .connect,
+  #root .hist-shell > .hist,
+  #root .stage1-in,
+  #root .stage2-in,
+  #root .stage3-in,
+  #root .team-video-main,
+  #root .team-review-main,
+  #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3):has(> .ws-topbar[data-collapsed="true"]) :is(.ws-main, .connect, .hist, .stage1-in, .stage2-in, .stage3-in, .team-video-main, .team-review-main) {
+    width: 100%;
+    height: 100dvh;
+    margin-left: 0;
+    padding: 70px 16px 154px;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  #root .hist > .hist-in { width: 100%; padding: 70px 16px 154px; }
+  #root .stage1-in, #root .stage2-in, #root .stage3-in { padding-right: 16px; padding-left: 16px; }
+  #root :is(.stage1, .stage2, .stage3) :is(.continue-bar, .s2-continue-bar, .s3-pub) {
+    right: 0;
+    bottom: calc(140px + env(safe-area-inset-bottom));
+    left: 0;
+  }
+  #root .stage1-in, #root .stage2-in, #root .stage3-in { padding-bottom: 245px; }
+  #root .ws .ws-stat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  #root .ws .ws-stat { min-height: 144px; padding: 15px; }
+  #root .ws .ws-stat:last-child { grid-column: auto; }
+  #root .ws .ws-stat > strong { font-size: 34px; }
+}
+
+@media (max-width: 380px) {
+  #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-nav {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    max-height: 146px;
+  }
+
+  #root :is(.stage1, .stage2, .stage3) :is(.continue-bar, .s2-continue-bar, .s3-pub) {
+    bottom: calc(196px + env(safe-area-inset-bottom));
+  }
+
+  #root .stage1-in, #root .stage2-in, #root .stage3-in { padding-bottom: 300px; }
 }

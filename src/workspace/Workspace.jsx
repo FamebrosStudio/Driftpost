@@ -81,13 +81,17 @@ export function WorkspaceNav({ page, onNavigate, email, onSignOut }) {
       <img className="logo-img logo-l" src="/logo-light.png" width="1908" height="512" decoding="async" alt="Driftpost" />
     </button>
     {page === 'create' && <button type="button" className="ws-overview-link" onClick={() => onNavigate('home')}><Icon name="arrowLeft" size={15} /> Overview</button>}
-    <button type="button" className="ws-collapse-toggle" onClick={toggleCollapsed} aria-expanded={!collapsed} aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'} title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}><span aria-hidden="true">{collapsed ? '›' : '‹'}</span><span className="ws-collapse-label">{collapsed ? 'Expand menu' : 'Collapse menu'}</span></button>
     <nav className="ws-nav" aria-label="Main navigation">
       {NAV.map(([id, label, icon]) => <button key={id} type="button" className={`${navPage === id ? 'active' : ''} ${id === 'create' ? 'ws-nav-create' : ''}`} aria-label={label} aria-current={navPage === id ? 'page' : undefined} title={collapsed ? label : undefined} onClick={() => onNavigate(id)}><span className="ws-nav-icon"><Icon name={icon} size={17} /></span><span className="ws-nav-label" data-mobile-label={MOBILE_NAV_LABELS[id]}>{label}</span></button>)}
       {isAiAccount(email) && <button type="button" className={page === 'team-video' ? 'active' : ''} aria-current={page === 'team-video' ? 'page' : undefined} title={collapsed ? 'Team video' : undefined} onClick={() => onNavigate('team-video')}><span className="ws-nav-icon"><Icon name="sparkles" size={17} /></span><span className="ws-nav-label">Team video</span></button>}
       {isAiAccount(email) && <button type="button" className={page === 'team-video-review' ? 'active' : ''} aria-current={page === 'team-video-review' ? 'page' : undefined} title={collapsed ? 'Video review' : undefined} onClick={() => onNavigate('team-video-review')}><span className="ws-nav-icon"><Icon name="clock" size={17} /></span><span className="ws-nav-label">Video review</span></button>}
     </nav>
-    <div className="ws-user"><span className="ws-user-dot">{(email || 'U')[0].toUpperCase()}</span><span className="ws-user-email">{email || 'Workspace'}</span><button type="button" className="ws-theme-toggle" onClick={() => setTheme((value) => value === 'dark' ? 'light' : 'dark')} aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} theme`} title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} theme`}>{theme === 'dark' ? '☼' : '◐'}<span>{theme === 'dark' ? 'Light mode' : 'Dark mode'}</span></button>{onSignOut && <button type="button" className="ws-signout" onClick={onSignOut}>Sign out</button>}</div>
+    <div className="ws-user"><span className="ws-user-dot">{(email || 'U')[0].toUpperCase()}</span><span className="ws-user-email">{email || 'Workspace'}</span></div>
+    <button type="button" className="ws-collapse-toggle" onClick={toggleCollapsed} aria-expanded={!collapsed} aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'} title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}><span aria-hidden="true">{collapsed ? '›' : '‹'}</span><span className="ws-collapse-label">{collapsed ? 'Expand menu' : 'Collapse menu'}</span></button>
+    <div className="ws-utility-dock" aria-label="Workspace controls">
+      <button type="button" className="ws-theme-toggle" onClick={() => setTheme((value) => value === 'dark' ? 'light' : 'dark')} aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} theme`} title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} theme`}><span aria-hidden="true">{theme === 'dark' ? '☼' : '◐'}</span><span>{theme === 'dark' ? 'Light appearance' : 'Dark appearance'}</span></button>
+      {onSignOut && <button type="button" className="ws-signout" onClick={onSignOut}>Sign out</button>}
+    </div>
   </header>;
 }
 
