@@ -49,7 +49,10 @@ let outcomeBusy = false;
 let intakeActive = 0;
 // Keep video/carousel analysis bounded to protect memory; the persistent
 // database queue accepts more jobs and drains as slots free up.
-const MAX_ACTIVE_INTAKE_JOBS = 2;
+// Process the shared editor inbox FIFO, one video/brand at a time. This keeps
+// concurrent uploads from mixing destination state or overloading analysis,
+// and still drains larger batches automatically as each job finishes.
+const MAX_ACTIVE_INTAKE_JOBS = 1;
 
 // Removes Drive duplicate markers and editor ordering numbers from a filename
 // fragment. Pure: the same input always produces the same output.

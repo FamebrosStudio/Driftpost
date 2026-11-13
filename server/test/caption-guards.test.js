@@ -11,6 +11,8 @@ import {
   safeTopicHashtags,
   topicRelevantPhrases,
   youtubeFallbackDescription,
+  normalizeCaptionParagraphs,
+  separateManagedByFooter,
 } from '../src/caption-guards.js';
 import { loadCaptionDraft, saveCaptionDraft } from '../../src/stage2/captionDraftScope.js';
 
@@ -24,6 +26,20 @@ const other = [
   { id: 'other_jeweller', name: 'Maha Laxmi Jewellers', aliases: ['Mahalaxmi Jewellers'], ig: 'mahalaxmi.jewellers' },
   { id: 'salon', name: 'Luxxe Salon', aliases: [], ig: 'luxxesalon' },
 ];
+
+test('caption prose is split into paragraphs of no more than two sentences', () => {
+  assert.equal(
+    normalizeCaptionParagraphs('A short hook. One more detail. A third sentence. A fourth sentence. A final line.'),
+    'A short hook. One more detail.\n\nA third sentence. A fourth sentence.\n\nA final line.',
+  );
+});
+
+test('managed-by credit is separated from contact footer lines', () => {
+  assert.equal(
+    separateManagedByFooter('📞 +91 96190 96762 | +91 80974 96670\n🎥 Managed by: @famebrosstudio ✨'),
+    '📞 +91 96190 96762 | +91 80974 96670\n\n🎥 Managed by: @famebrosstudio ✨',
+  );
+});
 
 test('caption fallback ignores empty and whitespace-only platform fields', () => {
   assert.equal(nonEmptyCaption('', 'A real brief caption'), 'A real brief caption');

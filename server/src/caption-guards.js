@@ -124,6 +124,36 @@ export function formatKeywordBracket(phrases = []) {
   return values.length ? `[${values.join(', ')}]` : '';
 }
 
+// Keep caption prose scannable even when the model returns a wall of text.
+// Each existing paragraph is divided into chunks of at most two sentences;
+// emoji/contact/list lines are left as standalone lines.
+export function normalizeCaptionParagraphs(text, maxSentences = 2) {
+  const limit = Math.max(1, Math.min(2, Number(maxSentences) || 2));
+  const source = String(text || '').replace(/\r\n?/g, '\n').trim();
+  if (!source) return '';
+  const isStandalone = (line) => /^(?:[#@]|[📍📞🎥📧☎️]|[-*•]|\d+[.)]\s)/u.test(line.trim());
+  return source.split(/\n\s*\n/).map((paragraph) => {
+    const lines = paragraph.split('\n').map((line) => line.trim()).filter(Boolean);
+    if (lines.length > 1 || lines.some(isStandalone)) return lines.join('\n');
+    const sentences = lines[0].match(/[^.!?]+(?:[.!?]+[”’"')\]]*)?(?:\s+|$)/g) || [lines[0]];
+    const clean = sentences.map((sentence) => sentence.trim()).filter(Boolean);
+    const chunks = [];
+    for (let index = 0; index < clean.length; index += limit) chunks.push(clean.slice(index, index + limit).join(' '));
+    return chunks.join('\n\n');
+  }).filter(Boolean).join('\n\n').replace(/\n{3,}/g, '\n\n');
+}
+
+// A manager/agency credit is visually distinct from phone/contact details.
+export function separateManagedByFooter(text) {
+  const lines = String(text || '').replace(/\r\n?/g, '\n').split('\n');
+  let managerIndex = lines.findIndex((line) => /managed\s+by\s*:/i.test(line));
+  if (managerIndex > 0 && lines.slice(0, managerIndex).some((line) => /(?:📞|\+?\d[\d\s()|+-]{7,})/.test(line))) {
+    while (managerIndex > 0 && !lines[managerIndex - 1].trim()) { lines.splice(managerIndex - 1, 1); managerIndex -= 1; }
+    lines.splice(managerIndex, 0, '');
+  }
+  return lines.join('\n').replace(/\n{3,}/g, '\n\n').trim();
+}
+
 // --- Deterministic caption quality gates -------------------------------------
 // The prompt already asks for human, distinct, non-filler copy, but a request
 // is not a guarantee. These gates are the server-side guarantee: deterministic,
