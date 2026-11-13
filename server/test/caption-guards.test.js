@@ -12,6 +12,7 @@ import {
   topicRelevantPhrases,
   youtubeFallbackDescription,
   normalizeCaptionParagraphs,
+  compactCaptionOpening,
   separateManagedByFooter,
 } from '../src/caption-guards.js';
 import { loadCaptionDraft, saveCaptionDraft } from '../../src/stage2/captionDraftScope.js';
@@ -32,6 +33,15 @@ test('caption prose is split into paragraphs of no more than two sentences', () 
     normalizeCaptionParagraphs('A short hook. One more detail. A third sentence. A fourth sentence. A final line.'),
     'A short hook. One more detail.\n\nA third sentence. A fourth sentence.\n\nA final line.',
   );
+});
+
+test('caption opening stays a short single-sentence hook and moves remaining copy below', () => {
+  const result = compactCaptionOpening('A happy customer is our biggest achievement. Vandana has trusted us for 25 years. She ordered a necklace.\n\nVisit us today.');
+  const [opening, ...rest] = result.split(/\n\n/);
+  assert.equal(opening, 'A happy customer is our biggest achievement.');
+  assert.deepEqual(rest, ['Vandana has trusted us for 25 years. She ordered a necklace.', 'Visit us today.']);
+  const longHook = compactCaptionOpening(`${'word '.repeat(23).trim()}. Supporting detail follows.`).split(/\n\n/)[0];
+  assert.ok(longHook.split(/\s+/).length <= 20);
 });
 
 test('managed-by credit is separated from contact footer lines', () => {

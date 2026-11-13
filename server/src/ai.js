@@ -9,6 +9,7 @@ import {
   captionBodiesNearlyIdentical,
   captionFillerIssues,
   brandTopicRelevant,
+  compactCaptionOpening,
   formatKeywordBracket,
   normalizeCaptionParagraphs,
   separateManagedByFooter,
@@ -815,14 +816,14 @@ export async function generateCaptions(summary, opts = {}) {
       otherBrands,
     });
     const hashLine = igTags.length ? igTags.map((t) => `#${t}`).join(' ') : '';
-    const igBody = normalizeCaptionParagraphs(enforceCleanFirstLine(moveLeadingContactToEnd(dedupeRepeatedSentences(stripToBody(igCap)))));
+    const igBody = compactCaptionOpening(normalizeCaptionParagraphs(enforceCleanFirstLine(moveLeadingContactToEnd(dedupeRepeatedSentences(stripToBody(igCap))))));
     igCap = fitCaption(igBody, `${footer}${hashLine ? `\n\n${hashLine}` : ''}${kwLine ? `\n\n${kwLine}` : ''}`, 2200, 'Instagram');
     // Facebook: body + footer + max 2 hashtags, never the bracket
     const fbTags = igTags.slice(0, 2).map((t) => `#${t}`).join(' ');
-    const fbBody = normalizeCaptionParagraphs(enforceCleanFirstLine(moveLeadingContactToEnd(dedupeRepeatedSentences(stripToBody(fbMsg)))));
+    const fbBody = compactCaptionOpening(normalizeCaptionParagraphs(enforceCleanFirstLine(moveLeadingContactToEnd(dedupeRepeatedSentences(stripToBody(fbMsg))))));
     fbMsg = fitCaption(fbBody, `${footer}${fbTags ? `\n\n${fbTags}` : ''}`, 2000, 'Facebook');
     // YouTube: body + footer
-    const ytBody = normalizeCaptionParagraphs(enforceCleanFirstLine(moveLeadingContactToEnd(dedupeRepeatedSentences(stripToBody(ytDesc)))));
+    const ytBody = compactCaptionOpening(normalizeCaptionParagraphs(enforceCleanFirstLine(moveLeadingContactToEnd(dedupeRepeatedSentences(stripToBody(ytDesc))))));
     ytDesc = fitCaption(ytBody, footer, 2000, 'YouTube');
     if (!ytTags.length && kwBank.length) {
       ytTags = kwBank.map((k) => k.toLowerCase().replace(/[^a-z0-9 ]/g, '').trim().replace(/\s+/g, ' ')).filter(Boolean).slice(0, 8);
@@ -844,7 +845,7 @@ export async function generateCaptions(summary, opts = {}) {
       .join('\n')
       .replace(/\n{3,}/g, '\n\n')
       .trim();
-    const igBody = normalizeCaptionParagraphs(cleanUnbrandedBody(igCap));
+    const igBody = compactCaptionOpening(normalizeCaptionParagraphs(cleanUnbrandedBody(igCap)));
     igCap = fitCaption(igBody, hashLine, 2200, 'Instagram');
     ytTags = topicRelevantPhrases([...ytTags, ...sigWords], brief, 8).map((tag) => tag.toLowerCase());
   }
@@ -862,7 +863,7 @@ export async function generateCaptions(summary, opts = {}) {
     .replace(/\s{2,}/g, ' ')
     .replace(/\n{3,}/g, '\n\n')
     .trim();
-  xText = normalizeCaptionParagraphs(xText);
+  xText = compactCaptionOpening(normalizeCaptionParagraphs(xText));
   xText = fitCaption(xText, xTags.map((tag) => `#${tag}`).join(' '), 280, 'X').replace(/\n\n/g, ' ');
 
   // Zero-LLM memory upgrade: record that this brand was used + asset hint.

@@ -144,6 +144,23 @@ export function normalizeCaptionParagraphs(text, maxSentences = 2) {
 }
 
 // A manager/agency credit is visually distinct from phone/contact details.
+export function compactCaptionOpening(text, maxWords = 20) {
+  const source = String(text || '').trim();
+  if (!source) return '';
+  const limit = Math.max(8, Math.min(20, Number(maxWords) || 20));
+  const firstBreak = source.search(/\n\s*\n/);
+  const opening = firstBreak < 0 ? source : source.slice(0, firstBreak).trim();
+  const remainder = firstBreak < 0 ? '' : source.slice(firstBreak).trim();
+  const lineBreak = opening.indexOf('\n');
+  const firstLine = lineBreak < 0 ? opening : opening.slice(0, lineBreak).trim();
+  const afterFirstLine = lineBreak < 0 ? '' : opening.slice(lineBreak).trim();
+  const sentence = (firstLine.match(/^.*?[.!?](?=\s|$)|^.+$/)?.[0] || firstLine).trim();
+  const words = sentence.split(/\s+/).filter(Boolean);
+  const hook = words.length > limit ? `${words.slice(0, limit).join(' ').replace(/[,:;\-–]+$/, '')}…` : sentence;
+  const following = [afterFirstLine, firstLine.slice(sentence.length).trim(), remainder].filter(Boolean).join('\n\n');
+  return [hook, following].filter(Boolean).join('\n\n');
+}
+
 export function separateManagedByFooter(text) {
   const lines = String(text || '').replace(/\r\n?/g, '\n').split('\n');
   let managerIndex = lines.findIndex((line) => /managed\s+by\s*:/i.test(line));
