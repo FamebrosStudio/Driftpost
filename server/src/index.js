@@ -1401,81 +1401,104 @@ app.get('/api/analytics/accounts', requireUser, connectionsLimit, burstLimit, as
   }
 });
 
-// Fetch public interaction totals for recently published posts in the user's
-// local history. The client sends only post/account IDs; tokens stay server-side.
+// Fetch recent published content and its interaction totals from each selected
+// account. Tokens remain server-side; client history is not required.
 app.post('/api/analytics/content', requireUser, connectionsLimit, burstLimit, async (req, res) => {
-  const input = Array.isArray(req.body?.posts) ? req.body.posts.slice(0, 50) : [];
-  const posts = input.filter((item) => item && typeof item === 'object'
-    && ['youtube', 'instagram', 'facebook', 'x'].includes(item.platform)
-    && /^[A-Za-z0-9_.:-]{1,160}$/.test(String(item.postId || ''))
-    && /^[A-Za-z0-9-]{1,100}$/.test(String(item.connectionId || '')));
-  if (!posts.length) return res.json({ posts: [], updated_at: new Date().toISOString() });
+  const connectionIds = [...new Set((Array.isArray(req.body?.connectionIds) ? req.body.connectionIds : [])
+    .filter((id) => /^[A-Za-z0-9-]{1,100}$/.test(String(id || ''))).map(String))].slice(0, 20);
+  if (!connectionIds.length) return res.json({ posts: [], updated_at: new Date().toISOString() });
   try {
-    const connectionIds = [...new Set(posts.map((post) => String(post.connectionId)))];
     const { data: connections, error } = await supabase.from('platform_connections')
-      .select('id, platform, platform_account_id, encrypted_tokens, token_expires_at')
+      .select('id, platform, platform_account_id, account_name, encrypted_tokens, token_expires_at')
       .eq('user_id', req.user.id).in('id', connectionIds);
     if (error) return res.status(500).json({ error: 'Could not load connected accounts for content analytics' });
-    const byId = new Map((connections || []).map((connection) => [connection.id, connection]));
-    const results = await Promise.all(posts.map(async (post) => {
-      const connection = byId.get(String(post.connectionId));
-      if (!connection || connection.platform !== post.platform) return { ...post, interactions: null, error: 'Account connection not found.' };
+    const results = await Promise.all((connections || []).map(async (connection) => {
+      const base = { connectionId: connection.id, platform: connection.platform, accountName: connection.account_name };
       try {
         const tokens = decryptJson(connection.encrypted_tokens);
-        const accessToken = post.platform === 'youtube'
+        const accessToken = connection.platform === 'youtube'
           ? await validAccessToken(supabase, connection)
-          : post.platform === 'x' ? await validXAccessToken(supabase, connection) : tokens.access_token;
-        let likes = 0;
-        let comments = 0;
-        let shares = 0;
-        let views = null;
-        let response;
-        if (post.platform === 'youtube') {
-          const params = new URLSearchParams({ part: 'statistics', id: String(post.postId) });
-          response = await fetch(`https://www.googleapis.com/youtube/v3/videos?${params}`, {
+          : connection.platform === 'x' ? await validXAccessToken(supabase, connection) : tokens.access_token;
+        let content = [];
+        if (connection.platform === 'youtube') {
+          const channelParams = new URLSearchParams({ part: 'contentDetails', id: connection.platform_account_id });
+          let response = await fetch(`https://www.googleapis.com/youtube/v3/channels?${channelParams}`, {
+            headers: { Authorization: `Bearer ${accessToken}` }, signal: AbortSignal.timeout(12000),
+          });
+          let payload = await response.json().catch(() => ({}));
+          if (!response.ok) throw new Error(payload.error?.message || 'YouTube could not list channel videos.');
+          const uploads = payload.items?.[0]?.contentDetails?.relatedPlaylists?.uploads;
+          if (uploads) {
+            const playlistParams = new URLSearchParams({ part: 'snippet,contentDetails', playlistId: uploads, maxResults: '25' });
+            response = await fetch(`https://www.googleapis.com/youtube/v3/playlistItems?${playlistParams}`, {
+              headers: { Authorization: `Bearer ${accessToken}` }, signal: AbortSignal.timeout(12000),
+            });
+            payload = await response.json().catch(() => ({}));
+            if (!response.ok) throw new Error(payload.error?.message || 'YouTube could not list recent videos.');
+            const videos = (payload.items || []).map((item) => ({
+              postId: item.contentDetails?.videoId,
+              text: item.snippet?.title || 'YouTube video',
+              at: Date.parse(item.contentDetails?.videoPublishedAt || item.snippet?.publishedAt || ''),
+            })).filter((item) => item.postId);
+            if (videos.length) {
+              const videoParams = new URLSearchParams({ part: 'statistics', id: videos.map((item) => item.postId).join(',') });
+              response = await fetch(`https://www.googleapis.com/youtube/v3/videos?${videoParams}`, {
+                headers: { Authorization: `Bearer ${accessToken}` }, signal: AbortSignal.timeout(12000),
+              });
+              payload = await response.json().catch(() => ({}));
+              if (!response.ok) throw new Error(payload.error?.message || 'YouTube interaction totals are unavailable.');
+              const statistics = new Map((payload.items || []).map((item) => [item.id, item.statistics || {}]));
+              content = videos.map((item) => {
+                const stats = statistics.get(item.postId) || {};
+                const likes = Number(stats.likeCount || 0);
+                const comments = Number(stats.commentCount || 0);
+                return { ...base, ...item, url: `https://www.youtube.com/watch?v=${encodeURIComponent(item.postId)}`, likes, comments, shares: 0, views: Number(stats.viewCount || 0), interactions: likes + comments };
+              });
+            }
+          }
+        } else if (connection.platform === 'instagram') {
+          const params = new URLSearchParams({ fields: 'id,caption,permalink,timestamp,like_count,comments_count,media_type', limit: '25', access_token: accessToken });
+          const response = await fetch(`https://graph.facebook.com/v26.0/${encodeURIComponent(connection.platform_account_id)}/media?${params}`, { signal: AbortSignal.timeout(12000) });
+          const payload = await response.json().catch(() => ({}));
+          if (!response.ok) throw new Error(payload.error?.message || 'Instagram could not load recent posts and insights.');
+          content = (payload.data || []).map((item) => {
+            const likes = Number(item.like_count || 0);
+            const comments = Number(item.comments_count || 0);
+            return { ...base, postId: item.id, text: item.caption || item.media_type || 'Instagram post', at: Date.parse(item.timestamp || ''), url: item.permalink || '', likes, comments, shares: 0, views: null, interactions: likes + comments };
+          });
+        } else if (connection.platform === 'facebook') {
+          const params = new URLSearchParams({ fields: 'id,message,permalink_url,created_time,shares,likes.limit(0).summary(true),comments.limit(0).summary(true)', limit: '25', access_token: accessToken });
+          const response = await fetch(`https://graph.facebook.com/v26.0/${encodeURIComponent(connection.platform_account_id)}/posts?${params}`, { signal: AbortSignal.timeout(12000) });
+          const payload = await response.json().catch(() => ({}));
+          if (!response.ok) throw new Error(payload.error?.message || 'Facebook could not load recent posts and insights.');
+          content = (payload.data || []).map((item) => {
+            const likes = Number(item.likes?.summary?.total_count || 0);
+            const comments = Number(item.comments?.summary?.total_count || 0);
+            const shares = Number(item.shares?.count || 0);
+            return { ...base, postId: item.id, text: item.message || 'Facebook post', at: Date.parse(item.created_time || ''), url: item.permalink_url || '', likes, comments, shares, views: null, interactions: likes + comments + shares };
+          });
+        } else if (connection.platform === 'x') {
+          const params = new URLSearchParams({ max_results: '25', 'tweet.fields': 'public_metrics,created_at,text' });
+          const response = await fetch(`https://api.x.com/2/users/${encodeURIComponent(connection.platform_account_id)}/tweets?${params}`, {
             headers: { Authorization: `Bearer ${accessToken}` }, signal: AbortSignal.timeout(12000),
           });
           const payload = await response.json().catch(() => ({}));
-          if (!response.ok) throw new Error(payload.error?.message || 'YouTube interaction totals are unavailable.');
-          const stats = payload.items?.[0]?.statistics;
-          if (!stats) throw new Error('YouTube did not return statistics for this post.');
-          likes = Number(stats.likeCount || 0);
-          comments = Number(stats.commentCount || 0);
-          views = Number(stats.viewCount || 0);
-        } else if (post.platform === 'instagram') {
-          const params = new URLSearchParams({ fields: 'like_count,comments_count', access_token: accessToken });
-          response = await fetch(`https://graph.facebook.com/v26.0/${encodeURIComponent(post.postId)}?${params}`, { signal: AbortSignal.timeout(12000) });
-          const payload = await response.json().catch(() => ({}));
-          if (!response.ok) throw new Error(payload.error?.message || 'Instagram interaction totals are unavailable.');
-          likes = Number(payload.like_count || 0);
-          comments = Number(payload.comments_count || 0);
-        } else if (post.platform === 'facebook') {
-          const params = new URLSearchParams({ fields: 'likes.limit(0).summary(true),comments.limit(0).summary(true),shares', access_token: accessToken });
-          response = await fetch(`https://graph.facebook.com/v26.0/${encodeURIComponent(post.postId)}?${params}`, { signal: AbortSignal.timeout(12000) });
-          const payload = await response.json().catch(() => ({}));
-          if (!response.ok) throw new Error(payload.error?.message || 'Facebook interaction totals are unavailable.');
-          likes = Number(payload.likes?.summary?.total_count || 0);
-          comments = Number(payload.comments?.summary?.total_count || 0);
-          shares = Number(payload.shares?.count || 0);
-        } else {
-          const params = new URLSearchParams({ 'tweet.fields': 'public_metrics' });
-          response = await fetch(`https://api.x.com/2/tweets/${encodeURIComponent(post.postId)}?${params}`, {
-            headers: { Authorization: `Bearer ${accessToken}` }, signal: AbortSignal.timeout(12000),
+          if (!response.ok) throw new Error(payload.detail || payload.errors?.[0]?.message || 'X could not load recent posts and insights.');
+          content = (payload.data || []).map((item) => {
+            const stats = item.public_metrics || {};
+            const likes = Number(stats.like_count || 0);
+            const comments = Number(stats.reply_count || 0);
+            const shares = Number(stats.repost_count || 0) + Number(stats.quote_count || 0);
+            return { ...base, postId: item.id, text: item.text || 'X post', at: Date.parse(item.created_at || ''), url: `https://x.com/i/status/${encodeURIComponent(item.id)}`, likes, comments, shares, views: null, interactions: likes + comments + shares };
           });
-          const payload = await response.json().catch(() => ({}));
-          if (!response.ok) throw new Error(payload.detail || payload.errors?.[0]?.message || 'X interaction totals are unavailable.');
-          const stats = payload.data?.public_metrics;
-          if (!stats) throw new Error('X did not return interaction totals for this post.');
-          likes = Number(stats.like_count || 0);
-          comments = Number(stats.reply_count || 0);
-          shares = Number(stats.repost_count || 0) + Number(stats.quote_count || 0);
         }
-        return { ...post, interactions: likes + comments + shares, likes, comments, shares, views };
+        if (!content.length) content = [{ ...base, isEmpty: true }];
+        return content;
       } catch (error) {
-        return { ...post, interactions: null, error: String(error?.message || 'Interaction totals unavailable.').slice(0, 240) };
+        return [{ ...base, error: String(error?.message || 'Post analytics unavailable.').slice(0, 240) }];
       }
     }));
-    res.json({ posts: results, updated_at: new Date().toISOString() });
+    res.json({ posts: results.flat(), updated_at: new Date().toISOString() });
   } catch {
     res.status(500).json({ error: 'Could not load content interaction totals' });
   }

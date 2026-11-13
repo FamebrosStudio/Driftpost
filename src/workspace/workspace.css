@@ -193,6 +193,8 @@
 .ws-platform-section-heading { display: flex; align-items: end; justify-content: space-between; gap: 10px; margin: 16px 0 8px; }
 .ws-platform-section-heading h3 { margin: 3px 0 0; font-size: 13px; }
 .ws-platform-analytics .ws-content-empty { margin-top: 8px; }
+.ws-platform-analytics .ws-content-empty.is-error { border-color: color-mix(in srgb, var(--danger, #e5484d) 35%, var(--line)); background: color-mix(in srgb, var(--danger, #e5484d) 5%, var(--panel)); }
+.ws-platform-analytics .ws-content-empty button { margin-top: 7px; padding: 0; border: 0; color: var(--go); background: transparent; font: inherit; font-size: 10px; font-weight: 700; cursor: pointer; }
 .ws-platform-analytics .ws-top-content-row { grid-template-columns: 26px minmax(0, 1fr) auto auto; gap: 9px; }
 .ws-platform-analytics .ws-content-breakdown { grid-column: 2 / -1; }
 .ws-platform-analytics .ws-chart { height: 145px; }
