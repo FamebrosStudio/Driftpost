@@ -1,6 +1,6 @@
 import { mediaBlob } from './media-io.js';
 // Meta (Facebook + Instagram) via Graph API. No X/Twitter anywhere in Driftpost.
-const GRAPH = 'https://graph.facebook.com/v21.0';
+const GRAPH = 'https://graph.facebook.com/v26.0';
 // Keep ordinary Facebook/Page connection consent to the scopes needed for
 // account discovery and publishing. Messaging/comment permissions are
 // separately configured on Meta's Login for Business configuration used by
@@ -72,7 +72,7 @@ export function metaAuthorizationUrl(state) {
     scope: FB_SCOPES,
     state,
   });
-  return `https://www.facebook.com/v21.0/dialog/oauth?${p}`;
+  return `https://www.facebook.com/v26.0/dialog/oauth?${p}`;
 }
 
 // Use a dedicated Facebook Business Login configuration only when explicitly
@@ -91,7 +91,7 @@ export function metaBusinessLoginUrl(state, platform = 'instagram') {
     response_type: 'code',
     state,
   });
-  return `https://www.facebook.com/v21.0/dialog/oauth?${p}`;
+  return `https://www.facebook.com/v26.0/dialog/oauth?${p}`;
 }
 
 async function graphError(res, fallback, parsedBody) {
@@ -125,36 +125,37 @@ export async function longLivedToken(shortToken) {
   return data;
 }
 
-export async function getMetaPages(userToken, { includeInstagram = true } = {}) {
+export async function getMetaPages(userToken, { includeInstagram = true, fetchImpl = fetch } = {}) {
   // 1) Personal assets.
   // 2) Business portfolio assets: /me/accounts can omit pages in a business
   //    portfolio. Walk both owned_pages and client_pages so agency-managed
   //    client pages are discoverable as well as pages owned by the portfolio.
   const auth = { headers: { Authorization: `Bearer ${userToken}` } };
   const all = [];
+  let businessLookupError = '';
   const instagramFields = includeInstagram ? ',instagram_business_account{id,username}' : '';
   let url = `${GRAPH}/me/accounts?fields=id,name,tasks,access_token${instagramFields}&limit=100`;
   for (let i = 0; i < 5 && url; i++) {
-    const res = await fetch(url, { ...auth, signal: AbortSignal.timeout(30000) });
+    const res = await fetchImpl(url, { ...auth, signal: AbortSignal.timeout(30000) });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error?.message || 'Unable to list Facebook Pages');
     all.push(...(data.data || []));
     url = data.paging?.next || null;
   }
   try {
-    const bRes = await fetch(`${GRAPH}/me/businesses?fields=id,name&limit=50`, { ...auth, signal: AbortSignal.timeout(30000) });
+    const bRes = await fetchImpl(`${GRAPH}/me/businesses?fields=id,name&limit=50`, { ...auth, signal: AbortSignal.timeout(30000) });
     const bData = await bRes.json();
-    if (!bRes.ok) throw new Error('no-business-access');
+    if (!bRes.ok) throw new Error(bData.error?.message || 'no-business-access');
     for (const biz of (bData.data || []).slice(0, 20)) {
       for (const edge of ['owned_pages', 'client_pages']) {
         try {
-          const pRes = await fetch(`${GRAPH}/${biz.id}/${edge}?fields=id,name&limit=100`, { ...auth, signal: AbortSignal.timeout(30000) });
+          const pRes = await fetchImpl(`${GRAPH}/${biz.id}/${edge}?fields=id,name&limit=100`, { ...auth, signal: AbortSignal.timeout(30000) });
           const pData = await pRes.json();
           if (!pRes.ok) continue;
           for (const p of (pData.data || [])) {
             if (all.some((x) => x.id === p.id)) continue;
             try {
-              const dRes = await fetch(`${GRAPH}/${p.id}?fields=access_token${instagramFields}`, { ...auth, signal: AbortSignal.timeout(30000) });
+              const dRes = await fetchImpl(`${GRAPH}/${p.id}?fields=access_token${instagramFields}`, { ...auth, signal: AbortSignal.timeout(30000) });
               const d = await dRes.json();
               if (dRes.ok && d.access_token) {
                 all.push({ id: p.id, name: p.name, access_token: d.access_token, instagram_business_account: d.instagram_business_account || null });
@@ -164,10 +165,16 @@ export async function getMetaPages(userToken, { includeInstagram = true } = {}) 
         } catch { /* edge may be unavailable; keep other business assets */ }
       }
     }
-  } catch { /* businesses unavailable without business_management: keep personal pages */ }
+  } catch (error) {
+    businessLookupError = String(error?.message || '').slice(0, 220);
+  }
   // De-duplicate by page id.
   const seen = new Set();
-  return all.filter((p) => (seen.has(p.id) ? false : (seen.add(p.id), true)));
+  const pages = all.filter((p) => (seen.has(p.id) ? false : (seen.add(p.id), true)));
+  if (!pages.length && businessLookupError) {
+    throw new Error(`Meta returned no Pages from your account, and Business Portfolio discovery failed: ${businessLookupError}. Confirm the selected Facebook profile has Page access and the required Page/Business permissions are approved.`);
+  }
+  return pages;
 }
 
 export async function publishFacebook({ pageId, pageToken, text, link, linkMeta, targeting, cta, unpublished, media, cover }) {

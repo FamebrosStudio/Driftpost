@@ -310,7 +310,7 @@ app.post('/api/meta/webhook', express.raw({ type: 'application/json', limit: '1m
                   console.info('[meta automation] private comment reply accepted', { platform, connection: connection.id.slice(0, 8) });
                   return;
                 }
-                const response = await fetch(`https://graph.facebook.com/v21.0/${encodeURIComponent(commentId)}/${edge}`, {
+                const response = await fetch(`https://graph.facebook.com/v26.0/${encodeURIComponent(commentId)}/${edge}`, {
                   method: 'POST', headers: { 'Content-Type': 'application/json' },
                   body: JSON.stringify({ message: message.slice(0, 1000), access_token: token }),
                   signal: AbortSignal.timeout(12000),
@@ -374,7 +374,7 @@ app.post('/api/meta/webhook', express.raw({ type: 'application/json', limit: '1m
             // replies must be sent from the Page endpoint even though the webhook
             // entry identifies the Instagram professional account.
             const replyEndpointId = platform === 'instagram' ? (tokens.page_id || igId) : igId;
-            const response = await fetch(`https://graph.facebook.com/v21.0/${encodeURIComponent(replyEndpointId)}/messages`, {
+            const response = await fetch(`https://graph.facebook.com/v26.0/${encodeURIComponent(replyEndpointId)}/messages`, {
               method: 'POST', headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ ...incomingMessageReply(platform, senderId, replyText), access_token: token }),
               signal: AbortSignal.timeout(12000),
@@ -1368,13 +1368,13 @@ app.get('/api/analytics/accounts', requireUser, connectionsLimit, burstLimit, as
           };
         } else if (connection.platform === 'instagram') {
           const params = new URLSearchParams({ fields: 'username,followers_count,follows_count,media_count', access_token: accessToken });
-          const response = await fetch(`https://graph.facebook.com/v21.0/${encodeURIComponent(connection.platform_account_id)}?${params}`, { signal: AbortSignal.timeout(15000) });
+          const response = await fetch(`https://graph.facebook.com/v26.0/${encodeURIComponent(connection.platform_account_id)}?${params}`, { signal: AbortSignal.timeout(15000) });
           const payload = await response.json().catch(() => ({}));
           if (!response.ok) throw new Error(payload.error?.message || 'Instagram could not return account analytics');
           metrics = { followers: Number(payload.followers_count || 0), following: Number(payload.follows_count || 0), posts: Number(payload.media_count || 0) };
         } else if (connection.platform === 'facebook') {
           const params = new URLSearchParams({ fields: 'followers_count,fan_count', access_token: accessToken });
-          const response = await fetch(`https://graph.facebook.com/v21.0/${encodeURIComponent(connection.platform_account_id)}?${params}`, { signal: AbortSignal.timeout(15000) });
+          const response = await fetch(`https://graph.facebook.com/v26.0/${encodeURIComponent(connection.platform_account_id)}?${params}`, { signal: AbortSignal.timeout(15000) });
           const payload = await response.json().catch(() => ({}));
           if (!response.ok) throw new Error(payload.error?.message || 'Facebook could not return Page analytics');
           metrics = { followers: Number(payload.followers_count ?? payload.fan_count ?? 0) };
@@ -2039,7 +2039,7 @@ app.get('/api/oauth/meta/callback', callbackLimit, async (req, res) => {
     const long = await longLivedToken(short.access_token);
     const userToken = long.access_token;
     const pages = await getMetaPages(userToken, { includeInstagram: state.platform !== 'facebook' });
-    if (!pages.length) throw new Error('No Facebook Page found. Create a Page and link Instagram in Page Settings first.');
+    if (!pages.length) throw new Error('Meta login succeeded, but it returned no Facebook Pages. Connect a Facebook Page that this profile can access (a personal profile alone cannot publish). For Instagram publishing, switch Instagram to a Business or Creator account and link it to that Page.');
     let igCount = 0;
     for (const page of pages.slice(0, 200)) {
       const { error: pageSaveError } = await supabase.from('platform_connections').upsert({

@@ -1,6 +1,6 @@
 ﻿import test from 'node:test';
 import assert from 'node:assert/strict';
-import { subscribeFacebookWebhooks, facebookAuthorizationUrl, metaBusinessLoginUrl, sendInstagramPrivateReply, metaAuthorizationUrl, publishFacebook, publishFacebookCarousel, resolveInstagramCollaboratorUsernames, subscribeInstagramWebhooks } from '../src/meta.js';
+import { getMetaPages, subscribeFacebookWebhooks, facebookAuthorizationUrl, metaBusinessLoginUrl, sendInstagramPrivateReply, metaAuthorizationUrl, publishFacebook, publishFacebookCarousel, resolveInstagramCollaboratorUsernames, subscribeInstagramWebhooks } from '../src/meta.js';
 
 test('Facebook login requests only the configured Facebook/Page consent scopes by default', () => {
   const url = new URL(metaAuthorizationUrl('signed-state'));
@@ -16,7 +16,7 @@ test('Facebook connection does not accidentally reuse the Instagram Business Log
     delete process.env.META_FB_CONFIG_ID;
     process.env.META_CONFIG_ID = 'instagram-business-config';
     const url = new URL(facebookAuthorizationUrl('state'));
-    assert.equal(url.pathname, '/v21.0/dialog/oauth');
+    assert.equal(url.pathname, '/v26.0/dialog/oauth');
     assert.equal(url.searchParams.has('config_id'), false);
     process.env.META_FB_CONFIG_ID = 'facebook-page-config';
     const configured = new URL(facebookAuthorizationUrl('state'));
@@ -27,6 +27,18 @@ test('Facebook connection does not accidentally reuse the Instagram Business Log
     if (previousIg === undefined) delete process.env.META_CONFIG_ID;
     else process.env.META_CONFIG_ID = previousIg;
   }
+});
+
+test('Page discovery reports the Business Portfolio permission error instead of hiding it as no Pages', async () => {
+  let call = 0;
+  await assert.rejects(getMetaPages('user-token', {
+    includeInstagram: false,
+    fetchImpl: async () => {
+      call += 1;
+      if (call === 1) return new Response(JSON.stringify({ data: [] }), { status: 200 });
+      return new Response(JSON.stringify({ error: { message: 'business_management permission required' } }), { status: 403 });
+    },
+  }), /Business Portfolio discovery failed: business_management permission required/);
 });
 
 async function withFetch(responses, run) {
@@ -115,8 +127,8 @@ test('Facebook Login automation subscribes the linked Page to comment and messag
   await withFetch([{ success: true }, { success: true }], async (requests) => {
     const result = await subscribeInstagramWebhooks({ igUserId: 'ig-account-1', pageId: 'linked-page-1', accessToken: 'page-token' });
     assert.deepEqual(result.fields, ['comments', 'messages']);
-    assert.equal(requests[0].url, 'https://graph.facebook.com/v21.0/ig-account-1/subscribed_apps');
-    assert.equal(requests[1].url, 'https://graph.facebook.com/v21.0/linked-page-1/subscribed_apps');
+    assert.equal(requests[0].url, 'https://graph.facebook.com/v26.0/ig-account-1/subscribed_apps');
+    assert.equal(requests[1].url, 'https://graph.facebook.com/v26.0/linked-page-1/subscribed_apps');
     assert.equal(requests[1].init.body.get('subscribed_fields'), 'feed');
     assert.equal(requests[0].init.method, 'POST');
     assert.equal(requests[0].init.body.get('subscribed_fields'), 'comments,messages');
@@ -183,7 +195,7 @@ test('Page subscription failure prevents reporting automation subscription succe
 test('Instagram comment private replies use linked Page messages with a comment recipient', async () => {
   await withFetch([{ recipient_id: 'customer', message_id: 'reply' }], async (requests) => {
     await sendInstagramPrivateReply({ pageId: 'linked-page', commentId: 'ig-comment', message: 'Details', accessToken: 'page-token' });
-    assert.equal(requests[0].url, 'https://graph.facebook.com/v21.0/linked-page/messages');
+    assert.equal(requests[0].url, 'https://graph.facebook.com/v26.0/linked-page/messages');
     const body = JSON.parse(requests[0].init.body);
     assert.deepEqual(body.recipient, { comment_id: 'ig-comment' });
     assert.deepEqual(body.message, { text: 'Details' });
@@ -193,7 +205,7 @@ test('Instagram comment private replies use linked Page messages with a comment 
 test('Facebook automation subscribes Page feed and Messenger fields', async () => {
   await withFetch([{ success: true }], async (requests) => {
     await subscribeFacebookWebhooks({ pageId: 'page', accessToken: 'token', comments: true, messages: true });
-    assert.equal(requests[0].url, 'https://graph.facebook.com/v21.0/page/subscribed_apps');
+    assert.equal(requests[0].url, 'https://graph.facebook.com/v26.0/page/subscribed_apps');
     assert.equal(requests[0].init.body.get('subscribed_fields'), 'feed,messages,messaging_postbacks');
   });
 });
