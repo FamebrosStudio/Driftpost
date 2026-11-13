@@ -14,18 +14,45 @@ const BUSINESS_SUFFIXES = new Set([
 
 function editDistance(a, b, limit = 2) {
   if (Math.abs(a.length - b.length) > limit) return limit + 1;
-  let previous = Array.from({ length: b.length + 1 }, (_, index) => index);
+  const rows = Array.from({ length: a.length + 1 }, () => Array(b.length + 1).fill(0));
+  for (let i = 0; i <= a.length; i += 1) rows[i][0] = i;
+  for (let j = 0; j <= b.length; j += 1) rows[0][j] = j;
   for (let i = 1; i <= a.length; i += 1) {
-    const current = [i];
-    let rowMin = i;
     for (let j = 1; j <= b.length; j += 1) {
-      current[j] = Math.min(current[j - 1] + 1, previous[j] + 1, previous[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
-      rowMin = Math.min(rowMin, current[j]);
+      rows[i][j] = Math.min(rows[i][j - 1] + 1, rows[i - 1][j] + 1, rows[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+      // Treat an adjacent transposition as one typo (e.g. jewllers).
+      if (i > 1 && j > 1 && a[i - 1] === b[j - 2] && a[i - 2] === b[j - 1]) {
+        rows[i][j] = Math.min(rows[i][j], rows[i - 2][j - 2] + 1);
+      }
     }
-    if (rowMin > limit) return limit + 1;
-    previous = current;
   }
-  return previous[b.length];
+  return rows[a.length][b.length];
+}
+
+function tokenTypoScore(query, alias) {
+  const queryWords = norm(query).split(' ').filter((word) => word && !BUSINESS_SUFFIXES.has(word));
+  const aliasWords = norm(alias).split(' ').filter((word) => word && !BUSINESS_SUFFIXES.has(word));
+  if (!queryWords.length || !aliasWords.length) return 0;
+  const used = new Set();
+  for (const word of queryWords) {
+    let best = -1;
+    let bestDistance = Infinity;
+    for (let index = 0; index < aliasWords.length; index += 1) {
+      if (used.has(index)) continue;
+      const candidate = aliasWords[index];
+      if (word === candidate) { best = index; bestDistance = 0; break; }
+      const shortest = Math.min(word.length, candidate.length);
+      if (shortest < 5) continue;
+      const distance = editDistance(word, candidate, shortest >= 10 ? 2 : 1);
+      if (distance < bestDistance) { best = index; bestDistance = distance; }
+    }
+    if (best < 0 || bestDistance > (Math.min(word.length, aliasWords[best].length) >= 10 ? 2 : 1)) return 0;
+    used.add(best);
+  }
+  // The whole distinct part of the filename must be accounted for. This
+  // tolerates casing, punctuation, word order, and small typos without
+  // accepting a name that merely shares one common word with a brand.
+  return queryWords.some((word) => word.length >= 5) ? 870 : 0;
 }
 
 function profileAliases(brand) {
@@ -83,7 +110,7 @@ function aliasScore(query, alias) {
     if (distance === 1) return 880 + Math.min(q.length, a.length);
     if (distance === 2 && Math.min(q.length, a.length) >= 10) return 860 + Math.min(q.length, a.length);
   }
-  return 0;
+  return tokenTypoScore(query, alias);
 }
 
 // Local-only alias resolver for Drive filenames. It uses saved brand names,
@@ -135,6 +162,8 @@ function nameScore(left, right) {
     if (distance === 1) return 880 + Math.min(a.length, b.length);
     if (distance === 2 && Math.min(a.length, b.length) >= 10) return 860 + Math.min(a.length, b.length);
   }
+  const tokenScore = tokenTypoScore(left, right);
+  if (tokenScore) return tokenScore;
   const leftTokens = norm(left).split(' ').filter((word) => word.length >= 3);
   const rightTokens = norm(right).split(' ').filter((word) => word.length >= 3);
   if (leftTokens.length < 2 || rightTokens.length < 2) return 0;
