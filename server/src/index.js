@@ -18,7 +18,7 @@ import { businessProfileAuthorizationUrl, businessProfileErrorMessage, driveInta
 import { learnedVoice, markLatestUsed, markUsed, recordGeneration } from './captionMemory.js';
 import { consentState, forgetUser, hasPersonalisationConsent, recordConsent, POLICY_VERSION, PURPOSES } from './consent.js';
 import { setVideoThumbnail, uploadVideoResumable, validAccessToken } from './youtube-upload.js';
-import { deleteFacebookPost, discoverInstagramAccount, exchangeMetaCode, facebookAuthorizationUrl, getMetaPages, longLivedToken, metaAuthorizationUrl, metaBusinessLoginUrl, publishFacebook, publishInstagram, subscribeInstagramWebhooks, sendInstagramPrivateReply, subscribeFacebookWebhooks } from './meta.js';
+import { deleteFacebookPost, discoverInstagramAccount, exchangeMetaCode, facebookAuthorizationUrl, getMetaPages, longLivedToken, metaAuthorizationUrl, metaBusinessLoginUrl, metaConnectionErrorMessage, publishFacebook, publishInstagram, subscribeInstagramWebhooks, sendInstagramPrivateReply, subscribeFacebookWebhooks } from './meta.js';
 import { createPkcePair, exchangeXCode, getXUser, xAuthorizationUrl } from './x.js';
 import { createXPost, deleteXPost, uploadXMedia, validXAccessToken } from './x-publish.js';
 import { assessVideoBrandMatch, chooseVideoCoverFrame, generateCaptions, inferLikelyVideoBrands } from './ai.js';
@@ -2079,7 +2079,7 @@ app.get('/api/oauth/meta/callback', callbackLimit, async (req, res) => {
       : '';
     back.searchParams.set('connected', 'meta');
     back.searchParams.set('connected_details', `${pages.length} Page${pages.length === 1 ? '' : 's'}, ${igCount} Instagram account${igCount === 1 ? '' : 's'} found${pageLabel}${igLabel}`);
-  } catch (e) { back.searchParams.set('oauth_error', e.message); }
+  } catch (e) { back.searchParams.set('oauth_error', metaConnectionErrorMessage(e)); }
   res.redirect(back.toString());
 });
 

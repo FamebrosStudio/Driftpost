@@ -1,6 +1,6 @@
 ﻿import test from 'node:test';
 import assert from 'node:assert/strict';
-import { getMetaPages, subscribeFacebookWebhooks, facebookAuthorizationUrl, metaBusinessLoginUrl, sendInstagramPrivateReply, metaAuthorizationUrl, publishFacebook, publishFacebookCarousel, resolveInstagramCollaboratorUsernames, subscribeInstagramWebhooks } from '../src/meta.js';
+import { getMetaPages, metaConnectionErrorMessage, subscribeFacebookWebhooks, facebookAuthorizationUrl, metaBusinessLoginUrl, sendInstagramPrivateReply, metaAuthorizationUrl, publishFacebook, publishFacebookCarousel, resolveInstagramCollaboratorUsernames, subscribeInstagramWebhooks } from '../src/meta.js';
 
 test('Facebook login requests only the configured Facebook/Page consent scopes by default', () => {
   const url = new URL(metaAuthorizationUrl('signed-state'));
@@ -39,6 +39,27 @@ test('Page discovery reports the Business Portfolio permission error instead of 
       return new Response(JSON.stringify({ error: { message: 'business_management permission required' } }), { status: 403 });
     },
   }), /Business Portfolio discovery failed: business_management permission required/);
+});
+
+test('Page discovery skips Business Portfolio fan-out when direct Pages are already available', async () => {
+  const requests = [];
+  const pages = await getMetaPages('user-token', {
+    includeInstagram: false,
+    fetchImpl: async (url) => {
+      requests.push(String(url));
+      return new Response(JSON.stringify({ data: [{ id: 'page-1', name: 'Wanted Page', access_token: 'page-token' }] }), { status: 200 });
+    },
+  });
+  assert.equal(pages[0].id, 'page-1');
+  assert.equal(requests.length, 1);
+  assert.match(requests[0], /v26\.0\/me\/accounts/);
+});
+
+test('Meta application request-limit errors explain the cooldown and unsaved state', () => {
+  const message = metaConnectionErrorMessage(new Error('(#4) Application request limit reached'));
+  assert.match(message, /rate-limited/i);
+  assert.match(message, /No account was saved/);
+  assert.match(message, /10–15 minutes/);
 });
 
 async function withFetch(responses, run) {

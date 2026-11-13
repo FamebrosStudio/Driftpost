@@ -142,18 +142,32 @@ export async function getMetaPages(userToken, { includeInstagram = true, fetchIm
     all.push(...(data.data || []));
     url = data.paging?.next || null;
   }
+  // /me/accounts already covers the Pages the person can directly manage.
+  // Only walk Business Portfolios when it returns none; doing both on every
+  // login multiplied Graph API calls and could trigger Meta's app rate limit.
+  if (all.length) {
+    const seen = new Set();
+    return all.filter((page) => (seen.has(page.id) ? false : (seen.add(page.id), true)));
+  }
   try {
     const bRes = await fetchImpl(`${GRAPH}/me/businesses?fields=id,name&limit=50`, { ...auth, signal: AbortSignal.timeout(30000) });
     const bData = await bRes.json();
     if (!bRes.ok) throw new Error(bData.error?.message || 'no-business-access');
-    for (const biz of (bData.data || []).slice(0, 20)) {
+    let pageDetailRequests = 0;
+    for (const biz of (bData.data || []).slice(0, 5)) {
       for (const edge of ['owned_pages', 'client_pages']) {
         try {
-          const pRes = await fetchImpl(`${GRAPH}/${biz.id}/${edge}?fields=id,name&limit=100`, { ...auth, signal: AbortSignal.timeout(30000) });
+          const pRes = await fetchImpl(`${GRAPH}/${biz.id}/${edge}?fields=id,name&limit=25`, { ...auth, signal: AbortSignal.timeout(30000) });
           const pData = await pRes.json();
           if (!pRes.ok) continue;
-          for (const p of (pData.data || [])) {
+          for (const p of (pData.data || []).slice(0, 25)) {
+            if (all.length >= 25) break;
             if (all.some((x) => x.id === p.id)) continue;
+            // Portfolio edges do not include Page tokens. Bound individual
+            // Page lookups to avoid turning a large agency portfolio into a
+            // burst of hundreds of calls on a single OAuth callback.
+            if (pageDetailRequests >= 10) break;
+            pageDetailRequests += 1;
             try {
               const dRes = await fetchImpl(`${GRAPH}/${p.id}?fields=access_token${instagramFields}`, { ...auth, signal: AbortSignal.timeout(30000) });
               const d = await dRes.json();
@@ -175,6 +189,14 @@ export async function getMetaPages(userToken, { includeInstagram = true, fetchIm
     throw new Error(`Meta returned no Pages from your account, and Business Portfolio discovery failed: ${businessLookupError}. Confirm the selected Facebook profile has Page access and the required Page/Business permissions are approved.`);
   }
   return pages;
+}
+
+export function metaConnectionErrorMessage(error) {
+  const message = String(error?.message || error || 'Meta connection failed.');
+  if (/(?:#4\b|code\s*4\b|application request limit reached|rate limit)/i.test(message)) {
+    return 'Meta temporarily rate-limited Page discovery. No account was saved. Wait 10–15 minutes before trying again, and avoid repeated retries; if it continues, Meta may need to raise the app’s request limit.';
+  }
+  return message;
 }
 
 export async function publishFacebook({ pageId, pageToken, text, link, linkMeta, targeting, cta, unpublished, media, cover }) {
