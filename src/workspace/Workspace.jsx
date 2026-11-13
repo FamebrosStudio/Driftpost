@@ -25,7 +25,7 @@ function metricIssue(account) {
     return { title: 'Reconnect YouTube', message: 'YouTube did not accept the saved sign-in. Reconnect this channel in Accounts to refresh access.' };
   }
   if (account.platform === 'facebook' && /permission|pages_read_engagement|pages_show_list|pages_manage_metadata|pages_read_user_content/.test(raw)) {
-    return { title: 'Page access needs updating', message: 'Meta has not granted Driftpost the page insights access this Page requires. Reconnect Facebook in Accounts and approve the requested Page permissions.' };
+    return { title: 'Facebook insights access is missing', message: 'Reconnect this Page in Accounts and approve pages_read_engagement. If Meta does not offer it, the app administrator must enable it in the Facebook Login configuration and grant the app the required Meta access.' };
   }
   if (account.platform === 'instagram' && /permission|oauth|token|unauthorized|190/.test(raw)) {
     return { title: 'Reconnect Instagram', message: 'Instagram did not allow Driftpost to read these account totals. Reconnect the account in Accounts and approve the requested access.' };
@@ -298,13 +298,17 @@ export function AnalyticsPage({ session, onNavigate, onSignOut }) {
   const dateLabel = contentPeriod === 'all' ? 'Latest 25 posts' : `Last ${contentPeriod} days`;
   return <PageFrame page="analytics" onNavigate={onNavigate} email={session.user?.email} onSignOut={onSignOut} eyebrow="Your results, at a glance" title="Analytics" intro="Search for an account to see each connected platform’s results separately." action={<div className="ws-analytics-actions"><button className="ws-secondary" disabled={metricsBusy || contentBusy} onClick={() => setMetricsRefresh((n) => n + 1)}>{metricsBusy || contentBusy ? 'Refreshing…' : 'Refresh'}</button><button className="ws-secondary" onClick={() => onNavigate('history')}>View history <Icon name="arrowRight" size={13} /></button></div>}>
     <section className="ws-panel ws-account-picker">
-      <label htmlFor="analytics-account-search">Search account name</label>
-      <input id="analytics-account-search" type="search" value={accountSearch} onChange={(event) => setAccountSearch(event.target.value)} placeholder="Type an account name…" />
-      <label htmlFor="analytics-account">Select account</label>
-      <select id="analytics-account" value={selectedAccountName} onChange={(event) => setSelectedAccountName(event.target.value)} disabled={metricsBusy || !visibleAccountChoices.length}>
-        <option value="">{metricsBusy ? 'Loading accounts…' : 'Choose an account name'}</option>
-        {visibleAccountChoices.map((account) => <option key={account.key} value={account.key}>{account.name}</option>)}
-      </select>
+      <div className="ws-account-field">
+        <label htmlFor="analytics-account-search">Search account name</label>
+        <input id="analytics-account-search" type="search" value={accountSearch} onChange={(event) => setAccountSearch(event.target.value)} placeholder="Type an account name…" />
+      </div>
+      <div className="ws-account-field">
+        <label htmlFor="analytics-account">Select account</label>
+        <select id="analytics-account" value={selectedAccountName} onChange={(event) => setSelectedAccountName(event.target.value)} disabled={metricsBusy || !visibleAccountChoices.length}>
+          <option value="">{metricsBusy ? 'Loading accounts…' : 'Choose an account name'}</option>
+          {visibleAccountChoices.map((account) => <option key={account.key} value={account.key}>{account.name}</option>)}
+        </select>
+      </div>
       {!metricsBusy && !accountMetrics.length && <p>No connected accounts yet. <button type="button" onClick={() => onNavigate('accounts')}>Connect an account <Icon name="arrowRight" size={12} /></button></p>}
       {!metricsBusy && metricsError && !accountMetrics.length && <p className="ws-account-picker-error" role="alert">{metricsError} <button type="button" onClick={() => setMetricsRefresh((n) => n + 1)}>Try again</button></p>}
       {!metricsBusy && accountMetrics.length > 0 && !filteredAccountChoices.length && <p className="ws-account-picker-error" role="status">No account names match “{accountSearch}”.</p>}
@@ -342,7 +346,7 @@ export function AnalyticsPage({ session, onNavigate, onSignOut }) {
           <div className="ws-platform-section-heading"><div><span className="ws-eyebrow">{dateLabel}</span><h3>Top content based on interactions</h3></div></div>
           {contentBusy && !rawAccountContent.length ? <div className="ws-content-state">Loading this platform’s recent content…</div>
             : contentError && !rawAccountContent.length ? <div className="ws-content-empty is-error"><div><b>Could not load recent content</b><p>{contentError}</p><button type="button" onClick={() => setMetricsRefresh((n) => n + 1)}>Try again</button></div></div>
-              : accountContentError ? <div className="ws-content-empty is-error"><div><b>{accountContentIssue.title}</b><p>{accountContentIssue.message}</p><details><summary>Technical details</summary><small>{accountContentError.error}</small></details><button type="button" onClick={() => onNavigate('accounts')}>Review connection</button></div></div>
+              : accountContentError ? <div className="ws-content-empty is-error"><div className="ws-content-error-copy"><b>{accountContentIssue.title}</b><p>{accountContentIssue.message}</p><button type="button" onClick={() => onNavigate('accounts')}>Reconnect / review Facebook access</button><details><summary>Show technical details</summary><small>{accountContentError.error}</small></details></div></div>
               : accountHasNoPosts ? <div className="ws-content-empty"><div><b>No recent public posts found</b><p>The platform returned no posts for this account.</p></div></div>
                 : !ranked.length ? <div className="ws-content-empty"><div><b>No posts in this time range</b><p>Choose a longer period or check whether this platform allows Driftpost to read post insights.</p></div></div>
                   : <div className="ws-top-content-list">{ranked.slice(0, 3).map((item, index) => <article className="ws-top-content-row" key={`${item.platform}:${item.connectionId}:${item.postId}`}>
