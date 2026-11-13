@@ -105,6 +105,10 @@ export function metaBusinessLoginUrl(state, platform = 'instagram') {
     response_type: 'code',
     state,
   });
+  // Business Login configurations define the granted permission bundle, but
+  // request Page access explicitly as well so a reconnect can refresh the
+  // Page token with the permissions analytics needs.
+  if (platform === 'facebook') p.set('scope', facebookScopes());
   return `https://www.facebook.com/v26.0/dialog/oauth?${p}`;
 }
 

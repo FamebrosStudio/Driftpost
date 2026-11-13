@@ -256,7 +256,9 @@ test('Business Login for Facebook uses the dedicated configuration when present'
   const previous = process.env.META_FB_CONFIG_ID;
   try {
     process.env.META_FB_CONFIG_ID = 'facebook-config';
-    assert.equal(new URL(metaBusinessLoginUrl('state', 'facebook')).searchParams.get('config_id'), 'facebook-config');
+    const url = new URL(metaBusinessLoginUrl('state', 'facebook'));
+    assert.equal(url.searchParams.get('config_id'), 'facebook-config');
+    assert.ok(new Set(url.searchParams.get('scope').split(',')).has('pages_read_engagement'));
   } finally {
     if (previous === undefined) delete process.env.META_FB_CONFIG_ID;
     else process.env.META_FB_CONFIG_ID = previous;
