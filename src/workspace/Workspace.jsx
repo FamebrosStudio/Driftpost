@@ -11,7 +11,11 @@ const NAV = [
   ['analytics', 'Analytics', 'chart'], ['automations', 'Automations', 'sparkles'], ['history', 'Publishing history', 'clock'], ['accounts', 'Connected accounts', 'users'],
 ];
 const platformName = (id) => PLATFORMS.find((p) => p.id === id)?.name || id;
-const accountNameKey = (name) => String(name || '').normalize('NFKC').trim().toLocaleLowerCase();
+// Normalize display names and @handles so "@brandstudio" and "Brand Studio"
+// can select the same client group, while preserving distinct suffixes such as
+// Production, Social, and Studio.
+const accountNameKey = (name) => String(name || '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '')
+  .toLocaleLowerCase().replace(/[^a-z0-9]/g, '');
 const accountGroupLabel = (name) => String(name || '').normalize('NFKC').trim();
 const localIso = (date) => new Date(date.getTime() - date.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
 
@@ -214,7 +218,7 @@ export function AnalyticsPage({ session, onNavigate, onSignOut }) {
   const [contentMetrics, setContentMetrics] = useState([]);
   const [contentBusy, setContentBusy] = useState(true);
   const [contentError, setContentError] = useState('');
-  const [contentPeriod, setContentPeriod] = useState('30');
+  const [contentPeriod, setContentPeriod] = useState('all');
   const [metricsBusy, setMetricsBusy] = useState(true);
   const [metricsError, setMetricsError] = useState('');
   const [metricsRefresh, setMetricsRefresh] = useState(0);
