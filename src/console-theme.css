@@ -1,0 +1,435 @@
+/*
+ * Driftpost console system
+ * Hard-edged publishing desk: ink-black surfaces, mineral white type, cyan
+ * reserved for the active task. Kept out of the public marketing pages.
+ */
+#root .ws,
+#root .hist-shell,
+#root .stage1,
+#root .stage2,
+#root .stage3,
+#root .connect,
+#root .team-video-page,
+#root .approval-page {
+  --bg: #050709;
+  --panel: #0b0f12;
+  --panel2: #11171b;
+  --input: #070a0c;
+  --ink: #f2f4f5;
+  --muted: #abb5bb;
+  --faint: #77858c;
+  --line: #1b252b;
+  --line-hard: #34434a;
+  --hover: #65dfff12;
+  --go: #62d9f3;
+  --go-ink: #061014;
+  --warm: #f0b66b;
+  --warm-bg: #f0b66b1a;
+  --cool: #62d9f3;
+  --cool-bg: #62d9f31a;
+  --accent-soft: #62d9f3;
+  --accent-ink: #061014;
+  --danger: #ff7777;
+  --ok: #73d8ae;
+  color: var(--ink);
+  background-color: var(--bg);
+  font-family: "Poppins", "Segoe UI", sans-serif;
+}
+
+[data-theme="light"] #root .ws,
+[data-theme="light"] #root .hist-shell,
+[data-theme="light"] #root .stage1,
+[data-theme="light"] #root .stage2,
+[data-theme="light"] #root .stage3,
+[data-theme="light"] #root .connect,
+[data-theme="light"] #root .team-video-page,
+[data-theme="light"] #root .approval-page {
+  --bg: #f1f4f5;
+  --panel: #fbfcfc;
+  --panel2: #e8eef0;
+  --input: #ffffff;
+  --ink: #10191d;
+  --muted: #47575e;
+  --faint: #697b82;
+  --line: #d3dde0;
+  --line-hard: #9eafb5;
+  --hover: #008cac12;
+  --go: #007e99;
+  --go-ink: #ffffff;
+  --warm: #8e5010;
+  --warm-bg: #ad64101a;
+  --cool: #007e99;
+  --cool-bg: #007e9914;
+  --accent-soft: #007e99;
+  --accent-ink: #ffffff;
+  --danger: #b4232f;
+  --ok: #087650;
+}
+
+/* Strict geometry contract: every console control and surface has square corners. */
+#root .ws *,
+#root .hist-shell *,
+#root .connect *,
+#root .stage1 *,
+#root .stage2 *,
+#root .stage3 *,
+#root .team-video-page *,
+#root .approval-page * {
+  border-radius: 0 !important;
+}
+#root .ws *::before,
+#root .ws *::after,
+#root .hist-shell *::before,
+#root .hist-shell *::after,
+#root .connect *::before,
+#root .connect *::after,
+#root .stage1 *::before,
+#root .stage1 *::after,
+#root .stage2 *::before,
+#root .stage2 *::after,
+#root .stage3 *::before,
+#root .stage3 *::after,
+#root .team-video-page *::before,
+#root .team-video-page *::after,
+#root .approval-page *::before,
+#root .approval-page *::after {
+  border-radius: 0 !important;
+}
+
+#root .ws,
+#root .hist-shell,
+#root .connect,
+#root .stage1,
+#root .stage2,
+#root .stage3,
+#root .team-video-page,
+#root .approval-page {
+  background-color: var(--bg);
+}
+
+.ws {
+  min-height: 100vh;
+  min-width: 0;
+  background-image:
+    linear-gradient(to right, #82d5e608 1px, transparent 1px),
+    linear-gradient(to bottom, #82d5e608 1px, transparent 1px);
+  background-size: 48px 48px;
+  background-position: center top;
+}
+
+#root .ws .ws-topbar,
+#root .stage1 .ws-topbar,
+#root .stage2 .ws-topbar,
+#root .stage3 .ws-topbar {
+  border-color: var(--line) !important;
+  background: color-mix(in srgb, var(--bg) 94%, transparent) !important;
+  backdrop-filter: blur(14px);
+}
+
+.ws-main,
+.hist-in,
+.connect-in,
+.stage1-in,
+.stage2-in,
+.stage3-in,
+.team-video-page > * {
+  position: relative;
+}
+
+.ws > .ws-main {
+  width: min(1540px, calc(100% - 244px));
+  margin: 0 auto 0 244px;
+  padding: clamp(26px, 4vw, 58px) clamp(22px, 5vw, 76px) 72px;
+}
+
+#root .ws > .ws-topbar {
+  border-right: 1px solid var(--line) !important;
+  background: var(--panel) !important;
+}
+
+#root .ws > .ws-topbar[data-collapsed="true"] ~ .ws-main {
+  width: min(1540px, calc(100% - 76px));
+  margin-left: 76px;
+}
+
+#root .ws .ws-heading {
+  align-items: end;
+  padding-bottom: 22px;
+  border-bottom: 1px solid var(--line);
+}
+
+#root .ws .ws-eyebrow,
+.stage1-badge,
+.s2-badge,
+.s3-badge {
+  color: var(--go) !important;
+  font-family: var(--mono);
+  font-size: 10px !important;
+  font-weight: 600;
+  letter-spacing: .16em !important;
+  text-transform: uppercase !important;
+}
+
+#root .ws .ws-heading h1,
+.stage1-head h1,
+.s2-head h1,
+.s3-head h1 {
+  color: var(--ink);
+  font-size: clamp(32px, 4.2vw, 54px) !important;
+  font-weight: 650;
+  letter-spacing: -.055em !important;
+  line-height: 1.02 !important;
+}
+
+#root .ws .ws-heading p,
+.stage1-head p,
+.s2-head p,
+.s3-head p {
+  max-width: 66ch;
+  color: var(--muted);
+  font-size: 13px !important;
+  line-height: 1.7 !important;
+}
+
+#root .ws .ws-panel,
+#root .ws .ws-stat,
+#root .ws .ws-welcome,
+#root .stage1 .setup-card,
+#root .stage2 .s2-sec,
+#root .stage3 .s3-work,
+#root .approval-page .approval-card,
+#root .hist-shell .hist-panel {
+  border-color: var(--line) !important;
+  background: var(--panel) !important;
+  box-shadow: none !important;
+}
+
+#root .ws .ws-welcome {
+  min-height: 250px;
+  background:
+    radial-gradient(ellipse at 88% 70%, #06232d 0, transparent 42%),
+    linear-gradient(115deg, #090d10, #0a1014 66%, #0a151a) !important;
+}
+
+[data-theme="light"] #root .ws .ws-welcome {
+  background:
+    radial-gradient(ellipse at 88% 70%, #c9edf3 0, transparent 42%),
+    linear-gradient(115deg, #fbfcfc, #f2f7f8 68%, #eaf5f7) !important;
+}
+
+#root .ws .ws-welcome-art {
+  opacity: .36 !important;
+}
+
+#root .ws .ws-stat {
+  min-height: 132px;
+  border-top: 2px solid var(--line-hard) !important;
+}
+
+#root .ws .ws-stat > strong {
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+#root .ws .ws-primary,
+.ws-nav-create,
+.s1-continue,
+.s2-continue,
+.s3-publish {
+  border-color: var(--go) !important;
+  color: var(--go-ink) !important;
+  background: var(--go) !important;
+  font-weight: 700 !important;
+  box-shadow: none !important;
+}
+
+#root .ws .ws-primary:hover,
+.ws-nav-create:hover,
+.s1-continue:hover,
+.s2-continue:hover,
+.s3-publish:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+}
+
+#root .ws .ws-secondary,
+.ws-month-actions button,
+.ws-cancel,
+.ws-overview-link {
+  border-color: var(--line-hard) !important;
+  color: var(--ink) !important;
+  background: var(--panel) !important;
+}
+
+#root .ws .ws-nav button {
+  color: var(--muted);
+}
+
+#root .ws .ws-nav button.active {
+  border-left: 2px solid var(--go);
+  color: var(--ink);
+  background: #62d9f30d;
+}
+
+#root .ws .ws-nav button:hover,
+.ws-text-button:hover,
+.ws-overview-link:hover {
+  color: var(--go) !important;
+  background-color: var(--hover) !important;
+}
+
+#root .ws .ws-icon,
+.ws-day-number,
+.ws-event,
+.ws-status,
+.ws-live-status > i,
+.ws-live-status > span {
+  border-radius: 0 !important;
+}
+
+#root .ws .ws-day.today .ws-day-number,
+#root .ws .ws-day.selected {
+  color: var(--go);
+  background: #62d9f310;
+  box-shadow: inset 0 0 0 1px var(--go);
+}
+
+#root .ws .ws-event {
+  border-left: 2px solid var(--go);
+  color: var(--ink);
+  background: var(--panel2);
+}
+
+.ws-day:focus-visible,
+.ws-nav button:focus-visible,
+.ws button:focus-visible,
+.hist-shell button:focus-visible,
+.connect button:focus-visible,
+.stage1 button:focus-visible,
+.stage2 button:focus-visible,
+.stage3 button:focus-visible,
+.team-video-page button:focus-visible,
+.approval-page button:focus-visible,
+.ws input:focus-visible,
+.ws textarea:focus-visible,
+.ws select:focus-visible,
+.stage1 input:focus-visible,
+.stage1 textarea:focus-visible,
+.stage2 input:focus-visible,
+.stage2 textarea:focus-visible,
+.stage3 input:focus-visible,
+.stage3 textarea:focus-visible {
+  outline: 2px solid var(--go);
+  outline-offset: 2px;
+}
+
+@media (max-width: 760px) {
+  #root .ws > .ws-main {
+    width: 100%;
+    margin: 0;
+    padding: 26px 16px calc(92px + env(safe-area-inset-bottom));
+  }
+
+  #root .ws .ws-heading {
+    align-items: flex-start;
+  }
+
+  #root .ws .ws-welcome {
+    min-height: 220px;
+  }
+
+  #root .ws .ws-stat-grid {
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+  }
+
+  #root .ws .ws-stat {
+    min-height: 112px;
+    border: 0 !important;
+  }
+
+  #root .ws .ws-stat:last-child {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 760px) {
+  #root .ws {
+    background-size: 32px 32px;
+  }
+
+  #root .ws .ws-welcome {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    padding: 22px 18px;
+  }
+
+  #root .ws .ws-welcome > div:first-child {
+    max-width: 100%;
+  }
+
+  #root .ws .ws-welcome-route {
+    width: 100%;
+  }
+
+  #root .ws > .ws-topbar {
+    width: 100vw;
+    min-width: 0;
+    border-right: 0 !important;
+    border-top: 1px solid var(--line) !important;
+  }
+
+  #root .ws > .ws-topbar .ws-nav {
+    flex: 1 1 0;
+    min-width: 0;
+    max-width: 100%;
+    overflow-x: auto;
+  }
+
+  #root .ws > .ws-topbar .ws-nav button {
+    min-width: 56px;
+    flex: 0 0 56px;
+    overflow: hidden;
+  }
+
+  #root .ws > .ws-topbar .ws-nav-label {
+    display: block;
+    max-width: 52px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0;
+  }
+
+  #root .ws > .ws-topbar .ws-nav-label::after {
+    content: attr(data-mobile-label);
+    display: block;
+    overflow: hidden;
+    font-size: 8px;
+    line-height: 1.2;
+    text-overflow: ellipsis;
+  }
+
+  #root .ws > .ws-topbar[data-collapsed="true"] ~ .ws-main {
+    width: 100%;
+    margin: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ws *,
+  .hist-shell *,
+  .connect *,
+  .stage1 *,
+  .stage2 *,
+  .stage3 *,
+  .team-video-page *,
+  .approval-page * {
+    scroll-behavior: auto !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}

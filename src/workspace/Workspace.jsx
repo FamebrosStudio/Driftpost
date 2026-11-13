@@ -10,6 +10,7 @@ const NAV = [
   ['home', 'Overview', 'home'], ['create', 'Create post', 'plus'], ['calendar', 'Calendar', 'calendar'],
   ['analytics', 'Analytics', 'chart'], ['automations', 'Automations', 'sparkles'], ['history', 'Publishing history', 'clock'], ['accounts', 'Connected accounts', 'users'],
 ];
+const MOBILE_NAV_LABELS = { home: 'Home', create: 'Create', calendar: 'Plan', analytics: 'Insights', automations: 'Auto', history: 'History', accounts: 'Accounts' };
 const platformName = (id) => PLATFORMS.find((p) => p.id === id)?.name || id;
 // Normalize display names and @handles so "@brandstudio" and "Brand Studio"
 // can select the same client group, while preserving distinct suffixes such as
@@ -82,7 +83,7 @@ export function WorkspaceNav({ page, onNavigate, email, onSignOut }) {
     {page === 'create' && <button type="button" className="ws-overview-link" onClick={() => onNavigate('home')}><Icon name="arrowLeft" size={15} /> Overview</button>}
     <button type="button" className="ws-collapse-toggle" onClick={toggleCollapsed} aria-expanded={!collapsed} aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'} title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}><span aria-hidden="true">{collapsed ? '›' : '‹'}</span><span className="ws-collapse-label">{collapsed ? 'Expand menu' : 'Collapse menu'}</span></button>
     <nav className="ws-nav" aria-label="Main navigation">
-      {NAV.map(([id, label, icon]) => <button key={id} type="button" className={`${navPage === id ? 'active' : ''} ${id === 'create' ? 'ws-nav-create' : ''}`} aria-current={navPage === id ? 'page' : undefined} title={collapsed ? label : undefined} onClick={() => onNavigate(id)}><span className="ws-nav-icon"><Icon name={icon} size={17} /></span><span className="ws-nav-label">{label}</span></button>)}
+      {NAV.map(([id, label, icon]) => <button key={id} type="button" className={`${navPage === id ? 'active' : ''} ${id === 'create' ? 'ws-nav-create' : ''}`} aria-label={label} aria-current={navPage === id ? 'page' : undefined} title={collapsed ? label : undefined} onClick={() => onNavigate(id)}><span className="ws-nav-icon"><Icon name={icon} size={17} /></span><span className="ws-nav-label" data-mobile-label={MOBILE_NAV_LABELS[id]}>{label}</span></button>)}
       {isAiAccount(email) && <button type="button" className={page === 'team-video' ? 'active' : ''} aria-current={page === 'team-video' ? 'page' : undefined} title={collapsed ? 'Team video' : undefined} onClick={() => onNavigate('team-video')}><span className="ws-nav-icon"><Icon name="sparkles" size={17} /></span><span className="ws-nav-label">Team video</span></button>}
       {isAiAccount(email) && <button type="button" className={page === 'team-video-review' ? 'active' : ''} aria-current={page === 'team-video-review' ? 'page' : undefined} title={collapsed ? 'Video review' : undefined} onClick={() => onNavigate('team-video-review')}><span className="ws-nav-icon"><Icon name="clock" size={17} /></span><span className="ws-nav-label">Video review</span></button>}
     </nav>
