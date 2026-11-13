@@ -948,8 +948,8 @@
   box-shadow: none;
 }
 #root .app-error-mark {
-  background: color-mix(in srgb, var(--warm) 14%, var(--panel));
-  color: var(--warm);
+  background: color-mix(in srgb, var(--go) 14%, var(--panel));
+  color: var(--go);
 }
 #root .app-error-actions button {
   border-color: var(--go);
