@@ -217,12 +217,48 @@ export function AnalyticsPage({ session, onNavigate, onSignOut }) {
   const posts = useMemo(() => readPostLog().filter((p) => p && Number.isFinite(Number(p.at))).sort((a, b) => Number(b.at) - Number(a.at)), []);
   const [schedules, setSchedules] = useState([]);
   const [accountMetrics, setAccountMetrics] = useState([]);
+  const [contentMetrics, setContentMetrics] = useState([]);
+  const [contentBusy, setContentBusy] = useState(true);
+  const [contentError, setContentError] = useState('');
+  const [contentPeriod, setContentPeriod] = useState('30');
   const [metricsBusy, setMetricsBusy] = useState(true);
   const [metricsError, setMetricsError] = useState('');
   const [metricsRefresh, setMetricsRefresh] = useState(0);
   const [metricsUpdatedAt, setMetricsUpdatedAt] = useState('');
   const [accountSearch, setAccountSearch] = useState('');
   const [accountPlatform, setAccountPlatform] = useState('all');
+  const contentReferences = useMemo(() => {
+    const unique = new Map();
+    for (const post of posts) {
+      const published = Array.isArray(post.publishedPosts) && post.publishedPosts.length
+        ? post.publishedPosts
+        : [{ platform: post.platform, postId: post.postId, connectionId: post.connectionId }];
+      for (const item of published) {
+        if (!item?.platform || !item?.postId || !item?.connectionId) continue;
+        const key = `${item.platform}:${item.connectionId}:${item.postId}`;
+        if (!unique.has(key)) unique.set(key, {
+          platform: item.platform, postId: String(item.postId), connectionId: String(item.connectionId),
+          at: Number(post.at), text: String(post.text || '').slice(0, 140), url: String(post.url || ''),
+        });
+      }
+    }
+    return [...unique.values()].slice(0, 50);
+  }, [posts]);
+  useEffect(() => {
+    let active = true;
+    setContentBusy(true); setContentError('');
+    if (!contentReferences.length) {
+      setContentMetrics([]);
+      setContentBusy(false);
+      return () => { active = false; };
+    }
+    api('/api/analytics/content', session.access_token, {
+      method: 'POST', body: JSON.stringify({ posts: contentReferences }),
+    }).then((data) => { if (active) setContentMetrics(data.posts || []); })
+      .catch((error) => { if (active) setContentError(error.message || 'Could not load post interactions.'); })
+      .finally(() => { if (active) setContentBusy(false); });
+    return () => { active = false; };
+  }, [contentReferences, session.access_token, metricsRefresh]);
   useEffect(() => { let active = true; listSchedules(session.access_token, { from: new Date().toISOString() }).then((data) => { if (active) setSchedules(data); }).catch(() => {}); return () => { active = false; }; }, [session.access_token]);
   useEffect(() => {
     let active = true;
@@ -247,15 +283,38 @@ export function AnalyticsPage({ session, onNavigate, onSignOut }) {
   const activeDays = new Set(monthPosts.map((p) => new Date(Number(p.at)).toDateString())).size;
   const chart = Array.from({ length: 7 }, (_, i) => { const d = new Date(weekStart); d.setDate(weekStart.getDate() + i); const next = new Date(d); next.setDate(d.getDate() + 1); return { date: d, count: posts.filter((p) => Number(p.at) >= d.getTime() && Number(p.at) < next.getTime()).length }; });
   const max = Math.max(1, ...chart.map((d) => d.count));
-  return <PageFrame page="analytics" onNavigate={onNavigate} email={session.user?.email} onSignOut={onSignOut} eyebrow="Understand your cadence" title="Analytics" intro="Live account totals alongside your publishing activity." action={<div className="ws-analytics-actions"><button className="ws-secondary" disabled={metricsBusy} onClick={() => setMetricsRefresh((n) => n + 1)}>{metricsBusy ? 'Refreshing…' : 'Refresh metrics'}</button><button className="ws-secondary" onClick={() => onNavigate('history')}>View history <Icon name="arrowRight" size={13} /></button></div>}>
-    <section className="ws-panel ws-live-panel"><div className="ws-panel-head"><div><span className="ws-eyebrow">Connected channels</span><h2>Account performance</h2></div><div className="ws-live-status"><span className={metricsBusy ? 'is-refreshing' : ''} />{metricsBusy ? 'Refreshing live totals' : metricsUpdatedAt ? `Updated ${new Date(metricsUpdatedAt).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })}` : 'Live from each platform'}</div></div>
+  const contentCutoff = contentPeriod === 'all' ? 0 : Date.now() - Number(contentPeriod) * 24 * 60 * 60 * 1000;
+  const contentInPeriod = contentMetrics.filter((item) => Number(item.at) >= contentCutoff);
+  const rankedContent = contentInPeriod
+    .filter((item) => item.interactions != null && Number.isFinite(Number(item.interactions)))
+    .sort((a, b) => Number(b.interactions) - Number(a.interactions));
+  const unavailableContent = contentInPeriod.filter((item) => item.interactions == null).length;
+  return <PageFrame page="analytics" onNavigate={onNavigate} email={session.user?.email} onSignOut={onSignOut} eyebrow="Your results, at a glance" title="Analytics" intro="See what’s resonating and how your channels are growing." action={<div className="ws-analytics-actions"><button className="ws-secondary" disabled={metricsBusy || contentBusy} onClick={() => setMetricsRefresh((n) => n + 1)}>{metricsBusy || contentBusy ? 'Refreshing…' : 'Refresh'}</button><button className="ws-secondary" onClick={() => onNavigate('history')}>View history <Icon name="arrowRight" size={13} /></button></div>}>
+    <section className="ws-panel ws-top-content">
+      <div className="ws-panel-head"><div><span className="ws-eyebrow">What’s working</span><h2>Top content based on interactions</h2><p>Ranked by likes, comments, replies, and shares from your connected platforms.</p></div>
+        <div className="ws-content-period" aria-label="Choose content period">{[['7', '7 days'], ['30', '30 days'], ['all', 'All time']].map(([value, label]) => <button type="button" key={value} className={contentPeriod === value ? 'active' : ''} aria-pressed={contentPeriod === value} onClick={() => setContentPeriod(value)}>{label}</button>)}</div>
+      </div>
+      {contentBusy && !contentMetrics.length ? <div className="ws-content-state">Loading post interactions…</div>
+        : contentError && !contentMetrics.length ? <div className="ws-content-state is-error" role="alert">{contentError} <button type="button" onClick={() => setMetricsRefresh((n) => n + 1)}>Try again</button></div>
+          : rankedContent.length ? <div className="ws-top-content-list">{rankedContent.slice(0, 8).map((item, index) => <article className="ws-top-content-row" key={`${item.platform}:${item.connectionId}:${item.postId}`}>
+            <span className="ws-content-rank">{String(index + 1).padStart(2, '0')}</span><span className="ws-icon"><BrandIcon id={item.platform} size={17} /></span>
+            <div className="ws-content-copy"><b>{item.text || 'Published post'}</b><small>{platformName(item.platform)} · {Number(item.at) ? new Date(Number(item.at)).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) : 'Date unavailable'}</small></div>
+            <div className="ws-content-interactions"><b>{Number(item.interactions).toLocaleString()}</b><small>interactions</small></div>
+            {/^https?:\/\//i.test(item.url || '') && <a className="ws-content-open" href={item.url} target="_blank" rel="noreferrer">Open post <Icon name="arrowRight" size={12} /></a>}
+          </article>)}</div>
+            : <div className="ws-content-empty"><span className="ws-insight-mark"><Icon name="chart" /></span><div><b>{!contentInPeriod.length ? (contentReferences.length ? 'No published posts in this period' : 'Your top posts will show up here') : 'No interaction totals available yet'}</b><p>{!contentInPeriod.length ? (contentReferences.length ? 'Choose another time range to see your recent top posts.' : 'Publish from this browser and we’ll rank posts here when their platform interaction totals are available.') : 'A platform may not provide post-level insights for these accounts. Check permissions or reconnect the account, then refresh.'}</p></div></div>}
+      {unavailableContent > 0 && rankedContent.length > 0 && <small className="ws-content-note">{unavailableContent} post{unavailableContent === 1 ? '' : 's'} could not return interaction totals.</small>}
+    </section>
+    <details className="ws-panel ws-account-details"><summary><span><b>Account performance</b><small>Follower and channel totals across connected accounts</small></span><span className="ws-live-status"><i className={metricsBusy ? 'is-refreshing' : ''} />{metricsBusy ? 'Refreshing' : metricsUpdatedAt ? `Updated ${new Date(metricsUpdatedAt).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })}` : 'Channel totals'}</span></summary>
+      <section className="ws-live-panel"><div className="ws-panel-head"><div><span className="ws-eyebrow">Connected channels</span><h2>Account performance</h2></div></div>
         {metricsBusy && !accountMetrics.length ? <div className="ws-inline-state">Loading account metrics…</div> : metricsError && !accountMetrics.length ? <div className="ws-metric-load-error" role="alert"><div><b>Account metrics could not load</b><small>{metricsError}</small></div><button className="ws-secondary" onClick={() => setMetricsRefresh((n) => n + 1)}>Try again</button></div> : !accountMetrics.length ? <div className="ws-empty compact"><b>No connected accounts yet</b><small>Connect a channel to see its available account metrics.</small><button onClick={() => onNavigate('accounts')}>Connect accounts <Icon name="arrowRight" size={13} /></button></div> : <>
         {metricsError && <div className="ws-metric-stale" role="status">Couldn’t refresh live totals. Showing the last results. <button type="button" onClick={() => setMetricsRefresh((n) => n + 1)}>Try again</button></div>}
         <div className="ws-metric-summary"><span><i className="available" />{workingMetrics} with live totals</span>{unavailableMetrics > 0 && <span><i className="needs-attention" />{unavailableMetrics} need attention</span>}<small>{accountMetrics.length} connected channel{accountMetrics.length === 1 ? '' : 's'}</small></div>
         <div className="ws-metric-controls"><label className="ws-metric-search"><span className="sr-only">Search connected accounts</span><input type="search" value={accountSearch} onChange={(event) => setAccountSearch(event.target.value)} placeholder="Search accounts by name or platform" /></label><label className="ws-metric-platform"><span className="sr-only">Filter by platform</span><select value={accountPlatform} onChange={(event) => setAccountPlatform(event.target.value)}><option value="all">All platforms</option>{PLATFORMS.map((platform) => <option key={platform.id} value={platform.id}>{platform.name}</option>)}</select></label><small>{filteredMetrics.length} of {accountMetrics.length} shown</small></div>
         {filteredMetrics.length ? <div className="ws-metric-grid">{filteredMetrics.map((account) => <article className={`ws-metric-card${account.error ? ' has-error' : ''}`} key={account.id}><div className="ws-metric-heading"><span className="ws-icon"><BrandIcon id={account.platform} size={17} /></span><div><b>{platformName(account.platform)}</b><small title={account.name}>{account.name}</small></div>{account.error && <span className="ws-metric-state">Needs attention</span>}</div>{account.error ? <div className="ws-metric-error"><b>{metricIssue(account).title}</b><p>{metricIssue(account).message}</p><button type="button" onClick={() => onNavigate('accounts')}>Review connection <Icon name="arrowRight" size={12} /></button><details><summary>Technical details</summary><small>{account.error}</small></details></div> : Object.entries(account.metrics || {}).filter(([, value]) => value != null).length ? <div className="ws-metric-values">{Object.entries(account.metrics || {}).filter(([, value]) => value != null).map(([key, value]) => <span key={key}><b>{Number(value).toLocaleString()}</b><small>{({ followers: 'Followers', following: 'Following', subscribers: 'Subscribers', views: 'Lifetime views', posts: account.platform === 'youtube' ? 'Videos' : 'Posts' })[key] || key}</small></span>)}</div> : <div className="ws-metric-no-data">This platform does not provide public totals for this account.</div>}</article>)}</div> : <div className="ws-empty compact ws-metric-empty"><b>No accounts match these filters</b><small>Try a different name or select all platforms.</small><button type="button" onClick={() => { setAccountSearch(''); setAccountPlatform('all'); }}>Clear filters</button></div>}
       </>}
-    </section>
+      </section>
+    </details>
     <div className="ws-stat-grid ws-analytics-stats"><article className="ws-stat"><span>Published this month</span><strong>{monthPosts.length}</strong><small>Saved post records in this browser</small></article><article className="ws-stat"><span>Last 7 days</span><strong>{thisWeek}</strong><small>Saved post records in this browser</small></article><article className="ws-stat"><span>Scheduled next</span><strong>{scheduled}</strong><small>Posts waiting to publish</small></article><article className="ws-stat"><span>Active publishing days</span><strong>{activeDays}</strong><small>Days with a saved post</small></article></div>
     <div className="ws-two-col ws-analytics-grid"><section className="ws-panel"><div className="ws-panel-head"><div><span className="ws-eyebrow">Recent activity</span><h2>Posts over the last 7 days</h2></div></div><div className="ws-chart" role="img" aria-label="Number of saved published posts per day for the last seven days">{chart.map((d) => <div className="ws-chart-day" key={d.date.toISOString()}><div className="ws-chart-track"><i style={{ height: `${Math.max(d.count ? 10 : 3, d.count / max * 100)}%` }} title={`${d.count} posts`} /></div><b>{d.count}</b><small>{d.date.toLocaleDateString(undefined, { weekday: 'short' })}</small></div>)}</div></section>
       <section className="ws-panel"><div className="ws-panel-head"><div><span className="ws-eyebrow">Channel mix</span><h2>Publishing by platform</h2></div></div><PlatformBars posts={posts} /></section>

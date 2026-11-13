@@ -173,9 +173,44 @@
 .ws-analytics-stats { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 .ws-analytics-actions { display: flex; gap: 8px; }
 .ws-live-panel { margin-bottom: 14px; }
+.ws-top-content { margin-bottom: 14px; }
+.ws-top-content .ws-panel-head { align-items: flex-start; }
+.ws-top-content .ws-panel-head p { margin: 6px 0 0; color: var(--muted); font-size: 10px; line-height: 1.5; }
+.ws-content-period { display: flex; flex: 0 0 auto; gap: 3px; padding: 3px; border: 1px solid var(--line); border-radius: 9px; background: var(--bg); }
+.ws-content-period button { min-height: 30px; padding: 0 9px; border: 0; border-radius: 6px; color: var(--muted); background: transparent; font: inherit; font-size: 9px; cursor: pointer; }
+.ws-content-period button.active { color: var(--ink); background: var(--panel2); box-shadow: 0 1px 4px #00000018; }
+.ws-top-content-list { display: flex; flex-direction: column; }
+.ws-top-content-row { display: grid; grid-template-columns: 30px 34px minmax(0, 1fr) auto auto; align-items: center; gap: 11px; min-width: 0; padding: 12px 2px; border-top: 1px solid var(--line); }
+.ws-content-rank { color: var(--faint); font-size: 10px; font-variant-numeric: tabular-nums; }
+.ws-content-copy { min-width: 0; }
+.ws-content-copy b { display: -webkit-box; overflow: hidden; color: var(--ink); font-size: 11px; font-weight: 600; line-height: 1.45; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.ws-content-copy small, .ws-content-interactions small { display: block; margin-top: 4px; color: var(--faint); font-size: 9px; }
+.ws-content-interactions { min-width: 78px; text-align: right; }
+.ws-content-interactions b { color: var(--ink); font-size: 16px; font-variant-numeric: tabular-nums; }
+.ws-content-open { display: inline-flex; align-items: center; gap: 5px; color: var(--go); font-size: 9px; font-weight: 650; text-decoration: none; white-space: nowrap; }
+.ws-content-open:hover { text-decoration: underline; }
+.ws-content-state { padding: 15px 0 2px; color: var(--muted); font-size: 11px; }
+.ws-content-state.is-error { color: var(--danger, #e5484d); }
+.ws-content-state button { margin-left: 8px; border: 0; color: var(--go); background: transparent; font: inherit; font-weight: 700; cursor: pointer; }
+.ws-content-empty { display: flex; align-items: center; gap: 12px; padding: 14px 0 3px; border-top: 1px solid var(--line); }
+.ws-content-empty > div { min-width: 0; }
+.ws-content-empty b { font-size: 11px; }
+.ws-content-empty p { margin: 4px 0 0; color: var(--muted); font-size: 10px; line-height: 1.5; }
+.ws-content-note { display: block; margin-top: 9px; color: var(--faint); font-size: 9px; }
+.ws-account-details { margin-bottom: 14px; padding: 0; overflow: hidden; }
+.ws-account-details > summary { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 18px; cursor: pointer; list-style: none; }
+.ws-account-details > summary::-webkit-details-marker { display: none; }
+.ws-account-details > summary::after { content: '+'; color: var(--go); font-size: 18px; line-height: 1; }
+.ws-account-details[open] > summary::after { content: '−'; }
+.ws-account-details > summary > span:first-child b, .ws-account-details > summary > span:first-child small { display: block; }
+.ws-account-details > summary > span:first-child b { font-size: 12px; }
+.ws-account-details > summary > span:first-child small { margin-top: 4px; color: var(--muted); font-size: 9px; }
+.ws-account-details > summary .ws-live-status { margin-left: auto; }
+.ws-account-details > section { padding: 0 18px 18px; }
+.ws-account-details .ws-panel-head { display: none; }
 .ws-live-status { display: flex; align-items: center; gap: 7px; color: var(--faint); font-size: 10px; }
-.ws-live-status > span { width: 7px; height: 7px; border-radius: 50%; background: var(--ok, #36b58f); box-shadow: 0 0 0 3px color-mix(in srgb, var(--ok, #36b58f) 13%, transparent); }
-.ws-live-status > span.is-refreshing { background: #e1a83c; box-shadow: 0 0 0 3px color-mix(in srgb, #e1a83c 14%, transparent); animation: ws-status-pulse 1.1s ease-in-out infinite; }
+.ws-live-status > span, .ws-live-status > i { width: 7px; height: 7px; border-radius: 50%; background: var(--ok, #36b58f); box-shadow: 0 0 0 3px color-mix(in srgb, var(--ok, #36b58f) 13%, transparent); }
+.ws-live-status > span.is-refreshing, .ws-live-status > i.is-refreshing { background: #e1a83c; box-shadow: 0 0 0 3px color-mix(in srgb, #e1a83c 14%, transparent); animation: ws-status-pulse 1.1s ease-in-out infinite; }
 .ws-metric-summary { display: flex; align-items: center; flex-wrap: wrap; gap: 9px 17px; margin: -3px 0 14px; color: var(--muted); font-size: 10px; }
 .ws-metric-summary span { display: inline-flex; align-items: center; gap: 6px; }
 .ws-metric-summary i { width: 7px; height: 7px; border-radius: 50%; background: var(--ok, #36b58f); }
@@ -366,6 +401,15 @@
   .ws-upcoming-row > div small { max-width: 180px; }
   .ws-analytics-stats .ws-stat { min-height: 118px; }
   .ws-analytics-actions { flex-wrap: wrap; }
+  .ws-top-content .ws-panel-head { align-items: stretch; flex-direction: column; gap: 12px; }
+  .ws-content-period { align-self: flex-start; }
+  .ws-account-details > summary { align-items: flex-start; padding: 14px 12px; }
+  .ws-account-details > section { padding: 0 12px 12px; }
+  .ws-account-details > summary .ws-live-status { max-width: 105px; }
+  .ws-top-content-row { grid-template-columns: 22px 30px minmax(0, 1fr) auto; gap: 8px; }
+  .ws-content-interactions { min-width: 62px; }
+  .ws-content-interactions b { font-size: 14px; }
+  .ws-content-open { grid-column: 3 / -1; justify-self: start; margin-top: -2px; }
   .ws-metric-grid { grid-template-columns: minmax(0, 1fr); }
   .ws-insight { align-items: flex-start; flex-wrap: wrap; }
   .ws-insight .ws-text-button { margin-left: 45px; }
@@ -394,6 +438,10 @@
   .ws-metric-load-error { align-items: flex-start; flex-direction: column; }
   .ws-metric-load-error > button { width: 100%; }
   .ws-metric-stale { align-items: flex-start; flex-direction: column; }
+  .ws-content-period { max-width: 100%; }
+  .ws-content-period button { padding: 0 7px; font-size: 8px; }
+  .ws-content-empty { align-items: flex-start; }
+  .ws-account-details > summary .ws-live-status { display: none; }
   .ws-panel { padding: 13px 11px; }
   .ws-calendar-panel { overflow-x: auto; }
   .ws-calendar-grid { min-width: 0; }
