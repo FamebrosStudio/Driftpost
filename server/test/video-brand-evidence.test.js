@@ -1,6 +1,35 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { parseVideoBrandSuggestions, parseVideoCoverChoice, selectBrandEvidenceFrames } from '../src/ai.js';
+import { parseVideoBrandSuggestions, parseVideoCoverChoice, selectBrandEvidenceFrames, videoEvidenceSampleTimes } from '../src/ai.js';
+
+test('brand verification samples the full timeline including a final logo/end card', () => {
+  const times = videoEvidenceSampleTimes(8.289, 5);
+  assert.equal(times.length, 5);
+  assert.ok(times[0] < 0.1);
+  assert.ok(Math.abs(times[2] - 4.1445) < 0.01);
+  assert.ok(times[4] > 8.1);
+  assert.deepEqual(times, [...times].sort((a, b) => a - b));
+  const frames = times.map((time, index) => ({
+    name: index === 4 ? 'final-brand-end-card.jpg' : `frame-${time}.jpg`,
+    mimetype: 'image/jpeg',
+    base64: `frame-${index}`,
+  }));
+  assert.deepEqual(selectBrandEvidenceFrames(frames, 5).map((frame) => frame.name), [
+    'frame-0.08.jpg',
+    'frame-2.11225.jpg',
+    'frame-4.1445.jpg',
+    'frame-6.17675.jpg',
+    'final-brand-end-card.jpg',
+  ]);
+});
+
+test('brand evidence sampling returns safe, unique timestamps for very short clips', () => {
+  const times = videoEvidenceSampleTimes(0.1, 5);
+  assert.equal(times.length, 5);
+  assert.ok(times.every((time) => time >= 0 && time < 0.1));
+  assert.equal(new Set(times).size, times.length);
+  assert.deepEqual(videoEvidenceSampleTimes(0), []);
+});
 
 test('brand verification samples the beginning, middle, and end of available video frames', () => {
   const images = Array.from({ length: 8 }, (_, index) => ({

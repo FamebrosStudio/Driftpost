@@ -6,7 +6,7 @@ import path from 'node:path';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { transcribeVideo } from './video-analysis.js';
-import { generateCaptions } from './ai.js';
+import { generateCaptions, videoEvidenceSampleTimes } from './ai.js';
 import { uploadMediaFile } from './media-io.js';
 import { getBrandById, resolveBrand } from './brand-memory/index.js';
 import { canUsePrivateBrandData } from './brand-access.js';
@@ -83,10 +83,9 @@ async function sampleFrames(videoPath, directory) {
   ], { timeout: 60_000, maxBuffer: 1024 * 1024 });
   const duration = Number(stdout.trim());
   if (!Number.isFinite(duration) || duration <= 0) throw new Error('The video duration could not be read. Send an MP4, MOV, or WebM video.');
-  const count = 3;
   const frames = [];
-  for (let index = 0; index < count; index++) {
-    const seconds = Math.min(Math.max(0, duration - 0.1), duration * ((index + 0.5) / count));
+  const sampleTimes = videoEvidenceSampleTimes(duration, 5);
+  for (const [index, seconds] of sampleTimes.entries()) {
     const output = path.join(directory, `frame-${index}.jpg`);
     await execFileAsync('ffmpeg', [
       '-hide_banner', '-loglevel', 'error', '-y', '-ss', String(seconds), '-i', videoPath,
