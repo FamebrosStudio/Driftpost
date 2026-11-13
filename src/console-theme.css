@@ -937,6 +937,31 @@
 }
 #root .team-video-page, #root .team-video-review-page { background: var(--bg) !important; }
 
+/* Keep the fatal-error fallback within the same mint/charcoal visual system. */
+#root .app-error {
+  background: var(--bg);
+  color: var(--ink);
+}
+#root .app-error-card {
+  border-color: var(--line);
+  background: var(--panel);
+  box-shadow: none;
+}
+#root .app-error-mark {
+  background: color-mix(in srgb, var(--warm) 14%, var(--panel));
+  color: var(--warm);
+}
+#root .app-error-actions button {
+  border-color: var(--go);
+  color: var(--go-ink);
+  background: var(--go);
+}
+#root .app-error-actions a {
+  border-color: var(--line-hard);
+  color: var(--ink);
+  background: var(--panel2);
+}
+
 @media (max-width: 760px) {
   #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar,
   #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar[data-collapsed="true"] {
