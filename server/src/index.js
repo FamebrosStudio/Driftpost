@@ -32,6 +32,7 @@ import { eraseUserMedia } from './storage-cleanup.js';
 import { enabledInstagramCollaborators, instagramCaptionRequiredError, nonEmptyCaption } from './caption-guards.js';
 import { createTemporaryMediaUrl, isOwnedMediaPath, isValidPreuploadedMedia } from './media-links.js';
 import { canUsePrivateBrandData } from './brand-access.js';
+import { isAllowedOrigin, normalizeHttpOrigin } from './cors-policy.js';
 import { createTelegramIntakeRouter, registerTelegramWebhook } from './telegram-intake.js';
 import { getDriveReviewFile, startGoogleDriveIntake, streamDriveReviewFile } from './google-drive-intake.js';
 import { authorizeMcpDevice, createMcpDeviceAuthorization, findMcpAccessToken, pollMcpDeviceAuthorization } from './mcp-auth.js';
@@ -59,17 +60,17 @@ const scheduleWorkerHealth = {
   lastError: null,
   lastClaimedCount: 0,
 };
-const allowedOrigins = (process.env.FRONTEND_URL || '').split(',').map((o) => o.trim()).filter(Boolean);
+const allowedOrigins = (process.env.FRONTEND_URL || '').split(',').map(normalizeHttpOrigin).filter(Boolean);
 // Hardcoded fallback so the API stays reachable from the deployed frontend
 // even if FRONTEND_URL is missing on the server env.
-const KNOWN_ORIGINS = ['https://driftpostpage.vercel.app'];
+const KNOWN_ORIGINS = ['https://driftpostpage.vercel.app', 'https://driftpost.vercel.app'];
 const corsOptions = {
   origin: (origin, callback) => {
     // Allow server-to-server / curl / mobile apps with no Origin header,
     // plus any explicitly configured frontend URL and the known deployed
     // frontend origin (handles the case where FRONTEND_URL env var is
     // empty on the server, which silently breaks all CORS).
-    if (!origin || allowedOrigins.includes(origin) || KNOWN_ORIGINS.includes(origin)) {
+    if (isAllowedOrigin(origin, allowedOrigins, KNOWN_ORIGINS)) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));
