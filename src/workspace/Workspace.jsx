@@ -11,15 +11,8 @@ const NAV = [
   ['analytics', 'Analytics', 'chart'], ['automations', 'Automations', 'sparkles'], ['history', 'Publishing history', 'clock'], ['accounts', 'Connected accounts', 'users'],
 ];
 const platformName = (id) => PLATFORMS.find((p) => p.id === id)?.name || id;
-const accountNameKey = (name) => {
-  const compact = String(name || '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '')
-    .toLocaleLowerCase().replace(/[^a-z0-9]/g, '');
-  const root = compact.replace(/(production|social|studio)$/, '');
-  return root.length >= 5 ? root : compact;
-};
-const accountGroupLabel = (name) => String(name || '').normalize('NFKC').trim()
-  .replace(/^@+/, '').replace(/[\s._-]*(production|social|studio)$/i, '').trim()
-  .replace(/^./, (first) => first.toLocaleUpperCase());
+const accountNameKey = (name) => String(name || '').normalize('NFKC').trim().toLocaleLowerCase();
+const accountGroupLabel = (name) => String(name || '').normalize('NFKC').trim();
 const localIso = (date) => new Date(date.getTime() - date.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
 
 function metricIssue(account) {
@@ -258,6 +251,10 @@ export function AnalyticsPage({ session, onNavigate, onSignOut }) {
     return [...unique.values()].sort((a, b) => a.name.localeCompare(b.name));
   }, [accountMetrics]);
   const filteredAccountChoices = accountChoices.filter((account) => matchesSearchText(accountSearch, account.name, ...account.aliases));
+  const selectedAccountChoice = accountChoices.find((account) => account.key === selectedAccountName);
+  const visibleAccountChoices = selectedAccountChoice && !filteredAccountChoices.some((account) => account.key === selectedAccountChoice.key)
+    ? [selectedAccountChoice, ...filteredAccountChoices]
+    : filteredAccountChoices;
   const selectedAccounts = useMemo(
     () => accountMetrics.filter((account) => accountNameKey(account.name) === selectedAccountName),
     [accountMetrics, selectedAccountName],
@@ -300,9 +297,9 @@ export function AnalyticsPage({ session, onNavigate, onSignOut }) {
       <label htmlFor="analytics-account-search">Search account name</label>
       <input id="analytics-account-search" type="search" value={accountSearch} onChange={(event) => setAccountSearch(event.target.value)} placeholder="Type an account name…" />
       <label htmlFor="analytics-account">Select account</label>
-      <select id="analytics-account" value={selectedAccountName} onChange={(event) => setSelectedAccountName(event.target.value)} disabled={metricsBusy || !filteredAccountChoices.length}>
+      <select id="analytics-account" value={selectedAccountName} onChange={(event) => setSelectedAccountName(event.target.value)} disabled={metricsBusy || !visibleAccountChoices.length}>
         <option value="">{metricsBusy ? 'Loading accounts…' : 'Choose an account name'}</option>
-        {filteredAccountChoices.map((account) => <option key={account.key} value={account.key}>{account.name}</option>)}
+        {visibleAccountChoices.map((account) => <option key={account.key} value={account.key}>{account.name}</option>)}
       </select>
       {!metricsBusy && !accountMetrics.length && <p>No connected accounts yet. <button type="button" onClick={() => onNavigate('accounts')}>Connect an account <Icon name="arrowRight" size={12} /></button></p>}
       {!metricsBusy && metricsError && !accountMetrics.length && <p className="ws-account-picker-error" role="alert">{metricsError} <button type="button" onClick={() => setMetricsRefresh((n) => n + 1)}>Try again</button></p>}
@@ -316,6 +313,7 @@ export function AnalyticsPage({ session, onNavigate, onSignOut }) {
         const rawAccountContent = contentMetrics.filter((post) => post.connectionId === account.id);
         const accountContent = rawAccountContent.filter((post) => !post.error && !post.isEmpty && Number(post.at) >= contentCutoff);
         const accountContentError = rawAccountContent.find((post) => post.error);
+        const accountContentIssue = accountContentError ? metricIssue({ platform: account.platform, error: accountContentError.error }) : null;
         const accountHasNoPosts = rawAccountContent.some((post) => post.isEmpty);
         const ranked = accountContent.filter((post) => post.interactions != null && Number.isFinite(Number(post.interactions))).sort((a, b) => Number(b.interactions) - Number(a.interactions));
         const accountNow = new Date();
@@ -340,7 +338,7 @@ export function AnalyticsPage({ session, onNavigate, onSignOut }) {
           <div className="ws-platform-section-heading"><div><span className="ws-eyebrow">{dateLabel}</span><h3>Top content based on interactions</h3></div></div>
           {contentBusy && !rawAccountContent.length ? <div className="ws-content-state">Loading this platform’s recent content…</div>
             : contentError && !rawAccountContent.length ? <div className="ws-content-empty is-error"><div><b>Could not load recent content</b><p>{contentError}</p><button type="button" onClick={() => setMetricsRefresh((n) => n + 1)}>Try again</button></div></div>
-              : accountContentError ? <div className="ws-content-empty is-error"><div><b>Post insights unavailable</b><p>{accountContentError.error}</p><button type="button" onClick={() => onNavigate('accounts')}>Review connection</button></div></div>
+              : accountContentError ? <div className="ws-content-empty is-error"><div><b>{accountContentIssue.title}</b><p>{accountContentIssue.message}</p><details><summary>Technical details</summary><small>{accountContentError.error}</small></details><button type="button" onClick={() => onNavigate('accounts')}>Review connection</button></div></div>
               : accountHasNoPosts ? <div className="ws-content-empty"><div><b>No recent public posts found</b><p>The platform returned no posts for this account.</p></div></div>
                 : !ranked.length ? <div className="ws-content-empty"><div><b>No posts in this time range</b><p>Choose a longer period or check whether this platform allows Driftpost to read post insights.</p></div></div>
                   : <div className="ws-top-content-list">{ranked.map((item, index) => <article className="ws-top-content-row" key={`${item.platform}:${item.connectionId}:${item.postId}`}>
