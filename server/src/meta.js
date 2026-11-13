@@ -75,11 +75,19 @@ export function metaAuthorizationUrl(state) {
   return `https://www.facebook.com/v21.0/dialog/oauth?${p}`;
 }
 
+// Use a dedicated Facebook Business Login configuration only when explicitly
+// configured. Do not reuse Instagram's configuration for Page connections.
+export function facebookAuthorizationUrl(state) {
+  return process.env.META_FB_CONFIG_ID
+    ? metaBusinessLoginUrl(state, 'facebook')
+    : metaAuthorizationUrl(state);
+}
+
 export function metaBusinessLoginUrl(state, platform = 'instagram') {
   const p = new URLSearchParams({
     client_id: process.env.META_APP_ID,
     redirect_uri: process.env.META_REDIRECT_URI,
-    config_id: platform === 'facebook' ? process.env.META_FB_CONFIG_ID || process.env.META_CONFIG_ID : process.env.META_CONFIG_ID,
+    config_id: platform === 'facebook' ? process.env.META_FB_CONFIG_ID : process.env.META_CONFIG_ID,
     response_type: 'code',
     state,
   });

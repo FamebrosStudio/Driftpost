@@ -18,7 +18,7 @@ import { businessProfileAuthorizationUrl, businessProfileErrorMessage, driveInta
 import { learnedVoice, markLatestUsed, markUsed, recordGeneration } from './captionMemory.js';
 import { consentState, forgetUser, hasPersonalisationConsent, recordConsent, POLICY_VERSION, PURPOSES } from './consent.js';
 import { setVideoThumbnail, uploadVideoResumable, validAccessToken } from './youtube-upload.js';
-import { deleteFacebookPost, discoverInstagramAccount, exchangeMetaCode, getMetaPages, longLivedToken, metaAuthorizationUrl, metaBusinessLoginUrl, publishFacebook, publishInstagram, subscribeInstagramWebhooks, sendInstagramPrivateReply, subscribeFacebookWebhooks } from './meta.js';
+import { deleteFacebookPost, discoverInstagramAccount, exchangeMetaCode, facebookAuthorizationUrl, getMetaPages, longLivedToken, metaAuthorizationUrl, metaBusinessLoginUrl, publishFacebook, publishInstagram, subscribeInstagramWebhooks, sendInstagramPrivateReply, subscribeFacebookWebhooks } from './meta.js';
 import { createPkcePair, exchangeXCode, getXUser, xAuthorizationUrl } from './x.js';
 import { createXPost, deleteXPost, uploadXMedia, validXAccessToken } from './x-publish.js';
 import { assessVideoBrandMatch, chooseVideoCoverFrame, generateCaptions, inferLikelyVideoBrands } from './ai.js';
@@ -2009,7 +2009,7 @@ app.post('/api/oauth/facebook/start', requireUser, oauthLimit, (req, res) => {
     return res.status(503).json({ error: 'Meta/Facebook is not configured on the API yet. Set META_APP_ID, META_APP_SECRET and META_REDIRECT_URI in the API environment, then redeploy.' });
   }
   const state = signState({ userId: req.user.id, platform: 'facebook', nonce: crypto.randomUUID(), exp: Date.now() + 10 * 60 * 1000 });
-  res.json({ url: process.env.META_FB_CONFIG_ID || process.env.META_CONFIG_ID ? metaBusinessLoginUrl(state, 'facebook') : metaAuthorizationUrl(state) });
+  res.json({ url: facebookAuthorizationUrl(state) });
 });
 app.post('/api/oauth/instagram/start', requireUser, oauthLimit, (req, res) => {
   if (!process.env.META_APP_ID || !process.env.META_APP_SECRET || !process.env.META_REDIRECT_URI) {
@@ -2021,10 +2021,20 @@ app.post('/api/oauth/instagram/start', requireUser, oauthLimit, (req, res) => {
 
 app.get('/api/oauth/meta/callback', callbackLimit, async (req, res) => {
   const back = new URL(FRONTEND_HOME);
+  back.pathname = '/console/accounts';
   try {
-    if (req.query.error) throw new Error(String(req.query.error_description || req.query.error));
+    const metaError = String(req.query.error_description || req.query.error_message || req.query.error || '');
+    const errorCode = String(req.query.error_code || '');
+    if (metaError || errorCode) {
+      if (/cancel|4201|access_denied/i.test(`${metaError} ${errorCode}`)) {
+        back.searchParams.set('oauth_error', 'Facebook login was cancelled or did not finish. No account was added. Try again; if it keeps looping, ask the administrator to check the Facebook Login configuration and approved permissions.');
+        return res.redirect(back.toString());
+      }
+      throw new Error(metaError || `Meta login failed (code ${errorCode}).`);
+    }
     const state = verifyState(req.query.state);
     burnState(state);
+    if (!req.query.code) throw new Error('Meta did not return an authorization code. No account was added. Please try connecting again.');
     const short = await exchangeMetaCode(String(req.query.code || ''));
     const long = await longLivedToken(short.access_token);
     const userToken = long.access_token;

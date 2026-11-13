@@ -1,12 +1,32 @@
 ﻿import test from 'node:test';
 import assert from 'node:assert/strict';
-import { subscribeFacebookWebhooks, metaBusinessLoginUrl, sendInstagramPrivateReply, metaAuthorizationUrl, publishFacebook, publishFacebookCarousel, resolveInstagramCollaboratorUsernames, subscribeInstagramWebhooks } from '../src/meta.js';
+import { subscribeFacebookWebhooks, facebookAuthorizationUrl, metaBusinessLoginUrl, sendInstagramPrivateReply, metaAuthorizationUrl, publishFacebook, publishFacebookCarousel, resolveInstagramCollaboratorUsernames, subscribeInstagramWebhooks } from '../src/meta.js';
 
 test('Facebook login requests only the configured Facebook/Page consent scopes by default', () => {
   const url = new URL(metaAuthorizationUrl('signed-state'));
   const scopes = new Set(url.searchParams.get('scope').split(','));
   for (const scope of ['pages_show_list', 'pages_read_engagement', 'pages_manage_posts']) assert.ok(scopes.has(scope));
   for (const scope of ['instagram_manage_comments', 'instagram_manage_messages', 'instagram_manage_insights']) assert.equal(scopes.has(scope), false);
+});
+
+test('Facebook connection does not accidentally reuse the Instagram Business Login configuration', () => {
+  const previousFb = process.env.META_FB_CONFIG_ID;
+  const previousIg = process.env.META_CONFIG_ID;
+  try {
+    delete process.env.META_FB_CONFIG_ID;
+    process.env.META_CONFIG_ID = 'instagram-business-config';
+    const url = new URL(facebookAuthorizationUrl('state'));
+    assert.equal(url.pathname, '/v21.0/dialog/oauth');
+    assert.equal(url.searchParams.has('config_id'), false);
+    process.env.META_FB_CONFIG_ID = 'facebook-page-config';
+    const configured = new URL(facebookAuthorizationUrl('state'));
+    assert.equal(configured.searchParams.get('config_id'), 'facebook-page-config');
+  } finally {
+    if (previousFb === undefined) delete process.env.META_FB_CONFIG_ID;
+    else process.env.META_FB_CONFIG_ID = previousFb;
+    if (previousIg === undefined) delete process.env.META_CONFIG_ID;
+    else process.env.META_CONFIG_ID = previousIg;
+  }
 });
 
 async function withFetch(responses, run) {
