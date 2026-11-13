@@ -13,6 +13,7 @@ import {
   youtubeFallbackDescription,
   normalizeCaptionParagraphs,
   compactCaptionOpening,
+  formatBrandFooter,
   separateManagedByFooter,
 } from '../src/caption-guards.js';
 import { loadCaptionDraft, saveCaptionDraft } from '../../src/stage2/captionDraftScope.js';
@@ -49,6 +50,22 @@ test('managed-by credit is separated from contact footer lines', () => {
     separateManagedByFooter('📞 +91 96190 96762 | +91 80974 96670\n🎥 Managed by: @famebrosstudio ✨'),
     '📞 +91 96190 96762 | +91 80974 96670\n\n🎥 Managed by: @famebrosstudio ✨',
   );
+});
+
+test('brand footer formats phone, each branch, and manager credit as separate blocks', () => {
+  assert.equal(formatBrandFooter([
+    '📞 +91 96190 96762 | +91 80974 96670',
+    '📍 Shree Mahalaxmi Jewellers – Kurla (E), Mumbai',
+    '📍 Kanchanmala Jewellers – Chembur, Mumbai',
+    '📍 Mahalaxmi Jewellers – Ghatla, Chembur, Mumbai',
+    '🎥 Managed by: @famebrosstudio',
+  ]), [
+    '📞 +91 96190 96762 | +91 80974 96670',
+    '📍 Shree Mahalaxmi Jewellers – Kurla (E), Mumbai',
+    '📍 Kanchanmala Jewellers – Chembur, Mumbai',
+    '📍 Mahalaxmi Jewellers – Ghatla, Chembur, Mumbai',
+    '🎥 Managed by: @famebrosstudio',
+  ].join('\n\n'));
 });
 
 test('caption fallback ignores empty and whitespace-only platform fields', () => {

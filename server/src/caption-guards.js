@@ -171,6 +171,26 @@ export function separateManagedByFooter(text) {
   return lines.join('\n').replace(/\n{3,}/g, '\n\n').trim();
 }
 
+// Give contact details, each branch location, and the agency credit distinct
+// visual blocks while leaving the verified wording of every footer line intact.
+export function formatBrandFooter(lines = []) {
+  const entries = (Array.isArray(lines) ? lines : [lines]).map((line) => String(line || '').trim()).filter(Boolean);
+  const blocks = [];
+  for (const line of entries) {
+    const isManager = /managed\s+by\s*:/i.test(line);
+    const isLocation = /📍|\b(?:address|branch|location)\s*:/i.test(line);
+    const isContact = /📞|☎️?|\+?\d[\d\s()|+-]{7,}/u.test(line);
+    const type = isManager ? 'manager' : isLocation ? 'location' : isContact ? 'contact' : 'other';
+    const previous = blocks.at(-1);
+    if (type === 'location' || type === 'manager' || !previous || previous.type !== type) {
+      blocks.push({ type, lines: [line] });
+    } else {
+      previous.lines.push(line);
+    }
+  }
+  return blocks.map((block) => block.lines.join('\n')).join('\n\n');
+}
+
 // --- Deterministic caption quality gates -------------------------------------
 // The prompt already asks for human, distinct, non-filler copy, but a request
 // is not a guarantee. These gates are the server-side guarantee: deterministic,
