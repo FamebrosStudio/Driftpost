@@ -2902,7 +2902,11 @@ async function runPublish(job, conn, payload, body, userId) {
     job.state = 'completed'; job.progress = 100; job.message = job.warning || 'Published'; job.completedAt = Date.now();
     await supabase.from('post_history').insert({ user_id: userId, platform: job.platform, status: 'published', url: job.url || null, caption: String(body.text || '').slice(0, 500) }).then(() => {});
   } catch (e) {
-    job.state = 'failed'; job.message = e.message; job.completedAt = Date.now();
+    job.state = 'failed';
+    job.message = ['facebook', 'instagram'].includes(job.platform)
+      ? metaConnectionErrorMessage(e)
+      : (e.message || 'Publishing failed');
+    job.completedAt = Date.now();
   } finally {
     await cleanupFiles();
     await removeStored(temporaryStoragePaths);

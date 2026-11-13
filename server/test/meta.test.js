@@ -6,7 +6,22 @@ test('Facebook login requests only the configured Facebook/Page consent scopes b
   const url = new URL(metaAuthorizationUrl('signed-state'));
   const scopes = new Set(url.searchParams.get('scope').split(','));
   for (const scope of ['pages_show_list', 'pages_read_engagement', 'pages_manage_posts']) assert.ok(scopes.has(scope));
+  for (const scope of ['instagram_basic', 'instagram_content_publish']) assert.ok(scopes.has(scope));
   for (const scope of ['instagram_manage_comments', 'instagram_manage_messages', 'instagram_manage_insights']) assert.equal(scopes.has(scope), false);
+});
+
+test('custom Meta scopes cannot accidentally remove required Page permissions', () => {
+  const previous = process.env.META_FB_SCOPES;
+  try {
+    process.env.META_FB_SCOPES = 'email,business_management';
+    const scopes = new Set(new URL(metaAuthorizationUrl('signed-state')).searchParams.get('scope').split(','));
+    for (const scope of ['pages_show_list', 'pages_read_engagement', 'pages_manage_posts']) assert.ok(scopes.has(scope));
+    assert.ok(scopes.has('email'));
+    assert.ok(scopes.has('business_management'));
+  } finally {
+    if (previous === undefined) delete process.env.META_FB_SCOPES;
+    else process.env.META_FB_SCOPES = previous;
+  }
 });
 
 test('Facebook connection does not accidentally reuse the Instagram Business Login configuration', () => {
@@ -60,6 +75,13 @@ test('Meta application request-limit errors explain the cooldown and unsaved sta
   assert.match(message, /rate-limited/i);
   assert.match(message, /No account was saved/);
   assert.match(message, /10–15 minutes/);
+});
+
+test('Meta Page permission errors explain the required app access and reconnection', () => {
+  const message = metaConnectionErrorMessage(new Error("Any of the pages_read_engagement or pages_show_list permission(s) must be granted before impersonating a user's page."));
+  assert.match(message, /Meta refused this action/i);
+  assert.match(message, /pages_show_list and pages_manage_posts/);
+  assert.match(message, /rescheduled after reconnecting/);
 });
 
 async function withFetch(responses, run) {

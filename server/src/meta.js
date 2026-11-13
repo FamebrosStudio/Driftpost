@@ -7,8 +7,22 @@ const GRAPH = 'https://graph.facebook.com/v26.0';
 // Instagram, rather than being silently requested for every Facebook login.
 // This does not bypass Meta app review: public users still need the app live
 // and each requested permission approved for Advanced Access.
-const FB_SCOPES = [...new Set((process.env.META_FB_SCOPES || 'pages_show_list,pages_read_engagement,pages_manage_posts,instagram_basic,instagram_content_publish,business_management')
-  .split(',').map((s) => s.trim()).filter(Boolean))].join(',');
+const REQUIRED_META_SCOPES = [
+  'pages_show_list',
+  'pages_read_engagement',
+  'pages_manage_posts',
+  'instagram_basic',
+  'instagram_content_publish',
+];
+// Allow deployments to add optional scopes, but never let a stale/custom
+// META_FB_SCOPES value accidentally remove the Page permissions needed for
+// Page discovery, Page-token publishing, or linked Instagram publishing.
+function facebookScopes() {
+  return [...new Set([
+  ...REQUIRED_META_SCOPES,
+  ...(process.env.META_FB_SCOPES || '').split(',').map((s) => s.trim()).filter(Boolean),
+  ])].join(',');
+}
 
 export async function subscribeInstagramWebhooks({ igUserId, pageId, accessToken, comments = true, messages = true, fetchImpl = fetch }) {
   const instagramId = String(igUserId || '').trim();
@@ -69,7 +83,7 @@ export function metaAuthorizationUrl(state) {
     client_id: process.env.META_APP_ID,
     redirect_uri: process.env.META_REDIRECT_URI,
     response_type: 'code',
-    scope: FB_SCOPES,
+    scope: facebookScopes(),
     state,
   });
   return `https://www.facebook.com/v26.0/dialog/oauth?${p}`;
@@ -195,6 +209,10 @@ export function metaConnectionErrorMessage(error) {
   const message = String(error?.message || error || 'Meta connection failed.');
   if (/(?:#4\b|code\s*4\b|application request limit reached|rate limit)/i.test(message)) {
     return 'Meta temporarily rate-limited Page discovery. No account was saved. Wait 10–15 minutes before trying again, and avoid repeated retries; if it continues, Meta may need to raise the app’s request limit.';
+  }
+  if (/pages_read_engagement|pages_manage_metadata|pages_read_user_content|pages_manage_ads|pages_show_list|pages_messaging/i.test(message)
+    && /permission|granted|impersonat|page/i.test(message)) {
+    return 'Meta refused this action because the saved sign-in does not have Page access. In Meta Developers, make sure the Facebook Login (or Login for Business) configuration grants pages_show_list and pages_manage_posts (pages_read_engagement is also used), and that the app has Advanced Access for the users connecting. Then reconnect the Facebook Page and linked Instagram account in Driftpost; failed posts must be rescheduled after reconnecting.';
   }
   return message;
 }
