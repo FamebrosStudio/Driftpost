@@ -707,11 +707,18 @@
   min-height: 42px;
   gap: 11px;
   padding: 0 11px;
-  overflow: hidden;
+  overflow: visible;
   border: 1px solid transparent;
   color: var(--muted);
   text-align: left;
-  white-space: nowrap;
+  white-space: normal;
+}
+
+#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-nav-label {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  line-height: 1.25;
 }
 
 #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-nav button.active {
