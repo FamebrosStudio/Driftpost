@@ -24,7 +24,7 @@ test('custom Meta scopes cannot accidentally remove required Page permissions', 
   }
 });
 
-test('Facebook connection does not accidentally reuse the Instagram Business Login configuration', () => {
+test('Facebook Page reconnect explicitly requests scopes and re-prompts regardless of Business Login config', () => {
   const previousFb = process.env.META_FB_CONFIG_ID;
   const previousIg = process.env.META_CONFIG_ID;
   try {
@@ -35,7 +35,11 @@ test('Facebook connection does not accidentally reuse the Instagram Business Log
     assert.equal(url.searchParams.has('config_id'), false);
     process.env.META_FB_CONFIG_ID = 'facebook-page-config';
     const configured = new URL(facebookAuthorizationUrl('state'));
-    assert.equal(configured.searchParams.get('config_id'), 'facebook-page-config');
+    const scopes = new Set(configured.searchParams.get('scope').split(','));
+    assert.equal(configured.searchParams.has('config_id'), false);
+    assert.equal(configured.searchParams.get('auth_type'), 'rerequest');
+    assert.ok(scopes.has('pages_read_engagement'));
+    assert.ok(scopes.has('pages_show_list'));
   } finally {
     if (previousFb === undefined) delete process.env.META_FB_CONFIG_ID;
     else process.env.META_FB_CONFIG_ID = previousFb;
