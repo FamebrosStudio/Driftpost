@@ -243,15 +243,6 @@
   box-shadow: none !important;
 }
 
-#root .ws .ws-primary:hover,
-.ws-nav-create:hover,
-.s1-continue:hover,
-.s2-continue:hover,
-.s3-publish:hover {
-  filter: brightness(1.1);
-  transform: translateY(-1px);
-}
-
 #root .ws .ws-secondary,
 .ws-month-actions button,
 .ws-cancel,
@@ -269,13 +260,6 @@
   border-left: 2px solid var(--go);
   color: var(--ink);
   background: #62d9f30d;
-}
-
-#root .ws .ws-nav button:hover,
-.ws-text-button:hover,
-.ws-overview-link:hover {
-  color: var(--go) !important;
-  background-color: var(--hover) !important;
 }
 
 #root .ws .ws-icon,
@@ -432,4 +416,50 @@
     animation-iteration-count: 1 !important;
     transition-duration: .01ms !important;
   }
+}
+
+/* Console interactions are expressed through focus, selection, and status,
+   never pointer hover. Keep keyboard focus and functional state changes. */
+#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) :hover {
+  animation: none !important;
+  box-shadow: none !important;
+  filter: none !important;
+  text-decoration: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+#root :is(.connect, .stage1, .stage2, .stage3, .hist, .ws, .team-video-page, .approval-page, .cg) :is(
+  .cn-card, .cn-brands, .cn-brand-row, .setup-card, .s1-modal, .ws-welcome,
+  .s2-sec, .s2-out, .s2-editor, .s2-video-editor-page, .s2-video-editor-workspace,
+  .s2-audio-track, .s2-clip-track, .s3-work, .s3-cover-picker, .s3-sched,
+  .s3-approval-choice, .hist-row, .hist-activity, .hist-delete-modal,
+  .hist-delete-option, .ws-panel, .ws-stat, .ws-metric-card, .approval-card,
+  .automation-account, .team-video-panel, .team-account-group, .team-account,
+  .team-file-field, .team-option, .team-video-job, .ws-campaign-account,
+  .bg-publish-notice, .bg-publish-notice__account, .cg-card
+) {
+  transition: none !important;
+}
+
+#root :is(.connect, .stage1, .stage2, .stage3, .hist, .ws, .team-video-page, .approval-page, .cg) :is(
+  .cn-card, .cn-brands, .cn-brand-row, .setup-card, .s1-modal, .ws-welcome,
+  .s2-sec, .s2-out, .s2-editor, .s2-video-editor-page, .s2-video-editor-workspace,
+  .s2-audio-track, .s2-clip-track, .s3-work, .s3-cover-picker, .s3-sched,
+  .s3-approval-choice, .hist-row, .hist-activity, .hist-delete-modal,
+  .hist-delete-option, .ws-panel, .ws-stat, .ws-metric-card, .approval-card,
+  .automation-account, .team-video-panel, .team-account-group, .team-account,
+  .team-file-field, .team-option, .team-video-job, .ws-campaign-account,
+  .bg-publish-notice, .bg-publish-notice__account, .cg-card
+)::after,
+#root :is(.connect, .stage1, .stage2, .stage3, .hist, .ws, .team-video-page, .approval-page, .cg) button::after {
+  content: none !important;
+  animation: none !important;
+  transition: none !important;
+}
+
+#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) :is(
+  a, button, input, select, textarea, [role="button"], [tabindex]
+) {
+  transition: none !important;
 }
