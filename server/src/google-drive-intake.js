@@ -6,7 +6,7 @@ import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { decryptJson, encryptJson } from './crypto.js';
 import { processIntakeJob } from './telegram-intake.js';
-import { assessVideoBrandMatch, inferLikelyVideoBrands } from './ai.js';
+import { inferLikelyVideoBrands } from './ai.js';
 import { mapBrandDestinations, matchDriveAccounts, resolveDriveBrand } from './brand-routing.js';
 
 const execFileAsync = promisify(execFile);
@@ -415,7 +415,9 @@ async function runClaimedIntakeJob(supabase, job) {
       intakeKey: 'google_drive_intake_job_id',
       sourcePrefix: 'drive',
       resolveDestinations: (brand, connections, platforms) => mapBrandDestinations(brand, connections, platforms),
-      assessBrand: (brand, frames, transcript) => assessVideoBrandMatch(brand, frames, transcript),
+      // Drive uploads follow the legacy direct-post flow without the optional
+      // AI brand-mismatch hold. Destination/account validation remains active.
+      verifyBrand: false,
       suggestBrands: (frames, transcript, excludedIds) => inferLikelyVideoBrands(frames, transcript, excludedIds),
       download: (current, destination) => downloadDriveVideo(supabase, current, destination),
       downloadMedia: (current, directory) => downloadDriveCarousel(supabase, current, directory),

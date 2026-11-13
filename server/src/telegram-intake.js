@@ -271,7 +271,7 @@ export async function processIntakeJob(supabase, job, options = {}) {
     const frameImages = frames.map(({ name, mimetype, base64, detail }) => ({ name, mimetype, base64, detail: detail || (isCarousel ? 'high' : 'low') }));
     const brandTargets = targetGroups.filter((target) => target.brand?.id);
     const reviewApproval = job.result?.review_approval?.approved === true ? job.result.review_approval : null;
-    const assessments = options.assessBrand && !reviewApproval
+    const assessments = options.assessBrand && options.verifyBrand !== false && !reviewApproval
       ? await Promise.all(brandTargets.map(async (target) => {
         try { return { target, assessment: await options.assessBrand(target.brand, frames, transcript) }; }
         catch (error) { return { target, assessment: { verdict: 'uncertain', confidence: 0, reason: `Automatic verification could not finish: ${String(error?.message || error).slice(0, 350)}` } }; }
