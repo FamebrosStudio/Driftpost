@@ -41,16 +41,13 @@ export function OfflinePage({ onRetry, checking }) {
 
 export function ServerStartingPage() {
   return <main className="recovery-page recovery-starting" role="status" aria-live="polite">
-    <header className="recovery-top"><span className="recovery-brand"><DriftpostLogo /></span><span className="starting-header-status"><i aria-hidden="true" />Server status <b>Starting</b></span></header>
+    <header className="recovery-top"><span className="recovery-brand"><DriftpostLogo /></span></header>
     <section className="recovery-content">
-      <p className="recovery-kicker">Preparing your workspace</p>
       <h1>Your workspace<br />is almost ready.</h1>
-      <p className="recovery-copy">Driftpost is reconnecting to its publishing server. You’ll continue automatically as soon as it’s available.</p>
+      <p className="recovery-copy">We’re getting things ready. Your workspace will open automatically in a moment.</p>
       <div className="starting-progress" role="progressbar" aria-label="Checking server readiness" aria-valuetext="Waiting for the publishing server"><i /></div>
-      <p className="starting-caption"><span className="starting-live-dot" /> Connecting to publishing server</p>
-      <small className="starting-footnote">No action needed. Keep this tab open.</small>
+      <p className="starting-caption"><span className="starting-live-dot" /> Getting your workspace ready</p>
     </section>
-    <footer className="recovery-footer"><span>DRIFTPOST</span><span>We’ll continue automatically.</span></footer>
   </main>;
 }
 
