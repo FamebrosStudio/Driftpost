@@ -15,7 +15,7 @@ const ACTIONS = [
   '.ws-campaign-actions button', '.app-error-actions button',
 ].join(',');
 
-const TARGETS = `${SURFACES},${ACTIONS},#root .ws button:not(.ws-nav button):not(.ws-text-button):not(.ws-collapse-toggle):not(.ws-theme-toggle),#root .hist-shell button:not(.hist-tab),#root .stage1 button:not(.progress-step-button),#root .stage2 button:not(.progress-step-button),#root .stage3 button:not(.progress-step-button),#root .connect button:not(.ws-nav button),#root .team-video-page button,#root .approval-page button`;
+const TARGETS = `${SURFACES},${ACTIONS},#root .ws button:not(.ws-nav button):not(.ws-text-button):not(.ws-collapse-toggle):not(.ws-theme-toggle):not(.ws-wordmark),#root .hist-shell button:not(.hist-tab),#root .stage1 button:not(.progress-step-button),#root .stage2 button:not(.progress-step-button),#root .stage3 button:not(.progress-step-button),#root .connect button:not(.ws-nav button),#root .team-video-page button,#root .approval-page button`;
 const EDGE_RANGE = 30;
 let active = new Set();
 

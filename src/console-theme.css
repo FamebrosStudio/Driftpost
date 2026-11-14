@@ -686,7 +686,7 @@
   border-color: color-mix(in srgb, var(--go) 72%, var(--line-hard)) !important;
   background: linear-gradient(145deg, color-mix(in srgb, var(--go) 10%, var(--panel)), var(--panel) 64%) !important;
 }
-#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) button:not(.ws-nav button):not(.ws-text-button):not(.ws-collapse-toggle):not(.ws-theme-toggle):not(.progress-step-button):not(.ws-day):not(.swatch):not(.dock button){
+#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) button:not(.ws-nav button):not(.ws-text-button):not(.ws-collapse-toggle):not(.ws-theme-toggle):not(.progress-step-button):not(.ws-day):not(.swatch):not(.dock button):not(.ws-wordmark){
   min-height: 38px;
   padding: 8px 13px;
   border: 1px solid var(--line-hard);
@@ -771,7 +771,7 @@
   border-color: var(--go) !important;
   background: color-mix(in srgb, var(--go) 6%, var(--panel)) !important;
 }
-#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) button:not(.ws-nav button):not(.ws-text-button):not(.ws-collapse-toggle):not(.ws-theme-toggle):not(.progress-step-button):not(.ws-day):not(.swatch):not(.dock button){
+#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) button:not(.ws-nav button):not(.ws-text-button):not(.ws-collapse-toggle):not(.ws-theme-toggle):not(.progress-step-button):not(.ws-day):not(.swatch):not(.dock button):not(.ws-wordmark){
   border-radius: 0 !important;
   border-color: var(--line-hard);
   background: var(--panel2);
@@ -784,4 +784,11 @@
   border-radius: 0 !important;
   background: var(--go) !important;
   box-shadow: 0 0 22px -8px var(--edge-glow-color, transparent) !important;
+}
+#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar > .ws-wordmark{
+  min-height: 0;
+  padding: 0;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
 }
