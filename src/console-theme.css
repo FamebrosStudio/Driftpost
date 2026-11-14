@@ -423,26 +423,16 @@
   background: transparent !important;
   border: 0 !important;
   min-width: 0;
-  /* Resting = faint hairline only. All glow is cursor-proximity driven
-     (--edge-proximity 0..100 from the component's pointer handler). */
+  /* single hairline ring + soft halo (no double border vs the card's own border) */
   box-shadow:
-    inset 0 0 0 1px rgba(125, 211, 252, 0.12),
-    inset 0 0 0 1px rgba(125, 211, 252, calc(0.06 + var(--edge-proximity, 0) * 0.0052)),
-    inset 0 0 calc(4px + var(--edge-proximity, 0) * 0.18px) rgba(125, 211, 252, calc(var(--edge-proximity, 0) * 0.0042)),
-    inset 0 0 calc(10px + var(--edge-proximity, 0) * 0.34px) rgba(125, 211, 252, calc(var(--edge-proximity, 0) * 0.0016)),
-    0 0 calc(var(--edge-proximity, 0) * 0.14px) rgba(125, 211, 252, calc(var(--edge-proximity, 0) * 0.0052)),
-    0 0 calc(var(--edge-proximity, 0) * 0.36px) rgba(125, 211, 252, calc(var(--edge-proximity, 0) * 0.0062));
-  transition: box-shadow 0.16s ease-out;
+    0 0 0 1px rgba(125, 211, 252, 0.22),
+    0 0 16px -6px rgba(125, 211, 252, 0.28) !important;
   --glow-padding: 10px;
 }
 [data-theme="light"] .bg-glow{
   box-shadow:
-    inset 0 0 0 1px rgba(3, 105, 161, 0.20),
-    inset 0 0 0 1px rgba(3, 105, 161, calc(0.06 + var(--edge-proximity, 0) * 0.0042)),
-    inset 0 0 calc(4px + var(--edge-proximity, 0) * 0.14px) rgba(3, 105, 161, calc(var(--edge-proximity, 0) * 0.0035)),
-    0 0 calc(var(--edge-proximity, 0) * 0.12px) rgba(3, 105, 161, calc(var(--edge-proximity, 0) * 0.004)),
-    0 0 calc(var(--edge-proximity, 0) * 0.30px) rgba(3, 105, 161, calc(var(--edge-proximity, 0) * 0.005));
-  transition: box-shadow 0.16s ease-out;
+    0 0 0 1px rgba(3, 105, 161, 0.28),
+    0 0 14px -6px rgba(3, 105, 161, 0.22) !important;
 }
 /* Grid cells stretch the wrapper taller than the card — the inner card must
    fill the whole wrapper or an empty box shows below it. */
@@ -459,16 +449,13 @@
     inset 0 0 5px 0 hsl(199deg 95% 74% / 40%),
     0 0 14px -2px hsl(199deg 95% 74% / 35%) !important;
 }
-/* Buttons: resting hairline; all glow is cursor-proximity driven via
-   --edge-proximity, set by glow-proximity.js (no :hover). */
-.ws-primary, .ws-secondary, .s2-continue-btn, .continue-btn, .skew-btn, .user-profile, .cn-next, .s1-btn, .s3-mini-btn, .ws-text-button, .ws-text-btn, .progress-step-button{
-  box-shadow:
-    inset 0 0 0 1px rgba(125, 211, 252, 0.16),
-    inset 0 0 0 1px rgba(125, 211, 252, calc(0.05 + var(--edge-proximity, 0) * 0.005)),
-    inset 0 0 calc(2px + var(--edge-proximity, 0) * 0.10px) rgba(125, 211, 252, calc(var(--edge-proximity, 0) * 0.004)),
-    0 0 calc(var(--edge-proximity, 0) * 0.12px) rgba(125, 211, 252, calc(var(--edge-proximity, 0) * 0.005)),
-    0 0 calc(var(--edge-proximity, 0) * 0.30px) rgba(125, 211, 252, calc(var(--edge-proximity, 0) * 0.006)) !important;
-  transition: box-shadow 0.16s ease-out;
+/* Action buttons carry their glow directly (no wrapper): a static sky halo
+   that never changes layout and never uses :hover. */
+.ws-primary, .ws-secondary, .s2-continue-btn{
+  box-shadow: 0 0 0 1px rgba(125, 211, 252, 0.22), 0 0 16px -4px rgba(125, 211, 252, 0.45);
+}
+.skew-btn{
+  box-shadow: 0 0 22px -6px rgba(125, 211, 252, 0.5);
 }/* Dock palette matched to the console: navy glass panel,sky-blue edge
    highlights,cool blue-gray ink. These override the component's inline
    theme tokens (CSS !important beats element.style) — the accent/badge
