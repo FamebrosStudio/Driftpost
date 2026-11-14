@@ -1,4 +1,3 @@
-import BorderGlow from '../components/reactbits/BorderGlow.jsx';
 import React, { Suspense, lazy, useEffect, useMemo, useRef, useState } from 'react';
 import { api, groupBrands, PLATFORMS } from '../lib.js';
 import ProgressSteps from '../ProgressSteps.jsx';
@@ -273,7 +272,7 @@ export default function StageTwoPage({ session, onBack, onSignOut, onNavigate, o
         </header>
         <ProgressSteps current={2} onStep={onStep} />
 
-        <BorderGlow className="bg-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.12} glowRadius={22}><section className="s2-sec" aria-label="Add media">
+        <section className="s2-sec" aria-label="Add media">
           <div className="s2-sec-head">
             <h2>Add media</h2>
             <span className="s2-count">{files.length}/20</span>
@@ -281,9 +280,9 @@ export default function StageTwoPage({ session, onBack, onSignOut, onNavigate, o
           <p className="sub">Images or video — shown on every selected platform. Tap Edit on a photo or video to crop it.</p>
           <MediaUploader count={files.length} onFiles={addFiles} canUseAi={canUseAi} />
           <MediaGallery files={files} onRemove={removeAt} onEdit={setEditing} />
-        </section></BorderGlow>
+        </section>
 
-        <BorderGlow className="bg-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.12} glowRadius={22}><section className="s2-sec" aria-label={canUseAi ? 'Write prompt' : 'Write content'}>
+        <section className="s2-sec" aria-label={canUseAi ? 'Write prompt' : 'Write content'}>
           <h2>{canUseAi ? 'Write prompt' : 'Write your content'}</h2>
           {canUseAi ? <>
           <p className="sub">Tell AI what to create for @example. Add your audience, goal and any facts it should use; each platform gets its own version.</p>
@@ -308,14 +307,14 @@ export default function StageTwoPage({ session, onBack, onSignOut, onNavigate, o
           {!busy && aiMsg && (
             <p className={`s2-msg ${aiMsgKind === 'err' ? 'err' : aiMsgKind === 'warn' ? 'warn' : 'ok'}`} role={aiMsgKind === 'err' ? 'alert' : 'status'}>{aiMsg}</p>
           )}
-        </section></BorderGlow>
+        </section>
 
         {basePlatforms.includes('instagram') && basePlatforms.includes('facebook') && (
           <CrosspostToggle on={crosspostOn} onChange={setCrosspostSaved} />
         )}
 
         {targetPlatforms.length > 0 && (
-          <BorderGlow className="bg-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.12} glowRadius={22}><section className="s2-sec" aria-label={canUseAi ? 'AI output' : 'Platform drafts'}>
+          <section className="s2-sec" aria-label={canUseAi ? 'AI output' : 'Platform drafts'}>
             <div className="s2-sec-head">
               <h2>{canUseAi ? 'AI output' : 'Platform drafts'}</h2>
               <span className="s2-count">{targetPlatforms.length} platform{targetPlatforms.length === 1 ? '' : 's'}</span>
@@ -323,7 +322,7 @@ export default function StageTwoPage({ session, onBack, onSignOut, onNavigate, o
             <p className="sub">Different output per platform — only the ones you selected in Stage 1.{crosspostOn ? ' Facebook hides here: it auto-posts through Instagram cross-post.' : ''}</p>
             {!hasOutputs && !busy && <p className="s2-msg ok">{canUseAi ? "Nothing here yet - write a prompt above and press Generate Content." : "Use Edit on a platform card to add your post text."}</p>}
             <OutputContainer platforms={targetPlatforms} outputs={outputs} onSave={saveOutput} regen={regen} onRegen={canUseAi ? regenOne : undefined} busy={busy} />
-          </section></BorderGlow>
+          </section>
         )}
       </div>
       <ContinueButton disabled={!canContinue} saved={saveTick} onClick={cont} />
