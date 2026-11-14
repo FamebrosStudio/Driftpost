@@ -655,7 +655,7 @@
   padding: 0;
 }
 #root .ws-welcome-actions .border-glow-inner{
-  overflow: visible;
+  display: contents;
 }
 #root .ws-welcome-actions .border-glow-card > .edge-light{
   mask-image: none;
