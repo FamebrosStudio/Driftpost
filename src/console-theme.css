@@ -733,3 +733,55 @@
     transition: none !important;
   }
 }
+
+/* Sharp, quiet surfaces: one card edge, with color appearing only under the
+   pointer-proximity handler. The content card owns the border, not its wrapper. */
+#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) .border-glow-card{
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) .border-glow-card::after{
+  display: none !important;
+}
+#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) .border-glow-card::before{
+  border-radius: 0 !important;
+  background:
+    linear-gradient(var(--panel) 0 100%) padding-box,
+    linear-gradient(135deg, transparent 8%, var(--go) 50%, transparent 92%) border-box !important;
+}
+#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) :is(
+  .ws-panel, .ws-stat, .ws-metric-card, .ws-welcome, .hist-panel, .hist-row,
+  .hist-activity, .cn-card, .cn-brands, .setup-card, .s2-sec, .s2-out,
+  .s2-editor, .s2-video-editor-page, .s3-work, .s3-sched, .team-video-panel,
+  .team-review-list, .team-review-detail, .approval-card, .cg-card,
+  .automation-account, .automation-setup, .ws-campaign-account
+){
+  border: 1px solid var(--line) !important;
+  border-radius: 0 !important;
+  background: var(--panel) !important;
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--ink) 3%, transparent),
+    0 0 25px -9px var(--edge-glow-color, transparent) !important;
+}
+#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) :is(
+  .setup-card.sel, .ws-campaign-account.selected, .hist-tab.active, .cn-card.linked
+){
+  border-color: var(--go) !important;
+  background: color-mix(in srgb, var(--go) 6%, var(--panel)) !important;
+}
+#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) button:not(.ws-nav button):not(.ws-text-button):not(.ws-collapse-toggle):not(.ws-theme-toggle):not(.progress-step-button):not(.ws-day):not(.swatch):not(.dock button){
+  border-radius: 0 !important;
+  border-color: var(--line-hard);
+  background: var(--panel2);
+  box-shadow: 0 0 22px -8px var(--edge-glow-color, transparent);
+}
+#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) :is(
+  .ws-primary, .s1-primary, .continue-btn, .s2-continue-btn, .s2-done,
+  .s3-postall, .s3-schedall, .cn-connect, .cg-acts button:first-child
+){
+  border-radius: 0 !important;
+  background: var(--go) !important;
+  box-shadow: 0 0 22px -8px var(--edge-glow-color, transparent) !important;
+}
