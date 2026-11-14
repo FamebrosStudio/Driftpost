@@ -563,10 +563,6 @@
   transition: border-color 180ms ease, background-color 180ms ease;
 }
 
-#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) :is(.ws-panel, .ws-stat, .ws-metric-card, .hist-row, .cn-card, .setup-card, .s2-sec, .s3-work, .team-video-panel, .approval-card):hover {
-  border-color: var(--line-hard) !important;
-}
-
 @keyframes console-page-enter {
   from { opacity: 0; transform: translateY(9px); }
   to { opacity: 1; transform: translateY(0); }
@@ -832,11 +828,6 @@
   border-left: 1px solid var(--line);
 }
 
-#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-utility-dock button:hover:not(:disabled) {
-  color: var(--ink);
-  background: var(--panel2);
-}
-
 #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar[data-collapsed="true"] .ws-user-email {
   display: none;
 }
@@ -930,11 +921,6 @@
 }
 #root .ws .ws-welcome { min-height: 205px; padding: clamp(22px, 3vw, 34px); }
 #root .ws .ws-welcome h2 { max-width: 17ch; font-size: clamp(24px, 3vw, 34px); letter-spacing: -.05em; }
-#root .ws .ws-primary:hover, #root .ws .ws-secondary:hover {
-  filter: none !important;
-  transform: none !important;
-  border-color: var(--go) !important;
-}
 #root .team-video-page, #root .team-video-review-page { background: var(--bg) !important; }
 
 /* Keep the fatal-error fallback within the same mint/charcoal visual system. */
