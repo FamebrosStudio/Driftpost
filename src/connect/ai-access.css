@@ -3,8 +3,8 @@
   display: grid;
   place-items: center;
   padding: 24px;
-  background: #10141b;
-  color: #f4f6fb;
+  background: #050709;
+  color: #f2f4f5;
 }
 
 .ai-lock-card {
@@ -12,35 +12,36 @@
   display: grid;
   gap: 14px;
   padding: 28px;
-  border: 1px solid #303949;
-  border-radius: 18px;
-  background: #171d27;
-  box-shadow: 0 20px 70px #0005;
+  border: 1px solid #1b252b;
+  border-radius: 0;
+  background: #0b0f12;
+  box-shadow: none;
 }
 
 .ai-lock-card h1,
 .ai-lock-card p { margin: 0; }
-.ai-lock-card p { color: #bdc7d5; line-height: 1.55; }
+.ai-lock-card p { color: #abb5bb; line-height: 1.55; }
 .ai-lock-card label { font-size: 13px; font-weight: 700; }
 .ai-lock-card input {
   width: 100%;
   box-sizing: border-box;
   padding: 12px 14px;
-  border: 1px solid #465268;
-  border-radius: 10px;
-  background: #0e131b;
-  color: #fff;
+  border: 1px solid #34434a;
+  border-radius: 0;
+  background: #070a0c;
+  color: #f2f4f5;
   font: inherit;
 }
+
 .ai-lock-card button {
   min-height: 44px;
   border: 0;
-  border-radius: 10px;
-  background: linear-gradient(110deg, #c89542, #e7bd71);
-  color: #17130d;
+  border-radius: 0;
+  background: #79c9ad;
+  color: #101714;
   font: inherit;
   font-weight: 800;
   cursor: pointer;
 }
 .ai-lock-card button:disabled { opacity: .55; cursor: wait; }
-.ai-lock-card .ai-lock-error { color: #ff9a9a; }
+.ai-lock-card .ai-lock-error { color: #ff7777; }
