@@ -421,25 +421,22 @@
    The cursor-proximity layers intensify it on approach. */
 .bg-glow{
   background: transparent !important;
-  border: 0 !important;
   min-width: 0;
-  /* single hairline ring + soft halo (no double border vs the card's own border) */
+  border-color: rgba(125, 211, 252, 0.26) !important;
   box-shadow:
-    0 0 0 1px rgba(125, 211, 252, 0.22),
-    0 0 16px -6px rgba(125, 211, 252, 0.28) !important;
+    0 0 0 1px rgba(125, 211, 252, 0.08),
+    0 0 20px -6px rgba(125, 211, 252, 0.28) !important;
   --glow-padding: 10px;
 }
 [data-theme="light"] .bg-glow{
+  border-color: rgba(3, 105, 161, 0.30) !important;
   box-shadow:
-    0 0 0 1px rgba(3, 105, 161, 0.28),
-    0 0 14px -6px rgba(3, 105, 161, 0.22) !important;
+    0 0 0 1px rgba(3, 105, 161, 0.06),
+    0 0 18px -6px rgba(3, 105, 161, 0.22) !important;
 }
 /* Grid cells stretch the wrapper taller than the card — the inner card must
    fill the whole wrapper or an empty box shows below it. */
 .bg-glow .border-glow-inner{ height: 100%; min-width: 0; }
-/* stretch the actual card (article/section/div) to fill the stretched wrapper —
-   otherwise cards end early inside taller invisible wrappers (uneven heights) */
-.bg-glow .border-glow-inner > *{ height: 100%; width: 100%; }
 #root .automation-grid > .bg-glow{ min-width: 0; }
 /* Tame the outer proximity glow: the vendored 50px shadow spill drew bands
    over neighbor cards. Sky-tinted, max 14px spread. */
