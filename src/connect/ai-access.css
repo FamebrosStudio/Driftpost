@@ -1,13 +1,11 @@
-.ai-lock {
+.ai-lock{
   min-height: 100vh;
   display: grid;
   place-items: center;
   padding: 24px;
   background: #000000;
   color: #eef5f9;
-}
-
-.ai-lock-card {
+}.ai-lock-card{
   width: min(100%, 420px);
   display: grid;
   gap: 14px;
@@ -16,13 +14,7 @@
   border-radius: 0;
   background: #071019;
   box-shadow: none;
-}
-
-.ai-lock-card h1,
-.ai-lock-card p { margin: 0; }
-.ai-lock-card p { color: #a9becd; line-height: 1.55; }
-.ai-lock-card label { font-size: 13px; font-weight: 700; }
-.ai-lock-card input {
+}.ai-lock-card h1,.ai-lock-card p{ margin: 0; }.ai-lock-card p{ color: #a9becd; line-height: 1.55; }.ai-lock-card label{ font-size: 13px; font-weight: 700; }.ai-lock-card input{
   width: 100%;
   box-sizing: border-box;
   padding: 12px 14px;
@@ -31,9 +23,7 @@
   background: #02070b;
   color: #eef5f9;
   font: inherit;
-}
-
-.ai-lock-card button {
+}.ai-lock-card button{
   min-height: 44px;
   border: 0;
   border-radius: 0;
@@ -42,6 +32,4 @@
   font: inherit;
   font-weight: 800;
   cursor: pointer;
-}
-.ai-lock-card button:disabled { opacity: .55; cursor: wait; }
-.ai-lock-card .ai-lock-error { color: #ff7777; }
+}.ai-lock-card button:disabled{ opacity: .55; cursor: wait; }.ai-lock-card .ai-lock-error{ color: #ff7777; }

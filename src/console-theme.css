@@ -1,17 +1,9 @@
 /*
  * Driftpost console system
- * Hard-edged publishing desk: ink-black surfaces, mineral white type, cyan
+ * Hard-edged publishing desk: ink-black surfaces,mineral white type,cyan
  * reserved for the active task. Kept out of the public marketing pages.
  */
-#root .ws,
-#root .hist-shell,
-#root .stage1,
-#root .stage2,
-#root .stage3,
-#root .connect,
-#root .welcome,
-#root .team-video-page,
-#root .approval-page {
+#root .ws,#root .hist-shell,#root .stage1,#root .stage2,#root .stage3,#root .connect,#root .welcome,#root .team-video-page,#root .approval-page{
   --bg: #000000;
   --panel: #071019;
   --panel2: #0c1824;
@@ -38,17 +30,7 @@
   color: var(--ink);
   background-color: var(--bg);
   font-family: "Poppins", "Segoe UI", sans-serif;
-}
-
-[data-theme="light"] #root .ws,
-[data-theme="light"] #root .hist-shell,
-[data-theme="light"] #root .stage1,
-[data-theme="light"] #root .stage2,
-[data-theme="light"] #root .stage3,
-[data-theme="light"] #root .connect,
-[data-theme="light"] #root .welcome,
-[data-theme="light"] #root .team-video-page,
-[data-theme="light"] #root .approval-page {
+}[data-theme="light"] #root .ws,[data-theme="light"] #root .hist-shell,[data-theme="light"] #root .stage1,[data-theme="light"] #root .stage2,[data-theme="light"] #root .stage3,[data-theme="light"] #root .connect,[data-theme="light"] #root .welcome,[data-theme="light"] #root .team-video-page,[data-theme="light"] #root .approval-page{
   --bg: #eef5f9;
   --panel: #f7fbfd;
   --panel2: #dceaf2;
@@ -72,532 +54,292 @@
   --accent-ink: var(--go-ink);
   --danger: #b4232f;
   --ok: #087650;
-}
-
-/* Strict geometry contract: every console control and surface has square corners. */
-#root .ws *,
-#root .hist-shell *,
-#root .connect *,
-#root .stage1 *,
-#root .stage2 *,
-#root .stage3 *,
-#root .team-video-page *,
-#root .approval-page * {
+}/* Strict geometry contract: every console control and surface has square corners. */
+#root .ws *,#root .hist-shell *,#root .connect *,#root .stage1 *,#root .stage2 *,#root .stage3 *,#root .team-video-page *,#root .approval-page *{
   border-radius: 0 !important;
-}
-#root .ws *::before,
-#root .ws *::after,
-#root .hist-shell *::before,
-#root .hist-shell *::after,
-#root .connect *::before,
-#root .connect *::after,
-#root .stage1 *::before,
-#root .stage1 *::after,
-#root .stage2 *::before,
-#root .stage2 *::after,
-#root .stage3 *::before,
-#root .stage3 *::after,
-#root .team-video-page *::before,
-#root .team-video-page *::after,
-#root .approval-page *::before,
-#root .approval-page *::after {
+}#root .ws *::before,#root .ws *::after,#root .hist-shell *::before,#root .hist-shell *::after,#root .connect *::before,#root .connect *::after,#root .stage1 *::before,#root .stage1 *::after,#root .stage2 *::before,#root .stage2 *::after,#root .stage3 *::before,#root .stage3 *::after,#root .team-video-page *::before,#root .team-video-page *::after,#root .approval-page *::before,#root .approval-page *::after{
   border-radius: 0 !important;
-}
-
-#root .ws,
-#root .hist-shell,
-#root .connect,
-#root .welcome,
-#root .stage1,
-#root .stage2,
-#root .stage3,
-#root .team-video-page,
-#root .approval-page {
+}#root .ws,#root .hist-shell,#root .connect,#root .welcome,#root .stage1,#root .stage2,#root .stage3,#root .team-video-page,#root .approval-page{
   background-color: var(--bg);
-}
-
-.ws {
+}.ws{
   min-height: 100vh;
   min-width: 0;
   background-image: none;
-}
-
-#root .ws .ws-topbar,
-#root .stage1 .ws-topbar,
-#root .stage2 .ws-topbar,
-#root .stage3 .ws-topbar {
+}#root .ws .ws-topbar,#root .stage1 .ws-topbar,#root .stage2 .ws-topbar,#root .stage3 .ws-topbar{
   border-color: var(--line) !important;
   background: color-mix(in srgb, var(--bg) 94%, transparent) !important;
   backdrop-filter: blur(14px);
-}
-
-.ws-main,
-.hist-in,
-.connect-in,
-.stage1-in,
-.stage2-in,
-.stage3-in,
-.team-video-page > * {
+}.ws-main,.hist-in,.connect-in,.stage1-in,.stage2-in,.stage3-in,.team-video-page > *{
   position: relative;
-}
-
-.ws > .ws-main {
+}.ws > .ws-main{
   width: min(1540px, calc(100% - 244px));
   margin: 0 auto 0 244px;
   padding: clamp(26px, 4vw, 58px) clamp(22px, 5vw, 76px) 72px;
-}
-
-#root .ws > .ws-topbar {
+}#root .ws > .ws-topbar{
   border-right: 1px solid var(--line) !important;
   background: var(--panel) !important;
-}
-
-#root .ws > .ws-topbar[data-collapsed="true"] ~ .ws-main {
+}#root .ws > .ws-topbar[data-collapsed="true"] ~ .ws-main{
   width: min(1540px, calc(100% - 76px));
   margin-left: 76px;
-}
-
-#root .ws .ws-heading {
+}#root .ws .ws-heading{
   align-items: end;
   padding-bottom: 22px;
   border-bottom: 1px solid var(--line);
-}
-
-#root .ws .ws-eyebrow,
-.stage1-badge,
-.s2-badge,
-.s3-badge {
+}#root .ws .ws-eyebrow,.stage1-badge,.s2-badge,.s3-badge{
   color: var(--go) !important;
   font-family: inherit;
   font-size: 11px !important;
   font-weight: 600;
   letter-spacing: .04em !important;
   text-transform: none !important;
-}
-
-#root .ws .ws-heading h1,
-.stage1-head h1,
-.s2-head h1,
-.s3-head h1 {
+}#root .ws .ws-heading h1,.stage1-head h1,.s2-head h1,.s3-head h1{
   color: var(--ink);
   font-size: clamp(32px, 4.2vw, 54px) !important;
   font-weight: 650;
   letter-spacing: -.055em !important;
   line-height: 1.02 !important;
-}
-
-#root .ws .ws-heading p,
-.stage1-head p,
-.s2-head p,
-.s3-head p {
+}#root .ws .ws-heading p,.stage1-head p,.s2-head p,.s3-head p{
   max-width: 66ch;
   color: var(--muted);
   font-size: 13px !important;
   line-height: 1.7 !important;
-}
-
-#root .ws .ws-panel,
-#root .ws .ws-stat,
-#root .ws .ws-welcome,
-#root .stage1 .setup-card,
-#root .stage2 .s2-sec,
-#root .stage3 .s3-work,
-#root .approval-page .approval-card,
-#root .hist-shell .hist-panel {
+}#root .ws .ws-panel,#root .ws .ws-stat,#root .ws .ws-welcome,#root .stage1 .setup-card,#root .stage2 .s2-sec,#root .stage3 .s3-work,#root .approval-page .approval-card,#root .hist-shell .hist-panel{
   border-color: var(--line) !important;
   background: var(--panel) !important;
   box-shadow: none !important;
-}
-
-#root .ws .ws-welcome {
+}#root .ws .ws-welcome{
   min-height: 250px;
   background: var(--panel) !important;
-}
-
-[data-theme="light"] #root .ws .ws-welcome {
+}[data-theme="light"] #root .ws .ws-welcome{
   background: var(--panel) !important;
-}
-
-#root .ws .ws-welcome-art {
+}#root .ws .ws-welcome-art{
   display: none !important;
-}
-
-#root .ws .ws-stat {
+}#root .ws .ws-stat{
   min-height: 132px;
   border-top: 2px solid var(--line-hard) !important;
-}
-
-#root .ws .ws-stat > strong {
+}#root .ws .ws-stat > strong{
   color: var(--ink);
   font-variant-numeric: tabular-nums;
-}
-
-/* The workflow pages loaded on demand; pin their theme tokens here so their
+}/* The workflow pages loaded on demand; pin their theme tokens here so their
    legacy per-page defaults cannot leak purple into the shared interface. */
-#root :is(.connect, .welcome, .stage1, .stage2, .stage3) {
+#root :is(.connect, .welcome, .stage1, .stage2, .stage3){
   --acc: var(--go);
   --acc-ink: var(--go-ink);
   --acc-soft: color-mix(in srgb, var(--go) 13%, transparent);
-}
-
-#root :is(.connect, .welcome, .stage1, .stage2, .stage3) :is(
+}#root :is(.connect, .welcome, .stage1, .stage2, .stage3) :is(
   .cn-head h1, .welcome-head h1, .stage1-head h1, .s2-head h1, .s3-head h1
-) {
+){
   letter-spacing: -.04em;
-}
-
-#root :is(.connect, .welcome, .stage1, .stage2, .stage3) :is(
+}#root :is(.connect, .welcome, .stage1, .stage2, .stage3) :is(
   .cn-badge, .welcome-steps, .stage1-badge, .s2-badge, .s3-badge
-) {
+){
   letter-spacing: .04em;
-}
-
-#root :is(.stage1, .stage2, .stage3) :is(
+}#root :is(.stage1, .stage2, .stage3) :is(
   .s1-step.cur .dot, .s2-step.cur .dot, .s3-step.cur .dot,
   .s1-step.done .dot, .s2-step.done .dot, .s3-step.done .dot,
   .s1-track i, .s2-track i, .s3-track i,
   .s1-primary, .continue-btn, .s2-generate, .s2-done,
   .s3-tab.on, .s3-review-all, .s3-acts button.go, .s3-postall
-) {
+){
   background-color: var(--go) !important;
   border-color: var(--go) !important;
   color: var(--go-ink) !important;
-}
-
-#root :is(.stage1, .stage2, .stage3) :is(
+}#root :is(.stage1, .stage2, .stage3) :is(
   .s1-step.cur, .s2-step.cur, .s3-step.cur,
   .s1-badge, .s2-badge, .s3-badge,
   .s3-pill.work, .s3-link
-) {
+){
   color: var(--go) !important;
-}
-
-#root :is(.connect, .welcome, .stage1, .stage2, .stage3) :is(
+}#root :is(.connect, .welcome, .stage1, .stage2, .stage3) :is(
   input:not([type="checkbox"]):not([type="radio"]),
   select, textarea
-) {
+){
   min-height: 42px;
   border-color: var(--line-hard);
   background-color: var(--input);
   color: var(--ink);
-}
-
-#root :is(.connect, .welcome, .stage1, .stage2, .stage3) :is(
+}#root :is(.connect, .welcome, .stage1, .stage2, .stage3) :is(
   input:not([type="checkbox"]):not([type="radio"]),
   select, textarea
-):focus-visible {
+):focus-visible{
   border-color: var(--go) !important;
   outline: 2px solid color-mix(in srgb, var(--go) 28%, transparent);
   outline-offset: 1px;
   box-shadow: none !important;
-}
-
-#root :is(.connect, .welcome, .stage1, .stage2, .stage3) :is(
+}#root :is(.connect, .welcome, .stage1, .stage2, .stage3) :is(
   .setup-card, .cn-card, .cn-brands, .s2-sec, .s3-work
-) {
+){
   border-width: 1px;
-}
-
-#root :is(.ws, .hist-shell, .connect, .welcome, .stage1, .stage2, .stage3, .team-video-page, .approval-page) :is(
+}#root :is(.ws, .hist-shell, .connect, .welcome, .stage1, .stage2, .stage3, .team-video-page, .approval-page) :is(
   .ws-eyebrow, .cn-col h4, .s1-col h4, .s2-setting label, .s3-field > span
-) {
+){
   color: var(--muted) !important;
   font-family: inherit !important;
   font-size: 12px !important;
   font-weight: 600 !important;
   letter-spacing: 0 !important;
   text-transform: none !important;
-}
-
-#root :is(.connect, .welcome, .stage1, .stage2, .stage3) :is(
+}#root :is(.connect, .welcome, .stage1, .stage2, .stage3) :is(
   .s1-primary, .continue-btn, .cn-connect, .cn-next, .s2-generate, .s2-done,
   .s3-review-all, .s3-acts button.go, .s3-postall
-) {
+){
   background: var(--go) !important;
   border-color: var(--go) !important;
   color: var(--go-ink) !important;
   font-weight: 650 !important;
   box-shadow: none !important;
-}
-
-#root :is(.connect, .welcome, .stage1, .stage2, .stage3) :is(
+}#root :is(.connect, .welcome, .stage1, .stage2, .stage3) :is(
   .s1-primary:disabled, .continue-btn:disabled, .cn-connect:disabled, .cn-next:disabled,
   .s2-generate:disabled, .s2-done:disabled, .s3-review-all:disabled,
   .s3-acts button.go:disabled, .s3-postall:disabled
-) {
+){
   opacity: .45;
-}
-
-#root :is(.connect, .welcome, .stage1, .stage2, .stage3) :is(
+}#root :is(.connect, .welcome, .stage1, .stage2, .stage3) :is(
   .cn-empty, .s1-drop, .s2-drop, .s3-grey-note
-) {
+){
   border-color: var(--line-hard);
   background: color-mix(in srgb, var(--panel2) 72%, transparent);
-}
-
-#root .stage2 .s2-sec,
-#root .stage3 .s3-work,
-#root .stage1 .setup-card,
-#root .connect .cn-card {
+}#root .stage2 .s2-sec,#root .stage3 .s3-work,#root .stage1 .setup-card,#root .connect .cn-card{
   padding: 20px;
-}
-
-#root .stage2 .s2-settings {
+}#root .stage2 .s2-settings{
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
 }
 
-@media (max-width: 600px) {
-  #root .stage2 .s2-settings {
+@media (max-width: 600px) {#root .stage2 .s2-settings{
     grid-template-columns: 1fr;
-  }
-
-  #root .stage1 .setup-card,
-  #root .stage2 .s2-sec,
-  #root .stage3 .s3-work,
-  #root .connect .cn-card {
+  }#root .stage1 .setup-card,#root .stage2 .s2-sec,#root .stage3 .s3-work,#root .connect .cn-card{
     padding: 16px;
   }
-}
-
-#root .ws .ws-primary,
-.ws-nav-create,
-.s1-continue,
-.s2-continue,
-.s3-publish {
+}#root .ws .ws-primary,.ws-nav-create,.s1-continue,.s2-continue,.s3-publish{
   border-color: var(--go) !important;
   color: var(--go-ink) !important;
   background: var(--go) !important;
   font-weight: 700 !important;
   box-shadow: none !important;
-}
-
-#root .ws .ws-secondary,
-.ws-month-actions button,
-.ws-cancel,
-.ws-overview-link {
+}#root .ws .ws-secondary,.ws-month-actions button,.ws-cancel,.ws-overview-link{
   border-color: var(--line-hard) !important;
   color: var(--ink) !important;
   background: var(--panel) !important;
-}
-
-#root .ws .ws-nav button {
+}#root .ws .ws-nav button{
   color: var(--muted);
-}
-
-#root .ws .ws-nav button.active {
+}#root .ws .ws-nav button.active{
   border-left: 2px solid var(--go);
   color: var(--ink);
   background: color-mix(in srgb, var(--go) 8%, transparent);
-}
-
-#root .ws .ws-icon,
-.ws-day-number,
-.ws-event,
-.ws-status,
-.ws-live-status > i,
-.ws-live-status > span {
+}#root .ws .ws-icon,.ws-day-number,.ws-event,.ws-status,.ws-live-status > i,.ws-live-status > span{
   border-radius: 0 !important;
-}
-
-#root .ws .ws-day.today .ws-day-number,
-#root .ws .ws-day.selected {
+}#root .ws .ws-day.today .ws-day-number,#root .ws .ws-day.selected{
   color: var(--go);
   background: color-mix(in srgb, var(--go) 10%, transparent);
   box-shadow: inset 0 0 0 1px var(--go);
-}
-
-#root .ws .ws-event {
+}#root .ws .ws-event{
   border-left: 2px solid var(--go);
   color: var(--ink);
   background: var(--panel2);
-}
-
-.ws-day:focus-visible,
-.ws-nav button:focus-visible,
-.ws button:focus-visible,
-.hist-shell button:focus-visible,
-.connect button:focus-visible,
-.stage1 button:focus-visible,
-.stage2 button:focus-visible,
-.stage3 button:focus-visible,
-.team-video-page button:focus-visible,
-.approval-page button:focus-visible,
-.ws input:focus-visible,
-.ws textarea:focus-visible,
-.ws select:focus-visible,
-.stage1 input:focus-visible,
-.stage1 textarea:focus-visible,
-.stage2 input:focus-visible,
-.stage2 textarea:focus-visible,
-.stage3 input:focus-visible,
-.stage3 textarea:focus-visible {
+}.ws-day:focus-visible,.ws-nav button:focus-visible,.ws button:focus-visible,.hist-shell button:focus-visible,.connect button:focus-visible,.stage1 button:focus-visible,.stage2 button:focus-visible,.stage3 button:focus-visible,.team-video-page button:focus-visible,.approval-page button:focus-visible,.ws input:focus-visible,.ws textarea:focus-visible,.ws select:focus-visible,.stage1 input:focus-visible,.stage1 textarea:focus-visible,.stage2 input:focus-visible,.stage2 textarea:focus-visible,.stage3 input:focus-visible,.stage3 textarea:focus-visible{
   outline: 2px solid var(--go);
   outline-offset: 2px;
 }
 
-@media (max-width: 760px) {
-  #root .ws > .ws-main {
+@media (max-width: 760px) {#root .ws > .ws-main{
     width: 100%;
     margin: 0;
     padding: 26px 16px calc(92px + env(safe-area-inset-bottom));
-  }
-
-  #root .ws .ws-heading {
+  }#root .ws .ws-heading{
     align-items: flex-start;
-  }
-
-  #root .ws .ws-welcome {
+  }#root .ws .ws-welcome{
     min-height: 220px;
-  }
-
-  #root .ws .ws-stat-grid {
+  }#root .ws .ws-stat-grid{
     gap: 1px;
     background: var(--line);
     border: 1px solid var(--line);
-  }
-
-  #root .ws .ws-stat {
+  }#root .ws .ws-stat{
     min-height: 112px;
     border: 0 !important;
-  }
-
-  #root .ws .ws-stat:last-child {
+  }#root .ws .ws-stat:last-child{
     grid-column: 1 / -1;
   }
 }
 
-@media (max-width: 760px) {
-  #root .ws {
+@media (max-width: 760px) {#root .ws{
     background-size: 32px 32px;
-  }
-
-  #root .ws .ws-welcome {
+  }#root .ws .ws-welcome{
     flex-direction: column;
     align-items: stretch;
     gap: 10px;
     padding: 22px 18px;
-  }
-
-  #root .ws .ws-welcome > div:first-child {
+  }#root .ws .ws-welcome > div:first-child{
     max-width: 100%;
-  }
-
-  #root .ws .ws-welcome-route {
+  }#root .ws .ws-welcome-route{
     width: 100%;
-  }
-
-  #root .ws > .ws-topbar {
+  }#root .ws > .ws-topbar{
     width: 100vw;
     min-width: 0;
     border-right: 0 !important;
     border-top: 1px solid var(--line) !important;
-  }
-
-  #root .ws > .ws-topbar .ws-nav {
+  }#root .ws > .ws-topbar .ws-nav{
     flex: 1 1 0;
     min-width: 0;
     max-width: 100%;
     overflow-x: auto;
-  }
-
-  #root .ws > .ws-topbar .ws-nav button {
+  }#root .ws > .ws-topbar .ws-nav button{
     min-width: 56px;
     flex: 0 0 56px;
     overflow: hidden;
-  }
-
-  #root .ws > .ws-topbar .ws-nav-label {
+  }#root .ws > .ws-topbar .ws-nav-label{
     display: block;
     max-width: 52px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     font-size: 0;
-  }
-
-  #root .ws > .ws-topbar .ws-nav-label::after {
+  }#root .ws > .ws-topbar .ws-nav-label::after{
     content: attr(data-mobile-label);
     display: block;
     overflow: hidden;
     font-size: 8px;
     line-height: 1.2;
     text-overflow: ellipsis;
-  }
-
-  #root .ws > .ws-topbar[data-collapsed="true"] ~ .ws-main {
+  }#root .ws > .ws-topbar[data-collapsed="true"] ~ .ws-main{
     width: 100%;
     margin: 0;
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .ws *,
-  .hist-shell *,
-  .connect *,
-  .stage1 *,
-  .stage2 *,
-  .stage3 *,
-  .team-video-page *,
-  .approval-page * {
+@media (prefers-reduced-motion: reduce) {.ws *,.hist-shell *,.connect *,.stage1 *,.stage2 *,.stage3 *,.team-video-page *,.approval-page *{
     scroll-behavior: auto !important;
     animation-duration: .01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: .01ms !important;
   }
-}
-
-/* Intentional motion: quick feedback, gentle page entry, no decorative loops. */
+}/* Intentional motion: quick feedback,gentle page entry,no decorative loops. */
 #root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) :is(
   a, button, input, select, textarea, [role="button"], [tabindex]
-) {
+){
   transition: color 150ms ease, background-color 150ms ease,
     border-color 150ms ease, opacity 150ms ease, transform 150ms ease;
-}
-
-#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) :is(button, [role="button"]):not(:disabled):active {
+}#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) :is(button, [role="button"]):not(:disabled):active{
   transform: scale(.985);
-}
-
-#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) :is(.ws-panel, .ws-stat, .ws-metric-card, .hist-row, .cn-card, .setup-card, .s2-sec, .s3-work, .team-video-panel, .approval-card) {
+}#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) :is(.ws-panel, .ws-stat, .ws-metric-card, .hist-row, .cn-card, .setup-card, .s2-sec, .s3-work, .team-video-panel, .approval-card){
   transition: border-color 180ms ease, background-color 180ms ease;
 }
 
-@keyframes console-page-enter {
-  from { opacity: 0; transform: translateY(9px); }
-  to { opacity: 1; transform: translateY(0); }
+@keyframes console-page-enter {from{ opacity: 0; transform: translateY(9px); }to{ opacity: 1; transform: translateY(0); }
 }
 
-@keyframes console-control-enter {
-  from { opacity: 0; transform: translateY(-5px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-#root .ws-main,
-#root .hist-in,
-#root .team-video-main,
-#root .team-review-main,
-#root :is(.stage1-in, .stage2-in, .stage3-in) {
+@keyframes console-control-enter {from{ opacity: 0; transform: translateY(-5px); }to{ opacity: 1; transform: translateY(0); }
+}#root .ws-main,#root .hist-in,#root .team-video-main,#root .team-review-main,#root :is(.stage1-in, .stage2-in, .stage3-in){
   animation: console-page-enter 360ms cubic-bezier(.2, .7, .25, 1) both;
-}
+}#root .ws-utility-dock{ animation: console-control-enter 240ms ease-out both; }#root .ws .ws-stat{ animation: console-page-enter 380ms cubic-bezier(.2, .7, .25, 1) both; }#root .ws .ws-stat:nth-child(2){ animation-delay: 45ms; }#root .ws .ws-stat:nth-child(3){ animation-delay: 90ms; }
 
-#root .ws-utility-dock { animation: console-control-enter 240ms ease-out both; }
-#root .ws .ws-stat { animation: console-page-enter 380ms cubic-bezier(.2, .7, .25, 1) both; }
-#root .ws .ws-stat:nth-child(2) { animation-delay: 45ms; }
-#root .ws .ws-stat:nth-child(3) { animation-delay: 90ms; }
-
-@media (prefers-reduced-motion: reduce) {
-  #root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) *,
-  #root .ws-main, #root .hist-in, #root .team-video-main, #root .team-review-main,
-  #root :is(.stage1-in, .stage2-in, .stage3-in) {
+@media (prefers-reduced-motion: reduce) {#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) *,#root .ws-main,#root .hist-in,#root .team-video-main,#root .team-review-main,#root :is(.stage1-in, .stage2-in, .stage3-in){
     animation: none !important;
     scroll-behavior: auto !important;
     transition-duration: .01ms !important;
   }
-}
-
-/* Desktop publishing desk: fixed rail, anchored content, no document overflow. */
-#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) {
+}/* Desktop publishing desk: fixed rail,anchored content,no document overflow. */
+#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3){
   box-sizing: border-box;
   width: 100%;
   max-width: 100vw;
@@ -605,10 +347,7 @@
   height: 100dvh;
   min-height: 0;
   overflow: hidden;
-}
-
-#root :is(.ws, .hist-shell) > .ws-topbar,
-#root :is(.stage1, .stage2, .stage3) > .ws-topbar {
+}#root :is(.ws, .hist-shell) > .ws-topbar,#root :is(.stage1, .stage2, .stage3) > .ws-topbar{
   position: fixed !important;
   inset: 0 auto 0 0 !important;
   z-index: 35;
@@ -628,43 +367,31 @@
   background: var(--panel) !important;
   backdrop-filter: none !important;
   transition: width 240ms cubic-bezier(.2, .7, .25, 1), padding 200ms ease;
-}
-
-#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar[data-collapsed="true"] {
+}#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar[data-collapsed="true"]{
   width: 76px !important;
   align-items: center !important;
   padding-right: 8px !important;
   padding-left: 8px !important;
-}
-
-#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-wordmark {
+}#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-wordmark{
   width: 100%;
   min-height: 42px;
   align-self: stretch;
   justify-content: flex-start;
   overflow: hidden;
   padding: 0 6px;
-}
-
-#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-wordmark img.logo-img {
+}#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-wordmark img.logo-img{
   width: 154px;
   max-height: 40px;
-}
-
-#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar[data-collapsed="true"] .ws-wordmark {
+}#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar[data-collapsed="true"] .ws-wordmark{
   width: 42px;
   align-self: center;
   padding: 0;
-}
-
-#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar[data-collapsed="true"] .ws-wordmark img.logo-img {
+}#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar[data-collapsed="true"] .ws-wordmark img.logo-img{
   width: 42px;
   height: 36px;
   object-fit: cover;
   object-position: left center;
-}
-
-#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-overview-link {
+}#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-overview-link{
   display: inline-flex;
   min-height: 38px;
   align-items: center;
@@ -674,9 +401,7 @@
   color: var(--muted);
   background: transparent;
   text-decoration: none;
-}
-
-#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-nav {
+}#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-nav{
   display: flex !important;
   flex: 1 1 auto;
   flex-basis: auto;
@@ -689,11 +414,7 @@
   overflow-y: auto;
   padding: 0;
   scrollbar-width: none;
-}
-
-#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-nav::-webkit-scrollbar { display: none; }
-
-#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-nav button {
+}#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-nav::-webkit-scrollbar{ display: none; }#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-nav button{
   box-sizing: border-box;
   display: flex;
   flex: 0 0 auto;
@@ -708,39 +429,27 @@
   color: var(--muted);
   text-align: left;
   white-space: normal;
-}
-
-#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-nav-label {
+}#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-nav-label{
   flex: 1 1 auto;
   min-width: 0;
   overflow-wrap: anywhere;
   line-height: 1.25;
-}
-
-#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-nav button.active {
+}#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-nav button.active{
   border-color: var(--line);
   border-left: 2px solid var(--go);
   color: var(--ink);
   background: var(--panel2);
-}
-
-#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-nav button.ws-nav-create {
+}#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-nav button.ws-nav-create{
   margin: 0 0 7px;
   border-color: var(--go);
   color: var(--go-ink);
   background: var(--go);
-}
-
-#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar[data-collapsed="true"] .ws-nav button {
+}#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar[data-collapsed="true"] .ws-nav button{
   justify-content: center;
   padding: 0;
-}
-
-#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar[data-collapsed="true"] :is(.ws-nav-label, .ws-collapse-label, .ws-user-email) {
+}#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar[data-collapsed="true"] :is(.ws-nav-label, .ws-collapse-label, .ws-user-email){
   display: none !important;
-}
-
-#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-user {
+}#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-user{
   display: flex;
   flex: 0 0 auto;
   align-items: center;
@@ -751,16 +460,12 @@
   margin-top: auto;
   padding: 12px 5px 2px;
   border-top: 1px solid var(--line);
-}
-
-#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-user-email {
+}#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-user-email{
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-collapse-toggle {
+}#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-collapse-toggle{
   display: inline-flex !important;
   flex: 0 0 auto;
   width: 100%;
@@ -773,34 +478,24 @@
   border: 1px solid var(--line-hard);
   color: var(--muted);
   background: transparent;
-}
-
-#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar[data-collapsed="true"] .ws-collapse-toggle {
+}#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar[data-collapsed="true"] .ws-collapse-toggle{
   width: 42px;
   justify-content: center;
   padding: 0;
-}
-
-#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-collapse-toggle > span:first-child {
+}#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-collapse-toggle > span:first-child{
   width: 16px;
   flex: 0 0 16px;
   font-size: 19px;
   line-height: 1;
   text-align: center;
-}
-
-#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar[data-collapsed="true"] .ws-user {
+}#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar[data-collapsed="true"] .ws-user{
   justify-content: center;
   padding-right: 0;
   padding-left: 0;
-}
-
-#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar[data-collapsed="true"] .ws-user-dot {
+}#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar[data-collapsed="true"] .ws-user-dot{
   width: 36px;
   height: 36px;
-}
-
-#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-utility-dock {
+}#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-utility-dock{
   position: fixed;
   inset: 14px 18px auto auto;
   z-index: 50;
@@ -811,9 +506,7 @@
   background: var(--panel);
   box-shadow: 0 8px 28px #00000018;
   animation: console-control-enter 240ms ease-out both;
-}
-
-#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-utility-dock button {
+}#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-utility-dock button{
   min-height: 38px;
   padding: 0 13px;
   border: 0;
@@ -822,28 +515,13 @@
   font: inherit;
   font-size: 11px;
   cursor: pointer;
-}
-
-#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-utility-dock button + button {
+}#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-utility-dock button + button{
   border-left: 1px solid var(--line);
-}
-
-#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar[data-collapsed="true"] .ws-user-email {
+}#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar[data-collapsed="true"] .ws-user-email{
   display: none;
-}
-
-#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar[data-collapsed="true"] .ws-utility-dock .ws-theme-toggle > span[aria-hidden="true"] {
+}#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar[data-collapsed="true"] .ws-utility-dock .ws-theme-toggle > span[aria-hidden="true"]{
   display: inline !important;
-}
-
-#root .ws > .ws-main,
-#root .ws > .connect,
-#root .hist-shell > .hist,
-#root .stage1-in,
-#root .stage2-in,
-#root .stage3-in,
-#root .team-video-main,
-#root .team-review-main {
+}#root .ws > .ws-main,#root .ws > .connect,#root .hist-shell > .hist,#root .stage1-in,#root .stage2-in,#root .stage3-in,#root .team-video-main,#root .team-review-main{
   box-sizing: border-box;
   width: calc(100% - 244px);
   height: 100dvh;
@@ -856,45 +534,25 @@
   scrollbar-gutter: stable;
   padding-top: 76px;
   padding-bottom: 32px;
-}
-
-#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3):has(> .ws-topbar[data-collapsed="true"]) :is(.ws-main, .connect, .hist, .stage1-in, .stage2-in, .stage3-in, .team-video-main, .team-review-main) {
+}#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3):has(> .ws-topbar[data-collapsed="true"]) :is(.ws-main, .connect, .hist, .stage1-in, .stage2-in, .stage3-in, .team-video-main, .team-review-main){
   width: calc(100% - 76px);
   margin-left: 76px;
-}
-
-#root .ws-main { padding-right: clamp(24px, 4vw, 64px); padding-left: clamp(24px, 4vw, 64px); }
-#root .hist-shell > .hist { height: 100dvh; overflow-y: auto; }
-#root .hist > .hist-in { box-sizing: border-box; width: 100%; max-width: 1320px; min-height: 100%; margin: 0 auto; padding: 76px clamp(24px, 4vw, 64px) 44px; }
-#root .stage1-in, #root .stage2-in, #root .stage3-in { max-width: none; margin-right: auto; margin-left: 244px; padding-right: clamp(24px, 4vw, 64px); padding-left: clamp(24px, 4vw, 64px); }
-#root :is(.stage1, .stage2, .stage3):has(> .ws-topbar[data-collapsed="true"]) :is(.stage1-in, .stage2-in, .stage3-in) { margin-left: 76px; }
-#root .ws.team-video-page > .team-video-main,
-#root .team-review-main { width: calc(100% - 244px); margin-left: 244px; padding-right: clamp(24px, 4vw, 64px); padding-left: clamp(24px, 4vw, 64px); }
-#root .ws:has(> .ws-topbar[data-collapsed="true"]) > .team-video-main,
-#root .ws:has(> .ws-topbar[data-collapsed="true"]) > .team-review-main { width: calc(100% - 76px); margin-left: 76px; }
-
-#root :is(.stage1, .stage2, .stage3) :is(.continue-bar, .s2-continue-bar, .s3-pub) {
+}#root .ws-main{ padding-right: clamp(24px, 4vw, 64px); padding-left: clamp(24px, 4vw, 64px); }#root .hist-shell > .hist{ height: 100dvh; overflow-y: auto; }#root .hist > .hist-in{ box-sizing: border-box; width: 100%; max-width: 1320px; min-height: 100%; margin: 0 auto; padding: 76px clamp(24px, 4vw, 64px) 44px; }#root .stage1-in,#root .stage2-in,#root .stage3-in{ max-width: none; margin-right: auto; margin-left: 244px; padding-right: clamp(24px, 4vw, 64px); padding-left: clamp(24px, 4vw, 64px); }#root :is(.stage1, .stage2, .stage3):has(> .ws-topbar[data-collapsed="true"]) :is(.stage1-in, .stage2-in, .stage3-in){ margin-left: 76px; }#root .ws.team-video-page > .team-video-main,#root .team-review-main{ width: calc(100% - 244px); margin-left: 244px; padding-right: clamp(24px, 4vw, 64px); padding-left: clamp(24px, 4vw, 64px); }#root .ws:has(> .ws-topbar[data-collapsed="true"]) > .team-video-main,#root .ws:has(> .ws-topbar[data-collapsed="true"]) > .team-review-main{ width: calc(100% - 76px); margin-left: 76px; }#root :is(.stage1, .stage2, .stage3) :is(.continue-bar, .s2-continue-bar, .s3-pub){
   left: 244px;
-}
-#root :is(.stage1, .stage2, .stage3):has(> .ws-topbar[data-collapsed="true"]) :is(.continue-bar, .s2-continue-bar, .s3-pub) {
+}#root :is(.stage1, .stage2, .stage3):has(> .ws-topbar[data-collapsed="true"]) :is(.continue-bar, .s2-continue-bar, .s3-pub){
   left: 76px;
-}
-
-/* A quieter card system: clear hierarchy, crisp corners, no floating effects. */
+}/* A quieter card system: clear hierarchy,crisp corners,no floating effects. */
 #root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) :is(
   .ws-panel, .ws-stat, .ws-metric-card, .hist-panel, .hist-row, .hist-activity,
   .cn-card, .cn-brands, .setup-card, .s2-sec, .s2-work, .s3-work,
   .team-video-panel, .team-review-list, .team-review-detail, .team-review-job,
   .approval-card, .cg-card
-) {
+){
   border: 1px solid var(--line) !important;
   border-radius: 0 !important;
   background: var(--panel) !important;
   box-shadow: none !important;
-}
-
-#root .ws .ws-stat-grid { gap: 12px; background: transparent; border: 0; }
-#root .ws .ws-stat {
+}#root .ws .ws-stat-grid{ gap: 12px; background: transparent; border: 0; }#root .ws .ws-stat{
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(96px, auto);
   grid-template-rows: auto 1fr auto;
@@ -903,11 +561,7 @@
   padding: 18px 18px 16px;
   border-top: 1px solid var(--line-hard) !important;
   background: var(--panel) !important;
-}
-#root .ws .ws-stat > span { grid-column: 1 / -1; color: var(--muted); font-size: 12px; }
-#root .ws .ws-stat > strong { grid-column: 1; align-self: center; margin: 12px 0; font-size: clamp(34px, 3vw, 44px); line-height: .95; letter-spacing: -.06em; }
-#root .ws .ws-stat > small { grid-column: 2; align-self: center; margin: 0; color: var(--faint); font-size: 11px; text-align: right; }
-#root .ws .ws-stat > button {
+}#root .ws .ws-stat > span{ grid-column: 1 / -1; color: var(--muted); font-size: 12px; }#root .ws .ws-stat > strong{ grid-column: 1; align-self: center; margin: 12px 0; font-size: clamp(34px, 3vw, 44px); line-height: .95; letter-spacing: -.06em; }#root .ws .ws-stat > small{ grid-column: 2; align-self: center; margin: 0; color: var(--faint); font-size: 11px; text-align: right; }#root .ws .ws-stat > button{
   grid-column: 1 / -1;
   display: flex;
   width: 100%;
@@ -918,13 +572,8 @@
   border-top: 1px solid var(--line);
   color: var(--ink);
   text-align: left;
-}
-#root .ws .ws-welcome { min-height: 205px; padding: clamp(22px, 3vw, 34px); }
-#root .ws .ws-welcome h2 { max-width: 17ch; font-size: clamp(24px, 3vw, 34px); letter-spacing: -.05em; }
-#root .team-video-page, #root .team-video-review-page { background: var(--bg) !important; }
-
-/* Keep the fatal-error fallback within the same mint/charcoal visual system. */
-#root .app-error {
+}#root .ws .ws-welcome{ min-height: 205px; padding: clamp(22px, 3vw, 34px); }#root .ws .ws-welcome h2{ max-width: 17ch; font-size: clamp(24px, 3vw, 34px); letter-spacing: -.05em; }#root .team-video-page,#root .team-video-review-page{ background: var(--bg) !important; }/* Keep the fatal-error fallback within the same mint/charcoal visual system. */
+#root .app-error{
   --bg: #000000;
   --panel: #071019;
   --panel2: #0c1824;
@@ -936,30 +585,23 @@
   --go-ink: #0a1520;
   background: var(--bg);
   color: var(--ink);
-}
-#root .app-error-card {
+}#root .app-error-card{
   border-color: var(--line);
   background: var(--panel);
   box-shadow: none;
-}
-#root .app-error-mark {
+}#root .app-error-mark{
   background: color-mix(in srgb, var(--go) 14%, var(--panel));
   color: var(--go);
-}
-#root .app-error-actions button {
+}#root .app-error-actions button{
   border-color: var(--go);
   color: var(--go-ink);
   background: var(--go);
-}
-#root .app-error-actions a {
+}#root .app-error-actions a{
   border-color: var(--line-hard);
   color: var(--ink);
   background: var(--panel2);
-}
-
-/* Reuse the console palette on every private-app loading and sign-in state. */
-#root .page-loading,
-#root .auth-wrap {
+}/* Reuse the console palette on every private-app loading and sign-in state. */
+#root .page-loading,#root .auth-wrap{
   --bg: #000000;
   --panel: #071019;
   --panel2: #0c1824;
@@ -975,36 +617,22 @@
   --grad: var(--go);
   background: var(--bg);
   color: var(--ink);
-}
-
-#root .page-loading-mark {
+}#root .page-loading-mark{
   border-top-color: var(--go);
-}
-
-#root .page-loading-recovery button,
-#root .auth-wrap .login-form .skew-btn.grad,
-#root .auth-wrap .login-form .skew-btn.submit {
+}#root .page-loading-recovery button,#root .auth-wrap .login-form .skew-btn.grad,#root .auth-wrap .login-form .skew-btn.submit{
   border-color: var(--go);
   color: var(--go-ink);
   background: var(--go);
-}
-
-#root .auth-wrap .login-form input:focus {
+}#root .auth-wrap .login-form input:focus{
   border-color: var(--go);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--go) 16%, transparent);
-}
-
-#root .auth-wrap .login-form .user-profile {
+}#root .auth-wrap .login-form .user-profile{
   background: color-mix(in srgb, var(--go) 18%, var(--panel));
-}
-
-#root .auth-wrap .login-form .user-profile-inner {
+}#root .auth-wrap .login-form .user-profile-inner{
   background: var(--panel);
-}
-
-/* The recovered, offline, not-found, and warm-up screens share the same
+}/* The recovered,offline,not-found,and warm-up screens share the same
    charcoal surfaces and mint action color as the console. */
-#root .recovery-page {
+#root .recovery-page{
   --rec-bg: #000000;
   --rec-panel: #071019;
   --rec-line: #142430;
@@ -1014,96 +642,55 @@
   --rec-accent-ink: #0a1520;
   color: #eef5f9;
   background: radial-gradient(ellipse at 50% 40%, #7dd3fc0c, transparent 40%), radial-gradient(ellipse at 85% 5%, #7dd3fc08, transparent 32%), #000000;
-}
-
-#root .recovery-page::before {
+}#root .recovery-page::before{
   background-image: radial-gradient(#2a415655 1px, transparent 1px);
-}
-
-#root .recovery-page :is(.recovery-top > span:last-child, .recovery-footer, .starting-footnote) {
+}#root .recovery-page :is(.recovery-top > span:last-child, .recovery-footer, .starting-footnote){
   color: #7e94a6;
-}
-
-#root .recovery-page :is(.recovery-orbit, .recovery-postcard, .offline-cloud, .offline-cloud::before, .offline-cloud::after) {
+}#root .recovery-page :is(.recovery-orbit, .recovery-postcard, .offline-cloud, .offline-cloud::before, .offline-cloud::after){
   border-color: #2a4156;
-}
-
-#root .recovery-page .recovery-postcard {
+}#root .recovery-page .recovery-postcard{
   background: linear-gradient(145deg, #0c1824, #071019);
-}
-
-#root .recovery-page :is(.offline-cloud, .offline-cloud::before, .offline-cloud::after) {
+}#root .recovery-page :is(.offline-cloud, .offline-cloud::before, .offline-cloud::after){
   background: #071019;
-}
-
-#root .recovery-page :is(.orbit-two, .offline-ground) {
+}#root .recovery-page :is(.orbit-two, .offline-ground){
   border-color: #142430;
-}
-
-#root .recovery-page :is(.postcard-line, .starting-progress) {
+}#root .recovery-page :is(.postcard-line, .starting-progress){
   background-color: #2a4156;
-}
-
-#root .recovery-page .postcard-media {
+}#root .recovery-page .postcard-media{
   background: linear-gradient(135deg, #7dd3fc20, #7dd3fc0a);
-}
-
-#root .recovery-page :is(.postcard-media i, .recovery-star, .recovery-404-number, .offline-signal i, .starting-dots) {
+}#root .recovery-page :is(.postcard-media i, .recovery-star, .recovery-404-number, .offline-signal i, .starting-dots){
   color: #7dd3fc;
   border-color: #7dd3fc;
-}
-
-#root .recovery-page .recovery-404-number {
+}#root .recovery-page .recovery-404-number{
   text-shadow: 0 5px 25px #7dd3fc55;
-}
-
-#root .recovery-page .recovery-kicker,
-#root .recovery-page .offline-tip span {
+}#root .recovery-page .recovery-kicker,#root .recovery-page .offline-tip span{
   color: #7dd3fc;
-}
-
-#root .recovery-page :is(.recovery-copy, .starting-caption) {
+}#root .recovery-page :is(.recovery-copy, .starting-caption){
   color: #a9becd;
-}
-
-#root .recovery-page .starting-progress i {
+}#root .recovery-page .starting-progress i{
   background: linear-gradient(90deg, #7dd3fc, #a5ddfa);
   box-shadow: 0 0 14px #7dd3fc66;
-}
-
-#root .recovery-page .starting-live-dot {
+}#root .recovery-page .starting-live-dot{
   background: #7dd3fc;
   box-shadow: 0 0 12px #7dd3fc;
-}
-
-#root .recovery-page .recovery-primary {
+}#root .recovery-page .recovery-primary{
   border-color: var(--rec-accent);
   color: var(--rec-accent-ink);
   background: linear-gradient(110deg, #7dd3fc, #a5ddfa);
   box-shadow: 0 10px 28px #7dd3fc22;
-}
-
-#root .recovery-page .recovery-secondary {
+}#root .recovery-page .recovery-secondary{
   border-color: #2a4156;
   color: #eef5f9;
   background: #071019;
-}
-
-#root .stage2 .s2-clip-strip {
+}#root .stage2 .s2-clip-strip{
   background-image: repeating-linear-gradient(90deg, transparent 0 7.8%, color-mix(in srgb, var(--go) 38%, transparent) 7.8% 8%, transparent 8% 16.4%), linear-gradient(180deg, rgba(255,255,255,.1), transparent 45%, rgba(0,0,0,.18));
-}
-
-#root .stage2 .s2-clip-selected {
+}#root .stage2 .s2-clip-selected{
   background: color-mix(in srgb, var(--go) 20%, transparent);
-}
-
-body:has(#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .auth-wrap, .page-loading, .recovery-page, .app-error)) {
+}body:has(#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .auth-wrap, .page-loading, .recovery-page, .app-error)){
   background: #000000;
 }
 
-@media (max-width: 760px) {
-  #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar,
-  #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar[data-collapsed="true"] {
+@media (max-width: 760px) {#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar,#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar[data-collapsed="true"]{
     inset: auto 0 0 0 !important;
     width: 100% !important;
     height: auto !important;
@@ -1116,15 +703,9 @@ body:has(#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-
     border-top: 1px solid var(--line) !important;
     background: color-mix(in srgb, var(--panel) 97%, transparent) !important;
     backdrop-filter: none !important;
-  }
-
-  #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-wordmark,
-  #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-overview-link,
-  #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-user {
+  }#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-wordmark,#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-overview-link,#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-user{
     display: none !important;
-  }
-
-  #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-nav {
+  }#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-nav{
     display: grid !important;
     order: 0;
     flex: none;
@@ -1134,10 +715,7 @@ body:has(#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-
     width: 100%;
     max-height: 98px;
     overflow: hidden;
-  }
-
-  #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-nav button,
-  #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar[data-collapsed="true"] .ws-nav button {
+  }#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-nav button,#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar[data-collapsed="true"] .ws-nav button{
     flex: none;
     flex-direction: row;
     justify-content: flex-start;
@@ -1146,9 +724,7 @@ body:has(#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-
     gap: 6px;
     padding: 0 6px;
     font-size: 10px;
-  }
-
-  #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-nav-label {
+  }#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-nav-label{
     display: block !important;
     min-width: 0;
     max-width: none;
@@ -1157,12 +733,7 @@ body:has(#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-
     line-height: 1.15;
     text-overflow: ellipsis;
     white-space: nowrap;
-  }
-
-  #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-nav-label::after { content: none !important; }
-
-  #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-collapse-toggle,
-  #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar[data-collapsed="true"] .ws-collapse-toggle {
+  }#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-nav-label::after{ content: none !important; }#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-collapse-toggle,#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar[data-collapsed="true"] .ws-collapse-toggle{
     order: 1;
     align-self: center;
     width: auto;
@@ -1173,54 +744,26 @@ body:has(#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-
     border: 0;
     border-top: 1px solid var(--line);
     font-size: 10px;
-  }
-
-  #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar[data-collapsed="true"] .ws-collapse-label { display: inline !important; }
-
-  #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-utility-dock {
+  }#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar[data-collapsed="true"] .ws-collapse-label{ display: inline !important; }#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-utility-dock{
     inset: 10px 10px auto auto;
-  }
-
-  #root .ws > .ws-main,
-  #root .ws > .connect,
-  #root .hist-shell > .hist,
-  #root .stage1-in,
-  #root .stage2-in,
-  #root .stage3-in,
-  #root .team-video-main,
-  #root .team-review-main,
-  #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3):has(> .ws-topbar[data-collapsed="true"]) :is(.ws-main, .connect, .hist, .stage1-in, .stage2-in, .stage3-in, .team-video-main, .team-review-main) {
+  }#root .ws > .ws-main,#root .ws > .connect,#root .hist-shell > .hist,#root .stage1-in,#root .stage2-in,#root .stage3-in,#root .team-video-main,#root .team-review-main,#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3):has(> .ws-topbar[data-collapsed="true"]) :is(.ws-main, .connect, .hist, .stage1-in, .stage2-in, .stage3-in, .team-video-main, .team-review-main){
     width: 100%;
     height: 100dvh;
     margin-left: 0;
     padding: 70px 16px 154px;
     overflow-x: hidden;
     overflow-y: auto;
-  }
-
-  #root .hist > .hist-in { width: 100%; padding: 70px 16px 154px; }
-  #root .stage1-in, #root .stage2-in, #root .stage3-in { padding-right: 16px; padding-left: 16px; }
-  #root :is(.stage1, .stage2, .stage3) :is(.continue-bar, .s2-continue-bar, .s3-pub) {
+  }#root .hist > .hist-in{ width: 100%; padding: 70px 16px 154px; }#root .stage1-in,#root .stage2-in,#root .stage3-in{ padding-right: 16px; padding-left: 16px; }#root :is(.stage1, .stage2, .stage3) :is(.continue-bar, .s2-continue-bar, .s3-pub){
     right: 0;
     bottom: calc(140px + env(safe-area-inset-bottom));
     left: 0;
-  }
-  #root .stage1-in, #root .stage2-in, #root .stage3-in { padding-bottom: 245px; }
-  #root .ws .ws-stat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  #root .ws .ws-stat { min-height: 144px; padding: 15px; }
-  #root .ws .ws-stat:last-child { grid-column: auto; }
-  #root .ws .ws-stat > strong { font-size: 34px; }
+  }#root .stage1-in,#root .stage2-in,#root .stage3-in{ padding-bottom: 245px; }#root .ws .ws-stat-grid{ grid-template-columns: repeat(2, minmax(0, 1fr)); }#root .ws .ws-stat{ min-height: 144px; padding: 15px; }#root .ws .ws-stat:last-child{ grid-column: auto; }#root .ws .ws-stat > strong{ font-size: 34px; }
 }
 
-@media (max-width: 380px) {
-  #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-nav {
+@media (max-width: 380px) {#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-nav{
     grid-template-columns: repeat(3, minmax(0, 1fr));
     max-height: 146px;
-  }
-
-  #root :is(.stage1, .stage2, .stage3) :is(.continue-bar, .s2-continue-bar, .s3-pub) {
+  }#root :is(.stage1, .stage2, .stage3) :is(.continue-bar, .s2-continue-bar, .s3-pub){
     bottom: calc(196px + env(safe-area-inset-bottom));
-  }
-
-  #root .stage1-in, #root .stage2-in, #root .stage3-in { padding-bottom: 300px; }
+  }#root .stage1-in,#root .stage2-in,#root .stage3-in{ padding-bottom: 300px; }
 }
