@@ -939,6 +939,15 @@
 
 /* Keep the fatal-error fallback within the same mint/charcoal visual system. */
 #root .app-error {
+  --bg: #050709;
+  --panel: #0b0f12;
+  --panel2: #11171b;
+  --ink: #f2f4f5;
+  --muted: #abb5bb;
+  --line: #1b252b;
+  --line-hard: #34434a;
+  --go: #79c9ad;
+  --go-ink: #101714;
   background: var(--bg);
   color: var(--ink);
 }
