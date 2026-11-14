@@ -315,7 +315,8 @@
   transform: translate(4px, -50%);
 }
 
-.dock-item:focus-visible .dock-label {
+.dock-item:focus-visible .dock-label,
+.dock-item .dock-label[data-visible] {
   opacity: 1;
 }
 
@@ -329,8 +330,15 @@
   transform: translate(0, -50%);
 }
 
-/* Driftpost: the hover-only label reveal is removed (no hover styles).
-   Labels remain available via keyboard focus and the dock context menu. */
+.dock--bottom .dock-item .dock-label[data-visible],
+.dock--top .dock-item .dock-label[data-visible] {
+  transform: translate(-50%, 0);
+}
+
+.dock--left .dock-item .dock-label[data-visible],
+.dock--right .dock-item .dock-label[data-visible] {
+  transform: translate(0, -50%);
+}
 
 .dock .dock-item[data-hop] .dock-label {
   opacity: 0;

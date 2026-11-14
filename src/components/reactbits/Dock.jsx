@@ -457,6 +457,7 @@ export default function Dock({
 }) {
   const rootRef = useRef(null);
   const itemRefs = useRef([]);
+  const labelTimerRef = useRef(0);
   const wakeRef = useRef(null);
   const actionsRef = useRef(null);
   const menuRef = useRef(null);
@@ -465,6 +466,7 @@ export default function Dock({
   const pressingRef = useRef(false);
   const skipRef = useRef(-1);
   const [fit, setFit] = useState(1);
+  const [labelIndex, setLabelIndex] = useState(-1);
   const [menu, setMenu] = useState(null);
   const side = SIDES.includes(position) ? position : 'bottom';
   const vertical = side === 'left' || side === 'right';
@@ -767,6 +769,7 @@ export default function Dock({
       alive = false;
       cancelAnimationFrame(raf);
       window.clearTimeout(hideTimer);
+      window.clearTimeout(labelTimerRef.current);
       root.removeEventListener('pointermove', onMove);
       root.removeEventListener('pointerdown', onMove);
       root.removeEventListener('pointerleave', onLeave);
@@ -978,6 +981,14 @@ export default function Dock({
               actionsRef.current?.hop(index);
               item.onClick?.();
             }}
+            onPointerEnter={() => {
+              window.clearTimeout(labelTimerRef.current);
+              labelTimerRef.current = window.setTimeout(() => setLabelIndex(index), 500);
+            }}
+            onPointerLeave={() => {
+              window.clearTimeout(labelTimerRef.current);
+              setLabelIndex(-1);
+            }}
             onFocus={event => {
               if (event.currentTarget.matches(':focus-visible')) actionsRef.current?.focus(index);
             }}
@@ -992,7 +1003,7 @@ export default function Dock({
             </span>
             {showIndicators && item.active ? <span className="dock-dot" aria-hidden="true" /> : null}
             {showLabels && item.label && !menu ? (
-              <span className="dock-label" aria-hidden="true">
+              <span className="dock-label" data-visible={labelIndex === index ? '' : undefined} aria-hidden="true">
                 {item.label}
               </span>
             ) : null}
