@@ -1,0 +1,48 @@
+/* Cursor-close border glow (MagicBento reference technique).
+   A 1px ring, masked to the border only, lit by a radial gradient that
+   follows the cursor; visible only while --cg-near is 1 (cursor within
+   NEAR_MARGIN). Focus/active styling is untouched. */
+[data-cursor-glow] {
+  position: relative;
+  isolation: isolate;
+  --cg-glow: #7dd3fc;
+}
+[data-theme="light"] [data-cursor-glow] {
+  --cg-glow: #0369a1;
+}
+[data-cursor-glow]::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: inherit;
+  padding: 1px;
+  background: radial-gradient(
+    240px circle at var(--cg-x, -999px) var(--cg-y, -999px),
+    var(--cg-glow) 0%,
+    color-mix(in srgb, var(--cg-glow) 40%, transparent) 42%,
+    transparent 72%
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  opacity: var(--cg-near, 0);
+  transition: opacity 0.28s ease-out;
+  pointer-events: none;
+}
+[data-cursor-glow]::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+  background: radial-gradient(
+    340px circle at var(--cg-x, -999px) var(--cg-y, -999px),
+    color-mix(in srgb, var(--cg-glow) 7%, transparent) 0%,
+    transparent 62%
+  );
+  opacity: var(--cg-near, 0);
+  transition: opacity 0.28s ease-out;
+  pointer-events: none;
+}

@@ -4,13 +4,15 @@ import { api, listSchedules, cancelSchedule, moveSchedule, matchesSearchText, PL
 import CampaignComposer from './CampaignComposer.jsx';
 import { readPostLog } from '../history/log.js';
 import { isAiAccount } from '../ai-access.js';
+import Dock from '../components/reactbits/Dock.jsx';
+import BorderGlow from '../components/reactbits/BorderGlow.jsx';
+import { useCursorGlow } from '../components/CursorGlow.jsx';
 import './workspace.css';
 
 const NAV = [
   ['home', 'Overview', 'home'], ['create', 'Create post', 'plus'], ['calendar', 'Calendar', 'calendar'],
   ['analytics', 'Analytics', 'chart'], ['automations', 'Automations', 'sparkles'], ['history', 'Publishing history', 'clock'], ['accounts', 'Connected accounts', 'users'],
 ];
-const MOBILE_NAV_LABELS = { home: 'Home', create: 'Create', calendar: 'Plan', analytics: 'Insights', automations: 'Auto', history: 'History', accounts: 'Accounts' };
 const platformName = (id) => PLATFORMS.find((p) => p.id === id)?.name || id;
 // Normalize display names and @handles so "@brandstudio" and "Brand Studio"
 // can select the same client group, while preserving distinct suffixes such as
@@ -56,43 +58,70 @@ function Icon({ name, size = 16 }) {
   return <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true" focusable="false" {...common}>{shapes[name] || shapes.sparkles}</svg>;
 }
 
+const Glyph = ({ d, children }) => (
+  <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false">{children}</svg>
+);
+const SunGlyph = () => <Glyph><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" /></Glyph>;
+const MoonGlyph = () => <Glyph><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" /></Glyph>;
+const SignOutGlyph = () => <Glyph><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><polyline points="16 17 21 12 16 7" /><line x1="21" y1="12" x2="9" y2="12" /></Glyph>;
+
 export function WorkspaceNav({ page, onNavigate, email, onSignOut }) {
-  const [collapsed, setCollapsed] = useState(() => {
-    try { return localStorage.getItem('driftpost-sidebar-collapsed') === 'true'; }
-    catch { return false; }
-  });
   const [theme, setTheme] = useState(() => {
     try { return localStorage.getItem('driftpost-console-theme') === 'light' ? 'light' : 'dark'; }
     catch { return 'dark'; }
   });
+  // Compact dock sizing on narrow screens so the full item row still fits.
+  const [compact, setCompact] = useState(() => window.matchMedia('(max-width: 760px)').matches);
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 760px)');
+    const onChange = () => setCompact(mq.matches);
+    mq.addEventListener('change', onChange);
+    return () => mq.removeEventListener('change', onChange);
+  }, []);
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
     try { localStorage.setItem('driftpost-console-theme', theme); } catch {}
   }, [theme]);
-  const toggleCollapsed = () => setCollapsed((value) => {
-    const next = !value;
-    try { localStorage.setItem('driftpost-sidebar-collapsed', String(next)); } catch {}
-    return next;
-  });
+  // Cursor-close border glow (MagicBento reference technique) on the main
+  // console cards; no hover styles involved.
+  useCursorGlow('.ws-stat, .ws-panel, .ws-metric-card, .hist-panel, .hist-row, .cn-card, .setup-card, .s2-sec, .s2-work, .s3-work, .team-video-panel, .team-review-list, .team-review-detail, .approval-card');
   const navPage = page === 'connect' ? 'accounts' : page;
-  return <header className="ws-topbar" data-collapsed={collapsed ? 'true' : 'false'}>
-    <button type="button" className="ws-wordmark" onClick={() => onNavigate('home')} aria-label="Driftpost overview">
-      <img className="logo-img logo-d" src="/logo-dark-620.png" srcSet="/logo-dark-620.png 620w, /logo-dark.png 1984w" sizes="168px" width="1984" height="512" decoding="async" alt="Driftpost" />
-      <img className="logo-img logo-l" src="/logo-light.png" width="1908" height="512" decoding="async" alt="Driftpost" />
-    </button>
-    {page === 'create' && <button type="button" className="ws-overview-link" onClick={() => onNavigate('home')}><Icon name="arrowLeft" size={15} /> Overview</button>}
-    <nav className="ws-nav" aria-label="Main navigation">
-      {NAV.map(([id, label, icon]) => <button key={id} type="button" className={`${navPage === id ? 'active' : ''} ${id === 'create' ? 'ws-nav-create' : ''}`} aria-label={label} aria-current={navPage === id ? 'page' : undefined} title={collapsed ? label : undefined} onClick={() => onNavigate(id)}><span className="ws-nav-icon"><Icon name={icon} size={17} /></span><span className="ws-nav-label" data-mobile-label={MOBILE_NAV_LABELS[id]}>{label}</span></button>)}
-      {isAiAccount(email) && <button type="button" className={page === 'team-video' ? 'active' : ''} aria-current={page === 'team-video' ? 'page' : undefined} title={collapsed ? 'Team video' : undefined} onClick={() => onNavigate('team-video')}><span className="ws-nav-icon"><Icon name="sparkles" size={17} /></span><span className="ws-nav-label">Team video</span></button>}
-      {isAiAccount(email) && <button type="button" className={page === 'team-video-review' ? 'active' : ''} aria-current={page === 'team-video-review' ? 'page' : undefined} title={collapsed ? 'Video review' : undefined} onClick={() => onNavigate('team-video-review')}><span className="ws-nav-icon"><Icon name="clock" size={17} /></span><span className="ws-nav-label">Video review</span></button>}
-    </nav>
-    <div className="ws-user"><span className="ws-user-dot">{(email || 'U')[0].toUpperCase()}</span><span className="ws-user-email">{email || 'Workspace'}</span></div>
-    <button type="button" className="ws-collapse-toggle" onClick={toggleCollapsed} aria-expanded={!collapsed} aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'} title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}><span aria-hidden="true">{collapsed ? '›' : '‹'}</span><span className="ws-collapse-label">{collapsed ? 'Expand menu' : 'Collapse menu'}</span></button>
-    <div className="ws-utility-dock" aria-label="Workspace controls">
-      <button type="button" className="ws-theme-toggle" onClick={() => setTheme((value) => value === 'dark' ? 'light' : 'dark')} aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} theme`} title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} theme`}><span aria-hidden="true">{theme === 'dark' ? '☼' : '◐'}</span><span>{theme === 'dark' ? 'Light appearance' : 'Dark appearance'}</span></button>
-      {onSignOut && <button type="button" className="ws-signout" onClick={onSignOut}>Sign out</button>}
+  const dockItems = [
+    ...NAV.map(([id, label, icon]) => ({
+      icon: <Icon name={icon} size={19} />,
+      label,
+      onClick: () => onNavigate(id),
+      active: navPage === id,
+    })),
+    ...(isAiAccount(email) ? [
+      { icon: <Icon name="sparkles" size={19} />, label: 'Team video', onClick: () => onNavigate('team-video'), active: page === 'team-video' },
+      { icon: <Icon name="clock" size={19} />, label: 'Video review', onClick: () => onNavigate('team-video-review'), active: page === 'team-video-review' },
+    ] : []),
+    ...(!compact ? [{ separator: true }] : []),
+    {
+      icon: theme === 'dark' ? <SunGlyph /> : <MoonGlyph />,
+      label: theme === 'dark' ? 'Light appearance' : 'Dark appearance',
+      onClick: () => setTheme((value) => value === 'dark' ? 'light' : 'dark'),
+    },
+    ...(onSignOut ? [{
+      icon: <SignOutGlyph />,
+      label: 'Sign out',
+      onClick: onSignOut,
+    }] : []),
+  ];
+  return <>
+    <header className="ws-topbar">
+      <button type="button" className="ws-wordmark" onClick={() => onNavigate('home')} aria-label="Driftpost overview">
+        <img className="logo-img logo-d" src="/logo-dark-620.png" srcSet="/logo-dark-620.png 620w, /logo-dark.png 1984w" sizes="168px" width="1984" height="512" decoding="async" alt="Driftpost" />
+        <img className="logo-img logo-l" src="/logo-light.png" width="1908" height="512" decoding="async" alt="Driftpost" />
+      </button>
+      {page === 'create' && <button type="button" className="ws-overview-link" onClick={() => onNavigate('home')}><Icon name="arrowLeft" size={15} /> Overview</button>}
+      <div className="ws-user"><span className="ws-user-dot">{(email || 'U')[0].toUpperCase()}</span><span className="ws-user-email">{email || 'Workspace'}</span></div>
+    </header>
+    <div className="ws-dock-holder">
+      <Dock items={dockItems} position="bottom" theme={theme} accentColor="#7dd3fc" badgeColor="#7dd3fc" baseItemSize={compact ? 34 : 46} magnification={compact ? 48 : 66} />
     </div>
-  </header>;
+  </>;
 }
 
 function PageFrame({ page, onNavigate, email, onSignOut, eyebrow, title, intro, children, action }) {
@@ -118,7 +147,7 @@ export function DashboardPage({ session, onNavigate, onCreate, onSignOut }) {
   const upcoming = (schedules || []).filter((s) => s.status === 'scheduled').slice(0, 4);
   const connectedPlatforms = PLATFORMS.filter((platform) => connections?.some((account) => account.platform === platform.id));
   return <PageFrame page="home" onNavigate={onNavigate} email={session.user?.email} onSignOut={onSignOut} eyebrow="Publishing overview" title="Overview" intro="See what’s scheduled, check your connected channels, and plan what goes out next.">
-    <section className="ws-welcome"><div><span className="ws-eyebrow">Publishing desk</span><h2>One post, across your channels</h2><p>Choose your destinations, prepare a post, then publish now or schedule it.</p><button className="ws-primary" onClick={onCreate}>Create a post <Icon name="arrowRight" size={15} /></button>{isAiAccount(session.user?.email) && <button className="ws-secondary ws-team-entry" onClick={() => onNavigate('team-video')}>Send a team video <Icon name="arrowRight" size={15} /></button>}</div><div className="ws-welcome-route" aria-label={`${connectedPlatforms.length} connected publishing channels`}>{connectedPlatforms.length ? connectedPlatforms.map((platform, index) => <span className="ws-route-stop" key={platform.id} style={{ '--route-order': index }} title={platform.name}><BrandIcon id={platform.id} size={18} /><small>{platform.name}</small></span>) : <span className="ws-route-empty">Connect a channel to start publishing</span>}</div></section>
+    <section className="ws-welcome"><div><span className="ws-eyebrow">Publishing desk</span><h2>One post, across your channels</h2><p>Choose your destinations, prepare a post, then publish now or schedule it.</p><BorderGlow className="btn-glow ws-btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={22}><button className="ws-primary" onClick={onCreate}>Create a post <Icon name="arrowRight" size={15} /></button></BorderGlow>{isAiAccount(session.user?.email) && <button className="ws-secondary ws-team-entry" onClick={() => onNavigate('team-video')}>Send a team video <Icon name="arrowRight" size={15} /></button>}</div><div className="ws-welcome-route" aria-label={`${connectedPlatforms.length} connected publishing channels`}>{connectedPlatforms.length ? connectedPlatforms.map((platform, index) => <span className="ws-route-stop" key={platform.id} style={{ '--route-order': index }} title={platform.name}><BrandIcon id={platform.id} size={18} /><small>{platform.name}</small></span>) : <span className="ws-route-empty">Connect a channel to start publishing</span>}</div></section>
     <div className="ws-stat-grid">
       <article className="ws-stat"><span>Connected accounts</span><strong>{connections === null ? '—' : connections.length}</strong><small>{connections?.length ? 'Ready to publish' : 'Connect your first channel'}</small><button onClick={() => onNavigate('accounts')}>Manage accounts <Icon name="arrowRight" size={13} /></button></article>
       <article className="ws-stat"><span>Scheduled posts</span><strong>{schedules === null ? '—' : schedules.filter((s) => s.status === 'scheduled').length}</strong><small>Waiting in your calendar</small><button onClick={() => onNavigate('calendar')}>Open calendar <Icon name="arrowRight" size={13} /></button></article>

@@ -8,6 +8,9 @@ import PageLoading from './PageLoading.jsx';
 import ApprovalPage from './workspace/ApprovalPage.jsx';
 import { NotFoundPage, OfflinePage, ServerStartingPage, useConnectivity, useServerReadiness } from './RecoveryPages.jsx';
 import { apiRequestUrl } from './lib.js';
+import CursorGrid from './components/reactbits/CursorGrid.jsx';
+import BorderGlow from './components/reactbits/BorderGlow.jsx';
+import { useCursorGlow } from './components/CursorGlow.jsx';
 
 const Console = lazy(() => import('./console.jsx'));
 
@@ -322,38 +325,19 @@ function DocPage({ page }) {
 
 function Landing({ onEnter, session, pubPage, setPubPage }) {
   const rootRef = useRef(null);
-  const gridRef = useRef(null);
-  const mouseRaf = useRef(0);
-  // Grid interactivity: a glow follows the cursor and the whole grid drifts
-  // a few pixels against it. rAF-throttled, transform/opacity only.
-  const onGridMouse = (e) => {
-    if (mouseRaf.current) return;
-    const { clientX, clientY } = e;
-    mouseRaf.current = requestAnimationFrame(() => {
-      mouseRaf.current = 0;
-      const g = gridRef.current;
-      if (!g) return;
-      const r = g.getBoundingClientRect();
-      const nx = Math.min(0.5, Math.max(-0.5, (clientX - r.left) / Math.max(1, r.width) - 0.5));
-      const ny = Math.min(0.5, Math.max(-0.5, (clientY - r.top) / Math.max(1, r.height) - 0.5));
-      g.style.setProperty('--mx', `${((nx + 0.5) * 100).toFixed(1)}%`);
-      g.style.setProperty('--my', `${((ny + 0.5) * 100).toFixed(1)}%`);
-      const shift = g.firstChild;
-      if (shift) shift.style.transform = `translate3d(${(nx * -22).toFixed(1)}px, ${(ny * -22).toFixed(1)}px, 0)`;
-    });
-  };
+  useCursorGlow('.hcard');
   // Animations are part of the look — but repainting invisible pixels is pure
   // waste. Pause rain + marquee the moment they leave the viewport; they
   // resume pixel-identical the instant they return.
   useEffect(() => {
     const root = rootRef.current;
     if (!root || !('IntersectionObserver' in window)) return;
-    const els = root.querySelectorAll('.grid-bg, .marquee-in');
+    const els = root.querySelectorAll('.marquee-in');
     const io = new IntersectionObserver((entries) => {
       for (const en of entries) en.target.classList.toggle('paused', !en.isIntersecting);
     }, { threshold: 0 });
     els.forEach((el) => io.observe(el));
-    return () => { io.disconnect(); if (mouseRaf.current) cancelAnimationFrame(mouseRaf.current); };
+    return () => { io.disconnect(); };
   }, [pubPage]);
   const dock = [
     { id: 'youtube', tip: 'YouTube — video, titles, tags', href: 'https://www.youtube.com' },
@@ -374,8 +358,8 @@ function Landing({ onEnter, session, pubPage, setPubPage }) {
     { n: '04', t: 'Publish or plan ahead', d: 'Publish now, import caption batches, set a weekly or monthly repeat, or hold a post for review. Check the calendar and available account totals in your workspace.' },
   ];
   return (
-    <div className="landing" ref={rootRef} onMouseMove={onGridMouse}>
-      <div className="grid-bg" ref={gridRef} aria-hidden="true"><div className="grid-shift"><div className="grid-pan" /><div className="grid-hot" /></div></div>
+    <div className="landing" ref={rootRef}>
+      <div className="landing-cbg" aria-hidden="true"><CursorGrid color="#7dd3fc" gridColor="#081b23" cellSize={64} radius={160} /></div>
       <nav className="land-nav">
         <button className="land-logo" onClick={() => setPubPage('home')} title="Driftpost home"><img className="logo-img logo-d" src="/logo-dark-620.png" srcSet="/logo-dark-620.png 620w, /logo-dark.png 1984w" sizes="248px" width="1984" height="512" fetchpriority="high" decoding="async" alt="Driftpost" /></button>
         <div className="land-links">
@@ -383,7 +367,9 @@ function Landing({ onEnter, session, pubPage, setPubPage }) {
             <button key={p.id} className={pubPage === p.id ? 'on' : ''} onClick={() => setPubPage(p.id)}>{p.label}</button>
           ))}
         </div>
-        <button className="skew-btn grad" onClick={onEnter}><span>{session ? 'Enter console' : 'Get started ’'}</span></button>
+        <BorderGlow className="btn-glow" backgroundColor="#071019" borderRadius={8} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.35} glowRadius={24}>
+          <button className="skew-btn grad" onClick={onEnter}><span>{session ? 'Enter console' : 'Get started ’'}</span></button>
+        </BorderGlow>
       </nav>
       {pubPage === 'home' ? <>
       <header className="landing-in">
@@ -391,7 +377,9 @@ function Landing({ onEnter, session, pubPage, setPubPage }) {
         <h1><SpotLine text="Post once." /><br /><SpotLine text="Everywhere." /></h1>
         <p>Schedule and publish social media posts across Instagram, Facebook, YouTube and X. Manage multiple brands and accounts in one workspace, with content tailored to each platform. Optional Google Drive intake reads media from a connected team folder to prepare posts for the accounts you select.</p>
         <div className="landing-cta">
-          <button className="skew-btn grad" onClick={onEnter}><span>{session ? 'Enter console' : 'Get started free ’'}</span></button>
+          <BorderGlow className="btn-glow" backgroundColor="#071019" borderRadius={8} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.35} glowRadius={24}>
+            <button className="skew-btn grad" onClick={onEnter}><span>{session ? 'Enter console' : 'Get started free ’'}</span></button>
+          </BorderGlow>
         </div>
         <div className="social-dock">
           {dock.map((d) => (
@@ -438,7 +426,9 @@ function Landing({ onEnter, session, pubPage, setPubPage }) {
       </> : <DocPage page={pubPage} />}
       <footer className="land-foot">
         <h2>Plan and publish from one workspace.</h2>
-        <button className="skew-btn grad" onClick={onEnter}><span>{session ? 'Enter console' : 'Start free ’'}</span></button>
+        <BorderGlow className="btn-glow" backgroundColor="#071019" borderRadius={8} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.35} glowRadius={24}>
+          <button className="skew-btn grad" onClick={onEnter}><span>{session ? 'Enter console' : 'Start free ’'}</span></button>
+        </BorderGlow>
         <div className="land-fine">
           <span>Free while in beta · Your logins never leave the platforms · © {new Date().getFullYear()} Driftpost · Made by Famebros Studio</span>
           <span className="land-legal"><button className="link" onClick={() => setPubPage('terms')}>Terms</button> · <a className="link" href="/privacy">Privacy Policy</a> · <button className="link" onClick={() => setPubPage('cookies')}>Cookies</button> · <button className="link" onClick={() => setPubPage('acceptable-use')}>Acceptable Use</button> · <button className="link" onClick={() => setPubPage('ai-disclaimer')}>AI Disclaimer</button> · <button className="link" onClick={() => setPubPage('platforms-disclaimer')}>Platforms</button> · <button className="link" onClick={() => setPubPage('copyright')}>Copyright</button> · <button className="link" onClick={() => setPubPage('refunds')}>Refunds</button> · <button className="link" onClick={() => setPubPage('data-deletion')}>Data Deletion</button> · <button className="link" onClick={() => setPubPage('security')}>Security</button> · <button className="link" onClick={() => setPubPage('contact')}>Contact</button></span>
