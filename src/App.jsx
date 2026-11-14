@@ -10,7 +10,6 @@ import { NotFoundPage, OfflinePage, ServerStartingPage, useConnectivity, useServ
 import { apiRequestUrl } from './lib.js';
 import CursorGrid from './components/reactbits/CursorGrid.jsx';
 import BorderGlow from './components/reactbits/BorderGlow.jsx';
-import { useCursorGlow } from './components/CursorGlow.jsx';
 
 const Console = lazy(() => import('./console.jsx'));
 
@@ -325,7 +324,6 @@ function DocPage({ page }) {
 
 function Landing({ onEnter, session, pubPage, setPubPage }) {
   const rootRef = useRef(null);
-  useCursorGlow('.hcard');
   // Animations are part of the look — but repainting invisible pixels is pure
   // waste. Pause rain + marquee the moment they leave the viewport; they
   // resume pixel-identical the instant they return.
@@ -400,16 +398,16 @@ function Landing({ onEnter, session, pubPage, setPubPage }) {
         <div className="hstrip-label">Every platform, covered</div>
         <div className="hstrip">
           {cards.map((c) => (
-            <div key={c.id} className="hcard">
+            <BorderGlow key={c.id} className="bg-glow" backgroundColor="#0b0b0e" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.12} glowRadius={22}><div  className="hcard">
               <span className="hcard-ic"><BrandIcon id={c.id} size={26} /></span>
               <b>{c.t}</b>
               <p>{c.d}</p>
-            </div>
+            </div></BorderGlow>
           ))}
-          <div className="hcard hot">
+          <BorderGlow className="bg-glow" backgroundColor="#0b0b0e" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.12} glowRadius={22}><div className="hcard hot">
             <b>One workspace, more control</b>
             <p>CSV batches, finite repeats, shareable approvals and available account metrics, alongside your connected brands.</p>
-          </div>
+          </div></BorderGlow>
         </div>
       </div>
       <section className="zig">

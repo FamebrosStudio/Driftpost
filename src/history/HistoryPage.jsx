@@ -1,3 +1,4 @@
+import BorderGlow from '../components/reactbits/BorderGlow.jsx';
 import React, { useEffect, useState } from 'react';
 import BrandIcon from '../brand.jsx';
 import { api } from '../lib.js';
@@ -32,7 +33,7 @@ function LegacyPostedTab() {
   return (
     <div>
       {posts.map((p) => (
-        <div key={p.at} className="hist-row">
+        <BorderGlow key={p.at} className="bg-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.12} glowRadius={22}><div  className="hist-row">
           <span className="hist-ic"><BrandIcon id={p.platform} size={15} /></span>
           <span className="hist-body">
             <b>{p.text ? (p.text.length > 90 ? p.text.slice(0, 90) + '…' : p.text) : p.platform}</b>
@@ -49,7 +50,7 @@ function LegacyPostedTab() {
           >
             Remove
           </button>
-        </div>
+        </div></BorderGlow>
       ))}
       <p className="hist-note">Removing clears this list only — live posts stay up on the platform.</p>
     </div>
@@ -145,21 +146,21 @@ export function PostedTab({ token }) {
         const when = new Date(row.scheduled_at);
         const label = row.status === 'published' ? 'Published' : row.status === 'failed' ? 'Failed' : row.status === 'cancelled' ? 'Cancelled' : row.status === 'publishing' ? 'Publishing…' : 'Scheduled';
         const tone = row.status === 'published' ? 'ok' : row.status === 'failed' ? 'fail' : '';
-        return <div key={row.id} className="hist-row">
+        return <BorderGlow key={row.id} className="bg-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.12} glowRadius={22}><div  className="hist-row">
           <span className="hist-ic"><BrandIcon id={row.platform} size={15} /></span>
           <span className="hist-body"><b>{row.platform[0].toUpperCase() + row.platform.slice(1)}{row.result_url ? ' · ' : ''}{row.result_url && <a href={row.result_url} target="_blank" rel="noreferrer">View post</a>}</b>
             <small>{when.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })} · {when.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })} · <span className={tone ? `hist-status ${tone}` : ''}>{label}</span></small>
             {row.error && <small className="hist-error">{row.error}</small>}
           </span>
           {['scheduled', 'publishing'].includes(row.status) && <button type="button" className="hist-mini danger" disabled={scheduleBusy === row.id} onClick={() => cancelScheduled(row.id)}>{scheduleBusy === row.id ? 'Cancelling…' : 'Cancel'}</button>}
-        </div>;
+        </div></BorderGlow>;
       })}
     </section>
     {!posts.length && <><p className="hist-empty">Nothing posted yet.</p><p className="hist-note">Posts published after delete support was added can be deleted from the platform here.</p></>}
     {posts.map((p) => {
       const targets = getTargets(p);
       const canDelete = targets.length > 0;
-      return <div key={p.at} className="hist-row">
+      return <BorderGlow key={p.at} className="bg-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.12} glowRadius={22}><div  className="hist-row">
         <span className="hist-ic"><BrandIcon id={p.platform} size={15} /></span>
         <span className="hist-body">
           <b>{p.text ? (p.text.length > 90 ? p.text.slice(0, 90) + '…' : p.text) : p.platform}</b>
@@ -169,7 +170,7 @@ export function PostedTab({ token }) {
           {busy === p.at ? 'Deleting…' : 'Delete post'}
         </button>}
         <button type="button" className="hist-mini" title="Remove this entry from this browser only; it does not delete the live platform post" onClick={() => { removePostLog(p.at); refresh(); }}>Remove from History</button>
-      </div>;
+      </div></BorderGlow>;
     })}
     {notice && <p className="hist-note" role="status">{notice}</p>}
     <p className="hist-note">Scheduled publishing appears above. Platform deletion is selected per destination; Instagram posts must be deleted in Instagram. Remove from History only clears this browser’s entry.</p>
@@ -239,7 +240,7 @@ function ScheduledTab({ token }) {
         const tone = r.status === 'published' ? 'ok' : r.status === 'failed' ? 'fail' : '';
         const label = r.status === 'published' ? 'Published' : r.status === 'failed' ? 'Failed' : r.status === 'cancelled' ? 'Cancelled' : r.status === 'publishing' ? 'Publishing…' : 'Scheduled';
         return (
-          <div key={r.id} className="hist-row">
+          <BorderGlow key={r.id} className="bg-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.12} glowRadius={22}><div  className="hist-row">
             <span className="hist-ic"><BrandIcon id={r.platform} size={15} /></span>
             <span className="hist-body">
               <b>{r.platform[0].toUpperCase() + r.platform.slice(1)}{r.result_url ? ' · ' : ''}
@@ -263,7 +264,7 @@ function ScheduledTab({ token }) {
                 {busy === r.id ? '…' : 'Cancel'}
               </button>
             )}
-          </div>
+          </div></BorderGlow>
         );
       })}
       <p className="hist-note">Scheduled posts publish on their own — keep the page closed if you like.</p>
@@ -298,7 +299,7 @@ export function DeletedTab({ token }) {
   return (
     <div>
       {items.map((d) => (
-        <div key={d.at} className="hist-row">
+        <BorderGlow key={d.at} className="bg-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.12} glowRadius={22}><div  className="hist-row">
           <span className="hist-ic"><BrandIcon id={d.platform} size={15} /></span>
           <span className="hist-body">
             <b>{d.account_name}</b>
@@ -308,7 +309,7 @@ export function DeletedTab({ token }) {
             {busy === d.platform ? '…' : 'Reconnect'}
           </button>
           <button type="button" className="hist-mini danger" onClick={() => { removeDisconnectLog(d.at); refresh(); }}>Forget</button>
-        </div>
+        </div></BorderGlow>
       ))}
       <p className="hist-note">Reconnect verifies the account again with the platform.</p>
     </div>
@@ -336,7 +337,7 @@ export function CaptionsTab({ userId }) {
   return (
     <div>
       {items.map((c) => (
-        <div key={`${c.at}-${c.platform}`} className="hist-row hist-cap">
+        <BorderGlow key={`${c.at}-${c.platform}`} className="bg-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.12} glowRadius={22}><div  className="hist-row hist-cap">
           <span className="hist-ic"><BrandIcon id={c.platform} size={15} /></span>
           <span className="hist-body">
             <b>{c.text.length > 110 ? c.text.slice(0, 110) + '…' : c.text}</b>
@@ -345,7 +346,7 @@ export function CaptionsTab({ userId }) {
           <button type="button" className="hist-mini" onClick={() => copy(c.text, c.at)}>
             {copied === c.at ? 'Copied ✓' : 'Copy'}
           </button>
-        </div>
+        </div></BorderGlow>
       ))}
     </div>
   );

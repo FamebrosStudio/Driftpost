@@ -413,6 +413,53 @@
    bottom edge — the dock floats just above it there. */
 #root :is(.stage1, .stage2, .stage3) .ws-dock-holder,#root .ws:has(> .connect) .ws-dock-holder{
   inset: auto 0 calc(92px + env(safe-area-inset-bottom)) 0;
+}/* BorderGlow card wrappers (className="bg-glow") must behave like the cards
+   they wrap inside grid/flex layouts. */
+.bg-glow{ min-width: 0; }
+#root .automation-grid > .bg-glow{ min-width: 0; }/* Dock palette matched to the console: navy glass panel,sky-blue edge
+   highlights,cool blue-gray ink. These override the component's inline
+   theme tokens (CSS !important beats element.style) — the accent/badge
+   props already pass #7dd3fc. The menu portal renders outside #root, so
+   its overrides are global. */
+.dock, .dock-menu{
+  --dock-panel: rgba(7, 16, 25, 0.86) !important;
+  --dock-panel-edge: rgba(42, 65, 86, 0.55) !important;
+  --dock-panel-highlight: rgba(125, 211, 252, 0.10) !important;
+  --dock-panel-shadow: 0 22px 44px -20px rgba(0, 0, 0, 0.8), 0 6px 16px -8px rgba(0, 0, 0, 0.5) !important;
+  --dock-tile: linear-gradient(180deg, #0c1824 0%, #071019 100%) !important;
+  --dock-tile-edge: rgba(125, 211, 252, 0.16) !important;
+  --dock-tile-highlight: rgba(125, 211, 252, 0.18) !important;
+  --dock-tile-shadow: 0 4px 10px -4px rgba(0, 0, 0, 0.7) !important;
+  --dock-ink: #a9becd !important;
+  --dock-label: #071019 !important;
+  --dock-label-ink: #eef5f9 !important;
+  --dock-dot: rgba(169, 190, 205, 0.72) !important;
+  --dock-separator: rgba(125, 211, 252, 0.20) !important;
+  --dock-menu: rgba(7, 16, 25, 0.92) !important;
+  --dock-menu-edge: rgba(42, 65, 86, 0.60) !important;
+  --dock-menu-ink: #eef5f9 !important;
+  --dock-menu-muted: rgba(169, 190, 205, 0.55) !important;
+  --dock-menu-separator: rgba(125, 211, 252, 0.16) !important;
+}
+[data-theme="light"] .dock, [data-theme="light"] .dock-menu{
+  --dock-panel: rgba(247, 251, 253, 0.88) !important;
+  --dock-panel-edge: rgba(157, 183, 200, 0.60) !important;
+  --dock-panel-highlight: rgba(255, 255, 255, 0.95) !important;
+  --dock-panel-shadow: 0 22px 44px -22px rgba(3, 40, 61, 0.25), 0 6px 16px -10px rgba(3, 40, 61, 0.14) !important;
+  --dock-tile: linear-gradient(180deg, #dceaf2 0%, #f7fbfd 100%) !important;
+  --dock-tile-edge: rgba(3, 105, 161, 0.18) !important;
+  --dock-tile-highlight: rgba(255, 255, 255, 1) !important;
+  --dock-tile-shadow: 0 4px 10px -5px rgba(3, 40, 61, 0.22) !important;
+  --dock-ink: #0a1520 !important;
+  --dock-label: #ffffff !important;
+  --dock-label-ink: #0a1520 !important;
+  --dock-dot: rgba(10, 21, 32, 0.55) !important;
+  --dock-separator: rgba(3, 105, 161, 0.16) !important;
+  --dock-menu: rgba(247, 251, 253, 0.92) !important;
+  --dock-menu-edge: rgba(157, 183, 200, 0.65) !important;
+  --dock-menu-ink: #0a1520 !important;
+  --dock-menu-muted: rgba(10, 21, 32, 0.45) !important;
+  --dock-menu-separator: rgba(3, 105, 161, 0.14) !important;
 }/* A quieter card system: clear hierarchy,crisp corners,no floating effects. */
 #root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) :is(
   .ws-panel, .ws-stat, .ws-metric-card, .hist-panel, .hist-row, .hist-activity,

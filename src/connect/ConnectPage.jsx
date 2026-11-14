@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { api, groupBrands, matchesSearchText, PLATFORMS } from '../lib.js';
 import BrandIcon from '../brand.jsx';
+import BorderGlow from '../components/reactbits/BorderGlow.jsx';
 import './connect.css';
 
 const HINTS = {
@@ -145,7 +146,7 @@ export default function ConnectPage({ session, onContinue, onHistory, onSignOut,
                 const accountCount = connections.filter((c) => c.platform === p.id).length;
                 const searchingAccounts = !!String(accountSearch[p.id] || '').trim();
                 return (
-                  <div key={p.id} className={list.length ? 'cn-card linked' : 'cn-card'}>
+                  <BorderGlow key={p.id} className="bg-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.12} glowRadius={22}><div className={list.length ? 'cn-card linked' : 'cn-card'}>
                     <div className="cn-card-head">
                       <span className="cn-ic"><BrandIcon id={p.id} size={18} /></span>
                       <span>
@@ -179,7 +180,7 @@ export default function ConnectPage({ session, onContinue, onHistory, onSignOut,
                     >
                       {busy === p.id ? 'Opening…' : list.length ? `Connect another ${p.name} account` : `Connect ${p.name}`}
                     </button>
-                  </div>
+                  </div></BorderGlow>
                 );
               })}
             </div>

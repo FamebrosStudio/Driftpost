@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import BrandIcon from '../brand.jsx';
+import BorderGlow from '../components/reactbits/BorderGlow.jsx';
 import { composeOutput } from '../stage2/PlatformOutputCard.jsx';
 import { assistCommunityPost, postsTabUrl } from './communityAssist.js';
 import { parseInstagramCollaborators } from './instagramCollaborators.js';
@@ -97,7 +98,7 @@ export default function Workspace({
             : <span className="s3-pill">Needs review</span>;
 
   return (
-    <div className={greyed ? 's3-work greyed' : 's3-work'}>
+    <BorderGlow className="bg-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.12} glowRadius={22}><div className={greyed ? 's3-work greyed' : 's3-work'}>
       <div className="s3-work-head">
         <BrandIcon id={pid} size={18} />
         <b>{NAMES[pid]}</b>
@@ -327,6 +328,6 @@ export default function Workspace({
           {posting ? 'Posting…' : accountList?.length > 1 ? `Post to ${NAMES[pid]} (${accountList.length})` : `Post to ${NAMES[pid]}`}
         </button>
       </div>
-    </div>
+    </div></BorderGlow>
   );
 }

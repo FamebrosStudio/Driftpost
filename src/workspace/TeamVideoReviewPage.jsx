@@ -1,3 +1,4 @@
+import BorderGlow from '../components/reactbits/BorderGlow.jsx';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { api, apiRequestUrl, PLATFORMS } from '../lib.js';
 import { mapResponse, requestCaptions } from '../stage2/ai.js';
@@ -195,15 +196,15 @@ export default function TeamVideoReviewPage({ session, onNavigate, onSignOut }) 
       {error && <p className="team-review-error" role="alert">{error}</p>}
       {notice && <p className="team-review-notice" role="status">{notice}</p>}
       {loading ? <p className="team-video-empty">Loading stopped videos…</p> : <div className="team-review-layout">
-        <aside className="team-review-list" aria-label="Stopped videos">
+        <BorderGlow className="bg-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.12} glowRadius={22}><aside className="team-review-list" aria-label="Stopped videos">
           {!jobs.length && <p className="team-video-empty">No videos are waiting for a brand decision.</p>}
           {jobs.map((job) => <button type="button" key={job.id} className={`team-review-job${selectedId === job.id ? ' active' : ''}`} onClick={() => setSelectedId(job.id)}>
             <b>{job.file_name}</b><small>{job.account_name} · {new Date(job.updated_at || job.created_at).toLocaleString()}</small>
             {(job.result?.brand_reviews || []).map((review) => <small className="team-review-reason" key={review.brand_id}>{review.brand_name}: {review.reason}</small>)}
             {(job.result?.suggested_brands || []).length > 0 && <small>AI alternatives: {job.result.suggested_brands.map((item) => item.name).join(', ')}</small>}
           </button>)}
-        </aside>
-        <section className="team-review-detail" aria-label="Video review detail">
+        </aside></BorderGlow>
+        <BorderGlow className="bg-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.12} glowRadius={22}><section className="team-review-detail" aria-label="Video review detail">
           {!selectedJob ? <div className="team-review-empty"><b>Select a stopped video</b><span>Its AI stop reason, video, brand options and destination controls will appear here.</span></div> : <>
             <div className="team-review-title"><div><span>STOPPED · NOT PUBLISHED</span><h2>{selectedJob.file_name}</h2></div><button type="button" className="team-review-stop" onClick={() => decide('stop')} disabled={!!busy}>{busy === 'stop' ? 'Stopping…' : 'Stop'}</button></div>
             <div className="team-review-reasons">{(selectedJob.result?.brand_reviews || []).map((item) => <p key={item.brand_id}><b>{item.brand_name}</b> · {item.verdict} ({Math.round((Number(item.confidence) || 0) * 100)}%): {item.reason}</p>)}{selectedJob.error && <p>{selectedJob.error}</p>}</div>
@@ -218,7 +219,7 @@ export default function TeamVideoReviewPage({ session, onNavigate, onSignOut }) 
             {selectedPlatforms.map((platform) => <div className="team-review-caption" key={platform}><b>{PLATFORMS.find((item) => item.id === platform)?.name || platform}</b>{platform === 'youtube' && <input aria-label="YouTube title" maxLength={100} placeholder="Video title" value={captions.youtube.title} onChange={(event) => updateCaption('youtube', 'title', event.target.value)} />}<textarea aria-label={`${platform} caption`} rows={4} maxLength={platform === 'instagram' ? 2200 : platform === 'x' ? 280 : undefined} placeholder={`Write the ${platform} caption…`} value={platform === 'instagram' ? captions.instagram.caption : platform === 'facebook' ? captions.facebook.message : platform === 'youtube' ? captions.youtube.description : captions.x.text} onChange={(event) => updateCaption(platform, platform === 'instagram' ? 'caption' : platform === 'facebook' ? 'message' : platform === 'youtube' ? 'description' : 'text', event.target.value)} /></div>)}
             <div className="team-review-actions"><button type="button" className="team-review-send" onClick={() => decide('send')} disabled={!!busy || !mediaFile}>{busy === 'send' ? 'Queueing…' : 'Send'}</button><button type="button" className="team-review-stop" onClick={() => decide('stop')} disabled={!!busy}>Stop — do not publish</button></div>
           </>}
-        </section>
+        </section></BorderGlow>
       </div>}
     </main>
   </div>;

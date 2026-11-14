@@ -1,3 +1,4 @@
+import BorderGlow from '../components/reactbits/BorderGlow.jsx';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { api, matchesSearchText, PLATFORMS } from '../lib.js';
 import { isAiAccount } from '../ai-access.js';
@@ -360,7 +361,7 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut, onOpenRe
       <header className="team-video-heading"><span>PRIVATE TEAM WORKFLOW</span><h1>Send one video. Prepare every destination.</h1><p>Driftpost analyzes the video, writes for the selected brand, validates each destination, and automatically publishes when enabled.</p><button type="button" className="team-review-refresh" onClick={() => onNavigate('team-video-review')}>Open stopped-video review</button></header>
       {!isAiAccount(session.user?.email) && <div className="team-video-alert" role="alert">This private workflow is only available to approved team accounts.</div>}
       {(loadError || brandLoadError) && <div className="team-video-alert" role="alert">{loadError || brandLoadError} <button type="button" onClick={() => setRetryTick((tick) => tick + 1)} disabled={connectionsLoading || brandLoading}>Retry loading</button></div>}
-      <section className="team-video-panel drive-intake-panel">
+      <BorderGlow className="bg-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.12} glowRadius={22}><section className="team-video-panel drive-intake-panel">
         <div className="team-video-section-title"><span>↗</span><div><h2>Editor video drop-off</h2><p>Connect the private team Drive once. Editors can upload batches of videos for different accounts; Driftpost queues them FIFO and analyzes one video/brand at a time, keeping each file’s destination separate.</p></div></div>
         {driveState.connected ? <div className="drive-intake-ready"><b>Drive connected · {driveState.google_email}</b><a href={driveState.folder_url} target="_blank" rel="noreferrer">Open Driftpost Video Intake folder ↗</a></div>
           : <div className="drive-intake-connect"><p>{driveState.loading ? 'Checking Google Drive setup…' : driveState.error || 'Connect the Famebros Drive account to turn on automatic video intake.'}</p><button type="button" onClick={connectDrive} disabled={driveBusy || driveState.loading}>{driveBusy ? 'Opening Google…' : 'Connect Google Drive'}</button></div>}
@@ -380,16 +381,16 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut, onOpenRe
             {job.error && !job.result?.review && <small className="drive-job-error">{job.error}</small>}
           </div>;
         }) : <p className="drive-job-empty">{driveState.connected ? 'No media has entered this inbox yet. Upload a video or image batch to the linked folder; videos appear within about 10 seconds. Carousel batches wait 90 seconds for all image uploads to finish.' : 'Connect the team Google Drive above before uploading. Without a linked Drive, new media cannot be detected or shown here.'}</p>}</div>
-      </section>
+      </section></BorderGlow>
       <form className="team-video-form" onSubmit={submit}>
-        <section className="team-video-panel">
+        <BorderGlow className="bg-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.12} glowRadius={22}><section className="team-video-panel">
           <div className="team-video-section-title"><span>01</span><div><h2>Choose the brand and video</h2><p>The selected brand controls the facts, voice, and caption rules.</p></div></div>
           <label className="team-field"><span>Brand profile</span><select value={brandKey} onChange={(event) => selectBrand(event.target.value)} required disabled={brandLoading || !!brandLoadError}><option value="">{brandLoading ? 'Loading saved brand profiles…' : brandLoadError ? 'Brand profiles unavailable' : 'Choose a saved brand profile'}</option>{brands.map((item) => <option key={item.key} value={item.key}>{item.label}</option>)}</select></label>
           <label className="team-video-drop" onDragOver={(event) => event.preventDefault()} onDrop={(event) => { event.preventDefault(); const dropped = event.dataTransfer.files?.[0]; if (dropped) selectVideo(dropped); }}><span className="team-video-drop-mark">↑</span><b>{file ? file.name : 'Choose or drop a video'}</b><small>{file ? `${(file.size / 1024 / 1024).toFixed(1)} MB · ${file.type || 'video'}` : 'MP4, MOV, WebM · up to 400 MB'}</small><input type="file" accept="video/*" onChange={(event) => { const input = event.currentTarget; selectVideo(input.files?.[0] || null); input.value = ''; }} /></label>
           <label className="team-field"><span>Optional editor note</span><textarea value={brief} onChange={(event) => setBrief(event.target.value)} rows={3} maxLength={2000} placeholder="Campaign context, key message, or anything the video does not make clear." /></label>
-        </section>
+        </section></BorderGlow>
 
-        <section className="team-video-panel">
+        <BorderGlow className="bg-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.12} glowRadius={22}><section className="team-video-panel">
           <div className="team-video-section-title"><span>02</span><div><h2>Select platforms and accounts</h2><p>Choose every destination. You can select multiple accounts on the same platform.</p></div></div>
           <label className="team-field team-account-search"><span>Search accounts across all platforms</span><input type="search" value={accountSearch} onChange={(event) => setAccountSearch(event.target.value)} placeholder="Search account name, handle, or platform" /><small>{filteredConnections.length} of {connections.length} connected accounts · YouTube, Instagram, Facebook, X</small></label>
           {connectionsLoading ? <p className="team-video-empty">Loading connected accounts…</p> : !connections.length ? <p className="team-video-empty">No connected accounts are available. Connect accounts in Driftpost first.</p> : <div className="team-account-groups">{PLATFORMS.map(({ id, name }) => {
@@ -408,9 +409,9 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut, onOpenRe
           })}</div>}
           {connections.length > 0 && !filteredConnections.length && <p className="team-video-empty">No connected accounts match “{accountSearch}”.</p>}
           {chosen.length > 0 && <p className="team-selection-summary">{chosen.length} account{chosen.length === 1 ? '' : 's'} selected · {selectedPlatforms.map((pid) => PLATFORM_LABELS[pid]).join(', ')}</p>}
-        </section>
+        </section></BorderGlow>
 
-        <section className="team-video-panel">
+        <BorderGlow className="bg-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.12} glowRadius={22}><section className="team-video-panel">
           <div className="team-video-section-title"><span>03</span><div><h2>Destination options</h2><p>Only settings supported by the selected platforms are enabled.</p></div></div>
           <div className="team-options-grid">
             {file && selectedPlatforms.includes('youtube') && <TeamCoverField title="YouTube thumbnail" value={youtubeThumb} setValue={setYoutubeThumb} platform="youtube" setError={setError} setBusy={(busy) => setCoverBusy('youtube', busy)} />}
@@ -421,7 +422,7 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut, onOpenRe
             {selectedPlatforms.includes('instagram') && selectedPlatforms.includes('facebook') && <label className="team-option"><input type="checkbox" checked={crosspost} onChange={(event) => setCrosspost(event.target.checked)} /><span><b>Cross-post Instagram to Facebook</b><small>Use the selected Facebook accounts as the mirrored destination.</small></span></label>}
           </div>
           <label className="team-option team-auto"><input type="checkbox" checked={autoPublish} onChange={(event) => setAutoPublish(event.target.checked)} /><span><b>Publish automatically after analysis</b><small>Driftpost validates every selected destination before publishing. Turn this off to prepare drafts without publishing.</small></span></label>
-        </section>
+        </section></BorderGlow>
         {error && <p className="team-video-error" role="alert">{error}</p>}
         <div className="team-video-actions"><button type="submit" disabled={activeJobs >= 3 || pendingCoverCount > 0 || connectionsLoading || !connections.length || !brand || !file || !chosen.length}>{pendingCoverCount ? 'Preparing cover…' : activeJobs >= 3 ? 'Three analyses already running' : autoPublish ? 'Analyze and publish' : 'Analyze and review'}</button><small>{activeJobs ? `${activeJobs} analysis${activeJobs === 1 ? '' : 'es'} running. You can start up to 3 at once.` : 'The original post creation flow is unchanged.'}</small></div>
       </form>

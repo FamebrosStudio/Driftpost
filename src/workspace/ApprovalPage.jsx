@@ -1,3 +1,4 @@
+import BorderGlow from '../components/reactbits/BorderGlow.jsx';
 import React, { useEffect, useState } from 'react';
 import BrandIcon from '../brand.jsx';
 import { apiRequestUrl } from '../lib.js';
@@ -41,7 +42,7 @@ export default function ApprovalPage({ id }) {
 
   return <main className="approval-page">
     <a className="approval-brand" href="/"><img src="/logo-dark-620.png" alt="Driftpost" /></a>
-    <section className="approval-card">
+    <BorderGlow className="bg-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.12} glowRadius={22}><section className="approval-card">
       <span className="ws-eyebrow">Post review</span>
       <h1>Review scheduled post</h1>
       {loading ? <p className="approval-state">Loading post…</p> : error && !review ? <p className="approval-error" role="alert">{error}</p> : done ? <p className="approval-done" role="status">{done}</p> : review && <>
@@ -53,6 +54,6 @@ export default function ApprovalPage({ id }) {
         <div className="approval-actions"><button type="button" disabled={busy} onClick={() => decide('rejected')}>{busy ? 'Saving…' : 'Request changes'}</button><button type="button" className="approval-approve" disabled={busy} onClick={() => decide('approved')}>{busy ? 'Saving…' : 'Approve post'}</button></div>
         <p className="approval-footnote">Anyone with this private link can review this scheduled post.</p>
       </>}
-    </section>
+    </section></BorderGlow>
   </main>;
 }

@@ -1,3 +1,4 @@
+import BorderGlow from '../components/reactbits/BorderGlow.jsx';
 import React, { Suspense, lazy, useEffect, useMemo, useRef, useState } from 'react';
 import { api, apiUrl, friendlyErrorMessage, groupBrands, PLATFORMS, resetPostState, schedulePost, fetchWithAuth } from '../lib.js';
 import { readVault, updateVault, vaultFiles } from '../stage2/mediaVault.js';
@@ -1252,17 +1253,17 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
         {isTeamWorkflow && teamWarning && <p className="team-analysis-warning" role="status">{teamWarning} Driftpost will continue with available video frames and without an optional custom cover where needed.</p>}
         {isTeamWorkflow && teamTranscript && <details className="team-transcript"><summary>Review detected transcript{teamTranscript.length >= 5000 ? ' · first 5,000 characters' : ''}</summary><p>{teamTranscript}</p></details>}
         {connsError && !connections.length && (
-          <div className="s3-work">
+          <BorderGlow className="bg-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.12} glowRadius={22}><div className="s3-work">
             <p className="s3-err" style={{ margin: 0 }}>{connsError} Nothing can post until accounts load.</p>
             <div className="s3-acts"><button type="button" onClick={() => setConnsTick((t) => t + 1)}>Retry loading accounts</button></div>
-          </div>
+          </div></BorderGlow>
         )}
 
         {!platforms.length ? (
-          <div className="s3-work">
+          <BorderGlow className="bg-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.12} glowRadius={22}><div className="s3-work">
             <p className="s3-err" style={{ margin: 0 }}>No platforms from Stage 1 — go back and finish the earlier stages first.</p>
             <div className="s3-acts"><button type="button" onClick={onBack}>← Back to Stage 2</button></div>
-          </div>
+          </div></BorderGlow>
         ) : success ? (
           <div className="s3-done">
             <h2>Posted everywhere ✓</h2>
