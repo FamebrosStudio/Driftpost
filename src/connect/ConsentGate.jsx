@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import BorderGlow from '../components/reactbits/BorderGlow.jsx';
 import { api } from '../lib.js';
 import { isAiAccount } from '../ai-access.js';
 import './consent.css';
@@ -69,18 +68,18 @@ export default function ConsentGate({ session, onOpenPage, children }) {
   };
 
   if (!allowed) return children;
-  if (state === undefined) return <div className="cg"><BorderGlow asChild className="bg-glow-control" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.12} glowRadius={12}><div className="cg-card" aria-busy="true">Checking your privacy settings…</div></BorderGlow></div>;
+  if (state === undefined) return <div className="cg"><div className="cg-card" aria-busy="true">Checking your privacy settings…</div></div>;
   if (state?.recorded || state?.unverified) return <>
     {state.unverified && <div className="cg-fallback" role="status">
       <span>Privacy settings could not be checked. Personalisation stays off until confirmed.</span>
-      <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button type="button" onClick={() => { setState(undefined); setRetry((n) => n + 1); }}>Retry</button></BorderGlow>
+      <button type="button" onClick={() => { setState(undefined); setRetry((n) => n + 1); }}>Retry</button>
     </div>}
     {children}
   </>;
 
   return (
     <div className="cg">
-      <BorderGlow asChild className="bg-glow-control" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.12} glowRadius={12}><div className="cg-card">
+      <div className="cg-card">
         <h1>Before your first post</h1>
         <p className="cg-lede">
           Driftpost sends what you type to an AI provider (xAI) to write your posts. That is the
@@ -116,22 +115,22 @@ export default function ConsentGate({ session, onOpenPage, children }) {
         </div>
 
         <div className="cg-acts">
-          <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button type="button" className="go" onClick={() => decide(true)} disabled={!opt || busy}>
+          <button type="button" className="go" onClick={() => decide(true)} disabled={!opt || busy}>
             {busy ? 'Saving…' : 'Agree and continue'}
-          </button></BorderGlow>
-          <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button type="button" onClick={() => decide(false)} disabled={busy}>
+          </button>
+          <button type="button" onClick={() => decide(false)} disabled={busy}>
             {busy ? 'Saving…' : 'No thanks, just generate'}
-          </button></BorderGlow>
+          </button>
         </div>
         {err && <p className="cg-err">{err}</p>}
 
         <p className="cg-foot">
-          <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button type="button" className="link" onClick={() => onOpenPage?.('privacy')}>Read the full Privacy Notice</button></BorderGlow>
+          <button type="button" className="link" onClick={() => onOpenPage?.('privacy')}>Read the full Privacy Notice</button>
           {' · '}
-          <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button type="button" className="link" onClick={() => onOpenPage?.('data-deletion')}>Delete my data</button></BorderGlow>
+          <button type="button" className="link" onClick={() => onOpenPage?.('data-deletion')}>Delete my data</button>
           {state?.version ? <span className="cg-ver"> · notice {state.version}</span> : null}
         </p>
-      </div></BorderGlow>
+      </div>
     </div>
   );
 }

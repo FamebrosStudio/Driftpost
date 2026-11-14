@@ -1,5 +1,4 @@
 import React from 'react';
-import BorderGlow from '../components/reactbits/BorderGlow.jsx';
 
 // Cross-post switch between the media and prompt sections.
 // ON: Instagram auto-shares to Facebook, so the Facebook card hides below
@@ -7,7 +6,7 @@ import BorderGlow from '../components/reactbits/BorderGlow.jsx';
 export default function CrosspostToggle({ on, onChange }) {
   return (
     <div className="s2-cross">
-      <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button
+      <button
         type="button"
         role="switch"
         aria-checked={on}
@@ -16,7 +15,7 @@ export default function CrosspostToggle({ on, onChange }) {
         onClick={() => onChange(!on)}
       >
         <span aria-hidden="true" />
-      </button></BorderGlow>
+      </button>
       <div className="s2-cross-text">
         <b>Cross-post to Facebook</b>
         <small>

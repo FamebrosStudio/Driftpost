@@ -1,5 +1,4 @@
 import React from 'react';
-import BorderGlow from '../components/reactbits/BorderGlow.jsx';
 
 // Option 4 tool: reuse a group built earlier. One select, member names visible.
 // Dead groups (all accounts disconnected) can be deleted — otherwise they
@@ -18,15 +17,15 @@ export default function ExistingGroupSelector({ groups, activeId, accountName, o
         const names = (g.accountIds || []).map((id) => accountName(id)).filter(Boolean);
         return (
           <div key={g.id} className="trio-line">
-            <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button type="button" role="radio" aria-checked={on} onClick={() => onPick(g.id)} className={on ? 'trio-radio on' : 'trio-radio'}>
+            <button type="button" role="radio" aria-checked={on} onClick={() => onPick(g.id)} className={on ? 'trio-radio on' : 'trio-radio'}>
               <span className="rdo" aria-hidden="true" />
               <span>
                 <b>{g.name}</b>
                 <small>{names.length ? names.join(' · ') : 'Accounts were disconnected'}</small>
               </span>
-            </button></BorderGlow>
+            </button>
             {onDelete && (
-              <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button type="button" className="s1-mini danger" title={`Delete ${g.name}`} onClick={() => del(g)}>✕</button></BorderGlow>
+              <button type="button" className="s1-mini danger" title={`Delete ${g.name}`} onClick={() => del(g)}>✕</button>
             )}
           </div>
         );

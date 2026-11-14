@@ -39,7 +39,7 @@ function LegacyPostedTab() {
             <b>{p.text ? (p.text.length > 90 ? p.text.slice(0, 90) + '…' : p.text) : p.platform}</b>
             <small>{fmtDate(p.at)}{p.url ? ' · ' : ''}{p.url && <a href={p.url} target="_blank" rel="noreferrer">View</a>}</small>
           </span>
-          <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button
+          <button
             type="button"
             className="hist-mini danger"
             title="Removes this entry from the list only — the live post stays up"
@@ -49,7 +49,7 @@ function LegacyPostedTab() {
             }}
           >
             Remove
-          </button></BorderGlow>
+          </button>
         </div></BorderGlow>
       ))}
       <p className="hist-note">Removing clears this list only — live posts stay up on the platform.</p>
@@ -152,7 +152,7 @@ export function PostedTab({ token }) {
             <small>{when.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })} · {when.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })} · <span className={tone ? `hist-status ${tone}` : ''}>{label}</span></small>
             {row.error && <small className="hist-error">{row.error}</small>}
           </span>
-          {['scheduled', 'publishing'].includes(row.status) && <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button type="button" className="hist-mini danger" disabled={scheduleBusy === row.id} onClick={() => cancelScheduled(row.id)}>{scheduleBusy === row.id ? 'Cancelling…' : 'Cancel'}</button></BorderGlow>}
+          {['scheduled', 'publishing'].includes(row.status) && <button type="button" className="hist-mini danger" disabled={scheduleBusy === row.id} onClick={() => cancelScheduled(row.id)}>{scheduleBusy === row.id ? 'Cancelling…' : 'Cancel'}</button>}
         </div></BorderGlow>;
       })}
     </section>
@@ -166,16 +166,16 @@ export function PostedTab({ token }) {
           <b>{p.text ? (p.text.length > 90 ? p.text.slice(0, 90) + '…' : p.text) : p.platform}</b>
           <small>{fmtDate(p.at)}{p.url ? ' · ' : ''}{p.url && <a href={p.url} target="_blank" rel="noreferrer">View</a>}</small>
         </span>
-        {canDelete && <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button type="button" className="hist-mini danger" disabled={busy === p.at} title="Choose which platforms to delete this post from" onClick={() => openDeleteDialog(p)}>
+        {canDelete && <button type="button" className="hist-mini danger" disabled={busy === p.at} title="Choose which platforms to delete this post from" onClick={() => openDeleteDialog(p)}>
           {busy === p.at ? 'Deleting…' : 'Delete post'}
-        </button></BorderGlow>}
-        <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button type="button" className="hist-mini" title="Remove this entry from this browser only; it does not delete the live platform post" onClick={() => { removePostLog(p.at); refresh(); }}>Remove from History</button></BorderGlow>
+        </button>}
+        <button type="button" className="hist-mini" title="Remove this entry from this browser only; it does not delete the live platform post" onClick={() => { removePostLog(p.at); refresh(); }}>Remove from History</button>
       </div></BorderGlow>;
     })}
     {notice && <p className="hist-note" role="status">{notice}</p>}
     <p className="hist-note">Scheduled publishing appears above. Platform deletion is selected per destination; Instagram posts must be deleted in Instagram. Remove from History only clears this browser’s entry.</p>
     {deleteDialog && <div className="hist-modal-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) closeDeleteDialog(); }}>
-      <BorderGlow asChild className="bg-glow-control" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.12} glowRadius={12}><section className="hist-delete-modal" role="dialog" aria-modal="true" aria-labelledby="hist-delete-title">
+      <section className="hist-delete-modal" role="dialog" aria-modal="true" aria-labelledby="hist-delete-title">
         <h2 id="hist-delete-title">Choose platforms to delete from</h2>
         <p>Select only the platform copies you want removed. This cannot be undone.</p>
         <div className="hist-delete-options">
@@ -194,10 +194,10 @@ export function PostedTab({ token }) {
           })}
         </div>
         <div className="hist-delete-actions">
-          <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button type="button" className="hist-mini" disabled={busy !== null} onClick={closeDeleteDialog}>Cancel</button></BorderGlow>
-          <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button type="button" className="hist-mini danger" disabled={!selectedDeleteTargets.length || busy !== null} onClick={deleteLive}>{busy !== null ? 'Deleting…' : 'Delete selected'}</button></BorderGlow>
+          <button type="button" className="hist-mini" disabled={busy !== null} onClick={closeDeleteDialog}>Cancel</button>
+          <button type="button" className="hist-mini danger" disabled={!selectedDeleteTargets.length || busy !== null} onClick={deleteLive}>{busy !== null ? 'Deleting…' : 'Delete selected'}</button>
         </div>
-      </section></BorderGlow>
+      </section>
     </div>}
   </div>;
 }
@@ -220,7 +220,7 @@ function ScheduledTab({ token }) {
     return () => { active = false; window.clearInterval(timer); };
   }, [token]);
 
-  if (rows === null && error) return <div><p className="hist-note" role="alert">{error}</p><BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button type="button" className="hist-mini" onClick={() => { setError(''); listSchedules(token).then(setRows).catch((e) => setError(e.message || 'Could not load scheduled posts.')); }}>Retry</button></BorderGlow></div>;
+  if (rows === null && error) return <div><p className="hist-note" role="alert">{error}</p><button type="button" className="hist-mini" onClick={() => { setError(''); listSchedules(token).then(setRows).catch((e) => setError(e.message || 'Could not load scheduled posts.')); }}>Retry</button></div>;
   if (rows === null) return <p className="hist-empty">Loading scheduled posts…</p>;
   if (!rows.length) {
     return (
@@ -250,7 +250,7 @@ function ScheduledTab({ token }) {
               {r.error && <small style={{ display: 'block', color: 'var(--danger, #e5484d)' }}>{r.error}</small>}
             </span>
             {['scheduled', 'publishing'].includes(r.status) && (
-              <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button
+              <button
                 type="button"
                 className="hist-mini danger"
                 disabled={busy === r.id}
@@ -262,7 +262,7 @@ function ScheduledTab({ token }) {
                 }}
               >
                 {busy === r.id ? '…' : 'Cancel'}
-              </button></BorderGlow>
+              </button>
             )}
           </div></BorderGlow>
         );
@@ -305,10 +305,10 @@ export function DeletedTab({ token }) {
             <b>{d.account_name}</b>
             <small>{d.platform} · disconnected {fmtDate(d.at)}</small>
           </span>
-          <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button type="button" className="hist-mini" disabled={!!busy} onClick={() => reconnect(d.platform)}>
+          <button type="button" className="hist-mini" disabled={!!busy} onClick={() => reconnect(d.platform)}>
             {busy === d.platform ? '…' : 'Reconnect'}
-          </button></BorderGlow>
-          <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button type="button" className="hist-mini danger" onClick={() => { removeDisconnectLog(d.at); refresh(); }}>Forget</button></BorderGlow>
+          </button>
+          <button type="button" className="hist-mini danger" onClick={() => { removeDisconnectLog(d.at); refresh(); }}>Forget</button>
         </div></BorderGlow>
       ))}
       <p className="hist-note">Reconnect verifies the account again with the platform.</p>
@@ -343,9 +343,9 @@ export function CaptionsTab({ userId }) {
             <b>{c.text.length > 110 ? c.text.slice(0, 110) + '…' : c.text}</b>
             <small>{c.brand || c.platform} · {fmtDate(c.at)}</small>
           </span>
-          <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button type="button" className="hist-mini" onClick={() => copy(c.text, c.at)}>
+          <button type="button" className="hist-mini" onClick={() => copy(c.text, c.at)}>
             {copied === c.at ? 'Copied ✓' : 'Copy'}
-          </button></BorderGlow>
+          </button>
         </div></BorderGlow>
       ))}
     </div>
@@ -367,8 +367,8 @@ export default function HistoryPage({ session, onNavigate, onSignOut }) {
         <div className="hist-heading"><h1>Publishing history</h1><p>{canUseAi ? 'Find published work, scheduled posts, saved captions and accounts.' : 'Find published work, scheduled posts and accounts.'}</p></div>
         <div className="hist-tabs" role="tablist" aria-label="History sections">
           {tabs.map((t) => (
-            <BorderGlow key={t.id} asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button
-
+            <button
+              key={t.id}
               type="button"
               role="tab"
               aria-selected={tab === t.id}
@@ -376,7 +376,7 @@ export default function HistoryPage({ session, onNavigate, onSignOut }) {
               onClick={() => setTab(t.id)}
             >
               {t.label}
-            </button></BorderGlow>
+            </button>
           ))}
         </div>
         {tab === 'posted' && <PostedTab token={session.access_token} />}

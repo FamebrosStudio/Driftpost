@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import BorderGlow from '../components/reactbits/BorderGlow.jsx';
 import BrandIcon from '../brand.jsx';
 
 // Per-platform editable fields.
@@ -72,15 +71,15 @@ export default function PlatformOutputCard({ pid, values, onSave, regenning, reg
       ))}
       {pid === 'x' && <div className={xLen > 280 ? 's2-xcount over' : 's2-xcount'}>{xLen}/280{xLen > 280 ? ' — too long' : ''}</div>}
       <div className="s2-out-acts">
-        <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button type="button" onClick={copy}>{copied ? 'Copied ✓' : 'Copy'}</button></BorderGlow>
+        <button type="button" onClick={copy}>{copied ? 'Copied ✓' : 'Copy'}</button>
         {editing ? (
-          <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button type="button" onClick={saveEdit}>Save</button></BorderGlow>
+          <button type="button" onClick={saveEdit}>Save</button>
         ) : (
-          <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button type="button" onClick={startEdit}>Edit</button></BorderGlow>
+          <button type="button" onClick={startEdit}>Edit</button>
         )}
-        {onRegen && <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button type="button" disabled={regenBusy} title="Fresh AI answer for this card only" onClick={() => onRegen(pid)}>
+        {onRegen && <button type="button" disabled={regenBusy} title="Fresh AI answer for this card only" onClick={() => onRegen(pid)}>
           {regenning ? '…' : 'Regen'}
-        </button></BorderGlow>}
+        </button>}
       </div>
       {(copied || copyError) && <small className={`s2-copy-status${copyError ? ' err' : ''}`} role="status">{copyError || 'Copied to clipboard.'}</small>}
     </div>

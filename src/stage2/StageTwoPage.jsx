@@ -264,7 +264,7 @@ export default function StageTwoPage({ session, onBack, onSignOut, onNavigate, o
       {onNavigate && <WorkspaceNav page="create" onNavigate={onNavigate} email={session.user?.email} onSignOut={onSignOut} />}
       <div className="stage2-in">
         <div className="s2-top">
-          <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button type="button" className="s2-back" onClick={onBack}>← Stage 1</button></BorderGlow>
+          <button type="button" className="s2-back" onClick={onBack}>← Stage 1</button>
         </div>
         <header className="s2-head">
           <span className="s2-badge">Stage 2 of 3</span>

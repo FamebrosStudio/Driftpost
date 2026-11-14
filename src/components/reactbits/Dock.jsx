@@ -1,7 +1,6 @@
 'use client';
 
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import BorderGlow from './BorderGlow.jsx';
 import { createPortal } from 'react-dom';
 
 import './Dock.css';
@@ -363,8 +362,8 @@ function DockMenu({
               const lit = index === active && !blink;
               const submenu = Boolean(row.items?.length);
               return (
-                <BorderGlow key={index} asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button
-
+                <button
+                  key={index}
                   ref={node => {
                     rowRefs.current[index] = node;
                   }}
@@ -399,7 +398,7 @@ function DockMenu({
                       <ChevronGlyph />
                     </span>
                   ) : null}
-                </button></BorderGlow>
+                </button>
               );
             })}
           </div>
@@ -943,8 +942,8 @@ export default function Dock({
         item?.separator ? (
           <span key={index} className="dock-separator" aria-hidden="true" />
         ) : (
-          <BorderGlow key={index} asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button
-
+          <button
+            key={index}
             ref={node => {
               itemRefs.current[index] = node;
             }}
@@ -997,7 +996,7 @@ export default function Dock({
                 {item.label}
               </span>
             ) : null}
-          </button></BorderGlow>
+          </button>
         )
       )}
       {menu ? (
