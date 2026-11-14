@@ -1,5 +1,4 @@
 import React from 'react';
-import BorderGlow from '../components/reactbits/BorderGlow.jsx';
 import BrandIcon from '../brand.jsx';
 import { PLATFORMS } from '../lib.js';
 
@@ -16,8 +15,8 @@ export default function PlatformSelector({ selected, counts, brand, onToggle }) 
           ? (brand ? `No ${p.name} account under ${brand.label}` : `No ${p.name} account connected yet`)
           : `${counts[p.id] || 0} connected`;
         return (
-          <BorderGlow key={p.id} asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button
-
+          <button
+            key={p.id}
             type="button"
             aria-pressed={on}
             disabled={!ok}
@@ -28,7 +27,7 @@ export default function PlatformSelector({ selected, counts, brand, onToggle }) 
             <BrandIcon id={p.id} size={15} />
             {p.name}
             {on && <span className="pill-check" aria-hidden="true">✓</span>}
-          </button></BorderGlow>
+          </button>
         );
       })}
     </div>

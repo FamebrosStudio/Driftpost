@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import BorderGlow from '../components/reactbits/BorderGlow.jsx';
 import VideoTimelineEditor from './VideoTimelineEditor.jsx';
 import EpidemicCatalog from '../music/EpidemicCatalog.jsx';
 
@@ -591,19 +590,19 @@ export default function MediaEditor({ entry, token, onClose, onApply, onApplyMus
           <div>
             <div className="s2-pills" role="group" aria-label="Aspect ratio">
               {Object.keys(RATIOS).map((id) => (
-                <BorderGlow key={id} asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button  type="button" className={aspect === id ? 's2-pill on' : 's2-pill'} onClick={() => pickAspect(id)}>{id}</button></BorderGlow>
+                <button key={id} type="button" className={aspect === id ? 's2-pill on' : 's2-pill'} onClick={() => pickAspect(id)}>{id}</button>
               ))}
             </div>
             {fitNote && <p className="s2-note">{fitNote}</p>}
             <div className="s2-mode" role="group" aria-label="Fit or crop">
-              <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button type="button" className={pad ? 'on' : ''} onClick={() => setMode(false)}>Fit · keep everything</button></BorderGlow>
-              <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button type="button" className={!pad ? 'on' : ''} onClick={() => setMode(true)}>Crop · customize frame</button></BorderGlow>
+              <button type="button" className={pad ? 'on' : ''} onClick={() => setMode(false)}>Fit · keep everything</button>
+              <button type="button" className={!pad ? 'on' : ''} onClick={() => setMode(true)}>Crop · customize frame</button>
             </div>
             <div className="s2-ed-btns">
-              <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button type="button" onClick={() => rotateTo((rot + 3) % 4)}>Rotate left</button></BorderGlow>
-              <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button type="button" onClick={() => rotateTo((rot + 1) % 4)}>Rotate right</button></BorderGlow>
-              <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button type="button" className={flipV ? 'on' : ''} onClick={() => setFlipV((v) => !v)}>Flip vertical</button></BorderGlow>
-              <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button type="button" className={flipH ? 'on' : ''} onClick={() => setFlipH((v) => !v)}>Flip horizontal</button></BorderGlow>
+              <button type="button" onClick={() => rotateTo((rot + 3) % 4)}>Rotate left</button>
+              <button type="button" onClick={() => rotateTo((rot + 1) % 4)}>Rotate right</button>
+              <button type="button" className={flipV ? 'on' : ''} onClick={() => setFlipV((v) => !v)}>Flip vertical</button>
+              <button type="button" className={flipH ? 'on' : ''} onClick={() => setFlipH((v) => !v)}>Flip horizontal</button>
             </div>
             {outputDims() && (
               <p className="s3-xcount" style={{ marginTop: 0, marginBottom: 10 }}>
@@ -611,11 +610,11 @@ export default function MediaEditor({ entry, token, onClose, onApply, onApplyMus
                 {RATIOS[aspect] ? ` · ${aspect}` : pad ? ' · original size' : ' · custom crop'}
               </p>
             )}
-            <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button type="button" className="s2-done" disabled={busy || !ready} onClick={done}>
+            <button type="button" className="s2-done" disabled={busy || !ready} onClick={done}>
               {busy ? (busyText || 'Saving…') : isVideo ? 'Done editing (render video)' : 'Done editing'}
-            </button></BorderGlow>
-            {isVideo && <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button type="button" className="s2-editor-music" disabled={busy} onClick={() => setShowVideoTimeline(true)}>Edit video</button></BorderGlow>}
-            <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button type="button" className="s2-cancel" onClick={onClose}>Cancel</button></BorderGlow>
+            </button>
+            {isVideo && <button type="button" className="s2-editor-music" disabled={busy} onClick={() => setShowVideoTimeline(true)}>Edit video</button>}
+            <button type="button" className="s2-cancel" onClick={onClose}>Cancel</button>
           </div>
         </div>
         {!isVideo && onApplyMusic && <div className="s2-editor-music-catalog s2-image-editor-music">

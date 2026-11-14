@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import BorderGlow from './components/reactbits/BorderGlow.jsx';
 import './recovery.css';
 
 function DriftpostLogo() {
@@ -12,14 +11,14 @@ export function NotFoundPage({ onHome, onEnter }) {
     <section className="recovery-content">
       <div className="recovery-art" aria-hidden="true">
         <div className="recovery-orbit orbit-one" /><div className="recovery-orbit orbit-two" />
-        <BorderGlow asChild className="bg-glow-control" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.12} glowRadius={12}><div className="recovery-postcard"><span className="postcard-line" /><span className="postcard-line short" /><span className="postcard-media"><i /></span><small>POST / LOST</small></div></BorderGlow>
+        <div className="recovery-postcard"><span className="postcard-line" /><span className="postcard-line short" /><span className="postcard-media"><i /></span><small>POST / LOST</small></div>
         <span className="recovery-star star-a">✳</span><span className="recovery-star star-b">·</span><span className="recovery-star star-c">✦</span>
         <b className="recovery-404-number">404</b>
       </div>
       <p className="recovery-kicker">A little off the feed</p>
       <h1>This page drifted<br />out of view.</h1>
       <p className="recovery-copy">That link doesn’t lead to a Driftpost page. Let’s get you back to the right place.</p>
-      <div className="recovery-actions"><BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button className="recovery-primary" onClick={onHome}>Back to home <span aria-hidden="true">↗</span></button></BorderGlow>{onEnter && <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button className="recovery-secondary" onClick={onEnter}>Open my workspace</button></BorderGlow>}</div>
+      <div className="recovery-actions"><button className="recovery-primary" onClick={onHome}>Back to home <span aria-hidden="true">↗</span></button>{onEnter && <button className="recovery-secondary" onClick={onEnter}>Open my workspace</button>}</div>
     </section>
     <footer className="recovery-footer"><span>DRIFTPOST</span><span>Keep good things moving.</span></footer>
   </main>;
@@ -33,7 +32,7 @@ export function OfflinePage({ onRetry, checking }) {
       <p className="recovery-kicker">Your work is still here</p>
       <h1 id="offline-title">Looks like the<br />internet wandered off.</h1>
       <p className="recovery-copy">Driftpost needs a connection to sync your accounts and publish. Reconnect, then check again — this screen won’t erase your draft.</p>
-      <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button className="recovery-primary" onClick={onRetry} disabled={checking}>{checking ? 'Checking connection…' : 'Try again'} <span aria-hidden="true">↻</span></button></BorderGlow>
+      <button className="recovery-primary" onClick={onRetry} disabled={checking}>{checking ? 'Checking connection…' : 'Try again'} <span aria-hidden="true">↻</span></button>
       <p className="offline-tip"><span aria-hidden="true">✳</span> Drafts saved on this device stay available.</p>
     </section>
     <footer className="recovery-footer"><span>DRIFTPOST</span><span>We’ll be right here.</span></footer>

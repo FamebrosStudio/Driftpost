@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import BorderGlow from '../components/reactbits/BorderGlow.jsx';
 import { api, apiRequestUrl } from '../lib.js';
 import { mixImageIntoVideo, mixMusicIntoVideo, mp4RecordingType } from './mixVideoAudio.js';
 
@@ -177,7 +176,7 @@ export default function EpidemicCatalog({ token, files, selectedIndex, onSelectV
     </label>}
     <form onSubmit={search}>
       <input aria-label="Search Epidemic Sound" value={term} onChange={(event) => setTerm(event.target.value)} maxLength={160} placeholder="Search music, artist, mood or genre" />
-      <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button type="submit" disabled={busy || !!addingId || previewBusy || !term.trim()}>{busy ? 'Searching…' : 'Search tracks'}</button></BorderGlow>
+      <button type="submit" disabled={busy || !!addingId || previewBusy || !term.trim()}>{busy ? 'Searching…' : 'Search tracks'}</button>
     </form>
     {!canAdd && <p className="s2-music-status">Add a photo or video to the editor to use a soundtrack.</p>}
     {previewTrack && <div className="s2-music-player" aria-live="polite"><span><small>NOW PREVIEWING</small><b>{previewTrack.title || previewTrack.name}</b></span><audio ref={audioRef} controls preload="none" onPlay={() => { setPreviewBusy(false); setPreviewPlaying(true); }} onPause={() => setPreviewPlaying(false)} onEnded={() => { setPreviewTrack(null); setPreviewPlaying(false); }} /></div>}
@@ -187,10 +186,10 @@ export default function EpidemicCatalog({ token, files, selectedIndex, onSelectV
     {!!tracks.length && <><div className="s2-music-results-head"><b>Tracks</b><span>{tracks.length}{nextOffset != null ? '+' : ''} found</span></div><ul>{tracks.map((track) => <li key={track.id} className={previewTrack?.id === track.id ? 'is-previewing' : ''}>
       <span><b>{track.title || track.name || 'Untitled track'}</b><small>{artistNames(track) || 'Epidemic Sound'}{track.bpm ? ` · ${track.bpm} BPM` : ''}{track.length ? ` · ${Math.round(track.length / 60)}:${String(track.length % 60).padStart(2, '0')}` : ''}</small></span>
       <div className="s2-music-actions">
-        <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button type="button" className="s2-music-preview" aria-label={`${previewTrack?.id === track.id && previewPlaying ? 'Pause' : 'Preview'} ${track.title || track.name || 'track'}`} disabled={previewBusy || !!addingId} onClick={() => preview(track)}>{previewTrack?.id === track.id && previewBusy ? 'Loading…' : previewTrack?.id === track.id && previewPlaying ? 'Pause' : 'Preview'}</button></BorderGlow>
-        <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button type="button" aria-label={`${isImage ? 'Add music to image' : 'Add music to video'}: ${track.title || track.name || 'track'}`} disabled={!canAdd || !!addingId || previewBusy} onClick={() => addTrack(track)}>{addingId === track.id ? 'Adding…' : isImage ? 'Add to image' : 'Add to video'}</button></BorderGlow>
+        <button type="button" className="s2-music-preview" aria-label={`${previewTrack?.id === track.id && previewPlaying ? 'Pause' : 'Preview'} ${track.title || track.name || 'track'}`} disabled={previewBusy || !!addingId} onClick={() => preview(track)}>{previewTrack?.id === track.id && previewBusy ? 'Loading…' : previewTrack?.id === track.id && previewPlaying ? 'Pause' : 'Preview'}</button>
+        <button type="button" aria-label={`${isImage ? 'Add music to image' : 'Add music to video'}: ${track.title || track.name || 'track'}`} disabled={!canAdd || !!addingId || previewBusy} onClick={() => addTrack(track)}>{addingId === track.id ? 'Adding…' : isImage ? 'Add to image' : 'Add to video'}</button>
       </div>
     </li>)}</ul></>}
-    {nextOffset != null && <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button type="button" className="s2-music-more" disabled={busy || !!addingId || previewBusy} onClick={loadMore}>{busy ? 'Loading…' : 'Load more tracks'}</button></BorderGlow>}
+    {nextOffset != null && <button type="button" className="s2-music-more" disabled={busy || !!addingId || previewBusy} onClick={loadMore}>{busy ? 'Loading…' : 'Load more tracks'}</button>}
   </details>;
 }

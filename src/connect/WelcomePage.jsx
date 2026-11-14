@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import BorderGlow from '../components/reactbits/BorderGlow.jsx';
 import ConnectPage from './ConnectPage.jsx';
 import './connect.css';
 
@@ -12,10 +11,10 @@ export default function WelcomePage({ session, onHistory, onSignOut, onContinue,
   useEffect(() => { document.title = 'Welcome · Driftpost'; }, []);
   return (
     <div className="welcome">
-      <BorderGlow asChild className="bg-glow-control" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.12} glowRadius={12}><div className="welcome-in">
+      <div className="welcome-in">
         <div className="welcome-top">
           <span className="cn-badge">Welcome · one-time setup</span>
-          <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button type="button" className="cn-link" onClick={onSkip}>Skip intro →</button></BorderGlow>
+          <button type="button" className="cn-link" onClick={onSkip}>Skip intro →</button>
         </div>
         <header className="welcome-head">
           <h1>All your accounts, one screen.</h1>
@@ -30,7 +29,7 @@ export default function WelcomePage({ session, onHistory, onSignOut, onContinue,
           <span><b>02</b> Pick a brand or bundle a group</span>
           <span><b>03</b> Write once, fire everywhere</span>
         </div>
-      </div></BorderGlow>
+      </div>
       <ConnectPage
         session={session}
         onContinue={onContinue}

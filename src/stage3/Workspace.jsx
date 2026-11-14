@@ -273,9 +273,9 @@ export default function Workspace({
             saved to your downloads, the caption is copied, and the create-post box
             opens on your channel. Paste and hit Post.
           </p>
-          <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button type="button" className="go" onClick={runAssist} disabled={greyed || !accountId}>
+          <button type="button" className="go" onClick={runAssist} disabled={greyed || !accountId}>
             Copy caption + open create-post box →
-          </button></BorderGlow>
+          </button>
           {assistMsg && <p className="s3-ytphoto-msg" aria-live="polite">{assistMsg}</p>}
           <p className="s3-ytphoto-alt">
             The box didn&apos;t open?{' '}
@@ -283,14 +283,14 @@ export default function Workspace({
               open your Posts tab
             </a>
             {' · '}or{' '}
-            <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button
+            <button
               type="button"
               className="s3-link"
               onClick={() => onPostPhotoAsVideo(pid)}
               disabled={posting || encoding || greyed || !accountId}
             >
               {encoding ? 'Making video…' : 'post it as a 6s Short instead'}
-            </button></BorderGlow>
+            </button>
           </p>
         </div>
       )}
@@ -308,25 +308,25 @@ export default function Workspace({
 
       <div className="s3-acts">
         {!reviewed && result?.state !== 'completed' && result?.state !== 'scheduled' && (
-          <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button type="button" onClick={() => onReviewed(pid)} disabled={greyed}>Reviewed ✓</button></BorderGlow>
+          <button type="button" onClick={() => onReviewed(pid)} disabled={greyed}>Reviewed ✓</button>
         )}
         {reviewed && result?.state !== 'completed' && result?.state !== 'scheduled' && (
-          <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button type="button" className="ok" disabled>✓ Reviewed</button></BorderGlow>
+          <button type="button" className="ok" disabled>✓ Reviewed</button>
         )}
-        {onRegen && <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button type="button" onClick={() => onRegen(pid)} disabled={regenBusy || greyed} title="Fresh AI answer for this card">
+        {onRegen && <button type="button" onClick={() => onRegen(pid)} disabled={regenBusy || greyed} title="Fresh AI answer for this card">
           {regenning ? '…' : 'Regen'}
-        </button></BorderGlow>}
-        <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button
+        </button>}
+        <button
           type="button"
           onClick={() => onSchedule(pid)}
           disabled={posting || greyed || scheduleBlocked || result?.state === 'scheduled'}
           title={photoOnly && pid === 'youtube' ? 'Encodes your photo to a 6s video, then schedules it' : 'Publish automatically later'}
         >
           {result?.state === 'scheduled' ? '✓ Scheduled' : 'Schedule'}
-        </button></BorderGlow>
-        <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button type="button" className="go" onClick={() => onPost(pid)} disabled={posting || greyed || blocked}>
+        </button>
+        <button type="button" className="go" onClick={() => onPost(pid)} disabled={posting || greyed || blocked}>
           {posting ? 'Posting…' : accountList?.length > 1 ? `Post to ${NAMES[pid]} (${accountList.length})` : `Post to ${NAMES[pid]}`}
-        </button></BorderGlow>
+        </button>
       </div>
     </div></BorderGlow>
   );

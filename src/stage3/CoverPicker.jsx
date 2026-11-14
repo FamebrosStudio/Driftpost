@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import BorderGlow from '../components/reactbits/BorderGlow.jsx';
 
 const FORMATS = {
   youtube: { width: 1280, height: 720, label: '16:9' },
@@ -114,9 +113,9 @@ export default function CoverPicker({ platform, files = [], cover, onChange }) {
   const label = platform === 'instagram' ? 'Instagram Reel cover' : platform === 'facebook' ? 'Facebook video cover' : 'YouTube thumbnail';
   return <section className="s3-cover-picker" aria-label={label}>
     <div className="s3-cover-head"><b>{label}</b><small>{FORMATS[platform].label} · video posts</small></div>
-    {coverUrl && <div className={`s3-cover-preview ${platform}`}><img src={coverUrl} alt="Selected post cover preview" /><BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button type="button" onClick={() => onChange(null)} disabled={busy}>Remove</button></BorderGlow></div>}
+    {coverUrl && <div className={`s3-cover-preview ${platform}`}><img src={coverUrl} alt="Selected post cover preview" /><button type="button" onClick={() => onChange(null)} disabled={busy}>Remove</button></div>}
     <div className="s3-cover-actions">
-      <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button type="button" className="s3-mini-btn" onClick={() => inputRef.current?.click()} disabled={busy}>{busy ? 'Preparing…' : 'Import cover image'}</button></BorderGlow>
+      <button type="button" className="s3-mini-btn" onClick={() => inputRef.current?.click()} disabled={busy}>{busy ? 'Preparing…' : 'Import cover image'}</button>
       <input ref={inputRef} type="file" accept="image/jpeg,image/png,image/webp" hidden onChange={(event) => { importCover(event.target.files?.[0]); event.target.value = ''; }} />
     </div>
     {videoUrl && <div className="s3-frame-picker">
@@ -152,7 +151,7 @@ export default function CoverPicker({ platform, files = [], cover, onChange }) {
         </div>
         <div className="s3-frame-scale"><span>Start</span><span>{formatTime(duration)}</span></div>
       </div>
-      <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button type="button" className="s3-mini-btn" onClick={useFrame} disabled={!duration || busy}>Use selected frame</button></BorderGlow>
+      <button type="button" className="s3-mini-btn" onClick={useFrame} disabled={!duration || busy}>Use selected frame</button>
     </div>}
     {!videoUrl && <small className="s3-subnote">Attach a video in Stage 2 to choose a frame. Uploaded covers are prepared as {FORMATS[platform].label} JPEGs.</small>}
     {error && <p className="s3-err" role="alert">{error}</p>}

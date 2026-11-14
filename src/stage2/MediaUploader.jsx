@@ -1,5 +1,4 @@
 import React, { useRef, useState } from 'react';
-import BorderGlow from '../components/reactbits/BorderGlow.jsx';
 
 const MAX_MEDIA_FILES = 20;
 
@@ -26,7 +25,7 @@ export default function MediaUploader({ count, onFiles, canUseAi = false }) {
         hidden
         onChange={(e) => { take(e.target.files); e.target.value = ''; }}
       />
-      <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button
+      <button
         type="button"
         className={over ? 's2-drop over' : 's2-drop'}
         onClick={() => inputRef.current?.click()}
@@ -36,7 +35,7 @@ export default function MediaUploader({ count, onFiles, canUseAi = false }) {
       >
         <b>+ Add Media{count ? ` (${count}/${MAX_MEDIA_FILES})` : ''}</b>
         <small>{canUseAi ? 'Images or video, up to 400 MB per file. Choose Analyze photo + video in the prompt settings to include visual and spoken details.' : 'Images or video, up to 400 MB per file.'}</small>
-      </button></BorderGlow>
+      </button>
       {message && <small role="status" style={{ display: 'block', marginTop: 8, color: '#e28e8e' }}>{message}</small>}
     </div>
   );

@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import BorderGlow from '../components/reactbits/BorderGlow.jsx';
 
 const MIN_SCHEDULE_AHEAD_MS = 2 * 60_000;
 
@@ -152,7 +151,7 @@ export default function ScheduleModal({ platforms, accountFor, invalidFor, busy,
 
         <div className="s3-quick">
           {quick.map((q) => (
-            <BorderGlow key={q.label} asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button  type="button" aria-pressed={when === q.value} onClick={() => setWhen(q.value)}>{q.label}</button></BorderGlow>
+            <button key={q.label} type="button" aria-pressed={when === q.value} onClick={() => setWhen(q.value)}>{q.label}</button>
           ))}
         </div>
 
@@ -193,7 +192,7 @@ export default function ScheduleModal({ platforms, accountFor, invalidFor, busy,
           <input type="file" accept=".csv,text/csv" aria-label="Import scheduled post CSV" onChange={(e) => importCsv(e.target.files?.[0])} />
           {bulkBusy && <small>Reading CSV…</small>}
           {bulkError && <small className="s3-bulk-error" role="alert">{bulkError}</small>}
-          {bulkError && <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button type="button" className="s3-bulk-clear" onClick={() => { setBulkError(''); setBulkRows([]); setErr(''); }}>Clear CSV import</button></BorderGlow>}
+          {bulkError && <button type="button" className="s3-bulk-clear" onClick={() => { setBulkError(''); setBulkRows([]); setErr(''); }}>Clear CSV import</button>}
         {bulkRows.length > 0 && <small className="s3-bulk-success" role="status">{bulkRows.length} posts ready. Repeat scheduling is turned off for this batch.{requestApproval ? ' Each post gets its own review link.' : ''}</small>}
         </details>
 
@@ -201,10 +200,10 @@ export default function ScheduleModal({ platforms, accountFor, invalidFor, busy,
         {serverError && <p className="s3-err" role="alert">{serverError}</p>}
 
         <div className="s3-acts">
-          <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button type="button" onClick={onClose}>Cancel</button></BorderGlow>
-          <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button type="button" className="go" disabled={busy || bulkBusy || !!bulkError} onClick={submit}>
+          <button type="button" onClick={onClose}>Cancel</button>
+          <button type="button" className="go" disabled={busy || bulkBusy || !!bulkError} onClick={submit}>
             {busy ? 'Scheduling…' : 'Schedule it'}
-          </button></BorderGlow>
+          </button>
         </div>
       </div>
     </div>
