@@ -27,7 +27,6 @@
 .recovery-primary { color: #0b1117; background: linear-gradient(110deg, #6ee7b7, #a78bfa); box-shadow: 0 10px 28px #8b5cf62b; }
 .recovery-primary span { margin-left: 17px; font-size: 16px; }
 .recovery-secondary { color: #e4e9f1; border-color: #43516a; background: #ffffff06; }
-.recovery-primary:hover:not(:disabled), .recovery-secondary:hover { transform: translateY(-2px); filter: brightness(1.08); }
 .recovery-primary:disabled { opacity: .65; cursor: wait; }
 .recovery-footer { padding-top: 14px; border-top: 1px solid #ffffff12; }
 .recovery-offline { position: fixed; z-index: 10000; inset: 0; align-items: stretch; }

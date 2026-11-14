@@ -16,7 +16,6 @@
 .s2-top { display: flex; align-items: center; justify-content: space-between; }
 .s2-top-right { display: flex; gap: 4px; }
 .s2-back, .s2-signout { background: none; border: 0; color: var(--faint); font-size: 12.5px; font-weight: 600; cursor: pointer; padding: 8px 4px; }
-.s2-back:hover, .s2-signout:hover { color: var(--ink); }
 .s2-head { text-align: center; padding: 12px 0 4px; animation: s2Up 0.5s ease both; }
 .s2-badge { display: inline-block; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--acc); border: 1px solid var(--acc); border-radius: 999px; padding: 5px 14px; font-weight: 700; }
 .s2-head h1 { font-size: clamp(26px, 4.6vw, 38px); letter-spacing: -0.5px; margin: 16px 0 8px; line-height: 1.15; }
@@ -53,14 +52,12 @@
 .s2-count { font-size: 12px; color: var(--faint); white-space: nowrap; }
 
 /* media */
-.s2-drop { border: 1.5px dashed var(--line-hard); border-radius: 14px; background: transparent; color: var(--ink); width: 100%; padding: 30px 18px; cursor: pointer; text-align: center; transition: border-color 0.15s ease, background 0.15s ease; font: inherit; }
-.s2-drop:hover, .s2-drop.over { border-color: var(--acc); background: var(--acc-soft); }
+.s2-drop { border: 1.5px dashed var(--line-hard); border-radius: 14px; background: transparent; color: var(--ink); width: 100%; padding: 30px 18px; cursor: pointer; text-align: center; transition: border-color 0.15s ease, background 0.15s ease; font: inherit; } .s2-drop.over { border-color: var(--acc); background: var(--acc-soft); }
 .s2-drop b { display: block; font-size: 15px; margin-bottom: 4px; }
 .s2-drop small { color: var(--muted); font-size: 12.5px; }
 .s2-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; margin-top: 12px; }
 .s2-media { position: relative; border: 1px solid var(--line); border-radius: 14px; overflow: hidden; background: var(--panel2); animation: s2In 0.3s ease both; }
 @keyframes s2In { from { opacity: 0; transform: translateY(8px) scale(0.98); } to { opacity: 1; transform: none; } }
-.s2-media:hover { border-color: var(--line-hard); box-shadow: 0 10px 26px rgba(0, 0, 0, 0.25); }
 .s2-media img, .s2-media video { width: 100%; height: 118px; object-fit: cover; display: block; background: #000; }
 .s2-media .meta { padding: 8px 10px; }
 .s2-media .meta b { display: block; font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -68,8 +65,6 @@
 .s2-kind { position: absolute; top: 8px; left: 8px; font-size: 10px; font-weight: 800; letter-spacing: 1px; background: rgba(0, 0, 0, 0.65); color: #fff; border-radius: 6px; padding: 3px 8px; }
 .s2-media .acts { display: flex; gap: 6px; padding: 0 10px 10px; }
 .s2-media .acts button { flex: 1; border: 1px solid var(--line-hard); background: var(--panel); color: var(--ink); border-radius: 9px; padding: 10px 4px; font-size: 11.5px; font-weight: 700; cursor: pointer; }
-.s2-media .acts button:hover { border-color: var(--acc); color: var(--acc); }
-.s2-media .acts button.danger:hover { border-color: var(--danger, #e5484d); color: var(--danger, #e5484d); }
 
 /* cross-post switch */
 .s2-cross { display: flex; gap: 12px; align-items: center; background: var(--panel); border: 1.5px dashed var(--line-hard); border-radius: 14px; padding: 14px 16px; margin-top: 16px; animation: s2Up 0.5s ease both; }
@@ -92,7 +87,6 @@
 .s2-analysis-note { display: block; margin-top: 6px; color: var(--muted); font-size: 11.5px; line-height: 1.45; }
 .s2-generate { width: 100%; margin-top: 12px; background: var(--acc); color: var(--acc-ink); border: 0; border-radius: 14px; padding: 15px; font-size: 15px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: filter 0.15s ease, transform 0.15s ease, opacity 0.2s ease; }
 .s2-generate:disabled { opacity: 0.45; cursor: not-allowed; }
-.s2-generate:not(:disabled):hover { filter: brightness(1.08); }
 .s2-generate:not(:disabled):active { transform: scale(0.99); }
 .s2-spin { width: 16px; height: 16px; border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.35); border-top-color: #fff; animation: s2Rot 0.8s linear infinite; }
 @keyframes s2Rot { to { transform: rotate(360deg); } }
@@ -120,7 +114,6 @@
 .s2-field textarea:focus, .s2-field input:focus { border-color: var(--acc); }
 .s2-out-acts { display: flex; gap: 8px; margin-top: 4px; flex-wrap: wrap; }
 .s2-out-acts button { flex: 1 1 110px; min-width: 0; border: 1px solid var(--line-hard); background: var(--panel); color: var(--ink); border-radius: 10px; padding: 10px 6px; font-size: 12.5px; font-weight: 700; cursor: pointer; white-space: nowrap; }
-.s2-out-acts button:hover { border-color: var(--acc); color: var(--acc); }
 .s2-out-acts button:disabled { opacity: 0.45; cursor: wait; }
 .s2-copy-status { display: block; min-height: 18px; margin-top: 7px; color: var(--muted); font-size: 12px; line-height: 1.5; }
 .s2-copy-status.err { color: var(--danger); }
@@ -152,20 +145,15 @@
 .s2-ed-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
 .s2-ed-btns button { border: 1.5px solid var(--line-hard); background: var(--panel2); color: var(--ink); border-radius: 10px; padding: 10px 6px; font-size: 12px; font-weight: 700; cursor: pointer; }
 .s2-ed-btns button.on { border-color: var(--acc); color: var(--acc); background: var(--acc-soft); }
-.s2-ed-btns button:hover { border-color: var(--acc); }
 .s2-note { font-size: 12.5px; color: var(--acc); background: var(--acc-soft); border: 1px solid var(--line-hard); border-radius: 10px; padding: 8px 12px; margin: 0 0 10px; line-height: 1.5; }
 /* fit / crop switch — Fit is the default so nothing is ever cut by surprise */
 .s2-mode { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 0 0 10px; padding: 4px; background: var(--panel2); border: 1px solid var(--line); border-radius: 12px; }
 .s2-mode button { border: 0; background: transparent; color: var(--muted); border-radius: 9px; padding: 9px 6px; font-size: 12px; font-weight: 700; cursor: pointer; }
 .s2-mode button.on { background: var(--acc); color: #fff; }
-.s2-mode button:hover:not(.on) { color: var(--ink); }
 .s2-done { width: 100%; margin-top: 10px; background: var(--acc); color: var(--acc-ink); border: 0; border-radius: 12px; padding: 13px; font-size: 14px; font-weight: 700; cursor: pointer; }
 .s2-done:disabled { opacity: 0.45; cursor: wait; }
-.s2-done:not(:disabled):hover { filter: brightness(1.08); }
 .s2-cancel { width: 100%; margin-top: 8px; background: transparent; border: 1px solid var(--line-hard); color: var(--muted); border-radius: 12px; padding: 11px; font-size: 13px; font-weight: 600; cursor: pointer; }
-.s2-cancel:hover { color: var(--ink); border-color: var(--ink); }
 .s2-editor-music { width: 100%; margin-top: 8px; background: var(--panel2); border: 1px solid var(--line-hard); color: var(--ink); border-radius: 12px; padding: 11px; font-size: 13px; font-weight: 700; cursor: pointer; }
-.s2-editor-music:hover { border-color: var(--acc); color: var(--acc); }
 .s2-editor-music:disabled { opacity: .5; cursor: wait; }
 .s2-video-editor-page { width: min(1180px, calc(100vw - 24px)); max-height: calc(100vh - 24px); overflow: auto; overscroll-behavior: contain; padding: clamp(14px, 2.5vw, 28px); border: 1px solid var(--line-hard); border-radius: 18px; background: var(--panel); color: var(--ink); box-shadow: 0 18px 70px rgba(0,0,0,.38); }
 .s2-video-editor-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 18px; }
@@ -177,7 +165,6 @@
 .s2-video-preview-wrap > video { display: block; width: 100%; max-height: 55vh; aspect-ratio: 16 / 9; object-fit: contain; background: #090b10; }
 .s2-video-transport { width: 100%; min-height: 48px; display: flex; align-items: center; gap: 12px; padding: 6px 2px; color: var(--ink); font-variant-numeric: tabular-nums; }
 .s2-video-transport > button:first-child { min-width: 76px; padding: 8px 14px; border: 1px solid var(--line-hard); border-radius: 8px; color: var(--ink); background: var(--panel2); font: inherit; font-size: 12px; font-weight: 700; cursor: pointer; }
-.s2-video-transport > button:first-child:hover:not(:disabled) { border-color: var(--acc); }
 .s2-video-transport > button:disabled { opacity: .5; cursor: wait; }
 .s2-video-transport > span { font-size: 12px; }
 .s2-video-transport small { color: var(--muted); }
@@ -210,7 +197,6 @@
 .s2-audio-clip { position: absolute; inset-block: 0; overflow: hidden; display: flex; align-items: center; padding: 0 9px; border-inline: 2px solid #45c998; border-radius: 4px; background: rgba(27,130,94,.72); color: #fff; font-size: 10px; font-weight: 700; white-space: nowrap; }
 .s2-audio-empty { display: flex; height: 100%; align-items: center; justify-content: center; color: var(--muted); font-size: 10px; }
 .s2-audio-remove { padding: 7px 9px; border: 1px solid var(--line-hard); border-radius: 7px; background: transparent; color: var(--muted); font-size: 10px; font-weight: 700; cursor: pointer; }
-.s2-audio-remove:hover { border-color: var(--danger, #e5484d); color: var(--danger, #e5484d); }
 .s2-timeline-values { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 12px; margin: 18px 0 4px; }
 .s2-timeline-values label { display: flex; align-items: center; gap: 7px; color: var(--muted); font-size: 11px; font-weight: 700; }
 .s2-timeline-values input { width: 84px; padding: 7px 8px; border: 1px solid var(--line-hard); border-radius: 7px; background: var(--input); color: var(--ink); font: inherit; font-variant-numeric: tabular-nums; }
@@ -287,7 +273,6 @@
 .s2-continue-bar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 50; background: var(--bg); border-top: 1px solid var(--line); padding: 12px 20px calc(env(safe-area-inset-bottom) + 12px); display: flex; flex-direction: column; align-items: center; gap: 6px; animation: s2BarUp 0.5s 0.15s ease both; }
 .s2-continue-btn { min-width: min(420px, 100%); background: var(--acc); color: var(--acc-ink); border: 0; border-radius: 14px; padding: 15px; font-size: 15px; font-weight: 700; cursor: pointer; transition: filter 0.15s ease, transform 0.15s ease, opacity 0.2s ease; }
 .s2-continue-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-.s2-continue-btn:not(:disabled):hover { filter: brightness(1.08); }
 .s2-continue-btn:not(:disabled):active { transform: scale(0.98); }
 .s2-continue-hint { font-size: 12px; color: var(--faint); margin: 0; }
 

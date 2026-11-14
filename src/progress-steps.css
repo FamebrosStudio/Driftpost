@@ -34,7 +34,6 @@
 }
 .progress-steps li button:disabled { cursor: not-allowed; opacity: .58; }
 .progress-steps li.is-complete button { cursor: pointer; }
-.progress-steps li.is-complete button:hover { background: color-mix(in srgb, var(--progress-accent) 7%, var(--panel)); color: var(--ink); }
 .progress-steps li.is-current button { background: color-mix(in srgb, var(--progress-accent) 10%, var(--panel)); color: var(--ink); font-weight: 700; box-shadow: inset 0 -2px 0 var(--progress-accent); }
 .progress-steps__number {
   display: grid;

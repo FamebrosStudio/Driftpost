@@ -90,7 +90,6 @@
 }
 .cg-acts button.go { background: var(--acc); border-color: transparent; color: var(--acc-ink); }
 .cg-acts button:disabled { opacity: 0.45; cursor: not-allowed; }
-.cg-acts button:not(:disabled):hover { filter: brightness(1.08); }
 
 .cg-err { margin: 12px 0 0; font-size: 13px; color: var(--danger, #e5484d); }
 .cg-foot { margin: 18px 0 0; font-size: 12.5px; color: var(--muted); }

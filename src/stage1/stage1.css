@@ -22,7 +22,6 @@
 @media (min-width: 1280px) { .stage1-in { max-width: min(1720px, 94vw); } }
 .stage1-top { display: flex; justify-content: flex-end; gap: 4px; flex-wrap: wrap; }
 .stage1-signout { background: none; border: 0; color: var(--faint); font-size: 12px; cursor: pointer; padding: 8px 4px; }
-.stage1-signout:hover { color: var(--ink); text-decoration: underline; }
 .stage1-head { text-align: center; padding: 14px 0 4px; animation: s1Up 0.5s ease both; }
 .stage1-badge { display: inline-block; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--acc); border: 1px solid var(--acc); border-radius: 999px; padding: 5px 14px; font-weight: 700; }
 .stage1-head h1 { font-size: clamp(26px, 4.6vw, 38px); letter-spacing: -0.5px; margin: 16px 0 8px; line-height: 1.15; }
@@ -36,7 +35,6 @@
 .bg-publish-live::before { content: ""; display: inline-block; width: 6px; height: 6px; margin: 0 5px 1px 0; border-radius: 50%; background: var(--ok); animation: bgPublishPulse 1.3s ease-in-out infinite; }
 .bg-publish-notice p { margin: 5px 0 10px; color: var(--muted); font-size: 12px; line-height: 1.5; }
 .bg-publish-notice > button { border: 0; border-radius: 7px; background: transparent; color: var(--faint); font-size: 22px; line-height: 1; cursor: pointer; }
-.bg-publish-notice > button:hover { background: var(--hover); color: var(--ink); }
 .bg-publish-notice__accounts { display: grid; gap: 8px; max-height: 210px; overflow: auto; padding-right: 3px; }
 .bg-publish-notice__account > div:first-child { display: flex; justify-content: space-between; gap: 8px; font-size: 11px; }
 .bg-publish-notice__account > div:first-child span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -74,7 +72,6 @@
 .stage1-cards .setup-card:nth-child(2) { animation-delay: 0.06s; }
 .stage1-cards .setup-card:nth-child(3) { animation-delay: 0.12s; }
 .stage1-cards .setup-card:nth-child(4) { animation-delay: 0.18s; }
-.setup-card:hover { transform: scale(1.02); border-color: var(--line-hard); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18); }
 .setup-card.sel { border-color: var(--acc); box-shadow: 0 0 0 3px var(--acc-soft); transform: scale(1.01); }
 .setup-check { position: absolute; top: 14px; right: 14px; width: 24px; height: 24px; border-radius: 50%; background: var(--acc); color: var(--acc-ink); display: grid; place-items: center; font-size: 13px; font-weight: 800; opacity: 0; transform: scale(0.5); transition: opacity 0.2s ease, transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1); }
 .setup-card.sel .setup-check { opacity: 1; transform: scale(1); }
@@ -85,12 +82,10 @@
 
 /* in-card controls */
 .s1-btn { width: 100%; border: 1.5px dashed var(--line-hard); background: transparent; color: var(--ink); border-radius: 12px; padding: 12px; font-weight: 600; font-size: 13.5px; cursor: pointer; }
-.s1-btn:hover { border-color: var(--acc); color: var(--acc); }
 .s1-pick { display: flex; align-items: center; gap: 10px; background: var(--panel2); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; margin-bottom: 8px; }
 .s1-pick b { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13.5px; }
 .s1-pick small { color: var(--muted); font-size: 11.5px; white-space: nowrap; }
 .s1-mini { border: 1px solid var(--line-hard); background: var(--panel); color: var(--ink); border-radius: 9px; padding: 9px 12px; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; }
-.s1-mini:hover { border-color: var(--acc); color: var(--acc); }
 .s1-icons { display: flex; gap: 5px; align-items: center; }
 .s1-note { font-size: 12.5px; color: var(--faint); margin: 8px 0 0; line-height: 1.6; }
 .s1-empty { font-size: 13px; color: var(--faint); margin: 6px 0 0; line-height: 1.6; }
@@ -98,7 +93,6 @@
 /* platform pills — option 2 only */
 .plat-pills { display: flex; flex-wrap: wrap; gap: 8px; }
 .plat-pill { display: inline-flex; align-items: center; gap: 8px; border: 1.5px solid var(--line-hard); background: var(--panel2); color: var(--ink); border-radius: 999px; padding: 9px 16px; font-size: 13px; font-weight: 600; cursor: pointer; transition: background 0.18s ease, border-color 0.18s ease; }
-.plat-pill:hover { border-color: var(--acc); }
 .plat-pill.on { background: var(--acc-soft); border-color: var(--acc); }
 .plat-pill:disabled { opacity: 0.4; cursor: not-allowed; border-style: dashed; background: transparent; }
 .plat-pill .pill-check { display: inline-grid; place-items: center; width: 18px; height: 18px; border-radius: 50%; background: var(--acc); color: var(--acc-ink); font-size: 11px; font-weight: 800; animation: s1Pop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
@@ -119,7 +113,6 @@
 .trio-line { display: flex; gap: 8px; align-items: stretch; }
 .trio-line .trio-radio { flex: 1; min-width: 0; }
 .trio-line .s1-mini { align-self: center; flex: 0 0 auto; }
-.s1-mini.danger:hover { border-color: var(--danger, #e5484d); color: var(--danger, #e5484d); }
 /* accounts load failure */
 .s1-loaderr { font-size: 13px; color: var(--danger, #e5484d); border: 1px solid var(--danger, #e5484d); border-left-width: 3px; border-radius: 10px; padding: 10px 12px; margin: 12px 0 0; line-height: 1.55; }
 .s1-loaderr .s1-mini { margin-left: 8px; }
@@ -134,18 +127,15 @@
 .s1-search { margin-bottom: 4px; }
 .s1-search:focus, .s1-field:focus { border-color: var(--acc); }
 .s1-brand { display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; background: var(--panel2); border: 1.5px solid var(--line); color: var(--ink); border-radius: 12px; padding: 12px; cursor: pointer; margin-top: 8px; font: inherit; }
-.s1-brand:hover { border-color: var(--acc); }
 .s1-brand.cur { border-color: var(--acc); background: var(--acc-soft); }
 .s1-brand .bmeta { flex: 1; min-width: 0; }
 .s1-brand b { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; }
 .s1-brand small { display: block; color: var(--muted); font-size: 11.5px; margin-top: 2px; }
 .s1-ghost { margin-top: 12px; width: 100%; background: transparent; border: 1px solid var(--line-hard); color: var(--muted); border-radius: 12px; padding: 11px; font-size: 13px; font-weight: 600; cursor: pointer; }
-.s1-ghost:hover { color: var(--ink); border-color: var(--ink); }
 .s1-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
 @media (max-width: 520px) { .s1-cols { grid-template-columns: 1fr; } }
 .s1-col h4 { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--faint); margin: 0 0 2px; }
 .s1-acct { display: flex; align-items: center; gap: 8px; width: 100%; background: var(--panel2); border: 1px solid var(--line); color: var(--ink); border-radius: 10px; padding: 9px 10px; font-size: 13px; cursor: pointer; margin-top: 6px; text-align: left; font: inherit; }
-.s1-acct:hover { border-color: var(--acc); }
 .s1-acct.in { border-color: var(--acc); background: var(--acc-soft); }
 .s1-acct span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; overflow-wrap: break-word; }
 .s1-acct small { color: var(--muted); font-size: 11px; }
@@ -163,13 +153,11 @@
 .s1-row .s1-ghost { flex: 1; width: auto; margin-top: 0; }
 .s1-primary { flex: 1; background: var(--acc); color: var(--acc-ink); border: 0; border-radius: 12px; padding: 12px; font-weight: 700; font-size: 14px; cursor: pointer; white-space: nowrap; }
 .s1-primary:disabled { opacity: 0.4; cursor: not-allowed; }
-.s1-primary:not(:disabled):hover { filter: brightness(1.08); }
 
 /* continue */
 .continue-bar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 50; background: var(--bg); border-top: 1px solid var(--line); padding: 12px 20px calc(env(safe-area-inset-bottom) + 12px); display: flex; flex-direction: column; align-items: center; gap: 6px; animation: s1BarUp 0.5s 0.15s ease both; }
 .continue-btn { min-width: min(420px, 100%); background: var(--acc); color: var(--acc-ink); border: 0; border-radius: 14px; padding: 15px; font-size: 15px; font-weight: 700; cursor: pointer; transition: filter 0.15s ease, transform 0.15s ease, opacity 0.2s ease; }
 .continue-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-.continue-btn:not(:disabled):hover { filter: brightness(1.08); }
 .continue-btn:not(:disabled):active { transform: scale(0.98); }
 .continue-hint { font-size: 12px; color: var(--faint); margin: 0; }
 
