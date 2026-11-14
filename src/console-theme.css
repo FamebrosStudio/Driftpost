@@ -423,28 +423,27 @@
   background: transparent !important;
   border: 0 !important;
   min-width: 0;
-  /* Glow hugs the border itself: inset ring + inner bloom (cannot be clipped by
-     overflow-hidden parents), plus a tight outer halo. Cursor proximity adds the
-     conic mesh directly on the border via ::before. */
+  /* Resting = faint hairline only. All glow is cursor-proximity driven
+     (--edge-proximity 0..100 from the component's pointer handler). */
   box-shadow:
-    inset 0 0 0 1px rgba(125, 211, 252, 0.55),
-    inset 0 0 16px 0 rgba(125, 211, 252, 0.32),
-    inset 0 0 36px 0 rgba(125, 211, 252, 0.14),
-    0 0 12px -2px rgba(125, 211, 252, 0.55),
-    0 0 34px -8px rgba(125, 211, 252, 0.75) !important;
+    inset 0 0 0 1px rgba(125, 211, 252, 0.12),
+    inset 0 0 0 1px rgba(125, 211, 252, calc(0.06 + var(--edge-proximity, 0) * 0.0052)),
+    inset 0 0 calc(4px + var(--edge-proximity, 0) * 0.18px) rgba(125, 211, 252, calc(var(--edge-proximity, 0) * 0.0042)),
+    inset 0 0 calc(10px + var(--edge-proximity, 0) * 0.34px) rgba(125, 211, 252, calc(var(--edge-proximity, 0) * 0.0016)),
+    0 0 calc(var(--edge-proximity, 0) * 0.14px) rgba(125, 211, 252, calc(var(--edge-proximity, 0) * 0.0052)),
+    0 0 calc(var(--edge-proximity, 0) * 0.36px) rgba(125, 211, 252, calc(var(--edge-proximity, 0) * 0.0062));
+  transition: box-shadow 0.16s ease-out;
   --glow-padding: 10px;
 }
 [data-theme="light"] .bg-glow{
   box-shadow:
-    inset 0 0 0 1px rgba(3, 105, 161, 0.45),
-    inset 0 0 14px 0 rgba(3, 105, 161, 0.22),
-    inset 0 0 30px 0 rgba(3, 105, 161, 0.10),
-    0 0 10px -2px rgba(3, 105, 161, 0.4),
-    0 0 28px -8px rgba(3, 105, 161, 0.55) !important;
+    inset 0 0 0 1px rgba(3, 105, 161, 0.20),
+    inset 0 0 0 1px rgba(3, 105, 161, calc(0.06 + var(--edge-proximity, 0) * 0.0042)),
+    inset 0 0 calc(4px + var(--edge-proximity, 0) * 0.14px) rgba(3, 105, 161, calc(var(--edge-proximity, 0) * 0.0035)),
+    0 0 calc(var(--edge-proximity, 0) * 0.12px) rgba(3, 105, 161, calc(var(--edge-proximity, 0) * 0.004)),
+    0 0 calc(var(--edge-proximity, 0) * 0.30px) rgba(3, 105, 161, calc(var(--edge-proximity, 0) * 0.005));
+  transition: box-shadow 0.16s ease-out;
 }
-/* the component's outer halo layer sat 10px outside the border and bled as stray
-   slivers (e.g. under the welcome panel) — glow now lives on the border itself */
-.bg-glow > .edge-light{ display: none !important; }
 /* Grid cells stretch the wrapper taller than the card — the inner card must
    fill the whole wrapper or an empty box shows below it. */
 .bg-glow .border-glow-inner{ height: 100%; min-width: 0; }
@@ -460,18 +459,16 @@
     inset 0 0 5px 0 hsl(199deg 95% 74% / 40%),
     0 0 14px -2px hsl(199deg 95% 74% / 35%) !important;
 }
-/* Buttons: same edge-hugging sky glow. Covers app action buttons + step buttons. */
-.ws-primary, .ws-secondary, .s2-continue-btn, .continue-btn, .skew-btn, .user-profile, .cn-next, .s1-btn, .s3-mini-btn{
+/* Buttons: resting hairline; all glow is cursor-proximity driven via
+   --edge-proximity, set by glow-proximity.js (no :hover). */
+.ws-primary, .ws-secondary, .s2-continue-btn, .continue-btn, .skew-btn, .user-profile, .cn-next, .s1-btn, .s3-mini-btn, .ws-text-button, .ws-text-btn, .progress-step-button{
   box-shadow:
-    0 0 0 1px rgba(125, 211, 252, 0.38),
-    inset 0 0 12px -2px rgba(125, 211, 252, 0.35),
-    0 0 16px -3px rgba(125, 211, 252, 0.55),
-    0 0 36px -8px rgba(125, 211, 252, 0.65) !important;
-}
-.ws-text-button, .ws-text-btn, .progress-step-button{
-  box-shadow:
-    0 0 0 1px rgba(125, 211, 252, 0.25),
-    0 0 14px -4px rgba(125, 211, 252, 0.4) !important;
+    inset 0 0 0 1px rgba(125, 211, 252, 0.16),
+    inset 0 0 0 1px rgba(125, 211, 252, calc(0.05 + var(--edge-proximity, 0) * 0.005)),
+    inset 0 0 calc(2px + var(--edge-proximity, 0) * 0.10px) rgba(125, 211, 252, calc(var(--edge-proximity, 0) * 0.004)),
+    0 0 calc(var(--edge-proximity, 0) * 0.12px) rgba(125, 211, 252, calc(var(--edge-proximity, 0) * 0.005)),
+    0 0 calc(var(--edge-proximity, 0) * 0.30px) rgba(125, 211, 252, calc(var(--edge-proximity, 0) * 0.006)) !important;
+  transition: box-shadow 0.16s ease-out;
 }/* Dock palette matched to the console: navy glass panel,sky-blue edge
    highlights,cool blue-gray ink. These override the component's inline
    theme tokens (CSS !important beats element.style) — the accent/badge

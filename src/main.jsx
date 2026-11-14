@@ -2,8 +2,10 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App.jsx';
 import AppErrorBoundary from './AppErrorBoundary.jsx';
+import { initGlowProximity } from './components/glow-proximity.js';
 import './styles.css';
 import './console-theme.css';
+initGlowProximity();
 
 // A tab can keep an older HTML/app bundle open after a deployment while the
 // server has already replaced its lazy-loaded chunks. Recover once instead of
