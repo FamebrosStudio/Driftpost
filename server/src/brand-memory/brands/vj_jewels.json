@@ -644,5 +644,158 @@
     "additional_observations": [
       "Exact-handle searches did not surface attributable new product/contact facts. A European InfinitySilver retailer was identified as an unrelated same-name collision and excluded."
     ]
+  },
+  "latest_user_dataset_update": {
+    "dataset_prepared_on": "2026-11-14",
+    "knowledge_scope": {
+      "record_status": "Managed brand, active in Famebros tracker",
+      "start_date_as_recorded": "1st",
+      "date_note": "Month and year not supplied. Do not infer."
+    },
+    "business": {
+      "genre": "Jewellery brand",
+      "known_offering": [],
+      "location": {
+        "city": null,
+        "exact_address": null
+      },
+      "audience": [
+        "Jewellery shoppers",
+        "Gift buyers",
+        "Customers shopping for occasion wear"
+      ],
+      "positioning": null
+    },
+    "contact": {
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": null,
+      "address": null
+    },
+    "social_media": {
+      "instagram_url": null,
+      "instagram_handle": null,
+      "facebook_url": null,
+      "youtube_url": null,
+      "note": "Search results surfaced similarly named jewellery companies. Do not assign their contact details or profile links to this account without confirmation."
+    },
+    "established_content_knowledge": {
+      "confirmed": [
+        "The Famebros tracker identifies VJ Jewels as a managed client.",
+        "A prior approved design direction used warm ivory, deep wine and antique gold, with the original logo unchanged.",
+        "A minimalist Guru Nanak Jayanti greeting was preferred; avoid jewellery busts, product sets, decorative diamonds, glitter, bells and conventional festival-card framing."
+      ],
+      "unconfirmed": [
+        "Specific jewellery metals, stones, categories, store location, price points, hallmark claims"
+      ]
+    },
+    "writing_direction": {
+      "tone": [
+        "Elegant",
+        "Refined",
+        "Trustworthy",
+        "Understated"
+      ],
+      "avoid": [
+        "Unverified purity, hallmark, certification, valuation, discount or durability claims",
+        "Overdecorated festival language"
+      ]
+    },
+    "content_playbook": {
+      "pillars": [
+        "Jewellery design appreciation when product supplied",
+        "Occasion styling",
+        "Craft and detail",
+        "Brand greetings",
+        "Store and collection discovery after confirmation"
+      ]
+    },
+    "brand_content_framework": {
+      "focus": "Describe only the jewellery visibly supplied or identified in the brief. Emphasize visual design, styling and occasion without inferring material or purity.",
+      "visual_preference": "Minimal composition, warm ivory, deep wine and antique gold; retain the official logo."
+    },
+    "caption_format": {
+      "structure": [
+        "Elegant opening line",
+        "Visible design or styling detail",
+        "Occasion or feeling",
+        "Soft CTA",
+        "Focused hashtags"
+      ],
+      "length": "Short and graceful."
+    },
+    "fixed_footer": null,
+    "suggested_hashtag_bank": [
+      "#VJJewels",
+      "#JewelleryStyle",
+      "#JewelleryDesign",
+      "#TimelessElegance",
+      "#OccasionWear",
+      "#IndianJewellery"
+    ],
+    "seo_keyword_bank": [
+      "VJ Jewels",
+      "jewellery designs",
+      "occasion jewellery",
+      "Indian jewellery styling"
+    ],
+    "cta_bank": [
+      "Explore the design in store.",
+      "Message the team for collection details.",
+      "Save this styling inspiration."
+    ],
+    "suggested_hooks": [
+      "A little detail can hold the whole look together.",
+      "Elegance, in the details.",
+      "For the moments you want to remember."
+    ],
+    "visual_and_asset_guidance": {
+      "palette": [
+        "Warm ivory",
+        "Deep wine",
+        "Antique gold"
+      ],
+      "must": [
+        "Use the original logo unchanged",
+        "Prefer whitespace and minimal styling"
+      ],
+      "avoid": [
+        "Jewellery busts",
+        "Unapproved product composites",
+        "Decorative diamonds",
+        "Glitter",
+        "Bells",
+        "Cliché festival framing"
+      ]
+    },
+    "carousel_and_reel_system": {
+      "carousel": [
+        "One visual detail per slide",
+        "Keep copy minimal",
+        "Finish with a gentle enquiry CTA"
+      ],
+      "reels": [
+        "Use supplied close-ups",
+        "Avoid claims not shown or provided"
+      ]
+    },
+    "accuracy_rules": [
+      "Do not claim gold, silver, diamond, gemstone, hallmark, karat or purity unless confirmed for the shown product.",
+      "Do not merge this client with similarly named VJ Jewels businesses found online."
+    ],
+    "per_post_input": [
+      "Product material and exact category",
+      "Occasion",
+      "Approved offer",
+      "Store address or contact CTA",
+      "Asset and logo"
+    ],
+    "missing_information": [
+      "Official social links",
+      "Phone, address, city and website",
+      "Verified product categories and material claims",
+      "Approved collection names, hours, logo files and offer rules"
+    ]
   }
 }

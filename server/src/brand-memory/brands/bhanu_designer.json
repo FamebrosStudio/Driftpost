@@ -1485,5 +1485,170 @@
       "Indexed profile post associates @bhanu.designer with phone 9224447024, custom wedding/ethnic menswear, Shop 7 K.K. Smruti Apartment, Maneklal Estate, Ghatkopar West. Full address remains subject to existing caveat."
     ],
     "rule": "Directory, creator and indexed-post facts are leads; reconfirm current contacts, offers and commercial details before public use."
+  },
+  "latest_user_dataset_update": {
+    "dataset_prepared_on": "2026-11-14",
+    "knowledge_scope": {
+      "record_status": "Managed brand",
+      "start_date_as_recorded": "1st",
+      "date_note": "Month and year not supplied."
+    },
+    "business": {
+      "genre": "Men's occasion and wedding fashion",
+      "known_offering": [
+        "Customized men's sherwanis",
+        "Custom suits",
+        "Wedding suits on rent",
+        "Indo-western outfits",
+        "Festive jackets and men's occasion wear"
+      ],
+      "location": {
+        "city": "Mumbai",
+        "area": "Ghatkopar is referenced in prior content",
+        "exact_address": null
+      },
+      "audience": [
+        "Grooms",
+        "Wedding guests",
+        "Men shopping for festive and occasion wear"
+      ],
+      "positioning": "Custom styling and rental options for men's special-occasion wear."
+    },
+    "contact": {
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": null,
+      "address": null
+    },
+    "social_media": {
+      "instagram_url": null,
+      "instagram_handle": null,
+      "facebook_url": null,
+      "youtube_url": null
+    },
+    "established_content_knowledge": {
+      "confirmed": [
+        "Listing name: Orange Bhanu Designer by Sanjay Bhanushali.",
+        "Prior content includes custom sherwanis, wedding suits for rent, Indo-western outfits and sangeet wear.",
+        "Customer reviews referenced fit, finishing, materials, service and timely delivery.",
+        "Past video posts received copyright restrictions for unlicensed music."
+      ],
+      "unconfirmed": [
+        "Exact address, phone, prices, rental terms, turnaround and stock"
+      ]
+    },
+    "writing_direction": {
+      "tone": [
+        "Confident",
+        "Festive",
+        "Masculine",
+        "Premium but approachable"
+      ],
+      "language": "English or Hindi/Hinglish when requested.",
+      "avoid": [
+        "Unsupported delivery promises",
+        "Unlicensed music suggestions",
+        "Overstating fabric or custom options"
+      ]
+    },
+    "content_playbook": {
+      "pillars": [
+        "Groom and wedding looks",
+        "Sherwani details",
+        "Suit styling",
+        "Rental option awareness",
+        "Sangeet and festive wear",
+        "Customer stories with consent"
+      ]
+    },
+    "brand_content_framework": {
+      "focus": "Help men find occasion-ready looks through customization and rental options. Specify rental versus purchase accurately for each item.",
+      "proof_points": [
+        "Fitting and finishing are recurring themes in customer feedback, but use as attributed review themes rather than guarantees."
+      ]
+    },
+    "caption_format": {
+      "structure": [
+        "Occasion-led hook",
+        "Name the actual outfit",
+        "One visible design or styling detail",
+        "Ask viewers to visit or enquire",
+        "Relevant local and category hashtags"
+      ],
+      "length": "Short to medium."
+    },
+    "fixed_footer": null,
+    "suggested_hashtag_bank": [
+      "#BhanuDesigner",
+      "#MensWeddingWear",
+      "#SherwaniStyle",
+      "#GroomWear",
+      "#MensEthnicWear",
+      "#GhatkoparFashion",
+      "#WeddingSuit"
+    ],
+    "seo_keyword_bank": [
+      "custom sherwani Mumbai",
+      "men's wedding suits Mumbai",
+      "sherwani rental Mumbai",
+      "men's ethnic wear Ghatkopar",
+      "Indo-western outfits Mumbai"
+    ],
+    "cta_bank": [
+      "Visit the store to explore occasion wear.",
+      "Message to check customization or rental details.",
+      "Book a trial after confirming availability."
+    ],
+    "suggested_hooks": [
+      "A wedding look that feels like you.",
+      "Make your entrance count.",
+      "For the celebration, the photos and every moment in between."
+    ],
+    "visual_and_asset_guidance": {
+      "use": [
+        "Actual outfit, fabric and fitting visuals",
+        "Approved customer looks"
+      ],
+      "avoid": [
+        "Misrepresenting rental pieces as custom-made or owned",
+        "Adding unapproved brand logos",
+        "Copyrighted music without a license"
+      ]
+    },
+    "carousel_and_reel_system": {
+      "reels": [
+        "Show full look",
+        "Detail shots",
+        "Occasion context",
+        "State rent/custom status only if provided",
+        "Enquiry CTA"
+      ],
+      "carousel": [
+        "Outfit overview",
+        "Close-up details",
+        "Fit or styling notes",
+        "Visit or enquiry CTA"
+      ]
+    },
+    "accuracy_rules": [
+      "Clearly distinguish rentals from sale or custom pieces.",
+      "Do not invent price, rental deposit, availability, alteration or delivery terms.",
+      "Use licensed audio only. Previous uploads faced copyright claims."
+    ],
+    "per_post_input": [
+      "Exact garment",
+      "Purchase, rental or custom status",
+      "Price or offer if approved",
+      "Available sizes and dates",
+      "Address, phone and CTA",
+      "Music license status"
+    ],
+    "missing_information": [
+      "Confirmed social links",
+      "Phone, exact address and website",
+      "Rental policy, prices, working hours and customization lead time",
+      "Logo and current collection catalogue"
+    ]
   }
 }

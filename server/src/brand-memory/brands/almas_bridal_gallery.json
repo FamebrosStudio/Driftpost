@@ -1,0 +1,206 @@
+{
+  "schema_version": "1.0",
+  "brand_id": "almas_bridal_gallery",
+  "brand_name": "Almas Bridal Gallery",
+  "aliases": [
+    "ALMAS Bridal Gallery",
+    "ALMAS Bridal Gallery Mumbai",
+    "Almas Official"
+  ],
+  "knowledge_scope": {
+    "record_status": "Managed brand; tracker status says awaiting launch/not yet started at the time of the tracker",
+    "launch_note": "Status may be outdated. Confirm before using coming-soon language."
+  },
+  "business": {
+    "genre": "Luxury bridal wear and bridal destination",
+    "known_offering": [
+      "Bridal wear",
+      "Bridal lehengas",
+      "Premium wedding looks"
+    ],
+    "location": {
+      "city": "Mumbai",
+      "area": "Vakola, Santacruz East",
+      "address": "Shop No. 2, Vaviya Mansion 33/257, Anand Nagar, Om Co-op HSG SOC Ltd, Nehru Road, Vakola, Santacruz East, Mumbai 400055"
+    },
+    "audience": [
+      "Mumbai brides",
+      "Bridal shoppers"
+    ],
+    "positioning": "Established London bridal legacy entering Mumbai; bridal-only positioning for the Mumbai destination."
+  },
+  "contact": {
+    "phone": "+91 90046 56157",
+    "whatsapp": null,
+    "email": null,
+    "website": "https://almasofficial.in/",
+    "address": "Shop No. 2, Vaviya Mansion 33/257, Anand Nagar, Om Co-op HSG SOC Ltd, Nehru Road, Vakola, Santacruz East, Mumbai 400055",
+    "phone_display": "+91 90046 56157",
+    "full_address": "Shop No. 2, Vaviya Mansion 33/257, Anand Nagar, Om Co-op HSG SOC Ltd, Nehru Road, Vakola, Santacruz East, Mumbai 400055"
+  },
+  "social_media": {
+    "instagram_url": "https://www.instagram.com/almasofficial/",
+    "instagram_handle": "@almasofficial",
+    "facebook_url": null,
+    "youtube_url": null,
+    "related_london_reference": "https://www.instagram.com/impressions_almas_couture/",
+    "note": "London account is a heritage reference, not the Mumbai store profile."
+  },
+  "established_content_knowledge": {
+    "confirmed": [
+      "Mumbai identity is ALMAS BRIDAL GALLERY.",
+      "Mumbai branch is bridal-only; exclude groom and menswear.",
+      "A 27-year London bridal legacy claim was approved in earlier campaign work.",
+      "Approved launch/teaser concept: 27 Years of Bridal Legacy. Now Coming to Mumbai.",
+      "A 9-grid Instagram curiosity campaign was requested, presenting an established brand entering Mumbai, not a new business.",
+      "Approved palette direction: ivory, burgundy, champagne and antique gold; preserve original logo."
+    ],
+    "approved_teaser_exclusions": [
+      "No dates, offers, phone/address, landmarks or full reveal in early teaser post unless the campaign brief is updated."
+    ]
+  },
+  "writing_direction": {
+    "tone": [
+      "Luxury",
+      "Elegant",
+      "Romantic",
+      "Confident",
+      "Bridal-focused"
+    ],
+    "avoid": [
+      "Groom or menswear references",
+      "Generic hard-sell language",
+      "Calling the brand new",
+      "Unapproved launch dates or offers"
+    ]
+  },
+  "content_playbook": {
+    "pillars": [
+      "London heritage",
+      "Mumbai arrival",
+      "Bridal lehengas and looks",
+      "Bride-centered inspiration",
+      "Store reveal and appointments after launch confirmation"
+    ],
+    "launch_sequence": [
+      "Curiosity",
+      "Heritage and reveal",
+      "Desire and anticipation"
+    ]
+  },
+  "brand_content_framework": {
+    "focus": "A luxury bridal destination for Mumbai brides, grounded in London heritage. In launch teasers, create intrigue without premature operational details.",
+    "exact_brand_name": "ALMAS BRIDAL GALLERY"
+  },
+  "caption_format": {
+    "structure": [
+      "Elegant emotional opening",
+      "Heritage or bridal promise supported by approved facts",
+      "Mumbai relevance",
+      "Campaign CTA matching launch phase",
+      "Minimal hashtags"
+    ],
+    "length": "Short and premium."
+  },
+  "fixed_footer": null,
+  "suggested_hashtag_bank": [
+    "#AlmasBridalGallery",
+    "#AlmasOfficial",
+    "#MumbaiBrides",
+    "#BridalWear",
+    "#BridalLehenga",
+    "#LondonBridalLegacy",
+    "#SantacruzEast"
+  ],
+  "seo_keyword_bank": [
+    "bridal wear Mumbai",
+    "bridal lehenga Santacruz East",
+    "bridal boutique Vakola",
+    "luxury bridal destination Mumbai",
+    "Almas Bridal Gallery"
+  ],
+  "cta_bank": [
+    "Follow @almasofficial for the reveal.",
+    "Mumbai, your bridal destination is on its way.",
+    "Visit the website for current details after launch confirmation."
+  ],
+  "suggested_hooks": [
+    "Mumbai, something beautiful is on its way.",
+    "27 years of London bridal heritage, coming to Mumbai.",
+    "A new bridal chapter begins for Mumbai brides."
+  ],
+  "visual_and_asset_guidance": {
+    "palette": [
+      "Ivory",
+      "Burgundy",
+      "Champagne",
+      "Antique gold"
+    ],
+    "must": [
+      "Use original logo unchanged",
+      "Luxury editorial art direction",
+      "Bridal-only visual world"
+    ],
+    "avoid": [
+      "Groomwear",
+      "Phone/address and dates on early teaser posts",
+      "Generic sales tiles",
+      "Full reveal before approved phase"
+    ]
+  },
+  "carousel_and_reel_system": {
+    "9_grid": [
+      "Curiosity",
+      "Heritage",
+      "Reveal",
+      "Bridal desire and anticipation"
+    ],
+    "reels": [
+      "Cinematic fabric/detail teasers",
+      "Heritage text only when approved",
+      "Reveal only at authorized campaign stage"
+    ]
+  },
+  "other_output_modes": [
+    "Launch campaign captions",
+    "9-grid copy",
+    "Bridal collection descriptions",
+    "Appointment posts after launch confirmation"
+  ],
+  "sample_caption": "Mumbai, something beautiful is on its way. 27 years of London bridal heritage, soon to meet the city's brides. Follow @almasofficial for the reveal.",
+  "accuracy_rules": [
+    "Maintain bridal-only Mumbai positioning.",
+    "Use 27-year London heritage claim only as previously approved and verify continued accuracy before new campaigns.",
+    "Do not publish opening dates, current availability, offers or contact footers on teaser creative unless approved.",
+    "Do not use London profile as Mumbai contact channel."
+  ],
+  "per_post_input": [
+    "Campaign phase",
+    "Featured bridal product",
+    "Launch/opening status",
+    "Approved appointment details",
+    "Current offer if any",
+    "Visual asset and logo"
+  ],
+  "master_brand_instruction": "Create premium, bridal-only content for ALMAS BRIDAL GALLERY in Vakola, Mumbai. Preserve the established London heritage positioning and original logo. Follow the approved curiosity-to-reveal campaign sequence. Keep groomwear out of the Mumbai brand content.",
+  "missing_information": [
+    "Current open/launch status",
+    "Current hours and appointment process",
+    "Product prices, designer/collection names and booking details",
+    "Confirmed Facebook link and current website contact page"
+  ],
+  "sources": [
+    {
+      "type": "user/project context",
+      "detail": "User-provided Mumbai address and phone, approved launch positioning, website and social handle."
+    },
+    {
+      "type": "official website",
+      "url": "https://almasofficial.in/"
+    },
+    {
+      "type": "Instagram",
+      "url": "https://www.instagram.com/almasofficial/"
+    }
+  ]
+}

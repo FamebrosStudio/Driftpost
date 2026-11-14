@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "count": 41,
+  "count": 47,
   "brands": [
     {
       "id": "hair_match_salon",
@@ -240,7 +240,6 @@
       "id": "cocos_inn",
       "name": "Coco’s Inn Resort",
       "aliases": [
-        "Cocos Inn Resort",
         "Coco’s Inn"
       ],
       "cat": "Resort",
@@ -278,8 +277,7 @@
       "id": "sk_furniture",
       "name": "SK Furniture",
       "aliases": [
-        "SK Furniture Market",
-        "@skfurnituremarket"
+        "SK Furniture Market"
       ],
       "cat": "Furniture",
       "loc": "",
@@ -396,8 +394,7 @@
       "id": "mahalaxmi_ghatla",
       "name": "Mahalaxmi Jewellers",
       "aliases": [
-        "Mahalaxmi Jewellers Ghatla",
-        "@mahalaxmi.jewellers.ghatla"
+        "Mahalaxmi Jewellers Ghatla"
       ],
       "cat": "Jewellery",
       "loc": "Ghatla, Mumbai",
@@ -437,8 +434,7 @@
       "id": "synergic_interior",
       "name": "SYnergic Studio",
       "aliases": [
-        "Synergic Interior",
-        "SYnergic Interior"
+        "Synergic Interior"
       ],
       "cat": "Interior design",
       "loc": "Mumbai",
@@ -517,7 +513,9 @@
     {
       "id": "jolly_tailor",
       "name": "Jolly Tailor",
-      "aliases": [],
+      "aliases": [
+        "Jolly Honest Tailor"
+      ],
       "cat": "Men tailoring",
       "loc": "",
       "genres": [
@@ -787,7 +785,10 @@
     {
       "id": "bhanu_designer",
       "name": "Bhanu Designer",
-      "aliases": [],
+      "aliases": [
+        "Orange Bhanu Designer",
+        "Orange Bhanu Designer by Sanjay Bhanushali"
+      ],
       "cat": "Designer clothing",
       "loc": "Ghatkopar West, Mumbai",
       "genres": [
@@ -910,7 +911,8 @@
       "id": "rajlaxmi_sangli",
       "name": "Rajlaxmi Jewellers",
       "aliases": [
-        "Rajlaxmi Jewellers Sangli"
+        "Rajlaxmi Jewellers Sangli",
+        "Rajlaxmi Jewellers Kavathe Mahankal"
       ],
       "cat": "Jewellery",
       "loc": "Sangli",
@@ -951,7 +953,6 @@
       "aliases": [
         "Devi and company Kanpur",
         "Devi and Company",
-        "Devi and Company Kanpur",
         "Devis Kanpur"
       ],
       "cat": "Fashion retail",
@@ -1076,10 +1077,8 @@
       "id": "zam_zam_motors",
       "name": "Zam Zam Motors",
       "aliases": [
-        "Zamzam Motors",
         "Zam Zam Motors Mulund",
-        "@zamzam_motorss",
-        "zamzammotorss"
+        "@zamzam_motorss"
       ],
       "cat": "Car dealership",
       "loc": "",
@@ -1154,8 +1153,7 @@
       "id": "lel_fitness",
       "name": "LEL Fitness",
       "aliases": [
-        "Laxya lel Fitness",
-        "Laxya LEL Fitness"
+        "Laxya lel Fitness"
       ],
       "cat": "Personalised fitness coaching studio",
       "loc": "Mumbai",
@@ -1236,10 +1234,7 @@
       "name": "HerChoice by Asma",
       "aliases": [
         "Asma Women Clothing",
-        "Asma Women's Clothing",
-        "Her Choice by Asma",
-        "herchoice_byasma",
-        "@herchoice_byasma"
+        "Asma Women's Clothing"
       ],
       "cat": "Pakistani women's fashion and ethnic clothing",
       "loc": "",
@@ -1280,7 +1275,9 @@
     {
       "id": "paak_pehnawa_mens",
       "name": "Paak Pehnawa Mens",
-      "aliases": [],
+      "aliases": [
+        "Paak Pehnawa"
+      ],
       "cat": "Men clothing",
       "loc": "",
       "genres": [
@@ -1380,8 +1377,8 @@
       "name": "G S Shetty International School",
       "aliases": [
         "Gs shetty school Bhandup",
-        "GS Shetty International School",
-        "GSSIS"
+        "GSSIS",
+        "GS Shetty School"
       ],
       "cat": "School",
       "loc": "Bhandup, Mumbai",
@@ -1423,7 +1420,6 @@
       "name": "Seven Cube Footwear",
       "aliases": [
         "Seven Cube",
-        "Seven cube footwear",
         "@sevencubes.footwear"
       ],
       "cat": "Footwear",
@@ -1563,7 +1559,7 @@
       "id": "uva_fashions",
       "name": "Uvafashions Mumbai",
       "aliases": [
-        "UVA Fashions Mumbai"
+        "UVA Fashions"
       ],
       "cat": "Fashion; exact product audience unconfirmed",
       "loc": "Mumbai",
@@ -1590,6 +1586,243 @@
       "ex": "",
       "ig": "@uvafashions_mumbai",
       "ready": "needs_brand_identity",
+      "web": null,
+      "email": null
+    },
+    {
+      "id": "ideal_tailor",
+      "name": "Ideal Tailor",
+      "aliases": [
+        "Ideal Tailor Jogeshwari East"
+      ],
+      "cat": "Tailoring and garment fitting",
+      "loc": "Jogeshwari East, Mumbai",
+      "genres": [
+        "Finished client outfits",
+        "Tailoring detail",
+        "Customer satisfaction with consent",
+        "Local service discovery",
+        "Occasion wear when garment is identified"
+      ],
+      "tone": "Personal, Skilled, Approachable, Customer-focused",
+      "lang": "",
+      "cta": [],
+      "avoid": [
+        "Calling a customer a named client without permission",
+        "Guarantees of perfect fit or same-day delivery",
+        "Do not promise alteration or delivery timing without confirmation.",
+        "Use customer likeness or testimonial only with consent.",
+        "Do not infer gender or garment category if not visible or provided."
+      ],
+      "kw": [
+        "tailor Jogeshwari East",
+        "tailoring Prem Nagar Mumbai",
+        "Ideal Tailor Mumbai",
+        "garment fitting Jogeshwari"
+      ],
+      "footer": [
+        "Ideal Tailor | Opp. Madrasi Masjid, Fish Market, Prem Nagar, Jogeshwari East, Mumbai 400060 | +91 91427 84784",
+        "💫 Managed by: @famebrosstudio"
+      ],
+      "mandatory": [],
+      "ex": "A happy customer and an outfit made to feel just right. Thank you for choosing Ideal Tailor. Visit us opposite Madrasi Masjid in Prem Nagar, Jogeshwari East, or call +91 91427 84784.",
+      "ig": null,
+      "ready": "ready_with_post_brief",
+      "web": null,
+      "email": null
+    },
+    {
+      "id": "almas_bridal_gallery",
+      "name": "Almas Bridal Gallery",
+      "aliases": [
+        "ALMAS Bridal Gallery Mumbai",
+        "Almas Official"
+      ],
+      "cat": "Luxury bridal wear and bridal destination",
+      "loc": "Vakola, Santacruz East, Mumbai",
+      "genres": [
+        "London heritage",
+        "Mumbai arrival",
+        "Bridal lehengas and looks",
+        "Bride-centered inspiration",
+        "Store reveal and appointments after launch confirmation"
+      ],
+      "tone": "Luxury, Elegant, Romantic, Confident, Bridal-focused",
+      "lang": "",
+      "cta": [],
+      "avoid": [
+        "Groom or menswear references",
+        "Generic hard-sell language",
+        "Calling the brand new",
+        "Unapproved launch dates or offers",
+        "Maintain bridal-only Mumbai positioning.",
+        "Use 27-year London heritage claim only as previously approved and verify continued accuracy before new campaigns.",
+        "Do not publish opening dates, current availability, offers or contact footers on teaser creative unless approved.",
+        "Do not use London profile as Mumbai contact channel."
+      ],
+      "kw": [
+        "bridal wear Mumbai",
+        "bridal lehenga Santacruz East",
+        "bridal boutique Vakola",
+        "luxury bridal destination Mumbai",
+        "Almas Bridal Gallery"
+      ],
+      "footer": [
+        "💫 Managed by: @famebrosstudio"
+      ],
+      "mandatory": [],
+      "ex": "Mumbai, something beautiful is on its way. 27 years of London bridal heritage, soon to meet the city's brides. Follow @almasofficial for the reveal.",
+      "ig": "@almasofficial",
+      "ready": "ready_with_post_brief",
+      "web": "https://almasofficial.in/",
+      "email": null
+    },
+    {
+      "id": "perfume_vault",
+      "name": "Perfume Vault",
+      "aliases": [
+        "Parrfum Vault"
+      ],
+      "cat": "Brand identity pending confirmation",
+      "loc": "",
+      "genres": [
+        "To be confirmed after client identity and offering are documented"
+      ],
+      "tone": "To be confirmed",
+      "lang": "",
+      "cta": [],
+      "avoid": [
+        "Assuming this is a perfume retailer or creator",
+        "Authenticity, longevity, projection or imported-original claims without proof",
+        "Using another Perfume Vault identity",
+        "Do not claim original/authentic, imported, long-lasting, designer or niche fragrance products unless documented.",
+        "Do not use contact details or Instagram pages belonging to unrelated search results."
+      ],
+      "kw": [
+        "Perfume Vault"
+      ],
+      "footer": [
+        "💫 Managed by: @famebrosstudio"
+      ],
+      "mandatory": [],
+      "ex": "A new chapter is on the way. Follow the official Perfume Vault page for updates.",
+      "ig": null,
+      "ready": "needs_brand_identity",
+      "web": null,
+      "email": null
+    },
+    {
+      "id": "cotton_plus",
+      "name": "Cotton Plus",
+      "aliases": [],
+      "cat": "Clothing retail",
+      "loc": "",
+      "genres": [
+        "Pending client identity and catalogue confirmation"
+      ],
+      "tone": "To be confirmed",
+      "lang": "",
+      "cta": [],
+      "avoid": [
+        "Assuming this client's Cotton Plus is the website or any similarly named shop",
+        "Promising cotton composition, comfort, quality or price without product proof",
+        "Do not use cotton-related fabric claims from the name alone.",
+        "Do not connect the client to cottonplus.in or any listed location without confirmation.",
+        "Do not publish prices, discounts, sizes or inventory without current details."
+      ],
+      "kw": [
+        "Cotton Plus"
+      ],
+      "footer": [
+        "💫 Managed by: @famebrosstudio"
+      ],
+      "mandatory": [],
+      "ex": "Find your next everyday favourite at Cotton Plus. Visit the store to explore the latest collection.",
+      "ig": null,
+      "ready": "needs_brand_identity",
+      "web": null,
+      "email": null
+    },
+    {
+      "id": "chinese_and_grill",
+      "name": "Chinese and Grill",
+      "aliases": [
+        "Chinese & Grill",
+        "Chinese N Grill"
+      ],
+      "cat": "Likely food/restaurant from account name, but exact cuisine and business identity are unconfirmed",
+      "loc": "",
+      "genres": [
+        "Menu highlights after exact business and menu confirmation",
+        "Kitchen and service content after client approval",
+        "Offers and events only with current terms"
+      ],
+      "tone": "To be confirmed",
+      "lang": "",
+      "cta": [],
+      "avoid": [
+        "Assigning any search-result menu or address to this client",
+        "Unverified halal, vegetarian, spice, freshness, price or hygiene claims",
+        "Confirm exact restaurant identity before including any address, phone, menu, ordering link or cuisine claims.",
+        "Do not call dishes halal or vegetarian unless the client confirms ingredients and preparation.",
+        "Do not use competitor or similarly named restaurant reviews as evidence."
+      ],
+      "kw": [
+        "Chinese and Grill"
+      ],
+      "footer": [
+        "💫 Managed by: @famebrosstudio"
+      ],
+      "mandatory": [],
+      "ex": "Good food deserves a place at the table. Follow Chinese and Grill for updates from the team.",
+      "ig": null,
+      "ready": "needs_brand_identity",
+      "web": null,
+      "email": null
+    },
+    {
+      "id": "zivara_salon",
+      "name": "Zivara Salon",
+      "aliases": [
+        "Zivara Salon & Wellness",
+        "Zivara Salon | Thane"
+      ],
+      "cat": "Salon and wellness",
+      "loc": "Naupada, Thane",
+      "genres": [
+        "Hair and grooming",
+        "Manicure and pedicure",
+        "Self-care and wellness",
+        "Wedding-season preparation",
+        "Salon launch and local discovery"
+      ],
+      "tone": "Polished, Welcoming, Self-care focused, Beauty-forward",
+      "lang": "",
+      "cta": [],
+      "avoid": [
+        "Medical or guaranteed treatment claims",
+        "Unverified results, prices or offers",
+        "Using salon services outside the confirmed menu",
+        "Confirm current opening status, phone and booking channel before publishing.",
+        "Do not promise outcomes or make medical claims.",
+        "Do not reuse the proposed 12 reels and 6 posts as a consumer offer or service package.",
+        "Verify the live service menu and campaign dates."
+      ],
+      "kw": [
+        "salon Naupada Thane",
+        "hair spa Thane",
+        "salon near LBS Marg",
+        "wedding salon bookings Thane",
+        "Zivara Salon Thane"
+      ],
+      "footer": [
+        "Zivara Salon & Wellness | Shop G-5, Highland Sky Arcade, Damani Road, LBS Marg, Naupada, Thane",
+        "💫 Managed by: @famebrosstudio"
+      ],
+      "mandatory": [],
+      "ex": "Make a little space for self-care. Explore hair and grooming services at Zivara Salon & Wellness, Naupada, Thane. Message the team to confirm services and appointment availability.",
+      "ig": null,
+      "ready": "ready_with_post_brief",
       "web": null,
       "email": null
     }

@@ -1,9 +1,9 @@
 {
   "dataset_name": "Famebros Studio Brand Caption Knowledge Base",
   "schema_version": "1.0",
-  "brand_count": 41,
-  "purpose": "Portable AI context and developer handoff for the 41 brands in the supplied data.txt. No demo-site import schema has been assumed.",
-  "source_scope": "Complete supplied roster. Other historic clients are not added to this active source roster.",
+  "brand_count": 47,
+  "purpose": "Portable AI context and developer handoff for the 47-brand active roster.",
+  "source_scope": "Existing 41-brand roster plus six new brands from the dataset prepared 2026-11-14. Eight source records update existing brands. Source BR IDs are not canonical IDs.",
   "evidence_note": "Names and genres come from the user file. Explicit prior preferences and public matching references supplement them. Proposed voice, CTA and keyword guidance is labelled editorial. Instagram matches mostly use indexed profiles or posts, not a full live account audit.",
   "status_definitions": {
     "public_profile_matched": "Public profile result matches name and relevant identity clues. Not a full page audit.",
@@ -758,7 +758,6 @@
       "brand_id": "cocos_inn",
       "name": "Coco’s Inn Resort",
       "aliases": [
-        "Cocos Inn Resort",
         "Coco’s Inn"
       ],
       "category": "Resort",
@@ -1230,8 +1229,7 @@
       "brand_id": "synergic_interior",
       "name": "SYnergic Studio",
       "aliases": [
-        "Synergic Interior",
-        "SYnergic Interior"
+        "Synergic Interior"
       ],
       "category": "Interior design",
       "location": "Mumbai",
@@ -2970,8 +2968,7 @@
       "brand_id": "lel_fitness",
       "name": "LEL Fitness",
       "aliases": [
-        "Laxya lel Fitness",
-        "Laxya LEL Fitness"
+        "Laxya lel Fitness"
       ],
       "category": "Personalised fitness coaching studio",
       "location": "Mumbai",
@@ -3173,9 +3170,7 @@
       "name": "HerChoice by Asma",
       "aliases": [
         "Asma Women Clothing",
-        "Asma Women's Clothing",
-        "Her Choice by Asma",
-        "@herchoice_byasma"
+        "Asma Women's Clothing"
       ],
       "category": "Pakistani women's fashion and ethnic clothing",
       "location": null,
@@ -3522,7 +3517,6 @@
       "name": "G S Shetty International School",
       "aliases": [
         "Gs shetty school Bhandup",
-        "GS Shetty International School",
         "GSSIS"
       ],
       "category": "School",
@@ -3969,9 +3963,7 @@
     {
       "brand_id": "uva_fashions",
       "name": "Uvafashions Mumbai",
-      "aliases": [
-        "UVA Fashions Mumbai"
-      ],
+      "aliases": [],
       "category": "Fashion; exact product audience unconfirmed",
       "location": "Mumbai",
       "content_genres": [],
@@ -4040,6 +4032,547 @@
         "Missing-data notes",
         "Internal sources and evidence URLs",
         "Draft example labels"
+      ]
+    },
+    {
+      "brand_id": "ideal_tailor",
+      "name": "Ideal Tailor",
+      "aliases": [
+        "Ideal Tailor Jogeshwari East"
+      ],
+      "category": "Tailoring and garment fitting",
+      "location": "Jogeshwari East, Mumbai",
+      "content_genres": [
+        "Finished client outfits",
+        "Tailoring detail",
+        "Customer satisfaction with consent",
+        "Local service discovery",
+        "Occasion wear when garment is identified"
+      ],
+      "caption_direction": {
+        "status": "user_provided_2026-11-14",
+        "tone": "Personal, Skilled, Approachable, Customer-focused",
+        "audience": "Local tailoring customers; Customers seeking tailored or fitted clothing",
+        "language": "Use the language in the supplied brief.",
+        "focus": [
+          "Celebrate real garment outcomes and customer experience. Refer to the pictured outfit only as specifically described in the brief."
+        ],
+        "avoid": [
+          "Calling a customer a named client without permission",
+          "Guarantees of perfect fit or same-day delivery",
+          "Do not promise alteration or delivery timing without confirmation.",
+          "Use customer likeness or testimonial only with consent.",
+          "Do not infer gender or garment category if not visible or provided."
+        ],
+        "cta_options": []
+      },
+      "keyword_bank": [
+        "tailor Jogeshwari East",
+        "tailoring Prem Nagar Mumbai",
+        "Ideal Tailor Mumbai",
+        "garment fitting Jogeshwari"
+      ],
+      "approved_facts": [
+        {
+          "text": "User supplied the address and phone.",
+          "source": "Famebros_14_Brand_Knowledge.json; qualifications remain in the detailed profile."
+        },
+        {
+          "text": "A happy-client caption was requested for an outfit by Ideal Tailor.",
+          "source": "Famebros_14_Brand_Knowledge.json; qualifications remain in the detailed profile."
+        }
+      ],
+      "mandatory_copy": [],
+      "contacts": {
+        "phone": [
+          "+91 91427 84784"
+        ],
+        "address": "Opp. Madrasi Masjid, Fish Market, Prem Nagar, Jogeshwari East, Mumbai 400060",
+        "email": null,
+        "website": null
+      },
+      "footer_lines": [
+        "Ideal Tailor | Opp. Madrasi Masjid, Fish Market, Prem Nagar, Jogeshwari East, Mumbai 400060 | +91 91427 84784",
+        "💫 Managed by: @famebrosstudio"
+      ],
+      "instagram": {
+        "url": null,
+        "handle": null,
+        "status": "not_resolved",
+        "evidence": [],
+        "note": "Use only confirmed official links."
+      },
+      "example": {
+        "status": "source_dataset_example",
+        "body": "A happy customer and an outfit made to feel just right. Thank you for choosing Ideal Tailor. Visit us opposite Madrasi Masjid in Prem Nagar, Jogeshwari East, or call +91 91427 84784.",
+        "full_caption": "A happy customer and an outfit made to feel just right. Thank you for choosing Ideal Tailor. Visit us opposite Madrasi Masjid in Prem Nagar, Jogeshwari East, or call +91 91427 84784."
+      },
+      "missing_details": [
+        "Official Instagram and Facebook",
+        "Hours and appointment process",
+        "Garment categories and services",
+        "Logo, palette, prices and turnaround"
+      ],
+      "sources": [
+        "Famebros_14_Brand_Knowledge.json (prepared 2026-11-14)"
+      ],
+      "footer_policy": "Append only confirmed footer lines for feed/reel captions. Never invent missing contact details.",
+      "readiness": "ready_with_post_brief",
+      "always_exclude_from_captions": [
+        "Internal notes",
+        "Source URLs and evidence notes",
+        "Unconfirmed details",
+        "Placeholders"
+      ]
+    },
+    {
+      "brand_id": "almas_bridal_gallery",
+      "name": "Almas Bridal Gallery",
+      "aliases": [
+        "ALMAS Bridal Gallery Mumbai",
+        "Almas Official"
+      ],
+      "category": "Luxury bridal wear and bridal destination",
+      "location": "Vakola, Santacruz East, Mumbai",
+      "content_genres": [
+        "London heritage",
+        "Mumbai arrival",
+        "Bridal lehengas and looks",
+        "Bride-centered inspiration",
+        "Store reveal and appointments after launch confirmation"
+      ],
+      "caption_direction": {
+        "status": "user_provided_2026-11-14",
+        "tone": "Luxury, Elegant, Romantic, Confident, Bridal-focused",
+        "audience": "Mumbai brides; Bridal shoppers",
+        "language": "Use the language in the supplied brief.",
+        "focus": [
+          "A luxury bridal destination for Mumbai brides, grounded in London heritage. In launch teasers, create intrigue without premature operational details."
+        ],
+        "avoid": [
+          "Groom or menswear references",
+          "Generic hard-sell language",
+          "Calling the brand new",
+          "Unapproved launch dates or offers",
+          "Maintain bridal-only Mumbai positioning.",
+          "Use 27-year London heritage claim only as previously approved and verify continued accuracy before new campaigns.",
+          "Do not publish opening dates, current availability, offers or contact footers on teaser creative unless approved.",
+          "Do not use London profile as Mumbai contact channel."
+        ],
+        "cta_options": []
+      },
+      "keyword_bank": [
+        "bridal wear Mumbai",
+        "bridal lehenga Santacruz East",
+        "bridal boutique Vakola",
+        "luxury bridal destination Mumbai",
+        "Almas Bridal Gallery"
+      ],
+      "approved_facts": [
+        {
+          "text": "Mumbai identity is ALMAS BRIDAL GALLERY.",
+          "source": "Famebros_14_Brand_Knowledge.json; qualifications remain in the detailed profile."
+        },
+        {
+          "text": "Mumbai branch is bridal-only; exclude groom and menswear.",
+          "source": "Famebros_14_Brand_Knowledge.json; qualifications remain in the detailed profile."
+        },
+        {
+          "text": "A 27-year London bridal legacy claim was approved in earlier campaign work.",
+          "source": "Famebros_14_Brand_Knowledge.json; qualifications remain in the detailed profile."
+        },
+        {
+          "text": "Approved launch/teaser concept: 27 Years of Bridal Legacy. Now Coming to Mumbai.",
+          "source": "Famebros_14_Brand_Knowledge.json; qualifications remain in the detailed profile."
+        },
+        {
+          "text": "A 9-grid Instagram curiosity campaign was requested, presenting an established brand entering Mumbai, not a new business.",
+          "source": "Famebros_14_Brand_Knowledge.json; qualifications remain in the detailed profile."
+        },
+        {
+          "text": "Approved palette direction: ivory, burgundy, champagne and antique gold; preserve original logo.",
+          "source": "Famebros_14_Brand_Knowledge.json; qualifications remain in the detailed profile."
+        }
+      ],
+      "mandatory_copy": [],
+      "contacts": {
+        "phone": [
+          "+91 90046 56157"
+        ],
+        "address": "Shop No. 2, Vaviya Mansion 33/257, Anand Nagar, Om Co-op HSG SOC Ltd, Nehru Road, Vakola, Santacruz East, Mumbai 400055",
+        "email": null,
+        "website": "https://almasofficial.in/"
+      },
+      "footer_lines": [
+        "💫 Managed by: @famebrosstudio"
+      ],
+      "instagram": {
+        "url": "https://www.instagram.com/almasofficial/",
+        "handle": "@almasofficial",
+        "status": "user_supplied_handle",
+        "evidence": [
+          "https://www.instagram.com/almasofficial/"
+        ],
+        "note": "London account is a heritage reference, not the Mumbai store profile."
+      },
+      "example": {
+        "status": "source_dataset_example",
+        "body": "Mumbai, something beautiful is on its way. 27 years of London bridal heritage, soon to meet the city's brides. Follow @almasofficial for the reveal.",
+        "full_caption": "Mumbai, something beautiful is on its way. 27 years of London bridal heritage, soon to meet the city's brides. Follow @almasofficial for the reveal."
+      },
+      "missing_details": [
+        "Current open/launch status",
+        "Current hours and appointment process",
+        "Product prices, designer/collection names and booking details",
+        "Confirmed Facebook link and current website contact page"
+      ],
+      "sources": [
+        "Famebros_14_Brand_Knowledge.json (prepared 2026-11-14)"
+      ],
+      "footer_policy": "Append only confirmed footer lines for feed/reel captions. Never invent missing contact details.",
+      "readiness": "ready_with_post_brief",
+      "always_exclude_from_captions": [
+        "Internal notes",
+        "Source URLs and evidence notes",
+        "Unconfirmed details",
+        "Placeholders"
+      ]
+    },
+    {
+      "brand_id": "perfume_vault",
+      "name": "Perfume Vault",
+      "aliases": [
+        "Parrfum Vault"
+      ],
+      "category": "Brand identity pending confirmation",
+      "location": null,
+      "content_genres": [
+        "To be confirmed after client identity and offering are documented"
+      ],
+      "caption_direction": {
+        "status": "user_provided_2026-11-14",
+        "tone": "To be confirmed",
+        "audience": "Unknown; do not infer.",
+        "language": "Use the language in the supplied brief.",
+        "focus": [
+          "Do not generate product or perfume advice until the client confirms whether this is retail, manufacturing, a creator account or another business."
+        ],
+        "avoid": [
+          "Assuming this is a perfume retailer or creator",
+          "Authenticity, longevity, projection or imported-original claims without proof",
+          "Using another Perfume Vault identity",
+          "Do not claim original/authentic, imported, long-lasting, designer or niche fragrance products unless documented.",
+          "Do not use contact details or Instagram pages belonging to unrelated search results."
+        ],
+        "cta_options": []
+      },
+      "keyword_bank": [
+        "Perfume Vault"
+      ],
+      "approved_facts": [
+        {
+          "text": "Famebros tracker has a managed account listed as Parrfum Vault, awaiting launch at tracker date.",
+          "source": "Famebros_14_Brand_Knowledge.json; qualifications remain in the detailed profile."
+        }
+      ],
+      "mandatory_copy": [],
+      "contacts": {
+        "phone": [],
+        "address": null,
+        "email": null,
+        "website": null
+      },
+      "footer_lines": [
+        "💫 Managed by: @famebrosstudio"
+      ],
+      "instagram": {
+        "url": null,
+        "handle": null,
+        "status": "not_resolved",
+        "evidence": [],
+        "note": "Search results found unrelated fragrance creators and overseas businesses. No account link can be assigned confidently to this managed client."
+      },
+      "example": {
+        "status": "source_dataset_example",
+        "body": "A new chapter is on the way. Follow the official Perfume Vault page for updates.",
+        "full_caption": "A new chapter is on the way. Follow the official Perfume Vault page for updates."
+      },
+      "missing_details": [
+        "All key facts: final name, genre, products/services, city/address, phone, website, Instagram, audience, prices, offers, visual identity and launch status"
+      ],
+      "sources": [
+        "Famebros_14_Brand_Knowledge.json (prepared 2026-11-14)"
+      ],
+      "footer_policy": "Append only confirmed footer lines for feed/reel captions. Never invent missing contact details.",
+      "readiness": "needs_brand_identity",
+      "always_exclude_from_captions": [
+        "Internal notes",
+        "Source URLs and evidence notes",
+        "Unconfirmed details",
+        "Placeholders"
+      ]
+    },
+    {
+      "brand_id": "cotton_plus",
+      "name": "Cotton Plus",
+      "aliases": [],
+      "category": "Clothing retail",
+      "location": null,
+      "content_genres": [
+        "Pending client identity and catalogue confirmation"
+      ],
+      "caption_direction": {
+        "status": "user_provided_2026-11-14",
+        "tone": "To be confirmed",
+        "audience": "Unknown; do not infer.",
+        "language": "Use the language in the supplied brief.",
+        "focus": [
+          "Potentially apparel retail, but confirm the exact client branch and actual inventory before writing product captions."
+        ],
+        "avoid": [
+          "Assuming this client's Cotton Plus is the website or any similarly named shop",
+          "Promising cotton composition, comfort, quality or price without product proof",
+          "Do not use cotton-related fabric claims from the name alone.",
+          "Do not connect the client to cottonplus.in or any listed location without confirmation.",
+          "Do not publish prices, discounts, sizes or inventory without current details."
+        ],
+        "cta_options": []
+      },
+      "keyword_bank": [
+        "Cotton Plus"
+      ],
+      "approved_facts": [
+        {
+          "text": "Cotton Plus is a managed, active client in the Famebros tracker.",
+          "source": "Famebros_14_Brand_Knowledge.json; qualifications remain in the detailed profile."
+        },
+        {
+          "text": "A payment record exists, but amounts are excluded from public brand knowledge.",
+          "source": "Famebros_14_Brand_Knowledge.json; qualifications remain in the detailed profile."
+        }
+      ],
+      "mandatory_copy": [],
+      "contacts": {
+        "phone": [],
+        "address": null,
+        "email": null,
+        "website": null
+      },
+      "footer_lines": [
+        "💫 Managed by: @famebrosstudio"
+      ],
+      "instagram": {
+        "url": null,
+        "handle": null,
+        "status": "not_resolved",
+        "evidence": [],
+        "note": "Search returns multiple unrelated Cotton Plus stores and a public website; none is verified as this Famebros client."
+      },
+      "example": {
+        "status": "source_dataset_example",
+        "body": "Find your next everyday favourite at Cotton Plus. Visit the store to explore the latest collection.",
+        "full_caption": "Find your next everyday favourite at Cotton Plus. Visit the store to explore the latest collection."
+      },
+      "missing_details": [
+        "Exact branch and address",
+        "Official Instagram and website",
+        "Phone",
+        "Product categories, target audience, material/quality claims, price and offers",
+        "Brand voice and visual identity"
+      ],
+      "sources": [
+        "Famebros_14_Brand_Knowledge.json (prepared 2026-11-14)"
+      ],
+      "footer_policy": "Append only confirmed footer lines for feed/reel captions. Never invent missing contact details.",
+      "readiness": "needs_brand_identity",
+      "always_exclude_from_captions": [
+        "Internal notes",
+        "Source URLs and evidence notes",
+        "Unconfirmed details",
+        "Placeholders"
+      ]
+    },
+    {
+      "brand_id": "chinese_and_grill",
+      "name": "Chinese and Grill",
+      "aliases": [
+        "Chinese & Grill",
+        "Chinese N Grill"
+      ],
+      "category": "Likely food/restaurant from account name, but exact cuisine and business identity are unconfirmed",
+      "location": null,
+      "content_genres": [
+        "Menu highlights after exact business and menu confirmation",
+        "Kitchen and service content after client approval",
+        "Offers and events only with current terms"
+      ],
+      "caption_direction": {
+        "status": "user_provided_2026-11-14",
+        "tone": "To be confirmed",
+        "audience": "Unknown; do not infer.",
+        "language": "Use the language in the supplied brief.",
+        "focus": [
+          "Food content must be tied to the client's verified menu and location. The brand name alone is not enough to determine cuisine or specialties."
+        ],
+        "avoid": [
+          "Assigning any search-result menu or address to this client",
+          "Unverified halal, vegetarian, spice, freshness, price or hygiene claims",
+          "Confirm exact restaurant identity before including any address, phone, menu, ordering link or cuisine claims.",
+          "Do not call dishes halal or vegetarian unless the client confirms ingredients and preparation.",
+          "Do not use competitor or similarly named restaurant reviews as evidence."
+        ],
+        "cta_options": []
+      },
+      "keyword_bank": [
+        "Chinese and Grill"
+      ],
+      "approved_facts": [
+        {
+          "text": "Chinese and Grill is listed as a managed active brand in the Famebros tracker.",
+          "source": "Famebros_14_Brand_Knowledge.json; qualifications remain in the detailed profile."
+        }
+      ],
+      "mandatory_copy": [],
+      "contacts": {
+        "phone": [],
+        "address": null,
+        "email": null,
+        "website": null
+      },
+      "footer_lines": [
+        "💫 Managed by: @famebrosstudio"
+      ],
+      "instagram": {
+        "url": null,
+        "handle": null,
+        "status": "not_resolved",
+        "evidence": [],
+        "note": "Use only confirmed official links."
+      },
+      "example": {
+        "status": "source_dataset_example",
+        "body": "Good food deserves a place at the table. Follow Chinese and Grill for updates from the team.",
+        "full_caption": "Good food deserves a place at the table. Follow Chinese and Grill for updates from the team."
+      },
+      "missing_details": [
+        "Exact branch, address and phone",
+        "Official social links and ordering channels",
+        "Menu and cuisine",
+        "Dietary policies",
+        "Hours, offers, prices and visual identity"
+      ],
+      "sources": [
+        "Famebros_14_Brand_Knowledge.json (prepared 2026-11-14)"
+      ],
+      "footer_policy": "Append only confirmed footer lines for feed/reel captions. Never invent missing contact details.",
+      "readiness": "needs_brand_identity",
+      "always_exclude_from_captions": [
+        "Internal notes",
+        "Source URLs and evidence notes",
+        "Unconfirmed details",
+        "Placeholders"
+      ]
+    },
+    {
+      "brand_id": "zivara_salon",
+      "name": "Zivara Salon",
+      "aliases": [
+        "Zivara Salon & Wellness",
+        "Zivara Salon | Thane"
+      ],
+      "category": "Salon and wellness",
+      "location": "Naupada, Thane",
+      "content_genres": [
+        "Hair and grooming",
+        "Manicure and pedicure",
+        "Self-care and wellness",
+        "Wedding-season preparation",
+        "Salon launch and local discovery"
+      ],
+      "caption_direction": {
+        "status": "user_provided_2026-11-14",
+        "tone": "Polished, Welcoming, Self-care focused, Beauty-forward",
+        "audience": "Local salon and grooming customers; Wedding-season and festive clients",
+        "language": "Use the language in the supplied brief.",
+        "focus": [
+          "Position the salon as a local Thane destination for grooming and beauty appointments. Make the service, result and booking details explicit only when confirmed."
+        ],
+        "avoid": [
+          "Medical or guaranteed treatment claims",
+          "Unverified results, prices or offers",
+          "Using salon services outside the confirmed menu",
+          "Confirm current opening status, phone and booking channel before publishing.",
+          "Do not promise outcomes or make medical claims.",
+          "Do not reuse the proposed 12 reels and 6 posts as a consumer offer or service package.",
+          "Verify the live service menu and campaign dates."
+        ],
+        "cta_options": []
+      },
+      "keyword_bank": [
+        "salon Naupada Thane",
+        "hair spa Thane",
+        "salon near LBS Marg",
+        "wedding salon bookings Thane",
+        "Zivara Salon Thane"
+      ],
+      "approved_facts": [
+        {
+          "text": "Zivara Salon is a Thane brand.",
+          "source": "Famebros_14_Brand_Knowledge.json; qualifications remain in the detailed profile."
+        },
+        {
+          "text": "Earlier launch planning included a Diwali Glam Bookings and Wedding Season push.",
+          "source": "Famebros_14_Brand_Knowledge.json; qualifications remain in the detailed profile."
+        },
+        {
+          "text": "A proposed deliverable plan included 12 reels and 6 posts; this is internal campaign planning, not a public offer.",
+          "source": "Famebros_14_Brand_Knowledge.json; qualifications remain in the detailed profile."
+        },
+        {
+          "text": "Address supplied in prior context: Shop G-5, Highland Sky Arcade, Damani Road, LBS Marg, Naupada, Thane.",
+          "source": "Famebros_14_Brand_Knowledge.json; qualifications remain in the detailed profile."
+        }
+      ],
+      "mandatory_copy": [],
+      "contacts": {
+        "phone": [],
+        "address": "Shop G-5, Highland Sky Arcade, Damani Road, LBS Marg, Naupada, Thane",
+        "email": null,
+        "website": null
+      },
+      "footer_lines": [
+        "Zivara Salon & Wellness | Shop G-5, Highland Sky Arcade, Damani Road, LBS Marg, Naupada, Thane",
+        "💫 Managed by: @famebrosstudio"
+      ],
+      "instagram": {
+        "url": null,
+        "handle": null,
+        "status": "not_resolved",
+        "evidence": [],
+        "note": "Meta portfolio evidence confirms an account named Zivara Salon | Thane, but no public page URL was retrieved."
+      },
+      "example": {
+        "status": "source_dataset_example",
+        "body": "Make a little space for self-care. Explore hair and grooming services at Zivara Salon & Wellness, Naupada, Thane. Message the team to confirm services and appointment availability.",
+        "full_caption": "Make a little space for self-care. Explore hair and grooming services at Zivara Salon & Wellness, Naupada, Thane. Message the team to confirm services and appointment availability."
+      },
+      "missing_details": [
+        "Official Instagram URL",
+        "Phone and appointment channel",
+        "Current opening date and hours",
+        "Full service and price list",
+        "Logo, colours and offer terms"
+      ],
+      "sources": [
+        "Famebros_14_Brand_Knowledge.json (prepared 2026-11-14)"
+      ],
+      "footer_policy": "Append only confirmed footer lines for feed/reel captions. Never invent missing contact details.",
+      "readiness": "ready_with_post_brief",
+      "always_exclude_from_captions": [
+        "Internal notes",
+        "Source URLs and evidence notes",
+        "Unconfirmed details",
+        "Placeholders"
       ]
     }
   ],

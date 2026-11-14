@@ -1,0 +1,176 @@
+{
+  "schema_version": "1.0",
+  "brand_id": "ideal_tailor",
+  "brand_name": "Ideal Tailor",
+  "aliases": [
+    "Ideal Tailor Jogeshwari East"
+  ],
+  "knowledge_scope": {
+    "record_status": "Managed brand, active",
+    "start_date_as_recorded": "1st Nov",
+    "date_note": "Year not specified in tracker."
+  },
+  "business": {
+    "genre": "Tailoring and garment fitting",
+    "known_offering": [
+      "Tailoring",
+      "Client outfit work was featured in a happy-client caption"
+    ],
+    "location": {
+      "city": "Mumbai",
+      "area": "Jogeshwari East",
+      "address": "Opp. Madrasi Masjid, Fish Market, Prem Nagar, Jogeshwari East, Mumbai 400060"
+    },
+    "audience": [
+      "Local tailoring customers",
+      "Customers seeking tailored or fitted clothing"
+    ],
+    "positioning": null
+  },
+  "contact": {
+    "phone": "+91 91427 84784",
+    "whatsapp": null,
+    "email": null,
+    "website": null,
+    "address": "Opp. Madrasi Masjid, Fish Market, Prem Nagar, Jogeshwari East, Mumbai 400060",
+    "phone_display": "+91 91427 84784",
+    "full_address": "Opp. Madrasi Masjid, Fish Market, Prem Nagar, Jogeshwari East, Mumbai 400060"
+  },
+  "social_media": {
+    "instagram_url": null,
+    "instagram_handle": null,
+    "facebook_url": null,
+    "youtube_url": null
+  },
+  "established_content_knowledge": {
+    "confirmed": [
+      "User supplied the address and phone.",
+      "A happy-client caption was requested for an outfit by Ideal Tailor."
+    ],
+    "unconfirmed": [
+      "Specific garment categories, tailoring techniques, turnaround, alterations, prices and appointment requirements"
+    ]
+  },
+  "writing_direction": {
+    "tone": [
+      "Personal",
+      "Skilled",
+      "Approachable",
+      "Customer-focused"
+    ],
+    "avoid": [
+      "Calling a customer a named client without permission",
+      "Guarantees of perfect fit or same-day delivery"
+    ]
+  },
+  "content_playbook": {
+    "pillars": [
+      "Finished client outfits",
+      "Tailoring detail",
+      "Customer satisfaction with consent",
+      "Local service discovery",
+      "Occasion wear when garment is identified"
+    ]
+  },
+  "brand_content_framework": {
+    "focus": "Celebrate real garment outcomes and customer experience. Refer to the pictured outfit only as specifically described in the brief."
+  },
+  "caption_format": {
+    "structure": [
+      "Customer or outfit appreciation hook",
+      "Describe visible/confirmed tailoring work",
+      "Thank customer if appropriate and approved",
+      "Local enquiry CTA",
+      "Relevant hashtags"
+    ],
+    "length": "Short and warm."
+  },
+  "fixed_footer": {
+    "lines": [
+      "Ideal Tailor | Opp. Madrasi Masjid, Fish Market, Prem Nagar, Jogeshwari East, Mumbai 400060 | +91 91427 84784",
+      "💫 Managed by: @famebrosstudio"
+    ]
+  },
+  "suggested_hashtag_bank": [
+    "#IdealTailor",
+    "#JogeshwariEast",
+    "#MumbaiTailor",
+    "#Tailoring",
+    "#CustomFit",
+    "#HappyCustomer"
+  ],
+  "seo_keyword_bank": [
+    "tailor Jogeshwari East",
+    "tailoring Prem Nagar Mumbai",
+    "Ideal Tailor Mumbai",
+    "garment fitting Jogeshwari"
+  ],
+  "cta_bank": [
+    "Visit Ideal Tailor in Prem Nagar.",
+    "Call +91 91427 84784 to enquire.",
+    "Message with your tailoring requirements."
+  ],
+  "suggested_hooks": [
+    "A happy customer is the best finishing touch.",
+    "Made with care, worn with confidence.",
+    "The right fit makes a difference."
+  ],
+  "visual_and_asset_guidance": {
+    "use": [
+      "Actual finished outfit",
+      "Customer photo only with consent",
+      "Details of stitching only when visible"
+    ],
+    "avoid": [
+      "Before/after unless the same garment and consent",
+      "Invented fabric or stitch descriptions"
+    ]
+  },
+  "carousel_and_reel_system": {
+    "reels": [
+      "Finished outfit reveal",
+      "Detail shots",
+      "Customer reaction only with consent",
+      "Local CTA"
+    ],
+    "carousel": [
+      "Outfit hero",
+      "Detail",
+      "Customer note if approved",
+      "Contact and location"
+    ]
+  },
+  "other_output_modes": [
+    "Happy-client captions",
+    "Local business copy",
+    "Reel script",
+    "Service explainer from confirmed scope"
+  ],
+  "sample_caption": "A happy customer and an outfit made to feel just right. Thank you for choosing Ideal Tailor. Visit us opposite Madrasi Masjid in Prem Nagar, Jogeshwari East, or call +91 91427 84784.",
+  "accuracy_rules": [
+    "Do not promise alteration or delivery timing without confirmation.",
+    "Use customer likeness or testimonial only with consent.",
+    "Do not infer gender or garment category if not visible or provided."
+  ],
+  "per_post_input": [
+    "Outfit type",
+    "What tailoring work was done",
+    "Customer name or anonymity preference",
+    "Consent",
+    "Turnaround or offer if approved",
+    "Preferred CTA"
+  ],
+  "master_brand_instruction": "Write warm, locally useful content for Ideal Tailor in Prem Nagar, Jogeshwari East. Center real outfits and customer satisfaction, but use only confirmed service claims and obtain consent for customer stories.",
+  "missing_information": [
+    "Official Instagram and Facebook",
+    "Hours and appointment process",
+    "Garment categories and services",
+    "Logo, palette, prices and turnaround"
+  ],
+  "sources": [
+    {
+      "type": "user-provided client information",
+      "detail": "Address +91 91427 84784 and prior happy-client caption brief."
+    }
+  ]
+}

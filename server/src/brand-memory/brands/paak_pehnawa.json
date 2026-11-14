@@ -1378,5 +1378,156 @@
       "type": "user_writing_preferences",
       "supports": "One brand per JSON file, comprehensive AI-ready structure, Instagram link, publication-ready captions, agency credit, exactly three hashtags, one square SEO keyword bracket and no em dashes."
     }
-  ]
+  ],
+  "latest_user_dataset_update": {
+    "dataset_prepared_on": "2026-11-14",
+    "knowledge_scope": {
+      "record_status": "Managed brand, active",
+      "start_date_as_recorded": "4th Sept",
+      "date_note": "Year not specified in tracker."
+    },
+    "business": {
+      "genre": "Men's ethnic and occasion fashion",
+      "known_offering": [
+        "Men's traditional outfits",
+        "Kurta and sherwani looks shown in client assets",
+        "Festive menswear"
+      ],
+      "location": {
+        "city": null,
+        "exact_address": null
+      },
+      "audience": [
+        "Men shopping for festive, cultural and occasion wear"
+      ],
+      "positioning": "Men's occasionwear with traditional detailing and contemporary styling, based on supplied campaign assets."
+    },
+    "contact": {
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": null,
+      "address": null
+    },
+    "social_media": {
+      "instagram_url": "https://www.instagram.com/paak.pehnawa.mens/",
+      "instagram_handle": "@paak.pehnawa.mens",
+      "facebook_url": null,
+      "youtube_url": null
+    },
+    "established_content_knowledge": {
+      "confirmed": [
+        "Official Instagram link supplied in prior brand work.",
+        "Client assets show teal embroidered kurta and ivory/white sherwani styles.",
+        "Content is for the men's brand specifically."
+      ],
+      "unconfirmed": [
+        "Exact fabrics, customization, rental availability, price, location and size range"
+      ]
+    },
+    "writing_direction": {
+      "tone": [
+        "Stylish",
+        "Confident",
+        "Festive",
+        "Masculine"
+      ],
+      "avoid": [
+        "Women's or bridal-only product language",
+        "Unsupported fabric or craftsmanship superlatives",
+        "Conflating with Paak Premium or another branch"
+      ]
+    },
+    "content_playbook": {
+      "pillars": [
+        "Festive men's looks",
+        "Kurta and sherwani styling",
+        "Embroidery and garment detail",
+        "Occasion inspiration",
+        "New arrivals when confirmed"
+      ]
+    },
+    "brand_content_framework": {
+      "focus": "Men's fashion only. Describe visible colours, embroidery, silhouette and occasion, and keep the Paak Pehnawa Mens page distinct from Paak Premium Jogeshwari West."
+    },
+    "caption_format": {
+      "structure": [
+        "Occasion hook",
+        "Specific look detail",
+        "Style feeling",
+        "Visit/message CTA when confirmed",
+        "Focused hashtags"
+      ],
+      "length": "Short, Instagram-ready."
+    },
+    "fixed_footer": null,
+    "suggested_hashtag_bank": [
+      "#PaakPehnawaMens",
+      "#MensEthnicWear",
+      "#MensFestiveWear",
+      "#KurtaStyle",
+      "#SherwaniStyle",
+      "#IndianMenswear"
+    ],
+    "seo_keyword_bank": [
+      "men's ethnic wear",
+      "men's festive wear",
+      "embroidered kurta for men",
+      "men's sherwani style"
+    ],
+    "cta_bank": [
+      "DM the page for outfit details.",
+      "Explore the collection on the official page.",
+      "Save this look for your next celebration."
+    ],
+    "suggested_hooks": [
+      "Tradition, with a confident new edge.",
+      "The festive look that speaks before you do.",
+      "Details made for the celebration."
+    ],
+    "visual_and_asset_guidance": {
+      "use": [
+        "Actual menswear assets",
+        "Close-ups of embroidery and styling",
+        "Original logo and client-approved palette"
+      ],
+      "avoid": [
+        "Women's garments",
+        "Unrelated branch logos",
+        "Unverified fabric or product claims"
+      ]
+    },
+    "carousel_and_reel_system": {
+      "reels": [
+        "Full outfit reveal",
+        "Close-up embroidery",
+        "Movement or styling shot",
+        "CTA to official page"
+      ],
+      "carousel": [
+        "Hero look",
+        "Detail",
+        "Occasion styling",
+        "Enquiry prompt"
+      ]
+    },
+    "accuracy_rules": [
+      "Do not infer fabric, price, availability, stitching, customization, rental or address.",
+      "Do not confuse this brand with Paak Premium in Jogeshwari West."
+    ],
+    "per_post_input": [
+      "Exact outfit name or category",
+      "Fabric and work details",
+      "Price or offer",
+      "Availability and sizes",
+      "Store address/contact",
+      "Preferred language"
+    ],
+    "missing_information": [
+      "Exact store address and contact",
+      "Website",
+      "Verified catalogue, fabrics, sizes, prices and services",
+      "Logo and brand palette"
+    ]
+  }
 }

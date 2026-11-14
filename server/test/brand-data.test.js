@@ -8,9 +8,9 @@ import { loadBrands, fullPack, deepPack, getFullBrand, deepFooter, getDeepForCom
 const here = path.dirname(fileURLToPath(import.meta.url));
 const memoryDir = path.join(here, '..', 'src', 'brand-memory');
 
-test('active brand index has 41 unique, complete profiles with usable prompt context', () => {
+test('active brand index has 47 unique, complete profiles with usable prompt context', () => {
   const brands = loadBrands();
-  assert.equal(brands.length, 41);
+  assert.equal(brands.length, 47);
   assert.equal(new Set(brands.map((b) => b.id)).size, brands.length, 'brand IDs must be unique');
   assert.equal(new Set(brands.map((b) => b.name.trim().toLowerCase())).size, brands.length, 'brand names must be unique');
 
@@ -42,11 +42,11 @@ test('Devi & Company prompt context retains all three owner-requested branch loc
   ]) assert.ok(footer.includes(location), `caption footer must retain ${location}`);
 });
 
-test('brand source archives parse and declare the full 41-brand portable roster', () => {
+test('brand source archives parse and declare the full 47-brand portable roster', () => {
   const archive = JSON.parse(fs.readFileSync(path.join(memoryDir, 'source-data', 'Famebros_Brand_Caption_Dataset.json'), 'utf8'));
   const compact = JSON.parse(fs.readFileSync(path.join(memoryDir, 'brands.compact.json'), 'utf8'));
   const full = JSON.parse(fs.readFileSync(path.join(memoryDir, 'brands.full.json'), 'utf8'));
-  assert.equal(archive.brands.length, 41);
+  assert.equal(archive.brands.length, 47);
   assert.equal(archive.brand_count, archive.brands.length);
   assert.equal(new Set(archive.brands.map((b) => b.brand_id)).size, archive.brands.length);
   const sortedIds = (items, key) => items.map((item) => item[key]).sort();
@@ -60,11 +60,39 @@ test('brand source archives parse and declare the full 41-brand portable roster'
     assert.ok(brand.sources, `${brand.brand_id} needs provenance`);
   }
 
+  const sourceArchive = JSON.parse(fs.readFileSync(
+    path.join(memoryDir, 'source-data', 'Famebros_14_Brand_Knowledge.json'), 'utf8',
+  ));
+  const mapping = JSON.parse(fs.readFileSync(
+    path.join(memoryDir, 'source-data', 'Famebros_14_Brand_Knowledge.mapping.json'), 'utf8',
+  ));
+  assert.equal(sourceArchive.brands.length, 14);
+  assert.equal(Object.keys(mapping.canonical_ids).length, 14);
+  for (const id of [
+    'ideal_tailor', 'almas_bridal_gallery', 'perfume_vault',
+    'cotton_plus', 'chinese_and_grill', 'zivara_salon',
+  ]) {
+    assert.ok(archive.brands.some((brand) => brand.brand_id === id), `${id} must be in portable data`);
+    assert.ok(loadBrands().some((brand) => brand.id === id), `${id} must resolve at runtime`);
+  }
+
   const variantsDir = path.join(memoryDir, 'source-data', 'Specific-brands');
   for (const filename of fs.readdirSync(variantsDir).filter((name) => name.endsWith('.json'))) {
     const profile = JSON.parse(fs.readFileSync(path.join(variantsDir, filename), 'utf8'));
     assert.ok(profile.brand_id && profile.brand_name, `${filename} needs brand identity`);
   }
+});
+
+test('newer user-supplied brand updates reach the selected-brand caption context', () => {
+  const rajlaxmi = loadBrands().find((brand) => brand.id === 'rajlaxmi_sangli');
+  const context = fullPack(rajlaxmi);
+  assert.match(context, /\+91 70205 51310/);
+  assert.match(context, /2026-11-14/);
+  assert.match(context, /95619 43310/);
+  assert.match(context, /not been confirmed|unconfirmed/i);
+
+  const uva = loadBrands().find((brand) => brand.id === 'uva_fashions');
+  assert.match(fullPack(uva), /kids’ fashion and western wear/i);
 });
 
 test('compact brand records retain valid Unicode and resolve to a detailed profile', () => {

@@ -12,7 +12,7 @@
   ],
   "knowledge_scope": "One brand only. This file covers the user's Uvafashions Mumbai record. Mumbai and the fashion category are confirmed, but the exact garment segment, audience, retail or wholesale model, official Instagram, contact details and catalogue remain unresolved.",
   "business": {
-    "category": "Fashion and clothing, exact segment unconfirmed",
+    "category": "Fashion retail, including kids’ fashion and western wear per the user-provided 2026-11-14 dataset",
     "industry": "Apparel and fashion",
     "business_model": null,
     "city": "Mumbai",
@@ -24,7 +24,9 @@
     "gender_scope": null,
     "operational_status": "Not started yet in the source record.",
     "dataset_date": "2026-09-26",
-    "commercial_accuracy_rule": "Do not assume men, women, children, retail, wholesale, manufacturing, fabric, price, stock or shipping."
+    "commercial_accuracy_rule": "Do not assume men, women, children, retail, wholesale, manufacturing, fabric, price, stock or shipping.",
+    "customer_focus": "Families shopping for children’s clothing and fashion shoppers",
+    "location_area": "Byculla, Mumbai"
   },
   "contact": {
     "phone": null,
@@ -35,7 +37,10 @@
     "city": "Mumbai",
     "google_maps_url": null,
     "contact_status": "Only Mumbai is established.",
-    "contact_rule": "Use Mumbai at city level only. Do not invent a locality or contact."
+    "contact_rule": "Use Mumbai at city level only. Do not invent a locality or contact.",
+    "phone_display": "+91 98333 54400",
+    "phone_e164": "+919833354400",
+    "full_address_preferred": "Byculla House, Mirza Galib Road (Clare Road), Byculla, Mumbai"
   },
   "social_media": {
     "instagram_handle": "@uvafashions_mumbai",
@@ -80,7 +85,11 @@
       "audience": "Unknown",
       "social": "Unknown",
       "catalogue": "Unknown"
-    }
+    },
+    "user_provided_business_facts_2026_11_14": [
+      "Kids’ fashion and western wear are identified in the supplied client knowledge dataset.",
+      "A kids’ denim launch post was discussed."
+    ]
   },
   "writing_direction": {
     "brand_voice": [
@@ -382,7 +391,7 @@
     ],
     "input_rule": "Do not create targeted sales copy before the segment and business model are confirmed."
   },
-  "master_brand_instruction": "Create content only for Uvafashions Mumbai. The confirmed facts are the working name, broad fashion category, Mumbai city-level location and not-started status. The exact product segment, audience, retail or wholesale model, official Instagram, contacts and catalogue are unknown. Do not assume men, women, children, ethnic wear, western wear, manufacturing or retail. Use only the actual garment and supplied facts. Preserve its colour, shape, pattern and design. Never invent fabric, sizes, price, stock, shipping or returns. Use Mumbai only at city level and do not tag a guessed account. Standard neutral concept captions use exactly three hashtags and one SEO bracket with five to eight phrases. Remove all em dashes.",
+  "master_brand_instruction": "Create content only for Uvafashions Mumbai. The confirmed facts are the working name, broad fashion category, Mumbai city-level location and not-started status. The exact product segment, audience, retail or wholesale model, official Instagram, contacts and catalogue are unknown. Do not assume men, women, children, ethnic wear, western wear, manufacturing or retail. Use only the actual garment and supplied facts. Preserve its colour, shape, pattern and design. Never invent fabric, sizes, price, stock, shipping or returns. Use Mumbai only at city level and do not tag a guessed account. Standard neutral concept captions use exactly three hashtags and one SEO bracket with five to eight phrases. Remove all em dashes. The 2026-11-14 user-provided dataset identifies kids’ fashion and western wear and supplies Byculla House, Mirza Galib Road (Clare Road), Mumbai and +91 98333 54400. Use these details when relevant and confirm time-sensitive information.",
   "missing_information": {
     "identity": [
       "Official Instagram",
@@ -443,5 +452,163 @@
     "source_urls": [],
     "observations": [],
     "rule": "Directory, creator and indexed-post facts are leads; reconfirm current contacts, offers and commercial details before public use."
+  },
+  "latest_user_dataset_update": {
+    "dataset_prepared_on": "2026-11-14",
+    "knowledge_scope": {
+      "record_status": "Managed brand, active",
+      "start_date_as_recorded": "1st Oct",
+      "date_note": "Year not specified in tracker."
+    },
+    "business": {
+      "genre": "Fashion retail",
+      "known_offering": [
+        "Kids' fashion",
+        "Western wear",
+        "Quality clothing and variety were emphasized in prior captions"
+      ],
+      "location": {
+        "city": "Mumbai",
+        "area": "Byculla",
+        "address": "Byculla House, Mirza Galib Road (Clare Road), Mumbai"
+      },
+      "audience": [
+        "Families shopping for children's clothing",
+        "Fashion shoppers"
+      ],
+      "positioning": null
+    },
+    "contact": {
+      "phone": "+91 98333 54400",
+      "whatsapp": null,
+      "email": null,
+      "website": null,
+      "address": "Byculla House, Mirza Galib Road (Clare Road), Byculla, Mumbai"
+    },
+    "social_media": {
+      "instagram_url": null,
+      "instagram_handle": null,
+      "facebook_url": null,
+      "youtube_url": null,
+      "note": "No verified profile URL retrieved. Do not guess a handle from the brand name."
+    },
+    "established_content_knowledge": {
+      "confirmed": [
+        "Byculla House, Mirza Galib Road / Clare Road, Mumbai.",
+        "Phone +91 98333 54400.",
+        "Kids' fashion, western wear, variety and friendly staff were included in prior caption work.",
+        "A kids' denim launch post was discussed."
+      ],
+      "unconfirmed": [
+        "Exact age range, sizes, brands, prices, materials, return policy and online ordering"
+      ]
+    },
+    "writing_direction": {
+      "tone": [
+        "Friendly",
+        "Bright",
+        "Family-focused",
+        "Fashionable"
+      ],
+      "avoid": [
+        "Unsupported fabric quality or comfort claims",
+        "Implying every size or design is in stock"
+      ]
+    },
+    "content_playbook": {
+      "pillars": [
+        "Kids' fashion",
+        "New arrivals",
+        "Denim styling",
+        "Family shopping",
+        "Store experience"
+      ],
+      "locality": "Byculla, Mumbai"
+    },
+    "brand_content_framework": {
+      "focus": "Make children's clothing easy and fun to discover. Keep wording warm and parent-friendly. Treat product information as item-specific."
+    },
+    "caption_format": {
+      "structure": [
+        "Fun fashion hook",
+        "Exact garment or visible detail",
+        "Who/occasion it suits",
+        "Visit or call CTA",
+        "Local and kidswear hashtags"
+      ],
+      "length": "Short and upbeat."
+    },
+    "fixed_footer": "UVA Fashion Mumbai | Byculla House, Mirza Galib Road (Clare Road), Byculla, Mumbai | +91 98333 54400",
+    "suggested_hashtag_bank": [
+      "#UVAFashionMumbai",
+      "#KidsFashion",
+      "#KidsWear",
+      "#MumbaiShopping",
+      "#Byculla",
+      "#KidsStyle",
+      "#DenimStyle"
+    ],
+    "seo_keyword_bank": [
+      "kids clothing Byculla",
+      "kids fashion Mumbai",
+      "western wear Byculla",
+      "UVA Fashion Mumbai",
+      "kids denim Mumbai"
+    ],
+    "cta_bank": [
+      "Visit us at Byculla House, Byculla.",
+      "Call +91 98333 54400 for store information.",
+      "Drop by and explore the latest styles."
+    ],
+    "suggested_hooks": [
+      "Little looks, big personality.",
+      "A fresh denim look for their next adventure.",
+      "Find a little something for every day."
+    ],
+    "visual_and_asset_guidance": {
+      "use": [
+        "Actual product photos",
+        "Age-appropriate styling",
+        "Bright uncluttered layouts"
+      ],
+      "avoid": [
+        "Unverified brand labels",
+        "Unsafe child styling",
+        "Overly adult fashion framing"
+      ]
+    },
+    "carousel_and_reel_system": {
+      "carousel": [
+        "New arrival",
+        "Detail/fit information if known",
+        "Styling idea",
+        "Store CTA"
+      ],
+      "reels": [
+        "Quick outfit reveal",
+        "Show details",
+        "Add age/size only if confirmed",
+        "Store CTA"
+      ]
+    },
+    "accuracy_rules": [
+      "Use the user-confirmed Byculla location and number, but verify before time-sensitive posts.",
+      "Do not invent an Instagram handle, sizes, price, fabric or stock availability.",
+      "Use age-appropriate, parent-conscious creative direction."
+    ],
+    "per_post_input": [
+      "Item name",
+      "Sizes and age range",
+      "Price or offer",
+      "Stock availability",
+      "Address/phone confirmation",
+      "Image permissions"
+    ],
+    "missing_information": [
+      "Official Instagram/Facebook URL",
+      "Current hours and exact map pin",
+      "Product size range, labels and pricing",
+      "Logo, brand palette and offers"
+    ]
   }
 }

@@ -1,0 +1,144 @@
+{
+  "schema_version": "1.0",
+  "brand_id": "chinese_and_grill",
+  "brand_name": "Chinese and Grill",
+  "aliases": [
+    "Chinese & Grill",
+    "Chinese N Grill"
+  ],
+  "knowledge_scope": {
+    "record_status": "Managed brand, active",
+    "start_date_as_recorded": "1st November",
+    "date_note": "Year not specified in tracker.",
+    "identity_note": "Several Mumbai restaurants have similar names. Do not assume which one is the client."
+  },
+  "business": {
+    "genre": "Likely food/restaurant from account name, but exact cuisine and business identity are unconfirmed",
+    "known_offering": [],
+    "location": {
+      "city": "Mumbai is a search candidate only",
+      "exact_address": null
+    },
+    "audience": [],
+    "positioning": null
+  },
+  "contact": {
+    "phone": null,
+    "whatsapp": null,
+    "email": null,
+    "website": null,
+    "address": null
+  },
+  "social_media": {
+    "instagram_url": null,
+    "instagram_handle": null,
+    "facebook_url": null,
+    "youtube_url": null
+  },
+  "established_content_knowledge": {
+    "confirmed": [
+      "Chinese and Grill is listed as a managed active brand in the Famebros tracker."
+    ],
+    "candidate_public_matches_not_confirmed": [
+      "Chinese N Grill near Minara Masjid / Mohammad Ali Road",
+      "Barkas Chinese and Grill, Andheri East",
+      "Qibla Chinese and Grill, Kurla West",
+      "Shaan Chinese and Grill locations"
+    ],
+    "unconfirmed": [
+      "Which restaurant is the client, address, phone, menu, cuisine, dietary options, hours and delivery links"
+    ]
+  },
+  "writing_direction": {
+    "tone": [
+      "To be confirmed"
+    ],
+    "avoid": [
+      "Assigning any search-result menu or address to this client",
+      "Unverified halal, vegetarian, spice, freshness, price or hygiene claims"
+    ]
+  },
+  "content_playbook": {
+    "pillars": [
+      "Menu highlights after exact business and menu confirmation",
+      "Kitchen and service content after client approval",
+      "Offers and events only with current terms"
+    ]
+  },
+  "brand_content_framework": {
+    "focus": "Food content must be tied to the client's verified menu and location. The brand name alone is not enough to determine cuisine or specialties."
+  },
+  "caption_format": {
+    "structure": [
+      "Dish-led sensory hook",
+      "Exact menu item and ingredients only if confirmed",
+      "Current availability or offer",
+      "Order or visit CTA"
+    ],
+    "length": "Short and appetizing after identity verification."
+  },
+  "fixed_footer": null,
+  "suggested_hashtag_bank": [
+    "#ChineseAndGrill",
+    "#MumbaiFood"
+  ],
+  "seo_keyword_bank": [],
+  "cta_bank": [
+    "Visit or order from the official page."
+  ],
+  "suggested_hooks": [
+    "What's cooking today?"
+  ],
+  "visual_and_asset_guidance": {
+    "use": [
+      "Actual client dishes, menu and restaurant assets"
+    ],
+    "avoid": [
+      "Photos from other similarly named restaurants",
+      "Dish names, dietary labels or menu prices not supplied by client"
+    ]
+  },
+  "carousel_and_reel_system": {
+    "status": "Awaiting client identity and menu."
+  },
+  "other_output_modes": [
+    "Food captions, menu descriptions and local SEO after client verification"
+  ],
+  "sample_caption": "Good food deserves a place at the table. Follow Chinese and Grill for updates from the team.",
+  "accuracy_rules": [
+    "Confirm exact restaurant identity before including any address, phone, menu, ordering link or cuisine claims.",
+    "Do not call dishes halal or vegetarian unless the client confirms ingredients and preparation.",
+    "Do not use competitor or similarly named restaurant reviews as evidence."
+  ],
+  "per_post_input": [
+    "Exact location/branch",
+    "Dish name and ingredients",
+    "Dietary status",
+    "Price and availability",
+    "Order link/phone",
+    "Offer terms"
+  ],
+  "master_brand_instruction": "Create content only from confirmed client-provided menu and location details for the managed Chinese and Grill account. Multiple similarly named Mumbai restaurants exist, so never fill in identity or menu facts from search results without matching evidence.",
+  "missing_information": [
+    "Exact branch, address and phone",
+    "Official social links and ordering channels",
+    "Menu and cuisine",
+    "Dietary policies",
+    "Hours, offers, prices and visual identity"
+  ],
+  "sources": [
+    {
+      "type": "user/project context",
+      "detail": "Famebros tracker identifies Chinese and Grill as a managed active brand."
+    },
+    {
+      "type": "public search candidates",
+      "urls": [
+        "https://www.tripadvisor.in/Restaurant_Review-g304554-d4048346-Reviews-Chinese_N_Grill-Mumbai_Maharashtra.html",
+        "https://www.district.in/dining/mumbai/barkas-chinese-and-grill-andheri-east",
+        "https://magicpin.in/Mumbai/Kurla-West/Restaurant/Qibla-Chinese-And-Grill/store/178972c"
+      ],
+      "detail": "Candidate businesses only, not matched to this client."
+    }
+  ]
+}

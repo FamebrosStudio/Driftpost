@@ -1,0 +1,196 @@
+{
+  "schema_version": "1.0",
+  "brand_id": "zivara_salon",
+  "brand_name": "Zivara Salon",
+  "aliases": [
+    "Zivara Salon & Wellness",
+    "Zivara Salon | Thane"
+  ],
+  "knowledge_scope": {
+    "record_status": "Managed brand; tracker says awaiting launch/not yet started at tracker date",
+    "launch_note": "Prior work contains a November 2026 launch push; confirm current status before using coming-soon language."
+  },
+  "business": {
+    "genre": "Salon and wellness",
+    "known_offering": [
+      "Haircuts",
+      "Beard grooming",
+      "Pedicure",
+      "Manicure",
+      "Face massage",
+      "Hair spa",
+      "Beauty and wellness services discussed in reviews"
+    ],
+    "location": {
+      "city": "Thane",
+      "area": "Naupada",
+      "address": "Shop G-5, Highland Sky Arcade, Damani Road, LBS Marg, Naupada, Thane"
+    },
+    "audience": [
+      "Local salon and grooming customers",
+      "Wedding-season and festive clients"
+    ],
+    "positioning": null
+  },
+  "contact": {
+    "phone": null,
+    "whatsapp": null,
+    "email": null,
+    "website": null,
+    "address": "Shop G-5, Highland Sky Arcade, Damani Road, LBS Marg, Naupada, Thane",
+    "full_address": "Shop G-5, Highland Sky Arcade, Damani Road, LBS Marg, Naupada, Thane"
+  },
+  "social_media": {
+    "instagram_url": null,
+    "instagram_handle": null,
+    "facebook_url": null,
+    "youtube_url": null,
+    "note": "Meta portfolio evidence confirms an account named Zivara Salon | Thane, but no public page URL was retrieved."
+  },
+  "established_content_knowledge": {
+    "confirmed": [
+      "Zivara Salon is a Thane brand.",
+      "Earlier launch planning included a Diwali Glam Bookings and Wedding Season push.",
+      "A proposed deliverable plan included 12 reels and 6 posts; this is internal campaign planning, not a public offer.",
+      "Address supplied in prior context: Shop G-5, Highland Sky Arcade, Damani Road, LBS Marg, Naupada, Thane."
+    ],
+    "unconfirmed": [
+      "Phone, exact service menu, pricing, appointment method, opening hours, current launch status"
+    ]
+  },
+  "writing_direction": {
+    "tone": [
+      "Polished",
+      "Welcoming",
+      "Self-care focused",
+      "Beauty-forward"
+    ],
+    "avoid": [
+      "Medical or guaranteed treatment claims",
+      "Unverified results, prices or offers",
+      "Using salon services outside the confirmed menu"
+    ]
+  },
+  "content_playbook": {
+    "pillars": [
+      "Hair and grooming",
+      "Manicure and pedicure",
+      "Self-care and wellness",
+      "Wedding-season preparation",
+      "Salon launch and local discovery"
+    ],
+    "campaigns": [
+      "Diwali Glam Bookings",
+      "Wedding Season",
+      "Confirm dates/status and terms before reuse"
+    ]
+  },
+  "brand_content_framework": {
+    "focus": "Position the salon as a local Thane destination for grooming and beauty appointments. Make the service, result and booking details explicit only when confirmed."
+  },
+  "caption_format": {
+    "structure": [
+      "Beauty/self-care hook",
+      "Exact service shown",
+      "Benefit stated carefully",
+      "Appointment CTA and address",
+      "Local beauty hashtags"
+    ],
+    "length": "Short and inviting."
+  },
+  "fixed_footer": {
+    "lines": [
+      "Zivara Salon & Wellness | Shop G-5, Highland Sky Arcade, Damani Road, LBS Marg, Naupada, Thane",
+      "💫 Managed by: @famebrosstudio"
+    ]
+  },
+  "suggested_hashtag_bank": [
+    "#ZivaraSalon",
+    "#ThaneSalon",
+    "#Naupada",
+    "#SalonAndWellness",
+    "#HairSpa",
+    "#BeautyAppointments",
+    "#WeddingSeason"
+  ],
+  "seo_keyword_bank": [
+    "salon Naupada Thane",
+    "hair spa Thane",
+    "salon near LBS Marg",
+    "wedding salon bookings Thane",
+    "Zivara Salon Thane"
+  ],
+  "cta_bank": [
+    "Visit us in Naupada, Thane.",
+    "Message to ask about appointments.",
+    "Book your festive or wedding-season appointment after confirming availability."
+  ],
+  "suggested_hooks": [
+    "Your moment to reset and refresh.",
+    "A little self-care before the big celebration.",
+    "Get ready for the season, one appointment at a time."
+  ],
+  "visual_and_asset_guidance": {
+    "use": [
+      "Real salon interior, service and result imagery",
+      "Client consent for before-and-after",
+      "Clean beauty-focused composition"
+    ],
+    "avoid": [
+      "Airbrushed results presented as real",
+      "Medical promises",
+      "Unverified product brands"
+    ]
+  },
+  "carousel_and_reel_system": {
+    "reels": [
+      "Service reveal",
+      "Process clip with consent",
+      "Result in natural lighting",
+      "Booking/location CTA"
+    ],
+    "carousel": [
+      "Service menu",
+      "What to expect",
+      "Appointment instructions",
+      "Verified contact/location"
+    ]
+  },
+  "other_output_modes": [
+    "Salon captions",
+    "Service descriptions",
+    "Launch and seasonal campaigns",
+    "Appointment reminders",
+    "Short-form reel scripts"
+  ],
+  "sample_caption": "Make a little space for self-care. Explore hair and grooming services at Zivara Salon & Wellness, Naupada, Thane. Message the team to confirm services and appointment availability.",
+  "accuracy_rules": [
+    "Confirm current opening status, phone and booking channel before publishing.",
+    "Do not promise outcomes or make medical claims.",
+    "Do not reuse the proposed 12 reels and 6 posts as a consumer offer or service package.",
+    "Verify the live service menu and campaign dates."
+  ],
+  "per_post_input": [
+    "Exact service",
+    "Current price or package",
+    "Appointment date/availability",
+    "Contact channel",
+    "Offer terms",
+    "Before/after consent",
+    "Campaign status"
+  ],
+  "master_brand_instruction": "Create polished, welcoming local content for Zivara Salon & Wellness in Naupada, Thane. Use the supplied address and only verified services. Confirm current launch status, contact and booking details before using a booking CTA.",
+  "missing_information": [
+    "Official Instagram URL",
+    "Phone and appointment channel",
+    "Current opening date and hours",
+    "Full service and price list",
+    "Logo, colours and offer terms"
+  ],
+  "sources": [
+    {
+      "type": "user/project context",
+      "detail": "Prior launch planning, location and Thane account context."
+    }
+  ]
+}

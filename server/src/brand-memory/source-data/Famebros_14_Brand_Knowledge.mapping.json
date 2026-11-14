@@ -1,0 +1,21 @@
+{
+  "source_file": "source-data/Famebros_14_Brand_Knowledge.json",
+  "prepared_on": "2026-11-14",
+  "note": "Source BR IDs and brand numbers are not canonical Driftpost IDs. Use this explicit mapping.",
+  "canonical_ids": {
+    "BR-009": "jolly_tailor",
+    "BR-012": "vj_jewels",
+    "BR-015": "bhanu_designer",
+    "BR-017": "rajlaxmi_sangli",
+    "BR-022": "paak_pehnawa_mens",
+    "BR-023": "pixi_grow",
+    "BR-024": "gs_shetty_school",
+    "BR-026": "uva_fashions",
+    "BR-027": "ideal_tailor",
+    "BR-028": "almas_bridal_gallery",
+    "BR-029": "perfume_vault",
+    "BR-030": "cotton_plus",
+    "BR-031": "chinese_and_grill",
+    "BR-034": "zivara_salon"
+  }
+}

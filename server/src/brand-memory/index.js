@@ -424,6 +424,7 @@ const HANDLED = new Set([
   'cta_bank', 'suggested_hashtag_bank', 'seo_keyword_bank', 'suggested_hooks', 'sources',
   'fixed_footer', 'sample_caption', 'sample_captions', 'per_post_input', 'missing_information',
   'visual_and_asset_guidance', 'knowledge_scope', 'schema_version', 'brand_id', 'brand_name', 'brand_number',
+  'latest_user_dataset_update',
 ]);
 
   // per_post_input is a field template: nearly every key is a null placeholder,
@@ -498,6 +499,21 @@ export function deepPack(deep, brand, { groupWide = false } = {}) {
     deep.sample_caption?.text ? fmt(deep.sample_caption, true) : null,
     deep.sample_captions ? fmt(deep.sample_captions, true) : null,
   ].filter(Boolean);
+  const latestUpdate = deep.latest_user_dataset_update;
+  const latestUpdateContext = latestUpdate ? [
+    'SOURCE: Newer user-provided brand knowledge dataset, prepared 2026-11-14. Respect its confirmed/unconfirmed labels. Do not promote unconfirmed facts.',
+    latestUpdate.knowledge_scope ? `Scope: ${fmt(latestUpdate.knowledge_scope, true)}` : null,
+    latestUpdate.business ? `Business details: ${cap(fmt(latestUpdate.business, true), 1800)}` : null,
+    latestUpdate.contact ? `Contact details: ${cap(fmt(latestUpdate.contact, true), 900)}` : null,
+    latestUpdate.established_content_knowledge
+      ? `Additional knowledge: ${cap(fmt(latestUpdate.established_content_knowledge, true), 2200)}` : null,
+    latestUpdate.writing_direction ? `Writing direction: ${cap(fmt(latestUpdate.writing_direction, true), 1000)}` : null,
+    latestUpdate.brand_content_framework
+      ? `Content framework: ${cap(fmt(latestUpdate.brand_content_framework, true), 900)}` : null,
+    latestUpdate.accuracy_rules ? `Additional accuracy rules: ${cap(fmt(latestUpdate.accuracy_rules, true), 900)}` : null,
+    latestUpdate.missing_information
+      ? `Still unknown: ${cap(fmt(latestUpdate.missing_information, true), 650)}` : null,
+  ].filter(Boolean).join('\n') : null;
   const rules = deep.sources?.source_usage_rules;
   const unconfirmed = /not owner-confirmed|observed/i.test(String(deep.knowledge_scope || ''));
   // Only the copy-relevant slice of the art direction.
@@ -533,6 +549,7 @@ export function deepPack(deep, brand, { groupWide = false } = {}) {
     ...T(1, cap(fmt(captionFormat, true), 1300)),
     ...T(1, !isBlank(deep.missing_information) ? `STILL UNKNOWN (never invent): ${cap(fmt(deep.missing_information), 800)}` : null),
     ...T(1, ppi.length ? `NEEDED INPUTS (omit any claim that depends on what is missing):\n${cap(ppi.join('\n'), 1100)}` : null),
+    ...T(1, latestUpdateContext),
     ...T(1, houseStyleFor(deep)),
 
     ...T(2, cap(fmt(deep.established_content_knowledge, true), 1500)),

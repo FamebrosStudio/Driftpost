@@ -1,0 +1,133 @@
+{
+  "schema_version": "1.0",
+  "brand_id": "cotton_plus",
+  "brand_name": "Cotton Plus",
+  "aliases": [
+    "Cotton Plus"
+  ],
+  "knowledge_scope": {
+    "record_status": "Managed brand, active",
+    "start_date_as_recorded": "24th Oct",
+    "date_note": "Year not specified in tracker."
+  },
+  "business": {
+    "genre": "Clothing retail",
+    "known_offering": [
+      "Unconfirmed for this client account"
+    ],
+    "location": {
+      "city": null,
+      "exact_address": null
+    },
+    "audience": [],
+    "positioning": null
+  },
+  "contact": {
+    "phone": null,
+    "whatsapp": null,
+    "email": null,
+    "website": null,
+    "address": null
+  },
+  "social_media": {
+    "instagram_url": null,
+    "instagram_handle": null,
+    "facebook_url": null,
+    "youtube_url": null,
+    "note": "Search returns multiple unrelated Cotton Plus stores and a public website; none is verified as this Famebros client."
+  },
+  "established_content_knowledge": {
+    "confirmed": [
+      "Cotton Plus is a managed, active client in the Famebros tracker.",
+      "A payment record exists, but amounts are excluded from public brand knowledge."
+    ],
+    "candidate_public_identity_not_confirmed": {
+      "website": "https://cottonplus.in/",
+      "description": "Website describes a Navi Mumbai family apparel retailer for men, women and kids, but this has not been matched to the client account."
+    }
+  },
+  "writing_direction": {
+    "tone": [
+      "To be confirmed"
+    ],
+    "avoid": [
+      "Assuming this client's Cotton Plus is the website or any similarly named shop",
+      "Promising cotton composition, comfort, quality or price without product proof"
+    ]
+  },
+  "content_playbook": {
+    "pillars": [
+      "Pending client identity and catalogue confirmation"
+    ]
+  },
+  "brand_content_framework": {
+    "focus": "Potentially apparel retail, but confirm the exact client branch and actual inventory before writing product captions."
+  },
+  "caption_format": {
+    "structure": [
+      "Product-specific hook",
+      "Exact item and details",
+      "Verified price/offer",
+      "Store/contact CTA"
+    ],
+    "length": "To be confirmed."
+  },
+  "fixed_footer": null,
+  "suggested_hashtag_bank": [
+    "#CottonPlus"
+  ],
+  "seo_keyword_bank": [],
+  "cta_bank": [
+    "Visit the store to explore the collection."
+  ],
+  "suggested_hooks": [
+    "Everyday style starts with the right piece."
+  ],
+  "visual_and_asset_guidance": {
+    "use": [
+      "Client-supplied product imagery and official logo"
+    ],
+    "avoid": [
+      "Using images or branch details from unrelated Cotton Plus locations"
+    ]
+  },
+  "carousel_and_reel_system": {
+    "status": "Set after catalogue and audience are confirmed."
+  },
+  "other_output_modes": [
+    "Retail captions and product copy after catalogue confirmation"
+  ],
+  "sample_caption": "Find your next everyday favourite at Cotton Plus. Visit the store to explore the latest collection.",
+  "accuracy_rules": [
+    "Do not use cotton-related fabric claims from the name alone.",
+    "Do not connect the client to cottonplus.in or any listed location without confirmation.",
+    "Do not publish prices, discounts, sizes or inventory without current details."
+  ],
+  "per_post_input": [
+    "Exact branch",
+    "Product category and material composition",
+    "Sizes",
+    "Current price or offer",
+    "Store location and hours",
+    "Official Instagram link"
+  ],
+  "master_brand_instruction": "This is a Famebros-managed Cotton Plus account, but its exact public identity and product mix are not yet verified. Use client assets and confirmed post details only. Do not borrow facts from other Cotton Plus businesses.",
+  "missing_information": [
+    "Exact branch and address",
+    "Official Instagram and website",
+    "Phone",
+    "Product categories, target audience, material/quality claims, price and offers",
+    "Brand voice and visual identity"
+  ],
+  "sources": [
+    {
+      "type": "user/project context",
+      "detail": "Famebros tracker identifies Cotton Plus as a managed active brand."
+    },
+    {
+      "type": "unmatched public candidate",
+      "url": "https://cottonplus.in/",
+      "detail": "Not assigned to this client pending identity confirmation."
+    }
+  ]
+}

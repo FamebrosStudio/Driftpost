@@ -532,5 +532,159 @@
       "type": "user_writing_preferences",
       "supports": "Short hooks, contextual English or Hinglish, one CTA, three hashtags, one SEO bracket and no em dashes."
     }
-  ]
+  ],
+  "latest_user_dataset_update": {
+    "dataset_prepared_on": "2026-11-14",
+    "knowledge_scope": {
+      "record_status": "Managed brand, active in Famebros tracker",
+      "start_date_as_recorded": "10th",
+      "date_note": "Month and year not supplied. Do not infer.",
+      "confidence": "Account relationship confirmed; public brand identity details are limited."
+    },
+    "business": {
+      "genre": "Men's fashion and tailoring",
+      "known_offering": [
+        "Tailoring",
+        "Men's fashion content",
+        "Brand shoots and campaign videos"
+      ],
+      "location": {
+        "city": "Mumbai",
+        "exact_address": null
+      },
+      "audience": [
+        "Men seeking tailored clothing",
+        "Customers interested in men's fashion"
+      ],
+      "positioning": null
+    },
+    "contact": {
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": null,
+      "address": null
+    },
+    "social_media": {
+      "instagram_url": null,
+      "instagram_handle": null,
+      "facebook_url": null,
+      "youtube_url": null,
+      "note": "No confirmed official profile link retrieved."
+    },
+    "established_content_knowledge": {
+      "confirmed": [
+        "Earlier work describes Jolly Honest Tailor as a men's fashion and tailoring business.",
+        "Brand shoots, campaign videos, reels and social media marketing have been discussed."
+      ],
+      "unconfirmed": [
+        "Specific garments, tailoring techniques, delivery timelines, prices, guarantees, branch count"
+      ]
+    },
+    "writing_direction": {
+      "tone": [
+        "Confident",
+        "Polished",
+        "Helpful",
+        "Style-aware"
+      ],
+      "language": "Use concise natural English unless the post or brief calls for another language.",
+      "avoid": [
+        "Unverified claims about bespoke quality, experience, turnaround or pricing",
+        "Overpromising fit or delivery"
+      ]
+    },
+    "content_playbook": {
+      "pillars": [
+        "Men's style inspiration",
+        "Tailoring and fit education",
+        "Behind-the-scenes craft",
+        "Client looks and testimonials when approved",
+        "Seasonal and occasion wear"
+      ],
+      "formats": [
+        "Reels",
+        "Campaign videos",
+        "Customer-look features",
+        "Style tips"
+      ]
+    },
+    "brand_content_framework": {
+      "focus": "Men's tailoring and fashion; tailor every caption to the garments or service visible in the supplied asset.",
+      "proof_policy": "Use actual client feedback only when supplied."
+    },
+    "caption_format": {
+      "structure": [
+        "Opening style or occasion hook",
+        "Specific visible garment or service detail",
+        "Useful or emotional benefit without exaggeration",
+        "Clear visit or enquiry CTA",
+        "Relevant hashtags"
+      ],
+      "length": "Short to medium; Instagram-ready."
+    },
+    "fixed_footer": null,
+    "suggested_hashtag_bank": [
+      "#JollyTailor",
+      "#MensTailoring",
+      "#MensStyle",
+      "#MensFashion",
+      "#TailoredFit",
+      "#MumbaiFashion"
+    ],
+    "seo_keyword_bank": [
+      "men's tailor Mumbai",
+      "men's tailoring",
+      "tailored menswear",
+      "men's fashion Mumbai"
+    ],
+    "cta_bank": [
+      "Visit the store to explore tailoring options.",
+      "Message the team to discuss your requirements.",
+      "Save this look for your next occasion."
+    ],
+    "suggested_hooks": [
+      "A sharper fit changes the whole look.",
+      "Made for the moments that call for a little more polish.",
+      "Your next occasion deserves a considered fit."
+    ],
+    "visual_and_asset_guidance": {
+      "use": [
+        "Real garments, actual fitting or stitching visuals, approved customer photos"
+      ],
+      "avoid": [
+        "Invented logos, fabricated customer endorsements, unapproved before-and-after claims"
+      ]
+    },
+    "carousel_and_reel_system": {
+      "reels": [
+        "Hook on screen",
+        "Show garment or tailoring detail",
+        "Explain one useful point",
+        "Close with enquiry CTA"
+      ],
+      "carousel": [
+        "Style question",
+        "Practical fit or styling tips",
+        "Final CTA"
+      ]
+    },
+    "accuracy_rules": [
+      "Do not invent phone numbers, address, price, fabric, service scope, guarantees, turnaround or availability.",
+      "Do not state bespoke or custom work unless confirmed for that specific post."
+    ],
+    "per_post_input": [
+      "Garment or service shown",
+      "Location or offer if applicable",
+      "Target customer",
+      "CTA/contact to include",
+      "Preferred language"
+    ],
+    "missing_information": [
+      "Official Instagram and Facebook URLs",
+      "Exact address and phone",
+      "Verified service list and garment categories",
+      "Brand colours, logo rules, offers, hours and preferred language"
+    ]
+  }
 }

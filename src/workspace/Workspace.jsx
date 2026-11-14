@@ -10,7 +10,7 @@ import './workspace.css';
 
 const NAV = [
   ['home', 'Overview', 'home'], ['create', 'Create post', 'plus'], ['calendar', 'Calendar', 'calendar'],
-  ['analytics', 'Analytics', 'chart'], ['automations', 'Automations', 'sparkles'], ['history', 'Publishing history', 'clock'], ['accounts', 'Connected accounts', 'users'],
+  ['analytics', 'Analytics', 'chart'], ['automations', 'Automations', 'sliders'], ['history', 'Publishing history', 'clock'], ['accounts', 'Connected accounts', 'users'],
 ];
 const platformName = (id) => PLATFORMS.find((p) => p.id === id)?.name || id;
 // Normalize display names and @handles so "@brandstudio" and "Brand Studio"
@@ -50,6 +50,9 @@ function Icon({ name, size = 16 }) {
     chart: <><path d="M4 19V5M4 19h17"/><path d="m7 15 4-4 3 2 6-7"/></>,
     clock: <><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></>,
     users: <><circle cx="9" cy="8" r="3"/><path d="M3.5 20a5.5 5.5 0 0 1 11 0M16 5.5a3 3 0 0 1 0 5.8M17 14a5 5 0 0 1 3.5 4.8"/></>,
+    sliders: <><path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h9M17 18h3"/><circle cx="15" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="15" cy="18" r="2"/></>,
+    video: <><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m10 9 5 3-5 3z"/></>,
+    review: <><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4.5h6M8.5 13l2.2 2.2 4.8-4.8"/></>,
     arrowRight: <><path d="M4 12h15M13 6l6 6-6 6"/></>,
     arrowLeft: <><path d="M20 12H5M11 6l-6 6 6 6"/></>,
     sparkles: <><path d="m12 3 1.7 5.3L19 10l-5.3 1.7L12 17l-1.7-5.3L5 10l5.3-1.7L12 3Z"/><path d="m19 14 .9 2.1L22 17l-2.1.9L19 20l-.9-2.1L16 17l2.1-.9L19 14ZM5 3l.7 1.8L7.5 5.5l-1.8.7L5 8l-.7-1.8-1.8-.7 1.8-.7L5 3Z"/></>,
@@ -91,8 +94,8 @@ export function WorkspaceNav({ page, onNavigate, email, onSignOut }) {
       active: navPage === id,
     })),
     ...(isAiAccount(email) ? [
-      { icon: <Icon name="sparkles" size={19} />, label: 'Team video', onClick: () => onNavigate('team-video'), active: page === 'team-video' },
-      { icon: <Icon name="clock" size={19} />, label: 'Video review', onClick: () => onNavigate('team-video-review'), active: page === 'team-video-review' },
+      { icon: <Icon name="video" size={19} />, label: 'Team video', onClick: () => onNavigate('team-video'), active: page === 'team-video' },
+      { icon: <Icon name="review" size={19} />, label: 'Video review', onClick: () => onNavigate('team-video-review'), active: page === 'team-video-review' },
     ] : []),
     ...(!compact ? [{ separator: true }] : []),
     {

@@ -389,7 +389,7 @@ function Landing({ onEnter, session, pubPage, setPubPage }) {
         </div>
         <div className="landing-stats">
           <span><b>4</b>platforms</span>
-          <span><b>39</b>brands</span>
+          <span><b>47</b>brands</span>
           <span><b>1</b>screen</span>
         </div>
         <div className="scroll-hint">Scroll to explore ↓</div>

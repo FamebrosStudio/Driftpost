@@ -439,5 +439,177 @@
     "additional_observations": [
       "Search-indexed media posts credit @pixigrowmedia for content/campaign work related to Praveg Beach Resort Diu and Our Rajkot. These support campaign-credit history only; exact services, current client status and outcomes are unverified."
     ]
+  },
+  "latest_user_dataset_update": {
+    "dataset_prepared_on": "2026-11-14",
+    "knowledge_scope": {
+      "record_status": "Managed brand, active",
+      "start_date_as_recorded": "1st",
+      "date_note": "Month and year not specified in tracker.",
+      "identity_note": "Separate client brand account from Famebros Studio. Do not expose private commercial negotiations in public captions."
+    },
+    "business": {
+      "genre": "Digital marketing, influencer marketing and creative branding agency",
+      "known_offering": [
+        "Digital marketing",
+        "Influencer marketing",
+        "Creative branding",
+        "Campaign and content production discussed in project context"
+      ],
+      "location": {
+        "city": "Rajkot is associated with client operations and campaigns",
+        "exact_address": null
+      },
+      "audience": [
+        "Businesses seeking marketing and creative services",
+        "Brands and event partners"
+      ],
+      "positioning": "Modern digital marketing and creative branding agency, based on prior client creative briefs."
+    },
+    "contact": {
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": null,
+      "address": null
+    },
+    "social_media": {
+      "instagram_url": "https://www.instagram.com/pixigrowmedia/",
+      "instagram_handle": "@pixigrowmedia",
+      "facebook_url": null,
+      "youtube_url": null
+    },
+    "established_content_knowledge": {
+      "confirmed": [
+        "Prior approved content describes Pixigrow as a modern digital marketing, influencer marketing and creative branding agency.",
+        "Recent campaign context involves Elyvora, a ticketing partner called OurRajkot, a Sachet-Parampara concert scheduled for 19 December 2026, and DJ Sazi as opening act.",
+        "PixiGrow has a campaign list spreadsheet, but complete campaign details were not retrieved.",
+        "The PixiGrow original logo must be used unchanged and colours should be taken from approved logo assets rather than guessed."
+      ],
+      "internal_only": [
+        "Production pricing, staff salary, travel, accommodation and commercial proposal figures from negotiation records are private operating information and must not be placed in public marketing copy."
+      ],
+      "unconfirmed": [
+        "Current service package, office address, public phone, full team list"
+      ]
+    },
+    "writing_direction": {
+      "tone": [
+        "Creative",
+        "Modern",
+        "Strategic",
+        "Clear",
+        "Energetic when promoting events"
+      ],
+      "avoid": [
+        "Fake performance metrics or client results",
+        "Unapproved promises",
+        "Revealing private negotiations",
+        "Generic gradients or invented logo colours"
+      ]
+    },
+    "content_playbook": {
+      "pillars": [
+        "Marketing education",
+        "Creative process",
+        "Campaign case studies with approval",
+        "Influencer and brand collaborations",
+        "Event promotion when partner-approved",
+        "Team and agency culture"
+      ],
+      "event_partner_rules": "Name Elyvora, OurRajkot, artists, dates, venue, ticket links and sponsor details only when confirmed in the supplied brief."
+    },
+    "brand_content_framework": {
+      "focus": "Show how creative strategy, content and digital campaigns connect brands with audiences. Use real examples only with client/partner approval.",
+      "logo": "Use original Pixigrow logo unchanged; derive colours from approved assets."
+    },
+    "caption_format": {
+      "structure": [
+        "Business or audience insight hook",
+        "One useful idea or verified result",
+        "What Pixigrow did or offers",
+        "Conversation CTA",
+        "Relevant marketing hashtags"
+      ],
+      "length": "Short to medium; prioritize clarity over agency jargon."
+    },
+    "fixed_footer": null,
+    "suggested_hashtag_bank": [
+      "#Pixigrow",
+      "#PixigrowMedia",
+      "#DigitalMarketing",
+      "#CreativeBranding",
+      "#InfluencerMarketing",
+      "#ContentMarketing",
+      "#RajkotBusiness"
+    ],
+    "seo_keyword_bank": [
+      "digital marketing agency Rajkot",
+      "influencer marketing",
+      "creative branding agency",
+      "social media content production",
+      "event marketing Rajkot"
+    ],
+    "cta_bank": [
+      "Let's build a campaign with purpose.",
+      "DM Pixigrow to discuss your next campaign.",
+      "Follow for practical creative and marketing ideas."
+    ],
+    "suggested_hooks": [
+      "Good marketing starts with a clear idea.",
+      "Make every touchpoint feel like your brand.",
+      "A campaign is more than a post. It is a connected experience."
+    ],
+    "visual_and_asset_guidance": {
+      "must": [
+        "Original logo unchanged",
+        "Use brand colours only when sampled from approved logo or design assets"
+      ],
+      "use": [
+        "Real campaign footage",
+        "Approved partner marks",
+        "Clear case-study evidence"
+      ],
+      "avoid": [
+        "Invented analytics dashboards",
+        "Fake reach or sales numbers",
+        "Unapproved partner logos"
+      ]
+    },
+    "carousel_and_reel_system": {
+      "carousel": [
+        "Business challenge",
+        "Strategic insight",
+        "Creative solution",
+        "Verified outcome if supplied",
+        "CTA"
+      ],
+      "reels": [
+        "Fast opening insight",
+        "Show real process or campaign",
+        "On-screen context",
+        "CTA"
+      ]
+    },
+    "accuracy_rules": [
+      "Never publish internal rates, staffing or travel arrangements in public-facing content.",
+      "Verify event date, venue, artists, ticket provider and sponsor names from the approved current event brief.",
+      "Never fabricate campaign metrics, testimonials or client outcomes."
+    ],
+    "per_post_input": [
+      "Post objective",
+      "Target audience",
+      "Verified service or case study",
+      "Approved metrics",
+      "Partner names and permissions",
+      "CTA and link",
+      "Logo asset"
+    ],
+    "missing_information": [
+      "Confirmed public phone, email, office address and website",
+      "Current services and pricing intended for public use",
+      "Approved logo palette and brand voice guide",
+      "Full event/campaign fact sheets and permissions"
+    ]
   }
 }

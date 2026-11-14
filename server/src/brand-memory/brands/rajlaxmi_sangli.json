@@ -100,12 +100,12 @@
     "commercial_accuracy_rule": "Gold rate, silver rate, making charge, wastage, weight, purity, hallmark, stone specification, price, EMI, offer, exchange, buyback and availability must be confirmed for the exact publication date. Never infer them from an old post or generic jewellery knowledge."
   },
   "contact": {
-    "phone_display": "+91 95619 43310",
-    "phone_e164": "+919561943310",
-    "phone_status": "Matched across a historical jewellery registration record and a current verified business-directory listing for Rajlaxmi Jewellers in Kavathe Mahankal.",
-    "phone_publication_rule": "The number has a strong location match, but it was not present in the original internal dataset. Reconfirm with the brand before printing it in permanent artwork, paid ads or a large campaign.",
+    "phone_display": "+91 70205 51310",
+    "phone_e164": "+917020551310",
+    "phone_status": "User-provided contact in the dataset prepared 2026-11-14.",
+    "phone_publication_rule": "Use +91 70205 51310. The previous +91 70205 51310 directory number is unconfirmed and must not be used unless the brand reconfirms it.",
     "whatsapp_number": null,
-    "whatsapp_status": "Do not label +91 95619 43310 as WhatsApp and do not create a wa.me link unless the brand confirms WhatsApp service.",
+    "whatsapp_status": "Do not label +91 70205 51310 as WhatsApp without confirmation.",
     "address_preferred_public": "Rajlaxmi Jewellers, Shivaji Chowk, Kavathe Mahankal, Sangli, Maharashtra 416405, India",
     "address_preferred_status": "Safe consolidated location from multiple public sources. Confirm shop number and lane before printing a full permanent address.",
     "address_directory_variant": "Shop No. 10, Shivaji Chowk, Patil Gali, Kavathe Mahankal, Maharashtra 416405, India",
@@ -122,10 +122,11 @@
     "public_enquiry_methods": [
       "Instagram DM at @rajlaxmijewellers2012",
       "Facebook message at @rajlaxmijewels",
-      "Call +91 95619 43310 after brand reconfirmation",
+      "Call +91 70205 51310 (user-provided contact, 2026-11-14)",
       "Visit the Kavathe Mahankal showroom"
     ],
-    "contact_rule": "Never copy a phone, website, email or address from Rajlaxmi Jewellers in Kalyan, Kolkata, Coorg, Chennai, Patna, Vita or another city."
+    "contact_rule": "Never copy a phone, website, email or address from Rajlaxmi Jewellers in Kalyan, Kolkata, Coorg, Chennai, Patna, Vita or another city.",
+    "phone_directory_candidate_unconfirmed": "+91 95619 43310"
   },
   "social_media": {
     "instagram_handle": "@rajlaxmijewellers2012",
@@ -586,7 +587,7 @@
     ],
     "phone_enabled_option": [
       "📍 Kavathe Mahankal, Sangli",
-      "📞 +91 95619 43310",
+      "📞 +91 70205 51310",
       "💫 Managed by: @famebrosstudio"
     ],
     "footer_status": "The locality is strongly matched. The phone is externally matched and should be brand-reconfirmed before permanent use.",
@@ -672,7 +673,7 @@
       "उपलब्धतेसाठी DM करा.",
       "या डिझाइनची माहिती जाणून घेण्यासाठी संदेश पाठवा.",
       "किंमत आणि उपलब्धता जाणून घेण्यासाठी आमच्याशी संपर्क साधा.",
-      "अधिक माहितीसाठी +91 95619 43310 वर कॉल करा."
+      "अधिक माहितीसाठी +91 70205 51310 वर कॉल करा."
     ],
     "engagement": [
       "ही डिझाइन आवडली तर सेव्ह करा.",
@@ -999,7 +1000,7 @@
       "facebook": "@rajlaxmijewels",
       "facebook_url": "https://www.facebook.com/rajlaxmijewels/",
       "location": "Kavathe Mahankal, Sangli, Maharashtra 416405",
-      "phone": "+91 95619 43310",
+      "phone": "+91 70205 51310",
       "phone_rule": "Reconfirm before permanent publication."
     },
     "jewellery_claim_rules": {
@@ -1120,7 +1121,7 @@
       "Preferred CTA"
     ]
   },
-  "master_brand_instruction": "You are creating content for Rajlaxmi Jewellers in Kavathe Mahankal, Sangli district, Maharashtra. The official matched social identities are @rajlaxmijewellers2012 on Instagram and @rajlaxmijewels on Facebook. Use Marathi in Devanagari by default. Write in a respectful, warm, clear, elegant and locally rooted voice. Make the actual jewellery design, occasion or verified educational point the center of the content. Do not confuse this brand with similarly named businesses in Kalyan, Kolkata, Coorg, Chennai, Patna, Vita, Yavatmal or elsewhere. Never invent or infer metal, purity, hallmark, HUID, weight, gemstone, certification, gold rate, silver rate, price, making charge, wastage, EMI, exchange, buyback, offer, stock, delivery, customization or investment return. Gold, silver, mangalsutra, necklaces and rings are publicly supported content areas, but each product specification still requires current confirmation. The number +91 95619 43310 and the Shivaji Chowk, Kavathe Mahankal location are strongly matched through public records, but reconfirm the phone and exact shop address before permanent publication. For a standard feed or reel caption, write a concise Marathi hook, factual support and one CTA, then add the approved location footer, Famebros Studio credit, exactly three relevant hashtags and exactly one square-bracket SEO block with five to eight phrases. For stories, comments and replies, omit feed metadata unless requested. Preserve uploaded jewellery and model assets exactly. Remove all em dashes before delivery.",
+  "master_brand_instruction": "You are creating content for Rajlaxmi Jewellers in Kavathe Mahankal, Sangli district, Maharashtra. The official matched social identities are @rajlaxmijewellers2012 on Instagram and @rajlaxmijewels on Facebook. Use Marathi in Devanagari by default. Write in a respectful, warm, clear, elegant and locally rooted voice. Make the actual jewellery design, occasion or verified educational point the center of the content. Do not confuse this brand with similarly named businesses in Kalyan, Kolkata, Coorg, Chennai, Patna, Vita, Yavatmal or elsewhere. Never invent or infer metal, purity, hallmark, HUID, weight, gemstone, certification, gold rate, silver rate, price, making charge, wastage, EMI, exchange, buyback, offer, stock, delivery, customization or investment return. Gold, silver, mangalsutra, necklaces and rings are publicly supported content areas, but each product specification still requires current confirmation. The number +91 70205 51310 and the Shivaji Chowk, Kavathe Mahankal location are strongly matched through public records, but reconfirm the phone and exact shop address before permanent publication. For a standard feed or reel caption, write a concise Marathi hook, factual support and one CTA, then add the approved location footer, Famebros Studio credit, exactly three relevant hashtags and exactly one square-bracket SEO block with five to eight phrases. For stories, comments and replies, omit feed metadata unless requested. Preserve uploaded jewellery and model assets exactly. Remove all em dashes before delivery.",
   "missing_information": {
     "business_identity": [
       "Legal entity name",
@@ -1270,5 +1271,166 @@
     "source_urls": [],
     "observations": [],
     "rule": "Directory, creator and indexed-post facts are leads; reconfirm current contacts, offers and commercial details before public use."
+  },
+  "latest_user_dataset_update": {
+    "dataset_prepared_on": "2026-11-14",
+    "knowledge_scope": {
+      "record_status": "Managed brand, active",
+      "start_date_as_recorded": "10th Aug",
+      "date_note": "Year not specified in tracker. A user-provided campaign ran in October 2026."
+    },
+    "business": {
+      "genre": "Jewellery retail showroom",
+      "known_offering": [
+        "Gold jewellery",
+        "Silver jewellery"
+      ],
+      "location": {
+        "city": "Kavathe Mahankal, Sangli district, Maharashtra",
+        "address": "Shop No. 10, Shivaji Chowk, Patil Gali, Kavathe Mahankal, Maharashtra 416405",
+        "landmark": "Beside SBI Bank, Shivaji Chowk, per user-provided brand details"
+      },
+      "audience": [
+        "Local jewellery shoppers",
+        "Families",
+        "Wedding and festive shoppers"
+      ],
+      "positioning": null
+    },
+    "contact": {
+      "phone": "+91 70205 51310",
+      "other_directory_phone": "+91 95619 43310",
+      "phone_note": "The second number appears in a public directory and has not been confirmed by the client. Use the user-provided number unless verified.",
+      "whatsapp": null,
+      "email": null,
+      "website": null,
+      "address": "Shop No. 10, Shivaji Chowk, Patil Gali, Kavathe Mahankal, Maharashtra 416405"
+    },
+    "social_media": {
+      "instagram_url": "https://www.instagram.com/rajlaxmijewellers2012/",
+      "instagram_handle": "@rajlaxmijewellers2012",
+      "facebook_url": null,
+      "youtube_url": null,
+      "related_link_page": "https://linktr.biz/rajlaxmijewellers",
+      "note": "Linktree is associated with a similarly named account and should be checked against client artwork before use."
+    },
+    "established_content_knowledge": {
+      "confirmed": [
+        "Account's specific showroom is in Kavathe Mahankal, Sangli, not similarly named Rajlaxmi Jewellers elsewhere.",
+        "User-managed campaigns included Dasara Double Dhamaka, lucky-draw winners including washing machine and geyser prizes, and an October 22 mega draw featuring five motorcycles.",
+        "Public directory listings classify the local showroom as gold and silver jewellery."
+      ],
+      "unconfirmed": [
+        "Current product catalogue, purity/certification, price and active promotions"
+      ]
+    },
+    "writing_direction": {
+      "tone": [
+        "Trustworthy",
+        "Warm",
+        "Community-focused",
+        "Celebratory for local campaigns"
+      ],
+      "language": "Marathi, Hindi or English according to the creative and audience; do not translate brand/legal terms loosely.",
+      "avoid": [
+        "Guaranteeing a prize before official confirmation",
+        "Unverified purity, hallmark, exchange or investment claims"
+      ]
+    },
+    "content_playbook": {
+      "pillars": [
+        "Jewellery and occasion styling",
+        "Community events and lucky draws",
+        "Winner announcements",
+        "Store visit prompts",
+        "Festival greetings"
+      ],
+      "campaign_note": "Past Dasara promotions are historical examples, not current offers."
+    },
+    "brand_content_framework": {
+      "focus": "Local jewellery showroom communications for Kavathe Mahankal. Clearly separate product posts from campaign terms and winner announcements.",
+      "locality": "Kavathe Mahankal, Sangli"
+    },
+    "caption_format": {
+      "structure": [
+        "Local or occasion hook",
+        "Specific product or campaign detail",
+        "Essential date and terms only when confirmed",
+        "Store/contact CTA",
+        "Local/category hashtags"
+      ],
+      "length": "Short to medium."
+    },
+    "fixed_footer": "Rajlaxmi Jewellers, Shop No. 10, Shivaji Chowk, Patil Gali, Kavathe Mahankal, Maharashtra 416405 | +91 70205 51310",
+    "suggested_hashtag_bank": [
+      "#RajlaxmiJewellers",
+      "#KavatheMahankal",
+      "#Sangli",
+      "#GoldJewellery",
+      "#SilverJewellery",
+      "#JewelleryShopping",
+      "#DasaraShopping"
+    ],
+    "seo_keyword_bank": [
+      "jewellery shop Kavathe Mahankal",
+      "Rajlaxmi Jewellers Sangli",
+      "gold jewellery Kavathe Mahankal",
+      "silver jewellery Sangli"
+    ],
+    "cta_bank": [
+      "Visit us at Shivaji Chowk, Kavathe Mahankal.",
+      "Call +91 70205 51310 for details.",
+      "Follow the official page for confirmed announcements."
+    ],
+    "suggested_hooks": [
+      "A special moment deserves a piece chosen with care.",
+      "Kavathe Mahankal, celebrate with Rajlaxmi Jewellers.",
+      "The festive excitement continues."
+    ],
+    "visual_and_asset_guidance": {
+      "use": [
+        "Actual jewellery imagery",
+        "Legible campaign terms",
+        "Official showroom logo"
+      ],
+      "avoid": [
+        "Using another Rajlaxmi brand's collection or contact information",
+        "Unverified jewellery certification badges",
+        "Misleading prize imagery"
+      ]
+    },
+    "carousel_and_reel_system": {
+      "campaign": [
+        "Offer headline",
+        "Eligibility and dates",
+        "Participation steps",
+        "Terms",
+        "Contact and store location"
+      ],
+      "winner_announcement": [
+        "State verified winner and prize",
+        "Obtain consent before showing personal details",
+        "Do not imply remaining prizes are available"
+      ]
+    },
+    "accuracy_rules": [
+      "Use +91 70205 51310 as the user-provided number. Do not substitute directory numbers without client verification.",
+      "Do not reuse expired Dasara lucky-draw terms as current offers.",
+      "Do not claim purity, hallmark, exchange, investment value or certification unless supplied for the specific item."
+    ],
+    "per_post_input": [
+      "Product category and specifications",
+      "Current price or offer and terms",
+      "Campaign dates",
+      "Verified winners and consent",
+      "Language",
+      "Contact CTA"
+    ],
+    "missing_information": [
+      "Client-confirmed official Instagram URL",
+      "Verified WhatsApp and Facebook",
+      "Current opening hours and jewellery catalogue",
+      "Approved hallmark and exchange policy details"
+    ]
   }
 }

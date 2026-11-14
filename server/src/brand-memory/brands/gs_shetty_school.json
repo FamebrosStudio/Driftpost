@@ -524,5 +524,183 @@
     ],
     "internal_dataset": "Famebros_Brand_Caption_Dataset.json record gs_shetty_school.",
     "source_rule": "Current school-approved admissions and claim documents override public website summaries."
+  },
+  "latest_user_dataset_update": {
+    "dataset_prepared_on": "2026-11-14",
+    "knowledge_scope": {
+      "record_status": "Managed brand, active",
+      "start_date_as_recorded": "13 Sept",
+      "date_note": "Year not specified in tracker."
+    },
+    "business": {
+      "genre": "ICSE/ISC school",
+      "known_offering": [
+        "ICSE education from Nursery to Grade 12",
+        "ISC Science and Commerce in Grades 11 and 12",
+        "10X programme",
+        "Robotics, coding, drones and 3D printing",
+        "Sports, arts, yoga and meditation",
+        "JEE/NEET and CA Foundation preparation have appeared in prior admissions content"
+      ],
+      "location": {
+        "city": "Bhandup West, Mumbai",
+        "address": "Sangeetkar Sudhir Phadke Marg, Bhandup Village Road, Bhandup West, Mumbai 400078",
+        "alternate_landmark": "Kukreja Complex was used on older creative materials; verify current visitor directions."
+      },
+      "audience": [
+        "Parents and guardians",
+        "Prospective students",
+        "Current school community"
+      ],
+      "tagline": "Education Beyond Excellence",
+      "motto": "Learn, Lead and Succeed"
+    },
+    "contact": {
+      "phone_primary": "+91 91366 68409",
+      "phone_secondary": "+91 96199 33715",
+      "older_creative_number": "+91 74004 32381",
+      "phone_note": "Different numbers appear in historic records and creatives. Verify current contact before publishing; do not combine them without approval.",
+      "email": null,
+      "website": "https://www.gsinternationalschool.com/",
+      "address": "Sangeetkar Sudhir Phadke Marg, Bhandup Village Road, Bhandup West, Mumbai 400078"
+    },
+    "social_media": {
+      "instagram_url": "https://www.instagram.com/gsshettyschool/",
+      "instagram_handle": "@gsshettyschool",
+      "facebook_url": null,
+      "youtube_url": null
+    },
+    "established_content_knowledge": {
+      "confirmed": [
+        "Science exhibitions, student projects, STEM, innovation, confident students and parent testimonials are established content themes.",
+        "School cultural events include Navratri and Garba.",
+        "Approved visual colors: #FF3131, #FFA800, #FFED00.",
+        "School creatives should be clean, use generous white space, smaller headings, one clear focal illustration/scene per slide, and less text."
+      ],
+      "requires_approval": [
+        "Ranked No.1, IIT/IIM expert, IIT Bombay collaboration and similar superiority claims must be supported by current approved evidence before use."
+      ]
+    },
+    "writing_direction": {
+      "tone": [
+        "Encouraging",
+        "Credible",
+        "Warm",
+        "Student-centered",
+        "Parent-aware"
+      ],
+      "avoid": [
+        "Unsubstantiated academic rankings or outcomes",
+        "Guarantees of admission or exam success",
+        "Identifying minors without required consent"
+      ]
+    },
+    "content_playbook": {
+      "pillars": [
+        "Admissions and learning",
+        "STEM/innovation projects",
+        "Student achievements",
+        "Sports and arts",
+        "School events and culture",
+        "Parent community"
+      ],
+      "taglines": [
+        "Education Beyond Excellence",
+        "Learn, Lead and Succeed"
+      ]
+    },
+    "brand_content_framework": {
+      "focus": "Show learning through real activities and student growth, connecting academic strength with creativity, confidence and co-curricular experiences.",
+      "visual_style": "Simple layouts with whitespace and one focal scene."
+    },
+    "caption_format": {
+      "structure": [
+        "Student- or parent-centered opening",
+        "Specific verified activity or programme",
+        "Meaning or learning outcome without inflated claims",
+        "Admissions/contact CTA only when current",
+        "School and local hashtags"
+      ],
+      "length": "Short to medium."
+    },
+    "fixed_footer": null,
+    "suggested_hashtag_bank": [
+      "#GSShetty",
+      "#GSShettyInternationalSchool",
+      "#Bhandup",
+      "#MumbaiSchools",
+      "#ICSE",
+      "#StudentLearning",
+      "#STEMEducation"
+    ],
+    "seo_keyword_bank": [
+      "ICSE school Bhandup West",
+      "ISC school Mumbai",
+      "school admissions Bhandup",
+      "robotics and coding school Mumbai",
+      "G S Shetty International School"
+    ],
+    "cta_bank": [
+      "Contact the school for current admissions information.",
+      "Visit the school website for details.",
+      "Celebrate our students' learning journey with us."
+    ],
+    "suggested_hooks": [
+      "Curiosity is where learning begins.",
+      "A classroom idea becomes a real-world discovery.",
+      "Learn, lead and succeed, one experience at a time."
+    ],
+    "visual_and_asset_guidance": {
+      "colors": [
+        "#FF3131",
+        "#FFA800",
+        "#FFED00"
+      ],
+      "format": "Reel cover or portrait school creative; use approved school logo",
+      "must": [
+        "Clean composition",
+        "Whitespace",
+        "One focal scene",
+        "Verify photo consent for students"
+      ],
+      "avoid": [
+        "Cluttered layouts",
+        "Assistant-invented crest in place of the official logo"
+      ]
+    },
+    "carousel_and_reel_system": {
+      "carousel": [
+        "One idea per slide",
+        "Short headings",
+        "Simple visual focal point",
+        "End with verified school CTA"
+      ],
+      "reels": [
+        "Show authentic activity",
+        "Add short context",
+        "Protect student privacy",
+        "Use approved music"
+      ]
+    },
+    "accuracy_rules": [
+      "Use the official website spelling gsinternationalschool.com, not the older creative spelling gssinternationalschool.com.",
+      "Confirm phone number and address before any public footer because records differ.",
+      "Do not publish rankings, partnerships, experts or exam-result claims without current evidence and approval.",
+      "Get appropriate consent for identifiable student images and testimonials."
+    ],
+    "per_post_input": [
+      "Programme/event name",
+      "Date and grade levels",
+      "Verified result or achievement",
+      "Approved contact number",
+      "Image consent status",
+      "Admissions CTA if applicable"
+    ],
+    "missing_information": [
+      "Current phone numbers and office hours",
+      "Admissions dates and fees",
+      "Current approved rankings, collaborations, results and faculty claims",
+      "Official logo asset and updated social links"
+    ]
   }
 }

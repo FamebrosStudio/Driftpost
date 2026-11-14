@@ -1,0 +1,124 @@
+{
+  "schema_version": "1.0",
+  "brand_id": "perfume_vault",
+  "brand_name": "Perfume Vault",
+  "aliases": [
+    "Parrfum Vault",
+    "Perfume Vault"
+  ],
+  "knowledge_scope": {
+    "record_status": "Managed brand; tracker spells account name Parrfum Vault and marks it awaiting launch/not yet started",
+    "identity_note": "The user's requested spelling is Perfume Vault. Confirm final public spelling before publishing.",
+    "launch_note": "Tracker status may be outdated; verify current status."
+  },
+  "business": {
+    "genre": null,
+    "known_offering": [],
+    "location": {
+      "city": null,
+      "exact_address": null
+    },
+    "audience": [],
+    "positioning": null
+  },
+  "contact": {
+    "phone": null,
+    "whatsapp": null,
+    "email": null,
+    "website": null,
+    "address": null
+  },
+  "social_media": {
+    "instagram_url": null,
+    "instagram_handle": null,
+    "facebook_url": null,
+    "youtube_url": null,
+    "note": "Search results found unrelated fragrance creators and overseas businesses. No account link can be assigned confidently to this managed client."
+  },
+  "established_content_knowledge": {
+    "confirmed": [
+      "Famebros tracker has a managed account listed as Parrfum Vault, awaiting launch at tracker date."
+    ],
+    "unconfirmed": [
+      "Whether this is a retail perfume store, perfume label, fragrance creator or another business type",
+      "Products, brands, authenticity claims, location and contact"
+    ]
+  },
+  "writing_direction": {
+    "tone": [
+      "To be confirmed"
+    ],
+    "avoid": [
+      "Assuming this is a perfume retailer or creator",
+      "Authenticity, longevity, projection or imported-original claims without proof",
+      "Using another Perfume Vault identity"
+    ]
+  },
+  "content_playbook": {
+    "pillars": [
+      "To be confirmed after client identity and offering are documented"
+    ],
+    "interim_safe_content": [
+      "Brand introduction using approved name/logo only"
+    ]
+  },
+  "brand_content_framework": {
+    "focus": "Do not generate product or perfume advice until the client confirms whether this is retail, manufacturing, a creator account or another business."
+  },
+  "caption_format": {
+    "structure": [
+      "Use only after business type is confirmed",
+      "Name the verified product or service",
+      "CTA supplied by client"
+    ],
+    "length": "To be confirmed."
+  },
+  "fixed_footer": null,
+  "suggested_hashtag_bank": [
+    "#PerfumeVault"
+  ],
+  "seo_keyword_bank": [],
+  "cta_bank": [
+    "Follow the official page for updates."
+  ],
+  "suggested_hooks": [],
+  "visual_and_asset_guidance": {
+    "must": [
+      "Use approved brand logo and assets"
+    ],
+    "avoid": [
+      "Stock bottle imagery implying a specific brand or product",
+      "Fake labels, counterfeit-looking packaging or unverified authenticity badges"
+    ]
+  },
+  "carousel_and_reel_system": {
+    "status": "Pending verified client brief."
+  },
+  "other_output_modes": [
+    "Basic brand introduction after name and offering confirmation"
+  ],
+  "sample_caption": "A new chapter is on the way. Follow the official Perfume Vault page for updates.",
+  "accuracy_rules": [
+    "Do not claim original/authentic, imported, long-lasting, designer or niche fragrance products unless documented.",
+    "Do not use contact details or Instagram pages belonging to unrelated search results."
+  ],
+  "per_post_input": [
+    "Correct public brand spelling",
+    "Business type",
+    "Products/services",
+    "Brand list and proof of authenticity if relevant",
+    "Location and contact",
+    "Launch status",
+    "Official social profile"
+  ],
+  "master_brand_instruction": "Treat this profile as an identity-pending managed account. Create only generic teaser copy until the client confirms the exact brand spelling, category, products and official social channels. Never infer details from unrelated perfume businesses.",
+  "missing_information": [
+    "All key facts: final name, genre, products/services, city/address, phone, website, Instagram, audience, prices, offers, visual identity and launch status"
+  ],
+  "sources": [
+    {
+      "type": "user/project context",
+      "detail": "Famebros tracker records Parrfum Vault, BR-029, as awaiting launch/not yet started."
+    }
+  ]
+}
