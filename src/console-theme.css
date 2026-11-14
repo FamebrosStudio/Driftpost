@@ -12,29 +12,29 @@
 #root .welcome,
 #root .team-video-page,
 #root .approval-page {
-  --bg: #050709;
-  --panel: #0b0f12;
-  --panel2: #11171b;
-  --input: #070a0c;
-  --ink: #f2f4f5;
-  --muted: #abb5bb;
-  --faint: #77858c;
-  --line: #1b252b;
-  --line-hard: #34434a;
-  --hover: #79c9ad12;
-  --go: #79c9ad;
-  --go-ink: #101714;
+  --bg: #000000;
+  --panel: #071019;
+  --panel2: #0c1824;
+  --input: #02070b;
+  --ink: #eef5f9;
+  --muted: #a9becd;
+  --faint: #7e94a6;
+  --line: #142430;
+  --line-hard: #2a4156;
+  --hover: #7dd3fc12;
+  --go: #7dd3fc;
+  --go-ink: #0a1520;
   --acc: var(--go);
   --acc-ink: var(--go-ink);
-  --acc-soft: #79c9ad1a;
-  --warm: #c8a478;
-  --warm-bg: #c8a4781a;
-  --cool: #79c9ad;
-  --cool-bg: #79c9ad1a;
+  --acc-soft: #7dd3fc1a;
+  --warm: #7fb3d3;
+  --warm-bg: #7fb3d31a;
+  --cool: #7dd3fc;
+  --cool-bg: #7dd3fc1a;
   --accent-soft: var(--go);
   --accent-ink: var(--go-ink);
   --danger: #ff7777;
-  --ok: #73d8ae;
+  --ok: #4dc3f7;
   color: var(--ink);
   background-color: var(--bg);
   font-family: "Poppins", "Segoe UI", sans-serif;
@@ -49,25 +49,25 @@
 [data-theme="light"] #root .welcome,
 [data-theme="light"] #root .team-video-page,
 [data-theme="light"] #root .approval-page {
-  --bg: #f1f4f5;
-  --panel: #fbfcfc;
-  --panel2: #e8eef0;
+  --bg: #eef5f9;
+  --panel: #f7fbfd;
+  --panel2: #dceaf2;
   --input: #ffffff;
-  --ink: #10191d;
-  --muted: #47575e;
-  --faint: #697b82;
-  --line: #d3dde0;
-  --line-hard: #9eafb5;
-  --hover: #267c6312;
-  --go: #267c63;
+  --ink: #0b1722;
+  --muted: #334d63;
+  --faint: #56718a;
+  --line: #c9dbe6;
+  --line-hard: #9db7c8;
+  --hover: #0369a112;
+  --go: #0369a1;
   --go-ink: #ffffff;
   --acc: var(--go);
   --acc-ink: var(--go-ink);
-  --acc-soft: #267c6318;
-  --warm: #805a2e;
-  --warm-bg: #805a2e18;
-  --cool: #267c63;
-  --cool-bg: #267c6314;
+  --acc-soft: #0369a118;
+  --warm: #3a6076;
+  --warm-bg: #3a607618;
+  --cool: #0369a1;
+  --cool-bg: #0369a114;
   --accent-soft: var(--go);
   --accent-ink: var(--go-ink);
   --danger: #b4232f;
@@ -939,15 +939,15 @@
 
 /* Keep the fatal-error fallback within the same mint/charcoal visual system. */
 #root .app-error {
-  --bg: #050709;
-  --panel: #0b0f12;
-  --panel2: #11171b;
-  --ink: #f2f4f5;
-  --muted: #abb5bb;
-  --line: #1b252b;
-  --line-hard: #34434a;
-  --go: #79c9ad;
-  --go-ink: #101714;
+  --bg: #000000;
+  --panel: #071019;
+  --panel2: #0c1824;
+  --ink: #eef5f9;
+  --muted: #a9becd;
+  --line: #142430;
+  --line-hard: #2a4156;
+  --go: #7dd3fc;
+  --go-ink: #0a1520;
   background: var(--bg);
   color: var(--ink);
 }
@@ -974,17 +974,17 @@
 /* Reuse the console palette on every private-app loading and sign-in state. */
 #root .page-loading,
 #root .auth-wrap {
-  --bg: #050709;
-  --panel: #0b0f12;
-  --panel2: #11171b;
-  --input: #070a0c;
-  --ink: #f2f4f5;
-  --muted: #abb5bb;
-  --faint: #77858c;
-  --line: #1b252b;
-  --line-hard: #34434a;
-  --go: #79c9ad;
-  --go-ink: #101714;
+  --bg: #000000;
+  --panel: #071019;
+  --panel2: #0c1824;
+  --input: #02070b;
+  --ink: #eef5f9;
+  --muted: #a9becd;
+  --faint: #7e94a6;
+  --line: #142430;
+  --line-hard: #2a4156;
+  --go: #7dd3fc;
+  --go-ink: #0a1520;
   --violet: var(--go);
   --grad: var(--go);
   background: var(--bg);
@@ -1019,88 +1019,88 @@
 /* The recovered, offline, not-found, and warm-up screens share the same
    charcoal surfaces and mint action color as the console. */
 #root .recovery-page {
-  --rec-bg: #050709;
-  --rec-panel: #0b0f12;
-  --rec-line: #1b252b;
-  --rec-accent: #79c9ad;
-  --rec-muted: #abb5bb;
-  --rec-faint: #77858c;
-  --rec-accent-ink: #101714;
-  color: #f2f4f5;
-  background: radial-gradient(ellipse at 50% 40%, #79c9ad0c, transparent 40%), radial-gradient(ellipse at 85% 5%, #79c9ad08, transparent 32%), #050709;
+  --rec-bg: #000000;
+  --rec-panel: #071019;
+  --rec-line: #142430;
+  --rec-accent: #7dd3fc;
+  --rec-muted: #a9becd;
+  --rec-faint: #7e94a6;
+  --rec-accent-ink: #0a1520;
+  color: #eef5f9;
+  background: radial-gradient(ellipse at 50% 40%, #7dd3fc0c, transparent 40%), radial-gradient(ellipse at 85% 5%, #7dd3fc08, transparent 32%), #000000;
 }
 
 #root .recovery-page::before {
-  background-image: radial-gradient(#34434a55 1px, transparent 1px);
+  background-image: radial-gradient(#2a415655 1px, transparent 1px);
 }
 
 #root .recovery-page :is(.recovery-top > span:last-child, .recovery-footer, .starting-footnote) {
-  color: #77858c;
+  color: #7e94a6;
 }
 
 #root .recovery-page :is(.recovery-orbit, .recovery-postcard, .offline-cloud, .offline-cloud::before, .offline-cloud::after) {
-  border-color: #34434a;
+  border-color: #2a4156;
 }
 
 #root .recovery-page .recovery-postcard {
-  background: linear-gradient(145deg, #11171b, #0b0f12);
+  background: linear-gradient(145deg, #0c1824, #071019);
 }
 
 #root .recovery-page :is(.offline-cloud, .offline-cloud::before, .offline-cloud::after) {
-  background: #0b0f12;
+  background: #071019;
 }
 
 #root .recovery-page :is(.orbit-two, .offline-ground) {
-  border-color: #1b252b;
+  border-color: #142430;
 }
 
 #root .recovery-page :is(.postcard-line, .starting-progress) {
-  background-color: #34434a;
+  background-color: #2a4156;
 }
 
 #root .recovery-page .postcard-media {
-  background: linear-gradient(135deg, #79c9ad20, #79c9ad0a);
+  background: linear-gradient(135deg, #7dd3fc20, #7dd3fc0a);
 }
 
 #root .recovery-page :is(.postcard-media i, .recovery-star, .recovery-404-number, .offline-signal i, .starting-dots) {
-  color: #79c9ad;
-  border-color: #79c9ad;
+  color: #7dd3fc;
+  border-color: #7dd3fc;
 }
 
 #root .recovery-page .recovery-404-number {
-  text-shadow: 0 5px 25px #79c9ad55;
+  text-shadow: 0 5px 25px #7dd3fc55;
 }
 
 #root .recovery-page .recovery-kicker,
 #root .recovery-page .offline-tip span {
-  color: #79c9ad;
+  color: #7dd3fc;
 }
 
 #root .recovery-page :is(.recovery-copy, .starting-caption) {
-  color: #abb5bb;
+  color: #a9becd;
 }
 
 #root .recovery-page .starting-progress i {
-  background: linear-gradient(90deg, #79c9ad, #a9ddc9);
-  box-shadow: 0 0 14px #79c9ad66;
+  background: linear-gradient(90deg, #7dd3fc, #a5ddfa);
+  box-shadow: 0 0 14px #7dd3fc66;
 }
 
 #root .recovery-page .starting-live-dot {
-  background: #79c9ad;
-  box-shadow: 0 0 12px #79c9ad;
+  background: #7dd3fc;
+  box-shadow: 0 0 12px #7dd3fc;
 }
 
 #root .recovery-page .recovery-primary {
   border-color: var(--rec-accent);
   color: var(--rec-accent-ink);
-  background: linear-gradient(110deg, #79c9ad, #a9ddc9);
-  box-shadow: 0 10px 28px #79c9ad22;
+  background: linear-gradient(110deg, #7dd3fc, #a5ddfa);
+  box-shadow: 0 10px 28px #7dd3fc22;
 }
 
 #root .recovery-page .recovery-secondary {
-  border-color: #34434a;
-  color: #f2f4f5;
-  background: #0b0f12;
+  border-color: #2a4156;
+  color: #eef5f9;
+  background: #071019;
 }
 
 #root .stage2 .s2-clip-strip {
@@ -1112,7 +1112,7 @@
 }
 
 body:has(#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .auth-wrap, .page-loading, .recovery-page, .app-error)) {
-  background: #050709;
+  background: #000000;
 }
 
 @media (max-width: 760px) {

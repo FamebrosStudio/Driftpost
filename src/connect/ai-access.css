@@ -3,8 +3,8 @@
   display: grid;
   place-items: center;
   padding: 24px;
-  background: #050709;
-  color: #f2f4f5;
+  background: #000000;
+  color: #eef5f9;
 }
 
 .ai-lock-card {
@@ -12,24 +12,24 @@
   display: grid;
   gap: 14px;
   padding: 28px;
-  border: 1px solid #1b252b;
+  border: 1px solid #142430;
   border-radius: 0;
-  background: #0b0f12;
+  background: #071019;
   box-shadow: none;
 }
 
 .ai-lock-card h1,
 .ai-lock-card p { margin: 0; }
-.ai-lock-card p { color: #abb5bb; line-height: 1.55; }
+.ai-lock-card p { color: #a9becd; line-height: 1.55; }
 .ai-lock-card label { font-size: 13px; font-weight: 700; }
 .ai-lock-card input {
   width: 100%;
   box-sizing: border-box;
   padding: 12px 14px;
-  border: 1px solid #34434a;
+  border: 1px solid #2a4156;
   border-radius: 0;
-  background: #070a0c;
-  color: #f2f4f5;
+  background: #02070b;
+  color: #eef5f9;
   font: inherit;
 }
 
@@ -37,8 +37,8 @@
   min-height: 44px;
   border: 0;
   border-radius: 0;
-  background: #79c9ad;
-  color: #101714;
+  background: #7dd3fc;
+  color: #0a1520;
   font: inherit;
   font-weight: 800;
   cursor: pointer;
