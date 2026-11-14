@@ -408,7 +408,7 @@
 }#root .ws-main{ padding-right: clamp(24px, 4vw, 64px); padding-left: clamp(24px, 4vw, 64px); }#root .hist-shell > .hist{ height: 100dvh; overflow-y: auto; }#root .hist > .hist-in{ box-sizing: border-box; width: 100%; max-width: 1320px; min-height: 100%; margin: 0 auto; padding: 86px clamp(24px, 4vw, 64px) 132px; }#root .stage1-in,#root .stage2-in,#root .stage3-in{ max-width: none; margin-right: auto; margin-left: 0; padding-right: clamp(24px, 4vw, 64px); padding-left: clamp(24px, 4vw, 64px); }#root .ws.team-video-page > .team-video-main,#root .team-review-main{ width: 100%; margin-left: 0; padding-right: clamp(24px, 4vw, 64px); padding-left: clamp(24px, 4vw, 64px); }#root :is(.stage1, .stage2, .stage3) :is(.continue-bar, .s2-continue-bar, .s3-pub){
   left: 0;
 }/* BorderGlow-wrapped primary CTAs: suppress the static plate, keep the glow. */
-#root .ws-btn-glow{ width: fit-content; max-width: 100%; border: 0; background: transparent; box-shadow: none; }
+#root .ws-btn-glow{ width: fit-content; max-width: 100%; border: 1px solid transparent; background: transparent; box-shadow: none; }
 #root .ws-btn-glow .border-glow-inner{ padding: 0; }/* Stage pages and the connect page pin a full-width continue bar at the very
    bottom edge — the dock floats just above it there. */
 #root :is(.stage1, .stage2, .stage3) .ws-dock-holder,#root .ws:has(> .connect) .ws-dock-holder{
@@ -641,4 +641,19 @@
 @media (max-width: 380px) {#root .ws-dock-holder .dock{
     transform: scale(.8);
   }#root .stage1-in,#root .stage2-in,#root .stage3-in{ padding-bottom: 300px; }
+}
+
+#root .ws-welcome-actions{
+  display: grid;
+  justify-items: start;
+  gap: 12px;
+  margin-top: 16px;
+}
+#root .ws-welcome-actions .ws-btn-glow{
+  box-sizing: border-box;
+  border: 1px solid transparent;
+  padding: 0;
+}
+#root .ws-welcome-actions .border-glow-inner{
+  overflow: visible;
 }
