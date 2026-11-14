@@ -1,4 +1,4 @@
-﻿import React, { Suspense, lazy, useEffect, useRef, useState } from 'react';
+import React, { Suspense, lazy, useEffect, useRef, useState } from 'react';
 import { useSession, getSupabase, pokeSession } from './session.js';
 import { friendlyAuthError } from './authMessages.js';
 import BrandIcon from './brand.jsx';
@@ -365,9 +365,8 @@ function Landing({ onEnter, session, pubPage, setPubPage }) {
             <button key={p.id} className={pubPage === p.id ? 'on' : ''} onClick={() => setPubPage(p.id)}>{p.label}</button>
           ))}
         </div>
-        <BorderGlow className="btn-glow" backgroundColor="#071019" borderRadius={8} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.35} glowRadius={24}>
+        
           <button className="skew-btn grad" onClick={onEnter}><span>{session ? 'Enter console' : 'Get started ’'}</span></button>
-        </BorderGlow>
       </nav>
       {pubPage === 'home' ? <>
       <header className="landing-in">
@@ -375,9 +374,8 @@ function Landing({ onEnter, session, pubPage, setPubPage }) {
         <h1><SpotLine text="Post once." /><br /><SpotLine text="Everywhere." /></h1>
         <p>Schedule and publish social media posts across Instagram, Facebook, YouTube and X. Manage multiple brands and accounts in one workspace, with content tailored to each platform. Optional Google Drive intake reads media from a connected team folder to prepare posts for the accounts you select.</p>
         <div className="landing-cta">
-          <BorderGlow className="btn-glow" backgroundColor="#071019" borderRadius={8} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.35} glowRadius={24}>
+          
             <button className="skew-btn grad" onClick={onEnter}><span>{session ? 'Enter console' : 'Get started free ’'}</span></button>
-          </BorderGlow>
         </div>
         <div className="social-dock">
           {dock.map((d) => (
@@ -424,11 +422,10 @@ function Landing({ onEnter, session, pubPage, setPubPage }) {
       </> : <DocPage page={pubPage} />}
       <footer className="land-foot">
         <h2>Plan and publish from one workspace.</h2>
-        <BorderGlow className="btn-glow" backgroundColor="#071019" borderRadius={8} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.35} glowRadius={24}>
+        
           <button className="skew-btn grad" onClick={onEnter}><span>{session ? 'Enter console' : 'Start free ’'}</span></button>
-        </BorderGlow>
         <div className="land-fine">
-          <span>Free while in beta · Your logins never leave the platforms · © {new Date().getFullYear()} Driftpost · Made by Famebros Studio</span>
+          <span className="land-copy">Free while in beta · Your logins never leave the platforms · © {new Date().getFullYear()} Driftpost · Made by Famebros Studio</span>
           <span className="land-legal"><button className="link" onClick={() => setPubPage('terms')}>Terms</button> · <a className="link" href="/privacy">Privacy Policy</a> · <button className="link" onClick={() => setPubPage('cookies')}>Cookies</button> · <button className="link" onClick={() => setPubPage('acceptable-use')}>Acceptable Use</button> · <button className="link" onClick={() => setPubPage('ai-disclaimer')}>AI Disclaimer</button> · <button className="link" onClick={() => setPubPage('platforms-disclaimer')}>Platforms</button> · <button className="link" onClick={() => setPubPage('copyright')}>Copyright</button> · <button className="link" onClick={() => setPubPage('refunds')}>Refunds</button> · <button className="link" onClick={() => setPubPage('data-deletion')}>Data Deletion</button> · <button className="link" onClick={() => setPubPage('security')}>Security</button> · <button className="link" onClick={() => setPubPage('contact')}>Contact</button></span>
         </div>
       </footer>
@@ -484,7 +481,6 @@ function Auth({ mode, setMode, onBack, markFresh, returnTo }) {
       <div className="auth-card">
         <div className="brand"><img className="logo-img logo-d" src="/logo-dark.png" width="1984" height="512" decoding="async" alt="Driftpost" /><img className="logo-img logo-l" src="/logo-light.png" width="1908" height="512" decoding="async" alt="Driftpost" /></div>
         <h1>{mode === 'login' ? 'Welcome back.' : 'Start posting.'}</h1>
-        <p>One calm composer for YouTube, Instagram, Facebook and X. No noise.</p>
         <form className="login-form" onSubmit={submit}>
           <button className="user-profile" type="button" disabled={busy} onClick={google}><span className="user-profile-inner"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.7 9.5 24 9.5Z"/><path d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.88c-.58 2.96-2.25 5.47-4.73 7.16l7.63 5.92c4.45-4.1 7.2-10.14 7.2-17.55Z"/><path d="M10.55 28.59a14.49 14.49 0 0 1 0-9.18l-7.98-6.19a23.94 23.94 0 0 0 0 21.56l7.98-6.19Z"/><path d="M24 48c6.47 0 11.91-2.13 15.88-5.8l-7.63-5.92c-2.12 1.43-4.83 2.28-8.25 2.28-6.3 0-11.57-4.22-13.46-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48Z"/></svg>{mode === 'login' ? 'Continue with Google' : 'Sign up with Google'}</span></button>
           <div className="input-span"><span className="label">Email address</span><input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" /></div>
@@ -494,7 +490,7 @@ function Auth({ mode, setMode, onBack, markFresh, returnTo }) {
           )}
           {error && <div className="alert err">{error}</div>}
           {info && <div className="banner">{info}</div>}
-          <button className="user-profile" disabled={busy}><span className="user-profile-inner"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10Zm0 2c-4.42 0-8 2.24-8 5v2h16v-2c0-2.76-3.58-5-8-5Z"/></svg>{busy ? 'Please wait…' : mode === 'login' ? 'Sign in' : 'Create account'}</span></button>
+          <button className="user-profile" disabled={busy}><span className="user-profile-inner">{busy ? 'Please wait…' : mode === 'login' ? 'Sign in' : 'Create account'}</span></button>
         </form>
         <p className="note" style={{ textAlign: 'center' }}>
           {mode === 'login' ? 'New here?' : 'Have an account?'}{' '}

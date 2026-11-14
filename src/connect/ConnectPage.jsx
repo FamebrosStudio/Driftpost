@@ -186,6 +186,7 @@ export default function ConnectPage({ session, onContinue, onHistory, onSignOut,
             </div>
 
             {brands.length > 0 && (
+              <BorderGlow className="bg-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.12} glowRadius={22}>
               <div className="cn-brands">
                 <h2>Brands we found</h2>
                 <p className="sub">We matched your connected accounts into {brands.length} brand{brands.length === 1 ? '' : 's'} — you can change this next.</p>
@@ -200,6 +201,7 @@ export default function ConnectPage({ session, onContinue, onHistory, onSignOut,
                 ))}
                 {brands.length > 12 && <p className="cn-hint" style={{ marginTop: 10 }}>+ {brands.length - 12} more brands</p>}
               </div>
+              </BorderGlow>
             )}
           </>
         )}

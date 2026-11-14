@@ -414,9 +414,46 @@
 #root :is(.stage1, .stage2, .stage3) .ws-dock-holder,#root .ws:has(> .connect) .ws-dock-holder{
   inset: auto 0 calc(92px + env(safe-area-inset-bottom)) 0;
 }/* BorderGlow card wrappers (className="bg-glow") must behave like the cards
-   they wrap inside grid/flex layouts. */
-.bg-glow{ min-width: 0; }
-#root .automation-grid > .bg-glow{ min-width: 0; }/* Dock palette matched to the console: navy glass panel,sky-blue edge
+   they wrap inside grid/flex layouts. The vendored wrapper paints its own
+   background + white border, which read as empty plates around/below cards;
+   in Driftpost the wrapped element already provides its own surface, so the
+   wrapper stays transparent and carries only a resting sky-blue edge glow.
+   The cursor-proximity layers intensify it on approach. */
+.bg-glow{
+  background: transparent !important;
+  min-width: 0;
+  border-color: rgba(125, 211, 252, 0.26) !important;
+  box-shadow:
+    0 0 0 1px rgba(125, 211, 252, 0.08),
+    0 0 20px -6px rgba(125, 211, 252, 0.28) !important;
+  --glow-padding: 10px;
+}
+[data-theme="light"] .bg-glow{
+  border-color: rgba(3, 105, 161, 0.30) !important;
+  box-shadow:
+    0 0 0 1px rgba(3, 105, 161, 0.06),
+    0 0 18px -6px rgba(3, 105, 161, 0.22) !important;
+}
+/* Grid cells stretch the wrapper taller than the card — the inner card must
+   fill the whole wrapper or an empty box shows below it. */
+.bg-glow .border-glow-inner{ height: 100%; min-width: 0; }
+#root .automation-grid > .bg-glow{ min-width: 0; }
+/* Tame the outer proximity glow: the vendored 50px shadow spill drew bands
+   over neighbor cards. Sky-tinted, max 14px spread. */
+.bg-glow > .edge-light::before{
+  box-shadow:
+    inset 0 0 0 1px hsl(199deg 95% 74% / 70%),
+    inset 0 0 5px 0 hsl(199deg 95% 74% / 40%),
+    0 0 14px -2px hsl(199deg 95% 74% / 35%) !important;
+}
+/* Action buttons carry their glow directly (no wrapper): a static sky halo
+   that never changes layout and never uses :hover. */
+.ws-primary, .ws-secondary, .s2-continue-btn{
+  box-shadow: 0 0 0 1px rgba(125, 211, 252, 0.22), 0 0 16px -4px rgba(125, 211, 252, 0.45);
+}
+.skew-btn{
+  box-shadow: 0 0 22px -6px rgba(125, 211, 252, 0.5);
+}/* Dock palette matched to the console: navy glass panel,sky-blue edge
    highlights,cool blue-gray ink. These override the component's inline
    theme tokens (CSS !important beats element.style) — the accent/badge
    props already pass #7dd3fc. The menu portal renders outside #root, so
