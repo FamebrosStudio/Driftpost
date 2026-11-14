@@ -5,7 +5,8 @@
   "brand_name": "Roopali Sarees",
   "aliases": [
     "Roopali Saree",
-    "Roopali Sarees Mira Road"
+    "Roopali Sarees Mira Road",
+    "Roopali Sarees"
   ],
   "knowledge_scope": "One brand only. User-approved contact details, brand-published product evidence, older campaign claims, external directory facts and recommended writing guidance are explicitly separated. Never use similarly named Roopali shops in Malad, Goregaon, Bhopal or elsewhere as evidence for this Mira Road brand.",
   "business": {
@@ -13,8 +14,8 @@
     "industry": "Sarees, occasion wear and women's Indian clothing",
     "customer_focus": "Women only for the active Famebros content program",
     "customer_focus_note": "The historical company profile also mentions men's kurta-pajamas, but the user's current content direction is only women's clothing. Do not promote men's products without a fresh approved brief.",
-    "location_area": "Shanti Nagar, Mira Road East",
-    "city": "Mira-Bhayandar, Thane district",
+    "location_area": "Mira Road East, Thane",
+    "city": "Thane",
     "metro_area": "Mumbai Metropolitan Region",
     "state": "Maharashtra",
     "country": "India",
@@ -47,7 +48,10 @@
     "email": null,
     "website_historical": "http://www.roopalisarees.com",
     "website_status": "Appears on a public company profile but could not be confirmed as a working, current customer-facing site. Do not put it in captions or ads until approved.",
-    "google_maps_url": null
+    "google_maps_url": null,
+    "caption_source_status": "User-supplied caption, 2026-11-14.",
+    "phone_display": "+91 90225 61477",
+    "phone_e164": "+919022561477"
   },
   "social_media": {
     "instagram_status": "Search-indexed profile and posts align with the exact approved phone number and Mira Road address. Profile access was throttled during this review, so obtain owner confirmation if account ownership matters for account linking.",
@@ -317,9 +321,9 @@
   },
   "fixed_footer": {
     "lines": [
-      "📍 Roopali Sarees, Shop No. 1, B-49, Chaitali Bldg., Sector-1, Shanti Nagar, Mira Road (E), Thane - 401107",
+      "📍 Shop No. 1, B-49, Chaitali Bldg., Sector-1, Shanti Nagar, Mira Road (E), Thane - 401107",
       "📞 +91 90225 61477",
-      "🎥 Managed by: @famebrosstudio ✨"
+      "💫 Managed by: @famebrosstudio"
     ],
     "source": "User-approved recent caption details, corroborated by indexed brand posts.",
     "usage": "Default for feed and reel captions when the user wants the full business footer. Shorten for Stories and text overlays.",
@@ -591,6 +595,11 @@
     {
       "type": "user_writing_preferences",
       "supports": "Short useful hooks, one CTA, agency credit, exactly three hashtags, one SEO bracket and no em dashes."
+    },
+    {
+      "type": "user_supplied_caption",
+      "received_on": "2026-11-14",
+      "supports": "The details in latest_user_caption_update; transient claims remain caption-specific."
     }
   ],
   "research_update": {
@@ -603,5 +612,47 @@
     "observations": [
       "Public listings differ on exact shop numbers in B-49 Sector 1, Shanti Nagar, Mira Road East. Confirm current address and phone."
     ]
-  }
+  },
+  "latest_user_caption_update": {
+    "caption_name": "Roopali Sarees",
+    "location": "Shop No. 1, B-49, Chaitali Bldg., Sector-1, Shanti Nagar, Mira Road (E), Thane - 401107",
+    "location_short": "Mira Road East, Thane",
+    "phones": [
+      "+91 90225 61477"
+    ],
+    "email": null,
+    "aliases": [
+      "Roopali Sarees"
+    ],
+    "notes": "Customer-appreciation caption; treat the customer experience as post-specific and do not invent or generalize a testimonial.",
+    "received_on": "2026-11-14",
+    "source": "Caption supplied directly by the user in this conversation; not independently verified.",
+    "brand_id": "roopali_saree",
+    "caption_examples": {
+      "hashtags": [
+        "#RoopaliSarees",
+        "#HappyCustomer",
+        "#MiraRoadShopping"
+      ],
+      "keywords": [
+        "Roopali Sarees Mira Road",
+        "Happy Customer Review",
+        "Saree Shopping Mira Road",
+        "Ethnic Wear Collection",
+        "Ladies Dresses Thane"
+      ]
+    }
+  },
+  "caption_keyword_examples": [
+    "Roopali Sarees Mira Road",
+    "Happy Customer Review",
+    "Saree Shopping Mira Road",
+    "Ethnic Wear Collection",
+    "Ladies Dresses Thane"
+  ],
+  "caption_hashtag_examples": [
+    "#RoopaliSarees",
+    "#HappyCustomer",
+    "#MiraRoadShopping"
+  ]
 }

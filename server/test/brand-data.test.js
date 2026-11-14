@@ -153,18 +153,41 @@ test('AI caption packs exclude agency billing and operational scope notes', () =
   assert.match(synthetic, /Use only supplied product facts/);
 });
 
-test('legacy MAP and Luxxe context includes approved facts and uncertainty without inventing contacts', () => {
+test('MAP user-supplied caption details reach the prompt while Luxxe retains its uncertainty', () => {
   const map = fullPack(loadBrands().find((brand) => brand.id === 'map_clothing'));
   assert.match(map, /APPROVED FACTS.*Never funny/i);
   assert.match(map, /mens clothing/i);
   assert.match(map, /SOURCE PROVENANCE.*data\.txt/i);
-  assert.doesNotMatch(map, /\+91|\b\d{10}\b|Address:/i);
+  assert.match(map, /\+91 98925 65737/);
+  assert.match(map, /Shop No\. 3, Shyam Apt\..*Mulund West/);
+  assert.match(map, /LATEST USER-SUPPLIED CAPTION DATA/);
 
   const luxxe = fullPack(loadBrands().find((brand) => brand.id === 'luxxe_nail_studio'));
   assert.match(luxxe, /Only transformation content is listed/i);
   assert.match(luxxe, /nail studio Powai/i);
   assert.match(luxxe, /not_resolved/i);
   assert.match(luxxe, /Confirmed official Instagram page/i);
+});
+
+test('new user captions update the matching brand context and keep caption-specific facts scoped', () => {
+  const archive = JSON.parse(fs.readFileSync(
+    path.join(memoryDir, 'source-data', 'Famebros_user_supplied_brand_captions_2026-11-14.json'), 'utf8',
+  ));
+  assert.equal(archive.brands.length, 11);
+  for (const id of ['reshine_clinic', 'sk_furniture', 'vj_jewels', 'roopali_saree', 'zam_zam_motors', 'cotton_plus', 'chinese_and_grill']) {
+    const context = fullPack(loadBrands().find((brand) => brand.id === id));
+    assert.match(context, /LATEST USER-SUPPLIED CAPTION DATA/);
+    assert.match(context, /Managed by: @famebrosstudio/);
+  }
+  const parrfums = loadBrands().find((brand) => brand.id === 'perfume_vault');
+  assert.equal(parrfums.name, 'Parrfums Vault');
+  assert.ok(parrfums.aliases.includes('Perfume Vault'), 'keep the old spelling as a compatibility alias');
+  const zam = fullPack(loadBrands().find((brand) => brand.id === 'zam_zam_motors'));
+  assert.match(zam, /not current inventory/i);
+  const cotton = fullPack(loadBrands().find((brand) => brand.id === 'cotton_plus'));
+  assert.match(cotton, /not mapped to individual branches/i);
+  const paak = getDeepForCompact(loadBrands().find((brand) => brand.id === 'paak_pehnawa_mens'));
+  assert.equal(paak.brand_id, 'paak_pehnawa', 'caption update must retain the existing detailed Paak profile');
 });
 
 test('a business name in a one-off brief cannot create persistent brand memory', () => {

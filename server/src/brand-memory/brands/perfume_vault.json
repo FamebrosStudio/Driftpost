@@ -1,14 +1,15 @@
 {
   "schema_version": "1.0",
   "brand_id": "perfume_vault",
-  "brand_name": "Perfume Vault",
+  "brand_name": "Parrfums Vault",
   "aliases": [
+    "Perfume Vault",
     "Parrfum Vault",
-    "Perfume Vault"
+    "@parrfums.vault"
   ],
   "knowledge_scope": {
     "record_status": "Managed brand; tracker spells account name Parrfum Vault and marks it awaiting launch/not yet started",
-    "identity_note": "The user's requested spelling is Perfume Vault. Confirm final public spelling before publishing.",
+    "identity_note": "User confirmed the public spelling Parrfums Vault in a caption supplied 2026-11-14. Use this spelling; Perfume Vault is a legacy alias.",
     "launch_note": "Tracker status may be outdated; verify current status."
   },
   "business": {
@@ -22,15 +23,20 @@
     "positioning": null
   },
   "contact": {
-    "phone": null,
-    "whatsapp": null,
+    "phone": "+91 85919 35352",
+    "whatsapp": "+91 85919 35352",
     "email": null,
     "website": null,
-    "address": null
+    "address": null,
+    "caption_source_status": "User-supplied caption, 2026-11-14.",
+    "phone_display": "+91 85919 35352",
+    "phone_e164": "+918591935352",
+    "primary_phone_display": "+91 85919 35352",
+    "whatsapp_status": "WhatsApp CTA explicitly stated in the user-supplied caption, 2026-11-14."
   },
   "social_media": {
     "instagram_url": null,
-    "instagram_handle": null,
+    "instagram_handle": "@parrfums.vault",
     "facebook_url": null,
     "youtube_url": null,
     "note": "Search results found unrelated fragrance creators and overseas businesses. No account link can be assigned confidently to this managed client."
@@ -73,7 +79,12 @@
     ],
     "length": "To be confirmed."
   },
-  "fixed_footer": null,
+  "fixed_footer": {
+    "lines": [
+      "📞 +91 85919 35352",
+      "💫 Managed by: @famebrosstudio"
+    ]
+  },
   "suggested_hashtag_bank": [
     "#PerfumeVault"
   ],
@@ -119,6 +130,63 @@
     {
       "type": "user/project context",
       "detail": "Famebros tracker records Parrfum Vault, BR-029, as awaiting launch/not yet started."
+    },
+    {
+      "type": "user_supplied_caption",
+      "received_on": "2026-11-14",
+      "supports": "The details in latest_user_caption_update; transient claims remain caption-specific."
     }
+  ],
+  "latest_user_caption_update": {
+    "caption_name": "Parrfums Vault",
+    "location": null,
+    "location_short": null,
+    "phones": [
+      "+91 85919 35352"
+    ],
+    "email": null,
+    "aliases": [
+      "Perfume Vault",
+      "Parrfum Vault",
+      "@parrfums.vault"
+    ],
+    "notes": "User confirms display spelling Parrfums Vault. Caption-specific product: LEATHER. WhatsApp CTA is stated. Do not generalize authenticity, longevity or performance claims.",
+    "received_on": "2026-11-14",
+    "source": "Caption supplied directly by the user in this conversation; not independently verified.",
+    "brand_id": "perfume_vault",
+    "caption_examples": {
+      "hashtags": [
+        "#ParrfumsVault",
+        "#LuxuryPerfume",
+        "#LeatherFragrance"
+      ],
+      "keywords": [
+        "Parrfums Vault",
+        "Leather Perfume",
+        "Luxury Perfumes India",
+        "Premium Fragrances",
+        "Quiet Luxury Fragrance",
+        "Sophisticated Scents",
+        "Elegant Perfumes",
+        "Unisex Fragrance",
+        "Perfume Shopping India"
+      ]
+    }
+  },
+  "caption_keyword_examples": [
+    "Parrfums Vault",
+    "Leather Perfume",
+    "Luxury Perfumes India",
+    "Premium Fragrances",
+    "Quiet Luxury Fragrance",
+    "Sophisticated Scents",
+    "Elegant Perfumes",
+    "Unisex Fragrance",
+    "Perfume Shopping India"
+  ],
+  "caption_hashtag_examples": [
+    "#ParrfumsVault",
+    "#LuxuryPerfume",
+    "#LeatherFragrance"
   ]
 }

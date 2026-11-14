@@ -1,0 +1,367 @@
+{
+  "received_on": "2026-11-14",
+  "source": "User-supplied captions in conversation",
+  "note": "No brands removed. Facts are attributed to captions, not independently verified. Active offers, one-off inventory, product claims, testimonials and ratings are not evergreen guarantees.",
+  "brands": [
+    {
+      "caption_name": "MAP for Men",
+      "location": "Shop No. 3, Shyam Apt., Tambe Nagar, Ashok Nagar, Mulund West, Mumbai 400080",
+      "location_short": "Mulund West, Mumbai",
+      "phones": [
+        "+91 98925 65737"
+      ],
+      "email": null,
+      "aliases": [
+        "MAP for Men"
+      ],
+      "notes": "Trouser-stitching informational caption; testimonial-like fit/wash claims are post-specific, not a general guarantee.",
+      "received_on": "2026-11-14",
+      "source": "Caption supplied directly by the user in this conversation; not independently verified.",
+      "brand_id": "map_clothing",
+      "caption_examples": {
+        "hashtags": [
+          "#MAPForMen",
+          "#MensTailoring",
+          "#MensFashion"
+        ],
+        "keywords": [
+          "Men's Trouser Stitching",
+          "Custom Tailoring Mumbai",
+          "Perfect Trouser Fit",
+          "Trouser Measurement",
+          "Men's Fashion Tips"
+        ]
+      }
+    },
+    {
+      "caption_name": "Re.Shine Skin Clinic",
+      "location": "501, Sorrento Building, Hiranandani, Powai - 400076",
+      "location_short": "Hiranandani, Powai, Mumbai",
+      "phones": [
+        "+91 99604 01016"
+      ],
+      "email": null,
+      "aliases": [
+        "Re.Shine Skin Clinic",
+        "ReShine Skin Clinic"
+      ],
+      "notes": "Chemical-peel caption advises consultation and notes multiple sessions/downtime may apply; do not present as individual medical advice.",
+      "received_on": "2026-11-14",
+      "source": "Caption supplied directly by the user in this conversation; not independently verified.",
+      "brand_id": "reshine_clinic",
+      "caption_examples": {
+        "hashtags": [
+          "#ChemicalPeel",
+          "#BridalSkincare",
+          "#ReShineSkinClinic"
+        ],
+        "keywords": [
+          "Chemical peel treatment",
+          "bridal skincare",
+          "pigmentation treatment",
+          "acne marks",
+          "dark spots",
+          "uneven skin tone",
+          "pre bridal skin treatment",
+          "skin clinic Powai",
+          "ReShine Skin Clinic"
+        ]
+      }
+    },
+    {
+      "caption_name": "SK Furniture Market",
+      "location": "Shop No. 50 & 51, Purna Shanti Heights, Khartan Road, Thane 400601",
+      "location_short": "Khartan Road, Thane",
+      "phones": [
+        "8433870901",
+        "9167870901"
+      ],
+      "email": "skfurnituremarket@gmail.com",
+      "aliases": [
+        "SK Furniture Market"
+      ],
+      "notes": "Caption features metal/combination cupboards. Free delivery, zero down payment and EMI are time-sensitive offers; reconfirm before reuse.",
+      "received_on": "2026-11-14",
+      "source": "Caption supplied directly by the user in this conversation; not independently verified.",
+      "brand_id": "sk_furniture",
+      "caption_examples": {
+        "hashtags": [
+          "#SKFurnitureMarket",
+          "#CupboardDesign",
+          "#FurnitureThane"
+        ],
+        "keywords": [
+          "Metal Cupboard Thane",
+          "Steel Wardrobe Thane",
+          "Combination Cupboard",
+          "Modern Cupboard Designs",
+          "Bedroom Furniture Thane",
+          "Mirror Wardrobe Designs",
+          "Furniture Shop in Thane",
+          "Wardrobe on EMI",
+          "Free Delivery Furniture Thane"
+        ]
+      }
+    },
+    {
+      "caption_name": "Infinity Silver by VJ Jewels",
+      "location": "Bharat Industrial Estate, T J Road, Gala No. 305, Near Ashok Garden, Sewri, Mumbai 400015",
+      "location_short": "Sewri, Mumbai",
+      "phones": [
+        "+91 89283 53255"
+      ],
+      "email": null,
+      "aliases": [
+        "Infinity Silver by VJ Jewels",
+        "Infinity Silver"
+      ],
+      "notes": "Caption says silver jewellery exporter, manufacturer and wholesaler. User-supplied positioning; do not infer purity or hallmarking.",
+      "received_on": "2026-11-14",
+      "source": "Caption supplied directly by the user in this conversation; not independently verified.",
+      "brand_id": "vj_jewels",
+      "caption_examples": {
+        "hashtags": [
+          "#InfinitySilver",
+          "#SilverJewellery",
+          "#WholesaleJewellery"
+        ],
+        "keywords": [
+          "Silver Jewellery",
+          "Silver Bracelet Designs",
+          "Silver Jewellery Manufacturer",
+          "Silver Jewellery Wholesaler",
+          "Silver Jewellery Exporter",
+          "Wholesale Silver Bracelets",
+          "Mumbai Silver Jewellery"
+        ]
+      }
+    },
+    {
+      "caption_name": "Charan Singh Sapra",
+      "location": null,
+      "location_short": null,
+      "phones": [],
+      "email": null,
+      "aliases": [],
+      "notes": "Hindi political-accountability caption; no physical location or contact details supplied. Follow handle: @charansinghsapra_official.",
+      "received_on": "2026-11-14",
+      "source": "Caption supplied directly by the user in this conversation; not independently verified.",
+      "brand_id": "charan_singh_sapra",
+      "caption_examples": {
+        "hashtags": [
+          "#PoliticalAccountability",
+          "#SaveConstitution",
+          "#IndianDemocracy"
+        ],
+        "keywords": [
+          "Charan Singh Sapra",
+          "Indian politics",
+          "political debate",
+          "constitutional values",
+          "democracy in India",
+          "government accountability",
+          "questions to government",
+          "political analysis"
+        ]
+      }
+    },
+    {
+      "caption_name": "Roopali Sarees",
+      "location": "Shop No. 1, B-49, Chaitali Bldg., Sector-1, Shanti Nagar, Mira Road (E), Thane - 401107",
+      "location_short": "Mira Road East, Thane",
+      "phones": [
+        "+91 90225 61477"
+      ],
+      "email": null,
+      "aliases": [
+        "Roopali Sarees"
+      ],
+      "notes": "Customer-appreciation caption; treat the customer experience as post-specific and do not invent or generalize a testimonial.",
+      "received_on": "2026-11-14",
+      "source": "Caption supplied directly by the user in this conversation; not independently verified.",
+      "brand_id": "roopali_saree",
+      "caption_examples": {
+        "hashtags": [
+          "#RoopaliSarees",
+          "#HappyCustomer",
+          "#MiraRoadShopping"
+        ],
+        "keywords": [
+          "Roopali Sarees Mira Road",
+          "Happy Customer Review",
+          "Saree Shopping Mira Road",
+          "Ethnic Wear Collection",
+          "Ladies Dresses Thane"
+        ]
+      }
+    },
+    {
+      "caption_name": "Zam Zam Motors",
+      "location": "Runwal Greens BMC Parking B1 Basement, Mulund West, Mumbai 400080, India",
+      "location_short": "Mulund West, Mumbai",
+      "phones": [
+        "8369160734"
+      ],
+      "email": null,
+      "aliases": [],
+      "notes": "Caption lists one 2021 Mahindra XUV500 W11. Individual listing is not current inventory; reconfirm availability/specifications. Non-accidental statement is attributed, not independently verified.",
+      "received_on": "2026-11-14",
+      "source": "Caption supplied directly by the user in this conversation; not independently verified.",
+      "brand_id": "zam_zam_motors",
+      "caption_examples": {
+        "hashtags": [
+          "#MahindraXUV500",
+          "#UsedCarsMumbai",
+          "#SUVForSale"
+        ],
+        "keywords": [
+          "Mahindra XUV500 W11 for Sale",
+          "Used Mahindra XUV500 Mumbai",
+          "Second Hand SUV Mumbai",
+          "Diesel SUV",
+          "7 Seater SUV",
+          "Used Cars Mulund West",
+          "Cars for Sale Mumbai"
+        ]
+      }
+    },
+    {
+      "caption_name": "Paak Pehnawa",
+      "location": null,
+      "location_short": null,
+      "phones": [],
+      "email": null,
+      "aliases": [],
+      "notes": "Ethnicwear style showcase with Pakistani-inspired styling language and DM-to-order CTA; no location/contact supplied.",
+      "received_on": "2026-11-14",
+      "source": "Caption supplied directly by the user in this conversation; not independently verified.",
+      "brand_id": "paak_pehnawa_mens",
+      "caption_examples": {
+        "hashtags": [
+          "#EthnicWear",
+          "#PakistaniStyle",
+          "#FashionInspiration"
+        ],
+        "keywords": [
+          "Pakistani inspired outfits",
+          "Pakistani suits",
+          "ethnic wear",
+          "embroidered kurta",
+          "designer suits",
+          "festive wear",
+          "salwar suit",
+          "women ethnic fashion",
+          "elegant Indian wear"
+        ]
+      }
+    },
+    {
+      "caption_name": "Parrfums Vault",
+      "location": null,
+      "location_short": null,
+      "phones": [
+        "+91 85919 35352"
+      ],
+      "email": null,
+      "aliases": [
+        "Perfume Vault",
+        "Parrfum Vault",
+        "@parrfums.vault"
+      ],
+      "notes": "User confirms display spelling Parrfums Vault. Caption-specific product: LEATHER. WhatsApp CTA is stated. Do not generalize authenticity, longevity or performance claims.",
+      "received_on": "2026-11-14",
+      "source": "Caption supplied directly by the user in this conversation; not independently verified.",
+      "brand_id": "perfume_vault",
+      "caption_examples": {
+        "hashtags": [
+          "#ParrfumsVault",
+          "#LuxuryPerfume",
+          "#LeatherFragrance"
+        ],
+        "keywords": [
+          "Parrfums Vault",
+          "Leather Perfume",
+          "Luxury Perfumes India",
+          "Premium Fragrances",
+          "Quiet Luxury Fragrance",
+          "Sophisticated Scents",
+          "Elegant Perfumes",
+          "Unisex Fragrance",
+          "Perfume Shopping India"
+        ]
+      }
+    },
+    {
+      "caption_name": "Cotton Plus",
+      "location": [
+        "Seawoods: Shop No. 1/2, Neelkanth Plaza, Plot No. 53, Sector 40, Seawoods, Nerul (W), Navi Mumbai 400706",
+        "Kharghar: Shop No. 9/10/11, Sai Moksh, Plot No. 48, Sector 15, Kharghar, Navi Mumbai 410210",
+        "Kalamboli: Shop No. G9/F9, Plot No. 4, Neelsiddhi Amrante Phase 2, Sector 9E, Near D-Mart, Roadpali, Kalamboli, Panvel 410218"
+      ],
+      "location_short": null,
+      "phones": [
+        "7666632979",
+        "9892461454",
+        "022 31939258"
+      ],
+      "email": null,
+      "aliases": [],
+      "notes": "Caption identifies three stores and a follower-gift promotion. Phone numbers are not mapped to individual branches; do not infer. Reconfirm offer terms.",
+      "received_on": "2026-11-14",
+      "source": "Caption supplied directly by the user in this conversation; not independently verified.",
+      "brand_id": "cotton_plus",
+      "caption_examples": {
+        "hashtags": [
+          "#CottonPlus",
+          "#CustomerLove",
+          "#ShoppingRewards"
+        ],
+        "keywords": [
+          "Cotton Plus Clothing Store",
+          "Women's Fashion",
+          "Family Shopping",
+          "Clothing Store Navi Mumbai",
+          "Seawoods Shopping",
+          "Kharghar Shopping",
+          "Kalamboli Shopping",
+          "Instagram Followers Gifts"
+        ]
+      }
+    },
+    {
+      "caption_name": "Chinese N Grill",
+      "location": "Mohammed Ali Road, Near Minara Masjid, Mumbai 400003",
+      "location_short": "Mohammed Ali Road, Mumbai",
+      "phones": [
+        "79001 22468",
+        "8423999299"
+      ],
+      "email": null,
+      "aliases": [
+        "Chinese N Grill"
+      ],
+      "notes": "Caption identifies a Thai Sizzler and customer rating 8.5/10; post-specific, not a permanent rating or availability guarantee.",
+      "received_on": "2026-11-14",
+      "source": "Caption supplied directly by the user in this conversation; not independently verified.",
+      "brand_id": "chinese_and_grill",
+      "caption_examples": {
+        "hashtags": [
+          "#ChineseNGrill",
+          "#ThaiSizzler",
+          "#MumbaiFoodies",
+          "#MohammedAliRoad",
+          "#FoodReview"
+        ],
+        "keywords": [
+          "Chinese N Grill Mumbai",
+          "Thai Sizzler review",
+          "Thai Sizzler Mumbai",
+          "Mohammed Ali Road restaurants",
+          "Mumbai food reviews",
+          "spicy sizzler",
+          "food lovers Mumbai"
+        ]
+      }
+    }
+  ]
+}

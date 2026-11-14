@@ -6,7 +6,8 @@
   "aliases": [
     "SK Furniture",
     "@skfurnituremarket",
-    "skfurnituremarket"
+    "skfurnituremarket",
+    "SK Furniture Market"
   ],
   "knowledge_scope": "One brand only. Confirmed business details, product evidence, internal case-study data and AI writing guidance are separated.",
   "business": {
@@ -23,8 +24,8 @@
     "founding_year": null
   },
   "contact": {
-    "phone_display": "+91 84338 70901",
-    "phone_e164": "+918433870901",
+    "phone_display": "8433870901 | 9167870901",
+    "phone_e164": null,
     "whatsapp_number": null,
     "whatsapp_note": "The number appears in indexed SK Furniture Market promotional content. Confirm WhatsApp availability before labeling it as WhatsApp.",
     "full_address": "Shop No. 50 and 51, Purna Shanti Heights, Khartan Road, Thane 400601",
@@ -36,11 +37,15 @@
     "road": "Khartan Road",
     "city": "Thane",
     "postal_code": "400601",
-    "email": null,
+    "email": "skfurnituremarket@gmail.com",
     "website": null,
     "catalogue_url": null,
     "ordering_url": null,
-    "google_maps_url": null
+    "google_maps_url": null,
+    "address_full": "Shop No. 50 & 51, Purna Shanti Heights, Khartan Road, Thane 400601",
+    "address_short": "Khartan Road, Thane",
+    "caption_source_status": "User-supplied caption, 2026-11-14.",
+    "primary_phone_display": "8433870901 | 9167870901"
   },
   "social_media": {
     "instagram_handle": "@skfurnituremarket",
@@ -297,9 +302,10 @@
   },
   "fixed_footer": {
     "lines": [
-      "📍 Shop No. 50 and 51, Purna Shanti Heights, Khartan Road, Thane 400601",
-      "📞 +91 84338 70901",
-      "🎥 Managed by: @famebrosstudio ✨"
+      "📍 Shop No. 50 & 51, Purna Shanti Heights, Khartan Road, Thane 400601",
+      "📞 8433870901 | 9167870901",
+      "📧 skfurnituremarket@gmail.com",
+      "💫 Managed by: @famebrosstudio"
     ],
     "source": "Indexed SK Furniture Market social content and the standard agency credit.",
     "usage": "Default feed and reel footer until the user supplies a different approved contact block.",
@@ -518,6 +524,41 @@
       "url": "https://magicpin.in/Thane/Naupada/Lifestyle/Sk-Furniture-Market/store/19033a0",
       "checked_on": "2026-10-04",
       "supports": "Magicpin listing claims furniture manufacturer/maker/store/wholesaler, interior decorator and office furniture; gives Purna Shanti Heights, Khartan Rd, Jambli Naka, Thane West 400601 and +91 84338 70901; mentions EMI/cash/card/UPI. Listing is third-party and owner-verification is not established. Do not use as approved contact, exact current location, active finance offer or caption fact until directly confirmed."
+    },
+    {
+      "type": "user_supplied_caption",
+      "received_on": "2026-11-14",
+      "supports": "The details in latest_user_caption_update."
+    },
+    {
+      "type": "user_supplied_caption",
+      "received_on": "2026-11-14",
+      "supports": "The details in latest_user_caption_update."
+    },
+    {
+      "type": "user_supplied_caption",
+      "received_on": "2026-11-14",
+      "supports": "The details in latest_user_caption_update."
+    },
+    {
+      "type": "user_supplied_caption",
+      "received_on": "2026-11-14",
+      "supports": "The details in latest_user_caption_update."
+    },
+    {
+      "type": "user_supplied_caption",
+      "received_on": "2026-11-14",
+      "supports": "The details in latest_user_caption_update."
+    },
+    {
+      "type": "user_supplied_caption",
+      "received_on": "2026-11-14",
+      "supports": "The details in latest_user_caption_update."
+    },
+    {
+      "type": "user_supplied_caption",
+      "received_on": "2026-11-14",
+      "supports": "The details in latest_user_caption_update."
     }
   ],
   "research_update": {
@@ -536,5 +577,56 @@
       "url": "https://www.instagram.com/skfurnituremarket/",
       "identity_authority": "User supplied as official"
     }
-  }
+  },
+  "latest_user_caption_update": {
+    "caption_name": "SK Furniture Market",
+    "location": "Shop No. 50 & 51, Purna Shanti Heights, Khartan Road, Thane 400601",
+    "location_short": "Khartan Road, Thane",
+    "phones": [
+      "8433870901",
+      "9167870901"
+    ],
+    "email": "skfurnituremarket@gmail.com",
+    "aliases": [
+      "SK Furniture Market"
+    ],
+    "notes": "Caption features metal/combination cupboards. Free delivery, zero down payment and EMI are time-sensitive offers; reconfirm before reuse.",
+    "received_on": "2026-11-14",
+    "source": "Caption supplied directly by the user in this conversation; not independently verified.",
+    "brand_id": "sk_furniture",
+    "caption_examples": {
+      "hashtags": [
+        "#SKFurnitureMarket",
+        "#CupboardDesign",
+        "#FurnitureThane"
+      ],
+      "keywords": [
+        "Metal Cupboard Thane",
+        "Steel Wardrobe Thane",
+        "Combination Cupboard",
+        "Modern Cupboard Designs",
+        "Bedroom Furniture Thane",
+        "Mirror Wardrobe Designs",
+        "Furniture Shop in Thane",
+        "Wardrobe on EMI",
+        "Free Delivery Furniture Thane"
+      ]
+    }
+  },
+  "caption_keyword_examples": [
+    "Metal Cupboard Thane",
+    "Steel Wardrobe Thane",
+    "Combination Cupboard",
+    "Modern Cupboard Designs",
+    "Bedroom Furniture Thane",
+    "Mirror Wardrobe Designs",
+    "Furniture Shop in Thane",
+    "Wardrobe on EMI",
+    "Free Delivery Furniture Thane"
+  ],
+  "caption_hashtag_examples": [
+    "#SKFurnitureMarket",
+    "#CupboardDesign",
+    "#FurnitureThane"
+  ]
 }

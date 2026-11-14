@@ -16,18 +16,27 @@
       "Unconfirmed for this client account"
     ],
     "location": {
-      "city": null,
-      "exact_address": null
+      "city": "Navi Mumbai and Panvel",
+      "exact_address": null,
+      "stores_from_user_caption": [
+        "Seawoods: Shop No. 1/2, Neelkanth Plaza, Plot No. 53, Sector 40, Seawoods, Nerul (W), Navi Mumbai 400706",
+        "Kharghar: Shop No. 9/10/11, Sai Moksh, Plot No. 48, Sector 15, Kharghar, Navi Mumbai 410210",
+        "Kalamboli: Shop No. G9/F9, Plot No. 4, Neelsiddhi Amrante Phase 2, Sector 9E, Near D-Mart, Roadpali, Kalamboli, Panvel 410218"
+      ]
     },
     "audience": [],
     "positioning": null
   },
   "contact": {
-    "phone": null,
+    "phone": "7666632979 | 9892461454 | 022 31939258",
     "whatsapp": null,
     "email": null,
     "website": null,
-    "address": null
+    "address": "Seawoods: Shop No. 1/2, Neelkanth Plaza, Plot No. 53, Sector 40, Seawoods, Nerul (W), Navi Mumbai 400706\nKharghar: Shop No. 9/10/11, Sai Moksh, Plot No. 48, Sector 15, Kharghar, Navi Mumbai 410210\nKalamboli: Shop No. G9/F9, Plot No. 4, Neelsiddhi Amrante Phase 2, Sector 9E, Near D-Mart, Roadpali, Kalamboli, Panvel 410218",
+    "caption_source_status": "User-supplied caption, 2026-11-14.",
+    "phone_display": "7666632979 | 9892461454 | 022 31939258",
+    "phone_e164": null,
+    "primary_phone_display": "7666632979 | 9892461454 | 022 31939258"
   },
   "social_media": {
     "instagram_url": null,
@@ -39,7 +48,8 @@
   "established_content_knowledge": {
     "confirmed": [
       "Cotton Plus is a managed, active client in the Famebros tracker.",
-      "A payment record exists, but amounts are excluded from public brand knowledge."
+      "A payment record exists, but amounts are excluded from public brand knowledge.",
+      "User-supplied caption identifies three Cotton Plus stores in Seawoods, Kharghar and Kalamboli/Panvel."
     ],
     "candidate_public_identity_not_confirmed": {
       "website": "https://cottonplus.in/",
@@ -72,7 +82,15 @@
     ],
     "length": "To be confirmed."
   },
-  "fixed_footer": null,
+  "fixed_footer": {
+    "lines": [
+      "📍 Seawoods: Shop No. 1/2, Neelkanth Plaza, Plot No. 53, Sector 40, Seawoods, Nerul (W), Navi Mumbai 400706",
+      "📍 Kharghar: Shop No. 9/10/11, Sai Moksh, Plot No. 48, Sector 15, Kharghar, Navi Mumbai 410210",
+      "📍 Kalamboli: Shop No. G9/F9, Plot No. 4, Neelsiddhi Amrante Phase 2, Sector 9E, Near D-Mart, Roadpali, Kalamboli, Panvel 410218",
+      "📞 7666632979 | 9892461454 | 022 31939258",
+      "💫 Managed by: @famebrosstudio"
+    ]
+  },
   "suggested_hashtag_bank": [
     "#CottonPlus"
   ],
@@ -128,6 +146,63 @@
       "type": "unmatched public candidate",
       "url": "https://cottonplus.in/",
       "detail": "Not assigned to this client pending identity confirmation."
+    },
+    {
+      "type": "user_supplied_caption",
+      "received_on": "2026-11-14",
+      "supports": "The details in latest_user_caption_update; transient claims remain caption-specific."
     }
+  ],
+  "latest_user_caption_update": {
+    "caption_name": "Cotton Plus",
+    "location": [
+      "Seawoods: Shop No. 1/2, Neelkanth Plaza, Plot No. 53, Sector 40, Seawoods, Nerul (W), Navi Mumbai 400706",
+      "Kharghar: Shop No. 9/10/11, Sai Moksh, Plot No. 48, Sector 15, Kharghar, Navi Mumbai 410210",
+      "Kalamboli: Shop No. G9/F9, Plot No. 4, Neelsiddhi Amrante Phase 2, Sector 9E, Near D-Mart, Roadpali, Kalamboli, Panvel 410218"
+    ],
+    "location_short": null,
+    "phones": [
+      "7666632979",
+      "9892461454",
+      "022 31939258"
+    ],
+    "email": null,
+    "aliases": [],
+    "notes": "Caption identifies three stores and a follower-gift promotion. Phone numbers are not mapped to individual branches; do not infer. Reconfirm offer terms.",
+    "received_on": "2026-11-14",
+    "source": "Caption supplied directly by the user in this conversation; not independently verified.",
+    "brand_id": "cotton_plus",
+    "caption_examples": {
+      "hashtags": [
+        "#CottonPlus",
+        "#CustomerLove",
+        "#ShoppingRewards"
+      ],
+      "keywords": [
+        "Cotton Plus Clothing Store",
+        "Women's Fashion",
+        "Family Shopping",
+        "Clothing Store Navi Mumbai",
+        "Seawoods Shopping",
+        "Kharghar Shopping",
+        "Kalamboli Shopping",
+        "Instagram Followers Gifts"
+      ]
+    }
+  },
+  "caption_keyword_examples": [
+    "Cotton Plus Clothing Store",
+    "Women's Fashion",
+    "Family Shopping",
+    "Clothing Store Navi Mumbai",
+    "Seawoods Shopping",
+    "Kharghar Shopping",
+    "Kalamboli Shopping",
+    "Instagram Followers Gifts"
+  ],
+  "caption_hashtag_examples": [
+    "#CottonPlus",
+    "#CustomerLove",
+    "#ShoppingRewards"
   ]
 }

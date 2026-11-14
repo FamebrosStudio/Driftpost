@@ -1377,6 +1377,26 @@
     {
       "type": "user_writing_preferences",
       "supports": "One brand per JSON file, comprehensive AI-ready structure, Instagram link, publication-ready captions, agency credit, exactly three hashtags, one square SEO keyword bracket and no em dashes."
+    },
+    {
+      "type": "user_supplied_caption",
+      "received_on": "2026-11-14",
+      "supports": "The details in latest_user_caption_update."
+    },
+    {
+      "type": "user_supplied_caption",
+      "received_on": "2026-11-14",
+      "supports": "The details in latest_user_caption_update."
+    },
+    {
+      "type": "user_supplied_caption",
+      "received_on": "2026-11-14",
+      "supports": "The details in latest_user_caption_update."
+    },
+    {
+      "type": "user_supplied_caption",
+      "received_on": "2026-11-14",
+      "supports": "The details in latest_user_caption_update."
     }
   ],
   "latest_user_dataset_update": {
@@ -1529,5 +1549,51 @@
       "Verified catalogue, fabrics, sizes, prices and services",
       "Logo and brand palette"
     ]
-  }
+  },
+  "latest_user_caption_update": {
+    "caption_name": "Paak Pehnawa",
+    "location": null,
+    "location_short": null,
+    "phones": [],
+    "email": null,
+    "aliases": [],
+    "notes": "Ethnicwear style showcase with Pakistani-inspired styling language and DM-to-order CTA; no location/contact supplied.",
+    "received_on": "2026-11-14",
+    "source": "Caption supplied directly by the user in this conversation; not independently verified.",
+    "brand_id": "paak_pehnawa_mens",
+    "caption_examples": {
+      "hashtags": [
+        "#EthnicWear",
+        "#PakistaniStyle",
+        "#FashionInspiration"
+      ],
+      "keywords": [
+        "Pakistani inspired outfits",
+        "Pakistani suits",
+        "ethnic wear",
+        "embroidered kurta",
+        "designer suits",
+        "festive wear",
+        "salwar suit",
+        "women ethnic fashion",
+        "elegant Indian wear"
+      ]
+    }
+  },
+  "caption_keyword_examples": [
+    "Pakistani inspired outfits",
+    "Pakistani suits",
+    "ethnic wear",
+    "embroidered kurta",
+    "designer suits",
+    "festive wear",
+    "salwar suit",
+    "women ethnic fashion",
+    "elegant Indian wear"
+  ],
+  "caption_hashtag_examples": [
+    "#EthnicWear",
+    "#PakistaniStyle",
+    "#FashionInspiration"
+  ]
 }

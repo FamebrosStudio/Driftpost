@@ -8,7 +8,8 @@
     "VJ Jewels – Infinity Silver",
     "Infinity Silver",
     "@infinitysilver._",
-    "infinitysilver._"
+    "infinitysilver._",
+    "Infinity Silver by VJ Jewels"
   ],
   "knowledge_scope": "One brand only. User-confirmed brand knowledge, campaign-specific facts, AI writing guidance and unresolved business details are separated. Do not merge information from unrelated businesses with similar names.",
   "business": {
@@ -17,9 +18,9 @@
     "active_product_context": "Silver jewellery in the confirmed VJ Jewels – Infinity Silver B2B exhibition campaign",
     "business_model_status": "Confirmed B2B campaign targeting jewellery retailers and wholesalers. Permanent retail/wholesale scope outside this campaign requires confirmation.",
     "country": "India",
-    "city": null,
+    "city": "Mumbai",
     "state": null,
-    "location_area": null,
+    "location_area": "Sewri, Mumbai",
     "owner_name": null,
     "established_year": null,
     "core_positioning": "Premium jewellery design presentation with strong B2B sourcing communication for retailers and wholesalers when the campaign requires it.",
@@ -28,15 +29,18 @@
     "identity_warning": "Multiple businesses may use the name VJ Jewels. Never import phone numbers, addresses, websites, founding years, purity claims or company details from another business without explicit confirmation."
   },
   "contact": {
-    "primary_phone_display": null,
-    "primary_phone_e164": null,
+    "primary_phone_display": "+91 89283 53255",
+    "primary_phone_e164": "+918928353255",
     "whatsapp_number": null,
     "email": null,
     "website": null,
-    "full_address_preferred": null,
+    "full_address_preferred": "Bharat Industrial Estate, T J Road, Gala No. 305, Near Ashok Garden, Sewri, Mumbai 400015",
     "google_maps_url": null,
     "contact_status": "Permanent public contact details are not confirmed in the current dataset.",
-    "publishing_rule": "Do not invent contact details. Use Instagram DM or event-specific contact information supplied in the current brief."
+    "publishing_rule": "Do not invent contact details. Use Instagram DM or event-specific contact information supplied in the current brief.",
+    "caption_source_status": "User-supplied caption, 2026-11-14.",
+    "phone_display": "+91 89283 53255",
+    "phone_e164": "+918928353255"
   },
   "social_media": {
     "instagram_handle": "@infinitysilver._",
@@ -332,6 +336,8 @@
   },
   "fixed_footer": {
     "lines": [
+      "📍 Bharat Industrial Estate, T J Road, Gala No. 305, Near Ashok Garden, Sewri, Mumbai 400015",
+      "📞 +91 89283 53255",
       "💫 Managed by: @famebrosstudio"
     ],
     "status": "Only permanent footer element currently confirmed.",
@@ -628,6 +634,11 @@
       "url": "https://www.infinitysilver.sk/; https://www.pricemania.sk/infinitysilver-sk/",
       "checked_on": "2026-10-04",
       "supports": "Search also surfaces a Slovak/Czech InfinitySilver jewellery retailer with unrelated European catalogue, currencies and contact details. No evidence links it to the user-confirmed @infinitysilver._ VJ Jewels campaign. Its 925-silver product specs, prices, shipping and phone must not be attributed to this brand."
+    },
+    {
+      "type": "user_supplied_caption",
+      "received_on": "2026-11-14",
+      "supports": "The details in latest_user_caption_update; transient claims remain caption-specific."
     }
   ],
   "research_update": {
@@ -797,5 +808,52 @@
       "Verified product categories and material claims",
       "Approved collection names, hours, logo files and offer rules"
     ]
-  }
+  },
+  "latest_user_caption_update": {
+    "caption_name": "Infinity Silver by VJ Jewels",
+    "location": "Bharat Industrial Estate, T J Road, Gala No. 305, Near Ashok Garden, Sewri, Mumbai 400015",
+    "location_short": "Sewri, Mumbai",
+    "phones": [
+      "+91 89283 53255"
+    ],
+    "email": null,
+    "aliases": [
+      "Infinity Silver by VJ Jewels",
+      "Infinity Silver"
+    ],
+    "notes": "Caption says silver jewellery exporter, manufacturer and wholesaler. User-supplied positioning; do not infer purity or hallmarking.",
+    "received_on": "2026-11-14",
+    "source": "Caption supplied directly by the user in this conversation; not independently verified.",
+    "brand_id": "vj_jewels",
+    "caption_examples": {
+      "hashtags": [
+        "#InfinitySilver",
+        "#SilverJewellery",
+        "#WholesaleJewellery"
+      ],
+      "keywords": [
+        "Silver Jewellery",
+        "Silver Bracelet Designs",
+        "Silver Jewellery Manufacturer",
+        "Silver Jewellery Wholesaler",
+        "Silver Jewellery Exporter",
+        "Wholesale Silver Bracelets",
+        "Mumbai Silver Jewellery"
+      ]
+    }
+  },
+  "caption_keyword_examples": [
+    "Silver Jewellery",
+    "Silver Bracelet Designs",
+    "Silver Jewellery Manufacturer",
+    "Silver Jewellery Wholesaler",
+    "Silver Jewellery Exporter",
+    "Wholesale Silver Bracelets",
+    "Mumbai Silver Jewellery"
+  ],
+  "caption_hashtag_examples": [
+    "#InfinitySilver",
+    "#SilverJewellery",
+    "#WholesaleJewellery"
+  ]
 }

@@ -194,7 +194,8 @@
           "Book your hair appointment.",
           "Save this look for your next salon visit."
         ],
-        "language_status": "editorial_default_not_a_claim_about_all_past_posts"
+        "language_status": "editorial_default_not_a_claim_about_all_past_posts",
+        "caption_source_update": "User-supplied caption update 2026-11-14; transient claims are caption-specific."
       },
       "keyword_bank": [
         "Hair Match Salon",
@@ -292,7 +293,8 @@
           "Tag the friend who does this.",
           "Book your next hair appointment."
         ],
-        "language_status": "editorial_default_not_a_claim_about_all_past_posts"
+        "language_status": "editorial_default_not_a_claim_about_all_past_posts",
+        "caption_source_update": "User-supplied caption update 2026-11-14; transient claims are caption-specific."
       },
       "keyword_bank": [
         "Velvet Salon",
@@ -306,7 +308,7 @@
       "mandatory_copy": [],
       "contacts": {
         "phone": [
-          "+91 9821006703"
+          "Contact: +91 9821006703"
         ],
         "address": "Shop No. 15, Tulsi Park, Amrut Park Road, Wayle Nagar, Near Starbucks, Khadakpada Circle, Kalyan",
         "email": null,
@@ -385,7 +387,8 @@
           "Which look would you wear?",
           "DM us to enquire about this outfit."
         ],
-        "language_status": "editorial_default_not_a_claim_about_all_past_posts"
+        "language_status": "editorial_default_not_a_claim_about_all_past_posts",
+        "caption_source_update": "User-supplied caption update 2026-11-14; transient claims are caption-specific."
       },
       "keyword_bank": [
         "UNS Creation",
@@ -457,9 +460,12 @@
     {
       "brand_id": "reshine_clinic",
       "name": "Reshine Clinic",
-      "aliases": [],
+      "aliases": [
+        "Re.Shine Skin Clinic",
+        "ReShine Skin Clinic"
+      ],
       "category": "Skin clinic",
-      "location": null,
+      "location": "Hiranandani, Powai, Mumbai",
       "content_genres": [
         "informational",
         "transformation"
@@ -483,24 +489,39 @@
           "Contact us to enquire about a consultation.",
           "Save this for your consultation questions."
         ],
-        "language_status": "editorial_default_not_a_claim_about_all_past_posts"
+        "language_status": "editorial_default_not_a_claim_about_all_past_posts",
+        "caption_source_update": "User-supplied caption update 2026-11-14; transient claims are caption-specific.",
+        "caption_examples_note": "Hashtag/keyword examples from a user-supplied caption; choose only when relevant to the current post."
       },
       "keyword_bank": [
         "Reshine Clinic",
         "skin consultation",
         "skin care",
         "skin clinic",
-        "skin concerns"
+        "skin concerns",
+        "Chemical peel treatment",
+        "bridal skincare",
+        "pigmentation treatment",
+        "acne marks",
+        "dark spots",
+        "uneven skin tone",
+        "pre bridal skin treatment",
+        "skin clinic Powai",
+        "ReShine Skin Clinic"
       ],
       "approved_facts": [],
       "mandatory_copy": [],
       "contacts": {
-        "phone": [],
-        "address": null,
+        "phone": [
+          "+91 99604 01016"
+        ],
+        "address": "501, Sorrento Building, Hiranandani, Powai - 400076",
         "email": null,
         "website": null
       },
       "footer_lines": [
+        "📍 501, Sorrento Building, Hiranandani, Powai - 400076",
+        "📞 +91 99604 01016",
         "💫 Managed by: @famebrosstudio"
       ],
       "instagram": {
@@ -535,7 +556,8 @@
         "Exact public address and applicable branch, if required"
       ],
       "sources": [
-        "data.txt: brand name and listed genres"
+        "data.txt: brand name and listed genres",
+        "User-supplied caption received 2026-11-14"
       ],
       "footer_policy": "Use these known lines for feed/reel captions. This is the proposed standard except the two source-file footers and the explicit Smietz rules. Omit footer for story/comment/repost modes unless requested. Do not add missing contact fields.",
       "readiness": "ready_with_post_brief",
@@ -545,6 +567,57 @@
         "Missing-data notes",
         "Internal sources and evidence URLs",
         "Draft example labels"
+      ],
+      "latest_user_caption_update": {
+        "caption_name": "Re.Shine Skin Clinic",
+        "location": "501, Sorrento Building, Hiranandani, Powai - 400076",
+        "location_short": "Hiranandani, Powai, Mumbai",
+        "phones": [
+          "+91 99604 01016"
+        ],
+        "email": null,
+        "aliases": [
+          "Re.Shine Skin Clinic",
+          "ReShine Skin Clinic"
+        ],
+        "notes": "Chemical-peel caption advises consultation and notes multiple sessions/downtime may apply; do not present as individual medical advice.",
+        "received_on": "2026-11-14",
+        "source": "Caption supplied directly by the user in this conversation; not independently verified.",
+        "brand_id": "reshine_clinic",
+        "caption_examples": {
+          "hashtags": [
+            "#ChemicalPeel",
+            "#BridalSkincare",
+            "#ReShineSkinClinic"
+          ],
+          "keywords": [
+            "Chemical peel treatment",
+            "bridal skincare",
+            "pigmentation treatment",
+            "acne marks",
+            "dark spots",
+            "uneven skin tone",
+            "pre bridal skin treatment",
+            "skin clinic Powai",
+            "ReShine Skin Clinic"
+          ]
+        }
+      },
+      "caption_keyword_examples": [
+        "Chemical peel treatment",
+        "bridal skincare",
+        "pigmentation treatment",
+        "acne marks",
+        "dark spots",
+        "uneven skin tone",
+        "pre bridal skin treatment",
+        "skin clinic Powai",
+        "ReShine Skin Clinic"
+      ],
+      "caption_hashtag_examples": [
+        "#ChemicalPeel",
+        "#BridalSkincare",
+        "#ReShineSkinClinic"
       ]
     },
     {
@@ -575,7 +648,8 @@
           "Retailers, DM us for collection details.",
           "Enquire about the current wholesale collection."
         ],
-        "language_status": "editorial_default_not_a_claim_about_all_past_posts"
+        "language_status": "editorial_default_not_a_claim_about_all_past_posts",
+        "caption_source_update": "User-supplied caption update 2026-11-14; transient claims are caption-specific."
       },
       "keyword_bank": [
         "AK Factor",
@@ -669,7 +743,8 @@
           "Send this to your getaway partner.",
           "Contact us to enquire about your stay."
         ],
-        "language_status": "editorial_default_not_a_claim_about_all_past_posts"
+        "language_status": "editorial_default_not_a_claim_about_all_past_posts",
+        "caption_source_update": "User-supplied caption update 2026-11-14; transient claims are caption-specific."
       },
       "keyword_bank": [
         "Vivid Sands Resort",
@@ -781,7 +856,8 @@
           "Save this for your next break.",
           "DM us to enquire about your stay."
         ],
-        "language_status": "editorial_default_not_a_claim_about_all_past_posts"
+        "language_status": "editorial_default_not_a_claim_about_all_past_posts",
+        "caption_source_update": "User-supplied caption update 2026-11-14; transient claims are caption-specific."
       },
       "keyword_bank": [
         "Cocos Inn Resort",
@@ -854,10 +930,12 @@
     },
     {
       "brand_id": "sk_furniture",
-      "name": "SK Furniture",
-      "aliases": [],
+      "name": "SK Furniture Market",
+      "aliases": [
+        "SK Furniture Market"
+      ],
       "category": "Furniture",
-      "location": null,
+      "location": "Khartan Road, Thane",
       "content_genres": [
         "funny",
         "hype"
@@ -880,24 +958,41 @@
           "Tag the person who chooses all the furniture.",
           "DM us to enquire about this piece."
         ],
-        "language_status": "editorial_default_not_a_claim_about_all_past_posts"
+        "language_status": "editorial_default_not_a_claim_about_all_past_posts",
+        "caption_source_update": "User-supplied caption update 2026-11-14; transient claims are caption-specific.",
+        "caption_examples_note": "Hashtag/keyword examples from a user-supplied caption; choose only when relevant to the current post."
       },
       "keyword_bank": [
         "SK Furniture",
         "furniture shopping",
         "home furniture",
         "room makeover",
-        "furniture ideas"
+        "furniture ideas",
+        "Metal Cupboard Thane",
+        "Steel Wardrobe Thane",
+        "Combination Cupboard",
+        "Modern Cupboard Designs",
+        "Bedroom Furniture Thane",
+        "Mirror Wardrobe Designs",
+        "Furniture Shop in Thane",
+        "Wardrobe on EMI",
+        "Free Delivery Furniture Thane"
       ],
       "approved_facts": [],
       "mandatory_copy": [],
       "contacts": {
-        "phone": [],
-        "address": null,
-        "email": null,
+        "phone": [
+          "8433870901",
+          "9167870901"
+        ],
+        "address": "Shop No. 50 & 51, Purna Shanti Heights, Khartan Road, Thane 400601",
+        "email": "skfurnituremarket@gmail.com",
         "website": null
       },
       "footer_lines": [
+        "📍 Shop No. 50 & 51, Purna Shanti Heights, Khartan Road, Thane 400601",
+        "📞 8433870901 | 9167870901",
+        "📧 skfurnituremarket@gmail.com",
         "💫 Managed by: @famebrosstudio"
       ],
       "instagram": {
@@ -931,7 +1026,8 @@
         "Exact public address and applicable branch, if required"
       ],
       "sources": [
-        "data.txt: brand name and listed genres"
+        "data.txt: brand name and listed genres",
+        "User-supplied caption received 2026-11-14"
       ],
       "footer_policy": "Use these known lines for feed/reel captions. This is the proposed standard except the two source-file footers and the explicit Smietz rules. Omit footer for story/comment/repost modes unless requested. Do not add missing contact fields.",
       "readiness": "ready_with_post_brief",
@@ -941,6 +1037,57 @@
         "Missing-data notes",
         "Internal sources and evidence URLs",
         "Draft example labels"
+      ],
+      "latest_user_caption_update": {
+        "caption_name": "SK Furniture Market",
+        "location": "Shop No. 50 & 51, Purna Shanti Heights, Khartan Road, Thane 400601",
+        "location_short": "Khartan Road, Thane",
+        "phones": [
+          "8433870901",
+          "9167870901"
+        ],
+        "email": "skfurnituremarket@gmail.com",
+        "aliases": [
+          "SK Furniture Market"
+        ],
+        "notes": "Caption features metal/combination cupboards. Free delivery, zero down payment and EMI are time-sensitive offers; reconfirm before reuse.",
+        "received_on": "2026-11-14",
+        "source": "Caption supplied directly by the user in this conversation; not independently verified.",
+        "brand_id": "sk_furniture",
+        "caption_examples": {
+          "hashtags": [
+            "#SKFurnitureMarket",
+            "#CupboardDesign",
+            "#FurnitureThane"
+          ],
+          "keywords": [
+            "Metal Cupboard Thane",
+            "Steel Wardrobe Thane",
+            "Combination Cupboard",
+            "Modern Cupboard Designs",
+            "Bedroom Furniture Thane",
+            "Mirror Wardrobe Designs",
+            "Furniture Shop in Thane",
+            "Wardrobe on EMI",
+            "Free Delivery Furniture Thane"
+          ]
+        }
+      },
+      "caption_keyword_examples": [
+        "Metal Cupboard Thane",
+        "Steel Wardrobe Thane",
+        "Combination Cupboard",
+        "Modern Cupboard Designs",
+        "Bedroom Furniture Thane",
+        "Mirror Wardrobe Designs",
+        "Furniture Shop in Thane",
+        "Wardrobe on EMI",
+        "Free Delivery Furniture Thane"
+      ],
+      "caption_hashtag_examples": [
+        "#SKFurnitureMarket",
+        "#CupboardDesign",
+        "#FurnitureThane"
       ]
     },
     {
@@ -973,7 +1120,8 @@
           "Visit our Kurla store to explore.",
           "Contact us for details of the featured design."
         ],
-        "language_status": "editorial_default_not_a_claim_about_all_past_posts"
+        "language_status": "editorial_default_not_a_claim_about_all_past_posts",
+        "caption_source_update": "User-supplied caption update 2026-11-14; transient claims are caption-specific."
       },
       "keyword_bank": [
         "Shree Mahalaxmi Jewellers",
@@ -1066,7 +1214,8 @@
           "Visit our Chembur store to explore.",
           "Ask us about the featured design."
         ],
-        "language_status": "editorial_default_not_a_claim_about_all_past_posts"
+        "language_status": "editorial_default_not_a_claim_about_all_past_posts",
+        "caption_source_update": "User-supplied caption update 2026-11-14; transient claims are caption-specific."
       },
       "keyword_bank": [
         "Kanchanmala Jewellers",
@@ -1161,7 +1310,8 @@
           "Visit us in Ghatla to explore.",
           "DM us about the featured piece."
         ],
-        "language_status": "editorial_default_not_a_claim_about_all_past_posts"
+        "language_status": "editorial_default_not_a_claim_about_all_past_posts",
+        "caption_source_update": "User-supplied caption update 2026-11-14; transient claims are caption-specific."
       },
       "keyword_bank": [
         "Mahalaxmi Jewellers Ghatla",
@@ -1255,7 +1405,8 @@
           "Save this idea for your home.",
           "DM us to discuss your space."
         ],
-        "language_status": "editorial_default_not_a_claim_about_all_past_posts"
+        "language_status": "editorial_default_not_a_claim_about_all_past_posts",
+        "caption_source_update": "User-supplied caption update 2026-11-14; transient claims are caption-specific."
       },
       "keyword_bank": [
         "SYnergic Studio",
@@ -1351,7 +1502,8 @@
           "Tag your haircut buddy.",
           "Save this look for your next visit."
         ],
-        "language_status": "editorial_default_not_a_claim_about_all_past_posts"
+        "language_status": "editorial_default_not_a_claim_about_all_past_posts",
+        "caption_source_update": "User-supplied caption update 2026-11-14; transient claims are caption-specific."
       },
       "keyword_bank": [
         "Ali Salon",
@@ -1419,7 +1571,9 @@
     {
       "brand_id": "jolly_tailor",
       "name": "Jolly Tailor",
-      "aliases": [],
+      "aliases": [
+        "Jolly Honest Tailor"
+      ],
       "category": "Men tailoring",
       "location": null,
       "content_genres": [
@@ -1443,7 +1597,8 @@
           "DM us to enquire about your look.",
           "Save this for your next outfit reference."
         ],
-        "language_status": "editorial_default_not_a_claim_about_all_past_posts"
+        "language_status": "editorial_default_not_a_claim_about_all_past_posts",
+        "caption_source_update": "User-supplied caption update 2026-11-14; transient claims are caption-specific."
       },
       "keyword_bank": [
         "Jolly Tailor",
@@ -1539,7 +1694,8 @@
           "Send this to a bride who plans to dance.",
           "DM us to discuss your bridal pair."
         ],
-        "language_status": "editorial_default_not_a_claim_about_all_past_posts"
+        "language_status": "editorial_default_not_a_claim_about_all_past_posts",
+        "caption_source_update": "User-supplied caption update 2026-11-14; transient claims are caption-specific."
       },
       "keyword_bank": [
         "Pardesi Sneakers",
@@ -1619,9 +1775,12 @@
     {
       "brand_id": "vj_jewels",
       "name": "VJ Jewels",
-      "aliases": [],
+      "aliases": [
+        "Infinity Silver by VJ Jewels",
+        "Infinity Silver"
+      ],
       "category": "Jewellery",
-      "location": null,
+      "location": "Sewri, Mumbai",
       "content_genres": [
         "product_shoot",
         "cinematic"
@@ -1644,24 +1803,37 @@
           "DM us to enquire about this piece.",
           "Save the design that caught your eye."
         ],
-        "language_status": "editorial_default_not_a_claim_about_all_past_posts"
+        "language_status": "editorial_default_not_a_claim_about_all_past_posts",
+        "caption_source_update": "User-supplied caption update 2026-11-14; transient claims are caption-specific.",
+        "caption_examples_note": "Hashtag/keyword examples from a user-supplied caption; choose only when relevant to the current post."
       },
       "keyword_bank": [
         "VJ Jewels",
         "jewellery design",
         "jewellery showcase",
         "occasion jewellery",
-        "jewellery details"
+        "jewellery details",
+        "Silver Jewellery",
+        "Silver Bracelet Designs",
+        "Silver Jewellery Manufacturer",
+        "Silver Jewellery Wholesaler",
+        "Silver Jewellery Exporter",
+        "Wholesale Silver Bracelets",
+        "Mumbai Silver Jewellery"
       ],
       "approved_facts": [],
       "mandatory_copy": [],
       "contacts": {
-        "phone": [],
-        "address": null,
+        "phone": [
+          "+91 89283 53255"
+        ],
+        "address": "Bharat Industrial Estate, T J Road, Gala No. 305, Near Ashok Garden, Sewri, Mumbai 400015",
         "email": null,
         "website": null
       },
       "footer_lines": [
+        "📍 Bharat Industrial Estate, T J Road, Gala No. 305, Near Ashok Garden, Sewri, Mumbai 400015",
+        "📞 +91 89283 53255",
         "💫 Managed by: @famebrosstudio"
       ],
       "instagram": {
@@ -1694,7 +1866,8 @@
         "Exact public address and applicable branch, if required"
       ],
       "sources": [
-        "data.txt: brand name and listed genres"
+        "data.txt: brand name and listed genres",
+        "User-supplied caption received 2026-11-14"
       ],
       "footer_policy": "Use these known lines for feed/reel captions. This is the proposed standard except the two source-file footers and the explicit Smietz rules. Omit footer for story/comment/repost modes unless requested. Do not add missing contact fields.",
       "readiness": "ready_with_post_brief",
@@ -1704,12 +1877,63 @@
         "Missing-data notes",
         "Internal sources and evidence URLs",
         "Draft example labels"
+      ],
+      "latest_user_caption_update": {
+        "caption_name": "Infinity Silver by VJ Jewels",
+        "location": "Bharat Industrial Estate, T J Road, Gala No. 305, Near Ashok Garden, Sewri, Mumbai 400015",
+        "location_short": "Sewri, Mumbai",
+        "phones": [
+          "+91 89283 53255"
+        ],
+        "email": null,
+        "aliases": [
+          "Infinity Silver by VJ Jewels",
+          "Infinity Silver"
+        ],
+        "notes": "Caption says silver jewellery exporter, manufacturer and wholesaler. User-supplied positioning; do not infer purity or hallmarking.",
+        "received_on": "2026-11-14",
+        "source": "Caption supplied directly by the user in this conversation; not independently verified.",
+        "brand_id": "vj_jewels",
+        "caption_examples": {
+          "hashtags": [
+            "#InfinitySilver",
+            "#SilverJewellery",
+            "#WholesaleJewellery"
+          ],
+          "keywords": [
+            "Silver Jewellery",
+            "Silver Bracelet Designs",
+            "Silver Jewellery Manufacturer",
+            "Silver Jewellery Wholesaler",
+            "Silver Jewellery Exporter",
+            "Wholesale Silver Bracelets",
+            "Mumbai Silver Jewellery"
+          ]
+        }
+      },
+      "caption_keyword_examples": [
+        "Silver Jewellery",
+        "Silver Bracelet Designs",
+        "Silver Jewellery Manufacturer",
+        "Silver Jewellery Wholesaler",
+        "Silver Jewellery Exporter",
+        "Wholesale Silver Bracelets",
+        "Mumbai Silver Jewellery"
+      ],
+      "caption_hashtag_examples": [
+        "#InfinitySilver",
+        "#SilverJewellery",
+        "#WholesaleJewellery"
       ]
     },
     {
       "brand_id": "charan_singh_sapra",
       "name": "Charan Singh Sapra",
-      "aliases": [],
+      "aliases": [
+        "Charan Sapra",
+        "Shri Charan Singh Sapra",
+        "Charan Singh Sapra Ji"
+      ],
       "category": "Public figure and political communication",
       "location": null,
       "content_genres": [
@@ -1735,13 +1959,22 @@
           "Share your thoughts respectfully.",
           "Follow for more community updates."
         ],
-        "language_status": "editorial_default_not_a_claim_about_all_past_posts"
+        "language_status": "editorial_default_not_a_claim_about_all_past_posts",
+        "caption_source_update": "User-supplied caption update 2026-11-14; transient claims are caption-specific.",
+        "caption_examples_note": "Hashtag/keyword examples from a user-supplied caption; choose only when relevant to the current post."
       },
       "keyword_bank": [
         "Charan Singh Sapra",
         "community updates",
         "public service",
-        "public discussion"
+        "public discussion",
+        "Indian politics",
+        "political debate",
+        "constitutional values",
+        "democracy in India",
+        "government accountability",
+        "questions to government",
+        "political analysis"
       ],
       "approved_facts": [],
       "mandatory_copy": [],
@@ -1786,7 +2019,8 @@
         "Exact public address and applicable branch, if required"
       ],
       "sources": [
-        "data.txt: brand name and listed genres"
+        "data.txt: brand name and listed genres",
+        "User-supplied caption received 2026-11-14"
       ],
       "footer_policy": "Use these known lines for feed/reel captions. This is the proposed standard except the two source-file footers and the explicit Smietz rules. Omit footer for story/comment/repost modes unless requested. Do not add missing contact fields.",
       "readiness": "ready_with_post_brief",
@@ -1796,14 +2030,61 @@
         "Missing-data notes",
         "Internal sources and evidence URLs",
         "Draft example labels"
+      ],
+      "latest_user_caption_update": {
+        "caption_name": "Charan Singh Sapra",
+        "location": null,
+        "location_short": null,
+        "phones": [],
+        "email": null,
+        "aliases": [],
+        "notes": "Hindi political-accountability caption; no physical location or contact details supplied. Follow handle: @charansinghsapra_official.",
+        "received_on": "2026-11-14",
+        "source": "Caption supplied directly by the user in this conversation; not independently verified.",
+        "brand_id": "charan_singh_sapra",
+        "caption_examples": {
+          "hashtags": [
+            "#PoliticalAccountability",
+            "#SaveConstitution",
+            "#IndianDemocracy"
+          ],
+          "keywords": [
+            "Charan Singh Sapra",
+            "Indian politics",
+            "political debate",
+            "constitutional values",
+            "democracy in India",
+            "government accountability",
+            "questions to government",
+            "political analysis"
+          ]
+        }
+      },
+      "caption_keyword_examples": [
+        "Charan Singh Sapra",
+        "Indian politics",
+        "political debate",
+        "constitutional values",
+        "democracy in India",
+        "government accountability",
+        "questions to government",
+        "political analysis"
+      ],
+      "caption_hashtag_examples": [
+        "#PoliticalAccountability",
+        "#SaveConstitution",
+        "#IndianDemocracy"
       ]
     },
     {
       "brand_id": "roopali_saree",
       "name": "Roopali Saree",
-      "aliases": [],
+      "aliases": [
+        "Roopali Sarees",
+        "Roopali Sarees Mira Road"
+      ],
       "category": "Women clothing",
-      "location": null,
+      "location": "Mira Road East, Thane",
       "content_genres": [
         "informational",
         "women_clothing"
@@ -1826,24 +2107,35 @@
           "Which colour would you choose?",
           "DM us to enquire about this saree."
         ],
-        "language_status": "editorial_default_not_a_claim_about_all_past_posts"
+        "language_status": "editorial_default_not_a_claim_about_all_past_posts",
+        "caption_source_update": "User-supplied caption update 2026-11-14; transient claims are caption-specific.",
+        "caption_examples_note": "Hashtag/keyword examples from a user-supplied caption; choose only when relevant to the current post."
       },
       "keyword_bank": [
         "Roopali Saree",
         "saree collection",
         "saree styling",
         "women ethnic wear",
-        "occasion wear"
+        "occasion wear",
+        "Roopali Sarees Mira Road",
+        "Happy Customer Review",
+        "Saree Shopping Mira Road",
+        "Ethnic Wear Collection",
+        "Ladies Dresses Thane"
       ],
       "approved_facts": [],
       "mandatory_copy": [],
       "contacts": {
-        "phone": [],
-        "address": null,
+        "phone": [
+          "+91 90225 61477"
+        ],
+        "address": "Shop No. 1, B-49, Chaitali Bldg., Sector-1, Shanti Nagar, Mira Road (E), Thane - 401107",
         "email": null,
         "website": null
       },
       "footer_lines": [
+        "📍 Shop No. 1, B-49, Chaitali Bldg., Sector-1, Shanti Nagar, Mira Road (E), Thane - 401107",
+        "📞 +91 90225 61477",
         "💫 Managed by: @famebrosstudio"
       ],
       "instagram": {
@@ -1877,7 +2169,8 @@
         "Exact public address and applicable branch, if required"
       ],
       "sources": [
-        "data.txt: brand name and listed genres"
+        "data.txt: brand name and listed genres",
+        "User-supplied caption received 2026-11-14"
       ],
       "footer_policy": "Use these known lines for feed/reel captions. This is the proposed standard except the two source-file footers and the explicit Smietz rules. Omit footer for story/comment/repost modes unless requested. Do not add missing contact fields.",
       "readiness": "ready_with_post_brief",
@@ -1887,14 +2180,58 @@
         "Missing-data notes",
         "Internal sources and evidence URLs",
         "Draft example labels"
+      ],
+      "latest_user_caption_update": {
+        "caption_name": "Roopali Sarees",
+        "location": "Shop No. 1, B-49, Chaitali Bldg., Sector-1, Shanti Nagar, Mira Road (E), Thane - 401107",
+        "location_short": "Mira Road East, Thane",
+        "phones": [
+          "+91 90225 61477"
+        ],
+        "email": null,
+        "aliases": [
+          "Roopali Sarees"
+        ],
+        "notes": "Customer-appreciation caption; treat the customer experience as post-specific and do not invent or generalize a testimonial.",
+        "received_on": "2026-11-14",
+        "source": "Caption supplied directly by the user in this conversation; not independently verified.",
+        "brand_id": "roopali_saree",
+        "caption_examples": {
+          "hashtags": [
+            "#RoopaliSarees",
+            "#HappyCustomer",
+            "#MiraRoadShopping"
+          ],
+          "keywords": [
+            "Roopali Sarees Mira Road",
+            "Happy Customer Review",
+            "Saree Shopping Mira Road",
+            "Ethnic Wear Collection",
+            "Ladies Dresses Thane"
+          ]
+        }
+      },
+      "caption_keyword_examples": [
+        "Roopali Sarees Mira Road",
+        "Happy Customer Review",
+        "Saree Shopping Mira Road",
+        "Ethnic Wear Collection",
+        "Ladies Dresses Thane"
+      ],
+      "caption_hashtag_examples": [
+        "#RoopaliSarees",
+        "#HappyCustomer",
+        "#MiraRoadShopping"
       ]
     },
     {
       "brand_id": "map_clothing",
       "name": "MAP Clothing",
-      "aliases": [],
+      "aliases": [
+        "MAP for Men"
+      ],
       "category": "Men clothing",
-      "location": null,
+      "location": "Mulund West, Mumbai",
       "content_genres": [
         "informational",
         "customer_review"
@@ -1918,7 +2255,9 @@
           "DM us to enquire about the featured look.",
           "Save this outfit reference."
         ],
-        "language_status": "editorial_default_not_a_claim_about_all_past_posts"
+        "language_status": "editorial_default_not_a_claim_about_all_past_posts",
+        "caption_source_update": "User-supplied caption update 2026-11-14; transient claims are caption-specific.",
+        "caption_examples_note": "Hashtag/keyword examples from a user-supplied caption; choose only when relevant to the current post."
       },
       "keyword_bank": [
         "MAP Clothing",
@@ -1926,7 +2265,12 @@
         "menswear",
         "outfit ideas for men",
         "customer feedback",
-        "mens style"
+        "mens style",
+        "Men's Trouser Stitching",
+        "Custom Tailoring Mumbai",
+        "Perfect Trouser Fit",
+        "Trouser Measurement",
+        "Men's Fashion Tips"
       ],
       "approved_facts": [
         {
@@ -1936,12 +2280,16 @@
       ],
       "mandatory_copy": [],
       "contacts": {
-        "phone": [],
-        "address": null,
+        "phone": [
+          "+91 98925 65737"
+        ],
+        "address": "Shop No. 3, Shyam Apt., Tambe Nagar, Ashok Nagar, Mulund West, Mumbai 400080",
         "email": null,
         "website": null
       },
       "footer_lines": [
+        "📍 Shop No. 3, Shyam Apt., Tambe Nagar, Ashok Nagar, Mulund West, Mumbai 400080",
+        "📞 +91 98925 65737",
         "💫 Managed by: @famebrosstudio"
       ],
       "instagram": {
@@ -1977,7 +2325,8 @@
         "Exact public address and applicable branch, if required"
       ],
       "sources": [
-        "data.txt: brand name and listed genres"
+        "data.txt: brand name and listed genres",
+        "User-supplied caption received 2026-11-14"
       ],
       "footer_policy": "Use these known lines for feed/reel captions. This is the proposed standard except the two source-file footers and the explicit Smietz rules. Omit footer for story/comment/repost modes unless requested. Do not add missing contact fields.",
       "readiness": "ready_with_post_brief",
@@ -1987,6 +2336,48 @@
         "Missing-data notes",
         "Internal sources and evidence URLs",
         "Draft example labels"
+      ],
+      "latest_user_caption_update": {
+        "caption_name": "MAP for Men",
+        "location": "Shop No. 3, Shyam Apt., Tambe Nagar, Ashok Nagar, Mulund West, Mumbai 400080",
+        "location_short": "Mulund West, Mumbai",
+        "phones": [
+          "+91 98925 65737"
+        ],
+        "email": null,
+        "aliases": [
+          "MAP for Men"
+        ],
+        "notes": "Trouser-stitching informational caption; testimonial-like fit/wash claims are post-specific, not a general guarantee.",
+        "received_on": "2026-11-14",
+        "source": "Caption supplied directly by the user in this conversation; not independently verified.",
+        "brand_id": "map_clothing",
+        "caption_examples": {
+          "hashtags": [
+            "#MAPForMen",
+            "#MensTailoring",
+            "#MensFashion"
+          ],
+          "keywords": [
+            "Men's Trouser Stitching",
+            "Custom Tailoring Mumbai",
+            "Perfect Trouser Fit",
+            "Trouser Measurement",
+            "Men's Fashion Tips"
+          ]
+        }
+      },
+      "caption_keyword_examples": [
+        "Men's Trouser Stitching",
+        "Custom Tailoring Mumbai",
+        "Perfect Trouser Fit",
+        "Trouser Measurement",
+        "Men's Fashion Tips"
+      ],
+      "caption_hashtag_examples": [
+        "#MAPForMen",
+        "#MensTailoring",
+        "#MensFashion"
       ]
     },
     {
@@ -2017,7 +2408,8 @@
           "Save this set for your next appointment.",
           "DM us to enquire about your nail transformation."
         ],
-        "language_status": "editorial_default_not_a_claim_about_all_past_posts"
+        "language_status": "editorial_default_not_a_claim_about_all_past_posts",
+        "caption_source_update": "User-supplied caption update 2026-11-14; transient claims are caption-specific."
       },
       "keyword_bank": [
         "Luxxe Nail Studio",
@@ -2091,7 +2483,10 @@
     {
       "brand_id": "bhanu_designer",
       "name": "Bhanu Designer",
-      "aliases": [],
+      "aliases": [
+        "Orange Bhanu Designer",
+        "Orange Bhanu Designer by Sanjay Bhanushali"
+      ],
       "category": "Designer clothing",
       "location": "Ghatkopar West, Mumbai",
       "content_genres": [
@@ -2118,7 +2513,8 @@
           "DM us to enquire about outfit rentals.",
           "Tag the friend planning their next occasion look."
         ],
-        "language_status": "editorial_default_not_a_claim_about_all_past_posts"
+        "language_status": "editorial_default_not_a_claim_about_all_past_posts",
+        "caption_source_update": "User-supplied caption update 2026-11-14; transient claims are caption-specific."
       },
       "keyword_bank": [
         "Bhanu Designer",
@@ -2218,7 +2614,8 @@
           "Book your appointment.",
           "Call us to enquire about the featured service."
         ],
-        "language_status": "editorial_default_not_a_claim_about_all_past_posts"
+        "language_status": "editorial_default_not_a_claim_about_all_past_posts",
+        "caption_source_update": "User-supplied caption update 2026-11-14; transient claims are caption-specific."
       },
       "keyword_bank": [
         "Smietz Beauty Hub",
@@ -2323,7 +2720,8 @@
           "DM us for collection enquiries.",
           "Save the trouser look you prefer."
         ],
-        "language_status": "editorial_default_not_a_claim_about_all_past_posts"
+        "language_status": "editorial_default_not_a_claim_about_all_past_posts",
+        "caption_source_update": "User-supplied caption update 2026-11-14; transient claims are caption-specific."
       },
       "keyword_bank": [
         "Carrara trousers",
@@ -2395,7 +2793,8 @@
       "brand_id": "rajlaxmi_sangli",
       "name": "Rajlaxmi Jewellers",
       "aliases": [
-        "Rajlaxmi Jewellers Sangli"
+        "Rajlaxmi Jewellers Sangli",
+        "Rajlaxmi Jewellers Kavathe Mahankal"
       ],
       "category": "Jewellery",
       "location": "Sangli",
@@ -2420,7 +2819,8 @@
           "अधिक माहितीसाठी आम्हाला संदेश पाठवा.",
           "आवडलेली डिझाइन सेव्ह करा."
         ],
-        "language_status": "explicit_user_rule"
+        "language_status": "explicit_user_rule",
+        "caption_source_update": "User-supplied caption update 2026-11-14; transient claims are caption-specific."
       },
       "keyword_bank": [
         "Rajlaxmi Jewellers Sangli",
@@ -2493,7 +2893,8 @@
       "name": "Devi & Company",
       "aliases": [
         "Devi and company Kanpur",
-        "Devi and Company"
+        "Devi and Company",
+        "Devis Kanpur"
       ],
       "category": "Fashion retail",
       "location": "Kanpur",
@@ -2520,7 +2921,8 @@
           "Visit Devi & Company in Kanpur.",
           "Share this with your shopping partner."
         ],
-        "language_status": "editorial_default_not_a_claim_about_all_past_posts"
+        "language_status": "editorial_default_not_a_claim_about_all_past_posts",
+        "caption_source_update": "User-supplied caption update 2026-11-14; transient claims are caption-specific."
       },
       "keyword_bank": [
         "Devi and Company",
@@ -2618,7 +3020,8 @@
           "Send this to someone with a sweet tooth.",
           "DM us to enquire about gifting options."
         ],
-        "language_status": "editorial_default_not_a_claim_about_all_past_posts"
+        "language_status": "editorial_default_not_a_claim_about_all_past_posts",
+        "caption_source_update": "User-supplied caption update 2026-11-14; transient claims are caption-specific."
       },
       "keyword_bank": [
         "Hazel Dryfruits",
@@ -2717,7 +3120,8 @@
           "DM us to enquire about your cake.",
           "Tag the person who always asks for one more bite."
         ],
-        "language_status": "editorial_default_not_a_claim_about_all_past_posts"
+        "language_status": "editorial_default_not_a_claim_about_all_past_posts",
+        "caption_source_update": "User-supplied caption update 2026-11-14; transient claims are caption-specific."
       },
       "keyword_bank": [
         "The Creamy Layer",
@@ -2786,9 +3190,12 @@
     {
       "brand_id": "zam_zam_motors",
       "name": "Zam Zam Motors",
-      "aliases": [],
+      "aliases": [
+        "Zam Zam Motors Mulund",
+        "@zamzam_motorss"
+      ],
       "category": "Car dealership",
-      "location": null,
+      "location": "Mulund West, Mumbai",
       "content_genres": [
         "car_information",
         "cinematic"
@@ -2811,24 +3218,37 @@
           "DM us for the featured car’s details.",
           "Contact us to enquire about viewing the car."
         ],
-        "language_status": "editorial_default_not_a_claim_about_all_past_posts"
+        "language_status": "editorial_default_not_a_claim_about_all_past_posts",
+        "caption_source_update": "User-supplied caption update 2026-11-14; transient claims are caption-specific.",
+        "caption_examples_note": "Hashtag/keyword examples from a user-supplied caption; choose only when relevant to the current post."
       },
       "keyword_bank": [
         "Zam Zam Motors",
         "car showcase",
         "car enquiries",
         "car details",
-        "car shopping"
+        "car shopping",
+        "Mahindra XUV500 W11 for Sale",
+        "Used Mahindra XUV500 Mumbai",
+        "Second Hand SUV Mumbai",
+        "Diesel SUV",
+        "7 Seater SUV",
+        "Used Cars Mulund West",
+        "Cars for Sale Mumbai"
       ],
       "approved_facts": [],
       "mandatory_copy": [],
       "contacts": {
-        "phone": [],
-        "address": null,
+        "phone": [
+          "8369160734"
+        ],
+        "address": "Runwal Greens BMC Parking B1 Basement, Mulund West, Mumbai 400080, India",
         "email": null,
         "website": null
       },
       "footer_lines": [
+        "📍 Runwal Greens BMC Parking B1 Basement, Mulund West, Mumbai 400080, India",
+        "📞 8369160734",
         "💫 Managed by: @famebrosstudio"
       ],
       "instagram": {
@@ -2861,7 +3281,8 @@
         "Exact public address and applicable branch, if required"
       ],
       "sources": [
-        "data.txt: brand name and listed genres"
+        "data.txt: brand name and listed genres",
+        "User-supplied caption received 2026-11-14"
       ],
       "footer_policy": "Use these known lines for feed/reel captions. This is the proposed standard except the two source-file footers and the explicit Smietz rules. Omit footer for story/comment/repost modes unless requested. Do not add missing contact fields.",
       "readiness": "ready_with_post_brief",
@@ -2871,6 +3292,50 @@
         "Missing-data notes",
         "Internal sources and evidence URLs",
         "Draft example labels"
+      ],
+      "latest_user_caption_update": {
+        "caption_name": "Zam Zam Motors",
+        "location": "Runwal Greens BMC Parking B1 Basement, Mulund West, Mumbai 400080, India",
+        "location_short": "Mulund West, Mumbai",
+        "phones": [
+          "8369160734"
+        ],
+        "email": null,
+        "aliases": [],
+        "notes": "Caption lists one 2021 Mahindra XUV500 W11. Individual listing is not current inventory; reconfirm availability/specifications. Non-accidental statement is attributed, not independently verified.",
+        "received_on": "2026-11-14",
+        "source": "Caption supplied directly by the user in this conversation; not independently verified.",
+        "brand_id": "zam_zam_motors",
+        "caption_examples": {
+          "hashtags": [
+            "#MahindraXUV500",
+            "#UsedCarsMumbai",
+            "#SUVForSale"
+          ],
+          "keywords": [
+            "Mahindra XUV500 W11 for Sale",
+            "Used Mahindra XUV500 Mumbai",
+            "Second Hand SUV Mumbai",
+            "Diesel SUV",
+            "7 Seater SUV",
+            "Used Cars Mulund West",
+            "Cars for Sale Mumbai"
+          ]
+        }
+      },
+      "caption_keyword_examples": [
+        "Mahindra XUV500 W11 for Sale",
+        "Used Mahindra XUV500 Mumbai",
+        "Second Hand SUV Mumbai",
+        "Diesel SUV",
+        "7 Seater SUV",
+        "Used Cars Mulund West",
+        "Cars for Sale Mumbai"
+      ],
+      "caption_hashtag_examples": [
+        "#MahindraXUV500",
+        "#UsedCarsMumbai",
+        "#SUVForSale"
       ]
     },
     {
@@ -2900,7 +3365,8 @@
           "DM us to enquire about this look.",
           "Save your favourite outfit reference."
         ],
-        "language_status": "editorial_default_not_a_claim_about_all_past_posts"
+        "language_status": "editorial_default_not_a_claim_about_all_past_posts",
+        "caption_source_update": "User-supplied caption update 2026-11-14; transient claims are caption-specific."
       },
       "keyword_bank": [
         "Avnikk Collection",
@@ -2994,7 +3460,8 @@
           "DM us to enquire about personalised coaching.",
           "Save this reminder for your training journey."
         ],
-        "language_status": "editorial_default_not_a_claim_about_all_past_posts"
+        "language_status": "editorial_default_not_a_claim_about_all_past_posts",
+        "caption_source_update": "User-supplied caption update 2026-11-14; transient claims are caption-specific."
       },
       "keyword_bank": [
         "LEL Fitness",
@@ -3100,7 +3567,8 @@
           "DM us to enquire about your makeover.",
           "Save this makeup reference."
         ],
-        "language_status": "editorial_default_not_a_claim_about_all_past_posts"
+        "language_status": "editorial_default_not_a_claim_about_all_past_posts",
+        "caption_source_update": "User-supplied caption update 2026-11-14; transient claims are caption-specific."
       },
       "keyword_bank": [
         "Qash Makeover",
@@ -3198,7 +3666,8 @@
           "DM @herchoice_byasma for current product details.",
           "Which look would you choose?"
         ],
-        "language_status": "editorial_default_not_a_claim_about_all_past_posts"
+        "language_status": "editorial_default_not_a_claim_about_all_past_posts",
+        "caption_source_update": "User-supplied caption update 2026-11-14; transient claims are caption-specific."
       },
       "keyword_bank": [
         "HerChoice by Asma",
@@ -3265,7 +3734,9 @@
     {
       "brand_id": "paak_pehnawa_mens",
       "name": "Paak Pehnawa Mens",
-      "aliases": [],
+      "aliases": [
+        "Paak Pehnawa"
+      ],
       "category": "Men clothing",
       "location": null,
       "content_genres": [
@@ -3292,14 +3763,25 @@
           "DM us to enquire about this look.",
           "Send this to your outfit planning partner."
         ],
-        "language_status": "editorial_default_not_a_claim_about_all_past_posts"
+        "language_status": "editorial_default_not_a_claim_about_all_past_posts",
+        "caption_source_update": "User-supplied caption update 2026-11-14; transient claims are caption-specific.",
+        "caption_examples_note": "Hashtag/keyword examples from a user-supplied caption; choose only when relevant to the current post."
       },
       "keyword_bank": [
         "Paak Pehnawa Mens",
         "menswear",
         "mens outfit ideas",
         "occasion wear for men",
-        "mens fashion showcase"
+        "mens fashion showcase",
+        "Pakistani inspired outfits",
+        "Pakistani suits",
+        "ethnic wear",
+        "embroidered kurta",
+        "designer suits",
+        "festive wear",
+        "salwar suit",
+        "women ethnic fashion",
+        "elegant Indian wear"
       ],
       "approved_facts": [],
       "mandatory_copy": [],
@@ -3344,7 +3826,8 @@
         "Exact public address and applicable branch, if required"
       ],
       "sources": [
-        "data.txt: brand name and listed genres"
+        "data.txt: brand name and listed genres",
+        "User-supplied caption received 2026-11-14"
       ],
       "footer_policy": "Use these known lines for feed/reel captions. This is the proposed standard except the two source-file footers and the explicit Smietz rules. Omit footer for story/comment/repost modes unless requested. Do not add missing contact fields.",
       "readiness": "ready_with_post_brief",
@@ -3354,6 +3837,52 @@
         "Missing-data notes",
         "Internal sources and evidence URLs",
         "Draft example labels"
+      ],
+      "latest_user_caption_update": {
+        "caption_name": "Paak Pehnawa",
+        "location": null,
+        "location_short": null,
+        "phones": [],
+        "email": null,
+        "aliases": [],
+        "notes": "Ethnicwear style showcase with Pakistani-inspired styling language and DM-to-order CTA; no location/contact supplied.",
+        "received_on": "2026-11-14",
+        "source": "Caption supplied directly by the user in this conversation; not independently verified.",
+        "brand_id": "paak_pehnawa_mens",
+        "caption_examples": {
+          "hashtags": [
+            "#EthnicWear",
+            "#PakistaniStyle",
+            "#FashionInspiration"
+          ],
+          "keywords": [
+            "Pakistani inspired outfits",
+            "Pakistani suits",
+            "ethnic wear",
+            "embroidered kurta",
+            "designer suits",
+            "festive wear",
+            "salwar suit",
+            "women ethnic fashion",
+            "elegant Indian wear"
+          ]
+        }
+      },
+      "caption_keyword_examples": [
+        "Pakistani inspired outfits",
+        "Pakistani suits",
+        "ethnic wear",
+        "embroidered kurta",
+        "designer suits",
+        "festive wear",
+        "salwar suit",
+        "women ethnic fashion",
+        "elegant Indian wear"
+      ],
+      "caption_hashtag_examples": [
+        "#EthnicWear",
+        "#PakistaniStyle",
+        "#FashionInspiration"
       ]
     },
     {
@@ -3361,7 +3890,7 @@
       "name": "Pixigrow Media",
       "aliases": [],
       "category": "Media and campaign content, exact service scope unconfirmed",
-      "location": "Rajkot association (public profile); exact address unverified",
+      "location": "Rajkot, Gujarat (exact address unverified)",
       "content_genres": [],
       "caption_direction": {
         "status": "editorial_default_based_on_source_genres",
@@ -3378,7 +3907,8 @@
         "cta_options": [
           "Use the action specified in the post brief."
         ],
-        "language_status": "editorial_default_not_a_claim_about_all_past_posts"
+        "language_status": "editorial_default_not_a_claim_about_all_past_posts",
+        "caption_source_update": "User-supplied caption update 2026-11-14; transient claims are caption-specific."
       },
       "keyword_bank": [
         "Pixi Grow"
@@ -3449,7 +3979,8 @@
         "cta_options": [
           "Contact the hospital for information about the service in this post."
         ],
-        "language_status": "editorial_default_not_a_claim_about_all_past_posts"
+        "language_status": "editorial_default_not_a_claim_about_all_past_posts",
+        "caption_source_update": "User-supplied caption update 2026-11-14; transient claims are caption-specific."
       },
       "keyword_bank": [
         "Sarang Hospital",
@@ -3517,7 +4048,8 @@
       "name": "G S Shetty International School",
       "aliases": [
         "Gs shetty school Bhandup",
-        "GSSIS"
+        "GSSIS",
+        "GS Shetty School"
       ],
       "category": "School",
       "location": "Bhandup, Mumbai",
@@ -3542,7 +4074,8 @@
           "See what our students explored.",
           "Contact the school for information."
         ],
-        "language_status": "editorial_default_not_a_claim_about_all_past_posts"
+        "language_status": "editorial_default_not_a_claim_about_all_past_posts",
+        "caption_source_update": "User-supplied caption update 2026-11-14; transient claims are caption-specific."
       },
       "keyword_bank": [
         "G S Shetty International School",
@@ -3561,8 +4094,7 @@
       "mandatory_copy": [],
       "contacts": {
         "phone": [
-          "9619933715",
-          "9136668409"
+          "9619933715 / 9136668409"
         ],
         "address": null,
         "email": "gsshettyinternationalschool@gmail.com",
@@ -3623,6 +4155,7 @@
       "brand_id": "seven_cube_footwear",
       "name": "Seven Cube Footwear",
       "aliases": [
+        "Seven Cube",
         "@sevencubes.footwear"
       ],
       "category": "Footwear",
@@ -3649,7 +4182,8 @@
           "DM us to enquire about this pair.",
           "Save the pair you would style."
         ],
-        "language_status": "editorial_default_not_a_claim_about_all_past_posts"
+        "language_status": "editorial_default_not_a_claim_about_all_past_posts",
+        "caption_source_update": "User-supplied caption update 2026-11-14; transient claims are caption-specific."
       },
       "keyword_bank": [
         "Seven Cube Footwear",
@@ -3738,7 +4272,8 @@
           "DM us for this piece’s details.",
           "Save this for your room planning."
         ],
-        "language_status": "editorial_default_not_a_claim_about_all_past_posts"
+        "language_status": "editorial_default_not_a_claim_about_all_past_posts",
+        "caption_source_update": "User-supplied caption update 2026-11-14; transient claims are caption-specific."
       },
       "keyword_bank": [
         "Sarama Furniture",
@@ -3825,7 +4360,8 @@
         "cta_options": [
           "Use the action specified in the post brief."
         ],
-        "language_status": "editorial_default_not_a_claim_about_all_past_posts"
+        "language_status": "editorial_default_not_a_claim_about_all_past_posts",
+        "caption_source_update": "User-supplied caption update 2026-11-14; transient claims are caption-specific."
       },
       "keyword_bank": [
         "OLVKIIXK"
@@ -3897,7 +4433,8 @@
         "cta_options": [
           "DM us to enquire about the featured piece."
         ],
-        "language_status": "editorial_default_not_a_claim_about_all_past_posts"
+        "language_status": "editorial_default_not_a_claim_about_all_past_posts",
+        "caption_source_update": "User-supplied caption update 2026-11-14; transient claims are caption-specific."
       },
       "keyword_bank": [
         "Anand Furniture",
@@ -3963,7 +4500,9 @@
     {
       "brand_id": "uva_fashions",
       "name": "Uvafashions Mumbai",
-      "aliases": [],
+      "aliases": [
+        "UVA Fashions"
+      ],
       "category": "Fashion; exact product audience unconfirmed",
       "location": "Mumbai",
       "content_genres": [],
@@ -3983,7 +4522,8 @@
         "cta_options": [
           "DM us for details of the featured outfit."
         ],
-        "language_status": "editorial_default_not_a_claim_about_all_past_posts"
+        "language_status": "editorial_default_not_a_claim_about_all_past_posts",
+        "caption_source_update": "User-supplied caption update 2026-11-14; transient claims are caption-specific."
       },
       "keyword_bank": [
         "Uvafashions Mumbai",
@@ -4064,7 +4604,8 @@
           "Use customer likeness or testimonial only with consent.",
           "Do not infer gender or garment category if not visible or provided."
         ],
-        "cta_options": []
+        "cta_options": [],
+        "caption_source_update": "User-supplied caption update 2026-11-14; transient claims are caption-specific."
       },
       "keyword_bank": [
         "tailor Jogeshwari East",
@@ -4084,9 +4625,7 @@
       ],
       "mandatory_copy": [],
       "contacts": {
-        "phone": [
-          "+91 91427 84784"
-        ],
+        "phone": [],
         "address": "Opp. Madrasi Masjid, Fish Market, Prem Nagar, Jogeshwari East, Mumbai 400060",
         "email": null,
         "website": null
@@ -4159,7 +4698,8 @@
           "Do not publish opening dates, current availability, offers or contact footers on teaser creative unless approved.",
           "Do not use London profile as Mumbai contact channel."
         ],
-        "cta_options": []
+        "cta_options": [],
+        "caption_source_update": "User-supplied caption update 2026-11-14; transient claims are caption-specific."
       },
       "keyword_bank": [
         "bridal wear Mumbai",
@@ -4196,9 +4736,7 @@
       ],
       "mandatory_copy": [],
       "contacts": {
-        "phone": [
-          "+91 90046 56157"
-        ],
+        "phone": [],
         "address": "Shop No. 2, Vaviya Mansion 33/257, Anand Nagar, Om Co-op HSG SOC Ltd, Nehru Road, Vakola, Santacruz East, Mumbai 400055",
         "email": null,
         "website": "https://almasofficial.in/"
@@ -4240,11 +4778,13 @@
     },
     {
       "brand_id": "perfume_vault",
-      "name": "Perfume Vault",
+      "name": "Parrfums Vault",
       "aliases": [
-        "Parrfum Vault"
+        "Parrfum Vault",
+        "Perfume Vault",
+        "@parrfums.vault"
       ],
-      "category": "Brand identity pending confirmation",
+      "category": "Fragrance brand (claims remain caption-specific)",
       "location": null,
       "content_genres": [
         "To be confirmed after client identity and offering are documented"
@@ -4264,10 +4804,21 @@
           "Do not claim original/authentic, imported, long-lasting, designer or niche fragrance products unless documented.",
           "Do not use contact details or Instagram pages belonging to unrelated search results."
         ],
-        "cta_options": []
+        "cta_options": [],
+        "caption_source_update": "User-supplied caption update 2026-11-14; transient claims are caption-specific.",
+        "caption_examples_note": "Hashtag/keyword examples from a user-supplied caption; choose only when relevant to the current post."
       },
       "keyword_bank": [
-        "Perfume Vault"
+        "Perfume Vault",
+        "Parrfums Vault",
+        "Leather Perfume",
+        "Luxury Perfumes India",
+        "Premium Fragrances",
+        "Quiet Luxury Fragrance",
+        "Sophisticated Scents",
+        "Elegant Perfumes",
+        "Unisex Fragrance",
+        "Perfume Shopping India"
       ],
       "approved_facts": [
         {
@@ -4277,18 +4828,22 @@
       ],
       "mandatory_copy": [],
       "contacts": {
-        "phone": [],
+        "phone": [
+          "+91 85919 35352"
+        ],
         "address": null,
         "email": null,
-        "website": null
+        "website": null,
+        "whatsapp": "+91 85919 35352"
       },
       "footer_lines": [
+        "📞 +91 85919 35352",
         "💫 Managed by: @famebrosstudio"
       ],
       "instagram": {
         "url": null,
-        "handle": null,
-        "status": "not_resolved",
+        "handle": "@parrfums.vault",
+        "status": "user_supplied_caption_2026-11-14",
         "evidence": [],
         "note": "Search results found unrelated fragrance creators and overseas businesses. No account link can be assigned confidently to this managed client."
       },
@@ -4301,15 +4856,68 @@
         "All key facts: final name, genre, products/services, city/address, phone, website, Instagram, audience, prices, offers, visual identity and launch status"
       ],
       "sources": [
-        "Famebros_14_Brand_Knowledge.json (prepared 2026-11-14)"
+        "Famebros_14_Brand_Knowledge.json (prepared 2026-11-14)",
+        "User-supplied caption received 2026-11-14"
       ],
       "footer_policy": "Append only confirmed footer lines for feed/reel captions. Never invent missing contact details.",
-      "readiness": "needs_brand_identity",
+      "readiness": "ready_with_post_brief",
       "always_exclude_from_captions": [
         "Internal notes",
         "Source URLs and evidence notes",
         "Unconfirmed details",
         "Placeholders"
+      ],
+      "latest_user_caption_update": {
+        "caption_name": "Parrfums Vault",
+        "location": null,
+        "location_short": null,
+        "phones": [
+          "+91 85919 35352"
+        ],
+        "email": null,
+        "aliases": [
+          "Perfume Vault",
+          "Parrfum Vault",
+          "@parrfums.vault"
+        ],
+        "notes": "User confirms display spelling Parrfums Vault. Caption-specific product: LEATHER. WhatsApp CTA is stated. Do not generalize authenticity, longevity or performance claims.",
+        "received_on": "2026-11-14",
+        "source": "Caption supplied directly by the user in this conversation; not independently verified.",
+        "brand_id": "perfume_vault",
+        "caption_examples": {
+          "hashtags": [
+            "#ParrfumsVault",
+            "#LuxuryPerfume",
+            "#LeatherFragrance"
+          ],
+          "keywords": [
+            "Parrfums Vault",
+            "Leather Perfume",
+            "Luxury Perfumes India",
+            "Premium Fragrances",
+            "Quiet Luxury Fragrance",
+            "Sophisticated Scents",
+            "Elegant Perfumes",
+            "Unisex Fragrance",
+            "Perfume Shopping India"
+          ]
+        }
+      },
+      "caption_keyword_examples": [
+        "Parrfums Vault",
+        "Leather Perfume",
+        "Luxury Perfumes India",
+        "Premium Fragrances",
+        "Quiet Luxury Fragrance",
+        "Sophisticated Scents",
+        "Elegant Perfumes",
+        "Unisex Fragrance",
+        "Perfume Shopping India"
+      ],
+      "caption_hashtag_examples": [
+        "#ParrfumsVault",
+        "#LuxuryPerfume",
+        "#LeatherFragrance"
       ]
     },
     {
@@ -4317,7 +4925,7 @@
       "name": "Cotton Plus",
       "aliases": [],
       "category": "Clothing retail",
-      "location": null,
+      "location": "Seawoods, Kharghar, Kalamboli/Panvel",
       "content_genres": [
         "Pending client identity and catalogue confirmation"
       ],
@@ -4336,10 +4944,20 @@
           "Do not connect the client to cottonplus.in or any listed location without confirmation.",
           "Do not publish prices, discounts, sizes or inventory without current details."
         ],
-        "cta_options": []
+        "cta_options": [],
+        "caption_source_update": "User-supplied caption update 2026-11-14; transient claims are caption-specific.",
+        "caption_examples_note": "Hashtag/keyword examples from a user-supplied caption; choose only when relevant to the current post."
       },
       "keyword_bank": [
-        "Cotton Plus"
+        "Cotton Plus",
+        "Cotton Plus Clothing Store",
+        "Women's Fashion",
+        "Family Shopping",
+        "Clothing Store Navi Mumbai",
+        "Seawoods Shopping",
+        "Kharghar Shopping",
+        "Kalamboli Shopping",
+        "Instagram Followers Gifts"
       ],
       "approved_facts": [
         {
@@ -4353,12 +4971,20 @@
       ],
       "mandatory_copy": [],
       "contacts": {
-        "phone": [],
-        "address": null,
+        "phone": [
+          "7666632979",
+          "9892461454",
+          "022 31939258"
+        ],
+        "address": "Seawoods: Shop No. 1/2, Neelkanth Plaza, Plot No. 53, Sector 40, Seawoods, Nerul (W), Navi Mumbai 400706\nKharghar: Shop No. 9/10/11, Sai Moksh, Plot No. 48, Sector 15, Kharghar, Navi Mumbai 410210\nKalamboli: Shop No. G9/F9, Plot No. 4, Neelsiddhi Amrante Phase 2, Sector 9E, Near D-Mart, Roadpali, Kalamboli, Panvel 410218",
         "email": null,
         "website": null
       },
       "footer_lines": [
+        "📍 Seawoods: Shop No. 1/2, Neelkanth Plaza, Plot No. 53, Sector 40, Seawoods, Nerul (W), Navi Mumbai 400706",
+        "📍 Kharghar: Shop No. 9/10/11, Sai Moksh, Plot No. 48, Sector 15, Kharghar, Navi Mumbai 410210",
+        "📍 Kalamboli: Shop No. G9/F9, Plot No. 4, Neelsiddhi Amrante Phase 2, Sector 9E, Near D-Mart, Roadpali, Kalamboli, Panvel 410218",
+        "📞 7666632979 | 9892461454 | 022 31939258",
         "💫 Managed by: @famebrosstudio"
       ],
       "instagram": {
@@ -4381,15 +5007,68 @@
         "Brand voice and visual identity"
       ],
       "sources": [
-        "Famebros_14_Brand_Knowledge.json (prepared 2026-11-14)"
+        "Famebros_14_Brand_Knowledge.json (prepared 2026-11-14)",
+        "User-supplied caption received 2026-11-14"
       ],
       "footer_policy": "Append only confirmed footer lines for feed/reel captions. Never invent missing contact details.",
-      "readiness": "needs_brand_identity",
+      "readiness": "ready_with_post_brief",
       "always_exclude_from_captions": [
         "Internal notes",
         "Source URLs and evidence notes",
         "Unconfirmed details",
         "Placeholders"
+      ],
+      "latest_user_caption_update": {
+        "caption_name": "Cotton Plus",
+        "location": [
+          "Seawoods: Shop No. 1/2, Neelkanth Plaza, Plot No. 53, Sector 40, Seawoods, Nerul (W), Navi Mumbai 400706",
+          "Kharghar: Shop No. 9/10/11, Sai Moksh, Plot No. 48, Sector 15, Kharghar, Navi Mumbai 410210",
+          "Kalamboli: Shop No. G9/F9, Plot No. 4, Neelsiddhi Amrante Phase 2, Sector 9E, Near D-Mart, Roadpali, Kalamboli, Panvel 410218"
+        ],
+        "location_short": null,
+        "phones": [
+          "7666632979",
+          "9892461454",
+          "022 31939258"
+        ],
+        "email": null,
+        "aliases": [],
+        "notes": "Caption identifies three stores and a follower-gift promotion. Phone numbers are not mapped to individual branches; do not infer. Reconfirm offer terms.",
+        "received_on": "2026-11-14",
+        "source": "Caption supplied directly by the user in this conversation; not independently verified.",
+        "brand_id": "cotton_plus",
+        "caption_examples": {
+          "hashtags": [
+            "#CottonPlus",
+            "#CustomerLove",
+            "#ShoppingRewards"
+          ],
+          "keywords": [
+            "Cotton Plus Clothing Store",
+            "Women's Fashion",
+            "Family Shopping",
+            "Clothing Store Navi Mumbai",
+            "Seawoods Shopping",
+            "Kharghar Shopping",
+            "Kalamboli Shopping",
+            "Instagram Followers Gifts"
+          ]
+        }
+      },
+      "caption_keyword_examples": [
+        "Cotton Plus Clothing Store",
+        "Women's Fashion",
+        "Family Shopping",
+        "Clothing Store Navi Mumbai",
+        "Seawoods Shopping",
+        "Kharghar Shopping",
+        "Kalamboli Shopping",
+        "Instagram Followers Gifts"
+      ],
+      "caption_hashtag_examples": [
+        "#CottonPlus",
+        "#CustomerLove",
+        "#ShoppingRewards"
       ]
     },
     {
@@ -4400,7 +5079,7 @@
         "Chinese N Grill"
       ],
       "category": "Likely food/restaurant from account name, but exact cuisine and business identity are unconfirmed",
-      "location": null,
+      "location": "Mohammed Ali Road, Mumbai",
       "content_genres": [
         "Menu highlights after exact business and menu confirmation",
         "Kitchen and service content after client approval",
@@ -4421,10 +5100,19 @@
           "Do not call dishes halal or vegetarian unless the client confirms ingredients and preparation.",
           "Do not use competitor or similarly named restaurant reviews as evidence."
         ],
-        "cta_options": []
+        "cta_options": [],
+        "caption_source_update": "User-supplied caption update 2026-11-14; transient claims are caption-specific.",
+        "caption_examples_note": "Hashtag/keyword examples from a user-supplied caption; choose only when relevant to the current post."
       },
       "keyword_bank": [
-        "Chinese and Grill"
+        "Chinese and Grill",
+        "Chinese N Grill Mumbai",
+        "Thai Sizzler review",
+        "Thai Sizzler Mumbai",
+        "Mohammed Ali Road restaurants",
+        "Mumbai food reviews",
+        "spicy sizzler",
+        "food lovers Mumbai"
       ],
       "approved_facts": [
         {
@@ -4434,12 +5122,17 @@
       ],
       "mandatory_copy": [],
       "contacts": {
-        "phone": [],
-        "address": null,
+        "phone": [
+          "79001 22468",
+          "8423999299"
+        ],
+        "address": "Mohammed Ali Road, Near Minara Masjid, Mumbai 400003",
         "email": null,
         "website": null
       },
       "footer_lines": [
+        "📍 Mohammed Ali Road, Near Minara Masjid, Mumbai 400003",
+        "📞 79001 22468 | 8423999299",
         "💫 Managed by: @famebrosstudio"
       ],
       "instagram": {
@@ -4462,15 +5155,67 @@
         "Hours, offers, prices and visual identity"
       ],
       "sources": [
-        "Famebros_14_Brand_Knowledge.json (prepared 2026-11-14)"
+        "Famebros_14_Brand_Knowledge.json (prepared 2026-11-14)",
+        "User-supplied caption received 2026-11-14"
       ],
       "footer_policy": "Append only confirmed footer lines for feed/reel captions. Never invent missing contact details.",
-      "readiness": "needs_brand_identity",
+      "readiness": "ready_with_post_brief",
       "always_exclude_from_captions": [
         "Internal notes",
         "Source URLs and evidence notes",
         "Unconfirmed details",
         "Placeholders"
+      ],
+      "latest_user_caption_update": {
+        "caption_name": "Chinese N Grill",
+        "location": "Mohammed Ali Road, Near Minara Masjid, Mumbai 400003",
+        "location_short": "Mohammed Ali Road, Mumbai",
+        "phones": [
+          "79001 22468",
+          "8423999299"
+        ],
+        "email": null,
+        "aliases": [
+          "Chinese N Grill"
+        ],
+        "notes": "Caption identifies a Thai Sizzler and customer rating 8.5/10; post-specific, not a permanent rating or availability guarantee.",
+        "received_on": "2026-11-14",
+        "source": "Caption supplied directly by the user in this conversation; not independently verified.",
+        "brand_id": "chinese_and_grill",
+        "caption_examples": {
+          "hashtags": [
+            "#ChineseNGrill",
+            "#ThaiSizzler",
+            "#MumbaiFoodies",
+            "#MohammedAliRoad",
+            "#FoodReview"
+          ],
+          "keywords": [
+            "Chinese N Grill Mumbai",
+            "Thai Sizzler review",
+            "Thai Sizzler Mumbai",
+            "Mohammed Ali Road restaurants",
+            "Mumbai food reviews",
+            "spicy sizzler",
+            "food lovers Mumbai"
+          ]
+        }
+      },
+      "caption_keyword_examples": [
+        "Chinese N Grill Mumbai",
+        "Thai Sizzler review",
+        "Thai Sizzler Mumbai",
+        "Mohammed Ali Road restaurants",
+        "Mumbai food reviews",
+        "spicy sizzler",
+        "food lovers Mumbai"
+      ],
+      "caption_hashtag_examples": [
+        "#ChineseNGrill",
+        "#ThaiSizzler",
+        "#MumbaiFoodies",
+        "#MohammedAliRoad",
+        "#FoodReview"
       ]
     },
     {
@@ -4506,7 +5251,8 @@
           "Do not reuse the proposed 12 reels and 6 posts as a consumer offer or service package.",
           "Verify the live service menu and campaign dates."
         ],
-        "cta_options": []
+        "cta_options": [],
+        "caption_source_update": "User-supplied caption update 2026-11-14; transient claims are caption-specific."
       },
       "keyword_bank": [
         "salon Naupada Thane",

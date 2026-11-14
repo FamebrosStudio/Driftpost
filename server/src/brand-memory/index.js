@@ -132,6 +132,8 @@ export function fullPack(brand, { groupWide = false } = {}) {
     full.footer_lines?.length ? `Footer (append exactly):\n${full.footer_lines.join('\n')}` : 'Footer: 💫 Managed by: @famebrosstudio',
     full.keyword_bank?.length ? `SEO keywords: ${full.keyword_bank.join(', ')}` : null,
     full.example?.body ? `Style example (match this energy, never copy facts):\n${String(full.example.body).slice(0, 500)}` : (brand.ex ? `Style example: ${brand.ex}` : null),
+    full.latest_user_caption_update
+      ? `LATEST USER-SUPPLIED CAPTION DATA (${full.latest_user_caption_update.received_on}; not independently verified):\n${cap(fmt(full.latest_user_caption_update), 2600)}\nOffers, inventory, product-specific statements, ratings and testimonials are post-specific; do not turn them into standing promises.` : null,
     full.instagram?.handle ? `IG handle: ${full.instagram.handle}` : null,
     full.instagram?.status ? `IG handle status: ${full.instagram.status} (never present an unverified handle as official)` : null,
     full.readiness === 'needs_brand_identity' ? 'Identity incomplete: if the brief lacks product/subject, ask ONE short question instead of inventing.' : null,
@@ -315,7 +317,11 @@ export function deepPhone(deep) {
 }
 
 export function deepAddress(deep) {
-  return deep?.contact?.full_address || '';
+  const address = deep?.contact?.full_address
+    || deep?.contact?.full_address_preferred
+    || deep?.contact?.address_full
+    || deep?.contact?.address;
+  return Array.isArray(address) ? address.join('\n') : (address || '');
 }
 // --- shared house style ----------------------------------------------------
 // The floor that applies to every brand, so output quality does not depend on
@@ -550,6 +556,8 @@ export function deepPack(deep, brand, { groupWide = false } = {}) {
     ...T(1, !isBlank(deep.missing_information) ? `STILL UNKNOWN (never invent): ${cap(fmt(deep.missing_information), 800)}` : null),
     ...T(1, ppi.length ? `NEEDED INPUTS (omit any claim that depends on what is missing):\n${cap(ppi.join('\n'), 1100)}` : null),
     ...T(1, latestUpdateContext),
+    ...T(1, deep.latest_user_caption_update
+      ? `LATEST USER-SUPPLIED CAPTION DATA (${deep.latest_user_caption_update.received_on}; not independently verified):\n${cap(fmt(deep.latest_user_caption_update), 2600)}\nTreat locations and contacts as details supplied in a caption. Offers, inventory, product-specific statements, ratings and testimonials are post-specific; do not turn them into standing promises.` : null),
     ...T(1, houseStyleFor(deep)),
 
     ...T(2, cap(fmt(deep.established_content_knowledge, true), 1500)),

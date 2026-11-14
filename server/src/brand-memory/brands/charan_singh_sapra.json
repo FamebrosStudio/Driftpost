@@ -415,6 +415,9 @@
       "Do not call Former Working President a current office without a fresh approved update.",
       "Recheck current roles before high-visibility campaigns or print production.",
       "Do not add phone, email, office address or constituency."
+    ],
+    "lines": [
+      "💫 Managed by: @famebrosstudio"
     ]
   },
   "suggested_hashtag_bank": {
@@ -720,6 +723,55 @@
     {
       "type": "user_writing_preferences",
       "supports": "Clear hooks, contextual English or Hinglish, three hashtags, one SEO bracket, accurate public details and no em dashes."
+    },
+    {
+      "type": "user_supplied_caption",
+      "received_on": "2026-11-14",
+      "supports": "The details in latest_user_caption_update; transient claims remain caption-specific."
     }
+  ],
+  "latest_user_caption_update": {
+    "caption_name": "Charan Singh Sapra",
+    "location": null,
+    "location_short": null,
+    "phones": [],
+    "email": null,
+    "aliases": [],
+    "notes": "Hindi political-accountability caption; no physical location or contact details supplied. Follow handle: @charansinghsapra_official.",
+    "received_on": "2026-11-14",
+    "source": "Caption supplied directly by the user in this conversation; not independently verified.",
+    "brand_id": "charan_singh_sapra",
+    "caption_examples": {
+      "hashtags": [
+        "#PoliticalAccountability",
+        "#SaveConstitution",
+        "#IndianDemocracy"
+      ],
+      "keywords": [
+        "Charan Singh Sapra",
+        "Indian politics",
+        "political debate",
+        "constitutional values",
+        "democracy in India",
+        "government accountability",
+        "questions to government",
+        "political analysis"
+      ]
+    }
+  },
+  "caption_keyword_examples": [
+    "Charan Singh Sapra",
+    "Indian politics",
+    "political debate",
+    "constitutional values",
+    "democracy in India",
+    "government accountability",
+    "questions to government",
+    "political analysis"
+  ],
+  "caption_hashtag_examples": [
+    "#PoliticalAccountability",
+    "#SaveConstitution",
+    "#IndianDemocracy"
   ]
 }

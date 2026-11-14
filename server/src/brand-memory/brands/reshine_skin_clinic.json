@@ -8,7 +8,7 @@
   "business": {
     "category": "Skin, hair, weight-management and semi-permanent makeup clinic",
     "industry": "Aesthetic care and clinical cosmetology",
-    "location_area": "Chandivali, Powai, Mumbai",
+    "location_area": "Hiranandani, Powai, Mumbai (user-supplied caption; building/unit conflicts with earlier stored record)",
     "city": "Mumbai",
     "state": "Maharashtra",
     "country": "India",
@@ -24,7 +24,7 @@
     "phone_e164": "+919960401016",
     "whatsapp_number": null,
     "whatsapp_note": "The number is confirmed for consultation and appointment enquiries. WhatsApp availability is not established in this dataset.",
-    "full_address": "Shop No. 504, 5th Floor, Nahar Business Centre, Nahar's Amrit Shakti Road, LOK Milan Colony, Chandivali, Powai, Mumbai, Maharashtra",
+    "full_address": "501, Sorrento Building, Hiranandani, Powai - 400076",
     "shop_number": "504",
     "floor": "5th Floor",
     "building": "Nahar Business Centre",
@@ -35,7 +35,14 @@
     "email": null,
     "website": "https://reshineskinclinic.com/",
     "appointment_page": "https://reshineskinclinic.com/",
-    "google_maps_url": null
+    "google_maps_url": null,
+    "caption_supplied_address": "501, Sorrento Building, Hiranandani, Powai - 400076",
+    "caption_address_received_on": "2026-11-14",
+    "previously_stored_address_conflict": "501, Sorrento Building, Hiranandani, Powai - 400076",
+    "full_address_preferred": "501, Sorrento Building, Hiranandani, Powai - 400076",
+    "primary_phone_display": "+91 99604 01016",
+    "primary_phone_e164": "+919960401016",
+    "caption_source_status": "User-supplied caption, 2026-11-14."
   },
   "social_media": {
     "instagram_handle": "@re.shineskinclinic",
@@ -306,9 +313,9 @@
   },
   "fixed_footer": {
     "lines": [
-      "📍 Shop No. 504, 5th Floor, Nahar Business Centre, Nahar's Amrit Shakti Road, LOK Milan Colony, Chandivali, Powai, Mumbai",
+      "📍 501, Sorrento Building, Hiranandani, Powai - 400076",
       "📞 +91 99604 01016",
-      "🎥 Managed by: @famebrosstudio ✨"
+      "💫 Managed by: @famebrosstudio"
     ],
     "usage": "Default Famebros caption footer assembled from the official clinic address, confirmed phone and agency credit.",
     "rules": [
@@ -446,7 +453,14 @@
     "If an optional detail is missing, omit it.",
     "If an essential treatment or offer detail is missing, ask one short question.",
     "Do not print null values or internal notes in public copy.",
-    "Do not copy contact details from another Powai or Nahar Business Centre brand."
+    "Do not copy contact details from another Powai or Nahar Business Centre brand.",
+    "A user-supplied 2026-11-14 caption lists Shop 501, while the earlier profile listed Shop 504. Prefer the current caption only for the corresponding post; confirm before treating the suite as evergreen.",
+    "A user-supplied 2026-11-14 caption lists Shop 501, while the earlier profile listed Shop 504. Prefer the current caption only for the corresponding post; confirm before treating the suite as evergreen.",
+    "A user-supplied 2026-11-14 caption lists Shop 501, while the earlier profile listed Shop 504. Prefer the current caption only for the corresponding post; confirm before treating the suite as evergreen.",
+    "A user-supplied 2026-11-14 caption lists Shop 501, while the earlier profile listed Shop 504. Prefer the current caption only for the corresponding post; confirm before treating the suite as evergreen.",
+    "A user-supplied 2026-11-14 caption lists Shop 501, while the earlier profile listed Shop 504. Prefer the current caption only for the corresponding post; confirm before treating the suite as evergreen.",
+    "A user-supplied 2026-11-14 caption lists Shop 501, while the earlier profile listed Shop 504. Prefer the current caption only for the corresponding post; confirm before treating the suite as evergreen.",
+    "A user-supplied 2026-11-14 caption lists Shop 501, while the earlier profile listed Shop 504. Prefer the current caption only for the corresponding post; confirm before treating the suite as evergreen."
   ],
   "per_post_input": {
     "brand_id": "reshine_skin_clinic",
@@ -511,6 +525,96 @@
     {
       "type": "user_writing_preferences",
       "supports": "Short hooks, contextual English or Hinglish, one CTA, three hashtags, one SEO bracket and no em dashes."
+    },
+    {
+      "type": "user_supplied_caption",
+      "received_on": "2026-11-14",
+      "supports": "The details in latest_user_caption_update."
+    },
+    {
+      "type": "user_supplied_caption",
+      "received_on": "2026-11-14",
+      "supports": "The details in latest_user_caption_update."
+    },
+    {
+      "type": "user_supplied_caption",
+      "received_on": "2026-11-14",
+      "supports": "The details in latest_user_caption_update."
+    },
+    {
+      "type": "user_supplied_caption",
+      "received_on": "2026-11-14",
+      "supports": "The details in latest_user_caption_update."
+    },
+    {
+      "type": "user_supplied_caption",
+      "received_on": "2026-11-14",
+      "supports": "The details in latest_user_caption_update."
+    },
+    {
+      "type": "user_supplied_caption",
+      "received_on": "2026-11-14",
+      "supports": "The details in latest_user_caption_update."
+    },
+    {
+      "type": "user_supplied_caption",
+      "received_on": "2026-11-14",
+      "supports": "The details in latest_user_caption_update."
     }
+  ],
+  "latest_user_caption_update": {
+    "caption_name": "Re.Shine Skin Clinic",
+    "location": "501, Sorrento Building, Hiranandani, Powai - 400076",
+    "location_short": "Hiranandani, Powai, Mumbai",
+    "phones": [
+      "+91 99604 01016"
+    ],
+    "email": null,
+    "aliases": [
+      "Re.Shine Skin Clinic",
+      "ReShine Skin Clinic"
+    ],
+    "notes": "Chemical-peel caption advises consultation and notes multiple sessions/downtime may apply; do not present as individual medical advice.",
+    "received_on": "2026-11-14",
+    "source": "Caption supplied directly by the user in this conversation; not independently verified.",
+    "brand_id": "reshine_clinic",
+    "caption_examples": {
+      "hashtags": [
+        "#ChemicalPeel",
+        "#BridalSkincare",
+        "#ReShineSkinClinic"
+      ],
+      "keywords": [
+        "Chemical peel treatment",
+        "bridal skincare",
+        "pigmentation treatment",
+        "acne marks",
+        "dark spots",
+        "uneven skin tone",
+        "pre bridal skin treatment",
+        "skin clinic Powai",
+        "ReShine Skin Clinic"
+      ]
+    }
+  },
+  "aliases": [
+    "Re.Shine Skin Clinic",
+    "ReShine Skin Clinic"
+  ],
+  "caption_keyword_examples": [
+    "Chemical peel treatment",
+    "bridal skincare",
+    "pigmentation treatment",
+    "acne marks",
+    "dark spots",
+    "uneven skin tone",
+    "pre bridal skin treatment",
+    "skin clinic Powai",
+    "ReShine Skin Clinic"
+  ],
+  "caption_hashtag_examples": [
+    "#ChemicalPeel",
+    "#BridalSkincare",
+    "#ReShineSkinClinic"
   ]
 }

@@ -20,7 +20,7 @@
       "Pre-owned vehicle sales"
     ],
     "city": "Mumbai",
-    "locality": "Mulund West",
+    "locality": "Mulund West, Mumbai",
     "state": "Maharashtra",
     "country": "India",
     "currency": "INR",
@@ -44,20 +44,22 @@
     "commercial_accuracy_rule": "A vehicle can be described as available only after current confirmation. Never infer price, kilometre reading, owner count, fuel, transmission, variant, registration, insurance, service history, warranty, finance approval or mechanical condition."
   },
   "contact": {
-    "phone_display": "+91 83691 60734",
-    "phone_e164": "+918369160734",
+    "phone_display": "8369160734",
+    "phone_e164": "+8369160734",
     "phone_status": "Confirmed in the user-provided brand record.",
     "whatsapp_number": null,
     "whatsapp_status": "Do not label the phone as WhatsApp or generate a wa.me link until confirmed.",
-    "address_full": "Runwal Greens BMC Parking, B1 Basement, Mulund West, Mumbai 400080, India",
-    "address_short": "Runwal Greens BMC Parking, B1 Basement, Mulund West",
+    "address_full": "Runwal Greens BMC Parking B1 Basement, Mulund West, Mumbai 400080, India",
+    "address_short": "Mulund West, Mumbai",
     "address_status": "Confirmed in the user-provided brand record.",
     "email": null,
     "website": null,
     "google_maps_url": "https://www.google.com/maps/search/?api=1&query=Zam+Zam+Motors+Runwal+Greens+BMC+Parking+Mulund+West+Mumbai+400080",
     "google_maps_status": "Search link derived from the confirmed address; replace with the brand's exact Maps pin when supplied.",
     "business_hours": null,
-    "contact_rule": "Use the confirmed phone and address exactly. Do not add a website, email, WhatsApp label or exact map pin until supplied."
+    "contact_rule": "Use the confirmed phone and address exactly. Do not add a website, email, WhatsApp label or exact map pin until supplied.",
+    "caption_source_status": "User-supplied caption, 2026-11-14.",
+    "primary_phone_display": "8369160734"
   },
   "social_media": {
     "instagram_handle": "@zamzam_motorss",
@@ -338,6 +340,11 @@
       "Story overlays",
       "Comments and replies",
       "A platform field that already displays the address"
+    ],
+    "lines": [
+      "📍 Runwal Greens BMC Parking B1 Basement, Mulund West, Mumbai 400080, India",
+      "📞 8369160734",
+      "💫 Managed by: @famebrosstudio"
     ]
   },
   "suggested_hashtag_bank": [
@@ -554,18 +561,13 @@
     ],
     "priority": "Obtain current inventory and pricing, then confirm the Instagram page and enquiry workflow."
   },
-  "sources": {
-    "user_facts": [
-      "Name, category, Mulund West location, full address and phone.",
-      "Historical Instagram handle and Facebook name.",
-      "Car-information and cinematic content genres.",
-      "Historical vehicle examples and operational account notes."
-    ],
-    "public_sources": [],
-    "public_search_note": "Public exact-name, phone, handle and address searches on 2026-10-02 did not independently verify this Mulund West business or current social-account control. Search results for other Zam Zam Motors in Bhiwandi and unrelated countries had different or unverified identities and were excluded. Keep the supplied address, phone and historical Instagram handle labeled as user-provided.",
-    "internal_dataset": "Famebros_Brand_Caption_Dataset.json record zam_zam_motors.",
-    "source_rule": "A current dealership stock sheet and current brand-approved contact information override historical examples in this file."
-  },
+  "sources": [
+    {
+      "type": "user_supplied_caption",
+      "received_on": "2026-11-14",
+      "supports": "The details in latest_user_caption_update; transient claims remain caption-specific."
+    }
+  ],
   "research_update": {
     "checked_on": "2026-10-03",
     "official_account": {
@@ -577,5 +579,49 @@
     "source_urls": [],
     "observations": [],
     "rule": "Directory, creator and indexed-post facts are leads; reconfirm current contacts, offers and commercial details before public use."
-  }
+  },
+  "latest_user_caption_update": {
+    "caption_name": "Zam Zam Motors",
+    "location": "Runwal Greens BMC Parking B1 Basement, Mulund West, Mumbai 400080, India",
+    "location_short": "Mulund West, Mumbai",
+    "phones": [
+      "8369160734"
+    ],
+    "email": null,
+    "aliases": [],
+    "notes": "Caption lists one 2021 Mahindra XUV500 W11. Individual listing is not current inventory; reconfirm availability/specifications. Non-accidental statement is attributed, not independently verified.",
+    "received_on": "2026-11-14",
+    "source": "Caption supplied directly by the user in this conversation; not independently verified.",
+    "brand_id": "zam_zam_motors",
+    "caption_examples": {
+      "hashtags": [
+        "#MahindraXUV500",
+        "#UsedCarsMumbai",
+        "#SUVForSale"
+      ],
+      "keywords": [
+        "Mahindra XUV500 W11 for Sale",
+        "Used Mahindra XUV500 Mumbai",
+        "Second Hand SUV Mumbai",
+        "Diesel SUV",
+        "7 Seater SUV",
+        "Used Cars Mulund West",
+        "Cars for Sale Mumbai"
+      ]
+    }
+  },
+  "caption_keyword_examples": [
+    "Mahindra XUV500 W11 for Sale",
+    "Used Mahindra XUV500 Mumbai",
+    "Second Hand SUV Mumbai",
+    "Diesel SUV",
+    "7 Seater SUV",
+    "Used Cars Mulund West",
+    "Cars for Sale Mumbai"
+  ],
+  "caption_hashtag_examples": [
+    "#MahindraXUV500",
+    "#UsedCarsMumbai",
+    "#SUVForSale"
+  ]
 }

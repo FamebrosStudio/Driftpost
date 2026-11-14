@@ -123,9 +123,12 @@
     {
       "id": "reshine_clinic",
       "name": "Reshine Clinic",
-      "aliases": [],
+      "aliases": [
+        "Re.Shine Skin Clinic",
+        "ReShine Skin Clinic"
+      ],
       "cat": "Skin clinic",
-      "loc": "",
+      "loc": "Hiranandani, Powai, Mumbai",
       "genres": [
         "informational",
         "transformation"
@@ -145,9 +148,20 @@
         "skin consultation",
         "skin care",
         "skin clinic",
-        "skin concerns"
+        "skin concerns",
+        "Chemical peel treatment",
+        "bridal skincare",
+        "pigmentation treatment",
+        "acne marks",
+        "dark spots",
+        "uneven skin tone",
+        "pre bridal skin treatment",
+        "skin clinic Powai",
+        "ReShine Skin Clinic"
       ],
       "footer": [
+        "📍 501, Sorrento Building, Hiranandani, Powai - 400076",
+        "📞 +91 99604 01016",
         "💫 Managed by: @famebrosstudio"
       ],
       "mandatory": [],
@@ -155,7 +169,12 @@
       "ig": "@re.shineskinclinic",
       "ready": "ready_with_post_brief",
       "web": null,
-      "email": null
+      "email": null,
+      "caption_hashtag_examples": [
+        "#ChemicalPeel",
+        "#BridalSkincare",
+        "#ReShineSkinClinic"
+      ]
     },
     {
       "id": "ak_factor",
@@ -275,12 +294,12 @@
     },
     {
       "id": "sk_furniture",
-      "name": "SK Furniture",
+      "name": "SK Furniture Market",
       "aliases": [
         "SK Furniture Market"
       ],
       "cat": "Furniture",
-      "loc": "",
+      "loc": "Khartan Road, Thane",
       "genres": [
         "funny",
         "hype"
@@ -300,9 +319,21 @@
         "furniture shopping",
         "home furniture",
         "room makeover",
-        "furniture ideas"
+        "furniture ideas",
+        "Metal Cupboard Thane",
+        "Steel Wardrobe Thane",
+        "Combination Cupboard",
+        "Modern Cupboard Designs",
+        "Bedroom Furniture Thane",
+        "Mirror Wardrobe Designs",
+        "Furniture Shop in Thane",
+        "Wardrobe on EMI",
+        "Free Delivery Furniture Thane"
       ],
       "footer": [
+        "📍 Shop No. 50 & 51, Purna Shanti Heights, Khartan Road, Thane 400601",
+        "📞 8433870901 | 9167870901",
+        "📧 skfurnituremarket@gmail.com",
         "💫 Managed by: @famebrosstudio"
       ],
       "mandatory": [],
@@ -310,7 +341,12 @@
       "ig": "@skfurnituremarket",
       "ready": "ready_with_post_brief",
       "web": null,
-      "email": null
+      "email": null,
+      "caption_hashtag_examples": [
+        "#SKFurnitureMarket",
+        "#CupboardDesign",
+        "#FurnitureThane"
+      ]
     },
     {
       "id": "shree_mahalaxmi_kurla",
@@ -593,9 +629,12 @@
     {
       "id": "vj_jewels",
       "name": "VJ Jewels",
-      "aliases": [],
+      "aliases": [
+        "Infinity Silver by VJ Jewels",
+        "Infinity Silver"
+      ],
       "cat": "Jewellery",
-      "loc": "",
+      "loc": "Sewri, Mumbai",
       "genres": [
         "product_shoot",
         "cinematic"
@@ -615,9 +654,21 @@
         "jewellery design",
         "jewellery showcase",
         "occasion jewellery",
-        "jewellery details"
+        "jewellery details",
+        "Infinity Silver",
+        "silver bracelet wholesale",
+        "silver jewellery manufacturer",
+        "Silver Jewellery",
+        "Silver Bracelet Designs",
+        "Silver Jewellery Manufacturer",
+        "Silver Jewellery Wholesaler",
+        "Silver Jewellery Exporter",
+        "Wholesale Silver Bracelets",
+        "Mumbai Silver Jewellery"
       ],
       "footer": [
+        "📍 Bharat Industrial Estate, T J Road, Gala No. 305, Near Ashok Garden, Sewri, Mumbai 400015",
+        "📞 +91 89283 53255",
         "💫 Managed by: @famebrosstudio"
       ],
       "mandatory": [],
@@ -625,7 +676,12 @@
       "ig": "@infinitysilver._",
       "ready": "ready_with_post_brief",
       "web": null,
-      "email": null
+      "email": null,
+      "caption_hashtag_examples": [
+        "#InfinitySilver",
+        "#SilverJewellery",
+        "#WholesaleJewellery"
+      ]
     },
     {
       "id": "charan_singh_sapra",
@@ -654,7 +710,14 @@
         "Charan Singh Sapra",
         "community updates",
         "public service",
-        "public discussion"
+        "public discussion",
+        "Indian politics",
+        "political debate",
+        "constitutional values",
+        "democracy in India",
+        "government accountability",
+        "questions to government",
+        "political analysis"
       ],
       "footer": [
         "💫 Managed by: @famebrosstudio"
@@ -664,7 +727,12 @@
       "ig": "@charansinghsapra_official",
       "ready": "ready_with_post_brief",
       "web": null,
-      "email": null
+      "email": null,
+      "caption_hashtag_examples": [
+        "#PoliticalAccountability",
+        "#SaveConstitution",
+        "#IndianDemocracy"
+      ]
     },
     {
       "id": "roopali_saree",
@@ -674,7 +742,7 @@
         "Roopali Sarees Mira Road"
       ],
       "cat": "Women clothing",
-      "loc": "",
+      "loc": "Mira Road East, Thane",
       "genres": [
         "informational",
         "women_clothing"
@@ -694,9 +762,16 @@
         "saree collection",
         "saree styling",
         "women ethnic wear",
-        "occasion wear"
+        "occasion wear",
+        "Roopali Sarees Mira Road",
+        "Happy Customer Review",
+        "Saree Shopping Mira Road",
+        "Ethnic Wear Collection",
+        "Ladies Dresses Thane"
       ],
       "footer": [
+        "📍 Shop No. 1, B-49, Chaitali Bldg., Sector-1, Shanti Nagar, Mira Road (E), Thane - 401107",
+        "📞 +91 90225 61477",
         "💫 Managed by: @famebrosstudio"
       ],
       "mandatory": [],
@@ -704,14 +779,21 @@
       "ig": "@roopalisarees",
       "ready": "ready_with_post_brief",
       "web": null,
-      "email": null
+      "email": null,
+      "caption_hashtag_examples": [
+        "#RoopaliSarees",
+        "#HappyCustomer",
+        "#MiraRoadShopping"
+      ]
     },
     {
       "id": "map_clothing",
       "name": "MAP Clothing",
-      "aliases": [],
+      "aliases": [
+        "MAP for Men"
+      ],
       "cat": "Men clothing",
-      "loc": "",
+      "loc": "Mulund West, Mumbai",
       "genres": [
         "informational",
         "customer_review"
@@ -732,9 +814,16 @@
         "menswear",
         "outfit ideas for men",
         "customer feedback",
-        "mens style"
+        "mens style",
+        "Men's Trouser Stitching",
+        "Custom Tailoring Mumbai",
+        "Perfect Trouser Fit",
+        "Trouser Measurement",
+        "Men's Fashion Tips"
       ],
       "footer": [
+        "📍 Shop No. 3, Shyam Apt., Tambe Nagar, Ashok Nagar, Mulund West, Mumbai 400080",
+        "📞 +91 98925 65737",
         "💫 Managed by: @famebrosstudio"
       ],
       "mandatory": [],
@@ -742,7 +831,12 @@
       "ig": "@map_for_men",
       "ready": "ready_with_post_brief",
       "web": null,
-      "email": null
+      "email": null,
+      "caption_hashtag_examples": [
+        "#MAPForMen",
+        "#MensTailoring",
+        "#MensFashion"
+      ]
     },
     {
       "id": "luxxe_nail_studio",
@@ -1081,7 +1175,7 @@
         "@zamzam_motorss"
       ],
       "cat": "Car dealership",
-      "loc": "",
+      "loc": "Mulund West, Mumbai",
       "genres": [
         "car_information",
         "cinematic"
@@ -1101,9 +1195,18 @@
         "car showcase",
         "car enquiries",
         "car details",
-        "car shopping"
+        "car shopping",
+        "Mahindra XUV500 W11 for Sale",
+        "Used Mahindra XUV500 Mumbai",
+        "Second Hand SUV Mumbai",
+        "Diesel SUV",
+        "7 Seater SUV",
+        "Used Cars Mulund West",
+        "Cars for Sale Mumbai"
       ],
       "footer": [
+        "📍 Runwal Greens BMC Parking B1 Basement, Mulund West, Mumbai 400080, India",
+        "📞 8369160734",
         "💫 Managed by: @famebrosstudio"
       ],
       "mandatory": [],
@@ -1111,7 +1214,12 @@
       "ig": "@zamzam_motorss",
       "ready": "ready_with_post_brief",
       "web": null,
-      "email": null
+      "email": null,
+      "caption_hashtag_examples": [
+        "#MahindraXUV500",
+        "#UsedCarsMumbai",
+        "#SUVForSale"
+      ]
     },
     {
       "id": "avnikk_collection",
@@ -1300,7 +1408,16 @@
         "menswear",
         "mens outfit ideas",
         "occasion wear for men",
-        "mens fashion showcase"
+        "mens fashion showcase",
+        "Pakistani inspired outfits",
+        "Pakistani suits",
+        "ethnic wear",
+        "embroidered kurta",
+        "designer suits",
+        "festive wear",
+        "salwar suit",
+        "women ethnic fashion",
+        "elegant Indian wear"
       ],
       "footer": [
         "💫 Managed by: @famebrosstudio"
@@ -1310,7 +1427,12 @@
       "ig": "@paak.pehnawa.mens",
       "ready": "ready_with_post_brief",
       "web": null,
-      "email": null
+      "email": null,
+      "caption_hashtag_examples": [
+        "#EthnicWear",
+        "#PakistaniStyle",
+        "#FashionInspiration"
+      ]
     },
     {
       "id": "pixi_grow",
@@ -1679,11 +1801,13 @@
     },
     {
       "id": "perfume_vault",
-      "name": "Perfume Vault",
+      "name": "Parrfums Vault",
       "aliases": [
-        "Parrfum Vault"
+        "Parrfum Vault",
+        "Perfume Vault",
+        "@parrfums.vault"
       ],
-      "cat": "Brand identity pending confirmation",
+      "cat": "Fragrance brand",
       "loc": "",
       "genres": [
         "To be confirmed after client identity and offering are documented"
@@ -1699,24 +1823,39 @@
         "Do not use contact details or Instagram pages belonging to unrelated search results."
       ],
       "kw": [
-        "Perfume Vault"
+        "Perfume Vault",
+        "Parrfums Vault",
+        "Leather Perfume",
+        "Luxury Perfumes India",
+        "Premium Fragrances",
+        "Quiet Luxury Fragrance",
+        "Sophisticated Scents",
+        "Elegant Perfumes",
+        "Unisex Fragrance",
+        "Perfume Shopping India"
       ],
       "footer": [
+        "📞 +91 85919 35352",
         "💫 Managed by: @famebrosstudio"
       ],
       "mandatory": [],
       "ex": "A new chapter is on the way. Follow the official Perfume Vault page for updates.",
-      "ig": null,
-      "ready": "needs_brand_identity",
+      "ig": "@parrfums.vault",
+      "ready": "ready_with_post_brief",
       "web": null,
-      "email": null
+      "email": null,
+      "caption_hashtag_examples": [
+        "#ParrfumsVault",
+        "#LuxuryPerfume",
+        "#LeatherFragrance"
+      ]
     },
     {
       "id": "cotton_plus",
       "name": "Cotton Plus",
       "aliases": [],
       "cat": "Clothing retail",
-      "loc": "",
+      "loc": "Seawoods, Kharghar, Kalamboli/Panvel",
       "genres": [
         "Pending client identity and catalogue confirmation"
       ],
@@ -1731,9 +1870,25 @@
         "Do not publish prices, discounts, sizes or inventory without current details."
       ],
       "kw": [
-        "Cotton Plus"
+        "Cotton Plus",
+        "Seawoods",
+        "Kharghar",
+        "Kalamboli",
+        "Navi Mumbai clothing store",
+        "Cotton Plus Clothing Store",
+        "Women's Fashion",
+        "Family Shopping",
+        "Clothing Store Navi Mumbai",
+        "Seawoods Shopping",
+        "Kharghar Shopping",
+        "Kalamboli Shopping",
+        "Instagram Followers Gifts"
       ],
       "footer": [
+        "📍 Seawoods: Shop No. 1/2, Neelkanth Plaza, Plot No. 53, Sector 40, Seawoods, Nerul (W), Navi Mumbai 400706",
+        "📍 Kharghar: Shop No. 9/10/11, Sai Moksh, Plot No. 48, Sector 15, Kharghar, Navi Mumbai 410210",
+        "📍 Kalamboli: Shop No. G9/F9, Plot No. 4, Neelsiddhi Amrante Phase 2, Sector 9E, Near D-Mart, Roadpali, Kalamboli, Panvel 410218",
+        "📞 7666632979 | 9892461454 | 022 31939258",
         "💫 Managed by: @famebrosstudio"
       ],
       "mandatory": [],
@@ -1741,7 +1896,12 @@
       "ig": null,
       "ready": "needs_brand_identity",
       "web": null,
-      "email": null
+      "email": null,
+      "caption_hashtag_examples": [
+        "#CottonPlus",
+        "#CustomerLove",
+        "#ShoppingRewards"
+      ]
     },
     {
       "id": "chinese_and_grill",
@@ -1751,7 +1911,7 @@
         "Chinese N Grill"
       ],
       "cat": "Likely food/restaurant from account name, but exact cuisine and business identity are unconfirmed",
-      "loc": "",
+      "loc": "Mohammed Ali Road, Mumbai",
       "genres": [
         "Menu highlights after exact business and menu confirmation",
         "Kitchen and service content after client approval",
@@ -1768,9 +1928,21 @@
         "Do not use competitor or similarly named restaurant reviews as evidence."
       ],
       "kw": [
-        "Chinese and Grill"
+        "Chinese and Grill",
+        "Mohammed Ali Road",
+        "Thai Sizzler",
+        "Minara Masjid",
+        "Chinese N Grill Mumbai",
+        "Thai Sizzler review",
+        "Thai Sizzler Mumbai",
+        "Mohammed Ali Road restaurants",
+        "Mumbai food reviews",
+        "spicy sizzler",
+        "food lovers Mumbai"
       ],
       "footer": [
+        "📍 Mohammed Ali Road, Near Minara Masjid, Mumbai 400003",
+        "📞 79001 22468 | 8423999299",
         "💫 Managed by: @famebrosstudio"
       ],
       "mandatory": [],
@@ -1778,7 +1950,14 @@
       "ig": null,
       "ready": "needs_brand_identity",
       "web": null,
-      "email": null
+      "email": null,
+      "caption_hashtag_examples": [
+        "#ChineseNGrill",
+        "#ThaiSizzler",
+        "#MumbaiFoodies",
+        "#MohammedAliRoad",
+        "#FoodReview"
+      ]
     },
     {
       "id": "zivara_salon",
