@@ -1,4 +1,5 @@
 import React from 'react';
+import BorderGlow from '../components/reactbits/BorderGlow.jsx';
 import BrandIcon from '../brand.jsx';
 
 const NAMES = { instagram: 'Instagram', facebook: 'Facebook', youtube: 'YouTube', x: 'X' };
@@ -11,8 +12,8 @@ export default function PlatformTabs({ platforms, tab, setTab, statusOf, greyed 
         const st = statusOf(pid);
         const g = greyed(pid);
         return (
-          <button
-            key={pid}
+          <BorderGlow key={pid} asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button
+
             type="button"
             role="tab"
             aria-selected={tab === pid}
@@ -26,7 +27,7 @@ export default function PlatformTabs({ platforms, tab, setTab, statusOf, greyed 
             {st === 'scheduled' && <span className="st ok">Scheduled</span>}
             {st === 'posted' && <span className="st ok">Posted</span>}
             {st === 'failed' && <span className="st bad">Failed</span>}
-          </button>
+          </button></BorderGlow>
         );
       })}
     </div>

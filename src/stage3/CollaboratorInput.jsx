@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import BorderGlow from '../components/reactbits/BorderGlow.jsx';
 import { matchesSearchText } from '../lib.js';
 import { searchInstagramCollaborators } from '../lib.js';
 
@@ -136,7 +137,7 @@ export default function CollaboratorInput({ value, onChange, accounts = [], toke
       </li>)}
     </ul>}
     {open && (options.length > 0 || searching || note) && <div className="s3-collab-options" role="listbox">
-      {options.slice(0, 8).map((option) => <button key={option.key} type="button" role="option" onMouseDown={(event) => event.preventDefault()} onClick={() => { addHandle(option.username); setOpen(false); }}><span>@{option.username}</span>{option.detail && <small>{option.detail}</small>}</button>)}
+      {options.slice(0, 8).map((option) => <BorderGlow key={option.key} asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button  type="button" role="option" onMouseDown={(event) => event.preventDefault()} onClick={() => { addHandle(option.username); setOpen(false); }}><span>@{option.username}</span>{option.detail && <small>{option.detail}</small>}</button></BorderGlow>)}
       {searching && options.length === 0 && <p className="s3-collab-status">Checking Instagram…</p>}
       {note && <p className="s3-collab-status">{note}</p>}
     </div>}

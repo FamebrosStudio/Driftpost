@@ -121,7 +121,7 @@ export default function CampaignComposer({ session, accounts, day, onClose, onSa
   const locked = busy || !!campaignId || submitted;
 
   return <BorderGlow className="bg-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.12} glowRadius={22}><section className="ws-panel ws-campaign" aria-labelledby="campaign-title">
-    <div className="ws-panel-head"><div><span className="ws-eyebrow">One caption, account-specific media</span><h2 id="campaign-title">Create a campaign</h2></div><button type="button" className="ws-secondary" onClick={onClose}>Close</button></div>
+    <div className="ws-panel-head"><div><span className="ws-eyebrow">One caption, account-specific media</span><h2 id="campaign-title">Create a campaign</h2></div><BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button type="button" className="ws-secondary" onClick={onClose}>Close</button></BorderGlow></div>
     <p className="ws-campaign-intro">Select any connected accounts, drop each account’s own design or video onto its card, write one shared caption, then publish now or schedule them together.</p>
     {!accounts.length ? <div className="ws-inline-state">No connected accounts found. Connect a social account first.</div> : <>
       <div className="ws-campaign-account-head"><h3>Connected accounts</h3><span>{selected.length} selected</span></div>
@@ -145,7 +145,7 @@ export default function CampaignComposer({ session, accounts, day, onClose, onSa
       {notice && <p className="ws-inline-state" role="status">{notice}</p>}
       {error && <p className="ws-inline-state ws-campaign-error" role="alert">{error}</p>}
       {jobs.length > 0 && <div className="ws-campaign-progress" aria-live="polite">{jobs.map((post) => <div key={post.id}><b>{platformLabel(post.platform)}</b><span>{post.status}{post.error ? `: ${post.error}` : post.result_url ? ': published' : ''}</span></div>)}</div>}
-      <div className="ws-campaign-actions"><button className="ws-secondary" type="button" disabled={locked || !selected.length} onClick={() => submit('')}>{busy && !campaignId ? 'Starting…' : 'Post now'}</button><button className="ws-primary" type="button" disabled={locked || !selected.length || !scheduledAt} onClick={() => submit(scheduledAt)}>Schedule campaign</button></div>
+      <div className="ws-campaign-actions"><BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button className="ws-secondary" type="button" disabled={locked || !selected.length} onClick={() => submit('')}>{busy && !campaignId ? 'Starting…' : 'Post now'}</button><BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}></BorderGlow><button className="ws-primary" type="button" disabled={locked || !selected.length || !scheduledAt} onClick={() => submit(scheduledAt)}>Schedule campaign</button></BorderGlow></div>
     </>}
   </section></BorderGlow>;
 }

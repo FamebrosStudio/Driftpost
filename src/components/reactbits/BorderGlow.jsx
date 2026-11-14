@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useCallback, useEffect } from 'react';
+import { cloneElement, isValidElement, useRef, useCallback, useEffect } from 'react';
 import './BorderGlow.css';
 
 function parseHSL(hslStr) {
@@ -70,6 +70,7 @@ function animateValue({ start = 0, end = 100, duration = 1000, delay = 0, ease =
 const BorderGlow = ({
   children,
   className = '',
+  asChild = false,
   edgeSensitivity = 30,
   glowColor = '40 80 80',
   backgroundColor = '#120F17',
@@ -113,6 +114,9 @@ const BorderGlow = ({
   const handlePointerMove = useCallback((e) => {
     const card = cardRef.current;
     if (!card) return;
+    // Nested BorderGlow controls own their cursor glow; don't light the
+    // parent card from the same bubbled pointer event.
+    if (e.target.closest?.('.border-glow-card') !== card) return;
 
     const rect = card.getBoundingClientRect();
     const x = e.clientX - rect.left;
@@ -155,23 +159,57 @@ const BorderGlow = ({
 
   const glowVars = buildGlowVars(glowColor, glowIntensity);
   const lightSurface = isLightColor(backgroundColor);
+  const childRef = isValidElement(children) ? children.ref : null;
+  const setChildRef = useCallback((node) => {
+    cardRef.current = node;
+    if (typeof childRef === 'function') childRef(node);
+    else if (childRef && typeof childRef === 'object') childRef.current = node;
+  }, [childRef]);
+
+  const cardClassName = `border-glow-card${lightSurface ? ' border-glow-card--light' : ''} ${className}`;
+  const cardStyle = {
+    '--card-bg': backgroundColor,
+    '--edge-sensitivity': edgeSensitivity,
+    '--border-radius': `${borderRadius}px`,
+    '--glow-padding': `${glowRadius}px`,
+    '--cone-spread': coneSpread,
+    '--fill-opacity': fillOpacity,
+    ...glowVars,
+    ...buildGradientVars(colors),
+  };
+
+  if (asChild && isValidElement(children)) {
+    const child = children;
+    return cloneElement(child, {
+      ref: setChildRef,
+      onPointerMove: (event) => {
+        child.props.onPointerMove?.(event);
+        handlePointerMove(event);
+      },
+      onPointerLeave: (event) => {
+        child.props.onPointerLeave?.(event);
+        cardRef.current?.style.setProperty('--edge-proximity', '0');
+      },
+      className: `${cardClassName} border-glow-card--control ${child.props.className || ''}`.trim(),
+      style: { ...cardStyle, ...child.props.style },
+      children: (
+        <>
+          {child.props.children}
+          <span className="border-glow-overlay" aria-hidden="true">
+            <span className="edge-light" />
+          </span>
+        </>
+      ),
+    });
+  }
 
   return (
     <div
       ref={cardRef}
       onPointerMove={handlePointerMove}
       onPointerLeave={() => cardRef.current?.style.setProperty('--edge-proximity', '0')}
-      className={`border-glow-card${lightSurface ? ' border-glow-card--light' : ''} ${className}`}
-      style={{
-        '--card-bg': backgroundColor,
-        '--edge-sensitivity': edgeSensitivity,
-        '--border-radius': `${borderRadius}px`,
-        '--glow-padding': `${glowRadius}px`,
-        '--cone-spread': coneSpread,
-        '--fill-opacity': fillOpacity,
-        ...glowVars,
-        ...buildGradientVars(colors),
-      }}
+      className={cardClassName}
+      style={cardStyle}
     >
       <span className="edge-light" />
       <div className="border-glow-inner">

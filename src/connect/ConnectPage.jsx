@@ -100,8 +100,8 @@ export default function ConnectPage({ session, onContinue, onHistory, onSignOut,
         {!embedded && <div className="cn-top">
           <span />
           <span className="cn-top-right">
-            <button type="button" className="cn-link" onClick={onHistory}>History</button>
-            <button type="button" className="cn-link" onClick={onSignOut}>Sign out</button>
+            <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button type="button" className="cn-link" onClick={onHistory}>History</button></BorderGlow>
+            <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button type="button" className="cn-link" onClick={onSignOut}>Sign out</button></BorderGlow>
           </span>
         </div>}
 
@@ -118,7 +118,7 @@ export default function ConnectPage({ session, onContinue, onHistory, onSignOut,
           <span className="cn-step"><b>4</b> Publishing</span>
         </div>
 
-        {msg && <div className={msgKind === 'err' ? 'cn-msg err' : 'cn-msg ok'}>{msg}{msgKind === 'err' && <div style={{ marginTop: 8 }}><button type="button" className="cn-connect ghost" style={{ width: 'auto', marginTop: 0, padding: '9px 18px' }} onClick={load}>Retry</button></div>}</div>}
+        {msg && <div className={msgKind === 'err' ? 'cn-msg err' : 'cn-msg ok'}>{msg}{msgKind === 'err' && <div style={{ marginTop: 8 }}><BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button type="button" className="cn-connect ghost" style={{ width: 'auto', marginTop: 0, padding: '9px 18px' }} onClick={load}>Retry</button></BorderGlow></div>}</div>}
 
         {config && !config.meta && (
           <div className="cn-msg err" style={{ marginTop: 12 }}>
@@ -164,22 +164,22 @@ export default function ConnectPage({ session, onContinue, onHistory, onSignOut,
                             <b title={c.account_name}>{c.account_name}</b>
                             <small>{p.name}</small>
                           </span>
-                          <button type="button" className="cn-drop" disabled={!!busy} onClick={() => disconnect(c)}>
+                          <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button type="button" className="cn-drop" disabled={!!busy} onClick={() => disconnect(c)}>
                             {busy === c.id ? '…' : 'Disconnect'}
-                          </button>
+                          </button></BorderGlow>
                         </div>
                       )) : (
                         <div className="cn-empty">{connections.some((c) => c.platform === p.id) ? 'No accounts match that search.' : `No ${p.name} account yet.`}</div>
                       )}
                     </div>
-                    <button
+                    <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button
                       type="button"
                       className={list.length ? 'cn-connect ghost' : 'cn-connect'}
                       disabled={!!busy}
                       onClick={() => connect(p.id)}
                     >
                       {busy === p.id ? 'Opening…' : list.length ? `Connect another ${p.name} account` : `Connect ${p.name}`}
-                    </button>
+                    </button></BorderGlow>
                   </div></BorderGlow>
                 );
               })}
@@ -208,9 +208,9 @@ export default function ConnectPage({ session, onContinue, onHistory, onSignOut,
       </div>
 
       <div className="cn-bar">
-        <button type="button" className="cn-next" disabled={!total || loading} onClick={onContinue}>
+        <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button type="button" className="cn-next" disabled={!total || loading} onClick={onContinue}>
           Continue to Account Setup →
-        </button>
+        </button></BorderGlow>
         {!total && <p className="cn-hintline">Connect at least one account to continue</p>}
       </div>
     </div>

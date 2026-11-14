@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import BorderGlow from '../components/reactbits/BorderGlow.jsx';
 import { api } from '../lib.js';
 import { clearAiGrant, hasAiAccess, isAiAccount, readAiGrant, saveAiGrant } from '../ai-access.js';
 
@@ -75,13 +76,13 @@ export default function AiAccessGate({ children, session }) {
   return <>
     {children}
     {eligible && !checking && !unlocked && !open && (
-      <button className="ai-unlock-reminder" type="button" onClick={() => setOpen(true)}>
+      <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button className="ai-unlock-reminder" type="button" onClick={() => setOpen(true)}>
         Unlock AI captions
-      </button>
+      </button></BorderGlow>
     )}
     {eligible && !checking && !unlocked && open && (
       <div className="ai-unlock-backdrop">
-        <section className="ai-unlock-card" role="dialog" aria-modal="true" aria-labelledby="ai-unlock-title">
+        <BorderGlow asChild className="bg-glow-control" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.12} glowRadius={12}><section className="ai-unlock-card" role="dialog" aria-modal="true" aria-labelledby="ai-unlock-title">
           <p className="ai-unlock-kicker">Driftpost AI</p>
           <h2 id="ai-unlock-title">Unlock AI on this browser</h2>
           <p>Enter the team AI passphrase once on this browser to generate and refine captions.</p>
@@ -97,15 +98,15 @@ export default function AiAccessGate({ children, session }) {
               disabled={busy}
             />
             {error && <p className="ai-unlock-error" role="alert">{error}</p>}
-            <button className="ai-unlock-submit" type="submit" disabled={busy || !password}>
+            <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button className="ai-unlock-submit" type="submit" disabled={busy || !password}>
               {busy ? 'Unlocking…' : 'Unlock AI captions'}
-            </button>
+            </button></BorderGlow>
           </form>
-          <button className="ai-unlock-later" type="button" onClick={() => { setError(''); setOpen(false); }} disabled={busy}>
+          <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button className="ai-unlock-later" type="button" onClick={() => { setError(''); setOpen(false); }} disabled={busy}>
             Continue without AI for now
-          </button>
+          </button></BorderGlow>
           <p className="ai-unlock-note">The passphrase is checked by Driftpost and is never saved in this browser.</p>
-        </section>
+        </section></BorderGlow>
       </div>
     )}
   </>;

@@ -1242,7 +1242,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
       {onNavigate && <WorkspaceNav page="create" onNavigate={onNavigate} email={session.user?.email} onSignOut={onSignOut} />}
       <div className="stage3-in">
         <div className="s3-top">
-          <button type="button" className="s3-back" onClick={onBack}>← Stage 2</button>
+          <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button type="button" className="s3-back" onClick={onBack}>← Stage 2</button></BorderGlow>
         </div>
         <header className="s3-head">
           <span className="s3-badge">Stage 3 of 3</span>
@@ -1255,14 +1255,14 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
         {connsError && !connections.length && (
           <BorderGlow className="bg-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.12} glowRadius={22}><div className="s3-work">
             <p className="s3-err" style={{ margin: 0 }}>{connsError} Nothing can post until accounts load.</p>
-            <div className="s3-acts"><button type="button" onClick={() => setConnsTick((t) => t + 1)}>Retry loading accounts</button></div>
+            <div className="s3-acts"><BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button type="button" onClick={() => setConnsTick((t) => t + 1)}>Retry loading accounts</button></BorderGlow></div>
           </div></BorderGlow>
         )}
 
         {!platforms.length ? (
           <BorderGlow className="bg-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.12} glowRadius={22}><div className="s3-work">
             <p className="s3-err" style={{ margin: 0 }}>No platforms from Stage 1 — go back and finish the earlier stages first.</p>
-            <div className="s3-acts"><button type="button" onClick={onBack}>← Back to Stage 2</button></div>
+            <div className="s3-acts"><BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button type="button" onClick={onBack}>← Back to Stage 2</button></BorderGlow></div>
           </div></BorderGlow>
         ) : success ? (
           <div className="s3-done">
@@ -1281,7 +1281,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
                 </span>
               ))}
             </div>
-            <button type="button" className="s3-new" onClick={startNew}>Start new post →</button>
+            <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button type="button" className="s3-new" onClick={startNew}>Start new post →</button></BorderGlow>
           </div>
         ) : (
           <>
@@ -1291,7 +1291,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
               <div key={tab} className="s3-cols" style={{ marginTop: 14 }}>
                 <MediaPreview files={files} cover={tab === 'youtube' ? thumb : null}>
                   <div className="s3-media-tools">
-                    <button
+                    <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button
                       type="button"
                       className={allReviewed ? 's3-review-all done' : 's3-review-all'}
                       onClick={reviewAllPlatforms}
@@ -1299,7 +1299,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
                       title="Mark every selected platform as reviewed"
                     >
                       {allReviewed ? '✓ All platforms reviewed' : 'Review all platforms'}
-                    </button>
+                    </button></BorderGlow>
                     {platforms.includes('youtube') && <CoverPicker platform="youtube" files={files} cover={thumb} onChange={onThumb} />}
                   </div>
                 </MediaPreview>
@@ -1355,7 +1355,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
                 <div className="s3-pub-track"><i style={{ width: `${effective.length ? (reviewedCount / effective.length) * 100 : 0}%` }} /></div>
                 <span className="s3-pub-count">{reviewedCount}/{effective.length} reviewed</span>
               </div>
-              <button
+              <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button
                 type="button"
                 className="s3-postall"
                 onClick={publishAll}
@@ -1363,8 +1363,8 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
                 title={!allReviewed ? 'Click Reviewed on every platform first' : 'Post to all reviewed platforms'}
               >
                 {!effective.length ? 'Nothing to post' : allReviewed ? `Post to all (${publishTargetsLabel})` : `Review remaining platforms (${reviewedCount}/${effective.length})`}
-              </button>
-              <button
+              </button></BorderGlow>
+              <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button
                 type="button"
                 className="s3-schedall"
                 onClick={() => setSchedOpen(true)}
@@ -1372,15 +1372,15 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
                 title="Queue this post to publish automatically"
               >
                 Schedule instead
-              </button>
+              </button></BorderGlow>
               {schedMsg && <p className="s3-bar-msg">{schedMsg}</p>}
               {!!approvalLinks.length && <div className="s3-review-links"><b>Share review link{approvalLinks.length === 1 ? '' : 's'}:</b>{approvalLinks.map((link, i) => <a key={link} href={link} target="_blank" rel="noreferrer">{approvalLinks.length === 1 ? link : `Review post ${i + 1}`}</a>)}</div>}
               {pubMsg && <p className="s3-bar-msg">{pubMsg}</p>}
               {batchQueue && <p className="s3-bar-msg" role="status">{batchQueue.accepted} of {batchQueue.total} account posts accepted into the background queue.</p>}
               {batchQueue && batchQueue.settled >= batchQueue.total && batchQueue.accepted > 0 && (
-                <button type="button" className="s3-continue-bg" onClick={continueInBackground}>
+                <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button type="button" className="s3-continue-bg" onClick={continueInBackground}>
                   Continue in background · start a new post →
-                </button>
+                </button></BorderGlow>
               )}
               {!allReviewed && effective.length > 0 && !schedMsg && !pubMsg && (
                 <p className="s3-pub-hint">Review platforms individually, or use “Review all platforms” beside the media preview.</p>
