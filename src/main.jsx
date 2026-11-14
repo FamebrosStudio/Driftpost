@@ -4,6 +4,7 @@ import App from './App.jsx';
 import AppErrorBoundary from './AppErrorBoundary.jsx';
 import './styles.css';
 import './console-theme.css';
+import './pointer-proximity.js';
 
 // A tab can keep an older HTML/app bundle open after a deployment while the
 // server has already replaced its lazy-loaded chunks. Recover once instead of

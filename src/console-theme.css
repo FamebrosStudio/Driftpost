@@ -660,3 +660,76 @@
 #root .ws-welcome-actions .border-glow-card > .edge-light{
   mask-image: none;
 }
+
+/* Unified surface + control refresh. Pointer glow is supplied by
+   pointer-proximity.js and stays transparent until the cursor reaches an edge. */
+#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) :is(
+  .ws-panel, .ws-stat, .ws-metric-card, .ws-welcome, .hist-panel, .hist-row,
+  .hist-activity, .cn-card, .cn-brands, .setup-card, .s2-sec, .s2-out,
+  .s2-editor, .s2-video-editor-page, .s3-work, .s3-sched, .team-video-panel,
+  .team-review-list, .team-review-detail, .approval-card, .cg-card,
+  .automation-account, .automation-setup, .ws-campaign-account
+){
+  border: 1px solid var(--line-hard) !important;
+  border-radius: 17px !important;
+  background:
+    linear-gradient(145deg, color-mix(in srgb, var(--go) 4%, var(--panel)), var(--panel) 48%) !important;
+  box-shadow:
+    0 1px 0 color-mix(in srgb, var(--ink) 5%, transparent),
+    0 16px 38px -28px color-mix(in srgb, var(--ink) 40%, transparent),
+    0 0 24px -8px var(--edge-glow-color, transparent) !important;
+  transition: border-color 180ms ease, box-shadow 180ms ease, background-color 180ms ease !important;
+}
+#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) :is(
+  .setup-card.sel, .ws-campaign-account.selected, .hist-tab.active, .cn-card.linked
+){
+  border-color: color-mix(in srgb, var(--go) 72%, var(--line-hard)) !important;
+  background: linear-gradient(145deg, color-mix(in srgb, var(--go) 10%, var(--panel)), var(--panel) 64%) !important;
+}
+#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) button:not(.ws-nav button):not(.ws-text-button):not(.ws-collapse-toggle):not(.ws-theme-toggle):not(.progress-step-button):not(.ws-day):not(.swatch):not(.dock button){
+  min-height: 38px;
+  padding: 8px 13px;
+  border: 1px solid var(--line-hard);
+  border-radius: 11px !important;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--panel2) 88%, var(--go)), var(--panel2));
+  color: var(--ink);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 650;
+  box-shadow: 0 1px 0 color-mix(in srgb, var(--ink) 6%, transparent),
+    0 0 20px -7px var(--edge-glow-color, transparent);
+  transition: border-color 160ms ease, color 160ms ease, background 160ms ease, box-shadow 180ms ease, transform 160ms ease;
+}
+#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) button:disabled{
+  cursor: not-allowed;
+  opacity: .52;
+  box-shadow: none;
+}
+#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) :is(
+  .ws-primary, .s1-primary, .continue-btn, .s2-continue-btn, .s2-done,
+  .s3-postall, .s3-schedall, .cn-connect, .cg-acts button:first-child
+){
+  border-color: transparent !important;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--go) 88%, white), var(--go) 72%) !important;
+  color: var(--go-ink) !important;
+  font-weight: 750 !important;
+}
+#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) :is(.ws-primary, .s1-primary, .continue-btn, .s2-continue-btn, .s2-done, .s3-postall, .s3-schedall, .cn-connect):focus-visible,
+#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) button:focus-visible{
+  outline: 2px solid var(--go) !important;
+  outline-offset: 3px;
+}
+#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) :is(.ws-primary, .s1-primary, .continue-btn, .s2-continue-btn, .s2-done, .s3-postall, .s3-schedall):hover:not(:disabled){
+  filter: brightness(1.07);
+}
+@media (max-width: 600px){
+  #root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) :is(
+    .ws-panel, .ws-stat, .ws-metric-card, .hist-panel, .hist-row, .cn-card,
+    .setup-card, .s2-sec, .s2-out, .s3-work, .team-video-panel, .approval-card
+  ){ border-radius: 15px !important; }
+}
+@media (prefers-reduced-motion: reduce){
+  #root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) :is(button, .ws-panel, .ws-stat, .ws-metric-card, .hist-row, .cn-card, .setup-card, .s2-sec, .s3-work, .team-video-panel, .approval-card){
+    transition: none !important;
+  }
+}
