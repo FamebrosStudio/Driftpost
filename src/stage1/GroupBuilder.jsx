@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import BorderGlow from '../components/reactbits/BorderGlow.jsx';
 import BrandIcon from '../brand.jsx';
 import { api, PLATFORMS, matchesSearchText } from '../lib.js';
 import { logDisconnect } from '../history/log.js';
@@ -34,14 +35,14 @@ function SwipeRow({ onDisconnect, disBusy, children }) {
 
   return (
     <div className="swipe-row">
-      <button
+      <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button
         type="button"
         className="swipe-act"
         tabIndex={dx === 0 ? -1 : 0}
         onClick={(e) => { e.stopPropagation(); setDx(0); onDisconnect(); }}
       >
         {disBusy ? '…' : 'Disconnect'}
-      </button>
+      </button></BorderGlow>
       <div
         className={drag ? 'swipe-main drag' : 'swipe-main'}
         style={{ transform: `translateX(${dx}px)` }}
@@ -118,7 +119,7 @@ export default function GroupBuilder({ connections, token, onConnectionsChange, 
 
   return (
     <div className="s1-overlay" onClick={onClose}>
-      <div className="s1-modal" role="dialog" aria-modal="true" aria-label="Create a group" onClick={(e) => e.stopPropagation()}>
+      <BorderGlow asChild className="bg-glow-control" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.12} glowRadius={12}><div className="s1-modal" role="dialog" aria-modal="true" aria-label="Create a group" onClick={(e) => e.stopPropagation()}>
         <h2>Create a group</h2>
         <p className="sub">A group is 2 or more accounts that share the same content, caption and media. Pick the platforms, pick the accounts, name it, save.</p>
         <input className="s1-field" value={name} maxLength={60} onChange={(e) => setName(e.target.value)} placeholder="Group name — e.g. Salon group" aria-label="Group name" />
@@ -128,8 +129,8 @@ export default function GroupBuilder({ connections, token, onConnectionsChange, 
             const on = !plats.length || plats.includes(p.id);
             const n = platCounts[p.id] || 0;
             return (
-              <button
-                key={p.id}
+              <BorderGlow key={p.id} asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button
+
                 type="button"
                 aria-pressed={on}
                 disabled={!n}
@@ -140,7 +141,7 @@ export default function GroupBuilder({ connections, token, onConnectionsChange, 
                 <BrandIcon id={p.id} size={15} />
                 {p.name}
                 {on && plats.length > 0 && <span className="pill-check" aria-hidden="true">✓</span>}
-              </button>
+              </button></BorderGlow>
             );
           })}
         </div>
@@ -154,7 +155,7 @@ export default function GroupBuilder({ connections, token, onConnectionsChange, 
             {connections.length > 0 && accountSearch && !visible.length && <p className="s1-empty">No accounts match that search.</p>}
             {visible.map((c) => (
               <SwipeRow key={c.id} disBusy={disBusy === c.id} onDisconnect={() => disconnect(c)}>
-                <button
+                <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button
                   type="button"
                   draggable
                   onDragStart={(e) => e.dataTransfer.setData('text/plain', c.id)}
@@ -164,7 +165,7 @@ export default function GroupBuilder({ connections, token, onConnectionsChange, 
                 >
                   <BrandIcon id={c.platform} size={14} />
                   <span>{c.account_name}</span>
-                </button>
+                </button></BorderGlow>
               </SwipeRow>
             ))}
           </div>
@@ -178,18 +179,18 @@ export default function GroupBuilder({ connections, token, onConnectionsChange, 
             >
               {!ids.length && <p className="s1-empty">Click or drop accounts here.</p>}
               {ids.map((id) => (
-                <button key={id} type="button" className="s1-acct in" onClick={() => remove(id)} title="Remove from group">
+                <BorderGlow key={id} asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button  type="button" className="s1-acct in" onClick={() => remove(id)} title="Remove from group">
                   <BrandIcon id={byId[id]?.platform} size={14} />
                   <span>{byId[id]?.account_name || 'Removed account'}</span>
                   <small>✕</small>
-                </button>
+                </button></BorderGlow>
               ))}
             </div>
           </div>
         </div>
         <div className="s1-row">
-          <button type="button" className="s1-ghost" onClick={onClose}>Cancel</button>
-          <button
+          <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button type="button" className="s1-ghost" onClick={onClose}>Cancel</button></BorderGlow>
+          <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button
             type="button"
             className="s1-primary"
             disabled={!ready}
@@ -197,9 +198,9 @@ export default function GroupBuilder({ connections, token, onConnectionsChange, 
             onClick={() => { if (savedRef.current) return; savedRef.current = true; onSave({ id: `g${Date.now()}`, name: name.trim().slice(0, 60), accountIds: ids, platforms: plats }); }}
           >
             Save group
-          </button>
+          </button></BorderGlow>
         </div>
-      </div>
+      </div></BorderGlow>
     </div>
   );
 }

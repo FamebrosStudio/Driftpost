@@ -422,18 +422,11 @@
 .bg-glow{
   background: transparent !important;
   border: 0 !important;
+  box-shadow: none !important;
   min-width: 0;
-  /* single hairline ring + soft halo (no double border vs the card's own border) */
-  box-shadow:
-    0 0 0 1px rgba(125, 211, 252, 0.22),
-    0 0 16px -6px rgba(125, 211, 252, 0.28) !important;
   --glow-padding: 10px;
 }
-[data-theme="light"] .bg-glow{
-  box-shadow:
-    0 0 0 1px rgba(3, 105, 161, 0.28),
-    0 0 14px -6px rgba(3, 105, 161, 0.22) !important;
-}
+.bg-glow-control{ min-width: 0; --glow-padding: 10px; }
 /* Grid cells stretch the wrapper taller than the card — the inner card must
    fill the whole wrapper or an empty box shows below it. */
 .bg-glow .border-glow-inner{ height: 100%; min-width: 0; }
@@ -449,14 +442,7 @@
     inset 0 0 5px 0 hsl(199deg 95% 74% / 40%),
     0 0 14px -2px hsl(199deg 95% 74% / 35%) !important;
 }
-/* Action buttons carry their glow directly (no wrapper): a static sky halo
-   that never changes layout and never uses :hover. */
-.ws-primary, .ws-secondary, .s2-continue-btn{
-  box-shadow: 0 0 0 1px rgba(125, 211, 252, 0.22), 0 0 16px -4px rgba(125, 211, 252, 0.45);
-}
-.skew-btn{
-  box-shadow: 0 0 22px -6px rgba(125, 211, 252, 0.5);
-}/* Dock palette matched to the console: navy glass panel,sky-blue edge
+/* Dock palette matched to the console: navy glass panel,sky-blue edge
    highlights,cool blue-gray ink. These override the component's inline
    theme tokens (CSS !important beats element.style) — the accent/badge
    props already pass #7dd3fc. The menu portal renders outside #root, so

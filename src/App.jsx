@@ -359,14 +359,14 @@ function Landing({ onEnter, session, pubPage, setPubPage }) {
     <div className="landing" ref={rootRef}>
       <div className="landing-cbg" aria-hidden="true"><CursorGrid color="#7dd3fc" gridColor="#081b23" cellSize={64} radius={160} /></div>
       <nav className="land-nav">
-        <button className="land-logo" onClick={() => setPubPage('home')} title="Driftpost home"><img className="logo-img logo-d" src="/logo-dark-620.png" srcSet="/logo-dark-620.png 620w, /logo-dark.png 1984w" sizes="248px" width="1984" height="512" fetchpriority="high" decoding="async" alt="Driftpost" /></button>
+        <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button className="land-logo" onClick={() => setPubPage('home')} title="Driftpost home"><img className="logo-img logo-d" src="/logo-dark-620.png" srcSet="/logo-dark-620.png 620w, /logo-dark.png 1984w" sizes="248px" width="1984" height="512" fetchpriority="high" decoding="async" alt="Driftpost" /></button></BorderGlow>
         <div className="land-links">
           {PUB_PAGES.filter((p) => !p.hidden).map((p) => (
-            <button key={p.id} className={pubPage === p.id ? 'on' : ''} onClick={() => setPubPage(p.id)}>{p.label}</button>
+            <BorderGlow key={p.id} asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button  className={pubPage === p.id ? 'on' : ''} onClick={() => setPubPage(p.id)}>{p.label}</button></BorderGlow>
           ))}
         </div>
         
-          <button className="skew-btn grad" onClick={onEnter}><span>{session ? 'Enter console' : 'Get started ’'}</span></button>
+          <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button className="skew-btn grad" onClick={onEnter}><span>{session ? 'Enter console' : 'Get started ’'}</span></button></BorderGlow>
       </nav>
       {pubPage === 'home' ? <>
       <header className="landing-in">
@@ -375,7 +375,7 @@ function Landing({ onEnter, session, pubPage, setPubPage }) {
         <p>Schedule and publish social media posts across Instagram, Facebook, YouTube and X. Manage multiple brands and accounts in one workspace, with content tailored to each platform. Optional Google Drive intake reads media from a connected team folder to prepare posts for the accounts you select.</p>
         <div className="landing-cta">
           
-            <button className="skew-btn grad" onClick={onEnter}><span>{session ? 'Enter console' : 'Get started free ’'}</span></button>
+            <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button className="skew-btn grad" onClick={onEnter}><span>{session ? 'Enter console' : 'Get started free ’'}</span></button></BorderGlow>
         </div>
         <div className="social-dock">
           {dock.map((d) => (
@@ -423,10 +423,10 @@ function Landing({ onEnter, session, pubPage, setPubPage }) {
       <footer className="land-foot">
         <h2>Plan and publish from one workspace.</h2>
         
-          <button className="skew-btn grad" onClick={onEnter}><span>{session ? 'Enter console' : 'Start free ’'}</span></button>
+          <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button className="skew-btn grad" onClick={onEnter}><span>{session ? 'Enter console' : 'Start free ’'}</span></button></BorderGlow>
         <div className="land-fine">
           <span className="land-copy">Free while in beta · Your logins never leave the platforms · © {new Date().getFullYear()} Driftpost · Made by Famebros Studio</span>
-          <span className="land-legal"><button className="link" onClick={() => setPubPage('terms')}>Terms</button> · <a className="link" href="/privacy">Privacy Policy</a> · <button className="link" onClick={() => setPubPage('cookies')}>Cookies</button> · <button className="link" onClick={() => setPubPage('acceptable-use')}>Acceptable Use</button> · <button className="link" onClick={() => setPubPage('ai-disclaimer')}>AI Disclaimer</button> · <button className="link" onClick={() => setPubPage('platforms-disclaimer')}>Platforms</button> · <button className="link" onClick={() => setPubPage('copyright')}>Copyright</button> · <button className="link" onClick={() => setPubPage('refunds')}>Refunds</button> · <button className="link" onClick={() => setPubPage('data-deletion')}>Data Deletion</button> · <button className="link" onClick={() => setPubPage('security')}>Security</button> · <button className="link" onClick={() => setPubPage('contact')}>Contact</button></span>
+          <span className="land-legal"><BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button className="link" onClick={() => setPubPage('terms')}>Terms</button></BorderGlow> · <a className="link" href="/privacy">Privacy Policy</a> · <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button className="link" onClick={() => setPubPage('cookies')}>Cookies</button></BorderGlow> · <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button className="link" onClick={() => setPubPage('acceptable-use')}>Acceptable Use</button></BorderGlow> · <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button className="link" onClick={() => setPubPage('ai-disclaimer')}>AI Disclaimer</button></BorderGlow> · <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button className="link" onClick={() => setPubPage('platforms-disclaimer')}>Platforms</button></BorderGlow> · <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button className="link" onClick={() => setPubPage('copyright')}>Copyright</button></BorderGlow> · <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button className="link" onClick={() => setPubPage('refunds')}>Refunds</button></BorderGlow> · <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button className="link" onClick={() => setPubPage('data-deletion')}>Data Deletion</button></BorderGlow> · <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button className="link" onClick={() => setPubPage('security')}>Security</button></BorderGlow> · <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button className="link" onClick={() => setPubPage('contact')}>Contact</button></BorderGlow></span>
         </div>
       </footer>
     </div>
@@ -478,11 +478,11 @@ function Auth({ mode, setMode, onBack, markFresh, returnTo }) {
 
   return (
     <div className="auth-wrap">
-      <div className="auth-card">
+      <BorderGlow asChild className="bg-glow-control" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.12} glowRadius={12}><div className="auth-card">
         <div className="brand"><img className="logo-img logo-d" src="/logo-dark.png" width="1984" height="512" decoding="async" alt="Driftpost" /><img className="logo-img logo-l" src="/logo-light.png" width="1908" height="512" decoding="async" alt="Driftpost" /></div>
         <h1>{mode === 'login' ? 'Welcome back.' : 'Start posting.'}</h1>
         <form className="login-form" onSubmit={submit}>
-          <button className="user-profile" type="button" disabled={busy} onClick={google}><span className="user-profile-inner"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.7 9.5 24 9.5Z"/><path d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.88c-.58 2.96-2.25 5.47-4.73 7.16l7.63 5.92c4.45-4.1 7.2-10.14 7.2-17.55Z"/><path d="M10.55 28.59a14.49 14.49 0 0 1 0-9.18l-7.98-6.19a23.94 23.94 0 0 0 0 21.56l7.98-6.19Z"/><path d="M24 48c6.47 0 11.91-2.13 15.88-5.8l-7.63-5.92c-2.12 1.43-4.83 2.28-8.25 2.28-6.3 0-11.57-4.22-13.46-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48Z"/></svg>{mode === 'login' ? 'Continue with Google' : 'Sign up with Google'}</span></button>
+          <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button className="user-profile" type="button" disabled={busy} onClick={google}><span className="user-profile-inner"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.7 9.5 24 9.5Z"/><path d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.88c-.58 2.96-2.25 5.47-4.73 7.16l7.63 5.92c4.45-4.1 7.2-10.14 7.2-17.55Z"/><path d="M10.55 28.59a14.49 14.49 0 0 1 0-9.18l-7.98-6.19a23.94 23.94 0 0 0 0 21.56l7.98-6.19Z"/><path d="M24 48c6.47 0 11.91-2.13 15.88-5.8l-7.63-5.92c-2.12 1.43-4.83 2.28-8.25 2.28-6.3 0-11.57-4.22-13.46-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48Z"/></svg>{mode === 'login' ? 'Continue with Google' : 'Sign up with Google'}</span></button></BorderGlow>
           <div className="input-span"><span className="label">Email address</span><input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" /></div>
           <div className="input-span"><span className="label">Password</span><input type="password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="At least 6 characters" /></div>
           {mode === 'signup' && (
@@ -490,14 +490,14 @@ function Auth({ mode, setMode, onBack, markFresh, returnTo }) {
           )}
           {error && <div className="alert err">{error}</div>}
           {info && <div className="banner">{info}</div>}
-          <button className="user-profile" disabled={busy}><span className="user-profile-inner">{busy ? 'Please wait…' : mode === 'login' ? 'Sign in' : 'Create account'}</span></button>
+          <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button className="user-profile" disabled={busy}><span className="user-profile-inner">{busy ? 'Please wait…' : mode === 'login' ? 'Sign in' : 'Create account'}</span></button></BorderGlow>
         </form>
         <p className="note" style={{ textAlign: 'center' }}>
           {mode === 'login' ? 'New here?' : 'Have an account?'}{' '}
-          <button className="link" onClick={() => { setMode(mode === 'login' ? 'signup' : 'login'); setError(''); setInfo(''); }}>{mode === 'login' ? 'Create account' : 'Sign in'}</button>
-          {' · '}<button className="link" onClick={onBack}>← Back</button>
+          <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button className="link" onClick={() => { setMode(mode === 'login' ? 'signup' : 'login'); setError(''); setInfo(''); }}>{mode === 'login' ? 'Create account' : 'Sign in'}</button></BorderGlow>
+          {' · '}<BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button className="link" onClick={onBack}>← Back</button></BorderGlow>
         </p>
-      </div>
+      </div></BorderGlow>
     </div>
   );
 }
@@ -529,7 +529,7 @@ function McpDeviceAuthorization({ userCode, session }) {
   };
   return (
     <div className="auth-wrap">
-      <div className="auth-card">
+      <BorderGlow asChild className="bg-glow-control" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.12} glowRadius={12}><div className="auth-card">
         <div className="brand"><img className="logo-img logo-d" src="/logo-dark.png" width="1984" height="512" decoding="async" alt="Driftpost" /><img className="logo-img logo-l" src="/logo-light.png" width="1908" height="512" decoding="async" alt="Driftpost" /></div>
         <h1>{approved ? 'Osien Stack is connected.' : 'Connect Osien Stack'}</h1>
         {approved ? (
@@ -538,10 +538,10 @@ function McpDeviceAuthorization({ userCode, session }) {
           <p>Allow Osien Stack on this device to view your connected accounts, upload media, publish and schedule posts. Your platform passwords and provider app credentials stay with Driftpost.</p>
           <div className="banner" style={{ textAlign: 'center', fontSize: 22, letterSpacing: 4, fontWeight: 700 }}>{userCode.slice(0, 4)}-{userCode.slice(4)}</div>
           {error && <div className="alert err">{error}</div>}
-          <button className="user-profile" disabled={busy || userCode.length !== 8} onClick={approve}><span className="user-profile-inner">{busy ? 'Approving…' : 'Authorize Osien Stack'}</span></button>
+          <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button className="user-profile" disabled={busy || userCode.length !== 8} onClick={approve}><span className="user-profile-inner">{busy ? 'Approving…' : 'Authorize Osien Stack'}</span></button></BorderGlow>
           <p className="note">Only approve this code if you started the connection from your own Osien Stack MCP.</p>
         </>}
-      </div>
+      </div></BorderGlow>
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import BorderGlow from '../components/reactbits/BorderGlow.jsx';
 
 // Media preview: main file + count, click to zoom (lightbox with prev/next).
 export default function MediaPreview({ files, cover, children }) {
@@ -50,8 +51,8 @@ export default function MediaPreview({ files, cover, children }) {
         <div className="s3-light" onClick={() => setLight(-1)}>
           {files.length > 1 && (
             <>
-              <button type="button" aria-label="Previous" style={{ position: 'fixed', left: 14, top: '50%', fontSize: 30, background: 'none', border: 0, color: '#fff' }} onClick={(e) => { e.stopPropagation(); setLight((light - 1 + files.length) % files.length); }}>‹</button>
-              <button type="button" aria-label="Next" style={{ position: 'fixed', right: 14, top: '50%', fontSize: 30, background: 'none', border: 0, color: '#fff' }} onClick={(e) => { e.stopPropagation(); setLight((light + 1) % files.length); }}>›</button>
+              <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button type="button" aria-label="Previous" style={{ position: 'fixed', left: 14, top: '50%', fontSize: 30, background: 'none', border: 0, color: '#fff' }} onClick={(e) => { e.stopPropagation(); setLight((light - 1 + files.length) % files.length); }}>‹</button></BorderGlow>
+              <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button type="button" aria-label="Next" style={{ position: 'fixed', right: 14, top: '50%', fontSize: 30, background: 'none', border: 0, color: '#fff' }} onClick={(e) => { e.stopPropagation(); setLight((light + 1) % files.length); }}>›</button></BorderGlow>
             </>
           )}
           <div onClick={(e) => e.stopPropagation()}>

@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import BorderGlow from '../components/reactbits/BorderGlow.jsx';
 import EpidemicCatalog from '../music/EpidemicCatalog.jsx';
 import { mp4RecordingType } from '../music/mixVideoAudio.js';
 
@@ -171,7 +172,7 @@ export default function VideoTimelineEditor({ entry, token, onBack, onApply, onA
     <div className="s2-video-editor-page" role="dialog" aria-modal="true" aria-label="Edit video timeline">
       <header className="s2-video-editor-head">
         <div><h2>Edit video</h2><p>Trim your clip in this browser. Original media is not uploaded by the editor.</p></div>
-        <button type="button" className="s2-cancel" onClick={onBack} disabled={busy}>Back to crop tools</button>
+        <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button type="button" className="s2-cancel" onClick={onBack} disabled={busy}>Back to crop tools</button></BorderGlow>
       </header>
       <div className="s2-video-editor-workspace">
         <div className="s2-video-preview-wrap">
@@ -182,9 +183,9 @@ export default function VideoTimelineEditor({ entry, token, onBack, onApply, onA
             if (busy && time >= end) e.currentTarget.pause();
           }} onPlay={() => setPlaying(true)} onPause={() => setPlaying(false)} />
           <div className="s2-video-transport">
-            <button type="button" aria-label={playing ? 'Pause' : 'Play'} disabled={busy || !duration} onClick={togglePlayback}>{playing ? 'Pause' : 'Play'}</button>
+            <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button type="button" aria-label={playing ? 'Pause' : 'Play'} disabled={busy || !duration} onClick={togglePlayback}>{playing ? 'Pause' : 'Play'}</button></BorderGlow>
             <span>{fmt(playhead)} <small>/ {fmt(duration)}</small></span>
-            <button type="button" className="s2-editor-music" disabled={!duration || busy} onClick={() => movePlayhead(start)}>Go to start</button>
+            <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button type="button" className="s2-editor-music" disabled={!duration || busy} onClick={() => movePlayhead(start)}>Go to start</button></BorderGlow>
           </div>
         </div>
         <section className="s2-timeline" aria-label="Video timeline">
@@ -195,9 +196,9 @@ export default function VideoTimelineEditor({ entry, token, onBack, onApply, onA
           }}>
             <div className="s2-clip-strip" aria-hidden="true" />
             <div className="s2-clip-selected" style={{ left: `${duration ? start / duration * 100 : 0}%`, width: `${duration ? (end - start) / duration * 100 : 0}%` }} />
-            <button type="button" className="s2-trim-handle start" style={{ left: `${duration ? start / duration * 100 : 0}%` }} role="slider" aria-label="Trim start" aria-valuemin="0" aria-valuemax={duration} aria-valuenow={start} disabled={!duration || busy} onPointerDown={(event) => beginDrag('start', event)} onKeyDown={(event) => handleKey('start', event)} />
-            <button type="button" className="s2-trim-handle end" style={{ left: `${duration ? end / duration * 100 : 0}%` }} role="slider" aria-label="Trim end" aria-valuemin="0" aria-valuemax={duration} aria-valuenow={end} disabled={!duration || busy} onPointerDown={(event) => beginDrag('end', event)} onKeyDown={(event) => handleKey('end', event)} />
-            <button type="button" className="s2-playhead" style={{ left: `${duration ? playhead / duration * 100 : 0}%` }} aria-label="Timeline playhead" aria-valuemin="0" aria-valuemax={duration} aria-valuenow={playhead} role="slider" disabled={!duration || busy} onPointerDown={(event) => beginDrag('playhead', event)} onKeyDown={(event) => handleKey('playhead', event)} />
+            <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button type="button" className="s2-trim-handle start" style={{ left: `${duration ? start / duration * 100 : 0}%` }} role="slider" aria-label="Trim start" aria-valuemin="0" aria-valuemax={duration} aria-valuenow={start} disabled={!duration || busy} onPointerDown={(event) => beginDrag('start', event)} onKeyDown={(event) => handleKey('start', event)} /></BorderGlow>
+            <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button type="button" className="s2-trim-handle end" style={{ left: `${duration ? end / duration * 100 : 0}%` }} role="slider" aria-label="Trim end" aria-valuemin="0" aria-valuemax={duration} aria-valuenow={end} disabled={!duration || busy} onPointerDown={(event) => beginDrag('end', event)} onKeyDown={(event) => handleKey('end', event)} /></BorderGlow>
+            <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button type="button" className="s2-playhead" style={{ left: `${duration ? playhead / duration * 100 : 0}%` }} aria-label="Timeline playhead" aria-valuemin="0" aria-valuemax={duration} aria-valuenow={playhead} role="slider" disabled={!duration || busy} onPointerDown={(event) => beginDrag('playhead', event)} onKeyDown={(event) => handleKey('playhead', event)} /></BorderGlow>
           </div>
           <div className={`s2-audio-track${musicTrack ? ' has-music' : ''}`}>
             <div className="s2-audio-track-label"><b>AUDIO</b><span>{musicTrack ? `${musicTrack.title || musicTrack.name || 'Music'}${musicTrack.mainArtists?.[0]?.name ? ` · ${musicTrack.mainArtists[0].name}` : ''}` : 'No music added'}</span></div>
@@ -205,19 +206,19 @@ export default function VideoTimelineEditor({ entry, token, onBack, onApply, onA
               {musicTrack && <div className="s2-audio-clip" style={{ left: 0, width: '100%' }}><span>{musicTrack.title || musicTrack.name || 'Music'}</span></div>}
               {!musicTrack && <span className="s2-audio-empty">Choose a soundtrack below</span>}
             </div>
-            {musicTrack && <button type="button" className="s2-audio-remove" onClick={async () => {
+            {musicTrack && <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button type="button" className="s2-audio-remove" onClick={async () => {
               await onRemoveMusic();
               setMusicTrack(null);
               setMusicSourceFile(entry.musicOriginalRaw || musicSourceFile);
-            }}>Remove</button>}
+            }}>Remove</button></BorderGlow>}
           </div>
           <div className="s2-timeline-values">
             <label>In <input type="number" min="0" max={Math.max(0, end - 0.25)} step="0.1" value={start.toFixed(1)} disabled={!duration || busy} onChange={(event) => clampStart(event.target.value)} /></label>
             <label>Out <input type="number" min={Math.min(duration, start + 0.25)} max={duration} step="0.1" value={end.toFixed(1)} disabled={!duration || busy} onChange={(event) => clampEnd(event.target.value)} /></label>
           </div>
           <div className="s2-timeline-actions">
-            <button type="button" className="s2-editor-music" disabled={!duration || busy} onClick={() => { movePlayhead(start); videoRef.current.play().catch(() => setError('Could not play this video in the browser.')); }}>Preview selection</button>
-            <button type="button" className="s2-done" disabled={!duration || busy} onClick={renderTrim}>{busy ? `Rendering… ${progress}%` : 'Render trimmed video'}</button>
+            <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button type="button" className="s2-editor-music" disabled={!duration || busy} onClick={() => { movePlayhead(start); videoRef.current.play().catch(() => setError('Could not play this video in the browser.')); }}>Preview selection</button></BorderGlow>
+            <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button type="button" className="s2-done" disabled={!duration || busy} onClick={renderTrim}>{busy ? `Rendering… ${progress}%` : 'Render trimmed video'}</button></BorderGlow>
           </div>
           {busy && <progress className="s2-trim-progress" max="100" value={progress} aria-label="Render progress" />}
           {error && <p className="s2-trim-error" role="alert">{error}</p>}

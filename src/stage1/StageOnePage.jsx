@@ -1,4 +1,5 @@
 import React, { Suspense, lazy, useEffect, useMemo, useState } from 'react';
+import BorderGlow from '../components/reactbits/BorderGlow.jsx';
 import { api, groupBrands } from '../lib.js';
 import BrandIcon from '../brand.jsx';
 import PageLoading from '../PageLoading.jsx';
@@ -227,7 +228,7 @@ export default function StageOnePage({ session, onNext, onNavigate, onSignOut })
         <ProgressSteps current={1} />
         <p className="s1-ways">Two ways to set up — post for <b>one brand</b>, or bundle accounts into a <b>group</b>. Pick one.</p>
         {connsError && (
-          <p className="s1-loaderr">{connsError} <button type="button" className="s1-mini" onClick={() => setReloadTick((t) => t + 1)}>Retry</button></p>
+          <p className="s1-loaderr">{connsError} <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button type="button" className="s1-mini" onClick={() => setReloadTick((t) => t + 1)}>Retry</button></BorderGlow></p>
         )}
         {loading ? (
           <div className="stage1-loading">Loading your accounts…</div>
@@ -239,11 +240,11 @@ export default function StageOnePage({ session, onNext, onNavigate, onSignOut })
                   <span className="s1-icons">{brandPlats(brand).map((pid) => <BrandIcon key={pid} id={pid} size={14} />)}</span>
                   <b title={brand.label}>{brand.label}</b>
                   <small>{brandPlats(brand).length} accounts</small>
-                  <button type="button" className="s1-mini" onClick={() => setBrandOpen(true)}>Change</button>
-                  <button type="button" className="s1-mini" onClick={clearBrand} title="Clear brand — platforms follow all connected accounts">Clear</button>
+                  <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button type="button" className="s1-mini" onClick={() => setBrandOpen(true)}>Change</button></BorderGlow>
+                  <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button type="button" className="s1-mini" onClick={clearBrand} title="Clear brand — platforms follow all connected accounts">Clear</button></BorderGlow>
                 </div>
               ) : (
-                <button type="button" className="s1-btn" onClick={() => setBrandOpen(true)}>Choose a brand</button>
+                <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button type="button" className="s1-btn" onClick={() => setBrandOpen(true)}>Choose a brand</button></BorderGlow>
               )}
               {!brands.length && <p className="s1-note">No accounts connected yet — connect accounts first, then pick a brand here.</p>}
             </SetupCard>
@@ -255,9 +256,9 @@ export default function StageOnePage({ session, onNext, onNavigate, onSignOut })
 
             <div className="s1-divider" role="separator" aria-label="Or bundle into groups"><span>or bundle into groups</span></div>
             <SetupCard id="create_groups" selected={type === 'create_groups'} onSelect={pick} icon={ICONS.trio} title="Create Groups" summary="Group 2 or more accounts that share the same content, caption and media.">
-              <button type="button" className="s1-btn" onClick={() => setBuilderOpen(true)}>Create a group</button>
+              <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button type="button" className="s1-btn" onClick={() => setBuilderOpen(true)}>Create a group</button></BorderGlow>
               {groups.map((g) => (
-                <div key={g.id} className="trio-mini"><b title={g.name}>{g.name}</b><small>{(g.accountIds || []).length} accounts · {groupPlatsLabel(g)}</small><button type="button" className="s1-mini danger" title={`Delete ${g.name}`} onClick={() => { if (window.confirm(`Delete group “${g.name}”? Your accounts stay connected.`)) removeGroup(g.id); }}>✕</button></div>
+                <div key={g.id} className="trio-mini"><b title={g.name}>{g.name}</b><small>{(g.accountIds || []).length} accounts · {groupPlatsLabel(g)}</small><BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button type="button" className="s1-mini danger" title={`Delete ${g.name}`} onClick={() => { if (window.confirm(`Delete group “${g.name}”? Your accounts stay connected.`)) removeGroup(g.id); }}>✕</button></BorderGlow></div>
               ))}
             </SetupCard>
 

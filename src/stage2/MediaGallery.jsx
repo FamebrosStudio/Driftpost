@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo } from 'react';
+import BorderGlow from '../components/reactbits/BorderGlow.jsx';
 
 // One media card: preview, name, type, size, edit (images) + delete.
 function MediaCard({ entry, index, onRemove, onEdit }) {
@@ -17,8 +18,8 @@ function MediaCard({ entry, index, onRemove, onEdit }) {
         <small>{entry.size}</small>
       </div>
       <div className="acts">
-        <button type="button" onClick={() => onEdit(index)}>Edit</button>
-        <button type="button" className="danger" onClick={() => onRemove(index)}>Delete</button>
+        <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button type="button" onClick={() => onEdit(index)}>Edit</button></BorderGlow>
+        <BorderGlow asChild className="btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={12}><button type="button" className="danger" onClick={() => onRemove(index)}>Delete</button></BorderGlow>
       </div>
     </div>
   );
