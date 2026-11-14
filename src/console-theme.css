@@ -388,7 +388,7 @@
 #root .ws .ws-nav button.active {
   border-left: 2px solid var(--go);
   color: var(--ink);
-  background: #62d9f30d;
+  background: color-mix(in srgb, var(--go) 8%, transparent);
 }
 
 #root .ws .ws-icon,
@@ -403,7 +403,7 @@
 #root .ws .ws-day.today .ws-day-number,
 #root .ws .ws-day.selected {
   color: var(--go);
-  background: #62d9f310;
+  background: color-mix(in srgb, var(--go) 10%, transparent);
   box-shadow: inset 0 0 0 1px var(--go);
 }
 
@@ -969,6 +969,150 @@
   border-color: var(--line-hard);
   color: var(--ink);
   background: var(--panel2);
+}
+
+/* Reuse the console palette on every private-app loading and sign-in state. */
+#root .page-loading,
+#root .auth-wrap {
+  --bg: #050709;
+  --panel: #0b0f12;
+  --panel2: #11171b;
+  --input: #070a0c;
+  --ink: #f2f4f5;
+  --muted: #abb5bb;
+  --faint: #77858c;
+  --line: #1b252b;
+  --line-hard: #34434a;
+  --go: #79c9ad;
+  --go-ink: #101714;
+  --violet: var(--go);
+  --grad: var(--go);
+  background: var(--bg);
+  color: var(--ink);
+}
+
+#root .page-loading-mark {
+  border-top-color: var(--go);
+}
+
+#root .page-loading-recovery button,
+#root .auth-wrap .login-form .skew-btn.grad,
+#root .auth-wrap .login-form .skew-btn.submit {
+  border-color: var(--go);
+  color: var(--go-ink);
+  background: var(--go);
+}
+
+#root .auth-wrap .login-form input:focus {
+  border-color: var(--go);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--go) 16%, transparent);
+}
+
+#root .auth-wrap .login-form .user-profile {
+  background: color-mix(in srgb, var(--go) 18%, var(--panel));
+}
+
+#root .auth-wrap .login-form .user-profile-inner {
+  background: var(--panel);
+}
+
+/* The recovered, offline, not-found, and warm-up screens share the same
+   charcoal surfaces and mint action color as the console. */
+#root .recovery-page {
+  --rec-bg: #050709;
+  --rec-panel: #0b0f12;
+  --rec-line: #1b252b;
+  --rec-accent: #79c9ad;
+  --rec-muted: #abb5bb;
+  --rec-faint: #77858c;
+  --rec-accent-ink: #101714;
+  color: #f2f4f5;
+  background: radial-gradient(ellipse at 50% 40%, #79c9ad0c, transparent 40%), radial-gradient(ellipse at 85% 5%, #79c9ad08, transparent 32%), #050709;
+}
+
+#root .recovery-page::before {
+  background-image: radial-gradient(#34434a55 1px, transparent 1px);
+}
+
+#root .recovery-page :is(.recovery-top > span:last-child, .recovery-footer, .starting-footnote) {
+  color: #77858c;
+}
+
+#root .recovery-page :is(.recovery-orbit, .recovery-postcard, .offline-cloud, .offline-cloud::before, .offline-cloud::after) {
+  border-color: #34434a;
+}
+
+#root .recovery-page .recovery-postcard {
+  background: linear-gradient(145deg, #11171b, #0b0f12);
+}
+
+#root .recovery-page :is(.offline-cloud, .offline-cloud::before, .offline-cloud::after) {
+  background: #0b0f12;
+}
+
+#root .recovery-page :is(.orbit-two, .offline-ground) {
+  border-color: #1b252b;
+}
+
+#root .recovery-page :is(.postcard-line, .starting-progress) {
+  background-color: #34434a;
+}
+
+#root .recovery-page .postcard-media {
+  background: linear-gradient(135deg, #79c9ad20, #79c9ad0a);
+}
+
+#root .recovery-page :is(.postcard-media i, .recovery-star, .recovery-404-number, .offline-signal i, .starting-dots) {
+  color: #79c9ad;
+  border-color: #79c9ad;
+}
+
+#root .recovery-page .recovery-404-number {
+  text-shadow: 0 5px 25px #79c9ad55;
+}
+
+#root .recovery-page .recovery-kicker,
+#root .recovery-page .offline-tip span {
+  color: #79c9ad;
+}
+
+#root .recovery-page :is(.recovery-copy, .starting-caption) {
+  color: #abb5bb;
+}
+
+#root .recovery-page .starting-progress i {
+  background: linear-gradient(90deg, #79c9ad, #a9ddc9);
+  box-shadow: 0 0 14px #79c9ad66;
+}
+
+#root .recovery-page .starting-live-dot {
+  background: #79c9ad;
+  box-shadow: 0 0 12px #79c9ad;
+}
+
+#root .recovery-page .recovery-primary {
+  border-color: var(--rec-accent);
+  color: var(--rec-accent-ink);
+  background: linear-gradient(110deg, #79c9ad, #a9ddc9);
+  box-shadow: 0 10px 28px #79c9ad22;
+}
+
+#root .recovery-page .recovery-secondary {
+  border-color: #34434a;
+  color: #f2f4f5;
+  background: #0b0f12;
+}
+
+#root .stage2 .s2-clip-strip {
+  background-image: repeating-linear-gradient(90deg, transparent 0 7.8%, color-mix(in srgb, var(--go) 38%, transparent) 7.8% 8%, transparent 8% 16.4%), linear-gradient(180deg, rgba(255,255,255,.1), transparent 45%, rgba(0,0,0,.18));
+}
+
+#root .stage2 .s2-clip-selected {
+  background: color-mix(in srgb, var(--go) 20%, transparent);
+}
+
+body:has(#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .auth-wrap, .page-loading, .recovery-page, .app-error)) {
+  background: #050709;
 }
 
 @media (max-width: 760px) {
