@@ -105,10 +105,10 @@ export default function MediaEditor({ entry, token, onClose, onApply, onApplyMus
     return () => { try { URL.revokeObjectURL(preview); } catch {} };
   }, [preview]);
   useEffect(() => {
-    const h = (e) => { if (e.key === 'Escape') onClose(); };
+    const h = (e) => { if (e.key === 'Escape' && !busy) onClose(); };
     window.addEventListener('keydown', h);
     return () => window.removeEventListener('keydown', h);
-  }, [onClose]);
+  }, [onClose, busy]);
 
   // Image source (with <img> fallback for exotic formats).
   useEffect(() => {
@@ -290,6 +290,55 @@ export default function MediaEditor({ entry, token, onClose, onApply, onApplyMus
     setOverlays((items) => items.filter((item) => item.id !== selectedOverlay));
     setSelectedOverlay('');
   };
+  const duplicateOverlay = () => {
+    if (!selectedOverlayItem || busy) return;
+    const copy = { ...selectedOverlayItem, id: crypto.randomUUID() };
+    copy.x = Math.min(1 - copy.w, copy.x + 0.025);
+    copy.y = Math.min(1 - copy.h, copy.y + 0.025);
+    setOverlays((items) => [...items, copy]);
+    setSelectedOverlay(copy.id);
+  };
+  const reorderOverlay = (front) => {
+    setOverlays((items) => {
+      const selected = items.find((item) => item.id === selectedOverlay);
+      if (!selected) return items;
+      const rest = items.filter((item) => item.id !== selectedOverlay);
+      return front ? [...rest, selected] : [selected, ...rest];
+    });
+  };
+  const setOverlayDimension = (key, value) => {
+    if (!Number.isFinite(value)) return;
+    setOverlays((items) => items.map((item) => {
+      if (item.id !== selectedOverlay) return item;
+      const next = { ...item };
+      const maximum = key === 'x' ? 1 - item.w : key === 'y' ? 1 - item.h : key === 'w' ? 1 - item.x : 1 - item.y;
+      next[key] = Math.max(key === 'w' || key === 'h' ? 0.01 : 0, Math.min(maximum, value / 100));
+      return next;
+    }));
+  };
+  useEffect(() => {
+    const handleKey = (event) => {
+      if (busy || !selectedOverlay || event.target.closest?.('input, textarea, select, [contenteditable="true"]')) return;
+      if (event.key === 'Delete' || event.key === 'Backspace') {
+        event.preventDefault();
+        setOverlays((items) => items.filter((item) => item.id !== selectedOverlay));
+        setSelectedOverlay('');
+        return;
+      }
+      if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(event.key)) return;
+      const bounds = overlayLayerRef.current?.getBoundingClientRect();
+      if (!bounds?.width || !bounds.height) return;
+      event.preventDefault();
+      const pixels = event.shiftKey ? 10 : 1;
+      setOverlays((items) => items.map((item) => item.id !== selectedOverlay ? item : {
+        ...item,
+        x: Math.max(0, Math.min(1 - item.w, item.x + (event.key === 'ArrowLeft' ? -pixels : event.key === 'ArrowRight' ? pixels : 0) / bounds.width)),
+        y: Math.max(0, Math.min(1 - item.h, item.y + (event.key === 'ArrowUp' ? -pixels : event.key === 'ArrowDown' ? pixels : 0) / bounds.height)),
+      }));
+    };
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
+  }, [selectedOverlay, busy]);
   const paintOverlays = (ctx, width, height) => {
     overlays.forEach((item) => {
       const x = item.x * width;
@@ -727,7 +776,7 @@ export default function MediaEditor({ entry, token, onClose, onApply, onApplyMus
   return (
     <main className="s2-media-editor-page" aria-label={`Edit ${entry.name}`}>
       <header className="s2-editor-topbar">
-        <button type="button" className="s2-editor-back" onClick={onClose}>← <span>Media</span></button>
+        <button type="button" className="s2-editor-back" disabled={busy} onClick={onClose}>← <span>Media</span></button>
         <div className="s2-editor-heading"><h1>{isVideo ? 'Video editor' : 'Image editor'}</h1><p title={entry.name}>{entry.name} <span>·</span> {isVideo ? 'Transform and design your video' : 'Transform and design your image'}</p></div>
         <button type="button" className="s2-editor-export" disabled={busy || !ready} onClick={done}>{busy ? (busyText || 'Preparing…') : 'Save edited media'}</button>
       </header>
@@ -791,6 +840,21 @@ export default function MediaEditor({ entry, token, onClose, onApply, onApplyMus
               </div>
               {selectedOverlayItem && <div className="s2-overlay-properties">
                 <div className="s2-overlay-properties-head"><b>{selectedOverlayItem.kind === 'text' ? 'Text style' : `${selectedOverlayItem.kind} style`}</b><button type="button" onClick={removeSelectedOverlay}>Delete</button></div>
+                <div className="s2-style-row">
+                  <button type="button" disabled={busy} onClick={duplicateOverlay}>Duplicate</button>
+                  <button type="button" disabled={busy} onClick={() => reorderOverlay(true)}>To front</button>
+                  <button type="button" disabled={busy} onClick={() => reorderOverlay(false)}>To back</button>
+                </div>
+                <div className="s2-element-geometry">
+                  {[['x', 'X position'], ['y', 'Y position'], ['w', 'Width'], ['h', 'Height']].map(([key, label]) => (
+                    <label key={key}>{label} %
+                      <input type="number" min={key === 'w' || key === 'h' ? 1 : 0} max="100" step="0.1"
+                        disabled={busy} value={Math.round(selectedOverlayItem[key] * 1000) / 10}
+                        onChange={(event) => setOverlayDimension(key, event.target.valueAsNumber)} />
+                    </label>
+                  ))}
+                </div>
+                <small className="s2-element-hint">Drag handles to resize. Arrow keys move; Shift + arrows move faster.</small>
                 {selectedOverlayItem.kind === 'text' && <>
                   <label className="s2-design-label" htmlFor="s2-selected-text">Content</label>
                   <textarea id="s2-selected-text" className="s2-design-text" value={selectedOverlayItem.text} onChange={(event) => updateSelectedOverlay({ text: event.target.value })} rows={2} />

@@ -120,6 +120,10 @@
 .s2-shape-tools .circle-icon { width: 13px; height: 13px; border-radius: 50% !important; }
 .s2-overlay-properties { margin-top: 16px; padding: 12px; border: 1px solid var(--line); background: var(--panel2); }
 .s2-overlay-properties-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px; font-size: 12px; }
+.s2-element-geometry { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 14px 0 10px; }
+.s2-element-geometry label { display: grid; gap: 5px; color: var(--muted); font-size: 11px; }
+.s2-element-geometry input { width: 100%; min-width: 0; padding: 8px; border: 1px solid var(--line-hard); background: var(--input); color: var(--ink); }
+.s2-element-hint { display: block; color: var(--muted); font-size: 11px; line-height: 1.6; }
 .s2-overlay-properties-head button { min-height: 28px; padding: 0 8px; color: var(--danger,#e5484d); }
 .s2-style-row { display: flex; align-items: center; gap: 8px; }
 .s2-style-row > * { flex: 1; min-width: 0; }
