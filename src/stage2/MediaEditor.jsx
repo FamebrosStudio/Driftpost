@@ -442,7 +442,7 @@ export default function MediaEditor({ entry, token, onClose, onApply, onApplyMus
     const c = normRef.current;
     const ratio = RATIOS[aspect];
     const MIN = 0.05;
-    let { fx, fy } = d.box;
+    let { fx, fy } = d.box || FULL;
     const clampBox = (b) => {
       b.fw = Math.min(1, Math.max(MIN, b.fw));
       b.fh = Math.min(1, Math.max(MIN, b.fh));
@@ -602,7 +602,7 @@ export default function MediaEditor({ entry, token, onClose, onApply, onApplyMus
         onApply(new File([blob], name, { type: 'video/webm' }));
       };
       const dur = isFinite(src.duration) && src.duration > 0 ? src.duration : 10;
-      const kill = setTimeout(finish, Math.min(dur * 1000 + 2000, 125000));
+      const kill = setTimeout(finish, dur * 1000 + 2000);
       src.onended = () => { clearTimeout(kill); finish(); };
       src.currentTime = 0;
       await src.play().catch(() => {});

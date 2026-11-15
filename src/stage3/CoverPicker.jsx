@@ -99,9 +99,8 @@ export default function CoverPicker({ platform, files = [], cover, onChange }) {
     try {
       const selectedTime = Math.max(0, Math.min(duration || 0, time));
       await waitForVideoSeek(video, selectedTime);
-      if (typeof video.requestVideoFrameCallback === 'function') {
-        await new Promise((resolve) => video.requestVideoFrameCallback(() => resolve()));
-      }
+      // seeked guarantees the selected frame is available to drawImage.
+      // A paused video may never deliver another frame callback.
       const canvas = document.createElement('canvas');
       canvas.width = video.videoWidth;
       canvas.height = video.videoHeight;

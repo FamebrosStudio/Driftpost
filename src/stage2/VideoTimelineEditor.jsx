@@ -41,7 +41,7 @@ export default function VideoTimelineEditor({ entry, token, onBack, onApply, onA
   const seek = (time) => new Promise((resolve, reject) => {
     const video = videoRef.current;
     if (!video) return reject(new Error('Preview is not ready.'));
-    if (Math.abs(video.currentTime - time) < 0.04) return resolve();
+    if (!video.seeking && Math.abs(video.currentTime - time) < 0.04) return resolve();
     const done = () => { cleanup(); resolve(); };
     const fail = () => { cleanup(); reject(new Error('Could not seek this video.')); };
     const cleanup = () => {
@@ -124,8 +124,8 @@ export default function VideoTimelineEditor({ entry, token, onBack, onApply, onA
     }
   };
 
-  const clampStart = (raw) => setStart(Math.min(Number(raw), Math.max(0, end - 0.25)));
-  const clampEnd = (raw) => setEnd(Math.max(Number(raw), Math.min(duration, start + 0.25)));
+  const clampStart = (raw) => setStart(Math.max(0, Math.min(Number(raw), Math.max(0, end - 0.25))));
+  const clampEnd = (raw) => setEnd(Math.min(duration, Math.max(Number(raw), Math.min(duration, start + 0.25))));
   const timeFromPointer = (event) => {
     const rect = event.currentTarget.getBoundingClientRect();
     return Math.max(0, Math.min(duration, ((event.clientX - rect.left) / rect.width) * duration));
