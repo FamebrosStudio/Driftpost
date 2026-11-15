@@ -13,7 +13,7 @@ const isHeld = (job) => !['stopped', 'send'].includes(job?.result?.review_decisi
 );
 const emptyCaptions = () => ({ instagram: { caption: '' }, facebook: { message: '' }, youtube: { title: '', description: '', tags: '' }, x: { text: '' } });
 
-export default function TeamVideoReviewPage({ session, onNavigate, onSignOut }) {
+export default function TeamVideoReviewPage({ session, onNavigate, onSignOut, onOpenStageThree }) {
   const [jobs, setJobs] = useState([]);
   const [brands, setBrands] = useState([]);
   const [connections, setConnections] = useState([]);

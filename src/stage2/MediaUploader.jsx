@@ -33,10 +33,11 @@ export default function MediaUploader({ count, onFiles, canUseAi = false }) {
         onDragLeave={() => setOver(false)}
         onDrop={(e) => { e.preventDefault(); setOver(false); take(e.dataTransfer.files); }}
       >
-        <b>+ Add Media{count ? ` (${count}/${MAX_MEDIA_FILES})` : ''}</b>
-        <small>{canUseAi ? 'Images or video, up to 400 MB per file. Choose Analyze photo + video in the prompt settings to include visual and spoken details.' : 'Images or video, up to 400 MB per file.'}</small>
+        <span className="s2-drop-icon" aria-hidden="true">↑</span>
+        <b>Drop photos or videos here, or browse{count ? ` (${count}/${MAX_MEDIA_FILES})` : ''}</b>
+        <small>{canUseAi ? 'High-resolution images or videos up to 400 MB. Open any item in Studio Edit to crop, color-grade, add text/shapes, or trim video.' : 'High-resolution images or videos up to 400 MB. Click Studio Edit on any item to crop, filter, add text, or trim.'}</small>
       </button>
-      {message && <small role="status" style={{ display: 'block', marginTop: 8, color: '#e28e8e' }}>{message}</small>}
+      {message && <small role="status" style={{ display: 'block', marginTop: 8, color: '#f87171' }}>{message}</small>}
     </div>
   );
 }

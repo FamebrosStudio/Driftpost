@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo } from 'react';
 
-// One media card: preview, name, type, size, edit (images) + delete.
+// One media card: preview, name, type, size, music badge, Studio Edit + Delete.
 function MediaCard({ entry, index, onRemove, onEdit }) {
   const url = useMemo(() => URL.createObjectURL(entry.raw), [entry]);
   useEffect(() => () => { try { URL.revokeObjectURL(url); } catch {} }, [url]);
@@ -8,17 +8,24 @@ function MediaCard({ entry, index, onRemove, onEdit }) {
 
   return (
     <div className="s2-media">
-      <span className="s2-kind">{isVideo ? 'VIDEO' : 'IMAGE'}</span>
-      {isVideo
-        ? <video src={url} preload="metadata" muted playsInline />
-        : <img src={url} alt={entry.name} />}
+      <div className="s2-media-preview-wrap" onClick={() => onEdit(index)} role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onEdit(index); } }} title="Click to open in Studio Editor">
+        <span className="s2-kind">{isVideo ? '🎬 VIDEO' : '🖼️ PHOTO'}</span>
+        {entry.musicTrack && (
+          <span className="s2-music-badge" title={entry.musicTrack.title || entry.musicTrack.name || 'Soundtrack attached'}>
+            🎵 Audio
+          </span>
+        )}
+        {isVideo
+          ? <video src={url} preload="metadata" muted playsInline />
+          : <img src={url} alt={entry.name} />}
+      </div>
       <div className="meta">
         <b title={entry.name}>{entry.name}</b>
-        <small>{entry.size}</small>
+        <small>{entry.size}{entry.musicTrack ? ` · ${entry.musicTrack.title || entry.musicTrack.name || 'Soundtrack'}` : ''}</small>
       </div>
       <div className="acts">
-        <button type="button" onClick={() => onEdit(index)}>Edit</button>
-        <button type="button" className="danger" onClick={() => onRemove(index)}>Delete</button>
+        <button type="button" className="s2-edit-btn" onClick={() => onEdit(index)}>✦ Studio Edit</button>
+        <button type="button" className="danger" onClick={() => onRemove(index)}>Remove</button>
       </div>
     </div>
   );

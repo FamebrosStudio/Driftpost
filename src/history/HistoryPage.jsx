@@ -206,6 +206,7 @@ function ScheduledTab({ token }) {
   const [rows, setRows] = useState(null);
   const [busy, setBusy] = useState('');
   const [error, setError] = useState('');
+  const [reloadTick, setReloadTick] = useState(0);
 
   useEffect(() => {
     let active = true;
@@ -218,7 +219,7 @@ function ScheduledTab({ token }) {
     // on screen and made completed schedules look stuck.
     const timer = window.setInterval(load, 15_000);
     return () => { active = false; window.clearInterval(timer); };
-  }, [token]);
+  }, [token, reloadTick]);
 
   if (rows === null && error) return <div><p className="hist-note" role="alert">{error}</p><button type="button" className="hist-mini" onClick={() => { setError(''); listSchedules(token).then(setRows).catch((e) => setError(e.message || 'Could not load scheduled posts.')); }}>Retry</button></div>;
   if (rows === null) return <p className="hist-empty">Loading scheduled posts…</p>;
@@ -256,7 +257,11 @@ function ScheduledTab({ token }) {
                 disabled={busy === r.id}
                 onClick={async () => {
                   setBusy(r.id);
-                  try { await cancelSchedule(token, r.id); load(); }
+                  try {
+                    await cancelSchedule(token, r.id);
+                    setRows((current) => Array.isArray(current) ? current.map((row) => row.id === r.id ? { ...row, status: 'cancelled' } : row) : current);
+                    setReloadTick((t) => t + 1);
+                  }
                   catch (e) { setError(e.message || 'Could not cancel this schedule.'); }
                   finally { setBusy(''); }
                 }}

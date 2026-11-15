@@ -1,365 +1,227 @@
 /*
- * Driftpost console system
- * Hard-edged publishing desk: ink-black surfaces,mineral white type,cyan
- * reserved for the active task. Kept out of the public marketing pages.
+ * Driftpost Studio Design System — "Obsidian & Alabaster Studio"
+ * Cohesive, ultra-smooth creator SaaS experience with tactile geometry,
+ * subtle atmospheric depth, glassmorphic navigation, and crisp typography.
  */
-#root .ws,#root .hist-shell,#root .stage1,#root .stage2,#root .stage3,#root .connect,#root .welcome,#root .team-video-page,#root .approval-page{
-  --bg: #000000;
-  --panel: #071019;
-  --panel2: #0c1824;
-  --input: #02070b;
-  --ink: #eef5f9;
-  --muted: #a9becd;
-  --faint: #7e94a6;
-  --line: #142430;
-  --line-hard: #2a4156;
-  --hover: #7dd3fc12;
-  --go: #7dd3fc;
-  --go-ink: #0a1520;
+
+#root .ws,
+#root .hist-shell,
+#root .stage1,
+#root .stage2,
+#root .stage3,
+#root .connect,
+#root .welcome,
+#root .team-video-page,
+#root .approval-page {
+  --bg: #05080d;
+  --panel: #0b111b;
+  --panel2: #111a28;
+  --input: #070b12;
+  --ink: #f1f5f9;
+  --muted: #94a3b8;
+  --faint: #64748b;
+  --line: rgba(148, 163, 184, 0.13);
+  --line-hard: rgba(148, 163, 184, 0.23);
+  --hover: rgba(56, 189, 248, 0.08);
+  --go: #38bdf8;
+  --go-ink: #03111c;
   --acc: var(--go);
   --acc-ink: var(--go-ink);
-  --acc-soft: #7dd3fc1a;
-  --warm: #7fb3d3;
-  --warm-bg: #7fb3d31a;
-  --cool: #7dd3fc;
-  --cool-bg: #7dd3fc1a;
+  --acc-soft: rgba(56, 189, 248, 0.14);
+  --warm: #fbbf24;
+  --warm-bg: rgba(251, 191, 36, 0.14);
+  --cool: #38bdf8;
+  --cool-bg: rgba(56, 189, 248, 0.14);
   --accent-soft: var(--go);
   --accent-ink: var(--go-ink);
-  --danger: #ff7777;
-  --ok: #4dc3f7;
+  --danger: #f87171;
+  --ok: #34d399;
   color: var(--ink);
   background-color: var(--bg);
-  font-family: "Poppins", "Segoe UI", sans-serif;
-}[data-theme="light"] #root .ws,[data-theme="light"] #root .hist-shell,[data-theme="light"] #root .stage1,[data-theme="light"] #root .stage2,[data-theme="light"] #root .stage3,[data-theme="light"] #root .connect,[data-theme="light"] #root .welcome,[data-theme="light"] #root .team-video-page,[data-theme="light"] #root .approval-page{
-  --bg: #eef5f9;
-  --panel: #f7fbfd;
-  --panel2: #dceaf2;
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% -15%, rgba(56, 189, 248, 0.09), transparent 65%),
+    radial-gradient(ellipse 55% 45% at 90% 10%, rgba(99, 102, 241, 0.06), transparent 60%);
+  font-family: "Poppins", "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+[data-theme="light"] #root .ws,
+[data-theme="light"] #root .hist-shell,
+[data-theme="light"] #root .stage1,
+[data-theme="light"] #root .stage2,
+[data-theme="light"] #root .stage3,
+[data-theme="light"] #root .connect,
+[data-theme="light"] #root .welcome,
+[data-theme="light"] #root .team-video-page,
+[data-theme="light"] #root .approval-page {
+  --bg: #f4f7fb;
+  --panel: #ffffff;
+  --panel2: #edf2f8;
   --input: #ffffff;
-  --ink: #0b1722;
-  --muted: #334d63;
-  --faint: #56718a;
-  --line: #c9dbe6;
-  --line-hard: #9db7c8;
-  --hover: #0369a112;
-  --go: #0369a1;
+  --ink: #0f172a;
+  --muted: #475569;
+  --faint: #64748b;
+  --line: rgba(15, 23, 42, 0.09);
+  --line-hard: rgba(15, 23, 42, 0.17);
+  --hover: rgba(2, 132, 199, 0.07);
+  --go: #0284c7;
   --go-ink: #ffffff;
   --acc: var(--go);
   --acc-ink: var(--go-ink);
-  --acc-soft: #0369a118;
-  --warm: #3a6076;
-  --warm-bg: #3a607618;
-  --cool: #0369a1;
-  --cool-bg: #0369a114;
+  --acc-soft: rgba(2, 132, 199, 0.11);
+  --warm: #d97706;
+  --warm-bg: rgba(217, 119, 6, 0.11);
+  --cool: #0284c7;
+  --cool-bg: rgba(2, 132, 199, 0.1);
   --accent-soft: var(--go);
   --accent-ink: var(--go-ink);
-  --danger: #b4232f;
-  --ok: #087650;
-}/* Strict geometry contract: every console control and surface has square corners. */
-#root .ws *,#root .hist-shell *,#root .connect *,#root .stage1 *,#root .stage2 *,#root .stage3 *,#root .team-video-page *,#root .approval-page *{
-  border-radius: 0 !important;
-}#root .ws *::before,#root .ws *::after,#root .hist-shell *::before,#root .hist-shell *::after,#root .connect *::before,#root .connect *::after,#root .stage1 *::before,#root .stage1 *::after,#root .stage2 *::before,#root .stage2 *::after,#root .stage3 *::before,#root .stage3 *::after,#root .team-video-page *::before,#root .team-video-page *::after,#root .approval-page *::before,#root .approval-page *::after{
-  border-radius: 0 !important;
-}#root .ws,#root .hist-shell,#root .connect,#root .welcome,#root .stage1,#root .stage2,#root .stage3,#root .team-video-page,#root .approval-page{
-  background-color: var(--bg);
-}.ws{
+  --danger: #dc2626;
+  --ok: #059669;
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% -15%, rgba(2, 132, 199, 0.07), transparent 65%),
+    radial-gradient(ellipse 55% 45% at 90% 10%, rgba(99, 102, 241, 0.05), transparent 60%);
+}
+
+.ws {
   min-height: 100vh;
   min-width: 0;
-  background-image: none;
-}#root .ws .ws-topbar,#root .stage1 .ws-topbar,#root .stage2 .ws-topbar,#root .stage3 .ws-topbar{
-  border-color: var(--line) !important;
-  background: color-mix(in srgb, var(--bg) 94%, transparent) !important;
-  backdrop-filter: blur(14px);
-}.ws-main,.hist-in,.connect-in,.stage1-in,.stage2-in,.stage3-in,.team-video-page > *{
+}
+
+.ws-main,
+.hist-in,
+.connect-in,
+.stage1-in,
+.stage2-in,
+.stage3-in,
+.team-video-page > * {
   position: relative;
-}.ws > .ws-main{
+}
+
+.ws > .ws-main {
   width: min(1540px, 100%);
   margin: 0 auto;
-  padding: clamp(26px, 4vw, 58px) clamp(22px, 5vw, 76px) 132px;
-}#root .ws > .ws-topbar{
-  border-right: 0 !important;
-  border-bottom: 1px solid var(--line) !important;
-  background: var(--panel) !important;
-}#root .ws .ws-heading{
-  align-items: end;
-  padding-bottom: 22px;
-  border-bottom: 1px solid var(--line);
-}#root .ws .ws-eyebrow,.stage1-badge,.s2-badge,.s3-badge{
-  color: var(--go) !important;
-  font-family: inherit;
-  font-size: 11px !important;
-  font-weight: 600;
-  letter-spacing: .04em !important;
-  text-transform: none !important;
-}#root .ws .ws-heading h1,.stage1-head h1,.s2-head h1,.s3-head h1{
-  color: var(--ink);
-  font-size: clamp(32px, 4.2vw, 54px) !important;
-  font-weight: 650;
-  letter-spacing: -.055em !important;
-  line-height: 1.02 !important;
-}#root .ws .ws-heading p,.stage1-head p,.s2-head p,.s3-head p{
-  max-width: 66ch;
-  color: var(--muted);
-  font-size: 13px !important;
-  line-height: 1.7 !important;
-}#root .ws .ws-panel,#root .ws .ws-stat,#root .ws .ws-welcome,#root .stage1 .setup-card,#root .stage2 .s2-sec,#root .stage3 .s3-work,#root .approval-page .approval-card,#root .hist-shell .hist-panel{
-  border-color: var(--line) !important;
-  background: var(--panel) !important;
-  box-shadow: none !important;
-}#root .ws .ws-welcome{
-  min-height: 250px;
-  background: var(--panel) !important;
-}[data-theme="light"] #root .ws .ws-welcome{
-  background: var(--panel) !important;
-}#root .ws .ws-welcome-art{
-  display: none !important;
-}#root .ws .ws-stat{
-  min-height: 132px;
-  border-top: 2px solid var(--line-hard) !important;
-}#root .ws .ws-stat > strong{
-  color: var(--ink);
-  font-variant-numeric: tabular-nums;
-}/* The workflow pages loaded on demand; pin their theme tokens here so their
-   legacy per-page defaults cannot leak purple into the shared interface. */
-#root :is(.connect, .welcome, .stage1, .stage2, .stage3){
-  --acc: var(--go);
-  --acc-ink: var(--go-ink);
-  --acc-soft: color-mix(in srgb, var(--go) 13%, transparent);
-}#root :is(.connect, .welcome, .stage1, .stage2, .stage3) :is(
-  .cn-head h1, .welcome-head h1, .stage1-head h1, .s2-head h1, .s3-head h1
-){
-  letter-spacing: -.04em;
-}#root :is(.connect, .welcome, .stage1, .stage2, .stage3) :is(
-  .cn-badge, .welcome-steps, .stage1-badge, .s2-badge, .s3-badge
-){
-  letter-spacing: .04em;
-}#root :is(.stage1, .stage2, .stage3) :is(
-  .s1-step.cur .dot, .s2-step.cur .dot, .s3-step.cur .dot,
-  .s1-step.done .dot, .s2-step.done .dot, .s3-step.done .dot,
-  .s1-track i, .s2-track i, .s3-track i,
-  .s1-primary, .continue-btn, .s2-generate, .s2-done,
-  .s3-tab.on, .s3-review-all, .s3-acts button.go, .s3-postall
-){
-  background-color: var(--go) !important;
-  border-color: var(--go) !important;
-  color: var(--go-ink) !important;
-}#root :is(.stage1, .stage2, .stage3) :is(
-  .s1-step.cur, .s2-step.cur, .s3-step.cur,
-  .s1-badge, .s2-badge, .s3-badge,
-  .s3-pill.work, .s3-link
-){
-  color: var(--go) !important;
-}#root :is(.connect, .welcome, .stage1, .stage2, .stage3) :is(
-  input:not([type="checkbox"]):not([type="radio"]),
-  select, textarea
-){
-  min-height: 42px;
-  border-color: var(--line-hard);
-  background-color: var(--input);
-  color: var(--ink);
-}#root :is(.connect, .welcome, .stage1, .stage2, .stage3) :is(
-  input:not([type="checkbox"]):not([type="radio"]),
-  select, textarea
-):focus-visible{
-  border-color: var(--go) !important;
-  outline: 2px solid color-mix(in srgb, var(--go) 28%, transparent);
-  outline-offset: 1px;
-  box-shadow: none !important;
-}#root :is(.connect, .welcome, .stage1, .stage2, .stage3) :is(
-  .setup-card, .cn-card, .cn-brands, .s2-sec, .s3-work
-){
-  border-width: 1px;
-}#root :is(.ws, .hist-shell, .connect, .welcome, .stage1, .stage2, .stage3, .team-video-page, .approval-page) :is(
-  .ws-eyebrow, .cn-col h4, .s1-col h4, .s2-setting label, .s3-field > span
-){
-  color: var(--muted) !important;
-  font-family: inherit !important;
-  font-size: 12px !important;
-  font-weight: 600 !important;
-  letter-spacing: 0 !important;
-  text-transform: none !important;
-}#root :is(.connect, .welcome, .stage1, .stage2, .stage3) :is(
-  .s1-primary, .continue-btn, .cn-connect, .cn-next, .s2-generate, .s2-done,
-  .s3-review-all, .s3-acts button.go, .s3-postall
-){
-  background: var(--go) !important;
-  border-color: var(--go) !important;
-  color: var(--go-ink) !important;
-  font-weight: 650 !important;
-  box-shadow: none !important;
-}#root :is(.connect, .welcome, .stage1, .stage2, .stage3) :is(
-  .s1-primary:disabled, .continue-btn:disabled, .cn-connect:disabled, .cn-next:disabled,
-  .s2-generate:disabled, .s2-done:disabled, .s3-review-all:disabled,
-  .s3-acts button.go:disabled, .s3-postall:disabled
-){
-  opacity: .45;
-}#root :is(.connect, .welcome, .stage1, .stage2, .stage3) :is(
-  .cn-empty, .s1-drop, .s2-drop, .s3-grey-note
-){
-  border-color: var(--line-hard);
-  background: color-mix(in srgb, var(--panel2) 72%, transparent);
-}#root .stage2 .s2-sec,#root .stage3 .s3-work,#root .stage1 .setup-card,#root .connect .cn-card{
-  padding: 20px;
-}#root .stage2 .s2-settings{
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
+  padding: clamp(26px, 3.6vw, 48px) clamp(22px, 4.5vw, 68px) 136px;
 }
 
-@media (max-width: 600px) {#root .stage2 .s2-settings{
-    grid-template-columns: 1fr;
-  }#root .stage1 .setup-card,#root .stage2 .s2-sec,#root .stage3 .s3-work,#root .connect .cn-card{
-    padding: 16px;
-  }
-}#root .ws .ws-primary,.ws-nav-create,.s1-continue,.s2-continue,.s3-publish{
-  border-color: var(--go) !important;
-  color: var(--go-ink) !important;
-  background: var(--go) !important;
-  font-weight: 700 !important;
-  box-shadow: none !important;
-}#root .ws .ws-secondary,.ws-month-actions button,.ws-cancel,.ws-overview-link{
-  border-color: var(--line-hard) !important;
-  color: var(--ink) !important;
-  background: var(--panel) !important;
-}#root .ws .ws-icon,.ws-day-number,.ws-event,.ws-status,.ws-live-status > i,.ws-live-status > span{
-  border-radius: 0 !important;
-}#root .ws .ws-day.today .ws-day-number,#root .ws .ws-day.selected{
-  color: var(--go);
-  background: color-mix(in srgb, var(--go) 10%, transparent);
-  box-shadow: inset 0 0 0 1px var(--go);
-}#root .ws .ws-event{
-  border-left: 2px solid var(--go);
-  color: var(--ink);
-  background: var(--panel2);
-}.ws-day:focus-visible,.ws-nav button:focus-visible,.ws button:focus-visible,.hist-shell button:focus-visible,.connect button:focus-visible,.stage1 button:focus-visible,.stage2 button:focus-visible,.stage3 button:focus-visible,.team-video-page button:focus-visible,.approval-page button:focus-visible,.ws input:focus-visible,.ws textarea:focus-visible,.ws select:focus-visible,.stage1 input:focus-visible,.stage1 textarea:focus-visible,.stage2 input:focus-visible,.stage2 textarea:focus-visible,.stage3 input:focus-visible,.stage3 textarea:focus-visible{
-  outline: 2px solid var(--go);
-  outline-offset: 2px;
-}
-
-@media (max-width: 760px) {#root .ws > .ws-main{
-    width: 100%;
-    margin: 0;
-    padding: 26px 16px calc(120px + env(safe-area-inset-bottom));
-  }#root .ws .ws-heading{
-    align-items: flex-start;
-  }#root .ws .ws-welcome{
-    min-height: 220px;
-  }#root .ws .ws-stat-grid{
-    gap: 1px;
-    background: var(--line);
-    border: 1px solid var(--line);
-  }#root .ws .ws-stat{
-    min-height: 112px;
-    border: 0 !important;
-  }#root .ws .ws-stat:last-child{
-    grid-column: 1 / -1;
-  }
-}
-
-@media (max-width: 760px) {#root .ws{
-    background-size: 32px 32px;
-  }#root .ws .ws-welcome{
-    flex-direction: column;
-    align-items: stretch;
-    gap: 10px;
-    padding: 22px 18px;
-  }#root .ws .ws-welcome > div:first-child{
-    max-width: 100%;
-  }#root .ws .ws-welcome-route{
-    width: 100%;
-  }#root .ws > .ws-topbar{
-    width: 100vw;
-    min-width: 0;
-    border-right: 0 !important;
-    border-top: 0 !important;
-    border-bottom: 1px solid var(--line) !important;
-  }#root .ws > .ws-topbar .ws-user-email{
-    max-width: 40vw;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {.ws *,.hist-shell *,.connect *,.stage1 *,.stage2 *,.stage3 *,.team-video-page *,.approval-page *{
-    scroll-behavior: auto !important;
-    animation-duration: .01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: .01ms !important;
-  }
-}/* Intentional motion: quick feedback,gentle page entry,no decorative loops. */
-#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) :is(
-  a, button, input, select, textarea, [role="button"], [tabindex]
-){
-  transition: color 150ms ease, background-color 150ms ease,
-    border-color 150ms ease, opacity 150ms ease, transform 150ms ease;
-}#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) :is(button, [role="button"]):not(:disabled):active{
-  transform: scale(.985);
-}#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) :is(.ws-panel, .ws-stat, .ws-metric-card, .hist-row, .cn-card, .setup-card, .s2-sec, .s3-work, .team-video-panel, .approval-card){
-  transition: border-color 180ms ease, background-color 180ms ease;
-}
-
-@keyframes console-page-enter {from{ opacity: 0; transform: translateY(9px); }to{ opacity: 1; transform: translateY(0); }
-}
-
-@keyframes console-control-enter {from{ opacity: 0; transform: translateY(-5px); }to{ opacity: 1; transform: translateY(0); }
-}#root .ws-main,#root .hist-in,#root .team-video-main,#root .team-review-main,#root :is(.stage1-in, .stage2-in, .stage3-in){
-  animation: console-page-enter 360ms cubic-bezier(.2, .7, .25, 1) both;
-}#root .ws .ws-stat{ animation: console-page-enter 380ms cubic-bezier(.2, .7, .25, 1) both; }#root .ws .ws-stat:nth-child(2){ animation-delay: 45ms; }#root .ws .ws-stat:nth-child(3){ animation-delay: 90ms; }
-
-@media (prefers-reduced-motion: reduce) {#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) *,#root .ws-main,#root .hist-in,#root .team-video-main,#root .team-review-main,#root :is(.stage1-in, .stage2-in, .stage3-in){
-    animation: none !important;
-    scroll-behavior: auto !important;
-    transition-duration: .01ms !important;
-  }
-}/* Desktop publishing desk: top bar,anchored content,bottom Dock,no document overflow. */
-#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3){
-  box-sizing: border-box;
-  width: 100%;
-  max-width: 100vw;
-  min-width: 0;
-  height: 100dvh;
-  min-height: 0;
-  overflow: hidden;
-}#root :is(.ws, .hist-shell) > .ws-topbar,#root :is(.stage1, .stage2, .stage3) > .ws-topbar{
+/* ==========================================================================
+   TOP STUDIO HEADER & PILL NAVIGATION (.ws-topbar & .ws-topnav)
+   ========================================================================== */
+#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar {
   position: fixed !important;
   inset: 0 0 auto 0 !important;
-  z-index: 35;
+  z-index: 45;
   box-sizing: border-box;
   display: flex !important;
   flex-direction: row !important;
   align-items: center !important;
-  gap: 18px;
+  justify-content: space-between;
+  gap: 16px;
   width: 100% !important;
   min-width: 0;
   height: auto !important;
-  min-height: 62px !important;
-  padding: 10px clamp(18px, 4vw, 64px) !important;
-  overflow: hidden;
+  min-height: 64px !important;
+  padding: 10px clamp(18px, 3.5vw, 52px) !important;
   border: 0 !important;
   border-bottom: 1px solid var(--line) !important;
-  background: var(--panel) !important;
-  backdrop-filter: none !important;
-}#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-wordmark{
-  width: auto;
-  min-height: 42px;
-  align-self: center;
-  justify-content: flex-start;
-  overflow: hidden;
-  padding: 0 6px;
-}#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-wordmark img.logo-img{
-  width: 150px;
-  max-height: 38px;
-}#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-overview-link{
+  background: color-mix(in srgb, var(--panel) 84%, transparent) !important;
+  backdrop-filter: blur(20px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(160%) !important;
+  box-shadow: 0 8px 32px -18px rgba(0, 0, 0, 0.45);
+}
+
+#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar > .ws-wordmark {
   display: inline-flex;
-  min-height: 38px;
   align-items: center;
-  gap: 8px;
-  padding: 0 10px;
+  width: auto;
+  min-height: 0;
+  padding: 4px 8px;
+  border: 0 !important;
+  border-radius: 10px !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-wordmark img.logo-img {
+  width: 142px;
+  max-height: 36px;
+  object-fit: contain;
+}
+
+.ws-topnav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
   border: 1px solid var(--line);
-  color: var(--muted);
-  background: transparent;
-  text-decoration: none;
-}#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-user{
+  border-radius: 999px !important;
+  background: color-mix(in srgb, var(--panel2) 72%, transparent);
+  overflow-x: auto;
+  scrollbar-width: none;
+  max-width: 100%;
+}
+
+.ws-topnav::-webkit-scrollbar {
+  display: none;
+}
+
+#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) .ws-topnav-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 34px !important;
+  padding: 6px 14px !important;
+  border: 1px solid transparent !important;
+  border-radius: 999px !important;
+  background: transparent !important;
+  color: var(--muted) !important;
+  font-size: 12.5px !important;
+  font-weight: 600 !important;
+  white-space: nowrap;
+  cursor: pointer;
+  box-shadow: none !important;
+  transition: all 160ms ease !important;
+}
+
+#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) .ws-topnav-pill:hover {
+  color: var(--ink) !important;
+  background: color-mix(in srgb, var(--ink) 6%, transparent) !important;
+}
+
+#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) .ws-topnav-pill.active {
+  color: var(--go-ink) !important;
+  background: var(--go) !important;
+  border-color: var(--go) !important;
+  font-weight: 700 !important;
+  box-shadow: 0 4px 14px -4px color-mix(in srgb, var(--go) 55%, transparent) !important;
+}
+
+.ws-topnav-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px !important;
+  background: color-mix(in srgb, var(--go) 22%, var(--panel));
+  color: var(--go);
+  font-size: 10.5px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.ws-topnav-pill.active .ws-topnav-badge {
+  background: rgba(3, 17, 28, 0.22);
+  color: var(--go-ink);
+}
+
+#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-user {
   display: flex;
   flex: 0 0 auto;
   align-items: center;
-  gap: 9px;
+  gap: 8px;
   width: auto;
   max-width: none;
   min-width: 0;
@@ -367,16 +229,491 @@
   margin-left: auto;
   padding: 0;
   border-top: 0;
-}#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-user-email{
+}
+
+#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) .ws-topbar-icon-btn {
+  display: inline-grid !important;
+  place-items: center !important;
+  width: 36px !important;
+  height: 36px !important;
+  min-height: 36px !important;
+  padding: 0 !important;
+  border: 1px solid var(--line-hard) !important;
+  border-radius: 999px !important;
+  background: var(--panel2) !important;
+  color: var(--muted) !important;
+  cursor: pointer;
+  box-shadow: none !important;
+}
+
+#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) .ws-topbar-icon-btn:hover {
+  color: var(--go) !important;
+  border-color: var(--go) !important;
+}
+
+#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) .ws-topbar-icon-btn svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.ws-user-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 36px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px !important;
+  background: color-mix(in srgb, var(--panel2) 65%, transparent);
+  max-width: 220px;
+}
+
+.ws-user-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px !important;
+  background: var(--ok);
+  box-shadow: 0 0 8px var(--ok);
+  flex-shrink: 0;
+}
+
+#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-user-email {
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}/* Navigation and utilities live in the bottom Dock (React Bits Dock) — the
-   sidebar rail, its collapse toggle and the utility dock are gone. The dock
-   holder is fixed and the dock itself is positioned by the holder's flex
-   centering, overriding the component's absolute placement. */
-#root .ws-dock-holder{
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) .ws-topbar-signout {
+  min-height: 36px !important;
+  padding: 0 13px !important;
+  border-radius: 999px !important;
+  font-size: 12px !important;
+}
+
+/* ==========================================================================
+   TYPOGRAPHY & HEADINGS
+   ========================================================================== */
+#root .ws .ws-heading {
+  align-items: end;
+  padding-bottom: 22px;
+  border-bottom: 1px solid var(--line);
+}
+
+#root .ws .ws-eyebrow,
+.stage1-badge,
+.s2-badge,
+.s3-badge,
+.cn-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--go) !important;
+  font-family: inherit;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.08em !important;
+  text-transform: uppercase !important;
+  border-radius: 999px !important;
+}
+
+.stage1-badge,
+.s2-badge,
+.s3-badge,
+.cn-badge {
+  padding: 5px 14px !important;
+  border: 1px solid color-mix(in srgb, var(--go) 35%, transparent) !important;
+  background: color-mix(in srgb, var(--go) 10%, transparent) !important;
+}
+
+#root .ws .ws-heading h1,
+.stage1-head h1,
+.s2-head h1,
+.s3-head h1,
+.cn-head h1 {
+  color: var(--ink);
+  font-size: clamp(28px, 3.6vw, 44px) !important;
+  font-weight: 700;
+  letter-spacing: -0.035em !important;
+  line-height: 1.12 !important;
+}
+
+#root .ws .ws-heading p,
+.stage1-head p,
+.s2-head p,
+.s3-head p,
+.cn-head p {
+  max-width: 66ch;
+  color: var(--muted);
+  font-size: 14px !important;
+  line-height: 1.65 !important;
+}
+
+#root :is(.ws, .hist-shell, .connect, .welcome, .stage1, .stage2, .stage3, .team-video-page, .approval-page) :is(
+  .cn-col h4, .s1-col h4, .s2-setting label, .s3-field > span
+) {
+  color: var(--muted) !important;
+  font-family: inherit !important;
+  font-size: 11.5px !important;
+  font-weight: 650 !important;
+  letter-spacing: 0.04em !important;
+  text-transform: uppercase !important;
+}
+
+/* ==========================================================================
+   SURFACES, CARDS & PANELS (TACTILE 16PX STUDIO GEOMETRY)
+   ========================================================================== */
+#root :is(.connect, .welcome, .stage1, .stage2, .stage3) {
+  --acc: var(--go);
+  --acc-ink: var(--go-ink);
+  --acc-soft: color-mix(in srgb, var(--go) 14%, transparent);
+}
+
+#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) .border-glow-card {
+  border: 0 !important;
+  border-radius: 16px !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) .border-glow-card::after {
+  display: none !important;
+}
+
+#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) .border-glow-card::before {
+  border-radius: 16px !important;
+  background:
+    linear-gradient(var(--panel) 0 100%) padding-box,
+    linear-gradient(135deg, transparent 8%, var(--go) 50%, transparent 92%) border-box !important;
+}
+
+#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) :is(
+  .ws-panel, .ws-stat, .ws-metric-card, .ws-welcome, .hist-panel, .hist-row,
+  .hist-activity, .cn-card, .cn-brands, .setup-card, .s2-sec, .s2-out,
+  .s2-editor:not(.s2-media-editor), .s2-video-editor-page, .s3-work, .s3-sched, .team-video-panel,
+  .team-review-list, .team-review-detail, .team-review-job, .approval-card, .cg-card,
+  .automation-account, .automation-setup, .ws-campaign-account
+) {
+  border: 1px solid var(--line) !important;
+  border-radius: 16px !important;
+  background: linear-gradient(
+    165deg,
+    color-mix(in srgb, var(--panel2) 42%, var(--panel)) 0%,
+    var(--panel) 100%
+  ) !important;
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--ink) 5%, transparent),
+    0 14px 34px -22px rgba(0, 0, 0, 0.45),
+    0 0 24px -9px var(--edge-glow-color, transparent) !important;
+  transition: border-color 180ms ease, box-shadow 180ms ease, background-color 180ms ease, transform 180ms ease !important;
+}
+
+#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) :is(
+  .setup-card:hover, .cn-card:hover, .ws-stat:hover, .ws-metric-card:hover, .hist-row:hover
+) {
+  border-color: var(--line-hard) !important;
+}
+
+#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) :is(
+  .setup-card.sel, .ws-campaign-account.selected, .hist-tab.active, .cn-card.linked
+) {
+  border-color: color-mix(in srgb, var(--go) 75%, var(--line-hard)) !important;
+  background: linear-gradient(
+    155deg,
+    color-mix(in srgb, var(--go) 11%, var(--panel)),
+    var(--panel) 72%
+  ) !important;
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--go) 22%, transparent),
+    0 12px 30px -18px color-mix(in srgb, var(--go) 28%, transparent) !important;
+}
+
+/* Overview Hero & Stat Cards */
+#root .ws .ws-welcome {
+  min-height: 210px;
+  padding: clamp(24px, 3vw, 36px);
+  background:
+    radial-gradient(circle at 92% 18%, color-mix(in srgb, var(--go) 14%, transparent), transparent 48%),
+    linear-gradient(155deg, color-mix(in srgb, var(--panel2) 60%, var(--panel)), var(--panel)) !important;
+}
+
+#root .ws .ws-welcome h2 {
+  max-width: 20ch;
+  font-size: clamp(24px, 2.8vw, 34px);
+  letter-spacing: -0.035em;
+  line-height: 1.15;
+}
+
+#root .ws .ws-welcome-art {
+  display: none !important;
+}
+
+#root .ws .ws-stat-grid {
+  gap: 14px;
+  background: transparent;
+  border: 0;
+}
+
+#root .ws .ws-stat {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(96px, auto);
+  grid-template-rows: auto 1fr auto;
+  align-items: start;
+  min-height: 164px;
+  padding: 20px 20px 16px;
+}
+
+#root .ws .ws-stat > span {
+  grid-column: 1 / -1;
+  color: var(--muted);
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+#root .ws .ws-stat > strong {
+  grid-column: 1;
+  align-self: center;
+  margin: 10px 0;
+  color: var(--ink);
+  font-size: clamp(32px, 2.8vw, 42px);
+  line-height: 1;
+  letter-spacing: -0.045em;
+  font-variant-numeric: tabular-nums;
+}
+
+#root .ws .ws-stat > small {
+  grid-column: 2;
+  align-self: center;
+  margin: 0;
+  color: var(--faint);
+  font-size: 11.5px;
+  text-align: right;
+}
+
+#root .ws .ws-stat > button {
+  grid-column: 1 / -1;
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 0;
+  padding: 12px 0 0;
+  border-top: 1px solid var(--line);
+  color: var(--ink);
+  text-align: left;
+}
+
+/* ==========================================================================
+   BUTTONS, INPUTS, PILLS & TOGGLE SWITCHES
+   ========================================================================== */
+#root :is(.connect, .welcome, .stage1, .stage2, .stage3, .ws, .hist-shell) :is(
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+  select,
+  textarea
+) {
+  min-height: 42px;
+  border: 1px solid var(--line-hard);
+  border-radius: 11px !important;
+  background-color: var(--input);
+  color: var(--ink);
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+#root :is(.connect, .welcome, .stage1, .stage2, .stage3, .ws, .hist-shell) :is(
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+  select,
+  textarea
+):focus-visible {
+  border-color: var(--go) !important;
+  outline: none !important;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--go) 20%, transparent) !important;
+}
+
+/* Tactile Studio Buttons (excluding specialized editor/canvas/nav buttons) */
+#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg)
+  button:not(.ws-nav button):not(.ws-topnav-pill):not(.ws-topbar-icon-btn):not(.ws-text-button):not(.ws-collapse-toggle):not(.ws-theme-toggle):not(.progress-step-button):not(.ws-day):not(.swatch):not(.dock button):not(.ws-wordmark):not(.s2-switch):not(.s2-media-editor-page button):not(.s2-timeline-page button) {
+  min-height: 38px;
+  padding: 8px 15px;
+  border: 1px solid var(--line-hard);
+  border-radius: 11px !important;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--panel2) 92%, var(--ink)), var(--panel2));
+  color: var(--ink);
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 650;
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--ink) 7%, transparent),
+    0 2px 6px rgba(0, 0, 0, 0.16),
+    0 0 20px -8px var(--edge-glow-color, transparent);
+  transition: border-color 160ms ease, color 160ms ease, background 160ms ease, box-shadow 180ms ease, transform 150ms ease, filter 150ms ease;
+}
+
+#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg)
+  button:not(.ws-nav button):not(.ws-topnav-pill):not(.ws-topbar-icon-btn):not(.ws-text-button):not(.ws-collapse-toggle):not(.ws-theme-toggle):not(.progress-step-button):not(.ws-day):not(.swatch):not(.dock button):not(.ws-wordmark):not(.s2-switch):not(.s2-media-editor-page button):not(.s2-timeline-page button):hover:not(:disabled) {
+  border-color: color-mix(in srgb, var(--go) 50%, var(--line-hard));
+}
+
+/* Primary Action CTAs */
+#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) :is(
+  .ws-primary, .ws-nav-create, .s1-primary, .continue-btn, .s1-continue,
+  .s2-continue-btn, .s2-continue, .s2-generate, .s2-done,
+  .s3-review-all, .s3-acts button.go, .s3-postall, .s3-schedall, .s3-publish,
+  .cn-connect, .cn-next, .cg-acts button:first-child
+) {
+  border-color: color-mix(in srgb, var(--go) 80%, white) !important;
+  border-radius: 12px !important;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--go) 90%, white) 0%, var(--go) 100%) !important;
+  color: var(--go-ink) !important;
+  font-weight: 700 !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.35),
+    0 8px 22px -6px color-mix(in srgb, var(--go) 48%, transparent) !important;
+}
+
+#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) :is(
+  .ws-primary, .s1-primary, .continue-btn, .s2-continue-btn, .s2-generate, .s2-done,
+  .s3-review-all, .s3-acts button.go, .s3-postall, .s3-schedall, .cn-connect, .cn-next
+):hover:not(:disabled) {
+  filter: brightness(1.06);
+  transform: translateY(-1px);
+}
+
+#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) button:disabled {
+  cursor: not-allowed;
+  opacity: 0.46;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+/* Rounded Pill Badges, Tabs, Status Indicators & Switches */
+#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3) :is(
+  .plat-pill, .s2-pill, .s3-pill, .s3-tab, .hist-tab, .cn-pill, .cn-step,
+  .ws-status, .ws-live-status, .s2-kind, .s2-music-badge
+) {
+  border-radius: 999px !important;
+}
+
+#root .stage2 .s2-switch {
+  width: 48px !important;
+  height: 26px !important;
+  min-height: 26px !important;
+  padding: 0 !important;
+  border-radius: 999px !important;
+  border: 1px solid var(--line-hard) !important;
+  background: var(--panel2) !important;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.35) !important;
+}
+
+#root .stage2 .s2-switch.on {
+  background: var(--go) !important;
+  border-color: var(--go) !important;
+}
+
+#root .stage2 .s2-switch span {
+  border-radius: 50% !important;
+  background: #ffffff !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+}
+
+/* ==========================================================================
+   CALENDAR, STAGE PIPELINE & FLOATING BOTTOM ACTION BARS
+   ========================================================================== */
+#root .ws .ws-day {
+  border-radius: 12px !important;
+}
+
+#root .ws .ws-day-number {
+  border-radius: 8px !important;
+}
+
+#root .ws .ws-day.today .ws-day-number,
+#root .ws .ws-day.selected {
+  color: var(--go);
+  background: color-mix(in srgb, var(--go) 11%, transparent);
+  box-shadow: inset 0 0 0 1px var(--go);
+}
+
+#root .ws .ws-event {
+  border-radius: 8px !important;
+  border-left: 3px solid var(--go);
+  color: var(--ink);
+  background: var(--panel2);
+}
+
+#root :is(.stage1, .stage2, .stage3) :is(
+  .s1-step.cur .dot, .s2-step.cur .dot, .s3-step.cur .dot,
+  .s1-step.done .dot, .s2-step.done .dot, .s3-step.done .dot,
+  .s1-track i, .s2-track i, .s3-track i,
+  .s3-tab.on
+) {
+  background-color: var(--go) !important;
+  border-color: var(--go) !important;
+  color: var(--go-ink) !important;
+}
+
+#root :is(.stage1, .stage2, .stage3) :is(
+  .s1-step.cur, .s2-step.cur, .s3-step.cur,
+  .s1-badge, .s2-badge, .s3-badge,
+  .s3-pill.work, .s3-link
+) {
+  color: var(--go) !important;
+}
+
+#root :is(.connect, .welcome, .stage1, .stage2, .stage3) :is(
+  .cn-empty, .s1-drop, .s2-drop, .s3-grey-note
+) {
+  border-radius: 16px !important;
+  border-color: var(--line-hard);
+  background: color-mix(in srgb, var(--panel2) 65%, transparent);
+}
+
+#root .stage2 .s2-sec,
+#root .stage3 .s3-work,
+#root .stage1 .setup-card,
+#root .connect .cn-card {
+  padding: 22px;
+}
+
+#root .stage2 .s2-settings {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+/* Glassmorphic Bottom Action Bars on Stage 1, 2, 3 & Connect */
+#root :is(.stage1, .stage2, .stage3, .connect) :is(.continue-bar, .s2-continue-bar, .s3-pub, .cn-bar) {
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: color-mix(in srgb, var(--panel) 86%, transparent) !important;
+  backdrop-filter: blur(20px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(160%) !important;
+  border-top: 1px solid var(--line) !important;
+  box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.28);
+}
+
+/* ==========================================================================
+   VIEWPORT SHELL & BOTTOM DOCK
+   ========================================================================== */
+#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100vw;
+  min-width: 0;
+  height: 100dvh;
+  min-height: 0;
+  overflow: hidden;
+}
+
+#root .ws-dock-holder {
   position: fixed;
   inset: auto 0 0 0;
   z-index: 60;
@@ -384,7 +721,9 @@
   justify-content: center;
   padding: 0 12px max(12px, env(safe-area-inset-bottom));
   pointer-events: none;
-}#root .ws-dock-holder .dock{
+}
+
+#root .ws-dock-holder .dock {
   position: relative;
   left: auto;
   right: auto;
@@ -392,7 +731,16 @@
   bottom: auto;
   transform: none;
   pointer-events: auto;
-}#root .ws > .ws-main,#root .ws > .connect,#root .hist-shell > .hist,#root .stage1-in,#root .stage2-in,#root .stage3-in,#root .team-video-main,#root .team-review-main{
+}
+
+#root .ws > .ws-main,
+#root .ws > .connect,
+#root .hist-shell > .hist,
+#root .stage1-in,
+#root .stage2-in,
+#root .stage3-in,
+#root .team-video-main,
+#root .team-review-main {
   box-sizing: border-box;
   width: 100%;
   height: 100dvh;
@@ -403,392 +751,416 @@
   overflow-y: auto;
   overscroll-behavior: contain;
   scrollbar-gutter: stable;
-  padding-top: 86px;
-  padding-bottom: 132px;
-}#root .ws-main{ padding-right: clamp(24px, 4vw, 64px); padding-left: clamp(24px, 4vw, 64px); }#root .hist-shell > .hist{ height: 100dvh; overflow-y: auto; }#root .hist > .hist-in{ box-sizing: border-box; width: 100%; max-width: 1320px; min-height: 100%; margin: 0 auto; padding: 86px clamp(24px, 4vw, 64px) 132px; }#root .stage1-in,#root .stage2-in,#root .stage3-in{ max-width: none; margin-right: auto; margin-left: 0; padding-right: clamp(24px, 4vw, 64px); padding-left: clamp(24px, 4vw, 64px); }#root .ws.team-video-page > .team-video-main,#root .team-review-main{ width: 100%; margin-left: 0; padding-right: clamp(24px, 4vw, 64px); padding-left: clamp(24px, 4vw, 64px); }#root :is(.stage1, .stage2, .stage3) :is(.continue-bar, .s2-continue-bar, .s3-pub){
-  left: 0;
-}/* BorderGlow-wrapped primary CTAs: suppress the static plate, keep the glow. */
-#root .ws-btn-glow{ width: fit-content; max-width: 100%; border: 1px solid transparent; background: transparent; box-shadow: none; }
-#root .ws-btn-glow .border-glow-inner{ padding: 0; }/* Stage pages and the connect page pin a full-width continue bar at the very
-   bottom edge — the dock floats just above it there. */
-#root :is(.stage1, .stage2, .stage3) .ws-dock-holder,#root .ws:has(> .connect) .ws-dock-holder{
-  inset: auto 0 calc(92px + env(safe-area-inset-bottom)) 0;
-}/* BorderGlow card wrappers (className="bg-glow") must behave like the cards
-   they wrap inside grid/flex layouts. */
-.bg-glow{ min-width: 0; }
-#root .automation-grid > .bg-glow{ min-width: 0; }/* Dock palette matched to the console: navy glass panel,sky-blue edge
-   highlights,cool blue-gray ink. These override the component's inline
-   theme tokens (CSS !important beats element.style) — the accent/badge
-   props already pass #7dd3fc. The menu portal renders outside #root, so
-   its overrides are global. */
-.dock, .dock-menu{
-  --dock-panel: rgba(7, 16, 25, 0.86) !important;
-  --dock-panel-edge: rgba(42, 65, 86, 0.55) !important;
-  --dock-panel-highlight: rgba(125, 211, 252, 0.10) !important;
-  --dock-panel-shadow: 0 22px 44px -20px rgba(0, 0, 0, 0.8), 0 6px 16px -8px rgba(0, 0, 0, 0.5) !important;
-  --dock-tile: linear-gradient(180deg, #0c1824 0%, #071019 100%) !important;
-  --dock-tile-edge: rgba(125, 211, 252, 0.16) !important;
-  --dock-tile-highlight: rgba(125, 211, 252, 0.18) !important;
-  --dock-tile-shadow: 0 4px 10px -4px rgba(0, 0, 0, 0.7) !important;
-  --dock-ink: #a9becd !important;
-  --dock-label: #071019 !important;
-  --dock-label-ink: #eef5f9 !important;
-  --dock-dot: rgba(169, 190, 205, 0.72) !important;
-  --dock-separator: rgba(125, 211, 252, 0.20) !important;
-  --dock-menu: rgba(7, 16, 25, 0.92) !important;
-  --dock-menu-edge: rgba(42, 65, 86, 0.60) !important;
-  --dock-menu-ink: #eef5f9 !important;
-  --dock-menu-muted: rgba(169, 190, 205, 0.55) !important;
-  --dock-menu-separator: rgba(125, 211, 252, 0.16) !important;
+  padding-top: 88px;
+  padding-bottom: 140px;
 }
-[data-theme="light"] .dock, [data-theme="light"] .dock-menu{
-  --dock-panel: rgba(247, 251, 253, 0.88) !important;
-  --dock-panel-edge: rgba(157, 183, 200, 0.60) !important;
-  --dock-panel-highlight: rgba(255, 255, 255, 0.95) !important;
-  --dock-panel-shadow: 0 22px 44px -22px rgba(3, 40, 61, 0.25), 0 6px 16px -10px rgba(3, 40, 61, 0.14) !important;
-  --dock-tile: linear-gradient(180deg, #dceaf2 0%, #f7fbfd 100%) !important;
-  --dock-tile-edge: rgba(3, 105, 161, 0.18) !important;
-  --dock-tile-highlight: rgba(255, 255, 255, 1) !important;
-  --dock-tile-shadow: 0 4px 10px -5px rgba(3, 40, 61, 0.22) !important;
-  --dock-ink: #0a1520 !important;
-  --dock-label: #ffffff !important;
-  --dock-label-ink: #0a1520 !important;
-  --dock-dot: rgba(10, 21, 32, 0.55) !important;
-  --dock-separator: rgba(3, 105, 161, 0.16) !important;
-  --dock-menu: rgba(247, 251, 253, 0.92) !important;
-  --dock-menu-edge: rgba(157, 183, 200, 0.65) !important;
-  --dock-menu-ink: #0a1520 !important;
-  --dock-menu-muted: rgba(10, 21, 32, 0.45) !important;
-  --dock-menu-separator: rgba(3, 105, 161, 0.14) !important;
-}/* A quieter card system: clear hierarchy,crisp corners,no floating effects. */
-#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) :is(
-  .ws-panel, .ws-stat, .ws-metric-card, .hist-panel, .hist-row, .hist-activity,
-  .cn-card, .cn-brands, .setup-card, .s2-sec, .s2-work, .s3-work,
-  .team-video-panel, .team-review-list, .team-review-detail, .team-review-job,
-  .approval-card, .cg-card
-){
-  border: 1px solid var(--line) !important;
-  border-radius: 0 !important;
-  background: var(--panel) !important;
-  box-shadow: none !important;
-}#root .ws .ws-stat-grid{ gap: 12px; background: transparent; border: 0; }#root .ws .ws-stat{
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(96px, auto);
-  grid-template-rows: auto 1fr auto;
-  align-items: start;
-  min-height: 166px;
-  padding: 18px 18px 16px;
-  border-top: 1px solid var(--line-hard) !important;
-  background: var(--panel) !important;
-}#root .ws .ws-stat > span{ grid-column: 1 / -1; color: var(--muted); font-size: 12px; }#root .ws .ws-stat > strong{ grid-column: 1; align-self: center; margin: 12px 0; font-size: clamp(34px, 3vw, 44px); line-height: .95; letter-spacing: -.06em; }#root .ws .ws-stat > small{ grid-column: 2; align-self: center; margin: 0; color: var(--faint); font-size: 11px; text-align: right; }#root .ws .ws-stat > button{
-  grid-column: 1 / -1;
-  display: flex;
+
+#root .ws-main {
+  padding-right: clamp(24px, 4vw, 64px);
+  padding-left: clamp(24px, 4vw, 64px);
+}
+
+#root .hist-shell > .hist {
+  height: 100dvh;
+  overflow-y: auto;
+}
+
+#root .hist > .hist-in {
+  box-sizing: border-box;
   width: 100%;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: 0;
-  padding: 13px 0 0;
-  border-top: 1px solid var(--line);
-  color: var(--ink);
-  text-align: left;
-}#root .ws .ws-welcome{ min-height: 205px; padding: clamp(22px, 3vw, 34px); }#root .ws .ws-welcome h2{ max-width: 17ch; font-size: clamp(24px, 3vw, 34px); letter-spacing: -.05em; }#root .team-video-page,#root .team-video-review-page{ background: var(--bg) !important; }/* Keep the fatal-error fallback within the same mint/charcoal visual system. */
-#root .app-error{
-  --bg: #000000;
-  --panel: #071019;
-  --panel2: #0c1824;
-  --ink: #eef5f9;
-  --muted: #a9becd;
-  --line: #142430;
-  --line-hard: #2a4156;
-  --go: #7dd3fc;
-  --go-ink: #0a1520;
-  background: var(--bg);
-  color: var(--ink);
-}#root .app-error-card{
-  border-color: var(--line);
-  background: var(--panel);
+  max-width: 1360px;
+  min-height: 100%;
+  margin: 0 auto;
+  padding: 88px clamp(24px, 4vw, 64px) 140px;
+}
+
+#root .stage1-in,
+#root .stage2-in,
+#root .stage3-in {
+  max-width: none;
+  margin-right: auto;
+  margin-left: 0;
+  padding-right: clamp(24px, 4vw, 64px);
+  padding-left: clamp(24px, 4vw, 64px);
+  padding-bottom: 190px;
+}
+
+#root .ws.team-video-page > .team-video-main,
+#root .team-review-main {
+  width: 100%;
+  margin-left: 0;
+  padding-right: clamp(24px, 4vw, 64px);
+  padding-left: clamp(24px, 4vw, 64px);
+}
+
+/* BorderGlow wrappers */
+#root .ws-btn-glow {
+  width: fit-content;
+  max-width: 100%;
+  border: 1px solid transparent;
+  background: transparent;
   box-shadow: none;
-}#root .app-error-mark{
-  background: color-mix(in srgb, var(--go) 14%, var(--panel));
-  color: var(--go);
-}#root .app-error-actions button{
-  border-color: var(--go);
-  color: var(--go-ink);
-  background: var(--go);
-}#root .app-error-actions a{
-  border-color: var(--line-hard);
-  color: var(--ink);
-  background: var(--panel2);
-}/* Reuse the console palette on every private-app loading and sign-in state. */
-#root .page-loading,#root .auth-wrap{
-  --bg: #000000;
-  --panel: #071019;
-  --panel2: #0c1824;
-  --input: #02070b;
-  --ink: #eef5f9;
-  --muted: #a9becd;
-  --faint: #7e94a6;
-  --line: #142430;
-  --line-hard: #2a4156;
-  --go: #7dd3fc;
-  --go-ink: #0a1520;
-  --violet: var(--go);
-  --grad: var(--go);
-  background: var(--bg);
-  color: var(--ink);
-}#root .page-loading-mark{
-  border-top-color: var(--go);
-}#root .page-loading-recovery button,#root .auth-wrap .login-form .skew-btn.grad,#root .auth-wrap .login-form .skew-btn.submit{
-  border-color: var(--go);
-  color: var(--go-ink);
-  background: var(--go);
-}#root .auth-wrap .login-form input:focus{
-  border-color: var(--go);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--go) 16%, transparent);
-}#root .auth-wrap .login-form .user-profile{
-  background: color-mix(in srgb, var(--go) 18%, var(--panel));
-}#root .auth-wrap .login-form .user-profile-inner{
-  background: var(--panel);
-}/* The recovered,offline,not-found,and warm-up screens share the same
-   charcoal surfaces and mint action color as the console. */
-#root .recovery-page{
-  --rec-bg: #000000;
-  --rec-panel: #071019;
-  --rec-line: #142430;
-  --rec-accent: #7dd3fc;
-  --rec-muted: #a9becd;
-  --rec-faint: #7e94a6;
-  --rec-accent-ink: #0a1520;
-  color: #eef5f9;
-  background: radial-gradient(ellipse at 50% 40%, #7dd3fc0c, transparent 40%), radial-gradient(ellipse at 85% 5%, #7dd3fc08, transparent 32%), #000000;
-}#root .recovery-page::before{
-  background-image: radial-gradient(#2a415655 1px, transparent 1px);
-}#root .recovery-page :is(.recovery-top > span:last-child, .recovery-footer, .starting-footnote){
-  color: #7e94a6;
-}#root .recovery-page :is(.recovery-orbit, .recovery-postcard, .offline-cloud, .offline-cloud::before, .offline-cloud::after){
-  border-color: #2a4156;
-}#root .recovery-page .recovery-postcard{
-  background: linear-gradient(145deg, #0c1824, #071019);
-}#root .recovery-page :is(.offline-cloud, .offline-cloud::before, .offline-cloud::after){
-  background: #071019;
-}#root .recovery-page :is(.orbit-two, .offline-ground){
-  border-color: #142430;
-}#root .recovery-page :is(.postcard-line, .starting-progress){
-  background-color: #2a4156;
-}#root .recovery-page .postcard-media{
-  background: linear-gradient(135deg, #7dd3fc20, #7dd3fc0a);
-}#root .recovery-page :is(.postcard-media i, .recovery-star, .recovery-404-number, .offline-signal i, .starting-dots){
-  color: #7dd3fc;
-  border-color: #7dd3fc;
-}#root .recovery-page .recovery-404-number{
-  text-shadow: 0 5px 25px #7dd3fc55;
-}#root .recovery-page .recovery-kicker,#root .recovery-page .offline-tip span{
-  color: #7dd3fc;
-}#root .recovery-page :is(.recovery-copy, .starting-caption){
-  color: #a9becd;
-}#root .recovery-page .starting-progress i{
-  background: linear-gradient(90deg, #7dd3fc, #a5ddfa);
-  box-shadow: 0 0 14px #7dd3fc66;
-}#root .recovery-page .starting-live-dot{
-  background: #7dd3fc;
-  box-shadow: 0 0 12px #7dd3fc;
-}#root .recovery-page .recovery-primary{
-  border-color: var(--rec-accent);
-  color: var(--rec-accent-ink);
-  background: linear-gradient(110deg, #7dd3fc, #a5ddfa);
-  box-shadow: 0 10px 28px #7dd3fc22;
-}#root .recovery-page .recovery-secondary{
-  border-color: #2a4156;
-  color: #eef5f9;
-  background: #071019;
-}#root .stage2 .s2-clip-strip{
-  background-image: repeating-linear-gradient(90deg, transparent 0 7.8%, color-mix(in srgb, var(--go) 38%, transparent) 7.8% 8%, transparent 8% 16.4%), linear-gradient(180deg, rgba(255,255,255,.1), transparent 45%, rgba(0,0,0,.18));
-}#root .stage2 .s2-clip-selected{
-  background: color-mix(in srgb, var(--go) 20%, transparent);
-}body:has(#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .auth-wrap, .page-loading, .recovery-page, .app-error)){
-  background: #000000;
 }
 
-@media (max-width: 760px) {#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar{
-    width: 100% !important;
-    min-height: 58px !important;
-    gap: 10px;
-    padding: 8px 12px !important;
-  }#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-user-email{
-    max-width: 40vw;
-  }#root .ws-dock-holder{
-    padding: 0 8px max(10px, env(safe-area-inset-bottom));
-  }#root .ws-dock-holder .dock{
-    --dock-gap: 2px !important;
-    transform: scale(.88);
-    transform-origin: 50% 100%;
-  }#root .ws > .ws-main,#root .ws > .connect,#root .hist-shell > .hist,#root .stage1-in,#root .stage2-in,#root .stage3-in,#root .team-video-main,#root .team-review-main{
-    width: 100%;
-    height: 100dvh;
-    margin-left: 0;
-    padding: 70px 16px calc(120px + env(safe-area-inset-bottom));
-    overflow-x: hidden;
-    overflow-y: auto;
-  }#root .hist > .hist-in{ width: 100%; padding: 70px 16px calc(120px + env(safe-area-inset-bottom)); }#root .stage1-in,#root .stage2-in,#root .stage3-in{ padding-right: 16px; padding-left: 16px; padding-bottom: 245px; }#root :is(.stage1, .stage2, .stage3) .ws-dock-holder{
-    inset: auto 0 calc(118px + env(safe-area-inset-bottom)) 0;
-  }#root :is(.stage1, .stage2, .stage3) :is(.continue-bar, .s2-continue-bar, .s3-pub){
-    right: 0;
-    bottom: 0;
-    left: 0;
-  }#root .ws .ws-stat-grid{ grid-template-columns: repeat(2, minmax(0, 1fr)); }#root .ws .ws-stat{ min-height: 144px; padding: 15px; }#root .ws .ws-stat:last-child{ grid-column: auto; }#root .ws .ws-stat > strong{ font-size: 34px; }
+#root .ws-btn-glow .border-glow-inner {
+  padding: 0;
 }
 
-@media (max-width: 380px) {#root .ws-dock-holder .dock{
-    transform: scale(.8);
-  }#root .stage1-in,#root .stage2-in,#root .stage3-in{ padding-bottom: 300px; }
+#root :is(.stage1, .stage2, .stage3) .ws-dock-holder,
+#root .ws:has(> .connect) .ws-dock-holder {
+  inset: auto 0 calc(92px + env(safe-area-inset-bottom)) 0;
 }
 
-#root .ws-welcome-actions{
+.bg-glow,
+#root .automation-grid > .bg-glow {
+  min-width: 0;
+}
+
+#root .ws-welcome-actions {
   display: grid;
   justify-items: start;
   gap: 12px;
   margin-top: 16px;
 }
-#root .ws-welcome-actions .ws-btn-glow{
+
+#root .ws-welcome-actions .ws-btn-glow {
   box-sizing: border-box;
   border: 0;
   padding: 0;
 }
-#root .ws-welcome-actions .border-glow-inner{
+
+#root .ws-welcome-actions .border-glow-inner {
   display: contents;
 }
-#root .ws-welcome-actions .border-glow-card > .edge-light{
+
+#root .ws-welcome-actions .border-glow-card > .edge-light {
   mask-image: none;
 }
 
-/* Unified surface + control refresh. Pointer glow is supplied by
-   pointer-proximity.js and stays transparent until the cursor reaches an edge. */
+/* ==========================================================================
+   DOCK PALETTE
+   ========================================================================== */
+.dock,
+.dock-menu {
+  --dock-panel: rgba(11, 17, 27, 0.86) !important;
+  --dock-panel-edge: rgba(148, 163, 184, 0.24) !important;
+  --dock-panel-highlight: rgba(56, 189, 248, 0.12) !important;
+  --dock-panel-shadow: 0 22px 48px -18px rgba(0, 0, 0, 0.82), 0 6px 16px -8px rgba(0, 0, 0, 0.5) !important;
+  --dock-tile: linear-gradient(180deg, #152234 0%, #0b121d 100%) !important;
+  --dock-tile-edge: rgba(56, 189, 248, 0.2) !important;
+  --dock-tile-highlight: rgba(56, 189, 248, 0.2) !important;
+  --dock-tile-shadow: 0 4px 10px -4px rgba(0, 0, 0, 0.7) !important;
+  --dock-ink: #cbd5e1 !important;
+  --dock-label: #0b121d !important;
+  --dock-label-ink: #f1f5f9 !important;
+  --dock-dot: #38bdf8 !important;
+  --dock-separator: rgba(148, 163, 184, 0.2) !important;
+  --dock-menu: rgba(11, 17, 27, 0.94) !important;
+  --dock-menu-edge: rgba(148, 163, 184, 0.28) !important;
+  --dock-menu-ink: #f1f5f9 !important;
+  --dock-menu-muted: rgba(148, 163, 184, 0.65) !important;
+  --dock-menu-separator: rgba(148, 163, 184, 0.16) !important;
+}
+
+[data-theme="light"] .dock,
+[data-theme="light"] .dock-menu {
+  --dock-panel: rgba(255, 255, 255, 0.88) !important;
+  --dock-panel-edge: rgba(15, 23, 42, 0.14) !important;
+  --dock-panel-highlight: rgba(255, 255, 255, 0.95) !important;
+  --dock-panel-shadow: 0 22px 44px -20px rgba(15, 23, 42, 0.2), 0 6px 16px -10px rgba(15, 23, 42, 0.1) !important;
+  --dock-tile: linear-gradient(180deg, #ffffff 0%, #edf2f8 100%) !important;
+  --dock-tile-edge: rgba(2, 132, 199, 0.18) !important;
+  --dock-tile-highlight: rgba(255, 255, 255, 1) !important;
+  --dock-tile-shadow: 0 4px 10px -5px rgba(15, 23, 42, 0.16) !important;
+  --dock-ink: #0f172a !important;
+  --dock-label: #0f172a !important;
+  --dock-label-ink: #ffffff !important;
+  --dock-dot: #0284c7 !important;
+  --dock-separator: rgba(15, 23, 42, 0.12) !important;
+  --dock-menu: rgba(255, 255, 255, 0.95) !important;
+  --dock-menu-edge: rgba(15, 23, 42, 0.16) !important;
+  --dock-menu-ink: #0f172a !important;
+  --dock-menu-muted: rgba(71, 85, 105, 0.7) !important;
+  --dock-menu-separator: rgba(15, 23, 42, 0.1) !important;
+}
+
+/* ==========================================================================
+   MOTION, ANIMATIONS & ACCESSIBILITY
+   ========================================================================== */
 #root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) :is(
-  .ws-panel, .ws-stat, .ws-metric-card, .ws-welcome, .hist-panel, .hist-row,
-  .hist-activity, .cn-card, .cn-brands, .setup-card, .s2-sec, .s2-out,
-  .s2-editor, .s2-video-editor-page, .s3-work, .s3-sched, .team-video-panel,
-  .team-review-list, .team-review-detail, .approval-card, .cg-card,
-  .automation-account, .automation-setup, .ws-campaign-account
-){
-  border: 1px solid var(--line-hard) !important;
-  border-radius: 17px !important;
-  background:
-    linear-gradient(145deg, color-mix(in srgb, var(--go) 4%, var(--panel)), var(--panel) 48%) !important;
-  box-shadow:
-    0 1px 0 color-mix(in srgb, var(--ink) 5%, transparent),
-    0 16px 38px -28px color-mix(in srgb, var(--ink) 40%, transparent),
-    0 0 24px -8px var(--edge-glow-color, transparent) !important;
-  transition: border-color 180ms ease, box-shadow 180ms ease, background-color 180ms ease !important;
+  a, button, input, select, textarea, [role="button"], [tabindex]
+) {
+  transition: color 150ms ease, background-color 150ms ease,
+    border-color 150ms ease, opacity 150ms ease, transform 150ms ease, box-shadow 150ms ease;
 }
-#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) :is(
-  .setup-card.sel, .ws-campaign-account.selected, .hist-tab.active, .cn-card.linked
-){
-  border-color: color-mix(in srgb, var(--go) 72%, var(--line-hard)) !important;
-  background: linear-gradient(145deg, color-mix(in srgb, var(--go) 10%, var(--panel)), var(--panel) 64%) !important;
+
+#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg)
+  :is(button, [role="button"]):not(:disabled):not(.s2-trim-handle):not(.s2-playhead):not(.s2-resize-handle):not(.crop-handle):not(.s2-rotate-handle):not(.s2-overlay-item):not(.crop-box):active {
+  transform: scale(0.985);
 }
-#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) button:not(.ws-nav button):not(.ws-text-button):not(.ws-collapse-toggle):not(.ws-theme-toggle):not(.progress-step-button):not(.ws-day):not(.swatch):not(.dock button):not(.ws-wordmark){
-  min-height: 38px;
-  padding: 8px 13px;
-  border: 1px solid var(--line-hard);
-  border-radius: 11px !important;
-  background: linear-gradient(180deg, color-mix(in srgb, var(--panel2) 88%, var(--go)), var(--panel2));
-  color: var(--ink);
-  font: inherit;
-  font-size: 12px;
-  font-weight: 650;
-  box-shadow: 0 1px 0 color-mix(in srgb, var(--ink) 6%, transparent),
-    0 0 20px -7px var(--edge-glow-color, transparent);
-  transition: border-color 160ms ease, color 160ms ease, background 160ms ease, box-shadow 180ms ease, transform 160ms ease;
-}
-#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) button:disabled{
-  cursor: not-allowed;
-  opacity: .52;
-  box-shadow: none;
-}
-#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) :is(
-  .ws-primary, .s1-primary, .continue-btn, .s2-continue-btn, .s2-done,
-  .s3-postall, .s3-schedall, .cn-connect, .cg-acts button:first-child
-){
-  border-color: transparent !important;
-  background: linear-gradient(135deg, color-mix(in srgb, var(--go) 88%, white), var(--go) 72%) !important;
-  color: var(--go-ink) !important;
-  font-weight: 750 !important;
-}
-#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) :is(.ws-primary, .s1-primary, .continue-btn, .s2-continue-btn, .s2-done, .s3-postall, .s3-schedall, .cn-connect):focus-visible,
-#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) button:focus-visible{
-  outline: 2px solid var(--go) !important;
-  outline-offset: 3px;
-}
-#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) :is(.ws-primary, .s1-primary, .continue-btn, .s2-continue-btn, .s2-done, .s3-postall, .s3-schedall):hover:not(:disabled){
-  filter: brightness(1.07);
-}
-@media (max-width: 600px){
-  #root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) :is(
-    .ws-panel, .ws-stat, .ws-metric-card, .hist-panel, .hist-row, .cn-card,
-    .setup-card, .s2-sec, .s2-out, .s3-work, .team-video-panel, .approval-card
-  ){ border-radius: 15px !important; }
-}
-@media (prefers-reduced-motion: reduce){
-  #root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) :is(button, .ws-panel, .ws-stat, .ws-metric-card, .hist-row, .cn-card, .setup-card, .s2-sec, .s3-work, .team-video-panel, .approval-card){
-    transition: none !important;
+
+@keyframes console-page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
-/* Sharp, quiet surfaces: one card edge, with color appearing only under the
-   pointer-proximity handler. The content card owns the border, not its wrapper. */
-#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) .border-glow-card{
-  border: 0 !important;
-  border-radius: 0 !important;
-  background: transparent !important;
-  box-shadow: none !important;
-  transform: none !important;
+#root .ws-main,
+#root .hist-in,
+#root .team-video-main,
+#root .team-review-main,
+#root :is(.stage1-in, .stage2-in, .stage3-in) {
+  animation: console-page-enter 320ms cubic-bezier(0.2, 0.75, 0.25, 1) both;
 }
-#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) .border-glow-card::after{
-  display: none !important;
+
+#root .ws .ws-stat {
+  animation: console-page-enter 360ms cubic-bezier(0.2, 0.75, 0.25, 1) both;
 }
-#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) .border-glow-card::before{
-  border-radius: 0 !important;
-  background:
-    linear-gradient(var(--panel) 0 100%) padding-box,
-    linear-gradient(135deg, transparent 8%, var(--go) 50%, transparent 92%) border-box !important;
+#root .ws .ws-stat:nth-child(2) {
+  animation-delay: 40ms;
 }
-#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) :is(
-  .ws-panel, .ws-stat, .ws-metric-card, .ws-welcome, .hist-panel, .hist-row,
-  .hist-activity, .cn-card, .cn-brands, .setup-card, .s2-sec, .s2-out,
-  .s2-editor, .s2-video-editor-page, .s3-work, .s3-sched, .team-video-panel,
-  .team-review-list, .team-review-detail, .approval-card, .cg-card,
-  .automation-account, .automation-setup, .ws-campaign-account
-){
-  border: 1px solid var(--line) !important;
-  border-radius: 0 !important;
-  background: var(--panel) !important;
-  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--ink) 3%, transparent),
-    0 0 25px -9px var(--edge-glow-color, transparent) !important;
+#root .ws .ws-stat:nth-child(3) {
+  animation-delay: 80ms;
 }
-#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) :is(
-  .setup-card.sel, .ws-campaign-account.selected, .hist-tab.active, .cn-card.linked
-){
-  border-color: var(--go) !important;
-  background: color-mix(in srgb, var(--go) 6%, var(--panel)) !important;
+
+.ws-day:focus-visible,
+.ws-nav button:focus-visible,
+.ws button:focus-visible,
+.hist-shell button:focus-visible,
+.connect button:focus-visible,
+.stage1 button:focus-visible,
+.stage2 button:focus-visible,
+.stage3 button:focus-visible,
+.team-video-page button:focus-visible,
+.approval-page button:focus-visible {
+  outline: 2px solid var(--go);
+  outline-offset: 2px;
 }
-#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) button:not(.ws-nav button):not(.ws-text-button):not(.ws-collapse-toggle):not(.ws-theme-toggle):not(.progress-step-button):not(.ws-day):not(.swatch):not(.dock button):not(.ws-wordmark){
-  border-radius: 0 !important;
+
+/* ==========================================================================
+   ERROR, AUTH, LOADING & RECOVERY SCREENS
+   ========================================================================== */
+#root .team-video-page,
+#root .team-video-review-page {
+  background: var(--bg) !important;
+}
+
+#root .app-error,
+#root .page-loading,
+#root .auth-wrap {
+  --bg: #05080d;
+  --panel: #0b111b;
+  --panel2: #111a28;
+  --input: #070b12;
+  --ink: #f1f5f9;
+  --muted: #94a3b8;
+  --faint: #64748b;
+  --line: rgba(148, 163, 184, 0.14);
+  --line-hard: rgba(148, 163, 184, 0.24);
+  --go: #38bdf8;
+  --go-ink: #03111c;
+  --violet: var(--go);
+  --grad: var(--go);
+  background: var(--bg);
+  color: var(--ink);
+}
+
+#root .app-error-card {
+  border-color: var(--line);
+  border-radius: 16px;
+  background: var(--panel);
+}
+
+#root .app-error-mark {
+  background: color-mix(in srgb, var(--go) 14%, var(--panel));
+  color: var(--go);
+}
+
+#root .app-error-actions button,
+#root .page-loading-recovery button,
+#root .auth-wrap .login-form .skew-btn.grad,
+#root .auth-wrap .login-form .skew-btn.submit {
+  border-color: var(--go);
+  color: var(--go-ink);
+  background: var(--go);
+}
+
+#root .app-error-actions a {
   border-color: var(--line-hard);
+  color: var(--ink);
   background: var(--panel2);
-  box-shadow: 0 0 22px -8px var(--edge-glow-color, transparent);
 }
-#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) :is(
-  .ws-primary, .s1-primary, .continue-btn, .s2-continue-btn, .s2-done,
-  .s3-postall, .s3-schedall, .cn-connect, .cg-acts button:first-child
-){
-  border-radius: 0 !important;
-  background: var(--go) !important;
-  box-shadow: 0 0 22px -8px var(--edge-glow-color, transparent) !important;
+
+#root .page-loading-mark {
+  border-top-color: var(--go);
 }
-#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar > .ws-wordmark{
-  min-height: 0;
-  padding: 0;
-  border: 0 !important;
-  background: transparent !important;
-  box-shadow: none !important;
+
+#root .auth-wrap .login-form input:focus {
+  border-color: var(--go);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--go) 16%, transparent);
+}
+
+#root .recovery-page {
+  --rec-bg: #05080d;
+  --rec-panel: #0b111b;
+  --rec-line: rgba(148, 163, 184, 0.15);
+  --rec-accent: #38bdf8;
+  --rec-muted: #94a3b8;
+  --rec-faint: #64748b;
+  --rec-accent-ink: #03111c;
+  color: #f1f5f9;
+  background:
+    radial-gradient(ellipse at 50% 40%, rgba(56, 189, 248, 0.08), transparent 45%),
+    #05080d;
+}
+
+#root .stage2 .s2-clip-strip {
+  background-image:
+    repeating-linear-gradient(90deg, transparent 0 7.8%, color-mix(in srgb, var(--go) 38%, transparent) 7.8% 8%, transparent 8% 16.4%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.1), transparent 45%, rgba(0, 0, 0, 0.18));
+}
+
+#root .stage2 .s2-clip-selected {
+  background: color-mix(in srgb, var(--go) 20%, transparent);
+}
+
+body:has(#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .auth-wrap, .page-loading, .recovery-page, .app-error)) {
+  background: #05080d;
+}
+
+[data-theme="light"] body:has(#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page)) {
+  background: #f4f7fb;
+}
+
+/* ==========================================================================
+   RESPONSIVE BREAKPOINTS
+   ========================================================================== */
+@media (max-width: 980px) {
+  .ws-user-badge {
+    display: none;
+  }
+}
+
+@media (max-width: 760px) {
+  #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar {
+    width: 100% !important;
+    min-height: 58px !important;
+    gap: 8px;
+    padding: 8px 12px !important;
+  }
+
+  .ws-topnav {
+    display: none;
+  }
+
+  #root .ws-dock-holder {
+    padding: 0 8px max(10px, env(safe-area-inset-bottom));
+  }
+
+  #root .ws-dock-holder .dock {
+    --dock-gap: 2px !important;
+    transform: scale(0.88);
+    transform-origin: 50% 100%;
+  }
+
+  #root .ws > .ws-main,
+  #root .ws > .connect,
+  #root .hist-shell > .hist,
+  #root .stage1-in,
+  #root .stage2-in,
+  #root .stage3-in,
+  #root .team-video-main,
+  #root .team-review-main {
+    width: 100%;
+    height: 100dvh;
+    margin-left: 0;
+    padding: 72px 16px calc(124px + env(safe-area-inset-bottom));
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  #root .hist > .hist-in {
+    width: 100%;
+    padding: 72px 16px calc(124px + env(safe-area-inset-bottom));
+  }
+
+  #root .stage1-in,
+  #root .stage2-in,
+  #root .stage3-in {
+    padding-right: 16px;
+    padding-left: 16px;
+    padding-bottom: 245px;
+  }
+
+  #root :is(.stage1, .stage2, .stage3) .ws-dock-holder {
+    inset: auto 0 calc(118px + env(safe-area-inset-bottom)) 0;
+  }
+
+  #root .ws .ws-heading {
+    align-items: flex-start;
+  }
+
+  #root .ws .ws-welcome {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    min-height: 200px;
+    padding: 22px 18px;
+  }
+
+  #root .ws .ws-stat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  #root .ws .ws-stat {
+    min-height: 140px;
+    padding: 16px;
+  }
+
+  #root .ws .ws-stat > strong {
+    font-size: 32px;
+  }
+}
+
+@media (max-width: 600px) {
+  #root .stage2 .s2-settings {
+    grid-template-columns: 1fr;
+  }
+
+  #root .stage1 .setup-card,
+  #root .stage2 .s2-sec,
+  #root .stage3 .s3-work,
+  #root .connect .cn-card {
+    padding: 16px;
+  }
+}
+
+@media (max-width: 380px) {
+  #root .ws-dock-holder .dock {
+    transform: scale(0.8);
+  }
+  #root .stage1-in,
+  #root .stage2-in,
+  #root .stage3-in {
+    padding-bottom: 300px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) *,
+  #root .ws-main,
+  #root .hist-in,
+  #root .team-video-main,
+  #root .team-review-main,
+  #root :is(.stage1-in, .stage2-in, .stage3-in) {
+    animation: none !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
 }

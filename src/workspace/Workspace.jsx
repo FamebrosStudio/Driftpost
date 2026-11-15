@@ -107,17 +107,66 @@ export function WorkspaceNav({ page, onNavigate, email, onSignOut }) {
       onClick: onSignOut,
     }] : []),
   ];
+  const topNavItems = [
+    ...NAV.map(([id, label, icon]) => ({
+      id,
+      label: id === 'create' ? 'Compose' : id === 'history' ? 'History' : id === 'accounts' ? 'Accounts' : label,
+      icon,
+      active: navPage === id,
+    })),
+    ...(isAiAccount(email) ? [
+      { id: 'team-video', label: 'Team Video', icon: 'video', active: page === 'team-video' },
+      { id: 'team-video-review', label: 'Review', icon: 'review', active: page === 'team-video-review' },
+    ] : []),
+  ];
   return <>
     <header className="ws-topbar">
       <button type="button" className="ws-wordmark" onClick={() => onNavigate('home')} aria-label="Driftpost overview">
         <img className="logo-img logo-d" src="/logo-dark-620.png" srcSet="/logo-dark-620.png 620w, /logo-dark.png 1984w" sizes="168px" width="1984" height="512" decoding="async" alt="Driftpost" />
         <img className="logo-img logo-l" src="/logo-light.png" width="1908" height="512" decoding="async" alt="Driftpost" />
       </button>
-      {page === 'create' && <button type="button" className="ws-overview-link" onClick={() => onNavigate('home')}><Icon name="arrowLeft" size={15} /> Overview</button>}
-      <div className="ws-user"><span className="ws-user-dot">{(email || 'U')[0].toUpperCase()}</span><span className="ws-user-email">{email || 'Workspace'}</span></div>
+      <nav className="ws-topnav" aria-label="Workspace navigation">
+        {topNavItems.map((item) => (
+          <button
+            key={item.id}
+            type="button"
+            className={item.active ? 'ws-topnav-pill active' : 'ws-topnav-pill'}
+            onClick={() => onNavigate(item.id)}
+          >
+            <Icon name={item.icon} size={15} />
+            <span>{item.label}</span>
+          </button>
+        ))}
+      </nav>
+      <div className="ws-user">
+        <button
+          type="button"
+          className="ws-topbar-icon-btn"
+          onClick={() => setTheme((value) => value === 'dark' ? 'light' : 'dark')}
+          title={theme === 'dark' ? 'Switch to light appearance' : 'Switch to dark appearance'}
+          aria-label={theme === 'dark' ? 'Switch to light appearance' : 'Switch to dark appearance'}
+        >
+          {theme === 'dark' ? <SunGlyph /> : <MoonGlyph />}
+        </button>
+        <div className="ws-user-badge" title={email || 'Workspace'}>
+          <span className="ws-user-dot">{(email || 'U')[0].toUpperCase()}</span>
+          <span className="ws-user-email">{email || 'Workspace'}</span>
+        </div>
+        {onSignOut && (
+          <button
+            type="button"
+            className="ws-topbar-icon-btn ws-topbar-signout"
+            onClick={onSignOut}
+            title="Sign out"
+            aria-label="Sign out"
+          >
+            <SignOutGlyph />
+          </button>
+        )}
+      </div>
     </header>
     <div className="ws-dock-holder">
-      <Dock items={dockItems} position="bottom" theme={theme} accentColor="#7dd3fc" badgeColor="#7dd3fc" baseItemSize={compact ? 34 : 46} magnification={compact ? 48 : 66} />
+      <Dock items={dockItems} position="bottom" theme={theme} accentColor="#38bdf8" badgeColor="#38bdf8" baseItemSize={compact ? 34 : 44} magnification={compact ? 46 : 62} />
     </div>
   </>;
 }
