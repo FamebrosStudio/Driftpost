@@ -10,6 +10,28 @@ const formatTime = (seconds = 0) => {
   return `${Math.floor(value / 60)}:${String(value % 60).padStart(2, '0')}`;
 };
 
+function waitForVideoSeek(video, target) {
+  if (Math.abs(video.currentTime - target) < 0.01 && !video.seeking) {
+    return Promise.resolve();
+  }
+  return new Promise((resolve, reject) => {
+    const cleanup = () => {
+      clearTimeout(timer);
+      video.removeEventListener('seeked', onSeeked);
+      video.removeEventListener('error', onError);
+    };
+    const onSeeked = () => { cleanup(); resolve(); };
+    const onError = () => { cleanup(); reject(new Error('Could not seek to that video frame.')); };
+    const timer = setTimeout(() => {
+      cleanup();
+      reject(new Error('The video took too long to seek. Try selecting the frame again.'));
+    }, 10000);
+    video.addEventListener('seeked', onSeeked, { once: true });
+    video.addEventListener('error', onError, { once: true });
+    video.currentTime = target;
+  });
+}
+
 export async function makeCover(source, platform, name) {
   const format = FORMATS[platform];
   const bitmap = await createImageBitmap(source);
@@ -75,12 +97,19 @@ export default function CoverPicker({ platform, files = [], cover, onChange }) {
     if (!video || video.readyState < 2) return;
     setBusy(true); setError('');
     try {
+      const selectedTime = Math.max(0, Math.min(duration || 0, time));
+      await waitForVideoSeek(video, selectedTime);
+      if (typeof video.requestVideoFrameCallback === 'function') {
+        await new Promise((resolve) => video.requestVideoFrameCallback(() => resolve()));
+      }
       const canvas = document.createElement('canvas');
       canvas.width = video.videoWidth;
       canvas.height = video.videoHeight;
-      canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+      const context = canvas.getContext('2d');
+      if (!context || !canvas.width || !canvas.height) throw new Error('The selected video frame is not ready yet.');
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
       const frame = await new Promise((resolve, reject) => canvas.toBlob((blob) => blob ? resolve(blob) : reject(new Error('Could not capture this video frame.')), 'image/jpeg', 0.95));
-      const file = new File([frame], `video-frame-${Math.floor(video.currentTime)}s.jpg`, { type: 'image/jpeg' });
+      const file = new File([frame], `video-frame-${Math.floor(selectedTime)}s.jpg`, { type: 'image/jpeg' });
       onChange(await makeCover(file, platform, file.name));
     } catch (e) { setError(e.message || 'Could not capture this video frame.'); }
     finally { setBusy(false); }
@@ -151,7 +180,7 @@ export default function CoverPicker({ platform, files = [], cover, onChange }) {
         </div>
         <div className="s3-frame-scale"><span>Start</span><span>{formatTime(duration)}</span></div>
       </div>
-      <button type="button" className="s3-mini-btn" onClick={useFrame} disabled={!duration || busy}>Use selected frame</button>
+      <button type="button" className="s3-mini-btn" onClick={useFrame} disabled={!duration || busy}>{busy ? 'Capturing selected frame…' : 'Use selected frame'}</button>
     </div>}
     {!videoUrl && <small className="s3-subnote">Attach a video in Stage 2 to choose a frame. Uploaded covers are prepared as {FORMATS[platform].label} JPEGs.</small>}
     {error && <p className="s3-err" role="alert">{error}</p>}
