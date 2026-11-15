@@ -427,6 +427,21 @@ export default function MediaEditor({ entry, token, onClose, onApply, onApplyMus
       if (!bounds.width || !bounds.height) return;
       const dx = (e.clientX - overlayDrag.x0) / bounds.width;
       const dy = (e.clientY - overlayDrag.y0) / bounds.height;
+      if (overlayDrag.handle) {
+        const { x, y, w, h } = overlayDrag.item;
+        const handle = overlayDrag.handle;
+        const minW = Math.min(w, 24 / bounds.width);
+        const minH = Math.min(h, 24 / bounds.height);
+        let left = x, top = y, right = x + w, bottom = y + h;
+        if (handle.includes('w')) left = Math.max(0, Math.min(right - minW, x + dx));
+        if (handle.includes('e')) right = Math.min(1, Math.max(left + minW, x + w + dx));
+        if (handle.includes('n')) top = Math.max(0, Math.min(bottom - minH, y + dy));
+        if (handle.includes('s')) bottom = Math.min(1, Math.max(top + minH, y + h + dy));
+        setOverlays((items) => items.map((item) => item.id === overlayDrag.id
+          ? { ...item, x: left, y: top, w: right - left, h: bottom - top }
+          : item));
+        return;
+      }
       setOverlays((items) => items.map((item) => item.id === overlayDrag.id
         ? { ...item, x: Math.max(0, Math.min(1 - item.w, overlayDrag.item.x + dx)), y: Math.max(0, Math.min(1 - item.h, overlayDrag.item.y + dy)) }
         : item));
@@ -668,6 +683,27 @@ export default function MediaEditor({ entry, token, onClose, onApply, onApplyMus
           {item.kind === 'text' ? <span>{item.text || 'Your text'}</span> : null}
         </div>
       ))}
+      {selectedOverlayItem && <div className="s2-selection-bounds" style={{
+        left: `${selectedOverlayItem.x * 100}%`, top: `${selectedOverlayItem.y * 100}%`,
+        width: `${selectedOverlayItem.w * 100}%`, height: `${selectedOverlayItem.h * 100}%`,
+      }}>
+        {['nw', 'n', 'ne', 'e', 'se', 's', 'sw', 'w'].map((handle) => (
+          <button key={handle} type="button" className={`s2-resize-handle ${handle}`}
+            aria-label={`Resize selected element ${handle}`}
+            onPointerDown={(event) => {
+              if (busy) return;
+              event.preventDefault();
+              event.stopPropagation();
+              event.currentTarget.setPointerCapture(event.pointerId);
+              overlayDragRef.current = {
+                id: selectedOverlayItem.id, handle,
+                x0: event.clientX, y0: event.clientY, item: { ...selectedOverlayItem },
+              };
+            }}
+            onClick={(event) => event.stopPropagation()}
+          />
+        ))}
+      </div>}
     </div>
   );
 

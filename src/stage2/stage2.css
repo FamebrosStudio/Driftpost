@@ -88,6 +88,17 @@
 .s2-overlay-item.rect { border-style: solid; }
 .s2-overlay-item.circle,#root .s2-media-editor-page .s2-overlay-item.circle { border-style: solid; border-radius: 50% !important; }
 .s2-overlay-item.selected { outline: 1px dashed var(--go); outline-offset: 2px; }
+.s2-selection-bounds { position: absolute; z-index: 10; border: 1px solid var(--go); pointer-events: none; box-sizing: border-box; }
+#root .s2-media-editor-page .s2-resize-handle { position: absolute; width: 12px; height: 12px; min-width: 12px; min-height: 12px; margin: 0; padding: 0; border: 1px solid #10231d; background: #fff; border-radius: 0 !important; pointer-events: auto; touch-action: none; transform: translate(-50%, -50%); }
+.s2-resize-handle.nw { left: 0; top: 0; cursor: nwse-resize; }
+.s2-resize-handle.n { left: 50%; top: 0; cursor: ns-resize; }
+.s2-resize-handle.ne { left: 100%; top: 0; cursor: nesw-resize; }
+.s2-resize-handle.e { left: 100%; top: 50%; cursor: ew-resize; }
+.s2-resize-handle.se { left: 100%; top: 100%; cursor: nwse-resize; }
+.s2-resize-handle.s { left: 50%; top: 100%; cursor: ns-resize; }
+.s2-resize-handle.sw { left: 0; top: 100%; cursor: nesw-resize; }
+.s2-resize-handle.w { left: 0; top: 50%; cursor: ew-resize; }
+.s2-resize-handle::after { content: ''; position: absolute; inset: -6px; }
 .crop-box > .s2-overlay-layer { z-index: 1; }
 .crop-box > .crop-handle { z-index: 3; }
 .crop-hint { z-index: 4; }
