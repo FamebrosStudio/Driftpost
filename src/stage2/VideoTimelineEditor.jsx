@@ -41,17 +41,30 @@ export default function VideoTimelineEditor({ entry, token, onBack, onApply, onA
   const seek = (time) => new Promise((resolve, reject) => {
     const video = videoRef.current;
     if (!video) return reject(new Error('Preview is not ready.'));
-    if (!video.seeking && Math.abs(video.currentTime - time) < 0.04) return resolve();
+    if (!video.seeking && video.readyState >= 2 && Math.abs(video.currentTime - time) < 0.04) return resolve();
     const done = () => { cleanup(); resolve(); };
     const fail = () => { cleanup(); reject(new Error('Could not seek this video.')); };
     const cleanup = () => {
+      clearTimeout(timer);
       video.removeEventListener('seeked', done);
       video.removeEventListener('error', fail);
     };
+    const timer = setTimeout(() => { cleanup(); reject(new Error('Seeking took too long. Try again.')); }, 10000);
     video.addEventListener('seeked', done, { once: true });
     video.addEventListener('error', fail, { once: true });
     video.currentTime = time;
   });
+
+  const playFrom = async (time) => {
+    const video = videoRef.current;
+    if (!video) return;
+    try {
+      await seek(time);
+      await video.play();
+    } catch {
+      setError('Could not play this video in the browser. Try again.');
+    }
+  };
 
   const renderTrim = async () => {
     setError('');
@@ -124,8 +137,14 @@ export default function VideoTimelineEditor({ entry, token, onBack, onApply, onA
     }
   };
 
-  const clampStart = (raw) => setStart(Math.max(0, Math.min(Number(raw), Math.max(0, end - 0.25))));
-  const clampEnd = (raw) => setEnd(Math.min(duration, Math.max(Number(raw), Math.min(duration, start + 0.25))));
+  const clampStart = (raw) => {
+    const value = Number(raw);
+    if (Number.isFinite(value)) setStart(Math.max(0, Math.min(value, Math.max(0, end - 0.25))));
+  };
+  const clampEnd = (raw) => {
+    const value = Number(raw);
+    if (Number.isFinite(value)) setEnd(Math.min(duration, Math.max(value, Math.min(duration, start + 0.25))));
+  };
   const timeFromPointer = (event) => {
     const rect = event.currentTarget.getBoundingClientRect();
     return Math.max(0, Math.min(duration, ((event.clientX - rect.left) / rect.width) * duration));
@@ -162,33 +181,36 @@ export default function VideoTimelineEditor({ entry, token, onBack, onApply, onA
     const video = videoRef.current;
     if (!video) return;
     if (video.paused) {
-      if (video.currentTime < start || video.currentTime >= end) movePlayhead(start);
-      video.play().catch(() => setError('Could not play this video in the browser.'));
+      playFrom(video.currentTime < start || video.currentTime >= end ? start : video.currentTime);
     } else video.pause();
   };
 
   return (
-    <div className="s2-video-editor-page" role="dialog" aria-modal="true" aria-label="Edit video timeline">
-      <header className="s2-video-editor-head">
-        <div><h2>Edit video</h2><p>Trim your clip in this browser. Original media is not uploaded by the editor.</p></div>
-        <button type="button" className="s2-cancel" onClick={onBack} disabled={busy}>Back to crop tools</button>
+    <main className="s2-timeline-page" aria-label="Video trim and soundtrack editor">
+      <header className="s2-timeline-topbar">
+        <button type="button" className="s2-timeline-back" onClick={onBack} disabled={busy}><span aria-hidden="true">←</span> Edit media</button>
+        <div className="s2-timeline-heading"><small>VIDEO WORKSPACE</small><h1>Trim & soundtrack</h1><p title={entry.name}>{entry.name} · Adjust this draft before publishing</p></div>
+        <div className="s2-timeline-length"><small>SELECTED</small><b>{fmt(Math.max(0, end - start))}</b></div>
       </header>
-      <div className="s2-video-editor-workspace">
-        <div className="s2-video-preview-wrap">
-          <video ref={videoRef} src={url} playsInline preload="metadata" onTimeUpdate={(e) => {
-            const time = e.currentTarget.currentTime;
-            setPlayhead(time);
-            if (playing && time >= end) e.currentTarget.pause();
-            if (busy && time >= end) e.currentTarget.pause();
-          }} onPlay={() => setPlaying(true)} onPause={() => setPlaying(false)} />
-          <div className="s2-video-transport">
-            <button type="button" aria-label={playing ? 'Pause' : 'Play'} disabled={busy || !duration} onClick={togglePlayback}>{playing ? 'Pause' : 'Play'}</button>
-            <span>{fmt(playhead)} <small>/ {fmt(duration)}</small></span>
-            <button type="button" className="s2-editor-music" disabled={!duration || busy} onClick={() => movePlayhead(start)}>Go to start</button>
+      <div className="s2-timeline-content">
+        <section className="s2-video-preview-wrap" aria-label="Video preview">
+          <div className="s2-timeline-section-label"><b>Preview</b><span>{playing ? 'Playing' : 'Ready to preview'}</span></div>
+          <div className="s2-video-preview-frame">
+            <video ref={videoRef} src={url} playsInline preload="metadata" onTimeUpdate={(e) => {
+              const time = e.currentTarget.currentTime;
+              setPlayhead(time);
+              if (playing && time >= end) e.currentTarget.pause();
+              if (busy && time >= end) e.currentTarget.pause();
+            }} onPlay={() => setPlaying(true)} onPause={() => setPlaying(false)} />
           </div>
-        </div>
+          <div className="s2-video-transport">
+            <button type="button" className="s2-transport-play" aria-label={playing ? 'Pause' : 'Play'} disabled={busy || !duration} onClick={togglePlayback}>{playing ? 'Ⅱ' : '▶'} <span>{playing ? 'Pause' : 'Play'}</span></button>
+            <span className="s2-transport-time">{fmt(playhead)} <small>/ {fmt(duration)}</small></span>
+            <button type="button" className="s2-transport-start" disabled={!duration || busy} onClick={() => movePlayhead(start)}>Go to trim start</button>
+          </div>
+        </section>
         <section className="s2-timeline" aria-label="Video timeline">
-          <div className="s2-timeline-title"><div><span>Timeline</span><small>Drag the handles to trim · drag the playhead to scrub</small></div><b>Selected {fmt(Math.max(0, end - start))}</b></div>
+          <div className="s2-timeline-title"><div><span>Trim your clip</span><small>Drag either end to choose what to keep. Drag the marker to preview.</small></div><b>{fmt(Math.max(0, end - start))} selected</b></div>
           <div className="s2-timeline-ruler" aria-hidden="true">{[0, 0.25, 0.5, 0.75, 1].map((fraction) => <span key={fraction} style={{ left: `${fraction * 100}%` }}>{fmt(duration * fraction)}</span>)}</div>
           <div className={`s2-clip-track${dragging ? ' is-dragging' : ''}`} onPointerMove={dragTimeline} onPointerUp={() => setDragging('')} onPointerCancel={() => setDragging('')} onPointerDown={(event) => {
             if (event.target === event.currentTarget || event.target.classList.contains('s2-clip-strip')) movePlayhead(timeFromPointer(event));
@@ -200,10 +222,10 @@ export default function VideoTimelineEditor({ entry, token, onBack, onApply, onA
             <button type="button" className="s2-playhead" style={{ left: `${duration ? playhead / duration * 100 : 0}%` }} aria-label="Timeline playhead" aria-valuemin="0" aria-valuemax={duration} aria-valuenow={playhead} role="slider" disabled={!duration || busy} onPointerDown={(event) => beginDrag('playhead', event)} onKeyDown={(event) => handleKey('playhead', event)} />
           </div>
           <div className={`s2-audio-track${musicTrack ? ' has-music' : ''}`}>
-            <div className="s2-audio-track-label"><b>AUDIO</b><span>{musicTrack ? `${musicTrack.title || musicTrack.name || 'Music'}${musicTrack.mainArtists?.[0]?.name ? ` · ${musicTrack.mainArtists[0].name}` : ''}` : 'No music added'}</span></div>
-            <div className="s2-audio-lane" aria-label={musicTrack ? 'Added music track' : 'Empty audio track'}>
+            <div className="s2-audio-track-label"><b>AUDIO</b><span>{musicTrack ? `${musicTrack.title || musicTrack.name || 'Music'}${musicTrack.mainArtists?.[0]?.name ? ` · ${musicTrack.mainArtists[0].name}` : ''}` : 'Original audio'}</span></div>
+            <div className="s2-audio-lane" aria-label={musicTrack ? 'Added music track' : 'Original audio track'}>
               {musicTrack && <div className="s2-audio-clip" style={{ left: 0, width: '100%' }}><span>{musicTrack.title || musicTrack.name || 'Music'}</span></div>}
-              {!musicTrack && <span className="s2-audio-empty">Choose a soundtrack below</span>}
+              {!musicTrack && <span className="s2-audio-empty">Original audio is kept</span>}
             </div>
             {musicTrack && <button type="button" className="s2-audio-remove" onClick={async () => {
               await onRemoveMusic();
@@ -211,31 +233,28 @@ export default function VideoTimelineEditor({ entry, token, onBack, onApply, onA
               setMusicSourceFile(entry.musicOriginalRaw || musicSourceFile);
             }}>Remove</button>}
           </div>
-          <div className="s2-timeline-values">
-            <label>In <input type="number" min="0" max={Math.max(0, end - 0.25)} step="0.1" value={start.toFixed(1)} disabled={!duration || busy} onChange={(event) => clampStart(event.target.value)} /></label>
-            <label>Out <input type="number" min={Math.min(duration, start + 0.25)} max={duration} step="0.1" value={end.toFixed(1)} disabled={!duration || busy} onChange={(event) => clampEnd(event.target.value)} /></label>
-          </div>
-          <div className="s2-timeline-actions">
-            <button type="button" className="s2-editor-music" disabled={!duration || busy} onClick={() => { movePlayhead(start); videoRef.current.play().catch(() => setError('Could not play this video in the browser.')); }}>Preview selection</button>
-            <button type="button" className="s2-done" disabled={!duration || busy} onClick={renderTrim}>{busy ? `Rendering… ${progress}%` : 'Render trimmed video'}</button>
+          <div className="s2-trim-controls">
+            <div className="s2-timeline-values">
+              <label>Start <span><input type="number" min="0" max={Math.max(0, end - 0.25)} step="0.1" value={start.toFixed(1)} disabled={!duration || busy} onChange={(event) => clampStart(event.target.value)} /> sec</span></label>
+              <label>End <span><input type="number" min={Math.min(duration, start + 0.25)} max={duration} step="0.1" value={end.toFixed(1)} disabled={!duration || busy} onChange={(event) => clampEnd(event.target.value)} /> sec</span></label>
+            </div>
+            <div className="s2-timeline-actions">
+              <button type="button" className="s2-selection-preview" disabled={!duration || busy} onClick={() => playFrom(start)}>▶ Preview selection</button>
+              <button type="button" className="s2-selection-render" disabled={!duration || busy} onClick={renderTrim}>{busy ? `Rendering… ${progress}%` : 'Save trimmed video'}</button>
+            </div>
           </div>
           {busy && <progress className="s2-trim-progress" max="100" value={progress} aria-label="Render progress" />}
           {error && <p className="s2-trim-error" role="alert">{error}</p>}
-          <div className="s2-editor-music-catalog">
-            <EpidemicCatalog
-              token={token}
-              files={[{ ...entry, raw: musicSourceFile || entry.raw }]}
-              selectedIndex={0}
-              onSelectVideo={() => {}}
-              summaryLabel={musicTrack ? 'Replace or preview music' : 'Add music to audio track'}
-              onApply={async (_index, mixedFile, track) => {
-                await onApplyMusic(mixedFile, track);
-                setMusicTrack(track);
-              }}
-            />
-          </div>
+          <details className="s2-timeline-music">
+            <summary>{musicTrack ? 'Change soundtrack' : '＋ Add a soundtrack'}</summary>
+            <div className="s2-editor-music-catalog">
+              <EpidemicCatalog token={token} files={[{ ...entry, raw: musicSourceFile || entry.raw }]} selectedIndex={0} onSelectVideo={() => {}}
+                summaryLabel={musicTrack ? 'Replace or preview music' : 'Choose soundtrack'}
+                onApply={async (_index, mixedFile, track) => { await onApplyMusic(mixedFile, track); setMusicTrack(track); }} />
+            </div>
+          </details>
         </section>
       </div>
-    </div>
+    </main>
   );
 }

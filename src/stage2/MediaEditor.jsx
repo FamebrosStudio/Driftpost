@@ -760,18 +760,14 @@ export default function MediaEditor({ entry, token, onClose, onApply, onApplyMus
 
   if (showVideoTimeline && isVideo) {
     return (
-      <div className="s2-overlay" onClick={() => setShowVideoTimeline(false)}>
-        <div onClick={(e) => e.stopPropagation()}>
-          <VideoTimelineEditor
-            entry={entry}
-            token={token}
-            onBack={() => setShowVideoTimeline(false)}
-            onApply={(file) => { setShowVideoTimeline(false); onApply(file); }}
-            onApplyMusic={onApplyMusic}
-            onRemoveMusic={onRemoveMusic}
-          />
-        </div>
-      </div>
+      <VideoTimelineEditor
+        entry={entry}
+        token={token}
+        onBack={() => setShowVideoTimeline(false)}
+        onApply={(file) => { setShowVideoTimeline(false); onApply(file); }}
+        onApplyMusic={onApplyMusic}
+        onRemoveMusic={onRemoveMusic}
+      />
     );
   }
 
