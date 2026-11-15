@@ -51,3 +51,85 @@
 
 @media (max-width: 380px) {.s2-settings{ grid-template-columns: minmax(0, 1fr); }.s2-grid{ grid-template-columns: minmax(0, 1fr); }
 }
+
+/* Full-screen media design workspace */
+.s2-media-editor-page { position: fixed; inset: 0; z-index: 120; display: flex; flex-direction: column; overflow: hidden; color: var(--ink); background: var(--bg); animation: s2Fade .18s ease both; }
+.s2-editor-topbar { min-height: 76px; display: grid; grid-template-columns: 120px minmax(0,1fr) 190px; align-items: center; gap: 18px; padding: 12px clamp(16px,3vw,36px); border-bottom: 1px solid var(--line); background: var(--panel); }
+.s2-editor-back,.s2-editor-export { min-height: 42px; border: 1px solid var(--line-hard); background: transparent; color: var(--ink); padding: 0 14px; font-size: 13px; font-weight: 650; cursor: pointer; }
+.s2-editor-back { justify-self: start; color: var(--muted); }
+.s2-editor-back:hover { color: var(--ink); background: var(--hover); }
+.s2-editor-export { border-color: var(--go); background: var(--go); color: #10231d; }
+.s2-editor-export:disabled { opacity: .5; cursor: wait; }
+.s2-editor-heading { min-width: 0; text-align: center; }
+.s2-editor-heading h1 { margin: 0 0 4px; font-size: 18px; letter-spacing: -.02em; }
+.s2-editor-heading p { overflow: hidden; margin: 0; color: var(--muted); font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
+.s2-editor-heading p span { padding: 0 5px; color: var(--go); }
+.s2-media-editor-page > .s2-editor { width: 100%; height: calc(100dvh - 76px); max-width: none; min-height: 0; flex: none; overflow: auto; padding: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; animation: none; }
+.s2-media-editor-page .s2-ed-cols { height: min(100%, calc(100dvh - 76px)); min-height: 540px; grid-template-columns: minmax(0,1fr) 360px; gap: 0; align-items: stretch; }
+.s2-editor-crop-stage { min-height: 0; height: calc(100% - 68px); border: 0; border-right: 1px solid var(--line); border-radius: 0; }
+.s2-editor-crop-stage .crop-wrap img { max-height: calc(100dvh - 190px); max-width: min(100%, 1100px); }
+.s2-editor-canvas-column { display: flex; min-width: 0; min-height: 0; flex-direction: column; background: #0c1118; }
+.s2-editor-canvas-toolbar,.s2-editor-canvas-footer { min-height: 44px; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 0 18px; color: #9caaa9; font-size: 10px; letter-spacing: .08em; }
+.s2-editor-canvas-toolbar { border-bottom: 1px solid #ffffff10; }
+.s2-editor-canvas-toolbar > span { display: inline-flex; align-items: center; gap: 8px; color: #e1e8e6; font-weight: 700; }
+.s2-editor-canvas-toolbar i { width: 7px; height: 7px; background: var(--go); }
+.s2-editor-canvas-toolbar small { color: #82908f; font-size: 11px; letter-spacing: 0; }
+.s2-editor-canvas-footer { min-height: 38px; border-top: 1px solid #ffffff10; letter-spacing: .04em; }
+.s2-editor-canvas-footer b { color: #e5ece9; }
+.s2-media-editor-page .crop-wrap { container-type: inline-size; }
+.s2-overlay-layer { position: absolute; inset: 0; z-index: 3; overflow: hidden; pointer-events: none; container-type: inline-size; }
+.s2-overlay-item { position: absolute; display: flex; align-items: center; justify-content: center; box-sizing: border-box; border-style: solid; border-color: transparent; color: #fff; line-height: 1.08; white-space: pre-wrap; overflow-wrap: anywhere; cursor: move; user-select: none; pointer-events: auto; touch-action: none; text-shadow: 0 2px 5px #000b; }
+.s2-overlay-item.text { border-color: transparent !important; }
+.s2-overlay-item.text span { display: block; width: 100%; }
+.s2-overlay-item.rect { border-style: solid; }
+.s2-overlay-item.circle,#root .s2-media-editor-page .s2-overlay-item.circle { border-style: solid; border-radius: 50% !important; }
+.s2-overlay-item.selected { outline: 1px dashed var(--go); outline-offset: 2px; }
+.crop-box > .s2-overlay-layer { z-index: 1; }
+.crop-box > .crop-handle { z-index: 3; }
+.crop-hint { z-index: 4; }
+.s2-editor-sidebar { min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 18px 18px 24px; background: var(--panel); }
+.s2-editor-sidebar .s2-pills { gap: 6px; }
+.s2-editor-sidebar .s2-pill { padding: 8px 11px; border-radius: 0; }
+.s2-tool-heading { display: flex; align-items: center; gap: 10px; margin: 0 0 16px; }
+.s2-tool-heading > span { display: grid; width: 30px; height: 30px; place-items: center; border: 1px solid var(--line-hard); color: var(--go); font: 700 10px/1 var(--mono, monospace); }
+.s2-tool-heading h2 { margin: 0 0 3px; font-size: 14px; }
+.s2-tool-heading small { color: var(--muted); font-size: 11px; }
+.s2-design-tools { margin: 20px 0 12px; padding-top: 18px; border-top: 1px solid var(--line); }
+.s2-design-label { display: block; margin: 12px 0 6px; color: var(--muted); font-size: 10px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; }
+.s2-design-text,.s2-editor-sidebar select { width: 100%; min-height: 38px; padding: 9px 10px; border: 1px solid var(--line-hard); border-radius: 0; background: var(--input); color: var(--ink); font-family: inherit; font-size: 13px; line-height: 1.45; resize: vertical; }
+.s2-add-text { width: 100%; min-height: 38px; margin-top: 8px; border: 1px solid var(--go); background: color-mix(in srgb,var(--go) 10%,var(--panel)); color: var(--go); font-size: 12px; font-weight: 700; cursor: pointer; }
+.s2-shape-tools { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
+.s2-shape-tools button,.s2-overlay-properties-head button,.s2-style-row button { display: flex; min-height: 38px; align-items: center; justify-content: center; gap: 8px; border: 1px solid var(--line-hard); background: var(--panel2); color: var(--ink); font-size: 11px; font-weight: 650; cursor: pointer; }
+.s2-shape-tools button:hover,.s2-style-row button:hover { border-color: var(--go); }
+.s2-shape-tools i { display: block; width: 15px; height: 12px; border: 1px solid var(--go); }
+.s2-shape-tools .circle-icon { width: 13px; height: 13px; border-radius: 50% !important; }
+.s2-overlay-properties { margin-top: 16px; padding: 12px; border: 1px solid var(--line); background: var(--panel2); }
+.s2-overlay-properties-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px; font-size: 12px; }
+.s2-overlay-properties-head button { min-height: 28px; padding: 0 8px; color: var(--danger,#e5484d); }
+.s2-style-row { display: flex; align-items: center; gap: 8px; }
+.s2-style-row > * { flex: 1; min-width: 0; }
+.s2-style-row input[type="color"],.s2-overlay-properties input[type="color"] { width: 42px; height: 34px; padding: 2px; border: 1px solid var(--line-hard); background: var(--panel2); }
+.s2-overlay-properties input[type="range"] { width: 100%; accent-color: var(--go); }
+.s2-style-row button.on { border-color: var(--go); color: var(--go); }
+.s2-editor-sidebar > .s2-done,.s2-editor-sidebar > .s2-cancel { display: none; }
+.s2-media-editor-page .s2-editor-music-catalog { width: min(900px, calc(100% - 36px)); margin: 28px auto 40px; }
+@media (max-width: 820px) {
+  .s2-editor-topbar { min-height: 64px; grid-template-columns: 76px minmax(0,1fr) 142px; gap: 8px; padding: 8px 10px; }
+  .s2-editor-back,.s2-editor-export { min-height: 38px; padding: 0 9px; font-size: 11px; }
+  .s2-editor-heading h1 { font-size: 15px; }
+  .s2-editor-heading p { max-width: 45vw; font-size: 10px; }
+  .s2-media-editor-page > .s2-editor { height: calc(100dvh - 64px); overflow: auto; }
+  .s2-media-editor-page .s2-ed-cols { height: auto; min-height: 0; grid-template-columns: minmax(0,1fr); }
+  .s2-editor-crop-stage { height: min(52dvh, 520px); min-height: 240px; border-right: 0; }
+  .s2-editor-crop-stage .crop-wrap img { max-height: min(48dvh, 460px); }
+  .s2-editor-sidebar { overflow: visible; border-top: 1px solid var(--line); }
+}
+@media (max-width: 480px) {
+  .s2-editor-topbar { grid-template-columns: 48px minmax(0,1fr) 112px; gap: 6px; }
+  .s2-editor-back span { display: none; }
+  .s2-editor-heading h1 { font-size: 14px; }
+  .s2-editor-heading p { max-width: 42vw; }
+  .s2-editor-canvas-toolbar,.s2-editor-canvas-footer { padding-inline: 10px; }
+  .s2-editor-canvas-toolbar small { max-width: 52%; text-align: right; }
+  .s2-editor-sidebar { padding: 14px 12px calc(20px + env(safe-area-inset-bottom)); }
+}

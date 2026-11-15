@@ -328,7 +328,7 @@ export default function StageTwoPage({ session, onBack, onSignOut, onNavigate, o
       <ContinueButton disabled={!canContinue} saved={saveTick} onClick={cont} />
       {editing >= 0 && files[editing] && (
         <Suspense fallback={<PageLoading label="Loading media editor…" />}>
-          <MediaEditor entry={files[editing]} token={session.access_token} onClose={() => setEditing(-1)} onApply={(f) => applyEditAt(editing, f)} onApplyMusic={(f, track) => applyMusicAt(editing, f, track)} onRemoveMusic={() => removeMusicAt(editing)} />
+          <MediaEditor key={editing} entry={files[editing]} token={session.access_token} onClose={() => setEditing(-1)} onApply={(f) => applyEditAt(editing, f)} onApplyMusic={(f, track) => applyMusicAt(editing, f, track)} onRemoveMusic={() => removeMusicAt(editing)} />
         </Suspense>
       )}
     </div>

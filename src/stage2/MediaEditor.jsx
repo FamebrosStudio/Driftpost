@@ -82,6 +82,10 @@ export default function MediaEditor({ entry, token, onClose, onApply, onApplyMus
   const [box, setBox] = useState(null);
   const [fitNote, setFitNote] = useState('');
   const [preview, setPreview] = useState('');
+  const [overlays, setOverlays] = useState([]);
+  const [selectedOverlay, setSelectedOverlay] = useState('');
+  const [overlayText, setOverlayText] = useState('Your text');
+  const overlayDragRef = useRef(null);
   const [busy, setBusy] = useState(false);
   const [busyText, setBusyText] = useState('');
   const [showVideoTimeline, setShowVideoTimeline] = useState(false);
@@ -91,6 +95,7 @@ export default function MediaEditor({ entry, token, onClose, onApply, onApplyMus
   const dragRef = useRef(null);
   const prevToken = useRef(0);
   const pixelsRef = useRef(''); // last-rendered preview pixels (skips identical re-renders)
+  const overlayLayerRef = useRef(null);
   const url = useMemo(() => URL.createObjectURL(entry.raw), [entry]);
 
   useEffect(() => () => { try { URL.revokeObjectURL(url); } catch {} }, [url]);
@@ -258,6 +263,81 @@ export default function MediaEditor({ entry, token, onClose, onApply, onApplyMus
     return targetDims();
   };
 
+  const selectedOverlayItem = overlays.find((item) => item.id === selectedOverlay);
+  const addOverlay = (kind) => {
+    const id = `${kind}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+    const item = {
+      id, kind, x: 0.25, y: 0.38, w: kind === 'text' ? 0.5 : 0.3,
+      h: kind === 'text' ? 0.18 : 0.24, text: kind === 'text' ? overlayText || 'Your text' : '',
+      font: 'Arial', size: 7, color: '#ffffff', fill: kind === 'text' ? 'transparent' : '#61c7a7',
+      stroke: '#ffffff', strokeWidth: 0.5, bold: true, align: 'center',
+    };
+    setOverlays((items) => [...items, item]);
+    setSelectedOverlay(id);
+  };
+  const updateSelectedOverlay = (patch) => {
+    if (!selectedOverlay) return;
+    setOverlays((items) => items.map((item) => item.id === selectedOverlay ? { ...item, ...patch } : item));
+  };
+  const removeSelectedOverlay = () => {
+    setOverlays((items) => items.filter((item) => item.id !== selectedOverlay));
+    setSelectedOverlay('');
+  };
+  const paintOverlays = (ctx, width, height) => {
+    overlays.forEach((item) => {
+      const x = item.x * width;
+      const y = item.y * height;
+      const w = item.w * width;
+      const h = item.h * height;
+      ctx.save();
+      ctx.lineWidth = Math.max(1, Number(item.strokeWidth || 0.5) * width / 100);
+      ctx.strokeStyle = item.stroke || '#ffffff';
+      ctx.fillStyle = item.fill || 'transparent';
+      if (item.kind === 'text') {
+        const fontSize = Math.max(12, Number(item.size || 7) * width / 100);
+        ctx.font = `${item.bold ? '700' : '400'} ${fontSize}px ${JSON.stringify(item.font || 'Arial')}`;
+        ctx.textAlign = item.align || 'center';
+        ctx.textBaseline = 'middle';
+        ctx.lineJoin = 'round';
+        ctx.strokeStyle = 'rgba(0,0,0,.72)';
+        ctx.lineWidth = Math.max(2, fontSize * 0.12);
+        const explicitLines = String(item.text || '').split('\n');
+        const lines = explicitLines.flatMap((line) => {
+          const words = line.split(/\s+/).filter(Boolean);
+          if (!words.length) return [''];
+          const wrapped = [];
+          let current = '';
+          words.forEach((word) => {
+            const candidate = current ? `${current} ${word}` : word;
+            if (current && ctx.measureText(candidate).width > w) {
+              wrapped.push(current);
+              current = word;
+            } else current = candidate;
+          });
+          wrapped.push(current);
+          return wrapped;
+        });
+        const lineHeight = fontSize * 1.15;
+        const textX = item.align === 'left' ? x : item.align === 'right' ? x + w : x + w / 2;
+        const startY = y + h / 2 - ((lines.length - 1) * lineHeight) / 2;
+        lines.forEach((line, index) => {
+          ctx.strokeText(line, textX, startY + index * lineHeight, w);
+          ctx.fillStyle = item.color || '#ffffff';
+          ctx.fillText(line, textX, startY + index * lineHeight, w);
+        });
+      } else if (item.kind === 'rect') {
+        if (item.fill !== 'transparent') ctx.fillRect(x, y, w, h);
+        if (item.strokeWidth > 0) ctx.strokeRect(x, y, w, h);
+      } else if (item.kind === 'circle') {
+        ctx.beginPath();
+        ctx.ellipse(x + w / 2, y + h / 2, w / 2, h / 2, 0, 0, Math.PI * 2);
+        if (item.fill !== 'transparent') ctx.fill();
+        if (item.strokeWidth > 0) ctx.stroke();
+      }
+      ctx.restore();
+    });
+  };
+
   // Smart default per ratio: already-correct -> no change, otherwise CROP
   // (literal cut to the exact ratio — no blur, no padding). Fit stays one
   // click away for anyone who wants the whole frame kept.
@@ -334,6 +414,17 @@ export default function MediaEditor({ entry, token, onClose, onApply, onApplyMus
     dragRef.current = { mode: 'draw', x0: e.clientX, y0: e.clientY, ax, ay };
   };
   const onPointerMove = useCallback((e) => {
+    const overlayDrag = overlayDragRef.current;
+    if (overlayDrag && overlayLayerRef.current) {
+      const bounds = overlayLayerRef.current.getBoundingClientRect();
+      if (!bounds.width || !bounds.height) return;
+      const dx = (e.clientX - overlayDrag.x0) / bounds.width;
+      const dy = (e.clientY - overlayDrag.y0) / bounds.height;
+      setOverlays((items) => items.map((item) => item.id === overlayDrag.id
+        ? { ...item, x: Math.max(0, Math.min(1 - item.w, overlayDrag.item.x + dx)), y: Math.max(0, Math.min(1 - item.h, overlayDrag.item.y + dy)) }
+        : item));
+      return;
+    }
     const d = dragRef.current;
     const wrap = wrapRef.current;
     if (!d || !wrap) return;
@@ -391,7 +482,7 @@ export default function MediaEditor({ entry, token, onClose, onApply, onApplyMus
     if (d.mode.includes('n')) fy = d.box.fy + d.box.fh - nh;
     setBox(clampBox({ fx, fy, fw: nw, fh: nh }));
   }, [aspect]);
-  const endDrag = useCallback(() => { dragRef.current = null; }, []);
+  const endDrag = useCallback(() => { dragRef.current = null; overlayDragRef.current = null; }, []);
   useEffect(() => {
     window.addEventListener('pointermove', onPointerMove);
     window.addEventListener('pointerup', endDrag);
@@ -426,6 +517,7 @@ export default function MediaEditor({ entry, token, onClose, onApply, onApplyMus
       out.height = t.h;
       ctx.drawImage(c, win.x, win.y, win.w, win.h, 0, 0, out.width, out.height);
     }
+    paintOverlays(ctx, out.width, out.height);
     out.toBlob((blob) => {
       setBusy(false); setBusyText('');
       if (!blob) return;
@@ -519,6 +611,7 @@ export default function MediaEditor({ entry, token, onClose, onApply, onApplyMus
         nctx.restore();
         if (win) octx.drawImage(norm, win.x, win.y, win.w, win.h, 0, 0, W, H);
         else drawFit(octx, norm, Nw, Nh, W, H);
+        paintOverlays(octx, W, H);
         // True progress: frames actually rendered vs total duration.
         if (isFinite(dur) && dur > 0) {
           setBusyText(`Rendering video… ${Math.min(100, Math.round((src.currentTime / dur) * 100))}%`);
@@ -543,6 +636,34 @@ export default function MediaEditor({ entry, token, onClose, onApply, onApplyMus
     }
   };
 
+  const renderOverlayLayer = () => (
+    <div className="s2-overlay-layer" ref={overlayLayerRef} aria-label="Text and shape overlays">
+      {overlays.map((item) => (
+        <div
+          key={item.id}
+          className={`s2-overlay-item ${item.kind}${selectedOverlay === item.id ? ' selected' : ''}`}
+          style={{
+            left: `${item.x * 100}%`, top: `${item.y * 100}%`,
+            width: `${item.w * 100}%`, height: `${item.h * 100}%`,
+            color: item.color, fontFamily: item.font, fontSize: `${item.size}cqi`,
+            fontWeight: item.bold ? 700 : 400, textAlign: item.align,
+            background: item.kind === 'text' ? 'transparent' : item.fill,
+            borderColor: item.stroke, borderWidth: `${item.strokeWidth}cqi`,
+          }}
+          onPointerDown={(event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            setSelectedOverlay(item.id);
+            overlayDragRef.current = { id: item.id, x0: event.clientX, y0: event.clientY, item: { ...item } };
+          }}
+          onClick={(event) => { event.stopPropagation(); setSelectedOverlay(item.id); }}
+        >
+          {item.kind === 'text' ? <span>{item.text || 'Your text'}</span> : null}
+        </div>
+      ))}
+    </div>
+  );
+
   if (showVideoTimeline && isVideo) {
     return (
       <div className="s2-overlay" onClick={() => setShowVideoTimeline(false)}>
@@ -561,33 +682,42 @@ export default function MediaEditor({ entry, token, onClose, onApply, onApplyMus
   }
 
   return (
-    <div className="s2-overlay" onClick={onClose}>
-      <div className="s2-editor" role="dialog" aria-modal="true" aria-label={`Edit ${entry.name}`} onClick={(e) => e.stopPropagation()}>
-        <h2>Edit {isVideo ? 'video' : 'media'}</h2>
-        <p className="sub">{entry.name} · {isVideo ? 'fit or crop, re-encoded with audio kept' : 'fit or crop, exact-size HD output'}</p>
+    <main className="s2-media-editor-page" aria-label={`Edit ${entry.name}`}>
+      <header className="s2-editor-topbar">
+        <button type="button" className="s2-editor-back" onClick={onClose}>← <span>Media</span></button>
+        <div className="s2-editor-heading"><h1>{isVideo ? 'Video editor' : 'Image editor'}</h1><p title={entry.name}>{entry.name} <span>·</span> {isVideo ? 'Transform and design your video' : 'Transform and design your image'}</p></div>
+        <button type="button" className="s2-editor-export" disabled={busy || !ready} onClick={done}>{busy ? (busyText || 'Preparing…') : 'Save edited media'}</button>
+      </header>
+      <div className="s2-editor" role="region" aria-label="Media editing workspace">
         <div className="s2-ed-cols">
-          <div className="crop-stage">
+          <section className="s2-editor-canvas-column" aria-label="Editing preview">
+            <div className="s2-editor-canvas-toolbar"><span><i /> LIVE PREVIEW</span><small>Drag text and shapes to position</small></div>
+            <div className="crop-stage s2-editor-crop-stage">
             <div className="crop-wrap" ref={wrapRef} onPointerDown={free ? startDraw : undefined}>
               {preview
                 ? <img src={preview} alt="Edit preview" draggable={false} />
                 : <span style={{ color: '#888', fontSize: 13 }}>Loading…</span>}
+              {!free && renderOverlayLayer()}
               {free && box && (
                 <div
                   className="crop-box"
                   style={{ left: `${box.fx * 100}%`, top: `${box.fy * 100}%`, width: `${box.fw * 100}%`, height: `${box.fh * 100}%` }}
                   onPointerDown={(e) => onPointerDown(e, 'move')}
                 >
+                  {renderOverlayLayer()}
                   {['nw', 'ne', 'sw', 'se'].map((h) => (
                     <span key={h} className={`crop-handle ${h}`} onPointerDown={(e) => onPointerDown(e, h)} />
                   ))}
                 </div>
               )}
               {free && (
-                <p className="crop-hint">Drag on the photo to draw a new crop · drag the box to move · corners to resize</p>
+                <p className="crop-hint">Drag to set crop · move the frame · drag overlays to position</p>
               )}
             </div>
-          </div>
-          <div>
+            </div>
+            <div className="s2-editor-canvas-footer"><span>OUTPUT <b>{outputDims() ? `${outputDims().w} × ${outputDims().h}` : '—'}</b></span><span>{overlays.length} design element{overlays.length === 1 ? '' : 's'}</span></div>
+          </section>
+          <div className="s2-editor-sidebar">
             <div className="s2-pills" role="group" aria-label="Aspect ratio">
               {Object.keys(RATIOS).map((id) => (
                 <button key={id} type="button" className={aspect === id ? 's2-pill on' : 's2-pill'} onClick={() => pickAspect(id)}>{id}</button>
@@ -604,6 +734,36 @@ export default function MediaEditor({ entry, token, onClose, onApply, onApplyMus
               <button type="button" className={flipV ? 'on' : ''} onClick={() => setFlipV((v) => !v)}>Flip vertical</button>
               <button type="button" className={flipH ? 'on' : ''} onClick={() => setFlipH((v) => !v)}>Flip horizontal</button>
             </div>
+            <section className="s2-design-tools">
+              <div className="s2-tool-heading"><span>02</span><div><h2>Design</h2><small>Titles and graphic accents</small></div></div>
+              <label className="s2-design-label" htmlFor="s2-overlay-copy">Text</label>
+              <textarea id="s2-overlay-copy" className="s2-design-text" value={overlayText} onChange={(event) => setOverlayText(event.target.value)} placeholder="Type your text…" rows={2} />
+              <button type="button" className="s2-add-text" onClick={() => addOverlay('text')}>＋ Add text</button>
+              <span className="s2-design-label">Shapes</span>
+              <div className="s2-shape-tools">
+                <button type="button" onClick={() => addOverlay('rect')}><i className="rect-icon" /> Rectangle</button>
+                <button type="button" onClick={() => addOverlay('circle')}><i className="circle-icon" /> Circle</button>
+              </div>
+              {selectedOverlayItem && <div className="s2-overlay-properties">
+                <div className="s2-overlay-properties-head"><b>{selectedOverlayItem.kind === 'text' ? 'Text style' : `${selectedOverlayItem.kind} style`}</b><button type="button" onClick={removeSelectedOverlay}>Delete</button></div>
+                {selectedOverlayItem.kind === 'text' && <>
+                  <label className="s2-design-label" htmlFor="s2-selected-text">Content</label>
+                  <textarea id="s2-selected-text" className="s2-design-text" value={selectedOverlayItem.text} onChange={(event) => updateSelectedOverlay({ text: event.target.value })} rows={2} />
+                  <label className="s2-design-label">Font family</label>
+                  <select value={selectedOverlayItem.font} onChange={(event) => updateSelectedOverlay({ font: event.target.value })}>{['Arial', 'Georgia', 'Impact', 'Trebuchet MS', 'Courier New', 'Palatino Linotype'].map((font) => <option key={font} value={font}>{font}</option>)}</select>
+                  <label className="s2-design-label">Size · {selectedOverlayItem.size}%</label>
+                  <input type="range" min="3" max="16" step="0.5" value={selectedOverlayItem.size} onChange={(event) => updateSelectedOverlay({ size: Number(event.target.value) })} />
+                  <div className="s2-style-row"><button type="button" className={selectedOverlayItem.bold ? 'on' : ''} onClick={() => updateSelectedOverlay({ bold: !selectedOverlayItem.bold })}><b>B</b> Bold</button><select aria-label="Text alignment" value={selectedOverlayItem.align} onChange={(event) => updateSelectedOverlay({ align: event.target.value })}><option value="left">Left</option><option value="center">Center</option><option value="right">Right</option></select></div>
+                  <label className="s2-design-label">Text color</label><input type="color" value={selectedOverlayItem.color} onChange={(event) => updateSelectedOverlay({ color: event.target.value })} />
+                </>}
+                {selectedOverlayItem.kind !== 'text' && <>
+                  <label className="s2-design-label">Fill color</label>
+                  <div className="s2-style-row"><input type="color" value={selectedOverlayItem.fill === 'transparent' ? '#61c7a7' : selectedOverlayItem.fill} onChange={(event) => updateSelectedOverlay({ fill: event.target.value })} /><button type="button" onClick={() => updateSelectedOverlay({ fill: 'transparent' })}>No fill</button></div>
+                  <label className="s2-design-label">Outline</label>
+                  <div className="s2-style-row"><input type="color" value={selectedOverlayItem.stroke} onChange={(event) => updateSelectedOverlay({ stroke: event.target.value })} /><input type="range" min="0" max="2" step="0.25" value={selectedOverlayItem.strokeWidth} onChange={(event) => updateSelectedOverlay({ strokeWidth: Number(event.target.value) })} /></div>
+                </>}
+              </div>}
+            </section>
             {outputDims() && (
               <p className="s3-xcount" style={{ marginTop: 0, marginBottom: 10 }}>
                 Output: <b style={{ color: 'var(--ink)' }}>{outputDims().w} × {outputDims().h}px</b>
@@ -633,6 +793,6 @@ export default function MediaEditor({ entry, token, onClose, onApply, onApplyMus
           />
         </div>}
       </div>
-    </div>
+    </main>
   );
 }
