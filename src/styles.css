@@ -74,7 +74,7 @@
 }
 @media (prefers-reduced-motion: reduce) {.stage1 *,.stage2 *,.stage3 *,.progress-steps *{ animation-duration: .01ms !important; transition-duration: .01ms !important; }
 }/* Refined console geometry. */
-#root .progress-steps .progress-steps__number{ border-radius: 50% !important; }.ws > .ws-topbar,.hist-shell > .ws-topbar{ transition: width .24s cubic-bezier(.2,.75,.25,1), padding .24s ease; }.ws > .ws-main,.ws > .connect,.hist > .hist-in{ transition: width .24s cubic-bezier(.2,.75,.25,1), margin-left .24s cubic-bezier(.2,.75,.25,1), padding .24s ease; }
+#root .ws *,#root .hist-shell *,#root .connect *,#root .stage1 *,#root .stage2 *,#root .stage3 *,#root .team-video-page *{ border-radius: 0 !important; }.ws > .ws-topbar,.hist-shell > .ws-topbar{ transition: width .24s cubic-bezier(.2,.75,.25,1), padding .24s ease; }.ws > .ws-main,.ws > .connect,.hist > .hist-in{ transition: width .24s cubic-bezier(.2,.75,.25,1), margin-left .24s cubic-bezier(.2,.75,.25,1), padding .24s ease; }
 @supports selector(:has(*)) {.ws:has(> .ws-topbar[data-collapsed="true"]) > .ws-main,.ws:has(> .ws-topbar[data-collapsed="true"]) > .connect,.hist-shell:has(> .ws-topbar[data-collapsed="true"]) > .hist{ transition: width .24s cubic-bezier(.2,.75,.25,1), margin-left .24s cubic-bezier(.2,.75,.25,1); }
 }
 @media (prefers-reduced-motion: reduce) {.ws > .ws-topbar,.hist-shell > .ws-topbar,.ws > .ws-main,.ws > .connect,.hist > .hist-in{ transition: none !important; }

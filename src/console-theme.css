@@ -82,6 +82,40 @@
     radial-gradient(ellipse 55% 45% at 90% 10%, rgba(99, 102, 241, 0.05), transparent 60%);
 }
 
+/* Strict sharp geometry contract: every console surface, control, badge & card has 0px corners. */
+#root .ws *,
+#root .hist-shell *,
+#root .connect *,
+#root .stage1 *,
+#root .stage2 *,
+#root .stage3 *,
+#root .team-video-page *,
+#root .approval-page *,
+#root .cg * {
+  border-radius: 0 !important;
+}
+
+#root .ws *::before,
+#root .ws *::after,
+#root .hist-shell *::before,
+#root .hist-shell *::after,
+#root .connect *::before,
+#root .connect *::after,
+#root .stage1 *::before,
+#root .stage1 *::after,
+#root .stage2 *::before,
+#root .stage2 *::after,
+#root .stage3 *::before,
+#root .stage3 *::after,
+#root .team-video-page *::before,
+#root .team-video-page *::after,
+#root .approval-page *::before,
+#root .approval-page *::after,
+#root .cg *::before,
+#root .cg *::after {
+  border-radius: 0 !important;
+}
+
 .ws {
   min-height: 100vh;
   min-width: 0;
@@ -104,7 +138,7 @@
 }
 
 /* ==========================================================================
-   TOP STUDIO HEADER & PILL NAVIGATION (.ws-topbar & .ws-topnav)
+   TOP STUDIO HEADER & NAVIGATION (.ws-topbar & .ws-topnav)
    ========================================================================== */
 #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar {
   position: fixed !important;
@@ -137,7 +171,7 @@
   min-height: 0;
   padding: 2px 4px;
   border: 0 !important;
-  border-radius: 10px !important;
+  border-radius: 0 !important;
   background: transparent !important;
   box-shadow: none !important;
   cursor: pointer;
@@ -162,9 +196,9 @@
   display: flex;
   align-items: center;
   gap: 2px;
-  padding: 4px;
+  padding: 3px;
   border: 1px solid var(--line);
-  border-radius: 999px !important;
+  border-radius: 0 !important;
   background: color-mix(in srgb, var(--panel2) 75%, transparent);
   overflow-x: auto;
   scrollbar-width: none;
@@ -183,7 +217,7 @@
   min-height: 32px !important;
   padding: 5px 10px !important;
   border: 1px solid transparent !important;
-  border-radius: 999px !important;
+  border-radius: 0 !important;
   background: transparent !important;
   color: var(--muted) !important;
   font-size: 12px !important;
@@ -215,7 +249,7 @@
   min-width: 18px;
   height: 18px;
   padding: 0 5px;
-  border-radius: 999px !important;
+  border-radius: 0 !important;
   background: color-mix(in srgb, var(--go) 22%, var(--panel));
   color: var(--go);
   font-size: 10.5px;
@@ -250,7 +284,7 @@
   min-height: 36px !important;
   padding: 0 !important;
   border: 1px solid var(--line-hard) !important;
-  border-radius: 999px !important;
+  border-radius: 0 !important;
   background: var(--panel2) !important;
   color: var(--muted) !important;
   cursor: pointer;
@@ -280,7 +314,7 @@
   height: 36px;
   padding: 0 12px 0 6px;
   border: 1px solid var(--line);
-  border-radius: 999px !important;
+  border-radius: 0 !important;
   background: color-mix(in srgb, var(--panel2) 65%, transparent);
   max-width: 196px;
 }
@@ -291,7 +325,7 @@
   height: 24px !important;
   display: inline-grid !important;
   place-items: center !important;
-  border-radius: 999px !important;
+  border-radius: 0 !important;
   border: 1px solid color-mix(in srgb, var(--go) 42%, transparent) !important;
   background: color-mix(in srgb, var(--go) 16%, var(--panel)) !important;
   color: var(--go) !important;
@@ -317,7 +351,7 @@
 #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) .ws-topbar-signout {
   min-height: 36px !important;
   padding: 0 !important;
-  border-radius: 999px !important;
+  border-radius: 0 !important;
   font-size: 12px !important;
 }
 
@@ -344,7 +378,7 @@
   font-weight: 700 !important;
   letter-spacing: 0.08em !important;
   text-transform: uppercase !important;
-  border-radius: 999px !important;
+  border-radius: 0 !important;
 }
 
 .stage1-badge,
@@ -391,7 +425,7 @@
 }
 
 /* ==========================================================================
-   SURFACES, CARDS & PANELS (TACTILE 16PX STUDIO GEOMETRY)
+   SURFACES, CARDS & PANELS (SHARP STUDIO GEOMETRY)
    ========================================================================== */
 #root :is(.connect, .welcome, .stage1, .stage2, .stage3) {
   --acc: var(--go);
@@ -401,7 +435,7 @@
 
 #root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) .border-glow-card {
   border: 0 !important;
-  border-radius: 16px !important;
+  border-radius: 0 !important;
   background: transparent !important;
   box-shadow: none !important;
   transform: none !important;
@@ -412,7 +446,7 @@
 }
 
 #root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) .border-glow-card::before {
-  border-radius: 16px !important;
+  border-radius: 0 !important;
   background:
     linear-gradient(var(--panel) 0 100%) padding-box,
     linear-gradient(135deg, transparent 8%, var(--go) 50%, transparent 92%) border-box !important;
@@ -426,7 +460,7 @@
   .automation-account, .automation-setup, .ws-campaign-account
 ) {
   border: 1px solid var(--line) !important;
-  border-radius: 16px !important;
+  border-radius: 0 !important;
   background: linear-gradient(
     165deg,
     color-mix(in srgb, var(--panel2) 42%, var(--panel)) 0%,
@@ -544,7 +578,7 @@
 ) {
   min-height: 42px;
   border: 1px solid var(--line-hard);
-  border-radius: 11px !important;
+  border-radius: 0 !important;
   background-color: var(--input);
   color: var(--ink);
   transition: border-color 150ms ease, box-shadow 150ms ease;
@@ -566,7 +600,7 @@
   min-height: 38px;
   padding: 8px 15px;
   border: 1px solid var(--line-hard);
-  border-radius: 11px !important;
+  border-radius: 0 !important;
   background: linear-gradient(180deg, color-mix(in srgb, var(--panel2) 92%, var(--ink)), var(--panel2));
   color: var(--ink);
   font: inherit;
@@ -592,7 +626,7 @@
   .cn-connect, .cn-next, .cg-acts button:first-child
 ) {
   border-color: color-mix(in srgb, var(--go) 80%, white) !important;
-  border-radius: 12px !important;
+  border-radius: 0 !important;
   background: linear-gradient(135deg, color-mix(in srgb, var(--go) 90%, white) 0%, var(--go) 100%) !important;
   color: var(--go-ink) !important;
   font-weight: 700 !important;
@@ -616,12 +650,12 @@
   transform: none !important;
 }
 
-/* Rounded Pill Badges, Tabs, Status Indicators & Switches */
+/* Sharp Badges, Tabs, Status Indicators & Switches */
 #root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3) :is(
   .plat-pill, .s2-pill, .s3-pill, .s3-tab, .hist-tab, .cn-pill, .cn-step,
   .ws-status, .ws-live-status, .s2-kind, .s2-music-badge
 ) {
-  border-radius: 999px !important;
+  border-radius: 0 !important;
 }
 
 #root .stage2 .s2-switch {
@@ -629,7 +663,7 @@
   height: 26px !important;
   min-height: 26px !important;
   padding: 0 !important;
-  border-radius: 999px !important;
+  border-radius: 0 !important;
   border: 1px solid var(--line-hard) !important;
   background: var(--panel2) !important;
   box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.35) !important;
@@ -641,7 +675,7 @@
 }
 
 #root .stage2 .s2-switch span {
-  border-radius: 50% !important;
+  border-radius: 0 !important;
   background: #ffffff !important;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
 }
@@ -650,11 +684,11 @@
    CALENDAR, STAGE PIPELINE & FLOATING BOTTOM ACTION BARS
    ========================================================================== */
 #root .ws .ws-day {
-  border-radius: 12px !important;
+  border-radius: 0 !important;
 }
 
 #root .ws .ws-day-number {
-  border-radius: 8px !important;
+  border-radius: 0 !important;
 }
 
 #root .ws .ws-day.today .ws-day-number,
@@ -665,7 +699,7 @@
 }
 
 #root .ws .ws-event {
-  border-radius: 8px !important;
+  border-radius: 0 !important;
   border-left: 3px solid var(--go);
   color: var(--ink);
   background: var(--panel2);
@@ -693,7 +727,7 @@
 #root :is(.connect, .welcome, .stage1, .stage2, .stage3) :is(
   .cn-empty, .s1-drop, .s2-drop, .s3-grey-note
 ) {
-  border-radius: 16px !important;
+  border-radius: 0 !important;
   border-color: var(--line-hard);
   background: color-mix(in srgb, var(--panel2) 65%, transparent);
 }
@@ -876,7 +910,7 @@
 }
 
 #root .ws .ws-route-stop > svg {
-  border-radius: 12px !important;
+  border-radius: 0 !important;
   padding: 10px !important;
   border: 1px solid var(--line-hard) !important;
   background: var(--panel2) !important;
@@ -929,6 +963,15 @@
   --dock-menu-ink: #0f172a !important;
   --dock-menu-muted: rgba(71, 85, 105, 0.7) !important;
   --dock-menu-separator: rgba(15, 23, 42, 0.1) !important;
+}
+
+.dock,
+.dock *,
+.dock-menu,
+.dock-menu *,
+.s2-overlay,
+.s2-overlay * {
+  border-radius: 0 !important;
 }
 
 /* ==========================================================================
