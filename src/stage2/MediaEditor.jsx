@@ -85,7 +85,7 @@ export default function MediaEditor({ entry, token, onClose, onApply, onApplyMus
   const [preview, setPreview] = useState('');
   const [overlays, setOverlays] = useState([]);
   const [selectedOverlay, setSelectedOverlay] = useState('');
-  const [overlayText, setOverlayText] = useState('Your text');
+  const [toolTab, setToolTab] = useState('design');
   const overlayDragRef = useRef(null);
   const [busy, setBusy] = useState(false);
   const [busyText, setBusyText] = useState('');
@@ -275,12 +275,13 @@ export default function MediaEditor({ entry, token, onClose, onApply, onApplyMus
     const id = `${kind}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
     const item = {
       id, kind, x: 0.25, y: 0.38, w: kind === 'text' ? 0.5 : 0.3,
-      h: kind === 'text' ? 0.18 : 0.24, text: kind === 'text' ? overlayText || 'Your text' : '',
+      h: kind === 'text' ? 0.18 : 0.24, text: kind === 'text' ? 'Your text' : '',
       font: 'Arial', size: 7, color: '#ffffff', fill: kind === 'text' ? 'transparent' : '#61c7a7',
       stroke: '#ffffff', strokeWidth: 0.5, bold: true, align: 'center',
     };
     setOverlays((items) => [...items, item]);
     setSelectedOverlay(id);
+    setToolTab('design');
   };
   const updateSelectedOverlay = (patch) => {
     if (!selectedOverlay) return;
@@ -725,6 +726,7 @@ export default function MediaEditor({ entry, token, onClose, onApply, onApplyMus
             event.preventDefault();
             event.stopPropagation();
             setSelectedOverlay(item.id);
+            setToolTab('design');
             overlayDragRef.current = { id: item.id, x0: event.clientX, y0: event.clientY, item: { ...item } };
           }}
           onClick={(event) => { event.stopPropagation(); setSelectedOverlay(item.id); }}
@@ -812,6 +814,12 @@ export default function MediaEditor({ entry, token, onClose, onApply, onApplyMus
             <div className="s2-editor-canvas-footer"><span>OUTPUT <b>{outputDims() ? `${outputDims().w} × ${outputDims().h}` : '—'}</b></span><span>{overlays.length} design element{overlays.length === 1 ? '' : 's'}</span></div>
           </section>
           <div className="s2-editor-sidebar">
+            <nav className="s2-simple-tabs" aria-label="Editor tools">
+              <button type="button" aria-pressed={toolTab === 'design'} onClick={() => setToolTab('design')}>＋ Add & style</button>
+              <button type="button" aria-pressed={toolTab === 'frame'} onClick={() => setToolTab('frame')}>Crop & rotate</button>
+            </nav>
+            <div hidden={toolTab !== 'frame'}>
+            <h2 className="s2-simple-title">Choose your frame</h2>
             <div className="s2-pills" role="group" aria-label="Aspect ratio">
               {Object.keys(RATIOS).map((id) => (
                 <button key={id} type="button" className={aspect === id ? 's2-pill on' : 's2-pill'} onClick={() => pickAspect(id)}>{id}</button>
@@ -828,18 +836,19 @@ export default function MediaEditor({ entry, token, onClose, onApply, onApplyMus
               <button type="button" className={flipV ? 'on' : ''} onClick={() => setFlipV((v) => !v)}>Flip vertical</button>
               <button type="button" className={flipH ? 'on' : ''} onClick={() => setFlipH((v) => !v)}>Flip horizontal</button>
             </div>
-            <section className="s2-design-tools">
-              <div className="s2-tool-heading"><span>02</span><div><h2>Design</h2><small>Titles and graphic accents</small></div></div>
-              <label className="s2-design-label" htmlFor="s2-overlay-copy">Text</label>
-              <textarea id="s2-overlay-copy" className="s2-design-text" value={overlayText} onChange={(event) => setOverlayText(event.target.value)} placeholder="Type your text…" rows={2} />
+            </div>
+            <section className="s2-design-tools" hidden={toolTab !== 'design'}>
+              <h2 className="s2-simple-title">Add something</h2>
               <button type="button" className="s2-add-text" onClick={() => addOverlay('text')}>＋ Add text</button>
-              <span className="s2-design-label">Shapes</span>
               <div className="s2-shape-tools">
                 <button type="button" onClick={() => addOverlay('rect')}><i className="rect-icon" /> Rectangle</button>
                 <button type="button" onClick={() => addOverlay('circle')}><i className="circle-icon" /> Circle</button>
               </div>
+              {!selectedOverlayItem && <p className="s2-empty-help">Add text or a shape, then drag it into place. Select any item on the preview to change its style.</p>}
               {selectedOverlayItem && <div className="s2-overlay-properties">
-                <div className="s2-overlay-properties-head"><b>{selectedOverlayItem.kind === 'text' ? 'Text style' : `${selectedOverlayItem.kind} style`}</b><button type="button" onClick={removeSelectedOverlay}>Delete</button></div>
+                <div className="s2-overlay-properties-head"><b>{selectedOverlayItem.kind === 'text' ? 'Edit text' : 'Edit shape'}</b><button type="button" onClick={removeSelectedOverlay}>Delete</button></div>
+                <details className="s2-more-options">
+                <summary>More options · size & layers</summary>
                 <div className="s2-style-row">
                   <button type="button" disabled={busy} onClick={duplicateOverlay}>Duplicate</button>
                   <button type="button" disabled={busy} onClick={() => reorderOverlay(true)}>To front</button>
@@ -855,6 +864,7 @@ export default function MediaEditor({ entry, token, onClose, onApply, onApplyMus
                   ))}
                 </div>
                 <small className="s2-element-hint">Drag handles to resize. Arrow keys move; Shift + arrows move faster.</small>
+                </details>
                 {selectedOverlayItem.kind === 'text' && <>
                   <label className="s2-design-label" htmlFor="s2-selected-text">Content</label>
                   <textarea id="s2-selected-text" className="s2-design-text" value={selectedOverlayItem.text} onChange={(event) => updateSelectedOverlay({ text: event.target.value })} rows={2} />
