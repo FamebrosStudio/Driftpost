@@ -71,6 +71,7 @@ export default function MediaEditor({ entry, token, onClose, onApply, onApplyMus
   const isVideo = entry.type.startsWith('video/');
   const [bmp, setBmp] = useState(null);
   const [vidEl, setVidEl] = useState(null);
+  const [videoFrameTick, setVideoFrameTick] = useState(0);
   const [rot, setRot] = useState(0); // quarter turns clockwise
   const [flipH, setFlipH] = useState(false);
   const [flipV, setFlipV] = useState(false);
@@ -141,13 +142,15 @@ export default function MediaEditor({ entry, token, onClose, onApply, onApplyMus
     const v = document.createElement('video');
     v.muted = true; v.playsInline = true; v.preload = 'auto';
     const u = URL.createObjectURL(entry.raw);
-    v.src = u;
     v.onloadedmetadata = () => {
       try { v.currentTime = Math.min(0.6, ((v.duration || 1.2) / 2) || 0); } catch {}
     };
-    v.onseeked = () => setVidEl(v);
-    v.onloadeddata = () => setVidEl((old) => old || v);
-    return () => { URL.revokeObjectURL(u); setVidEl(null); };
+    v.onseeked = () => { setVidEl(v); setVideoFrameTick((tick) => tick + 1); };
+    v.onloadeddata = () => { setVidEl(v); setVideoFrameTick((tick) => tick + 1); };
+    v.onerror = () => setVidEl(null);
+    v.src = u;
+    v.load();
+    return () => { v.pause(); v.removeAttribute('src'); v.load(); URL.revokeObjectURL(u); setVidEl(null); };
   }, [entry, isVideo]);
 
   // Normalized bitmap: rotation + flip baked in (preview + export base).
@@ -170,7 +173,7 @@ export default function MediaEditor({ entry, token, onClose, onApply, onApplyMus
     };
     if (!isVideo && bmp) bake(bmp, bmp.width, bmp.height);
     else if (isVideo && vidEl && vidEl.videoWidth) bake(vidEl, vidEl.videoWidth, vidEl.videoHeight);
-  }, [bmp, vidEl, rot, flipH, flipV, isVideo]);
+  }, [bmp, vidEl, videoFrameTick, rot, flipH, flipV, isVideo]);
 
   // WYSIWYG preview: exactly what Done will export, re-rendered on every
   // control change. Fit/Original render the final padded frame at the exact
@@ -695,8 +698,10 @@ export default function MediaEditor({ entry, token, onClose, onApply, onApplyMus
             <div className="crop-stage s2-editor-crop-stage">
             <div className="crop-wrap" ref={wrapRef} onPointerDown={free ? startDraw : undefined}>
               {preview
-                ? <img src={preview} alt="Edit preview" draggable={false} />
-                : <span style={{ color: '#888', fontSize: 13 }}>Loading…</span>}
+                ? <img src={preview} alt="Edit preview" draggable={false} onError={() => isVideo && setPreview('')} />
+                : isVideo
+                  ? <video className="s2-editor-video-fallback" src={url} autoPlay muted loop playsInline aria-label="Live video preview" />
+                  : <span style={{ color: '#888', fontSize: 13 }}>Loading image…</span>}
               {!free && renderOverlayLayer()}
               {free && box && (
                 <div
