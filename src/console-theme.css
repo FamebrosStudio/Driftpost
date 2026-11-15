@@ -441,15 +441,53 @@
   transform: none !important;
 }
 
+#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) .border-glow-card::before,
 #root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) .border-glow-card::after {
   display: none !important;
+  content: none !important;
 }
 
-#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) .border-glow-card::before {
-  border-radius: 0 !important;
-  background:
-    linear-gradient(var(--panel) 0 100%) padding-box,
-    linear-gradient(135deg, transparent 8%, var(--go) 50%, transparent 92%) border-box !important;
+/* Guarantee 1:1 bounding-box lock between .border-glow-card and its child card/button
+   so the glow never floats above or below elements that had their own margin or top offset. */
+#root .border-glow-inner {
+  overflow: visible !important;
+}
+
+#root .border-glow-inner > * {
+  margin: 0 !important;
+  top: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  left: auto !important;
+  position: relative !important;
+  box-sizing: border-box !important;
+}
+
+#root .border-glow-card:has(> .border-glow-inner > :is(.ws-account-picker, .ws-campaign, .ws-live-panel, .ws-top-content, .ws-account-details, .automation-setup, .automation-account)) {
+  margin-bottom: 16px !important;
+}
+
+#root .border-glow-card:has(> .border-glow-inner > .cn-brands) {
+  margin-bottom: 22px !important;
+}
+
+#root .border-glow-card:has(> .border-glow-inner > :is(.ws-day-panel, .ws-insight, .s2-sec, .s2-cross, .s3-work, .s3-sched)) {
+  margin-top: 16px !important;
+}
+
+#root .border-glow-card:has(> .border-glow-inner > .s2-generate) {
+  width: 100% !important;
+  margin-top: 12px !important;
+}
+
+#root .border-glow-card:has(> .border-glow-inner > .s2-done) {
+  width: 100% !important;
+  margin-top: 10px !important;
+}
+
+#root .border-glow-card:has(> .border-glow-inner > .s2-cancel) {
+  width: 100% !important;
+  margin-top: 8px !important;
 }
 
 #root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) :is(
@@ -894,14 +932,6 @@
   box-sizing: border-box;
   border: 0;
   padding: 0;
-}
-
-#root .ws-welcome-actions .border-glow-inner {
-  display: contents;
-}
-
-#root .ws-welcome-actions .border-glow-card > .edge-light {
-  mask-image: none;
 }
 
 #root .ws .ws-welcome-route::before {

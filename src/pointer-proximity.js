@@ -15,8 +15,8 @@ const ACTIONS = [
   '.ws-campaign-actions button', '.app-error-actions button',
 ].join(',');
 
-const TARGETS = `${SURFACES},${ACTIONS},#root .ws button:not(.ws-nav button):not(.ws-text-button):not(.ws-collapse-toggle):not(.ws-theme-toggle):not(.ws-wordmark),#root .hist-shell button:not(.hist-tab),#root .stage1 button:not(.progress-step-button),#root .stage2 button:not(.progress-step-button),#root .stage3 button:not(.progress-step-button),#root .connect button:not(.ws-nav button),#root .team-video-page button,#root .approval-page button`;
-const EDGE_RANGE = 30;
+const TARGETS = `${SURFACES},${ACTIONS},#root .ws button:not(.ws-nav button):not(.ws-topnav-pill):not(.ws-topbar-icon-btn):not(.ws-text-button):not(.ws-collapse-toggle):not(.ws-theme-toggle):not(.ws-wordmark),#root .hist-shell button:not(.hist-tab):not(.ws-topnav-pill):not(.ws-topbar-icon-btn),#root .stage1 button:not(.progress-step-button):not(.ws-topnav-pill):not(.ws-topbar-icon-btn),#root .stage2 button:not(.progress-step-button):not(.ws-topnav-pill):not(.ws-topbar-icon-btn):not(.s2-media-editor-page button):not(.s2-timeline-page button),#root .stage3 button:not(.progress-step-button):not(.ws-topnav-pill):not(.ws-topbar-icon-btn),#root .connect button:not(.ws-nav button):not(.ws-topnav-pill):not(.ws-topbar-icon-btn),#root .team-video-page button:not(.ws-topnav-pill):not(.ws-topbar-icon-btn),#root .approval-page button`;
+const EDGE_RANGE = 48;
 let active = new Set();
 
 function writeGlow(element, event) {
@@ -29,8 +29,8 @@ function writeGlow(element, event) {
   }
   const distance = Math.min(x, y, rect.width - x, rect.height - y);
   const intensity = Math.max(0, Math.min(1, 1 - distance / EDGE_RANGE));
-  const accent = getComputedStyle(element).getPropertyValue('--go').trim() || '#7dd3fc';
-  element.style.setProperty('--edge-glow-color', `color-mix(in srgb, ${accent} ${Math.round(intensity * 54)}%, transparent)`);
+  const accent = getComputedStyle(element).getPropertyValue('--go').trim() || '#38bdf8';
+  element.style.setProperty('--edge-glow-color', `color-mix(in srgb, ${accent} ${Math.round(intensity * 38)}%, transparent)`);
   return true;
 }
 
