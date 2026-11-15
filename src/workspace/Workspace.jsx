@@ -26,9 +26,6 @@ function metricIssue(account) {
   if (account.platform === 'youtube' && /credential|unauthorized|invalid_grant|authorization expired|invalid authentication/.test(raw)) {
     return { title: 'Reconnect YouTube', message: 'YouTube did not accept the saved sign-in. Reconnect this channel in Accounts to refresh access.' };
   }
-  if (account.platform === 'facebook' && /permission|pages_read_engagement|pages_show_list|pages_manage_metadata|pages_read_user_content/.test(raw)) {
-    return { title: 'Facebook insights access is missing', message: 'Reconnect this Page in Accounts and approve pages_read_engagement. If Meta does not offer it, the app administrator must enable it in the Facebook Login configuration and grant the app the required Meta access.' };
-  }
   if (account.platform === 'instagram' && /permission|oauth|token|unauthorized|190/.test(raw)) {
     return { title: 'Reconnect Instagram', message: 'Instagram did not allow Driftpost to read these account totals. Reconnect the account in Accounts and approve the requested access.' };
   }
@@ -324,14 +321,21 @@ export function AnalyticsPage({ session, onNavigate, onSignOut }) {
     let active = true;
     setMetricsBusy(true); setMetricsError('');
     api('/api/analytics/accounts', session.access_token)
-      .then((data) => { if (active) { setAccountMetrics(data.accounts || []); setMetricsUpdatedAt(data.updated_at || new Date().toISOString()); } })
+      .then((data) => {
+        if (active) {
+          // Facebook insights are intentionally not part of Driftpost Analytics.
+          // Keep Facebook connected and publishable elsewhere in the console.
+          setAccountMetrics((data.accounts || []).filter((account) => account.platform !== 'facebook'));
+          setMetricsUpdatedAt(data.updated_at || new Date().toISOString());
+        }
+      })
       .catch((e) => { if (active) setMetricsError(e.message || 'Could not load live account metrics.'); })
       .finally(() => { if (active) setMetricsBusy(false); });
     return () => { active = false; };
   }, [session.access_token, metricsRefresh]);
   const contentCutoff = contentPeriod === 'all' ? 0 : Date.now() - Number(contentPeriod) * 24 * 60 * 60 * 1000;
   const dateLabel = contentPeriod === 'all' ? 'Latest 25 posts' : `Last ${contentPeriod} days`;
-  return <PageFrame page="analytics" onNavigate={onNavigate} email={session.user?.email} onSignOut={onSignOut} eyebrow="Your results, at a glance" title="Analytics" intro="Search for an account to see each connected platform’s results separately." action={<div className="ws-analytics-actions"><BorderGlow className="btn-glow ws-btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={22}><button className="ws-secondary" disabled={metricsBusy || contentBusy} onClick={() => setMetricsRefresh((n) => n + 1)}>{metricsBusy || contentBusy ? 'Refreshing…' : 'Refresh'}</button></BorderGlow><BorderGlow className="btn-glow ws-btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={22}><button className="ws-secondary" onClick={() => onNavigate('history')}>View history <Icon name="arrowRight" size={13} /></button></BorderGlow></div>}>
+  return <PageFrame page="analytics" onNavigate={onNavigate} email={session.user?.email} onSignOut={onSignOut} eyebrow="Your results, at a glance" title="Analytics" intro="Search for an account to see analytics available from supported platforms." action={<div className="ws-analytics-actions"><BorderGlow className="btn-glow ws-btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={22}><button className="ws-secondary" disabled={metricsBusy || contentBusy} onClick={() => setMetricsRefresh((n) => n + 1)}>{metricsBusy || contentBusy ? 'Refreshing…' : 'Refresh'}</button></BorderGlow><BorderGlow className="btn-glow ws-btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={22}><button className="ws-secondary" onClick={() => onNavigate('history')}>View history <Icon name="arrowRight" size={13} /></button></BorderGlow></div>}>
     <BorderGlow className="bg-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.12} glowRadius={22}><section className="ws-panel ws-account-picker">
       <div className="ws-account-field">
         <label htmlFor="analytics-account-search">Search account name</label>
@@ -344,11 +348,11 @@ export function AnalyticsPage({ session, onNavigate, onSignOut }) {
           {visibleAccountChoices.map((account) => <option key={account.key} value={account.key}>{account.name}</option>)}
         </select>
       </div>
-      {!metricsBusy && !accountMetrics.length && <p>No connected accounts yet. <button type="button" onClick={() => onNavigate('accounts')}>Connect an account <Icon name="arrowRight" size={12} /></button></p>}
+      {!metricsBusy && !accountMetrics.length && <p>No account analytics are available yet. <button type="button" onClick={() => onNavigate('accounts')}>Manage connected accounts <Icon name="arrowRight" size={12} /></button></p>}
       {!metricsBusy && metricsError && !accountMetrics.length && <p className="ws-account-picker-error" role="alert">{metricsError} <button type="button" onClick={() => setMetricsRefresh((n) => n + 1)}>Try again</button></p>}
       {!metricsBusy && accountMetrics.length > 0 && !filteredAccountChoices.length && <p className="ws-account-picker-error" role="status">No account names match “{accountSearch}”.</p>}
     </section></BorderGlow>
-    {!selectedAccounts.length ? <BorderGlow className="bg-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.12} glowRadius={22}><section className="ws-panel ws-account-prompt"><span className="ws-insight-mark"><Icon name="chart" /></span><div><b>{metricsError && !accountMetrics.length ? 'Could not load account analytics' : 'Search and select an account name'}</b><p>{metricsError && !accountMetrics.length ? 'Refresh to try again. Your analytics will appear here after connected accounts load.' : 'Each connected platform for that account will have its own detailed analytics section.'}</p></div></section></BorderGlow> : <>
+    {!selectedAccounts.length ? <BorderGlow className="bg-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.12} glowRadius={22}><section className="ws-panel ws-account-prompt"><span className="ws-insight-mark"><Icon name="chart" /></span><div><b>{metricsError && !accountMetrics.length ? 'Could not load account analytics' : 'Search and select an account name'}</b><p>{metricsError && !accountMetrics.length ? 'Refresh to try again. Your analytics will appear here after connected accounts load.' : 'Available platform analytics for that account will appear here.'}</p></div></section></BorderGlow> : <>
       <div className="ws-content-period ws-content-period-global" aria-label="Choose analytics period">{[['7', '7 days'], ['30', '30 days'], ['all', 'Latest 25']].map(([value, label]) => <button type="button" key={value} className={contentPeriod === value ? 'active' : ''} aria-pressed={contentPeriod === value} onClick={() => setContentPeriod(value)}>{label}</button>)}</div>
       {contentBusy && <div className="ws-inline-state" role="status">Loading post interactions…</div>}
       <div className="ws-platform-analytics-grid">{selectedAccounts.map((account) => {
@@ -381,7 +385,7 @@ export function AnalyticsPage({ session, onNavigate, onSignOut }) {
           <div className="ws-platform-section-heading"><div><span className="ws-eyebrow">{dateLabel}</span><h3>Top content based on interactions</h3></div></div>
           {contentBusy && !rawAccountContent.length ? <div className="ws-content-state">Loading this platform’s recent content…</div>
             : contentError && !rawAccountContent.length ? <div className="ws-content-empty is-error"><div><b>Could not load recent content</b><p>{contentError}</p><button type="button" onClick={() => setMetricsRefresh((n) => n + 1)}>Try again</button></div></div>
-              : accountContentError ? <div className="ws-content-empty is-error"><div className="ws-content-error-copy"><b>{accountContentIssue.title}</b><p>{accountContentIssue.message}</p><button type="button" onClick={() => onNavigate('accounts')}>Reconnect / review Facebook access</button><details><summary>Show technical details</summary><small>{accountContentError.error}</small></details></div></div>
+              : accountContentError ? <div className="ws-content-empty is-error"><div className="ws-content-error-copy"><b>{accountContentIssue.title}</b><p>{accountContentIssue.message}</p><button type="button" onClick={() => onNavigate('accounts')}>Review connection</button><details><summary>Show technical details</summary><small>{accountContentError.error}</small></details></div></div>
               : accountHasNoPosts ? <div className="ws-content-empty"><div><b>No recent public posts found</b><p>The platform returned no posts for this account.</p></div></div>
                 : !ranked.length ? <div className="ws-content-empty"><div><b>No posts in this time range</b><p>Choose a longer period or check whether this platform allows Driftpost to read post insights.</p></div></div>
                   : <div className="ws-top-content-list">{ranked.slice(0, 3).map((item, index) => <article className="ws-top-content-row" key={`${item.platform}:${item.connectionId}:${item.postId}`}>
