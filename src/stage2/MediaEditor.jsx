@@ -101,6 +101,10 @@ export default function MediaEditor({ entry, token, onClose, onApply, onApplyMus
 
   useEffect(() => () => { try { URL.revokeObjectURL(url); } catch {} }, [url]);
   useEffect(() => {
+    if (!preview) return undefined;
+    return () => { try { URL.revokeObjectURL(preview); } catch {} };
+  }, [preview]);
+  useEffect(() => {
     const h = (e) => { if (e.key === 'Escape') onClose(); };
     window.addEventListener('keydown', h);
     return () => window.removeEventListener('keydown', h);
@@ -217,7 +221,7 @@ export default function MediaEditor({ entry, token, onClose, onApply, onApplyMus
       out.toBlob((blob) => {
         if (!blob || tk !== prevToken.current) return;
         pixelsRef.current = pixelsKey;
-        setPreview((old) => { try { if (old) URL.revokeObjectURL(old); } catch {} return URL.createObjectURL(blob); });
+        setPreview(URL.createObjectURL(blob));
       }, 'image/jpeg', 0.85);
     };
     raf = requestAnimationFrame(render);
