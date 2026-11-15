@@ -77,7 +77,10 @@
 .s2-editor-canvas-toolbar small { color: #82908f; font-size: 11px; letter-spacing: 0; }
 .s2-editor-canvas-footer { min-height: 38px; border-top: 1px solid #ffffff10; letter-spacing: .04em; }
 .s2-editor-canvas-footer b { color: #e5ece9; }
-.s2-media-editor-page .crop-wrap { container-type: inline-size; }
+/* The media supplies this shrink-to-fit wrapper's intrinsic width.
+   Size containment here collapses both the preview and its overlays to zero.
+   Only the absolutely positioned overlay layer needs a query container. */
+.s2-media-editor-page .crop-wrap { container-type: normal; }
 .s2-overlay-layer { position: absolute; inset: 0; z-index: 3; overflow: hidden; pointer-events: none; container-type: inline-size; }
 .s2-overlay-item { position: absolute; display: flex; align-items: center; justify-content: center; box-sizing: border-box; border-style: solid; border-color: transparent; color: #fff; line-height: 1.08; white-space: pre-wrap; overflow-wrap: anywhere; cursor: move; user-select: none; pointer-events: auto; touch-action: none; text-shadow: 0 2px 5px #000b; }
 .s2-overlay-item.text { border-color: transparent !important; }
