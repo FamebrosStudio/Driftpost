@@ -63,17 +63,23 @@ const Glyph = ({ d, children }) => (
 const SunGlyph = () => <Glyph><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" /></Glyph>;
 const MoonGlyph = () => <Glyph><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" /></Glyph>;
 const SignOutGlyph = () => <Glyph><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><polyline points="16 17 21 12 16 7" /><line x1="21" y1="12" x2="9" y2="12" /></Glyph>;
+const MoreGridGlyph = () => <Glyph><rect x="4" y="4" width="6" height="6" rx="1" /><rect x="14" y="4" width="6" height="6" rx="1" /><rect x="4" y="14" width="6" height="6" rx="1" /><rect x="14" y="14" width="6" height="6" rx="1" /></Glyph>;
 
 export function WorkspaceNav({ page, onNavigate, email, onSignOut }) {
   const [theme, setTheme] = useState(() => {
     try { return localStorage.getItem('driftpost-console-theme') === 'light' ? 'light' : 'dark'; }
     catch { return 'dark'; }
   });
+  const [mobileMoreOpen, setMobileMoreOpen] = useState(false);
+  useEffect(() => {
+    setMobileMoreOpen(false);
+  }, [page]);
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
     try { localStorage.setItem('driftpost-console-theme', theme); } catch {}
   }, [theme]);
   const navPage = page === 'connect' ? 'accounts' : page;
+  const isTeam = isAiAccount(email);
   const topNavItems = [
     ...NAV.map(([id, label, icon]) => ({
       id,
@@ -81,11 +87,15 @@ export function WorkspaceNav({ page, onNavigate, email, onSignOut }) {
       icon,
       active: navPage === id,
     })),
-    ...(isAiAccount(email) ? [
+    ...(isTeam ? [
       { id: 'team-video', label: 'Team Video', icon: 'video', active: page === 'team-video' },
       { id: 'team-video-review', label: 'Review', icon: 'review', active: page === 'team-video-review' },
     ] : []),
   ];
+  const mobilePrimaryIds = isTeam ? ['home', 'create', 'calendar', 'team-video'] : ['home', 'create', 'calendar', 'accounts'];
+  const mobilePrimaryItems = topNavItems.filter((item) => mobilePrimaryIds.includes(item.id));
+  const mobileMoreItems = topNavItems.filter((item) => !mobilePrimaryIds.includes(item.id));
+  const mobileMoreActive = mobileMoreItems.some((item) => item.active);
   return <>
     <header className="ws-topbar">
       <button type="button" className="ws-wordmark" onClick={() => onNavigate('home')} aria-label="Driftpost overview">
@@ -132,6 +142,51 @@ export function WorkspaceNav({ page, onNavigate, email, onSignOut }) {
         )}
       </div>
     </header>
+    <div className="ws-mobile-dock-wrap">
+      {mobileMoreOpen && (
+        <>
+          <div className="ws-mobile-more-backdrop" onClick={() => setMobileMoreOpen(false)} aria-hidden="true" />
+          <div className="ws-mobile-more-menu" role="menu" aria-label="More workspace pages">
+            {mobileMoreItems.map((item) => (
+              <button
+                key={item.id}
+                type="button"
+                role="menuitem"
+                className={item.active ? 'ws-mobile-more-item active' : 'ws-mobile-more-item'}
+                onClick={() => { setMobileMoreOpen(false); onNavigate(item.id); }}
+              >
+                <Icon name={item.icon} size={17} />
+                <span>{item.label}</span>
+              </button>
+            ))}
+          </div>
+        </>
+      )}
+      <nav className="ws-mobile-dock" aria-label="Mobile navigation">
+        {mobilePrimaryItems.map((item) => (
+          <button
+            key={item.id}
+            type="button"
+            className={item.active ? 'ws-mobile-dock-btn active' : 'ws-mobile-dock-btn'}
+            onClick={() => { setMobileMoreOpen(false); onNavigate(item.id); }}
+            aria-label={item.label}
+            title={item.label}
+          >
+            <Icon name={item.icon} size={20} />
+          </button>
+        ))}
+        <button
+          type="button"
+          className={mobileMoreOpen || mobileMoreActive ? 'ws-mobile-dock-btn ws-mobile-dock-more active' : 'ws-mobile-dock-btn ws-mobile-dock-more'}
+          onClick={() => setMobileMoreOpen((open) => !open)}
+          aria-expanded={mobileMoreOpen}
+          aria-label="More navigation options"
+          title="More"
+        >
+          <MoreGridGlyph />
+        </button>
+      </nav>
+    </div>
   </>;
 }
 

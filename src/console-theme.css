@@ -13,13 +13,13 @@
 #root .welcome,
 #root .team-video-page,
 #root .approval-page {
-  --bg: #07080a;
-  --panel: #0d0f13;
-  --panel2: #14171d;
-  --input: #090b0e;
-  --ink: #f8fafc;
-  --muted: #9ca3af;
-  --faint: #6b7280;
+  --bg: #050507;
+  --panel: #0c0d10;
+  --panel2: #14161b;
+  --input: #08090c;
+  --ink: #fafafa;
+  --muted: #a1a1aa;
+  --faint: #71717a;
   --line: rgba(255, 255, 255, 0.08);
   --line-hard: rgba(255, 255, 255, 0.16);
   --hover: rgba(255, 255, 255, 0.05);
@@ -27,11 +27,11 @@
   --go-ink: #03111c;
   --acc: var(--go);
   --acc-ink: var(--go-ink);
-  --acc-soft: rgba(56, 189, 248, 0.12);
+  --acc-soft: rgba(56, 189, 248, 0.11);
   --warm: #fbbf24;
   --warm-bg: rgba(251, 191, 36, 0.14);
   --cool: #38bdf8;
-  --cool-bg: rgba(56, 189, 248, 0.12);
+  --cool-bg: rgba(56, 189, 248, 0.11);
   --accent-soft: var(--go);
   --accent-ink: var(--go-ink);
   --danger: #f87171;
@@ -39,7 +39,7 @@
   color: var(--ink);
   background-color: var(--bg);
   background-image:
-    radial-gradient(ellipse 70% 40% at 50% -18%, rgba(56, 189, 248, 0.05), transparent 65%);
+    radial-gradient(ellipse 65% 35% at 50% -18%, rgba(56, 189, 248, 0.04), transparent 65%);
   font-family: "Poppins", "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
@@ -1877,50 +1877,162 @@ body:has(#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-
   }
 }
 
+#root .ws-mobile-dock-wrap {
+  display: none;
+}
+
 @media (max-width: 760px) {
   #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar {
     grid-template-columns: 1fr auto !important;
     width: 100% !important;
-    min-height: 0 !important;
+    min-height: 56px !important;
     gap: 8px !important;
-    padding: 8px 14px 10px !important;
-  }
-
-  #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar > .ws-wordmark {
-    order: 1;
-  }
-
-  #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar > .ws-user {
-    order: 2;
+    padding: 8px 14px !important;
   }
 
   #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-topnav {
-    display: flex !important;
-    order: 3;
-    grid-column: 1 / -1;
-    justify-content: flex-start;
-    width: 100%;
-    max-width: 100%;
-    overflow-x: auto;
-    scrollbar-width: none;
-    -webkit-overflow-scrolling: touch;
-    gap: 4px;
-    padding: 3px;
-  }
-
-  #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-topnav::-webkit-scrollbar {
-    display: none;
-  }
-
-  #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) .ws-topnav-pill {
-    flex: 0 0 auto;
-    min-height: 32px !important;
-    padding: 0 10px !important;
-    font-size: 12px !important;
-  }
-
-  #root .ws-dock-holder {
     display: none !important;
+  }
+
+  #root .ws-mobile-dock-wrap {
+    position: fixed;
+    inset: auto 0 max(12px, env(safe-area-inset-bottom)) 0;
+    z-index: 60;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 0 14px;
+    pointer-events: none;
+  }
+
+  #root :is(.stage1, .stage2, .stage3) .ws-mobile-dock-wrap,
+  #root .ws:has(> .connect) .ws-mobile-dock-wrap {
+    display: none !important;
+  }
+
+  #root .ws-mobile-more-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 59;
+    background: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(4px);
+    pointer-events: auto;
+    animation: mobileFadeIn 180ms ease both;
+  }
+
+  #root .ws-mobile-more-menu {
+    position: relative;
+    z-index: 61;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+    width: min(320px, calc(100vw - 28px));
+    padding: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 18px !important;
+    background: color-mix(in srgb, var(--panel) 92%, transparent);
+    backdrop-filter: blur(24px) saturate(160%);
+    -webkit-backdrop-filter: blur(24px) saturate(160%);
+    box-shadow: 0 20px 44px rgba(0, 0, 0, 0.65);
+    pointer-events: auto;
+    transform-origin: 50% 100%;
+    animation: mobileMoreIn 220ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  #root .ws-mobile-more-item {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    min-height: 44px;
+    padding: 0 12px;
+    border: 1px solid transparent;
+    border-radius: 12px !important;
+    background: rgba(255, 255, 255, 0.03);
+    color: var(--muted);
+    font-size: 12.5px;
+    font-weight: 600;
+    text-align: left;
+    cursor: pointer;
+    transition: background-color 150ms ease, color 150ms ease, border-color 150ms ease, transform 120ms ease;
+  }
+
+  #root .ws-mobile-more-item.active {
+    color: var(--ink);
+    background: rgba(255, 255, 255, 0.09);
+    border-color: color-mix(in srgb, var(--go) 45%, rgba(255, 255, 255, 0.12));
+  }
+
+  #root .ws-mobile-more-item.active svg {
+    color: var(--go);
+  }
+
+  #root .ws-mobile-dock {
+    position: relative;
+    z-index: 61;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 8px;
+    border: 1px solid rgba(255, 255, 255, 0.11);
+    border-radius: 999px !important;
+    background: color-mix(in srgb, var(--panel) 84%, transparent);
+    backdrop-filter: blur(24px) saturate(160%);
+    -webkit-backdrop-filter: blur(24px) saturate(160%);
+    box-shadow: 0 14px 36px rgba(0, 0, 0, 0.6);
+    pointer-events: auto;
+  }
+
+  #root .ws-mobile-dock-btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 1px solid transparent;
+    border-radius: 999px !important;
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    transition: background-color 180ms ease, color 180ms ease, transform 140ms ease;
+  }
+
+  #root .ws-mobile-dock-btn:active {
+    transform: scale(0.92);
+  }
+
+  #root .ws-mobile-dock-btn.active {
+    color: var(--ink);
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.14);
+  }
+
+  #root .ws-mobile-dock-btn.active::after {
+    content: "";
+    position: absolute;
+    bottom: 5px;
+    width: 4px;
+    height: 4px;
+    border-radius: 999px;
+    background: var(--go);
+  }
+
+  @keyframes mobileMoreIn {
+    from {
+      opacity: 0;
+      transform: translateY(12px) scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  @keyframes mobileFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
   }
 
   #root .ws > .ws-main,
@@ -1934,20 +2046,20 @@ body:has(#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-
     width: 100%;
     height: 100dvh;
     margin-left: 0;
-    padding: 118px 14px calc(36px + env(safe-area-inset-bottom));
+    padding: 74px 14px calc(92px + env(safe-area-inset-bottom));
     overflow-x: hidden;
     overflow-y: auto;
   }
 
   #root .hist > .hist-in {
     width: 100%;
-    padding: 118px 14px calc(36px + env(safe-area-inset-bottom));
+    padding: 74px 14px calc(92px + env(safe-area-inset-bottom));
   }
 
   #root .stage1-in,
   #root .stage2-in,
   #root .stage3-in {
-    padding-top: 118px;
+    padding-top: 74px;
     padding-right: 14px;
     padding-left: 14px;
     padding-bottom: calc(155px + env(safe-area-inset-bottom));
