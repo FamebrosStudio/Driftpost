@@ -1866,238 +1866,242 @@ body:has(#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-
   display: none;
 }
 
+html[data-device="mobile"] #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar {
+  grid-template-columns: 1fr auto !important;
+  width: 100% !important;
+  min-height: 56px !important;
+  gap: 8px !important;
+  padding: 8px 14px !important;
+}
+
+html[data-device="mobile"] #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) .ws-topnav {
+  display: none !important;
+}
+
+html[data-device="mobile"] #root .ws-mobile-dock-wrap {
+  position: fixed;
+  inset: auto 0 max(10px, env(safe-area-inset-bottom)) 0;
+  z-index: 70;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 0 14px;
+  pointer-events: none;
+}
+
+html[data-device="mobile"] #root .ws-mobile-dock-wrap::before {
+  content: "";
+  position: fixed;
+  inset: auto 0 0 0;
+  height: calc(108px + env(safe-area-inset-bottom));
+  background: linear-gradient(to top, color-mix(in srgb, var(--bg) 92%, transparent) 30%, transparent);
+  pointer-events: none;
+  z-index: 58;
+}
+
+html[data-device="mobile"] #root :is(.stage1, .stage2, .stage3, .connect) :is(.continue-bar, .s2-continue-bar, .s3-pub, .cn-bar) {
+  left: 14px !important;
+  right: 14px !important;
+  bottom: calc(74px + env(safe-area-inset-bottom)) !important;
+  width: auto !important;
+  border-radius: 18px !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  padding: 10px 12px !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 14px 36px rgba(0, 0, 0, 0.58) !important;
+}
+
+html[data-device="mobile"] #root .ws-mobile-more-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 59;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(4px);
+  pointer-events: auto;
+  animation: mobileFadeIn 180ms ease both;
+}
+
+html[data-device="mobile"] #root .ws-mobile-more-menu {
+  position: relative;
+  z-index: 65;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+  width: min(320px, calc(100vw - 28px));
+  max-height: calc(100dvh - 130px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 18px !important;
+  background: color-mix(in srgb, var(--panel) 92%, transparent);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  box-shadow: 0 20px 44px rgba(0, 0, 0, 0.65);
+  pointer-events: auto;
+  transform-origin: 50% 100%;
+  animation: mobileMoreIn 220ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+html[data-device="mobile"] #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) .ws-mobile-more-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 44px !important;
+  padding: 0 12px !important;
+  border: 1px solid transparent !important;
+  border-radius: 12px !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+  color: var(--muted) !important;
+  font-size: 12.5px;
+  font-weight: 600;
+  text-align: left;
+  box-shadow: none !important;
+  cursor: pointer;
+  transition: background-color 150ms ease, color 150ms ease, border-color 150ms ease, transform 120ms ease;
+}
+
+html[data-device="mobile"] #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) .ws-mobile-more-item.active {
+  color: var(--ink) !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-color: color-mix(in srgb, var(--go) 45%, rgba(255, 255, 255, 0.14)) !important;
+}
+
+html[data-device="mobile"] #root .ws-mobile-dock {
+  animation: appleDockRise 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+html[data-device="mobile"] #root .ws-mobile-more-item {
+  animation: appleMoreItemIn 260ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+html[data-device="mobile"] #root .ws-mobile-more-item:nth-child(2) { animation-delay: 25ms; }
+html[data-device="mobile"] #root .ws-mobile-more-item:nth-child(3) { animation-delay: 50ms; }
+html[data-device="mobile"] #root .ws-mobile-more-item:nth-child(4) { animation-delay: 75ms; }
+html[data-device="mobile"] #root .ws-mobile-more-item:nth-child(5) { animation-delay: 100ms; }
+html[data-device="mobile"] #root .ws-mobile-more-item:nth-child(6) { animation-delay: 125ms; }
+
+html[data-device="mobile"] #root .ws-mobile-more-item.active svg {
+  color: var(--go);
+}
+
+html[data-device="mobile"] #root .ws-mobile-dock {
+  position: relative;
+  z-index: 65;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px;
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  border-radius: 999px !important;
+  background: color-mix(in srgb, var(--panel) 84%, transparent);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.6);
+  pointer-events: auto;
+}
+
+html[data-device="mobile"] #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) .ws-mobile-dock-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px !important;
+  min-width: 44px !important;
+  height: 44px !important;
+  min-height: 44px !important;
+  padding: 0 !important;
+  border: 1px solid transparent !important;
+  border-radius: 999px !important;
+  background: transparent !important;
+  color: var(--muted) !important;
+  box-shadow: none !important;
+  cursor: pointer;
+  transition: background-color 180ms ease, color 180ms ease, transform 140ms ease;
+}
+
+html[data-device="mobile"] #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) .ws-mobile-dock-btn:active {
+  transform: scale(0.92);
+}
+
+html[data-device="mobile"] #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) .ws-mobile-dock-btn.active {
+  color: var(--ink) !important;
+  background: rgba(255, 255, 255, 0.13) !important;
+  border-color: rgba(255, 255, 255, 0.16) !important;
+}
+
+html[data-device="mobile"] #root .ws-mobile-dock-btn.active::after {
+  content: "";
+  position: absolute;
+  bottom: 5px;
+  width: 4px;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--go);
+}
+
+@keyframes mobileMoreIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes mobileFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+html[data-device="mobile"] #root .ws > .ws-main,
+html[data-device="mobile"] #root .ws > .connect,
+html[data-device="mobile"] #root .hist-shell > .hist,
+html[data-device="mobile"] #root .stage1-in,
+html[data-device="mobile"] #root .stage2-in,
+html[data-device="mobile"] #root .stage3-in,
+html[data-device="mobile"] #root .team-video-main,
+html[data-device="mobile"] #root .team-review-main {
+  width: 100%;
+  height: 100dvh;
+  margin-left: 0;
+  padding: 74px 14px calc(92px + env(safe-area-inset-bottom));
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+html[data-device="mobile"] #root .hist > .hist-in {
+  width: 100%;
+  padding: 74px 14px calc(92px + env(safe-area-inset-bottom));
+}
+
+html[data-device="mobile"] #root .ws > .connect {
+  padding-bottom: calc(210px + env(safe-area-inset-bottom));
+}
+
+html[data-device="mobile"] #root .stage1-in,
+html[data-device="mobile"] #root .stage2-in {
+  padding-top: 74px;
+  padding-right: 14px;
+  padding-left: 14px;
+  padding-bottom: calc(210px + env(safe-area-inset-bottom));
+}
+
+html[data-device="mobile"] #root .stage3-in {
+  padding-top: 74px;
+  padding-right: 14px;
+  padding-left: 14px;
+  padding-bottom: calc(250px + env(safe-area-inset-bottom));
+}
+
+html[data-device="mobile"] #root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page) :is(input, select, textarea) {
+  font-size: 16px;
+}
+
 @media (max-width: 760px) {
-  #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar {
-    grid-template-columns: 1fr auto !important;
-    width: 100% !important;
-    min-height: 56px !important;
-    gap: 8px !important;
-    padding: 8px 14px !important;
-  }
-
-  #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) .ws-topnav {
-    display: none !important;
-  }
-
-  #root .ws-mobile-dock-wrap {
-    position: fixed;
-    inset: auto 0 max(10px, env(safe-area-inset-bottom)) 0;
-    z-index: 70;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    padding: 0 14px;
-    pointer-events: none;
-  }
-
-  #root .ws-mobile-dock-wrap::before {
-    content: "";
-    position: fixed;
-    inset: auto 0 0 0;
-    height: calc(108px + env(safe-area-inset-bottom));
-    background: linear-gradient(to top, color-mix(in srgb, var(--bg) 92%, transparent) 30%, transparent);
-    pointer-events: none;
-    z-index: 58;
-  }
-
-  #root :is(.stage1, .stage2, .stage3, .connect) :is(.continue-bar, .s2-continue-bar, .s3-pub, .cn-bar) {
-    left: 14px !important;
-    right: 14px !important;
-    bottom: calc(74px + env(safe-area-inset-bottom)) !important;
-    width: auto !important;
-    border-radius: 18px !important;
-    border: 1px solid rgba(255, 255, 255, 0.14) !important;
-    padding: 10px 12px !important;
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.12),
-      0 14px 36px rgba(0, 0, 0, 0.58) !important;
-  }
-
-  #root .ws-mobile-more-backdrop {
-    position: fixed;
-    inset: 0;
-    z-index: 59;
-    background: rgba(0, 0, 0, 0.45);
-    backdrop-filter: blur(4px);
-    pointer-events: auto;
-    animation: mobileFadeIn 180ms ease both;
-  }
-
-  #root .ws-mobile-more-menu {
-    position: relative;
-    z-index: 65;
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 6px;
-    width: min(320px, calc(100vw - 28px));
-    max-height: calc(100dvh - 130px);
-    overflow-y: auto;
-    overscroll-behavior: contain;
-    padding: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: 18px !important;
-    background: color-mix(in srgb, var(--panel) 92%, transparent);
-    backdrop-filter: blur(24px) saturate(160%);
-    -webkit-backdrop-filter: blur(24px) saturate(160%);
-    box-shadow: 0 20px 44px rgba(0, 0, 0, 0.65);
-    pointer-events: auto;
-    transform-origin: 50% 100%;
-    animation: mobileMoreIn 220ms cubic-bezier(0.22, 1, 0.36, 1) both;
-  }
-
-  #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) .ws-mobile-more-item {
-    display: flex;
-    align-items: center;
-    gap: 9px;
-    min-height: 44px !important;
-    padding: 0 12px !important;
-    border: 1px solid transparent !important;
-    border-radius: 12px !important;
-    background: rgba(255, 255, 255, 0.04) !important;
-    color: var(--muted) !important;
-    font-size: 12.5px;
-    font-weight: 600;
-    text-align: left;
-    box-shadow: none !important;
-    cursor: pointer;
-    transition: background-color 150ms ease, color 150ms ease, border-color 150ms ease, transform 120ms ease;
-  }
-
-  #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) .ws-mobile-more-item.active {
-    color: var(--ink) !important;
-    background: rgba(255, 255, 255, 0.1) !important;
-    border-color: color-mix(in srgb, var(--go) 45%, rgba(255, 255, 255, 0.14)) !important;
-  }
-
-  #root .ws-mobile-dock {
-    animation: appleDockRise 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
-  }
-
-  #root .ws-mobile-more-item {
-    animation: appleMoreItemIn 260ms cubic-bezier(0.22, 1, 0.36, 1) both;
-  }
-  #root .ws-mobile-more-item:nth-child(2) { animation-delay: 25ms; }
-  #root .ws-mobile-more-item:nth-child(3) { animation-delay: 50ms; }
-  #root .ws-mobile-more-item:nth-child(4) { animation-delay: 75ms; }
-  #root .ws-mobile-more-item:nth-child(5) { animation-delay: 100ms; }
-  #root .ws-mobile-more-item:nth-child(6) { animation-delay: 125ms; }
-
-  #root .ws-mobile-more-item.active svg {
-    color: var(--go);
-  }
-
-  #root .ws-mobile-dock {
-    position: relative;
-    z-index: 65;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 8px;
-    border: 1px solid rgba(255, 255, 255, 0.11);
-    border-radius: 999px !important;
-    background: color-mix(in srgb, var(--panel) 84%, transparent);
-    backdrop-filter: blur(24px) saturate(160%);
-    -webkit-backdrop-filter: blur(24px) saturate(160%);
-    box-shadow: 0 14px 36px rgba(0, 0, 0, 0.6);
-    pointer-events: auto;
-  }
-
-  #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) .ws-mobile-dock-btn {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 44px !important;
-    min-width: 44px !important;
-    height: 44px !important;
-    min-height: 44px !important;
-    padding: 0 !important;
-    border: 1px solid transparent !important;
-    border-radius: 999px !important;
-    background: transparent !important;
-    color: var(--muted) !important;
-    box-shadow: none !important;
-    cursor: pointer;
-    transition: background-color 180ms ease, color 180ms ease, transform 140ms ease;
-  }
-
-  #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) .ws-mobile-dock-btn:active {
-    transform: scale(0.92);
-  }
-
-  #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) .ws-mobile-dock-btn.active {
-    color: var(--ink) !important;
-    background: rgba(255, 255, 255, 0.13) !important;
-    border-color: rgba(255, 255, 255, 0.16) !important;
-  }
-
-  #root .ws-mobile-dock-btn.active::after {
-    content: "";
-    position: absolute;
-    bottom: 5px;
-    width: 4px;
-    height: 4px;
-    border-radius: 999px;
-    background: var(--go);
-  }
-
-  @keyframes mobileMoreIn {
-    from {
-      opacity: 0;
-      transform: translateY(12px) scale(0.95);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0) scale(1);
-    }
-  }
-
-  @keyframes mobileFadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
-
-  #root .ws > .ws-main,
-  #root .ws > .connect,
-  #root .hist-shell > .hist,
-  #root .stage1-in,
-  #root .stage2-in,
-  #root .stage3-in,
-  #root .team-video-main,
-  #root .team-review-main {
-    width: 100%;
-    height: 100dvh;
-    margin-left: 0;
-    padding: 74px 14px calc(92px + env(safe-area-inset-bottom));
-    overflow-x: hidden;
-    overflow-y: auto;
-  }
-
-  #root .hist > .hist-in {
-    width: 100%;
-    padding: 74px 14px calc(92px + env(safe-area-inset-bottom));
-  }
-
-  #root .ws > .connect {
-    padding-bottom: calc(210px + env(safe-area-inset-bottom));
-  }
-
-  #root .stage1-in,
-  #root .stage2-in {
-    padding-top: 74px;
-    padding-right: 14px;
-    padding-left: 14px;
-    padding-bottom: calc(210px + env(safe-area-inset-bottom));
-  }
-
-  #root .stage3-in {
-    padding-top: 74px;
-    padding-right: 14px;
-    padding-left: 14px;
-    padding-bottom: calc(250px + env(safe-area-inset-bottom));
-  }
-
   #root .ws .ws-heading {
     align-items: flex-start;
   }
@@ -2160,10 +2164,6 @@ body:has(#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-
   #root .stage3 .s3-pub-hint {
     font-size: 11px;
     text-align: center;
-  }
-
-  #root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page) :is(input, select, textarea) {
-    font-size: 16px;
   }
 
   #root .ws .ws-stat-grid {
@@ -2692,91 +2692,89 @@ body:has(#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-
   }
 }
 
-@media (min-width: 761px) {
-  #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar {
-    grid-template-columns: auto auto !important;
-    justify-content: space-between !important;
-  }
+html:not([data-device="mobile"]) #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar {
+  grid-template-columns: auto auto !important;
+  justify-content: space-between !important;
+}
 
-  #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) .ws-topnav {
-    position: fixed !important;
-    left: 50% !important;
-    bottom: max(16px, env(safe-area-inset-bottom)) !important;
-    transform: translateX(-50%);
-    z-index: 65;
-    width: fit-content;
-    max-width: calc(100vw - 32px);
-    margin: 0 !important;
-    padding: 6px 8px !important;
-    gap: 4px !important;
-    border: 1px solid rgba(255, 255, 255, 0.13) !important;
-    border-radius: 999px !important;
-    backdrop-filter: blur(26px) saturate(180%) !important;
-    -webkit-backdrop-filter: blur(26px) saturate(180%) !important;
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.14),
-      0 18px 42px -12px rgba(0, 0, 0, 0.72) !important;
-    animation: applePcDockRise 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
-  }
+html:not([data-device="mobile"]) #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) .ws-topnav {
+  position: fixed !important;
+  left: 50% !important;
+  bottom: max(16px, env(safe-area-inset-bottom)) !important;
+  transform: translateX(-50%);
+  z-index: 65;
+  width: fit-content;
+  max-width: calc(100vw - 32px);
+  margin: 0 !important;
+  padding: 6px 8px !important;
+  gap: 4px !important;
+  border: 1px solid rgba(255, 255, 255, 0.13) !important;
+  border-radius: 999px !important;
+  backdrop-filter: blur(26px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(26px) saturate(180%) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    0 18px 42px -12px rgba(0, 0, 0, 0.72) !important;
+  animation: applePcDockRise 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
 
-  #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) .ws-topnav-pill {
-    position: relative;
-    min-height: 38px !important;
-    padding: 0 14px !important;
-    font-size: 12.5px !important;
-    gap: 6px !important;
-  }
+html:not([data-device="mobile"]) #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) .ws-topnav-pill {
+  position: relative;
+  min-height: 38px !important;
+  padding: 0 14px !important;
+  font-size: 12.5px !important;
+  gap: 6px !important;
+}
 
-  #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) .ws-topnav-pill.active {
-    background: rgba(255, 255, 255, 0.13) !important;
-    border-color: rgba(255, 255, 255, 0.18) !important;
-    color: var(--ink) !important;
-  }
+html:not([data-device="mobile"]) #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) .ws-topnav-pill.active {
+  background: rgba(255, 255, 255, 0.13) !important;
+  border-color: rgba(255, 255, 255, 0.18) !important;
+  color: var(--ink) !important;
+}
 
-  #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) .ws-topnav-pill.active::after {
-    content: "";
-    position: absolute;
-    left: 50%;
-    bottom: 3px;
-    width: 14px;
-    height: 2.5px;
-    transform: translateX(-50%);
-    border-radius: 999px;
-    background: var(--go);
-    box-shadow: 0 0 8px color-mix(in srgb, var(--go) 75%, transparent);
-  }
+html:not([data-device="mobile"]) #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) .ws-topnav-pill.active::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 3px;
+  width: 14px;
+  height: 2.5px;
+  transform: translateX(-50%);
+  border-radius: 999px;
+  background: var(--go);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--go) 75%, transparent);
+}
 
-  [data-theme="light"] #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) .ws-topnav-pill.active {
-    background: rgba(15, 23, 42, 0.08) !important;
-    border-color: rgba(15, 23, 42, 0.14) !important;
-  }
+html:not([data-device="mobile"])[data-theme="light"] #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) .ws-topnav-pill.active {
+  background: rgba(15, 23, 42, 0.08) !important;
+  border-color: rgba(15, 23, 42, 0.14) !important;
+}
 
-  #root :is(.stage1, .stage2, .stage3, .connect) :is(.continue-bar, .s2-continue-bar, .s3-pub, .cn-bar) {
-    left: 50% !important;
-    right: auto !important;
-    bottom: 78px !important;
-    transform: translateX(-50%);
-    width: min(760px, calc(100vw - 48px));
-    border-radius: 18px !important;
-    border: 1px solid rgba(255, 255, 255, 0.12) !important;
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.12),
-      0 18px 40px -12px rgba(0, 0, 0, 0.65) !important;
-  }
+html:not([data-device="mobile"]) #root :is(.stage1, .stage2, .stage3, .connect) :is(.continue-bar, .s2-continue-bar, .s3-pub, .cn-bar) {
+  left: 50% !important;
+  right: auto !important;
+  bottom: 78px !important;
+  transform: translateX(-50%);
+  width: min(760px, calc(100vw - 48px));
+  border-radius: 18px !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 18px 40px -12px rgba(0, 0, 0, 0.65) !important;
+}
 
-  #root .ws > .ws-main,
-  #root .hist > .hist-in,
-  #root .team-video-main,
-  #root .team-review-main {
-    padding-bottom: 108px;
-  }
+html:not([data-device="mobile"]) #root .ws > .ws-main,
+html:not([data-device="mobile"]) #root .hist > .hist-in,
+html:not([data-device="mobile"]) #root .team-video-main,
+html:not([data-device="mobile"]) #root .team-review-main {
+  padding-bottom: 108px;
+}
 
-  #root .ws > .connect,
-  #root .stage1-in,
-  #root .stage2-in,
-  #root .stage3-in {
-    padding-bottom: 196px;
-  }
+html:not([data-device="mobile"]) #root .ws > .connect,
+html:not([data-device="mobile"]) #root .stage1-in,
+html:not([data-device="mobile"]) #root .stage2-in,
+html:not([data-device="mobile"]) #root .stage3-in {
+  padding-bottom: 196px;
 }
 
 /* Clean Card & Row Breathing Room (History, Upcoming, Team Lists) */
@@ -2816,82 +2814,80 @@ body:has(#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-
   background: rgba(255, 255, 255, 0.025);
 }
 
-@media (max-width: 760px) {
-  #root .ws .ws-heading {
-    margin-bottom: 14px;
-  }
+html[data-device="mobile"] #root .ws .ws-heading {
+  margin-bottom: 14px;
+}
 
-  #root .ws .ws-heading h1 {
-    font-size: 24px;
-    line-height: 1.15;
-  }
+html[data-device="mobile"] #root .ws .ws-heading h1 {
+  font-size: 24px;
+  line-height: 1.15;
+}
 
-  #root .ws .ws-heading p {
-    display: none;
-  }
+html[data-device="mobile"] #root .ws .ws-heading p {
+  display: none;
+}
 
-  #root .ws .ws-welcome {
-    padding: 16px !important;
-    gap: 12px;
-  }
+html[data-device="mobile"] #root .ws .ws-welcome {
+  padding: 16px !important;
+  gap: 12px;
+}
 
-  #root .ws .ws-welcome h2 {
-    font-size: 20px;
-    line-height: 1.2;
-  }
+html[data-device="mobile"] #root .ws .ws-welcome h2 {
+  font-size: 20px;
+  line-height: 1.2;
+}
 
-  #root .ws .ws-welcome-route {
-    display: none !important;
-  }
+html[data-device="mobile"] #root .ws .ws-welcome-route {
+  display: none !important;
+}
 
-  #root .ws .ws-welcome-actions {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    margin-top: 12px;
-  }
+html[data-device="mobile"] #root .ws .ws-welcome-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 12px;
+}
 
-  #root .ws .ws-welcome-actions .ws-btn-glow {
-    width: 100% !important;
-    padding: 0 !important;
-  }
+html[data-device="mobile"] #root .ws .ws-welcome-actions .ws-btn-glow {
+  width: 100% !important;
+  padding: 0 !important;
+}
 
-  #root .ws .ws-welcome-actions .ws-btn-glow .border-glow-inner {
-    width: 100%;
-  }
+html[data-device="mobile"] #root .ws .ws-welcome-actions .ws-btn-glow .border-glow-inner {
+  width: 100%;
+}
 
-  #root .ws .ws-welcome-actions button {
-    width: 100% !important;
-    justify-content: center;
-    padding: 10px 10px !important;
-    font-size: 12.5px !important;
-  }
+html[data-device="mobile"] #root .ws .ws-welcome-actions button {
+  width: 100% !important;
+  justify-content: center;
+  padding: 10px 10px !important;
+  font-size: 12.5px !important;
+}
 
-  #root .ws .ws-stat-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-    gap: 8px !important;
-  }
+html[data-device="mobile"] #root .ws .ws-stat-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 8px !important;
+}
 
-  #root .ws .ws-stat {
-    min-height: 0 !important;
-    padding: 12px 10px !important;
-    gap: 4px;
-  }
+html[data-device="mobile"] #root .ws .ws-stat {
+  min-height: 0 !important;
+  padding: 12px 10px !important;
+  gap: 4px;
+}
 
-  #root .ws .ws-stat > span {
-    font-size: 10.5px !important;
-    line-height: 1.25;
-  }
+html[data-device="mobile"] #root .ws .ws-stat > span {
+  font-size: 10.5px !important;
+  line-height: 1.25;
+}
 
-  #root .ws .ws-stat > strong {
-    font-size: 22px !important;
-    margin: 4px 0 2px !important;
-  }
+html[data-device="mobile"] #root .ws .ws-stat > strong {
+  font-size: 22px !important;
+  margin: 4px 0 2px !important;
+}
 
-  #root .ws .ws-stat > small,
-  #root .ws .ws-stat > button {
-    display: none !important;
-  }
+html[data-device="mobile"] #root .ws .ws-stat > small,
+html[data-device="mobile"] #root .ws .ws-stat > button {
+  display: none !important;
 }
 
 /* ==========================================================================

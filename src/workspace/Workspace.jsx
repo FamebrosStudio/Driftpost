@@ -5,6 +5,7 @@ import CampaignComposer from './CampaignComposer.jsx';
 import { readPostLog } from '../history/log.js';
 import { isAiAccount } from '../ai-access.js';
 import BorderGlow from '../components/reactbits/BorderGlow.jsx';
+import { useDevice } from '../utils/device.js';
 import './workspace.css';
 
 const NAV = [
@@ -67,6 +68,8 @@ const SignOutGlyph = () => <Glyph><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2
 const MoreGridGlyph = () => <Glyph><rect x="4" y="4" width="6" height="6" rx="1" /><rect x="14" y="4" width="6" height="6" rx="1" /><rect x="4" y="14" width="6" height="6" rx="1" /><rect x="14" y="14" width="6" height="6" rx="1" /></Glyph>;
 
 export function WorkspaceNav({ page, onNavigate, email, onSignOut }) {
+  const device = useDevice();
+  const isMobileDevice = device === 'mobile';
   const [theme, setTheme] = useState(() => {
     try { return localStorage.getItem('driftpost-console-theme') === 'light' ? 'light' : 'dark'; }
     catch { return 'dark'; }
@@ -131,64 +134,68 @@ export function WorkspaceNav({ page, onNavigate, email, onSignOut }) {
         )}
       </div>
     </header>
-    <nav className="ws-topnav" aria-label="Workspace navigation">
-      {topNavItems.map((item) => (
-        <button
-          key={item.id}
-          type="button"
-          className={item.active ? 'ws-topnav-pill active' : 'ws-topnav-pill'}
-          onClick={() => onNavigate(item.id)}
-        >
-          <Icon name={item.icon} size={15} />
-          <span>{item.label}</span>
-        </button>
-      ))}
-    </nav>
-    <div className="ws-mobile-dock-wrap">
-      {mobileMoreOpen && (
-        <>
-          <div className="ws-mobile-more-backdrop" onClick={() => setMobileMoreOpen(false)} aria-hidden="true" />
-          <div className="ws-mobile-more-menu" role="menu" aria-label="More workspace pages">
-            {mobileMoreItems.map((item) => (
-              <button
-                key={item.id}
-                type="button"
-                role="menuitem"
-                className={item.active ? 'ws-mobile-more-item active' : 'ws-mobile-more-item'}
-                onClick={() => { setMobileMoreOpen(false); onNavigate(item.id); }}
-              >
-                <Icon name={item.icon} size={17} />
-                <span>{item.label}</span>
-              </button>
-            ))}
-          </div>
-        </>
-      )}
-      <nav className="ws-mobile-dock" aria-label="Mobile navigation">
-        {mobilePrimaryItems.map((item) => (
+    {!isMobileDevice && (
+      <nav className="ws-topnav" aria-label="Workspace navigation">
+        {topNavItems.map((item) => (
           <button
             key={item.id}
             type="button"
-            className={item.active ? 'ws-mobile-dock-btn active' : 'ws-mobile-dock-btn'}
-            onClick={() => { setMobileMoreOpen(false); onNavigate(item.id); }}
-            aria-label={item.label}
-            title={item.label}
+            className={item.active ? 'ws-topnav-pill active' : 'ws-topnav-pill'}
+            onClick={() => onNavigate(item.id)}
           >
-            <Icon name={item.icon} size={20} />
+            <Icon name={item.icon} size={15} />
+            <span>{item.label}</span>
           </button>
         ))}
-        <button
-          type="button"
-          className={mobileMoreOpen || mobileMoreActive ? 'ws-mobile-dock-btn ws-mobile-dock-more active' : 'ws-mobile-dock-btn ws-mobile-dock-more'}
-          onClick={() => setMobileMoreOpen((open) => !open)}
-          aria-expanded={mobileMoreOpen}
-          aria-label="More navigation options"
-          title="More"
-        >
-          <MoreGridGlyph />
-        </button>
       </nav>
-    </div>
+    )}
+    {isMobileDevice && (
+      <div className="ws-mobile-dock-wrap">
+        {mobileMoreOpen && (
+          <>
+            <div className="ws-mobile-more-backdrop" onClick={() => setMobileMoreOpen(false)} aria-hidden="true" />
+            <div className="ws-mobile-more-menu" role="menu" aria-label="More workspace pages">
+              {mobileMoreItems.map((item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  role="menuitem"
+                  className={item.active ? 'ws-mobile-more-item active' : 'ws-mobile-more-item'}
+                  onClick={() => { setMobileMoreOpen(false); onNavigate(item.id); }}
+                >
+                  <Icon name={item.icon} size={17} />
+                  <span>{item.label}</span>
+                </button>
+              ))}
+            </div>
+          </>
+        )}
+        <nav className="ws-mobile-dock" aria-label="Mobile navigation">
+          {mobilePrimaryItems.map((item) => (
+            <button
+              key={item.id}
+              type="button"
+              className={item.active ? 'ws-mobile-dock-btn active' : 'ws-mobile-dock-btn'}
+              onClick={() => { setMobileMoreOpen(false); onNavigate(item.id); }}
+              aria-label={item.label}
+              title={item.label}
+            >
+              <Icon name={item.icon} size={20} />
+            </button>
+          ))}
+          <button
+            type="button"
+            className={mobileMoreOpen || mobileMoreActive ? 'ws-mobile-dock-btn ws-mobile-dock-more active' : 'ws-mobile-dock-btn ws-mobile-dock-more'}
+            onClick={() => setMobileMoreOpen((open) => !open)}
+            aria-expanded={mobileMoreOpen}
+            aria-label="More navigation options"
+            title="More"
+          >
+            <MoreGridGlyph />
+          </button>
+        </nav>
+      </div>
+    )}
   </>;
 }
 
