@@ -44,8 +44,8 @@
     "commercial_accuracy_rule": "A vehicle can be described as available only after current confirmation. Never infer price, kilometre reading, owner count, fuel, transmission, variant, registration, insurance, service history, warranty, finance approval or mechanical condition."
   },
   "contact": {
-    "phone_display": "8369160734",
-    "phone_e164": "+8369160734",
+    "phone_display": "7021125754",
+    "phone_e164": "+917021125754",
     "phone_status": "Confirmed in the user-provided brand record.",
     "whatsapp_number": null,
     "whatsapp_status": "Do not label the phone as WhatsApp or generate a wa.me link until confirmed.",
@@ -59,7 +59,7 @@
     "business_hours": null,
     "contact_rule": "Use the confirmed phone and address exactly. Do not add a website, email, WhatsApp label or exact map pin until supplied.",
     "caption_source_status": "User-supplied caption, 2026-11-14.",
-    "primary_phone_display": "8369160734"
+    "primary_phone_display": "7021125754"
   },
   "social_media": {
     "instagram_handle": "@zamzam_motorss",
@@ -288,7 +288,7 @@
       "Warranty",
       "Test-drive terms"
     ],
-    "short_listing_template": "[Year] [make] [model] [variant]. [Owner count], [kilometres] km, [fuel], [transmission]. Current asking price: [price]. Call +91 83691 60734 to confirm availability and plan a visit.",
+    "short_listing_template": "[Year] [make] [model] [variant]. [Owner count], [kilometres] km, [fuel], [transmission]. Current asking price: [price]. Call +91 70211 25754 to confirm availability and plan a visit.",
     "unknown_field_rule": "Omit an unknown field or label it confirmation required. Never fill it from appearance or a similar vehicle.",
     "price_rule": "Use current asking price, not historical price. Avoid fixed-price or final-price language unless approved.",
     "availability_rule": "Verify on the publication date because used-car inventory can change quickly."
@@ -328,11 +328,11 @@
   "fixed_footer": {
     "standard_lines": [
       "📍 Runwal Greens BMC Parking, B1 Basement, Mulund West, Mumbai 400080",
-      "📞 +91 83691 60734",
+      "📞 +91 70211 25754",
       "💫 Managed by: @famebrosstudio"
     ],
     "compact_lines": [
-      "📍 Mulund West | 📞 +91 83691 60734",
+      "📍 Mulund West | 📞 +91 70211 25754",
       "💫 Managed by: @famebrosstudio"
     ],
     "usage": "Use the standard version for listings and dealership reels. Use the compact version when the specification block is long.",
@@ -343,7 +343,7 @@
     ],
     "lines": [
       "📍 Runwal Greens BMC Parking B1 Basement, Mulund West, Mumbai 400080, India",
-      "📞 8369160734",
+      "📞 7021125754",
       "💫 Managed by: @famebrosstudio"
     ]
   },
@@ -368,7 +368,7 @@
     "car dealer near Runwal Greens"
   ],
   "cta_bank": [
-    "Call +91 83691 60734 to confirm current availability.",
+    "Call +91 70211 25754 to confirm current availability.",
     "Visit us in Mulund West after confirming the vehicle.",
     "DM the exact model name for current details.",
     "Save this listing for your comparison.",
@@ -450,7 +450,7 @@
     "caption_body": "Family space, diesel practicality and a clear set of details to compare. This 2017 Maruti Suzuki Ertiga VDI was recorded as a second-owner diesel manual with 98,000 km. Call us to confirm its current availability and latest asking price.",
     "footer": [
       "📍 Runwal Greens BMC Parking, B1 Basement, Mulund West, Mumbai 400080",
-      "📞 +91 83691 60734",
+      "📞 +91 70211 25754",
       "💫 Managed by: @famebrosstudio"
     ],
     "hashtags": [
@@ -466,7 +466,7 @@
       "used car dealership Mulund West",
       "family car Mumbai"
     ],
-    "full_caption": "Family space, diesel practicality and a clear set of details to compare. This 2017 Maruti Suzuki Ertiga VDI was recorded as a second-owner diesel manual with 98,000 km. Call us to confirm its current availability and latest asking price.\n\n📍 Runwal Greens BMC Parking, B1 Basement, Mulund West, Mumbai 400080\n📞 +91 83691 60734\n💫 Managed by: @famebrosstudio\n\n#ZamZamMotors #UsedCarsMumbai #Ertiga\n\n[Zam Zam Motors Mulund, used Ertiga Mumbai, pre owned cars Mulund, diesel manual car Mumbai, used car dealership Mulund West, family car Mumbai]",
+    "full_caption": "Family space, diesel practicality and a clear set of details to compare. This 2017 Maruti Suzuki Ertiga VDI was recorded as a second-owner diesel manual with 98,000 km. Call us to confirm its current availability and latest asking price.\n\n📍 Runwal Greens BMC Parking, B1 Basement, Mulund West, Mumbai 400080\n📞 +91 70211 25754\n💫 Managed by: @famebrosstudio\n\n#ZamZamMotors #UsedCarsMumbai #Ertiga\n\n[Zam Zam Motors Mulund, used Ertiga Mumbai, pre owned cars Mulund, diesel manual car Mumbai, used car dealership Mulund West, family car Mumbai]",
     "validation": {
       "hashtags": 3,
       "seo_phrases": 6,
@@ -523,7 +523,7 @@
     ],
     "input_rule": "If a required listing field is missing, ask for it or omit it. Never substitute historical data without approval."
   },
-  "master_brand_instruction": "Create content only for Zam Zam Motors, a pre-owned car dealership at Runwal Greens BMC Parking, B1 Basement, Mulund West, Mumbai 400080. The confirmed phone is +91 83691 60734 and the user-provided Instagram is @zamzam_motorss. Write clear, confident and aspirational Hinglish or English. Make the actual car and verified specifications the hero. Treat every vehicle in this file as a historical example unless the current stock sheet confirms it on the publication date. Never invent year, variant, owner count, kilometres, fuel, transmission, price, condition, service history, insurance, warranty, finance approval or availability. Use the approved footer, exactly three hashtags and one SEO bracket with five to eight phrases for standard captions. Remove all em dashes.",
+  "master_brand_instruction": "Create content only for Zam Zam Motors, a pre-owned car dealership at Runwal Greens BMC Parking, B1 Basement, Mulund West, Mumbai 400080. The confirmed phone is +91 70211 25754 and the user-provided Instagram is @zamzam_motorss. Write clear, confident and aspirational Hinglish or English. Make the actual car and verified specifications the hero. Treat every vehicle in this file as a historical example unless the current stock sheet confirms it on the publication date. Never invent year, variant, owner count, kilometres, fuel, transmission, price, condition, service history, insurance, warranty, finance approval or availability. Use the approved footer, exactly three hashtags and one SEO bracket with five to eight phrases for standard captions. Remove all em dashes.",
   "missing_information": {
     "business": [
       "Legal entity",
@@ -585,7 +585,7 @@
     "location": "Runwal Greens BMC Parking B1 Basement, Mulund West, Mumbai 400080, India",
     "location_short": "Mulund West, Mumbai",
     "phones": [
-      "8369160734"
+      "7021125754"
     ],
     "email": null,
     "aliases": [],
