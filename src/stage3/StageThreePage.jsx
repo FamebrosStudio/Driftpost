@@ -1377,24 +1377,26 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
                 <div className="s3-pub-track"><i style={{ width: `${effective.length ? (reviewedCount / effective.length) * 100 : 0}%` }} /></div>
                 <span className="s3-pub-count">{reviewedCount}/{effective.length} reviewed</span>
               </div>
-              <button
-                type="button"
-                className="s3-postall"
-                onClick={publishAll}
-                disabled={!effective.length || !allReviewed || Object.values(busy).some(Boolean)}
-                title={!allReviewed ? 'Click Reviewed on every platform first' : 'Post to all reviewed platforms'}
-              >
-                {!effective.length ? 'Nothing to post' : allReviewed ? `Post to all (${publishTargetsLabel})` : `Review remaining platforms (${reviewedCount}/${effective.length})`}
-              </button>
-              <button
-                type="button"
-                className="s3-schedall"
-                onClick={() => setSchedOpen(true)}
-                disabled={!effective.length || !allReviewed || Object.values(busy).some(Boolean)}
-                title="Queue this post to publish automatically"
-              >
-                Schedule instead
-              </button>
+              <div className="s3-pub-actions">
+                <button
+                  type="button"
+                  className="s3-postall"
+                  onClick={publishAll}
+                  disabled={!effective.length || !allReviewed || Object.values(busy).some(Boolean)}
+                  title={!allReviewed ? 'Click Reviewed on every platform first' : 'Post to all reviewed platforms'}
+                >
+                  {!effective.length ? 'Nothing to post' : allReviewed ? `Post to all (${publishTargetsLabel})` : `Review remaining platforms (${reviewedCount}/${effective.length})`}
+                </button>
+                <button
+                  type="button"
+                  className="s3-schedall"
+                  onClick={() => setSchedOpen(true)}
+                  disabled={!effective.length || !allReviewed || Object.values(busy).some(Boolean)}
+                  title="Queue this post to publish automatically"
+                >
+                  Schedule instead
+                </button>
+              </div>
               {schedMsg && <p className="s3-bar-msg">{schedMsg}</p>}
               {!!approvalLinks.length && <div className="s3-review-links"><b>Share review link{approvalLinks.length === 1 ? '' : 's'}:</b>{approvalLinks.map((link, i) => <a key={link} href={link} target="_blank" rel="noreferrer">{approvalLinks.length === 1 ? link : `Review post ${i + 1}`}</a>)}</div>}
               {pubMsg && <p className="s3-bar-msg">{pubMsg}</p>}

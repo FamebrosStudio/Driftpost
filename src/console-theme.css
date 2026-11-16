@@ -1435,14 +1435,36 @@
 
 /* Glassmorphic Bottom Action Bars on Stage 1, 2, 3 & Connect */
 #root :is(.stage1, .stage2, .stage3, .connect) :is(.continue-bar, .s2-continue-bar, .s3-pub, .cn-bar) {
+  position: fixed !important;
   left: 0;
   right: 0;
   bottom: 0;
-  background: color-mix(in srgb, var(--panel) 86%, transparent) !important;
+  z-index: 50;
+  background: color-mix(in srgb, var(--panel) 90%, transparent) !important;
   backdrop-filter: blur(20px) saturate(160%) !important;
   -webkit-backdrop-filter: blur(20px) saturate(160%) !important;
   border-top: 1px solid var(--line) !important;
   box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.28);
+}
+
+#root .stage3 .s3-pub-actions {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  width: min(680px, 100%);
+}
+
+#root .stage3 .s3-pub-actions .s3-postall,
+#root .stage3 .s3-pub-actions .s3-schedall {
+  width: 100%;
+  min-width: 0;
+  padding: 12px 18px;
+}
+
+@media (max-width: 560px) {
+  #root .stage3 .s3-pub-actions {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* ==========================================================================
@@ -1677,16 +1699,29 @@
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: none;
+  }
+}
+
+@keyframes console-page-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }
 
 #root .ws-main,
 #root .hist-in,
 #root .team-video-main,
-#root .team-review-main,
-#root :is(.stage1-in, .stage2-in, .stage3-in) {
+#root .team-review-main {
   animation: console-page-enter 320ms cubic-bezier(0.2, 0.75, 0.25, 1) both;
+}
+
+/* Stage containers hold position:fixed bottom bars; avoid transform so fixed bars anchor to the viewport. */
+#root :is(.stage1-in, .stage2-in, .stage3-in) {
+  animation: console-page-fade 240ms ease both;
 }
 
 #root .ws .ws-stat {
