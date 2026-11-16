@@ -143,33 +143,29 @@ export default function FeedItPage({ session, onNavigate, onSignOut }) {
         ) : (
           <div className="feed-it-grid">
             <section className="ws-panel feed-it-card">
-              <div className="feed-it-step-head">
-                <span className="feed-it-step-badge">STEP 1</span>
-                <div>
-                  <h2>Get Brand Details From Any AI</h2>
-                  <p>Type the brand name below, copy the prompt, and paste it into ChatGPT, Gemini, or Perplexity.</p>
+              <details className="dp-collapse">
+                <summary><span>Step 1 · Copy AI Research Prompt</span></summary>
+                <div className="dp-collapse-body feed-it-collapse-body">
+                  <p className="feed-it-sub">Type the brand name below, copy the prompt, and paste it into ChatGPT, Gemini, or Perplexity.</p>
+                  <label className="feed-it-field">
+                    <span>Brand Name &amp; City (optional)</span>
+                    <input
+                      type="text"
+                      value={researchTarget}
+                      onChange={(e) => setResearchTarget(e.target.value)}
+                      placeholder="e.g. Zam Zam Motors, Mulund West Mumbai"
+                    />
+                  </label>
+                  <div className="feed-it-prompt-box">
+                    <pre>{promptText}</pre>
+                  </div>
+                  <div className="feed-it-actions">
+                    <button type="button" className="ws-secondary" onClick={copyPrompt}>
+                      {copied ? 'Copied Prompt ✓' : 'Copy AI Research Prompt'}
+                    </button>
+                  </div>
                 </div>
-              </div>
-
-              <label className="feed-it-field">
-                <span>Brand Name &amp; City (optional)</span>
-                <input
-                  type="text"
-                  value={researchTarget}
-                  onChange={(e) => setResearchTarget(e.target.value)}
-                  placeholder="e.g. Zam Zam Motors, Mulund West Mumbai"
-                />
-              </label>
-
-              <div className="feed-it-prompt-box">
-                <pre>{promptText}</pre>
-              </div>
-
-              <div className="feed-it-actions">
-                <button type="button" className="ws-secondary" onClick={copyPrompt}>
-                  {copied ? 'Copied Prompt ✓' : 'Copy AI Research Prompt'}
-                </button>
-              </div>
+              </details>
             </section>
 
             <section className="ws-panel feed-it-card">
@@ -234,53 +230,51 @@ export default function FeedItPage({ session, onNavigate, onSignOut }) {
             </section>
 
             <section className="ws-panel feed-it-card feed-it-list-card">
-              <div className="ws-panel-head">
-                <div>
-                  <span className="ws-eyebrow">SAVED VIA FEED IT</span>
-                  <h2>Team-Fed Brands ({brands.length})</h2>
-                </div>
-                <input
-                  type="search"
-                  className="feed-it-search"
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  placeholder="Search fed brands..."
-                />
-              </div>
-
-              {loadingList ? (
-                <p className="feed-it-empty">Loading saved brands…</p>
-              ) : !filteredBrands.length ? (
-                <p className="feed-it-empty">
-                  {brands.length ? 'No matching fed brands found.' : 'No brands fed yet. Use Step 1 and Step 2 above to add your first new client brand.'}
-                </p>
-              ) : (
-                <div className="feed-it-list">
-                  {filteredBrands.map((item) => (
-                    <div key={item.id} className="feed-it-item">
-                      <div className="feed-it-item-info">
-                        <strong>{item.name}</strong>
-                        <small>
-                          {[
-                            item.category,
-                            item.location,
-                            item.ig,
-                            item.phones?.length ? item.phones.join(' / ') : '',
-                          ].filter(Boolean).join(' · ') || 'Custom brand profile'}
-                        </small>
-                      </div>
-                      <div className="feed-it-item-actions">
-                        <button type="button" className="ws-secondary" onClick={() => loadIntoEditor(item)}>
-                          Edit
-                        </button>
-                        <button type="button" className="ws-secondary feed-it-del" onClick={() => handleDelete(item.id, item.name)}>
-                          Delete
-                        </button>
-                      </div>
+              <details className="dp-collapse">
+                <summary><span>Team-Fed Brands ({brands.length})</span></summary>
+                <div className="dp-collapse-body feed-it-collapse-body">
+                  <input
+                    type="search"
+                    className="feed-it-search"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    placeholder="Search fed brands..."
+                  />
+                  {loadingList ? (
+                    <p className="feed-it-empty">Loading saved brands…</p>
+                  ) : !filteredBrands.length ? (
+                    <p className="feed-it-empty">
+                      {brands.length ? 'No matching fed brands found.' : 'No brands fed yet. Use Step 1 and Step 2 above to add your first new client brand.'}
+                    </p>
+                  ) : (
+                    <div className="feed-it-list">
+                      {filteredBrands.map((item) => (
+                        <div key={item.id} className="feed-it-item">
+                          <div className="feed-it-item-info">
+                            <strong>{item.name}</strong>
+                            <small>
+                              {[
+                                item.category,
+                                item.location,
+                                item.ig,
+                                item.phones?.length ? item.phones.join(' / ') : '',
+                              ].filter(Boolean).join(' · ') || 'Custom brand profile'}
+                            </small>
+                          </div>
+                          <div className="feed-it-item-actions">
+                            <button type="button" className="ws-secondary" onClick={() => loadIntoEditor(item)}>
+                              Edit
+                            </button>
+                            <button type="button" className="ws-secondary feed-it-del" onClick={() => handleDelete(item.id, item.name)}>
+                              Delete
+                            </button>
+                          </div>
+                        </div>
+                      ))}
                     </div>
-                  ))}
+                  )}
                 </div>
-              )}
+              </details>
             </section>
           </div>
         )}

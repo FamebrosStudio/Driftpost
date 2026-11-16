@@ -156,22 +156,27 @@ export default function ConnectPage({ session, onContinue, onHistory, onSignOut,
                     </div>
                     <p className="cn-hint">{HINTS[p.id]}</p>
                     {accountCount > 0 && <input className="cn-search" type="search" value={accountSearch[p.id] || ''} onChange={(e) => setAccountSearch((s) => ({ ...s, [p.id]: e.target.value }))} placeholder={`Search ${p.name} accounts`} aria-label={`Search ${p.name} accounts`} />}
-                    <div className="cn-list">
-                      {list.length ? list.map((c) => (
-                        <div key={c.id} className="cn-acct">
-                          <span className="cn-av">{(c.account_name || '?')[0].toUpperCase()}</span>
-                          <span style={{ minWidth: 0 }}>
-                            <b title={c.account_name}>{c.account_name}</b>
-                            <small>{p.name}</small>
-                          </span>
-                          <button type="button" className="cn-drop" disabled={!!busy} onClick={() => disconnect(c)}>
-                            {busy === c.id ? '…' : 'Disconnect'}
-                          </button>
+                    <details className="dp-collapse" open={searchingAccounts}>
+                      <summary><span>{list.length ? `${list.length} ${p.name} account${list.length === 1 ? '' : 's'}` : `No ${p.name} accounts`}</span></summary>
+                      <div className="dp-collapse-body">
+                        <div className="cn-list">
+                          {list.length ? list.map((c) => (
+                            <div key={c.id} className="cn-acct">
+                              <span className="cn-av">{(c.account_name || '?')[0].toUpperCase()}</span>
+                              <span style={{ minWidth: 0 }}>
+                                <b title={c.account_name}>{c.account_name}</b>
+                                <small>{p.name}</small>
+                              </span>
+                              <button type="button" className="cn-drop" disabled={!!busy} onClick={() => disconnect(c)}>
+                                {busy === c.id ? '…' : 'Disconnect'}
+                              </button>
+                            </div>
+                          )) : (
+                            <div className="cn-empty">{connections.some((c) => c.platform === p.id) ? 'No accounts match that search.' : `No ${p.name} account yet.`}</div>
+                          )}
                         </div>
-                      )) : (
-                        <div className="cn-empty">{connections.some((c) => c.platform === p.id) ? 'No accounts match that search.' : `No ${p.name} account yet.`}</div>
-                      )}
-                    </div>
+                      </div>
+                    </details>
                     <button
                       type="button"
                       className={list.length ? 'cn-connect ghost' : 'cn-connect'}
@@ -186,20 +191,24 @@ export default function ConnectPage({ session, onContinue, onHistory, onSignOut,
             </div>
 
             {brands.length > 0 && (
-              <div className="cn-brands">
-                <h2>Brands we found</h2>
-                <p className="sub">We matched your connected accounts into {brands.length} brand{brands.length === 1 ? '' : 's'} — you can change this next.</p>
-                {brands.slice(0, 12).map((b) => (
-                  <div key={b.key} className="cn-brand-row">
-                    <b title={b.label}>{b.label}</b>
-                    <span className="cn-dots">
-                      {Object.keys(b.map).map((pid) => <BrandDot key={pid} pid={pid} />)}
-                    </span>
-                    <small style={{ color: 'var(--faint)' }}>{Object.keys(b.map).length} acct</small>
+              <details className="dp-collapse cn-brands-collapse">
+                <summary><span>Brands we found ({brands.length})</span></summary>
+                <div className="dp-collapse-body">
+                  <div className="cn-brands">
+                    <p className="sub">We matched your connected accounts into {brands.length} brand{brands.length === 1 ? '' : 's'} — you can change this next.</p>
+                    {brands.slice(0, 12).map((b) => (
+                      <div key={b.key} className="cn-brand-row">
+                        <b title={b.label}>{b.label}</b>
+                        <span className="cn-dots">
+                          {Object.keys(b.map).map((pid) => <BrandDot key={pid} pid={pid} />)}
+                        </span>
+                        <small style={{ color: 'var(--faint)' }}>{Object.keys(b.map).length} acct</small>
+                      </div>
+                    ))}
+                    {brands.length > 12 && <p className="cn-hint" style={{ marginTop: 10 }}>+ {brands.length - 12} more brands</p>}
                   </div>
-                ))}
-                {brands.length > 12 && <p className="cn-hint" style={{ marginTop: 10 }}>+ {brands.length - 12} more brands</p>}
-              </div>
+                </div>
+              </details>
             )}
           </>
         )}

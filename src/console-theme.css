@@ -2397,3 +2397,103 @@ body:has(#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-
     max-width: 100%;
   }
 }
+
+/* ==========================================================================
+   COLLAPSIBLE DROPDOWNS (.dp-collapse) — REDUCES LONG PAGE SCROLLING
+   ========================================================================== */
+#root .dp-collapse {
+  border: 1px solid var(--line);
+  background: var(--panel2);
+  min-width: 0;
+}
+
+#root .dp-collapse > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 44px;
+  padding: 10px 14px;
+  cursor: pointer;
+  list-style: none;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 650;
+  user-select: none;
+}
+
+#root .dp-collapse > summary::-webkit-details-marker {
+  display: none;
+}
+
+#root .dp-collapse > summary > span:first-child {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+#root .dp-collapse > summary > span:first-child::before {
+  content: "▸";
+  color: var(--go);
+  font-size: 12px;
+  transition: transform 150ms ease;
+}
+
+#root .dp-collapse[open] > summary > span:first-child::before {
+  transform: rotate(90deg);
+}
+
+#root .dp-collapse[open] > summary {
+  border-bottom: 1px solid var(--line);
+}
+
+#root .dp-collapse-action {
+  flex: 0 0 auto;
+  min-height: 30px !important;
+  padding: 4px 10px !important;
+  border: 1px solid var(--line-hard) !important;
+  background: var(--panel) !important;
+  color: var(--ink) !important;
+  font-size: 11.5px !important;
+  font-weight: 600 !important;
+  cursor: pointer;
+}
+
+#root .dp-collapse-body {
+  padding: 12px 14px;
+}
+
+#root .dp-collapse-body > .team-account-group {
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+
+#root .feed-it-collapse-body {
+  display: grid;
+  gap: 12px;
+}
+
+#root .feed-it-sub {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+
+#root .team-media-clear {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: -4px;
+}
+
+#root .team-media-clear button {
+  min-height: 32px !important;
+  padding: 4px 12px !important;
+  font-size: 12px !important;
+}
+
+#root .cn-brands-collapse {
+  margin-top: 16px;
+}
