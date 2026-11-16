@@ -5,6 +5,68 @@ const PLATFORMS = ['youtube', 'instagram', 'facebook', 'x'];
 const norm = (value) => String(value || '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
 const compact = (value) => norm(value).replace(/\s/g, '');
 
+// Famebros Studio | Instagram Tagging List:
+// Canonical per-brand Instagram handles automatically tagged on posts & reels
+// in the automated Drive and team workflows.
+export const FAMEBROS_INSTAGRAM_TAGGING_LIST = Object.freeze([
+  Object.freeze({
+    brandId: 'hair_match_salon',
+    brandName: 'Hair Match Salon',
+    aliases: Object.freeze(['hair match salon', 'hairmatch.salon', '@hairmatch.salon']),
+    handles: Object.freeze(['kuldeepmaurya1209', 'akshadparvalkar', 'nikkpawar00057']),
+  }),
+  Object.freeze({
+    brandId: 'reshine_clinic',
+    brandName: 'Reshine Skin Clinic',
+    aliases: Object.freeze(['reshine clinic', 'reshine skin clinic', 're.shine skin clinic', 'reshine_skin_clinic', 're.shineskinclinic', '@re.shineskinclinic']),
+    handles: Object.freeze(['browsbyavani']),
+  }),
+  Object.freeze({
+    brandId: 'shree_mahalaxmi_kurla',
+    brandName: 'Shree Mahalaxmi Jewellers (SMJ)',
+    aliases: Object.freeze(['shree mahalaxmi jewellers', 'shree mahalaxmi jewellers kurla', 'shree mahalaxmi jewellers (smj)', 'shree mahalaxmi jewellers smj', 'smj', 'shree_mahalaxmi_jewellers_kurla', 'mahalaxmi.jewellers.kurla', '@mahalaxmi.jewellers.kurla']),
+    handles: Object.freeze(['mahalaxmi.jewellers.ghatla']),
+  }),
+  Object.freeze({
+    brandId: 'kanchanmala_chembur',
+    brandName: 'Kanchanmala Jewellers (KMJ)',
+    aliases: Object.freeze(['kanchanmala jewellers', 'kanchanmala jewellers chembur', 'kanchanmala jewellers (kmj)', 'kanchanmala jewellers kmj', 'kmj', 'kanchanmala_jewellers_chembur', 'kanchanmala.jewellers.chembur', '@kanchanmala.jewellers.chembur']),
+    handles: Object.freeze(['mahalaxmi.jewellers.ghatla']),
+  }),
+  Object.freeze({
+    brandId: 'ali_salon',
+    brandName: 'Ali Salon',
+    aliases: Object.freeze(['ali salon', 'ali and hussain salon', 'ali.and.hussain.salon', '@ali.and.hussain.salon']),
+    handles: Object.freeze(['hussainshaikh_13_']),
+  }),
+  Object.freeze({
+    brandId: 'roopali_saree',
+    brandName: 'Roopali Sarees',
+    aliases: Object.freeze(['roopali saree', 'roopali sarees', 'roopali sarees mira road', 'roopali_sarees', 'roopalisarees', '@roopalisarees']),
+    handles: Object.freeze(['abhi19rpl', 'upadhyaynayna']),
+  }),
+  Object.freeze({
+    brandId: 'vj_jewels',
+    brandName: 'Infinity Silver / VJ Jewels',
+    aliases: Object.freeze(['vj jewels', 'infinity silver', 'infinity silver / vj jewels', 'infinity silver by vj jewels', 'infinity silver vj jewels', 'infinity_silver_vj_jewels', 'infinitysilver._', '@infinitysilver._']),
+    handles: Object.freeze(['vjjewels_916']),
+  }),
+  Object.freeze({
+    brandId: 'bhanu_designer',
+    brandName: 'Bhanu Designer',
+    aliases: Object.freeze(['bhanu designer', 'orange bhanu designer', 'orange bhanu designer by sanjay bhanushali', 'bhanu.designer', '@bhanu.designer']),
+    handles: Object.freeze(['viralbhanu09']),
+  }),
+  Object.freeze({
+    brandId: 'zivara_salon',
+    brandName: 'Zivara Salon',
+    aliases: Object.freeze(['zivara salon', 'zivara salon & wellness', 'zivara salon wellness', 'zivara salon thane', 'salon.zivara', '@salon.zivara', 'zivarasalon']),
+    handles: Object.freeze(['salon.zivara']),
+  }),
+]);
+
+const TAGGING_BY_BRAND_ID = new Map(FAMEBROS_INSTAGRAM_TAGGING_LIST.map((entry) => [entry.brandId, entry]));
+
 const BUSINESS_SUFFIXES = new Set([
   'and', 'the', 'by', 'shree', 'sri', 'smt', 'mr', 'mrs', 'dr', 'company', 'co', 'private', 'limited', 'pvt', 'ltd',
   'jeweller', 'jewellers', 'jewelry', 'jewellery', 'salon', 'studio', 'clinic',
@@ -58,7 +120,9 @@ function tokenTypoScore(query, alias) {
 function profileAliases(brand) {
   const deep = getDeepForCompact(brand) || {};
   const social = deep.social_media || {};
+  const taggingEntry = TAGGING_BY_BRAND_ID.get(brand.id);
   const names = [brand.name, brand.id?.replace(/_/g, ' '), ...(brand.aliases || []), brand.ig,
+    ...(taggingEntry?.aliases || []),
     deep.brand_name, deep.public_name, deep.alternate_public_name, deep.alternate_public_identity,
     deep.branch_name ? `${deep.brand_name || brand.name} ${deep.branch_name}` : '',
     deep.branch_name && deep.business?.city ? `${deep.brand_name || brand.name} ${deep.branch_name} ${deep.business.city}` : '',
@@ -230,4 +294,38 @@ export function mapBrandDestinations(brand, connections, selectedPlatforms = [])
     destinations.push(...best.map((entry) => entry.connection));
   }
   return { destinations: [...new Map(destinations.map((entry) => [entry.id, entry])).values()], unresolved };
+}
+
+// Resolve assigned Instagram handles to tag for a brand or connected account
+// from the Famebros Studio Instagram Tagging List.
+export function getAssignedInstagramTags({ brandId = '', brandName = '', accountName = '', accounts = [] } = {}) {
+  const cleanId = String(brandId || '').trim().toLowerCase();
+  if (cleanId && TAGGING_BY_BRAND_ID.has(cleanId)) {
+    return [...TAGGING_BY_BRAND_ID.get(cleanId).handles];
+  }
+  for (const entry of FAMEBROS_INSTAGRAM_TAGGING_LIST) {
+    if (cleanId && entry.aliases.some((alias) => alias.replace(/\s+/g, '_') === cleanId)) {
+      return [...entry.handles];
+    }
+  }
+  const candidates = [
+    brandName,
+    accountName,
+    ...(Array.isArray(accounts) ? accounts.flatMap((acc) => [acc?.account_name, acc?.username, acc?.handle, acc?.platform_account_id]) : []),
+  ].map((val) => String(val || '').trim()).filter(Boolean);
+
+  for (const candidate of candidates) {
+    const cNorm = compact(candidate.replace(/@/g, ' '));
+    if (!cNorm) continue;
+    for (const entry of FAMEBROS_INSTAGRAM_TAGGING_LIST) {
+      if ([entry.brandId, entry.brandName, ...entry.aliases].some((alias) => compact(alias.replace(/@/g, ' ')) === cNorm)) {
+        return [...entry.handles];
+      }
+    }
+    const resolved = resolveDriveBrand(candidate);
+    if (resolved.brand?.id && TAGGING_BY_BRAND_ID.has(resolved.brand.id)) {
+      return [...TAGGING_BY_BRAND_ID.get(resolved.brand.id).handles];
+    }
+  }
+  return [];
 }

@@ -314,21 +314,52 @@ async function waitForInstagramContainer({ id, pageToken, onStage, label = 'vide
   throw new Error(`Instagram is still processing this ${label} after 10 minutes. Check the Instagram account before retrying.`);
 }
 
+export function buildInstagramUserTags(handles = []) {
+  const clean = [...new Set((Array.isArray(handles) ? handles : [])
+    .map((h) => String(h || '').trim().replace(/^@+/, ''))
+    .filter(Boolean))].slice(0, 3);
+  return clean.map((username, idx) => ({
+    username,
+    x: Number((0.25 + (idx * 0.25)).toFixed(2)),
+    y: 0.5,
+  }));
+}
+
+async function createInstagramMediaContainer(igUserId, baseParams, handles = []) {
+  const cleanHandles = [...new Set((Array.isArray(handles) ? handles : [])
+    .map((h) => String(h || '').trim().replace(/^@+/, ''))
+    .filter(Boolean))].slice(0, 3);
+  const userTags = buildInstagramUserTags(cleanHandles);
+  const attempts = cleanHandles.length
+    ? [
+      { ...baseParams, collaborators: cleanHandles, user_tags: userTags },
+      { ...baseParams, collaborators: cleanHandles },
+      { ...baseParams, user_tags: userTags },
+      baseParams,
+    ]
+    : [baseParams];
+  let lastError = 'Instagram container failed';
+  for (const params of attempts) {
+    const cRes = await fetch(`${GRAPH}/${igUserId}/media`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(params), signal: AbortSignal.timeout(30000),
+    });
+    const container = await cRes.json().catch(() => ({}));
+    if (cRes.ok && container?.id) return container;
+    lastError = container?.error?.message || lastError;
+  }
+  throw new Error(lastError);
+}
+
 export async function publishInstagram({ igUserId, pageToken, caption, alt, collabs, locationId, mediaUrl, isVideo, coverUrl, onStage }) {
   if (!mediaUrl) throw new Error('Instagram needs a photo or video. Attach media first.');
-  const createParams = {
+  const baseParams = {
     caption: caption || '',
     access_token: pageToken,
     ...(alt ? { accessibility_caption: String(alt).slice(0, 500) } : {}),
-    ...(Array.isArray(collabs) && collabs.length ? { collaborators: collabs } : {}),
     ...(locationId ? { location_id: String(locationId) } : {}),
     ...(isVideo ? { media_type: 'REELS', video_url: mediaUrl, ...(coverUrl ? { cover_url: coverUrl } : {}) } : { image_url: mediaUrl }),
   };
-  const cRes = await fetch(`${GRAPH}/${igUserId}/media`, {
-    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(createParams), signal: AbortSignal.timeout(30000),
-  });
-  const container = await cRes.json();
-  if (!cRes.ok) throw new Error(container.error?.message || 'Instagram container failed');
+  const container = await createInstagramMediaContainer(igUserId, baseParams, collabs);
   // Instagram can accept container creation before the media is actually
   // ready to publish. Publishing immediately can fail with "Media ID is not
   // available" for photos as well as Reels, so wait for every container.
@@ -376,29 +407,36 @@ export async function publishInstagramCarousel({ igUserId, pageToken, caption, c
   if (urls.length < 2) throw new Error('Carousel needs at least 2 photos');
   if (urls.length > 10) throw new Error('Carousel allows up to 10 photos');
   const childIds = [];
-  for (const url of urls) {
-    const cRes = await fetch(`${GRAPH}/${igUserId}/media`, {
-      method: 'POST', headers: { 'Content-Type': 'application/json' }, signal: AbortSignal.timeout(30000),
-      body: JSON.stringify({ image_url: url, is_carousel_item: true, access_token: pageToken }),
-    });
-    const c = await cRes.json();
-    if (!cRes.ok) throw new Error(c.error?.message || 'Instagram carousel item failed');
-    await waitForInstagramContainer({ id: c.id, pageToken, label: 'carousel photo' });
-    childIds.push(c.id);
+  const firstItemTags = buildInstagramUserTags(collabs);
+  for (let index = 0; index < urls.length; index++) {
+    const url = urls[index];
+    const baseItemParams = { image_url: url, is_carousel_item: true, access_token: pageToken };
+    const itemAttempts = index === 0 && firstItemTags.length
+      ? [{ ...baseItemParams, user_tags: firstItemTags }, baseItemParams]
+      : [baseItemParams];
+    let itemContainer = null;
+    let itemErr = 'Instagram carousel item failed';
+    for (const itemParams of itemAttempts) {
+      const cRes = await fetch(`${GRAPH}/${igUserId}/media`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, signal: AbortSignal.timeout(30000),
+        body: JSON.stringify(itemParams),
+      });
+      const c = await cRes.json().catch(() => ({}));
+      if (cRes.ok && c?.id) { itemContainer = c; break; }
+      itemErr = c?.error?.message || itemErr;
+    }
+    if (!itemContainer) throw new Error(itemErr);
+    await waitForInstagramContainer({ id: itemContainer.id, pageToken, label: 'carousel photo' });
+    childIds.push(itemContainer.id);
   }
-  const pRes = await fetch(`${GRAPH}/${igUserId}/media`, {
-    method: 'POST', headers: { 'Content-Type': 'application/json' }, signal: AbortSignal.timeout(30000),
-    body: JSON.stringify({
-      media_type: 'CAROUSEL',
-      children: childIds.join(','),
-      caption: caption || '',
-      access_token: pageToken,
-      ...(Array.isArray(collabs) && collabs.length ? { collaborators: collabs } : {}),
-      ...(locationId ? { location_id: String(locationId) } : {}),
-    }),
-  });
-  const parent = await pRes.json();
-  if (!pRes.ok) throw new Error(parent.error?.message || 'Instagram carousel container failed');
+  const baseParentParams = {
+    media_type: 'CAROUSEL',
+    children: childIds.join(','),
+    caption: caption || '',
+    access_token: pageToken,
+    ...(locationId ? { location_id: String(locationId) } : {}),
+  };
+  const parent = await createInstagramMediaContainer(igUserId, baseParentParams, collabs);
   await waitForInstagramContainer({ id: parent.id, pageToken, label: 'carousel' });
   const pub = await fetch(`${GRAPH}/${igUserId}/media_publish`, {
     method: 'POST', headers: { 'Content-Type': 'application/json' }, signal: AbortSignal.timeout(30000),

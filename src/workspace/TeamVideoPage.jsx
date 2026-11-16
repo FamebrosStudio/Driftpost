@@ -6,7 +6,12 @@ import { requestCaptions, mapResponse } from '../stage2/ai.js';
 import { saveCaptionDraft, readStageSelection } from '../stage2/captionDraftScope.js';
 import { readVault, writeVault } from '../stage2/mediaVault.js';
 import { makeCover } from '../stage3/CoverPicker.jsx';
-import { parseInstagramCollaborators } from '../stage3/instagramCollaborators.js';
+import {
+  FAMEBROS_INSTAGRAM_TAGGING_LIST,
+  formatAssignedInstagramTags,
+  getAssignedInstagramTagsForBrand,
+  parseInstagramCollaborators,
+} from '../stage3/instagramCollaborators.js';
 import { WorkspaceNav } from './Workspace.jsx';
 
 const PLATFORM_LABELS = Object.fromEntries(PLATFORMS.map(({ id, name }) => [id, name]));
@@ -145,12 +150,14 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut, onOpenRe
     setSelectedIds((old) => old.includes(account.id) ? old.filter((id) => id !== account.id) : [...old, account.id]);
   };
   const selectBrand = (key) => {
+    const picked = brands.find((item) => item.key === key);
+    const assigned = formatAssignedInstagramTags({ brandId: key, brandName: picked?.label });
     setBrandKey(key);
     setSelectedIds([]);
     setConfirmedAccountIds([]);
     setCrosspost(false);
     setInstagramStory(false);
-    setCollaborators('');
+    setCollaborators(assigned);
   };
   const selectVideo = (video) => {
     if (!video) return;
@@ -258,8 +265,10 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut, onOpenRe
     if (!chosen.length) return setError('Choose at least one account to publish to.');
     if (crosspost && !(selectedPlatforms.includes('instagram') && selectedPlatforms.includes('facebook'))) return setError('Cross-posting needs at least one selected Instagram and Facebook account.');
     if (instagramStory && !selectedPlatforms.includes('instagram')) return setError('Select an Instagram account to publish a Story.');
-    if (collaborators && selectedPlatforms.includes('instagram')) {
-      const validation = parseInstagramCollaborators(collaborators);
+    const assignedBrandTags = formatAssignedInstagramTags({ brandId: brandKey, brandName: brand.label, accounts: chosen });
+    const effectiveCollaborators = (collaborators.trim() || assignedBrandTags).trim();
+    if (effectiveCollaborators && selectedPlatforms.includes('instagram')) {
+      const validation = parseInstagramCollaborators(effectiveCollaborators);
       if (validation.error) return setError(validation.error);
     }
     if (pendingCoverIds.current.size) return setError('Wait for the selected cover image to finish preparing.');
@@ -270,7 +279,7 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut, onOpenRe
     const snapshot = {
       id, createdAt: Date.now(), status: 'analyzing', message: 'Extracting frames and transcribing speech…',
       file, brandKey, brand: brand.label, accountIds: chosen.map((item) => item.id), platforms: [...selectedPlatforms],
-      brief: brief.trim(), crosspost, instagramStory, collaborators: collaborators.trim(), autoPublish,
+      brief: brief.trim(), crosspost, instagramStory, collaborators: effectiveCollaborators, autoPublish,
       manualCovers: { thumb: youtubeThumb, instagram: instagramCover, facebook: facebookCover },
     };
     setJobs((current) => [{ id, file_name: file.name, brand: brand.label, status: 'analyzing', message: snapshot.message, createdAt: snapshot.createdAt, autoPublish, brandKey, accountIds: snapshot.accountIds, platforms: snapshot.platforms, brief: snapshot.brief, crosspost, instagramStory, collaborators: snapshot.collaborators }, ...current]);
@@ -366,12 +375,17 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut, onOpenRe
         {driveState.connected ? <div className="drive-intake-ready"><b>Drive connected · {driveState.google_email}</b><a href={driveState.folder_url} target="_blank" rel="noreferrer">Open Driftpost Video Intake folder ↗</a></div>
           : <div className="drive-intake-connect"><p>{driveState.loading ? 'Checking Google Drive setup…' : driveState.error || 'Connect the Famebros Drive account to turn on automatic video intake.'}</p><button type="button" onClick={connectDrive} disabled={driveBusy || driveState.loading}>{driveBusy ? 'Opening Google…' : 'Connect Google Drive'}</button></div>}
         <details className="drive-intake-guide"><summary>How to name uploads</summary><div className="drive-intake-guide-body"><p>Put the brand or connected account name in the filename. For example:</p><p><code>@mahalaxmi.jewellers.kurla.mp4</code></p><p>To target more than one brand, separate names with commas. To limit platforms, add <code>-- facebook,instagram</code> before the extension. Driftpost matches the names to your connected accounts and checks each video against its brand. If it cannot safely match a brand, it stops the post and explains what to correct.</p><p>Photo carousels: use the same destination in each filename with an order number (for example, <code>Brand 01.jpg</code>, <code>Brand 02.jpg</code>). Upload up to 10 JPEG or PNG images. The inbox groups them after uploads settle.</p></div></details>
+        <details className="drive-intake-guide"><summary>Famebros Studio · Automatic Instagram Tagging List ({FAMEBROS_INSTAGRAM_TAGGING_LIST.length} brands)</summary><div className="drive-intake-guide-body"><p><strong>TEAM INSTRUCTION:</strong> Tag the assigned accounts in relevant brand posts and reels. Verify handles in Instagram before publishing. Driftpost automatically applies and verifies these handles whenever a matching brand is processed via Google Drive or Team Video:</p><ul>{FAMEBROS_INSTAGRAM_TAGGING_LIST.map((entry) => <li key={entry.brandId}><strong>{entry.number}. {entry.brandName}:</strong> {entry.handles.map((h) => `@${h}`).join(', ')}</li>)}</ul></div></details>
         <div className="drive-intake-jobs" aria-live="polite"><div className="drive-jobs-heading"><b>Live Drive inbox and posting status</b><button type="button" onClick={() => setRetryTick((tick) => tick + 1)}>Refresh now</button></div>{driveJobs.length ? driveJobs.slice(0, 12).map((job) => {
           const progress = job.result?.progress;
           const isCarousel = job.result?.media_kind === 'carousel' || job.mime_type === 'image/carousel';
           const timestamp = new Date(job.updated_at || job.created_at).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+          const autoInstagramTags = (Array.isArray(job.result?.instagram_tags) && job.result.instagram_tags.length
+            ? job.result.instagram_tags
+            : getAssignedInstagramTagsForBrand({ brandId: job.result?.brand_id, brandName: job.account_name, accountName: job.file_name })
+          ).map((h) => `@${String(h).replace(/^@+/, '')}`);
           return <div key={job.id} className={!!job.result?.review ? 'drive-job-needs-review' : ''}>
-            <span><strong>{job.file_name}</strong><small>{job.account_name} · {(job.platforms || []).join(', ') || 'Destination needs correction'} · {isCarousel ? `${job.result?.source_drive_files?.length || 'Photo'}-image carousel` : job.mime_type || 'Video'} · {(Number(job.file_size || 0) / 1024 / 1024).toFixed(1)} MB</small></span>
+            <span><strong>{job.file_name}</strong><small>{job.account_name} · {(job.platforms || []).join(', ') || 'Destination needs correction'} · {isCarousel ? `${job.result?.source_drive_files?.length || 'Photo'}-image carousel` : job.mime_type || 'Video'} · {(Number(job.file_size || 0) / 1024 / 1024).toFixed(1)} MB{autoInstagramTags.length ? ` · Auto-tags: ${autoInstagramTags.join(', ')}` : ''}</small></span>
            <em className={`drive-job-status ${job.status || 'unknown'}`}>{job.result?.brand_reviews?.length ? 'brand decision needed' : job.result?.review ? 'needs correction' : String(job.status || 'unknown').replaceAll('_', ' ')}</em>
              <small className="drive-job-progress">{progress?.detail || (job.status === 'queued' ? 'Waiting for the intake worker…' : job.status === 'publishing' ? 'Publishing to selected accounts…' : job.status === 'completed' ? 'Published successfully.' : job.status === 'partial' ? 'Some accounts published; check the post history.' : job.status === 'review' || job.result?.brand_reviews?.length ? 'Held before publishing. Open Video review to inspect the video and decide.' : job.status === 'failed' ? 'Needs attention.' : job.status === 'stopped' ? 'Stopped; this video was not published.' : 'Preparing media…')} · Updated {timestamp}</small>
             {!!progress?.destinations?.length && <small className="drive-job-destinations">{progress.destinations.map((target) => `${target.platform} · ${target.account}: ${target.status}${target.error ? ` (${target.error})` : ''}`).join('  |  ')}</small>}
@@ -418,7 +432,7 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut, onOpenRe
             {file && selectedPlatforms.includes('instagram') && <TeamCoverField title="Instagram Reel cover" value={instagramCover} setValue={setInstagramCover} platform="instagram" setError={setError} setBusy={(busy) => setCoverBusy('instagram', busy)} />}
             {file && selectedPlatforms.includes('facebook') && <TeamCoverField title="Facebook video cover" value={facebookCover} setValue={setFacebookCover} platform="facebook" setError={setError} setBusy={(busy) => setCoverBusy('facebook', busy)} />}
             {selectedPlatforms.includes('instagram') && <label className="team-option"><input type="checkbox" checked={instagramStory} onChange={(event) => setInstagramStory(event.target.checked)} /><span><b>Also publish as an Instagram Story</b><small>Stories expire after 24 hours and use the selected Instagram account(s).</small></span></label>}
-            {selectedPlatforms.includes('instagram') && <label className="team-field"><span>Instagram collaborators (up to 3)</span><input value={collaborators} onChange={(event) => setCollaborators(event.target.value)} placeholder="handles separated by commas" aria-invalid={!!collaborators && !!parseInstagramCollaborators(collaborators).error} /><small>{parseInstagramCollaborators(collaborators).error || 'Meta must accept each handle and the account must have collaborator access.'}</small></label>}
+            {selectedPlatforms.includes('instagram') && <label className="team-field"><span>Instagram tags &amp; collaborators (up to 3)</span><input value={collaborators} onChange={(event) => setCollaborators(event.target.value)} placeholder="handles separated by commas" aria-invalid={!!collaborators && !!parseInstagramCollaborators(collaborators).error} /><small>{parseInstagramCollaborators(collaborators).error || (brand && formatAssignedInstagramTags({ brandId: brandKey, brandName: brand.label }) ? `Assigned handles for ${brand.label} (${formatAssignedInstagramTags({ brandId: brandKey, brandName: brand.label })}) are applied automatically and verified in Instagram before publishing.` : 'Meta verifies each handle in Instagram before publishing.')}</small></label>}
             {selectedPlatforms.includes('instagram') && selectedPlatforms.includes('facebook') && <label className="team-option"><input type="checkbox" checked={crosspost} onChange={(event) => setCrosspost(event.target.checked)} /><span><b>Cross-post Instagram to Facebook</b><small>Use the selected Facebook accounts as the mirrored destination.</small></span></label>}
           </div>
           <label className="team-option team-auto"><input type="checkbox" checked={autoPublish} onChange={(event) => setAutoPublish(event.target.checked)} /><span><b>Publish automatically after analysis</b><small>Driftpost validates every selected destination before publishing. Turn this off to prepare drafts without publishing.</small></span></label>

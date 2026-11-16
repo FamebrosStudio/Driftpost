@@ -10,6 +10,7 @@ import { generateCaptions, videoEvidenceSampleTimes } from './ai.js';
 import { uploadMediaFile } from './media-io.js';
 import { getBrandById, resolveBrand } from './brand-memory/index.js';
 import { canUsePrivateBrandData } from './brand-access.js';
+import { getAssignedInstagramTags } from './brand-routing.js';
 
 const execFileAsync = promisify(execFile);
 const MAX_VIDEO_BYTES = 400 * 1024 * 1024;
@@ -370,6 +371,25 @@ export async function processIntakeJob(supabase, job, options = {}) {
       if (connection.platform === 'instagram') {
         body.ig_caption = String(byPlatform.instagram?.caption || '').trim();
         body.text = body.ig_caption;
+        const assignedTags = getAssignedInstagramTags({
+          brandId: captionTarget?.brand?.id || job.result?.brand_id,
+          brandName: captionTarget?.name || captionTarget?.brand?.name || job.account_name,
+          accountName: connection.account_name,
+          accounts: [connection],
+        });
+        const overrideTags = Array.isArray(job.result?.review_approval?.instagram_tags)
+          ? job.result.review_approval.instagram_tags
+          : Array.isArray(captionTarget?.instagram_tags)
+            ? captionTarget.instagram_tags
+            : Array.isArray(job.result?.instagram_tags)
+              ? job.result.instagram_tags
+              : [];
+        const igTags = [...new Set((overrideTags.length ? overrideTags : assignedTags).map((h) => String(h || '').trim().replace(/^@+/, '')).filter(Boolean))].slice(0, 3);
+        if (igTags.length) {
+          body.ig_collabs_enabled = '1';
+          body.ig_collabs = igTags.join(',');
+          body.ig_user_tags = igTags.join(',');
+        }
       } else if (connection.platform === 'facebook') {
         body.fb_message = String(byPlatform.facebook?.message || '').trim();
         body.text = body.fb_message;

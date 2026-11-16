@@ -7,7 +7,7 @@ import { promisify } from 'node:util';
 import { decryptJson, encryptJson } from './crypto.js';
 import { processIntakeJob } from './telegram-intake.js';
 import { inferLikelyVideoBrands } from './ai.js';
-import { mapBrandDestinations, matchDriveAccounts, resolveDriveBrand } from './brand-routing.js';
+import { getAssignedInstagramTags, mapBrandDestinations, matchDriveAccounts, resolveDriveBrand } from './brand-routing.js';
 
 const execFileAsync = promisify(execFile);
 const TABLE = 'google_drive_video_jobs';
@@ -251,11 +251,22 @@ async function enqueueFiles(supabase, connection, files) {
       target.destinations.push(...destinations);
       targetsByKey.set(key, target);
     }
-    const targetBrands = [...targetsByKey.values()].map((target) => ({
-      brand_id: target.brand?.id || null,
-      brand_name: target.brand?.name || accountNames.find((name) => matchDriveAccounts(name, target.destinations).destinations.length) || parsed.accountName,
-      destination_connection_ids: [...new Set(target.destinations.map((item) => item.id))],
-    }));
+    const targetBrands = [...targetsByKey.values()].map((target) => {
+      const brandName = target.brand?.name || accountNames.find((name) => matchDriveAccounts(name, target.destinations).destinations.length) || parsed.accountName;
+      const instagramTags = getAssignedInstagramTags({
+        brandId: target.brand?.id,
+        brandName,
+        accountName: parsed.accountName,
+        accounts: target.destinations,
+      });
+      return {
+        brand_id: target.brand?.id || null,
+        brand_name: brandName,
+        destination_connection_ids: [...new Set(target.destinations.map((item) => item.id))],
+        ...(instagramTags.length ? { instagram_tags: instagramTags } : {}),
+      };
+    });
+    const allInstagramTags = [...new Set(targetBrands.flatMap((item) => item.instagram_tags || []))].slice(0, 3);
     let resolvedDestinations = [...new Map([...targetsByKey.values()].flatMap((target) => target.destinations).map((item) => [item.id, item])).values()];
     if (batch.kind === 'image') resolvedDestinations = resolvedDestinations.filter((item) => ['instagram', 'facebook', 'x'].includes(item.platform));
     const autoPlatforms = [...new Set(resolvedDestinations.map((item) => item.platform))];
@@ -296,6 +307,7 @@ async function enqueueFiles(supabase, connection, files) {
         target_brands: targetBrands,
         ...(targetBrands.length === 1 && targetBrands[0].brand_id ? { brand_id: targetBrands[0].brand_id } : {}),
         ...(targetBrands.length === 1 && !targetBrands[0].brand_id ? { generic_account_target: true } : {}),
+        ...(allInstagramTags.length ? { instagram_tags: allInstagramTags } : {}),
         destination_connection_ids: resolvedDestinations.map((item) => item.id),
         ...(needsBrandInference ? { brand_resolution_required: true, requested_brand_names: requestedNames } : {}),
         ...(batch.kind === 'image' ? { media_kind: 'carousel', source_drive_files: batchFiles.map((item) => ({ id: item.id, name: item.name, mime_type: item.mimeType, size: Number(item.size) || 0 })) } : {}),

@@ -4,6 +4,7 @@ import { api, apiRequestUrl, PLATFORMS } from '../lib.js';
 import { mapResponse, requestCaptions } from '../stage2/ai.js';
 import { readStageSelection, saveCaptionDraft } from '../stage2/captionDraftScope.js';
 import { readVault, writeVault } from '../stage2/mediaVault.js';
+import { formatAssignedInstagramTags, parseInstagramCollaborators } from '../stage3/instagramCollaborators.js';
 import { WorkspaceNav } from './Workspace.jsx';
 
 const LEGACY_BRAND_REVIEW_ERROR = 'Automatic brand verification stopped the post, but Driftpost could not save the result.';
@@ -154,7 +155,16 @@ export default function TeamVideoReviewPage({ session, onNavigate, onSignOut, on
           if (platform === 'youtube' && !String(captions.youtube.title || '').trim()) throw new Error('Add a YouTube title before sending to YouTube.');
         }
         const group = { id: selectedJob.id, name: `Reviewed video · ${selectedBrand.name}`, accountIds: selectedConnections.map((item) => item.id), platforms: selectedPlatforms, workflow: 'team_video' };
-        const cfg = { instagram: { story: false, collabs: '', collabsEnabled: false }, facebook: {}, youtube: {}, x: {} };
+        const autoIgTags = formatAssignedInstagramTags({ brandId: selectedBrand.id, brandName: selectedBrand.name, accounts: selectedConnections });
+        const parsedIgTags = parseInstagramCollaborators(autoIgTags).usernames;
+        const cfg = {
+          instagram: {
+            story: false,
+            collabs: parsedIgTags.map((h) => `@${h}`).join(', '),
+            collabsEnabled: parsedIgTags.length > 0,
+          },
+          facebook: {}, youtube: {}, x: {},
+        };
         await writeVault(`driftpost-stage2-media:${userId}`, localMedia);
         const restored = await readVault(`driftpost-stage2-media:${userId}`);
         if (!restored?.files?.some((entry) => entry.blob instanceof Blob)) throw new Error('Could not restore the video for publishing. Free browser storage and retry.');
@@ -177,9 +187,16 @@ export default function TeamVideoReviewPage({ session, onNavigate, onSignOut, on
         onOpenStageThree?.();
         return;
       }
+      const assignedDriveTags = parseInstagramCollaborators(formatAssignedInstagramTags({ brandId, brandName: selectedBrand?.name, accounts: selectedConnections })).usernames;
       const result = await api(`/api/intake/drive/jobs/${encodeURIComponent(selectedJob.id)}/review`, token, {
         method: 'POST',
-        body: JSON.stringify({ action, brand_id: brandId, connection_ids: connectionIds, captions }),
+        body: JSON.stringify({
+          action,
+          brand_id: brandId,
+          connection_ids: connectionIds,
+          captions,
+          ...(assignedDriveTags.length ? { instagram_tags: assignedDriveTags } : {}),
+        }),
       });
       setNotice(action === 'send' ? 'Approved and queued for publishing. It will leave this review inbox.' : 'Stopped. This video will not be published.');
       setSelectedId('');

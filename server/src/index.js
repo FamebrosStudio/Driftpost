@@ -2039,11 +2039,32 @@ app.post('/api/intake/drive/jobs/:jobId/review', requireUser, async (req, res) =
     if (platform === 'x' && Array.from(String(text)).length > 280) return res.status(400).json({ error: 'X captions must be 280 characters or fewer.' });
     if (platform === 'youtube' && (!String(captions.youtube?.title || '').trim() || String(captions.youtube.title).length > 100)) return res.status(400).json({ error: 'Add a YouTube title of 100 characters or fewer.' });
   }
-  const reviewApproval = { approved: true, approved_by: req.user.id, approved_at: new Date().toISOString(), brand_id: brand.id, captions };
-  const target = { brand_id: brand.id, brand_name: brand.name, destination_connection_ids: connectionIds };
+  const { getAssignedInstagramTags } = await import('./brand-routing.js');
+  const rawTags = Array.isArray(req.body?.instagram_tags)
+    ? req.body.instagram_tags.join(',')
+    : typeof req.body?.instagram_tags === 'string'
+      ? req.body.instagram_tags
+      : '';
+  const parsedManualTags = rawTags ? parseInstagramCollaborators(rawTags).usernames : [];
+  const autoTags = getAssignedInstagramTags({ brandId: brand.id, brandName: brand.name, accounts: connections });
+  const instagramTags = (parsedManualTags.length ? parsedManualTags : autoTags).slice(0, 3);
+  const reviewApproval = {
+    approved: true,
+    approved_by: req.user.id,
+    approved_at: new Date().toISOString(),
+    brand_id: brand.id,
+    captions,
+    ...(instagramTags.length ? { instagram_tags: instagramTags } : {}),
+  };
+  const target = {
+    brand_id: brand.id,
+    brand_name: brand.name,
+    destination_connection_ids: connectionIds,
+    ...(instagramTags.length ? { instagram_tags: instagramTags } : {}),
+  };
   const { error: updateError } = await supabase.from('google_drive_video_jobs').update({
     account_name: brand.name, platforms, status: 'queued', error: null,
-    result: { ...job.result, target_brands: [target], brand_id: brand.id, destination_connection_ids: connectionIds, review_approval: reviewApproval, review_decision: { action: 'send', user_id: req.user.id, decided_at: reviewApproval.approved_at } },
+    result: { ...job.result, target_brands: [target], brand_id: brand.id, ...(instagramTags.length ? { instagram_tags: instagramTags } : {}), destination_connection_ids: connectionIds, review_approval: reviewApproval, review_decision: { action: 'send', user_id: req.user.id, decided_at: reviewApproval.approved_at } },
     updated_at: new Date().toISOString(),
   }).eq('id', job.id).eq('owner_user_id', req.user.id).in('status', ['review', 'failed']);
   if (updateError) return res.status(503).json({ error: 'Could not queue this approved post. Retry once the service is available.' });
@@ -2758,7 +2779,11 @@ async function runPublish(job, conn, payload, body, userId) {
       const tokens = dec(conn.encrypted_tokens);
       const pageToken = tokens.access_token;
       const pageId = tokens.page_id || conn.platform_account_id;
-      const igCollabs = enabledInstagramCollaborators(body, parseInstagramCollaborators).usernames;
+      let igCollabs = enabledInstagramCollaborators(body, parseInstagramCollaborators).usernames;
+      if (!igCollabs.length && (body.google_drive_intake_job_id || body.telegram_intake_job_id)) {
+        const { getAssignedInstagramTags } = await import('./brand-routing.js');
+        igCollabs = getAssignedInstagramTags({ accountName: conn.account_name, accounts: [conn] }).slice(0, 3);
+      }
       const otherConn = async (platform, id, linkedPageId = null) => {
         const matchesPage = (candidate) => {
           if (!candidate || !linkedPageId) return !!candidate;

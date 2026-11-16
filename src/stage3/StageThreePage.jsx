@@ -6,7 +6,7 @@ import { requestCaptions, mapResponse, approveCaption } from '../stage2/ai.js';
 import { composeOutput } from '../stage2/PlatformOutputCard.jsx';
 import { photoToVideo } from './photoVideo.js';
 import { instagramMediaFiles, facebookMediaFiles } from './instagramMedia.js';
-import { parseInstagramCollaborators } from './instagramCollaborators.js';
+import { formatAssignedInstagramTags, parseInstagramCollaborators } from './instagramCollaborators.js';
 import { logCaptions, logPost } from '../history/log.js';
 import ProgressSteps from '../ProgressSteps.jsx';
 import PlatformTabs from './PlatformTabs.jsx';
@@ -315,6 +315,27 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
   const brandLabel = isTeamWorkflow ? s1.teamBrandLabel || brand?.label || '' : s1.type === 'common_brand' ? brand?.label || '' : '';
 
   useEffect(() => {
+    if (!brandLabel && !s1.brandKey) return;
+    const assigned = formatAssignedInstagramTags({ brandId: s1.brandKey, brandName: brandLabel });
+    if (!assigned) return;
+    setCfg((current) => {
+      if (current?.instagram?.collabs !== undefined && current?.instagram?.collabs !== '') return current;
+      if (current?.instagram?.collabsTouched) return current;
+      const next = {
+        ...current,
+        instagram: {
+          ...DEFAULT_CFG.instagram,
+          ...(current?.instagram || {}),
+          collabs: assigned,
+          collabsEnabled: true,
+        },
+      };
+      save(scopedKey('driftpost-stage3-cfg', userId), next);
+      return next;
+    });
+  }, [brandLabel, s1.brandKey, userId]);
+
+  useEffect(() => {
     if (!platforms.includes(tab)) setTab(platforms[0] || '');
   }, [platforms, tab]);
 
@@ -418,7 +439,8 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
     return '';
   };
   const onCfg = (pid, patch) => setCfg((c) => {
-    const n = { ...c, [pid]: { ...cfgFor(pid), ...patch } };
+    const extra = pid === 'instagram' && ('collabs' in patch || 'collabsEnabled' in patch) ? { collabsTouched: true } : {};
+    const n = { ...c, [pid]: { ...cfgFor(pid), ...patch, ...extra } };
     if (pid === 'instagram' && patch.shareFb) n.facebook = { ...cfgFor('facebook'), syndIg: false };
     if (pid === 'facebook' && patch.syndIg) n.instagram = { ...cfgFor('instagram'), shareFb: false };
     save(scopedKey('driftpost-stage3-cfg', userId), n);
