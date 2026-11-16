@@ -71,8 +71,9 @@ export function stripUploadMarkers(value) {
   return title;
 }
 
-export function parseDestination(fileName) {
-  const base = String(fileName || '').split(/[\\/]/).at(-1).trim().replace(/\.[a-z0-9]{2,8}$/i, '').trim();
+export function parseDestination(fileName, { stripExtension = true } = {}) {
+  const rawName = String(fileName || '').split(/[\\/]/).at(-1).trim();
+  const base = stripExtension ? rawName.replace(/\.[a-z0-9]{2,8}$/i, '').trim() : rawName;
   const title = stripUploadMarkers(base);
   const parts = title.split(' -- ');
   if (parts.length >= 2) {
@@ -191,13 +192,39 @@ export function normalizeIntakeImageMime(file) {
   return mimeFromFileName(file?.name) || mime;
 }
 
+async function listSubfolderImages(accessToken, subfolderId) {
+  const images = [];
+  let pageToken = '';
+  do {
+    const params = new URLSearchParams({
+      q: `'${String(subfolderId).replace(/'/g, "\\'")}' in parents and trashed = false and mimeType != 'application/vnd.google-apps.folder'`,
+      fields: 'nextPageToken,files(id,name,mimeType,size,createdTime,modifiedTime)',
+      pageSize: '100',
+      orderBy: 'name',
+      supportsAllDrives: 'true',
+      includeItemsFromAllDrives: 'true',
+      ...(pageToken ? { pageToken } : {}),
+    });
+    const response = await fetch(`https://www.googleapis.com/drive/v3/files?${params}`, { headers: { Authorization: `Bearer ${accessToken}` }, signal: AbortSignal.timeout(30_000) });
+    if (!response.ok) return images;
+    const data = await response.json().catch(() => ({}));
+    for (const item of data.files || []) {
+      if (isIntakeImageFile(item)) {
+        images.push({ ...item, mimeType: normalizeIntakeImageMime(item) });
+      }
+    }
+    pageToken = data.nextPageToken || '';
+  } while (pageToken && images.length < 100);
+  return images;
+}
+
 async function listDriveFiles(accessToken, folderId, connectedAt) {
   const files = [];
   let pageToken = '';
   const since = new Date(connectedAt || 0).toISOString();
   do {
     const params = new URLSearchParams({
-      q: `'${folderId.replace(/'/g, "\\'")}' in parents and trashed = false and mimeType != 'application/vnd.google-apps.folder' and (createdTime > '${since}' or modifiedTime > '${since}')`,
+      q: `'${folderId.replace(/'/g, "\\'")}' in parents and trashed = false and (createdTime > '${since}' or modifiedTime > '${since}')`,
       fields: 'nextPageToken,files(id,name,mimeType,size,createdTime,modifiedTime)',
       pageSize: '100',
       orderBy: 'modifiedTime desc',
@@ -211,6 +238,11 @@ async function listDriveFiles(accessToken, folderId, connectedAt) {
     files.push(...(data.files || []));
     pageToken = data.nextPageToken || '';
   } while (pageToken && files.length < 1000);
+  for (const item of files) {
+    if (item?.mimeType === 'application/vnd.google-apps.folder') {
+      item.children = await listSubfolderImages(accessToken, item.id).catch(() => []);
+    }
+  }
   return files;
 }
 
@@ -219,15 +251,18 @@ export async function enqueueFiles(supabase, connection, files) {
     .select('id, user_id, platform, platform_account_id, account_name, encrypted_tokens')
     .eq('user_id', connection.user_id);
   if (connectionsError) throw new Error('Could not read the connected publishing accounts.');
+  const { data: priorJobs } = await supabase.from(TABLE).select('drive_file_id, result').eq('owner_user_id', connection.user_id).order('created_at', { ascending: false }).limit(2000);
+  const seenIds = new Set((priorJobs || []).flatMap((job) => [job.drive_file_id, ...(Array.isArray(job.result?.source_drive_files) ? job.result.source_drive_files.map((file) => file.id) : [])]));
   const imageFiles = files.filter(isIntakeImageFile).map((file) => ({ ...file, mimeType: normalizeIntakeImageMime(file) }));
   const videoFiles = files.filter(isIntakeVideoFile).map((file) => ({
     ...file,
     mimeType: String(file.mimeType || '').toLowerCase().startsWith('video/') ? file.mimeType : 'video/mp4',
   }));
-  // Editors can drop up to 10 photos for one carousel. Images sharing the
-  // account name and arriving in the same short upload batch are one post.
-  // Wait until the batch has been quiet for 90 seconds so sequential uploads
-  // are not split into separate posts.
+  const folderEntries = files.filter((file) => file?.mimeType === 'application/vnd.google-apps.folder' && Array.isArray(file.children) && file.children.length > 0);
+  const readyFolders = folderEntries.filter((folder) => !seenIds.has(folder.id) && folder.children.every((img) => Date.now() - Date.parse(img.createdTime || img.modifiedTime || 0) >= 90_000));
+  // Editors can drop up to 10 photos for one carousel (either in a brand-named
+  // folder or as flat files sharing the account name). Wait until the batch has
+  // been quiet for 90 seconds so sequential uploads are not split.
   const groups = new Map();
   for (const file of imageFiles) {
     const parsed = parseDestination(file.name);
@@ -241,13 +276,20 @@ export async function enqueueFiles(supabase, connection, files) {
     groups.set(key, group);
   }
   const readyGroups = [...groups.values()].filter((group) => group.files.every((file) => Date.now() - Date.parse(file.createdTime || file.modifiedTime || 0) >= 90_000));
-  const batches = [...videoFiles.map((file) => ({ files: [file], parsed: parseDestination(file.name), kind: 'video' })),
-    ...readyGroups.map((group) => ({ files: group.files.sort((a, b) => String(a.name).localeCompare(String(b.name), undefined, { numeric: true })), parsed: group.parsed, kind: 'image' }))];
-  const { data: priorJobs } = await supabase.from(TABLE).select('drive_file_id, result').eq('owner_user_id', connection.user_id).order('created_at', { ascending: false }).limit(2000);
-  const seenIds = new Set((priorJobs || []).flatMap((job) => [job.drive_file_id, ...(Array.isArray(job.result?.source_drive_files) ? job.result.source_drive_files.map((file) => file.id) : [])]));
+  const batches = [
+    ...videoFiles.map((file) => ({ files: [file], parsed: parseDestination(file.name), kind: 'video' })),
+    ...readyFolders.map((folder) => ({
+      files: [...folder.children].sort((a, b) => String(a.name).localeCompare(String(b.name), undefined, { numeric: true })),
+      parsed: parseDestination(folder.name, { stripExtension: false }),
+      kind: 'image',
+      folderId: folder.id,
+    })),
+    ...readyGroups.map((group) => ({ files: group.files.sort((a, b) => String(a.name).localeCompare(String(b.name), undefined, { numeric: true })), parsed: group.parsed, kind: 'image' })),
+  ];
   for (const batch of batches) {
     // A partially seen image group must never be re-enqueued as a smaller
     // second carousel on the next folder scan.
+    if (batch.folderId && seenIds.has(batch.folderId)) continue;
     const batchFiles = batch.files.filter((item) => !seenIds.has(item.id));
     if (!batchFiles.length) continue;
     const file = batchFiles[0];
@@ -338,7 +380,7 @@ export async function enqueueFiles(supabase, connection, files) {
       kind: batch.kind, size, targetErrors, destinations: resolvedDestinations,
     }) && !(batch.kind === 'video' && size > MAX_VIDEO_BYTES);
     const { error } = await supabase.from(TABLE).insert({
-      drive_file_id: file.id,
+      drive_file_id: batch.folderId || file.id,
       owner_user_id: connection.user_id,
       drive_folder_id: connection.drive_folder_id,
       file_name: batch.kind === 'image' ? `${parsed.accountName} · ${batchFiles.length} image carousel` : file.name || 'incoming-video.mp4',

@@ -166,3 +166,62 @@ test('enqueueFiles queues new videos and skips already-seen drive_file_ids', asy
   assert.equal(inserted[0].mime_type, 'video/mp4');
   assert.equal(inserted[0].status, 'queued');
 });
+
+test('folder-based carousels queue all settled images under the brand folder name and preserve dotted handles', async () => {
+  assert.equal(parseDestination('salon.zivara', { stripExtension: false }).accountName, 'salon.zivara');
+  const inserted = [];
+  let prior = [];
+  const supabase = {
+    from(table) {
+      if (table === 'platform_connections') {
+        return {
+          select() { return this; },
+          async eq() {
+            return {
+              data: [
+                { id: 'conn-ig-1', user_id: 'user-1', platform: 'instagram', platform_account_id: 'ig-1', account_name: 'Hair Match Salon' },
+              ],
+              error: null,
+            };
+          },
+        };
+      }
+      if (table === 'google_drive_video_jobs') {
+        return {
+          select() { return this; },
+          eq() { return this; },
+          order() { return this; },
+          async limit() {
+            return { data: prior, error: null };
+          },
+          async insert(row) {
+            inserted.push(row);
+            prior = [{ drive_file_id: row.drive_file_id, result: row.result }];
+            return { error: null };
+          },
+        };
+      }
+      throw new Error(`Unexpected table ${table}`);
+    },
+  };
+  const settledTime = new Date(Date.now() - 120_000).toISOString();
+  const folderItem = {
+    id: 'folder-hair-match',
+    name: 'Hair Match Salon',
+    mimeType: 'application/vnd.google-apps.folder',
+    children: [
+      { id: 'img-2', name: 'photo 2.png', mimeType: 'image/png', size: 2048, createdTime: settledTime },
+      { id: 'img-1', name: 'photo 1.jpg', mimeType: 'image/jpeg', size: 1024, createdTime: settledTime },
+      { id: 'img-10', name: 'photo 10.webp', mimeType: 'image/webp', size: 3072, createdTime: settledTime },
+    ],
+  };
+  await enqueueFiles(supabase, { user_id: 'user-1', drive_folder_id: 'root-folder' }, [folderItem]);
+  await enqueueFiles(supabase, { user_id: 'user-1', drive_folder_id: 'root-folder' }, [folderItem]);
+  assert.equal(inserted.length, 1);
+  assert.equal(inserted[0].drive_file_id, 'folder-hair-match');
+  assert.equal(inserted[0].mime_type, 'image/carousel');
+  assert.deepEqual(
+    inserted[0].result.source_drive_files.map((f) => f.id),
+    ['img-1', 'img-2', 'img-10'],
+  );
+});
