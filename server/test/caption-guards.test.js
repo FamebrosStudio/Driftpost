@@ -187,6 +187,17 @@ test('near-identical bodies are detected and clearly different bodies are not', 
   assert.equal(captionBodiesNearlyIdentical('', different), false);
 });
 
+test('non-Latin (Marathi/Devanagari) captions are compared by their actual words, not stripped to shared English names', () => {
+  assert.equal(captionBodiesNearlyIdentical(
+    'खास क्षणांसाठी खास डिझाइन. Rajlaxmi Jewellers, Sangli येथे सोन्याच्या दागिन्यांची सुंदर झलक पाहा.',
+    'सणासुदीच्या खरेदीसाठी Rajlaxmi Jewellers, Sangli ला भेट द्या आणि नवीन कलेक्शन निवडा.',
+  ), false);
+  assert.equal(captionBodiesNearlyIdentical(
+    'खास क्षणांसाठी खास डिझाइन. Rajlaxmi Jewellers, Sangli येथे भेट द्या.',
+    'खास क्षणांसाठी खास डिझाइन. Rajlaxmi Jewellers, Sangli येथे भेट द्या.',
+  ), true);
+});
+
 test('the YouTube fallback writes a specific description from the title, brief and verified brand facts', () => {
   const description = youtubeFallbackDescription({
     title: 'Bridal gold sets at Chembur',

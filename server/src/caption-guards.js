@@ -263,8 +263,12 @@ export function captionFillerIssues(text, { platform = '' } = {}) {
   return issues;
 }
 
-const normalizedBody = (value) => String(value || '').toLowerCase()
-  .replace(/[^a-z0-9]+/g, ' ').replace(/\s+/g, ' ').trim();
+const normalizedBody = (value) => String(value || '')
+  .normalize('NFKC')
+  .toLowerCase()
+  .replace(/[^\p{L}\p{N}\p{M}]+/gu, ' ')
+  .replace(/\s+/g, ' ')
+  .trim();
 
 // Distinctness gate: two platform bodies that are the same copy wearing two
 // platform names. Token-set Jaccard >= threshold, or one body is a prefix of

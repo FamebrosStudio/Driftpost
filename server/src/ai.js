@@ -628,7 +628,7 @@ export async function generateCaptions(summary, opts = {}) {
   // Single-card output caps are small (one card, not four).
   const outTokens = only ? 450 : Math.min(1000, 350 + requestedPlatforms.length * 250);
   const outTokensRetry = only ? 600 : outTokens + 250;
-  for (let attempt = 0; attempt < 2; attempt++) {
+  for (let attempt = 0; attempt < 3; attempt++) {
     try {
       if (trends) {
         // Live SEO via the current Agent Tools API (Responses endpoint).
@@ -659,7 +659,7 @@ export async function generateCaptions(summary, opts = {}) {
       // fallback from the generated title (which already reflects the brief),
       // the post brief and the selected brand's verified record, rather than
       // returning a 500 to the composer.
-      if (qualityIssue && attempt === 1 && /^(youtube) has no useful caption body$/.test(qualityIssue)) {
+      if (qualityIssue && attempt >= 1 && /^(youtube) has no useful caption body$/.test(qualityIssue)) {
         const title = clean(parsed.youtube?.title, 100);
         const profile = verifiedBrandProfile(brand, mem);
         parsed.youtube = {
