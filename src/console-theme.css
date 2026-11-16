@@ -13,33 +13,32 @@
 #root .welcome,
 #root .team-video-page,
 #root .approval-page {
-  --bg: #050507;
-  --panel: #0c0d10;
-  --panel2: #14161b;
-  --input: #08090c;
+  --bg: #09090b;
+  --panel: #111114;
+  --panel2: #18181b;
+  --input: #0d0d10;
   --ink: #fafafa;
   --muted: #a1a1aa;
   --faint: #71717a;
   --line: rgba(255, 255, 255, 0.08);
-  --line-hard: rgba(255, 255, 255, 0.16);
+  --line-hard: rgba(255, 255, 255, 0.14);
   --hover: rgba(255, 255, 255, 0.05);
-  --go: #38bdf8;
-  --go-ink: #03111c;
+  --go: #3b82f6;
+  --go-ink: #ffffff;
   --acc: var(--go);
   --acc-ink: var(--go-ink);
-  --acc-soft: rgba(56, 189, 248, 0.11);
+  --acc-soft: rgba(59, 130, 246, 0.14);
   --warm: #fbbf24;
   --warm-bg: rgba(251, 191, 36, 0.14);
-  --cool: #38bdf8;
-  --cool-bg: rgba(56, 189, 248, 0.11);
+  --cool: #3b82f6;
+  --cool-bg: rgba(59, 130, 246, 0.14);
   --accent-soft: var(--go);
   --accent-ink: var(--go-ink);
   --danger: #f87171;
   --ok: #34d399;
   color: var(--ink);
   background-color: var(--bg);
-  background-image:
-    radial-gradient(ellipse 65% 35% at 50% -18%, rgba(56, 189, 248, 0.04), transparent 65%);
+  background-image: none;
   font-family: "Poppins", "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
@@ -197,11 +196,11 @@
   justify-self: center !important;
   margin: 0 auto !important;
   gap: 2px;
-  padding: 3px;
-  border: 1px solid var(--line-hard);
-  border-radius: 0 !important;
-  background: color-mix(in srgb, var(--panel2) 82%, var(--bg));
-  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--ink) 5%, transparent);
+  padding: 4px;
+  border: 1px solid var(--line);
+  border-radius: 999px !important;
+  background: var(--panel);
+  box-shadow: none;
   overflow-x: auto;
   scrollbar-width: none;
   min-width: 0;
@@ -217,14 +216,14 @@
   align-items: center;
   gap: 5px;
   min-height: 32px !important;
-  padding: 0 9px !important;
+  padding: 0 11px !important;
   border: 1px solid transparent !important;
-  border-radius: 0 !important;
+  border-radius: 999px !important;
   background: transparent !important;
   color: var(--muted) !important;
-  font-size: 11.5px !important;
-  font-weight: 600 !important;
-  letter-spacing: 0.01em;
+  font-size: 12px !important;
+  font-weight: 550 !important;
+  letter-spacing: 0;
   white-space: nowrap;
   cursor: pointer;
   box-shadow: none !important;
@@ -234,15 +233,15 @@
 
 #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) .ws-topnav-pill:hover {
   color: var(--ink) !important;
-  background: color-mix(in srgb, var(--ink) 6%, transparent) !important;
+  background: rgba(255, 255, 255, 0.05) !important;
 }
 
 #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) .ws-topnav-pill.active {
   color: var(--ink) !important;
-  background: color-mix(in srgb, var(--ink) 8%, var(--panel2)) !important;
-  border-color: color-mix(in srgb, var(--go) 42%, var(--line-hard)) !important;
-  font-weight: 700 !important;
-  box-shadow: inset 0 -2px 0 var(--go) !important;
+  background: var(--panel2) !important;
+  border-color: var(--line-hard) !important;
+  font-weight: 650 !important;
+  box-shadow: none !important;
 }
 
 .ws-topnav-badge {
@@ -506,17 +505,10 @@
   .automation-account, .automation-setup, .ws-campaign-account
 ) {
   border: 1px solid var(--line) !important;
-  border-radius: 0 !important;
-  background: linear-gradient(
-    165deg,
-    color-mix(in srgb, var(--panel2) 42%, var(--panel)) 0%,
-    var(--panel) 100%
-  ) !important;
-  box-shadow:
-    inset 0 1px 0 color-mix(in srgb, var(--ink) 5%, transparent),
-    0 14px 34px -22px rgba(0, 0, 0, 0.45),
-    0 0 24px -9px var(--edge-glow-color, transparent) !important;
-  transition: border-color 180ms ease, box-shadow 180ms ease, background-color 180ms ease, transform 180ms ease !important;
+  border-radius: 14px !important;
+  background: var(--panel) !important;
+  box-shadow: 0 8px 28px -18px rgba(0, 0, 0, 0.6) !important;
+  transition: border-color 180ms ease, box-shadow 180ms ease, background-color 180ms ease !important;
 }
 
 #root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) :is(
@@ -1192,23 +1184,15 @@
   .team-video-actions button, .drive-intake-connect button, .team-review-actions .team-review-send
 ) {
   min-height: 42px;
-  padding: 10px 22px;
-  border: 1px solid color-mix(in srgb, var(--go) 68%, white) !important;
-  border-radius: 0 !important;
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--go) 84%, white) 0%,
-    var(--go) 50%,
-    color-mix(in srgb, var(--go) 88%, #0284c7) 100%
-  ) !important;
-  color: var(--go-ink) !important;
+  padding: 10px 20px;
+  border: 1px solid color-mix(in srgb, var(--go) 70%, white) !important;
+  border-radius: 10px !important;
+  background: var(--go) !important;
+  color: #ffffff !important;
   font-size: 13px;
-  font-weight: 750 !important;
-  letter-spacing: 0.015em;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.55),
-    inset 0 -1px 0 rgba(2, 16, 25, 0.28),
-    0 8px 24px -6px color-mix(in srgb, var(--go) 52%, transparent) !important;
+  font-weight: 650 !important;
+  letter-spacing: 0;
+  box-shadow: 0 6px 20px -6px rgba(59, 130, 246, 0.5) !important;
 }
 
 #root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) :is(
@@ -1218,19 +1202,11 @@
   .cn-connect:not(.ghost), .cn-next, .cg-acts button.go, .cg-acts button:first-child,
   .team-video-actions button, .drive-intake-connect button, .team-review-actions .team-review-send
 ):hover:not(:disabled) {
-  border-color: #ffffff !important;
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--go) 72%, white) 0%,
-    color-mix(in srgb, var(--go) 92%, white) 52%,
-    var(--go) 100%
-  ) !important;
-  color: var(--go-ink) !important;
-  transform: translateY(-1.5px);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.72),
-    0 12px 28px -6px color-mix(in srgb, var(--go) 68%, transparent),
-    0 0 20px -4px color-mix(in srgb, var(--go) 48%, transparent) !important;
+  border-color: color-mix(in srgb, var(--go) 50%, white) !important;
+  background: #2563eb !important;
+  color: #ffffff !important;
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px -6px rgba(59, 130, 246, 0.65) !important;
 }
 
 /* Segmented Controls, Filter Tabs & Pill Selectors */
@@ -1241,14 +1217,14 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  min-height: 38px;
-  padding: 8px 16px;
-  border: 1px solid var(--line-hard);
-  border-radius: 0 !important;
+  min-height: 36px;
+  padding: 7px 15px;
+  border: 1px solid var(--line);
+  border-radius: 999px !important;
   background: var(--panel2);
   color: var(--muted);
   font-size: 12.5px;
-  font-weight: 650;
+  font-weight: 600;
   transition: border-color 150ms ease, background 150ms ease, color 150ms ease;
 }
 
@@ -2548,4 +2524,51 @@ body:has(#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-
 
 [data-theme="light"] #root .ws-mobile-more-item.active {
   background: rgba(15, 23, 42, 0.08);
+}
+
+/* Unified Minimal Geometry: Clean Monochrome + 10% Blue */
+#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) :is(
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+  select,
+  textarea
+) {
+  border-radius: 10px !important;
+  border-color: var(--line-hard) !important;
+  background: var(--input) !important;
+}
+
+#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) :is(
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):focus,
+  select:focus,
+  textarea:focus
+) {
+  border-color: var(--go) !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.16) !important;
+}
+
+#root .ws-topbar-icon-btn,
+#root .ws-user-badge {
+  border-radius: 999px !important;
+}
+
+#root .dp-collapse,
+#root .team-video-page .team-video-drop,
+#root .feed-it-prompt-box,
+#root .feed-it-item {
+  border-radius: 12px !important;
+}
+
+#root .ws-secondary,
+#root .dp-collapse-action,
+#root .team-review-refresh {
+  border-radius: 10px !important;
+  background: var(--panel2) !important;
+  border-color: var(--line-hard) !important;
+}
+
+#root .ws-secondary:hover:not(:disabled),
+#root .dp-collapse-action:hover:not(:disabled),
+#root .team-review-refresh:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255, 255, 255, 0.24) !important;
 }
