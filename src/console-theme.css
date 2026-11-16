@@ -442,10 +442,15 @@
 
 #root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) .border-glow-card {
   border: 0 !important;
-  border-radius: 0 !important;
+  border-radius: 14px !important;
   background: transparent !important;
   box-shadow: none !important;
   transform: none !important;
+}
+
+#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) .border-glow-card > .edge-light,
+#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) .border-glow-card > .edge-light::before {
+  border-radius: 14px !important;
 }
 
 #root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) .border-glow-card::before,
@@ -1886,9 +1891,12 @@ body:has(#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-
     pointer-events: none;
   }
 
-  #root :is(.stage1, .stage2, .stage3) .ws-mobile-dock-wrap,
-  #root .ws:has(> .connect) .ws-mobile-dock-wrap {
-    display: none !important;
+  #root :is(.stage1, .stage2, .stage3, .connect) :is(.continue-bar, .s2-continue-bar, .s3-pub, .cn-bar) {
+    bottom: calc(68px + env(safe-area-inset-bottom)) !important;
+  }
+
+  #root .ws-mobile-dock-wrap {
+    z-index: 70;
   }
 
   #root .ws-mobile-more-backdrop {
