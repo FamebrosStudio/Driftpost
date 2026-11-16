@@ -34,7 +34,7 @@ import { createTemporaryMediaUrl, isOwnedMediaPath, isValidPreuploadedMedia } fr
 import { canUsePrivateBrandData } from './brand-access.js';
 import { isAllowedOrigin, normalizeHttpOrigin } from './cors-policy.js';
 import { createTelegramIntakeRouter, registerTelegramWebhook } from './telegram-intake.js';
-import { getDriveReviewFile, startGoogleDriveIntake, streamDriveReviewFile } from './google-drive-intake.js';
+import { getDriveReviewFile, getDriveScanError, startGoogleDriveIntake, streamDriveReviewFile, triggerDriveScan } from './google-drive-intake.js';
 import { authorizeMcpDevice, createMcpDeviceAuthorization, findMcpAccessToken, pollMcpDeviceAuthorization } from './mcp-auth.js';
 
 const required = ['FRONTEND_URL', 'SUPABASE_URL', 'SUPABASE_SECRET_KEY', 'TOKEN_ENCRYPTION_KEY', 'STATE_SIGNING_SECRET'];
@@ -1949,9 +1949,11 @@ app.get('/api/intake/drive/status', requireUser, async (req, res) => {
   const { data, error } = await supabase.from('google_drive_intake_connections')
     .select('google_email, drive_folder_id, status, updated_at').eq('user_id', req.user.id).maybeSingle();
   if (error) return res.status(503).json({ error: 'Drive intake is not initialized yet. Apply the Google Drive intake migration, then retry.' });
+  const scanError = getDriveScanError(req.user.id);
   res.json({ configured: true, connected: data?.status === 'connected', google_email: data?.google_email || null,
     folder_id: data?.drive_folder_id || process.env.DRIFTPOST_DRIVE_FOLDER_ID || null,
     folder_url: data?.drive_folder_id ? `https://drive.google.com/drive/folders/${encodeURIComponent(data.drive_folder_id)}` : null,
+    ...(scanError ? { error: scanError } : {}),
     updated_at: data?.updated_at || null });
 });
 
@@ -1975,11 +1977,15 @@ app.post('/api/intake/drive/disconnect', requireUser, async (req, res) => {
 
 app.get('/api/intake/drive/jobs', requireUser, async (req, res) => {
   if (!canUsePrivateBrandData(req.user)) return res.status(403).json({ error: 'Private team access required.' });
+  if (String(req.query?.scan || '') === '1') {
+    try { await triggerDriveScan(supabase, req.user.id); } catch {}
+  }
   const { data, error } = await supabase.from('google_drive_video_jobs')
     .select('id, file_name, mime_type, file_size, account_name, platforms, status, error, result, created_at, updated_at')
     .eq('owner_user_id', req.user.id).order('created_at', { ascending: false }).limit(50);
   if (error) return res.status(503).json({ error: 'Drive intake jobs are not initialized yet. Apply the Google Drive intake migration, then retry.' });
-  res.json({ jobs: data || [] });
+  const scanError = getDriveScanError(req.user.id);
+  res.json({ jobs: data || [], ...(scanError ? { scan_error: scanError } : {}) });
 });
 
 const LEGACY_BRAND_REVIEW_ERROR = 'Automatic brand verification stopped the post, but Driftpost could not save the result.';

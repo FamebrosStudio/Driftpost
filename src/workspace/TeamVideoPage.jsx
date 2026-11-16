@@ -78,6 +78,8 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut, onOpenRe
   const activeJobIds = useRef(new Set());
   const pendingCoverIds = useRef(new Set());
   const [retryTick, setRetryTick] = useState(0);
+  const [driveScanTick, setDriveScanTick] = useState(0);
+  const [driveScanError, setDriveScanError] = useState('');
   const [pendingCoverCount, setPendingCoverCount] = useState(0);
   const activeJobs = jobs.filter((job) => job.status === 'analyzing').length;
   const [error, setError] = useState('');
@@ -88,16 +90,22 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut, onOpenRe
 
   useEffect(() => {
     let active = true;
-    const refresh = () => {
-       api('/api/intake/drive/status', session.access_token)
-         .then((data) => { if (active) setDriveState({ ...(data && typeof data === 'object' ? data : {}), loading: false, error: '' }); })
-         .catch((e) => { if (active) setDriveState((old) => ({ ...old, loading: false, error: e.message || 'Could not check the Drive connection.' })); });
-       api('/api/intake/drive/jobs', session.access_token).then((data) => { if (active) setDriveJobs(Array.isArray(data?.jobs) ? data.jobs.filter((job) => job && typeof job === 'object') : []); }).catch(() => {});
+    const refresh = (forceScan = false) => {
+      api('/api/intake/drive/status', session.access_token)
+        .then((data) => { if (active) setDriveState({ ...(data && typeof data === 'object' ? data : {}), loading: false, error: data?.error || '' }); })
+        .catch((e) => { if (active) setDriveState((old) => ({ ...old, loading: false, error: e.message || 'Could not check the Drive connection.' })); });
+      api(`/api/intake/drive/jobs${forceScan ? '?scan=1' : ''}`, session.access_token)
+        .then((data) => {
+          if (!active) return;
+          setDriveJobs(Array.isArray(data?.jobs) ? data.jobs.filter((job) => job && typeof job === 'object') : []);
+          setDriveScanError(data?.scan_error || '');
+        })
+        .catch((e) => { if (active) setDriveScanError(e?.message || 'Could not load Drive inbox.'); });
     };
-    refresh();
-    const timer = window.setInterval(refresh, 5_000);
+    refresh(driveScanTick > 0);
+    const timer = window.setInterval(() => refresh(false), 5_000);
     return () => { active = false; window.clearInterval(timer); };
-  }, [session.access_token]);
+  }, [session.access_token, driveScanTick]);
 
   const connectDrive = async () => {
     setDriveBusy(true);
@@ -376,7 +384,7 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut, onOpenRe
           : <div className="drive-intake-connect"><p>{driveState.loading ? 'Checking Google Drive setup…' : driveState.error || 'Connect the Famebros Drive account to turn on automatic video intake.'}</p><button type="button" onClick={connectDrive} disabled={driveBusy || driveState.loading}>{driveBusy ? 'Opening Google…' : 'Connect Google Drive'}</button></div>}
         <details className="drive-intake-guide"><summary>How to name uploads</summary><div className="drive-intake-guide-body"><p>Put the brand or connected account name in the filename. For example:</p><p><code>@mahalaxmi.jewellers.kurla.mp4</code></p><p>To target more than one brand, separate names with commas. To limit platforms, add <code>-- facebook,instagram</code> before the extension. Driftpost matches the names to your connected accounts and checks each video against its brand. If it cannot safely match a brand, it stops the post and explains what to correct.</p><p>Photo carousels: use the same destination in each filename with an order number (for example, <code>Brand 01.jpg</code>, <code>Brand 02.jpg</code>). Upload up to 10 JPEG or PNG images. The inbox groups them after uploads settle.</p></div></details>
         <details className="drive-intake-guide"><summary>Famebros Studio · Automatic Instagram Tagging List ({FAMEBROS_INSTAGRAM_TAGGING_LIST.length} brands)</summary><div className="drive-intake-guide-body"><p><strong>TEAM INSTRUCTION:</strong> Tag the assigned accounts in relevant brand posts and reels. Verify handles in Instagram before publishing. Driftpost automatically applies and verifies these handles whenever a matching brand is processed via Google Drive or Team Video:</p><ul>{FAMEBROS_INSTAGRAM_TAGGING_LIST.map((entry) => <li key={entry.brandId}><strong>{entry.number}. {entry.brandName}:</strong> {entry.handles.map((h) => `@${h}`).join(', ')}</li>)}</ul></div></details>
-        <div className="drive-intake-jobs" aria-live="polite"><div className="drive-jobs-heading"><b>Live Drive inbox and posting status</b><button type="button" onClick={() => setRetryTick((tick) => tick + 1)}>Refresh now</button></div>{driveJobs.length ? driveJobs.slice(0, 12).map((job) => {
+        <div className="drive-intake-jobs" aria-live="polite"><div className="drive-jobs-heading"><b>Live Drive inbox and posting status</b><button type="button" onClick={() => { setDriveScanTick((t) => t + 1); setRetryTick((tick) => tick + 1); }}>Refresh now</button></div>{driveScanError && <small className="drive-job-error">{driveScanError}</small>}{driveJobs.length ? driveJobs.slice(0, 12).map((job) => {
           const progress = job.result?.progress;
           const isCarousel = job.result?.media_kind === 'carousel' || job.mime_type === 'image/carousel';
           const timestamp = new Date(job.updated_at || job.created_at).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });

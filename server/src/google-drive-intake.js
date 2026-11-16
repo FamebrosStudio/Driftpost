@@ -47,6 +47,11 @@ const UPLOAD_MARKER_PATTERNS = [
 let intakeBusy = false;
 let outcomeBusy = false;
 let intakeActive = 0;
+const lastScanErrorByUser = new Map();
+
+export function getDriveScanError(userId) {
+  return lastScanErrorByUser.get(String(userId || '')) || '';
+}
 // Keep video/carousel analysis bounded to protect memory; the persistent
 // database queue accepts more jobs and drains as slots free up.
 // Process the shared editor inbox FIFO, one video/brand at a time. This keeps
@@ -158,11 +163,15 @@ async function tokenFor(supabase, connection) {
 async function listDriveFiles(accessToken, folderId, connectedAt) {
   const files = [];
   let pageToken = '';
+  const since = new Date(connectedAt || 0).toISOString();
   do {
     const params = new URLSearchParams({
-      q: `'${folderId.replace(/'/g, "\\'")}' in parents and trashed = false and (mimeType contains 'video/' or mimeType contains 'image/') and createdTime > '${new Date(connectedAt).toISOString()}'`,
+      q: `'${folderId.replace(/'/g, "\\'")}' in parents and trashed = false and (mimeType contains 'video/' or mimeType contains 'image/') and (createdTime > '${since}' or modifiedTime > '${since}')`,
       fields: 'nextPageToken,files(id,name,mimeType,size,createdTime,modifiedTime)',
-      pageSize: '100', orderBy: 'createdTime desc',
+      pageSize: '100',
+      orderBy: 'modifiedTime desc',
+      supportsAllDrives: 'true',
+      includeItemsFromAllDrives: 'true',
       ...(pageToken ? { pageToken } : {}),
     });
     const response = await fetch(`https://www.googleapis.com/drive/v3/files?${params}`, { headers: { Authorization: `Bearer ${accessToken}` }, signal: AbortSignal.timeout(30_000) });
@@ -525,16 +534,29 @@ async function checkPublishOutcomes(supabase) {
   finally { outcomeBusy = false; }
 }
 
-async function scanFolders(supabase) {
-  const { data: connections, error } = await supabase.from(CONNECTIONS).select('*').eq('status', 'connected').limit(20);
+async function scanFolders(supabase, onlyUserId = '') {
+  let query = supabase.from(CONNECTIONS).select('*').eq('status', 'connected').limit(20);
+  if (onlyUserId) query = query.eq('user_id', onlyUserId);
+  const { data: connections, error } = await query;
   if (error || !connections?.length) return;
   for (const connection of connections) {
     try {
       const accessToken = await tokenFor(supabase, connection);
       const files = await listDriveFiles(accessToken, connection.drive_folder_id, connection.created_at);
       await enqueueFiles(supabase, connection, files);
-    } catch (error) { console.error('[drive-intake] folder scan failed:', connection.user_id, String(error?.message || error).slice(0, 220)); }
+      lastScanErrorByUser.delete(String(connection.user_id));
+    } catch (error) {
+      const msg = String(error?.message || error).slice(0, 220);
+      lastScanErrorByUser.set(String(connection.user_id), msg);
+      console.error('[drive-intake] folder scan failed:', connection.user_id, msg);
+    }
   }
+}
+
+export async function triggerDriveScan(supabase, userId = '') {
+  if (!process.env.DRIFTPOST_DRIVE_FOLDER_ID) return;
+  await scanFolders(supabase, userId);
+  await processQueued(supabase);
 }
 
 export function startGoogleDriveIntake(supabase) {
@@ -542,6 +564,12 @@ export function startGoogleDriveIntake(supabase) {
     console.info('[drive-intake] disabled; DRIFTPOST_DRIVE_FOLDER_ID is not set.');
     return;
   }
+  // Recover any jobs left in 'processing' from a previous server restart.
+  void supabase.from(TABLE)
+    .update({ status: 'queued', updated_at: new Date().toISOString() })
+    .eq('status', 'processing')
+    .then(() => { void processQueued(supabase); })
+    .catch(() => {});
   let scanBusy = false;
   const scan = async () => {
     if (scanBusy) return;
