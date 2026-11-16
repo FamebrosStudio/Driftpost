@@ -1875,7 +1875,7 @@ body:has(#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-
     padding: 8px 14px !important;
   }
 
-  #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-topnav {
+  #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) .ws-topnav {
     display: none !important;
   }
 
@@ -2609,18 +2609,159 @@ body:has(#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-
 #root .ws-welcome,
 #root .ws-topnav,
 #root .ws-mobile-dock,
-#root .ws-mobile-more-menu {
+#root .ws-mobile-more-menu,
+#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3) > .ws-topbar {
   background: linear-gradient(
     135deg,
-    rgba(255, 255, 255, 0.05) 0%,
+    rgba(255, 255, 255, 0.055) 0%,
     rgba(17, 17, 20, 0.72) 55%,
-    rgba(59, 130, 246, 0.04) 100%
+    rgba(59, 130, 246, 0.045) 100%
   ) !important;
-  backdrop-filter: blur(22px) saturate(165%) !important;
-  -webkit-backdrop-filter: blur(22px) saturate(165%) !important;
+  backdrop-filter: blur(24px) saturate(170%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(170%) !important;
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.12),
     0 14px 36px -18px rgba(0, 0, 0, 0.72) !important;
+}
+
+#root :is(.ws-stat, .ws-create-mode-card, .cn-card, .setup-card, .s2-sec, .s3-work, .team-video-panel, .hist-row, .dp-collapse) {
+  border-radius: 16px !important;
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.035) 0%,
+    rgba(17, 17, 20, 0.78) 60%,
+    rgba(59, 130, 246, 0.025) 100%
+  ) !important;
+  backdrop-filter: blur(18px) saturate(150%);
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 12px 30px -18px rgba(0, 0, 0, 0.65) !important;
+}
+
+[data-theme="light"] #root :is(.ws-welcome, .ws-topnav, .ws-mobile-dock, .ws-mobile-more-menu),
+[data-theme="light"] #root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3) > .ws-topbar {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.88) 0%,
+    rgba(244, 247, 252, 0.78) 65%,
+    rgba(59, 130, 246, 0.06) 100%
+  ) !important;
+  border-color: rgba(15, 23, 42, 0.12) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    0 14px 34px -16px rgba(15, 23, 42, 0.16) !important;
+}
+
+[data-theme="light"] #root :is(.ws-stat, .ws-create-mode-card, .cn-card, .setup-card, .s2-sec, .s3-work, .team-video-panel, .hist-row, .dp-collapse) {
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.86) 0%,
+    rgba(246, 248, 252, 0.8) 70%,
+    rgba(59, 130, 246, 0.03) 100%
+  ) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    0 10px 26px -16px rgba(15, 23, 42, 0.14) !important;
+}
+
+/* PC Floating Bottom-Center Liquid Glass Dock Navigation */
+@keyframes applePcDockRise {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(22px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+}
+
+@media (min-width: 761px) {
+  #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar {
+    grid-template-columns: auto auto !important;
+    justify-content: space-between !important;
+  }
+
+  #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) .ws-topnav {
+    position: fixed !important;
+    left: 50% !important;
+    bottom: max(16px, env(safe-area-inset-bottom)) !important;
+    transform: translateX(-50%);
+    z-index: 65;
+    width: fit-content;
+    max-width: calc(100vw - 32px);
+    margin: 0 !important;
+    padding: 6px 8px !important;
+    gap: 4px !important;
+    border: 1px solid rgba(255, 255, 255, 0.13) !important;
+    border-radius: 999px !important;
+    backdrop-filter: blur(26px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(26px) saturate(180%) !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.14),
+      0 18px 42px -12px rgba(0, 0, 0, 0.72) !important;
+    animation: applePcDockRise 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) .ws-topnav-pill {
+    position: relative;
+    min-height: 38px !important;
+    padding: 0 14px !important;
+    font-size: 12.5px !important;
+    gap: 6px !important;
+  }
+
+  #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) .ws-topnav-pill.active {
+    background: rgba(255, 255, 255, 0.13) !important;
+    border-color: rgba(255, 255, 255, 0.18) !important;
+    color: var(--ink) !important;
+  }
+
+  #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) .ws-topnav-pill.active::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: 3px;
+    width: 14px;
+    height: 2.5px;
+    transform: translateX(-50%);
+    border-radius: 999px;
+    background: var(--go);
+    box-shadow: 0 0 8px color-mix(in srgb, var(--go) 75%, transparent);
+  }
+
+  [data-theme="light"] #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) .ws-topnav-pill.active {
+    background: rgba(15, 23, 42, 0.08) !important;
+    border-color: rgba(15, 23, 42, 0.14) !important;
+  }
+
+  #root :is(.stage1, .stage2, .stage3, .connect) :is(.continue-bar, .s2-continue-bar, .s3-pub, .cn-bar) {
+    left: 50% !important;
+    right: auto !important;
+    bottom: 78px !important;
+    transform: translateX(-50%);
+    width: min(760px, calc(100vw - 48px));
+    border-radius: 18px !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.12),
+      0 18px 40px -12px rgba(0, 0, 0, 0.65) !important;
+  }
+
+  #root .ws > .ws-main,
+  #root .hist > .hist-in,
+  #root .team-video-main,
+  #root .team-review-main {
+    padding-bottom: 108px;
+  }
+
+  #root .ws > .connect,
+  #root .stage1-in,
+  #root .stage2-in,
+  #root .stage3-in {
+    padding-bottom: 196px;
+  }
 }
 
 @media (max-width: 760px) {

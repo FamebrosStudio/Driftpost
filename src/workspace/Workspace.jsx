@@ -104,19 +104,6 @@ export function WorkspaceNav({ page, onNavigate, email, onSignOut }) {
         <img className="logo-img logo-d" src="/logo-dark-620.png" srcSet="/logo-dark-620.png 620w, /logo-dark.png 1984w" sizes="168px" width="1984" height="512" decoding="async" alt="Driftpost" />
         <img className="logo-img logo-l" src="/logo-light.png" width="1908" height="512" decoding="async" alt="Driftpost" />
       </button>
-      <nav className="ws-topnav" aria-label="Workspace navigation">
-        {topNavItems.map((item) => (
-          <button
-            key={item.id}
-            type="button"
-            className={item.active ? 'ws-topnav-pill active' : 'ws-topnav-pill'}
-            onClick={() => onNavigate(item.id)}
-          >
-            <Icon name={item.icon} size={15} />
-            <span>{item.label}</span>
-          </button>
-        ))}
-      </nav>
       <div className="ws-user">
         <button
           type="button"
@@ -144,6 +131,19 @@ export function WorkspaceNav({ page, onNavigate, email, onSignOut }) {
         )}
       </div>
     </header>
+    <nav className="ws-topnav" aria-label="Workspace navigation">
+      {topNavItems.map((item) => (
+        <button
+          key={item.id}
+          type="button"
+          className={item.active ? 'ws-topnav-pill active' : 'ws-topnav-pill'}
+          onClick={() => onNavigate(item.id)}
+        >
+          <Icon name={item.icon} size={15} />
+          <span>{item.label}</span>
+        </button>
+      ))}
+    </nav>
     <div className="ws-mobile-dock-wrap">
       {mobileMoreOpen && (
         <>
