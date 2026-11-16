@@ -34,7 +34,7 @@ import { createTemporaryMediaUrl, isOwnedMediaPath, isValidPreuploadedMedia } fr
 import { canUsePrivateBrandData } from './brand-access.js';
 import { isAllowedOrigin, normalizeHttpOrigin } from './cors-policy.js';
 import { createTelegramIntakeRouter, registerTelegramWebhook } from './telegram-intake.js';
-import { getDriveReviewFile, getDriveScanError, startGoogleDriveIntake, streamDriveReviewFile, triggerDriveScan } from './google-drive-intake.js';
+import { enqueueDirectUpload, getDriveReviewFile, getDriveScanError, startGoogleDriveIntake, streamDriveReviewFile, triggerDriveScan } from './google-drive-intake.js';
 import { authorizeMcpDevice, createMcpDeviceAuthorization, findMcpAccessToken, pollMcpDeviceAuthorization } from './mcp-auth.js';
 
 const required = ['FRONTEND_URL', 'SUPABASE_URL', 'SUPABASE_SECRET_KEY', 'TOKEN_ENCRYPTION_KEY', 'STATE_SIGNING_SECRET'];
@@ -2028,6 +2028,19 @@ app.get('/api/intake/drive/jobs', requireUser, async (req, res) => {
   if (error) return res.status(503).json({ error: 'Drive intake jobs are not initialized yet. Apply the Google Drive intake migration, then retry.' });
   const scanError = getDriveScanError(req.user.id);
   res.json({ jobs: data || [], ...(scanError ? { scan_error: scanError } : {}) });
+});
+
+app.post('/api/intake/direct', requireUser, upload.array('media', 10), async (req, res) => {
+  if (!canUsePrivateBrandData(req.user)) {
+    for (const f of req.files || []) if (f?.path) fs.promises.rm(f.path, { force: true }).catch(() => {});
+    return res.status(403).json({ error: 'Private team access required.' });
+  }
+  try {
+    const out = await enqueueDirectUpload(supabase, req.user.id, req.files || [], String(req.body?.description || ''));
+    res.json(out);
+  } catch (e) {
+    res.status(400).json({ error: e?.message || 'Could not queue your upload.' });
+  }
 });
 
 const LEGACY_BRAND_REVIEW_ERROR = 'Automatic brand verification stopped the post, but Driftpost could not save the result.';

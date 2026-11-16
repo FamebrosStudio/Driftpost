@@ -303,8 +303,12 @@ export async function processIntakeJob(supabase, job, options = {}) {
       ? targetGroups.map((target) => ({ ...target, captions: reviewApproval.captions || {} }))
       : await Promise.all(targetGroups.map(async (target) => {
       const targetPlatforms = [...new Set(target.destinations.filter((item) => supportedDestinations.some((dest) => dest.id === item.id)).map((item) => item.platform))];
+      const customBrief = String(job.result?.brief || '').trim();
+      const captionPrompt = customBrief
+        ? `Create accurate, platform-specific captions for the ${isCarousel ? 'photo carousel' : 'video'} sent to the ${target.name} account. Follow these specific editor instructions and details:\n${customBrief}`
+        : `Create accurate, platform-specific captions for the ${isCarousel ? 'photo carousel' : 'video'} sent to the ${target.name} account. Describe only what is visible or spoken.`;
       const generated = await generateCaptions(
-        `Create accurate, platform-specific captions for the ${isCarousel ? 'photo carousel' : 'video'} sent to the ${target.name} account. Describe only what is visible or spoken.`,
+        captionPrompt,
         {
           brand: target.brand?.id ? target.brand.name : '',
           brandId: target.brand?.id || '',

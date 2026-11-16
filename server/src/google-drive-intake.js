@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import crypto from 'node:crypto';
 import { Readable } from 'node:stream';
 import { Transform } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
@@ -277,12 +278,14 @@ export async function enqueueFiles(supabase, connection, files) {
   }
   const readyGroups = [...groups.values()].filter((group) => group.files.every((file) => Date.now() - Date.parse(file.createdTime || file.modifiedTime || 0) >= 90_000));
   const batches = [
-    ...videoFiles.map((file) => ({ files: [file], parsed: parseDestination(file.name), kind: 'video' })),
+    ...videoFiles.map((file) => ({ files: [file], parsed: parseDestination(file.name), kind: 'video', brief: file.brief || '', directStoragePaths: file.directStoragePaths || [] })),
     ...readyFolders.map((folder) => ({
       files: [...folder.children].sort((a, b) => String(a.name).localeCompare(String(b.name), undefined, { numeric: true })),
       parsed: parseDestination(folder.name, { stripExtension: false }),
       kind: 'image',
       folderId: folder.id,
+      brief: folder.brief || '',
+      directStoragePaths: folder.directStoragePaths || [],
     })),
     ...readyGroups.map((group) => ({ files: group.files.sort((a, b) => String(a.name).localeCompare(String(b.name), undefined, { numeric: true })), parsed: group.parsed, kind: 'image' })),
   ];
@@ -395,7 +398,9 @@ export async function enqueueFiles(supabase, connection, files) {
         ...(allInstagramTags.length ? { instagram_tags: allInstagramTags } : {}),
         destination_connection_ids: resolvedDestinations.map((item) => item.id),
         ...(needsBrandInference ? { brand_resolution_required: true, requested_brand_names: requestedNames } : {}),
-        ...(batch.kind === 'image' ? { media_kind: 'carousel', source_drive_files: batchFiles.map((item) => ({ id: item.id, name: item.name, mime_type: item.mimeType, size: Number(item.size) || 0 })) } : {}),
+        ...(batch.brief ? { brief: batch.brief } : {}),
+        ...(batch.directStoragePaths?.length ? { direct_storage_paths: batch.directStoragePaths } : {}),
+        ...(batch.kind === 'image' ? { media_kind: 'carousel', source_drive_files: batchFiles.map((item) => ({ id: item.id, name: item.name, mime_type: item.mimeType, size: Number(item.size) || 0, ...(item.storage_path ? { storage_path: item.storage_path } : {}) })) } : {}),
       },
       status: errorMessage && !needsBrandInference ? 'failed' : 'queued',
       error: errorMessage && !needsBrandInference ? errorMessage : null,
@@ -404,7 +409,95 @@ export async function enqueueFiles(supabase, connection, files) {
   }
 }
 
+export async function enqueueDirectUpload(supabase, userId, uploadedFiles, description = '') {
+  const incoming = Array.isArray(uploadedFiles) ? uploadedFiles.filter(Boolean) : [];
+  if (!incoming.length) throw new Error('Choose a video or up to 10 carousel images first.');
+  const videos = incoming.filter((f) => String(f.mimetype || '').startsWith('video/') || isIntakeVideoFile({ name: f.originalname, mimeType: f.mimetype }));
+  const images = incoming.filter((f) => String(f.mimetype || '').startsWith('image/') || isIntakeImageFile({ name: f.originalname, mimeType: f.mimetype }));
+  if (videos.length && images.length) throw new Error('Upload either one video or up to 10 carousel images — not both together.');
+  if (videos.length > 1) throw new Error('Upload one video per post.');
+  if (!videos.length && !images.length) throw new Error('Only video and image files are supported.');
+  if (images.length > MAX_CAROUSEL_IMAGES) throw new Error('Carousels support up to 10 images per post.');
+
+  const bucket = process.env.MEDIA_BUCKET || 'driftpost-media';
+  const batchId = crypto.randomUUID();
+  const storagePaths = [];
+  const files = [];
+  const settledTime = new Date(Date.now() - 120_000).toISOString();
+
+  try {
+    for (let i = 0; i < incoming.length; i++) {
+      const item = incoming[i];
+      const safeName = String(item.originalname || `upload-${i + 1}`).replace(/[^\w.\- @()]/g, '_');
+      const storagePath = `direct-intake/${userId}/${batchId}/${String(i + 1).padStart(2, '0')}-${safeName}`;
+      const stream = fs.createReadStream(item.path);
+      const { error: uploadError } = await supabase.storage.from(bucket).upload(storagePath, stream, {
+        contentType: item.mimetype || (videos.length ? 'video/mp4' : 'image/jpeg'),
+        duplex: 'half',
+        upsert: true,
+      });
+      if (uploadError) throw new Error(`Could not store "${item.originalname}": ${uploadError.message}`);
+      storagePaths.push(storagePath);
+      files.push({
+        id: `direct:${batchId}:${i + 1}`,
+        name: item.originalname || safeName,
+        mimeType: item.mimetype || (videos.length ? 'video/mp4' : 'image/jpeg'),
+        size: Number(item.size) || 0,
+        createdTime: settledTime,
+        storage_path: storagePath,
+      });
+    }
+
+    const isCarousel = images.length > 0;
+    const brief = String(description || '').trim().slice(0, 2000);
+    const connection = {
+      user_id: userId,
+      drive_folder_id: process.env.DRIFTPOST_DRIVE_FOLDER_ID || 'direct-upload',
+    };
+    if (isCarousel) {
+      await enqueueFiles(supabase, connection, [{
+        id: `direct:${batchId}`,
+        name: parseDestination(files[0].name).accountName || files[0].name,
+        mimeType: 'application/vnd.google-apps.folder',
+        children: files,
+        brief,
+        directStoragePaths: storagePaths,
+      }]);
+    } else {
+      await enqueueFiles(supabase, connection, [{
+        ...files[0],
+        id: `direct:${batchId}`,
+        brief,
+        directStoragePaths: storagePaths,
+      }]);
+    }
+    void processQueued(supabase);
+    return { ok: true, count: files.length, kind: isCarousel ? 'carousel' : 'video' };
+  } catch (err) {
+    if (storagePaths.length) await supabase.storage.from(bucket).remove(storagePaths).catch(() => {});
+    throw err;
+  } finally {
+    for (const item of incoming) {
+      if (item?.path) await fs.promises.rm(item.path, { force: true }).catch(() => {});
+    }
+  }
+}
+
+async function downloadStorageToFile(supabase, storagePath, destination, maxBytes) {
+  const bucket = process.env.MEDIA_BUCKET || 'driftpost-media';
+  const { data, error } = await supabase.storage.from(bucket).download(storagePath);
+  if (error || !data) throw new Error('Could not read the uploaded media from storage.');
+  const buf = Buffer.from(await data.arrayBuffer());
+  if (!buf.length) throw new Error('The uploaded file is empty.');
+  if (buf.length > maxBytes) throw new Error(`File exceeds the ${Math.floor(maxBytes / (1024 * 1024))} MB limit.`);
+  await fs.promises.writeFile(destination, buf, { flag: 'wx' });
+  return buf.length;
+}
+
 async function downloadDriveVideo(supabase, job, destination) {
+  if (job.result?.direct_storage_paths?.[0]) {
+    return downloadStorageToFile(supabase, job.result.direct_storage_paths[0], destination, MAX_VIDEO_BYTES);
+  }
   const { data: connection, error } = await supabase.from(CONNECTIONS).select('*').eq('user_id', job.owner_user_id).eq('status', 'connected').maybeSingle();
   if (error || !connection) throw new Error('The Drive connection is unavailable. Reconnect Drive in Driftpost.');
   const accessToken = await tokenFor(supabase, connection);
@@ -454,10 +547,14 @@ async function convertImageToJpeg(sourcePath, destinationPath) {
 }
 
 async function downloadDriveCarousel(supabase, job, directory) {
-  const { data: connection, error } = await supabase.from(CONNECTIONS).select('*').eq('user_id', job.owner_user_id).eq('status', 'connected').maybeSingle();
-  if (error || !connection) throw new Error('The Drive connection is unavailable. Reconnect Drive in Driftpost.');
-  const accessToken = await tokenFor(supabase, connection);
   const files = job.result?.source_drive_files || [];
+  const hasDirectStorage = files.some((item) => item?.storage_path);
+  let accessToken = '';
+  if (!hasDirectStorage) {
+    const { data: connection, error } = await supabase.from(CONNECTIONS).select('*').eq('user_id', job.owner_user_id).eq('status', 'connected').maybeSingle();
+    if (error || !connection) throw new Error('The Drive connection is unavailable. Reconnect Drive in Driftpost.');
+    accessToken = await tokenFor(supabase, connection);
+  }
   const limitBytes = carouselImageLimitBytes(await jobDestinationPlatforms(supabase, job));
   const media = [];
   for (let index = 0; index < files.length; index++) {
@@ -466,17 +563,21 @@ async function downloadDriveCarousel(supabase, job, directory) {
     if (!isAcceptedCarouselImageType(mime)) {
       throw new Error(`Carousel image ${index + 1} ("${item.name}") is not a supported image format. Drive carousels accept ${ACCEPTED_FORMAT_LABEL} images.`);
     }
-    const response = await fetch(`https://www.googleapis.com/drive/v3/files/${encodeURIComponent(item.id)}?alt=media&supportsAllDrives=true`, {
-      headers: { Authorization: `Bearer ${accessToken}` }, signal: AbortSignal.timeout(120_000),
-    });
-    if (!response.ok || !response.body) throw new Error(`Google Drive could not download carousel image ${index + 1}.`);
     const stem = `${directory}/source-${String(index + 1).padStart(2, '0')}`;
     const sourcePath = `${stem}${imageExtensionFor(mime)}`;
-    let received = 0;
-    await pipeline(response.body, new Transform({ transform(chunk, _encoding, callback) {
-      received += chunk.length;
-      callback(received > limitBytes ? new Error(`Carousel image ${index + 1} exceeds the ${Math.floor(limitBytes / (1024 * 1024))} MB limit.`) : null, received <= limitBytes ? chunk : undefined);
-    } }), fs.createWriteStream(sourcePath, { flags: 'wx' }));
+    if (item.storage_path) {
+      await downloadStorageToFile(supabase, item.storage_path, sourcePath, limitBytes);
+    } else {
+      const response = await fetch(`https://www.googleapis.com/drive/v3/files/${encodeURIComponent(item.id)}?alt=media&supportsAllDrives=true`, {
+        headers: { Authorization: `Bearer ${accessToken}` }, signal: AbortSignal.timeout(120_000),
+      });
+      if (!response.ok || !response.body) throw new Error(`Google Drive could not download carousel image ${index + 1}.`);
+      let received = 0;
+      await pipeline(response.body, new Transform({ transform(chunk, _encoding, callback) {
+        received += chunk.length;
+        callback(received > limitBytes ? new Error(`Carousel image ${index + 1} exceeds the ${Math.floor(limitBytes / (1024 * 1024))} MB limit.`) : null, received <= limitBytes ? chunk : undefined);
+      } }), fs.createWriteStream(sourcePath, { flags: 'wx' }));
+    }
     let mediaPath = sourcePath;
     let mediaMime = mime;
     let stat = await fs.promises.stat(sourcePath);
@@ -529,6 +630,9 @@ async function runClaimedIntakeJob(supabase, job) {
     console.error('[drive-intake] job failed:', job.id, message);
   } finally {
     clearInterval(heartbeat);
+    if (Array.isArray(job.result?.direct_storage_paths) && job.result.direct_storage_paths.length) {
+      await supabase.storage.from(process.env.MEDIA_BUCKET || 'driftpost-media').remove(job.result.direct_storage_paths).catch(() => {});
+    }
     intakeActive = Math.max(0, intakeActive - 1);
     void processQueued(supabase);
   }
