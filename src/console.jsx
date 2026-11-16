@@ -3,6 +3,7 @@ import React, { lazy, Suspense, useEffect, useState } from 'react';
 import { flushSync } from 'react-dom';
 import PageLoading from './PageLoading.jsx';
 import { isAiAccount } from './ai-access.js';
+import { installGlobalSfx } from './utils/sfx.js';
 // Load Team Video styles with the console shell instead of relying on a
 // nested lazy import's CSS preload, which can leave the page unstyled when
 // users open its deep link directly.
@@ -89,6 +90,9 @@ export default function Console({ session, onSwitchAccount, onSignOut }) {
   });
   const [createModePicker, setCreateModePicker] = useState(false);
   const [backgroundPublishNotice, setBackgroundPublishNotice] = useState(null);
+  useEffect(() => {
+    installGlobalSfx();
+  }, []);
   useEffect(() => {
     const sync = () => {
       const [nextView, nextStage] = consoleRoute();
