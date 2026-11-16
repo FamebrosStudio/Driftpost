@@ -168,10 +168,9 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut }) {
       <WorkspaceNav page="team-video" onNavigate={onNavigate} email={session.user?.email} onSignOut={onSignOut} />
       <main className="team-video-main">
         <header className="team-video-heading">
-          <span>PRIVATE TEAM WORKFLOW</span>
-          <h1>Drop your media. Driftpost handles the rest.</h1>
-          <p>Upload a video or carousel named after the brand (plus optional instructions for the AI). Driftpost automatically matches accounts, applies tags, posts to Story, and publishes.</p>
-          <button type="button" className="team-review-refresh" onClick={() => onNavigate('team-video-review')}>Open stopped-video review</button>
+          <span>TEAM PIPELINE</span>
+          <h1>Team Video</h1>
+          <button type="button" className="team-review-refresh" onClick={() => onNavigate('team-video-review')}>Stopped review</button>
         </header>
 
         {!isAiAccount(session.user?.email) && (
@@ -179,13 +178,12 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut }) {
         )}
 
         <form className="team-video-form" onSubmit={submit}>
-          <BorderGlow className="bg-glow" backgroundColor="#0c0d10" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.12} glowRadius={22}>
+          <BorderGlow className="bg-glow" backgroundColor="#111114" borderRadius={14} glowColor="217 91 60" colors={['#3b82f6', '#60a5fa', '#93c5fd']} fillOpacity={0.12} glowRadius={22}>
             <section className="team-video-panel">
               <div className="team-video-section-title">
                 <span>↑</span>
                 <div>
-                  <h2>Upload directly</h2>
-                  <p>Name your file(s) with the brand name (e.g. <code>Rajlaxmi Jewellers.mp4</code> or <code>Hair Match 01.jpg</code>) — no Google Drive needed.</p>
+                  <h2>Upload media</h2>
                 </div>
               </div>
 
@@ -258,13 +256,12 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut }) {
           </BorderGlow>
         </form>
 
-        <BorderGlow className="bg-glow" backgroundColor="#0c0d10" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.12} glowRadius={22}>
+        <BorderGlow className="bg-glow" backgroundColor="#111114" borderRadius={14} glowColor="217 91 60" colors={['#3b82f6', '#60a5fa', '#93c5fd']} fillOpacity={0.12} glowRadius={22}>
           <section className="team-video-panel drive-intake-panel">
             <div className="team-video-section-title">
               <span>↗</span>
               <div>
-                <h2>Live inbox &amp; Google Drive drop-off</h2>
-                <p>Track both direct uploads and Google Drive uploads in one place.</p>
+                <h2>Inbox &amp; Google Drive</h2>
               </div>
             </div>
 

@@ -2575,11 +2575,92 @@ body:has(#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-
   border-color: var(--line-hard) !important;
 }
 
-#root .ws-secondary:hover:not(:disabled),
-#root .dp-collapse-action:hover:not(:disabled),
-#root .team-review-refresh:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.08) !important;
-  border-color: rgba(255, 255, 255, 0.24) !important;
+/* 10% Frosted / Liquid Glassmorphism on key focal & navigation surfaces */
+#root .ws-welcome,
+#root .ws-topnav,
+#root .ws-mobile-dock,
+#root .ws-mobile-more-menu {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.05) 0%,
+    rgba(17, 17, 20, 0.72) 55%,
+    rgba(59, 130, 246, 0.04) 100%
+  ) !important;
+  backdrop-filter: blur(22px) saturate(165%) !important;
+  -webkit-backdrop-filter: blur(22px) saturate(165%) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 14px 36px -18px rgba(0, 0, 0, 0.72) !important;
+}
+
+@media (max-width: 760px) {
+  #root .ws .ws-heading {
+    margin-bottom: 14px;
+  }
+
+  #root .ws .ws-heading h1 {
+    font-size: 24px;
+    line-height: 1.15;
+  }
+
+  #root .ws .ws-heading p {
+    display: none;
+  }
+
+  #root .ws .ws-welcome {
+    padding: 16px !important;
+    gap: 12px;
+  }
+
+  #root .ws .ws-welcome h2 {
+    font-size: 20px;
+    line-height: 1.2;
+  }
+
+  #root .ws .ws-welcome-route {
+    display: none !important;
+  }
+
+  #root .ws .ws-welcome-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  #root .ws .ws-welcome-actions .ws-btn-glow,
+  #root .ws .ws-welcome-actions button {
+    width: 100% !important;
+    justify-content: center;
+    padding: 10px 10px !important;
+    font-size: 12.5px !important;
+  }
+
+  #root .ws .ws-stat-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+  }
+
+  #root .ws .ws-stat {
+    min-height: 0 !important;
+    padding: 12px 10px !important;
+    gap: 4px;
+  }
+
+  #root .ws .ws-stat > span {
+    font-size: 10.5px !important;
+    line-height: 1.25;
+  }
+
+  #root .ws .ws-stat > strong {
+    font-size: 22px !important;
+    margin: 4px 0 2px !important;
+  }
+
+  #root .ws .ws-stat > small,
+  #root .ws .ws-stat > button {
+    display: none !important;
+  }
 }
 
 /* Real-time Progress Bars & Stop Button */
