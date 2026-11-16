@@ -160,13 +160,44 @@ async function tokenFor(supabase, connection) {
   return renewed.access_token;
 }
 
+const VIDEO_EXTENSIONS = new Set(['.mp4', '.mov', '.m4v', '.webm', '.mkv', '.avi', '.3gp', '.mpeg', '.mpg']);
+
+function fileExtension(name) {
+  const match = String(name || '').trim().toLowerCase().match(/(\.[a-z0-9]{2,8})$/);
+  return match ? match[1] : '';
+}
+
+export function isIntakeVideoFile(file) {
+  const mime = String(file?.mimeType || '').trim().toLowerCase();
+  if (mime.startsWith('video/')) return true;
+  if ((!mime || mime === 'application/octet-stream' || mime === 'application/mp4') && VIDEO_EXTENSIONS.has(fileExtension(file?.name))) {
+    return true;
+  }
+  return false;
+}
+
+export function isIntakeImageFile(file) {
+  const mime = String(file?.mimeType || '').trim().toLowerCase();
+  if (mime.startsWith('image/')) return true;
+  if ((!mime || mime === 'application/octet-stream') && Boolean(mimeFromFileName(file?.name))) {
+    return true;
+  }
+  return false;
+}
+
+export function normalizeIntakeImageMime(file) {
+  const mime = String(file?.mimeType || '').trim().toLowerCase();
+  if (mime.startsWith('image/')) return mime;
+  return mimeFromFileName(file?.name) || mime;
+}
+
 async function listDriveFiles(accessToken, folderId, connectedAt) {
   const files = [];
   let pageToken = '';
   const since = new Date(connectedAt || 0).toISOString();
   do {
     const params = new URLSearchParams({
-      q: `'${folderId.replace(/'/g, "\\'")}' in parents and trashed = false and (mimeType contains 'video/' or mimeType contains 'image/') and (createdTime > '${since}' or modifiedTime > '${since}')`,
+      q: `'${folderId.replace(/'/g, "\\'")}' in parents and trashed = false and mimeType != 'application/vnd.google-apps.folder' and (createdTime > '${since}' or modifiedTime > '${since}')`,
       fields: 'nextPageToken,files(id,name,mimeType,size,createdTime,modifiedTime)',
       pageSize: '100',
       orderBy: 'modifiedTime desc',
@@ -183,13 +214,16 @@ async function listDriveFiles(accessToken, folderId, connectedAt) {
   return files;
 }
 
-async function enqueueFiles(supabase, connection, files) {
+export async function enqueueFiles(supabase, connection, files) {
   const { data: ownedConnections, error: connectionsError } = await supabase.from('platform_connections')
     .select('id, user_id, platform, platform_account_id, account_name, encrypted_tokens')
     .eq('user_id', connection.user_id);
   if (connectionsError) throw new Error('Could not read the connected publishing accounts.');
-  const imageFiles = files.filter((file) => String(file.mimeType || '').startsWith('image/'));
-  const videoFiles = files.filter((file) => String(file.mimeType || '').startsWith('video/'));
+  const imageFiles = files.filter(isIntakeImageFile).map((file) => ({ ...file, mimeType: normalizeIntakeImageMime(file) }));
+  const videoFiles = files.filter(isIntakeVideoFile).map((file) => ({
+    ...file,
+    mimeType: String(file.mimeType || '').toLowerCase().startsWith('video/') ? file.mimeType : 'video/mp4',
+  }));
   // Editors can drop up to 10 photos for one carousel. Images sharing the
   // account name and arriving in the same short upload batch are one post.
   // Wait until the batch has been quiet for 90 seconds so sequential uploads
@@ -332,7 +366,7 @@ async function downloadDriveVideo(supabase, job, destination) {
   const { data: connection, error } = await supabase.from(CONNECTIONS).select('*').eq('user_id', job.owner_user_id).eq('status', 'connected').maybeSingle();
   if (error || !connection) throw new Error('The Drive connection is unavailable. Reconnect Drive in Driftpost.');
   const accessToken = await tokenFor(supabase, connection);
-  const response = await fetch(`https://www.googleapis.com/drive/v3/files/${encodeURIComponent(job.drive_file_id)}?alt=media`, {
+  const response = await fetch(`https://www.googleapis.com/drive/v3/files/${encodeURIComponent(job.drive_file_id)}?alt=media&supportsAllDrives=true`, {
     headers: { Authorization: `Bearer ${accessToken}` }, signal: AbortSignal.timeout(15 * 60 * 1000),
   });
   if (!response.ok || !response.body) throw new Error('Google Drive could not download this video. Check the file and retry.');
@@ -390,7 +424,7 @@ async function downloadDriveCarousel(supabase, job, directory) {
     if (!isAcceptedCarouselImageType(mime)) {
       throw new Error(`Carousel image ${index + 1} ("${item.name}") is not a supported image format. Drive carousels accept ${ACCEPTED_FORMAT_LABEL} images.`);
     }
-    const response = await fetch(`https://www.googleapis.com/drive/v3/files/${encodeURIComponent(item.id)}?alt=media`, {
+    const response = await fetch(`https://www.googleapis.com/drive/v3/files/${encodeURIComponent(item.id)}?alt=media&supportsAllDrives=true`, {
       headers: { Authorization: `Bearer ${accessToken}` }, signal: AbortSignal.timeout(120_000),
     });
     if (!response.ok || !response.body) throw new Error(`Google Drive could not download carousel image ${index + 1}.`);
@@ -484,7 +518,7 @@ export async function getDriveReviewFile(supabase, job) {
     .eq('user_id', job.owner_user_id).eq('status', 'connected').maybeSingle();
   if (error || !connection) throw new Error('The private Drive connection is unavailable. Reconnect Drive in Driftpost.');
   const accessToken = await tokenFor(supabase, connection);
-  const response = await fetch(`https://www.googleapis.com/drive/v3/files/${encodeURIComponent(job.drive_file_id)}?alt=media`, {
+  const response = await fetch(`https://www.googleapis.com/drive/v3/files/${encodeURIComponent(job.drive_file_id)}?alt=media&supportsAllDrives=true`, {
     headers: { Authorization: `Bearer ${accessToken}` }, signal: AbortSignal.timeout(15 * 60 * 1000),
   });
   if (!response.ok || !response.body) throw new Error('Google Drive could not load this video for review. Check the file and retry.');
@@ -541,9 +575,11 @@ async function scanFolders(supabase, onlyUserId = '') {
   if (error || !connections?.length) return;
   for (const connection of connections) {
     try {
+      const folderId = String(connection.drive_folder_id || process.env.DRIFTPOST_DRIVE_FOLDER_ID || '').trim();
+      if (!folderId) throw new Error('Drive intake folder ID is not configured.');
       const accessToken = await tokenFor(supabase, connection);
-      const files = await listDriveFiles(accessToken, connection.drive_folder_id, connection.created_at);
-      await enqueueFiles(supabase, connection, files);
+      const files = await listDriveFiles(accessToken, folderId, connection.created_at);
+      await enqueueFiles(supabase, { ...connection, drive_folder_id: folderId }, files);
       lastScanErrorByUser.delete(String(connection.user_id));
     } catch (error) {
       const msg = String(error?.message || error).slice(0, 220);
@@ -554,7 +590,7 @@ async function scanFolders(supabase, onlyUserId = '') {
 }
 
 export async function triggerDriveScan(supabase, userId = '') {
-  if (!process.env.DRIFTPOST_DRIVE_FOLDER_ID) return;
+  if (!process.env.DRIFTPOST_DRIVE_FOLDER_ID && !userId) return;
   await scanFolders(supabase, userId);
   await processQueued(supabase);
 }

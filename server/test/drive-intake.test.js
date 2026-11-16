@@ -4,8 +4,12 @@ import { platformsNeedingGeneratedCovers, saveBrandReview } from '../src/telegra
 import {
   CAROUSEL_IMAGE_MIME_TYPES,
   carouselImageLimitBytes,
+  enqueueFiles,
   isAcceptedCarouselImageType,
+  isIntakeImageFile,
+  isIntakeVideoFile,
   needsJpegConversion,
+  normalizeIntakeImageMime,
   parseDestination,
 } from '../src/google-drive-intake.js';
 
@@ -102,4 +106,63 @@ test('carousel image limits follow the destination platforms', () => {
   assert.equal(carouselImageLimitBytes(['instagram', 'facebook']), 8 * 1024 * 1024);
   assert.equal(carouselImageLimitBytes(['facebook', 'x']), 10 * 1024 * 1024);
   assert.equal(carouselImageLimitBytes([]), 10 * 1024 * 1024);
+});
+
+test('drive intake detects videos and images even when Drive reports application/octet-stream', () => {
+  assert.equal(isIntakeVideoFile({ name: 'Hair Match.mp4', mimeType: 'video/mp4' }), true);
+  assert.equal(isIntakeVideoFile({ name: 'Hair Match.mov', mimeType: 'application/octet-stream' }), true);
+  assert.equal(isIntakeVideoFile({ name: 'Hair Match.mp4', mimeType: 'application/mp4' }), true);
+  assert.equal(isIntakeVideoFile({ name: 'notes.txt', mimeType: 'text/plain' }), false);
+
+  assert.equal(isIntakeImageFile({ name: 'Hair Match 01.heic', mimeType: 'application/octet-stream' }), true);
+  assert.equal(normalizeIntakeImageMime({ name: 'Hair Match 01.heic', mimeType: 'application/octet-stream' }), 'image/heic');
+  assert.equal(isIntakeImageFile({ name: 'Hair Match.mp4', mimeType: 'video/mp4' }), false);
+});
+
+test('enqueueFiles queues new videos and skips already-seen drive_file_ids', async () => {
+  const inserted = [];
+  const supabase = {
+    from(table) {
+      if (table === 'platform_connections') {
+        return {
+          select() { return this; },
+          async eq() {
+            return {
+              data: [
+                { id: 'conn-ig-1', user_id: 'user-1', platform: 'instagram', platform_account_id: 'ig-1', account_name: 'Hair Match Salon' },
+              ],
+              error: null,
+            };
+          },
+        };
+      }
+      if (table === 'google_drive_video_jobs') {
+        return {
+          select() { return this; },
+          eq() { return this; },
+          order() { return this; },
+          async limit() {
+            return { data: [{ drive_file_id: 'file-seen', result: {} }], error: null };
+          },
+          async insert(row) {
+            inserted.push(row);
+            return { error: null };
+          },
+        };
+      }
+      throw new Error(`Unexpected table ${table}`);
+    },
+  };
+  await enqueueFiles(
+    supabase,
+    { user_id: 'user-1', drive_folder_id: 'folder-1' },
+    [
+      { id: 'file-seen', name: 'Hair Match.mp4', mimeType: 'video/mp4', size: 1024 },
+      { id: 'file-new', name: 'Hair Match.mov', mimeType: 'application/octet-stream', size: 2048 },
+    ],
+  );
+  assert.equal(inserted.length, 1);
+  assert.equal(inserted[0].drive_file_id, 'file-new');
+  assert.equal(inserted[0].mime_type, 'video/mp4');
+  assert.equal(inserted[0].status, 'queued');
 });
