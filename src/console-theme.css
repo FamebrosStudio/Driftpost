@@ -475,7 +475,7 @@
   box-sizing: border-box !important;
 }
 
-#root .border-glow-card:has(> .border-glow-inner > :is(.ws-account-picker, .ws-campaign, .ws-live-panel, .ws-top-content, .ws-account-details, .automation-setup, .automation-account)) {
+#root .border-glow-card:has(> .border-glow-inner > :is(.ws-welcome, .ws-account-picker, .ws-campaign, .ws-live-panel, .ws-top-content, .ws-account-details, .automation-setup, .automation-account)) {
   margin-bottom: 16px !important;
 }
 
