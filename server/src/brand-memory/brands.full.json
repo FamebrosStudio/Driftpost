@@ -2823,28 +2823,38 @@
         "caption_source_update": "User-supplied caption update 2026-11-14; transient claims are caption-specific."
       },
       "keyword_bank": [
-        "Rajlaxmi Jewellers Sangli",
-        "सांगली ज्वेलर्स",
-        "दागिन्यांची डिझाइन",
-        "पारंपरिक दागिने",
-        "jewellery Sangli"
+        "राजलक्ष्मी ज्वेलर्स",
+        "सोन्यावर EMI",
+        "मंगळसूत्र EMI वर",
+        "सोन्याचे मंगळसूत्र",
+        "Gold on EMI Kavthe Mahankal",
+        "Mangalsutra Collection Sangli",
+        "Gold Jewellery Shop Sangli",
+        "Latest Mangalsutra Designs"
       ],
       "approved_facts": [
         {
           "text": "Use Marathi for this brand.",
           "source": "Prior explicit user language preference"
+        },
+        {
+          "text": "Showroom address: राजलक्ष्मी ज्वेलर्स, SBI बँकेच्या शेजारी, शिवाजी चौक, कवठे महांकाळ, जि. सांगली; Phone: 7020551310",
+          "source": "User-supplied Marathi caption (2026-11-16)"
         }
       ],
       "mandatory_copy": [],
       "contacts": {
-        "phone": [],
-        "address": null,
+        "phone": [
+          "7020551310"
+        ],
+        "address": "राजलक्ष्मी ज्वेलर्स, SBI बँकेच्या शेजारी, शिवाजी चौक, कवठे महांकाळ, जि. सांगली",
         "email": null,
         "website": null
       },
       "footer_lines": [
-        "📍 Sangli",
-        "💫 Managed by: @famebrosstudio"
+        "📍 राजलक्ष्मी ज्वेलर्स, SBI बँकेच्या शेजारी, शिवाजी चौक, कवठे महांकाळ, जि. सांगली",
+        "📞 7020551310",
+        "🎥 Managed by: @famebrosstudio"
       ],
       "instagram": {
         "url": "https://www.instagram.com/rajlaxmijewellers2012/",
@@ -2854,22 +2864,25 @@
         "note": "Use as brand identity anchor. Current claims and commercial details still require verification."
       },
       "example": {
-        "status": "new_illustrative_example_not_a_historical_caption",
-        "scenario": "Jewellery design showcase",
-        "body": "खास क्षणांसाठी खास डिझाइन. ✨\nराजलक्ष्मी ज्वेलर्समधील या दागिन्याची सुंदर झलक पाहा.\nअधिक माहितीसाठी आम्हाला संदेश पाठवा.",
+        "status": "user_supplied_example",
+        "scenario": "Mangalsutra collection & Gold on EMI",
+        "body": "मंगळसूत्र घ्यायचंय, पण बजेटची चिंता आहे? आता सोन्याची खरेदी करा सोप्या EMI सुविधेसह! 😍💛\n\nपारंपरिक आणि आकर्षक डिझाइन्समधील सुंदर मंगळसूत्रांचं कलेक्शन पाहण्यासाठी आजच भेट द्या राजलक्ष्मी ज्वेलर्स, कवठे महांकाळ येथे! ✨",
         "hashtags": [
-          "RajlaxmiJewellers",
-          "SangliJewellers",
-          "JewelleryDesign"
+          "राजलक्ष्मीज्वेलर्स",
+          "GoldOnEMI",
+          "MangalsutraCollection"
         ],
         "seo_keywords": [
-          "Rajlaxmi Jewellers Sangli",
-          "सांगली ज्वेलर्स",
-          "दागिन्यांची डिझाइन",
-          "पारंपरिक दागिने",
-          "jewellery Sangli"
+          "राजलक्ष्मी ज्वेलर्स",
+          "सोन्यावर EMI",
+          "मंगळसूत्र EMI वर",
+          "सोन्याचे मंगळसूत्र",
+          "Gold on EMI Kavthe Mahankal",
+          "Mangalsutra Collection Sangli",
+          "Gold Jewellery Shop Sangli",
+          "Latest Mangalsutra Designs"
         ],
-        "full_caption": "खास क्षणांसाठी खास डिझाइन. ✨\nराजलक्ष्मी ज्वेलर्समधील या दागिन्याची सुंदर झलक पाहा.\nअधिक माहितीसाठी आम्हाला संदेश पाठवा.\n\n📍 Sangli\n💫 Managed by: @famebrosstudio\n\n#RajlaxmiJewellers #SangliJewellers #JewelleryDesign\n\n[Rajlaxmi Jewellers Sangli, सांगली ज्वेलर्स, दागिन्यांची डिझाइन, पारंपरिक दागिने, jewellery Sangli]"
+        "full_caption": "मंगळसूत्र घ्यायचंय, पण बजेटची चिंता आहे? आता सोन्याची खरेदी करा सोप्या EMI सुविधेसह! 😍💛\n\nपारंपरिक आणि आकर्षक डिझाइन्समधील सुंदर मंगळसूत्रांचं कलेक्शन पाहण्यासाठी आजच भेट द्या राजलक्ष्मी ज्वेलर्स, कवठे महांकाळ येथे! ✨\n\n📍 राजलक्ष्मी ज्वेलर्स, SBI बँकेच्या शेजारी, शिवाजी चौक, कवठे महांकाळ, जि. सांगली\n\n📞 7020551310\n\n🎥 Managed by: @famebrosstudio\n\n#राजलक्ष्मीज्वेलर्स #GoldOnEMI #MangalsutraCollection\n\n[राजलक्ष्मी ज्वेलर्स, सोन्यावर EMI, मंगळसूत्र EMI वर, सोन्याचे मंगळसूत्र, Gold on EMI Kavthe Mahankal, Mangalsutra Collection Sangli, Gold Jewellery Shop Sangli, Latest Mangalsutra Designs]"
       },
       "missing_details": [
         "Public enquiry phone, if the brand wants it in captions",

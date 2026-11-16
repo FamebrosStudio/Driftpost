@@ -100,14 +100,14 @@
     "commercial_accuracy_rule": "Gold rate, silver rate, making charge, wastage, weight, purity, hallmark, stone specification, price, EMI, offer, exchange, buyback and availability must be confirmed for the exact publication date. Never infer them from an old post or generic jewellery knowledge."
   },
   "contact": {
-    "phone_display": "+91 70205 51310",
+    "phone_display": "7020551310",
     "phone_e164": "+917020551310",
-    "phone_status": "User-provided contact in the dataset prepared 2026-11-14.",
-    "phone_publication_rule": "Use +91 70205 51310. The previous +91 70205 51310 directory number is unconfirmed and must not be used unless the brand reconfirms it.",
+    "phone_status": "User-provided and confirmed contact in Marathi caption (2026-11-16).",
+    "phone_publication_rule": "Use 7020551310 (or +91 70205 51310). The +91 95619 43310 directory number is unconfirmed and must not be used.",
     "whatsapp_number": null,
     "whatsapp_status": "Do not label +91 70205 51310 as WhatsApp without confirmation.",
-    "address_preferred_public": "Rajlaxmi Jewellers, Shivaji Chowk, Kavathe Mahankal, Sangli, Maharashtra 416405, India",
-    "address_preferred_status": "Safe consolidated location from multiple public sources. Confirm shop number and lane before printing a full permanent address.",
+    "address_preferred_public": "राजलक्ष्मी ज्वेलर्स, SBI बँकेच्या शेजारी, शिवाजी चौक, कवठे महांकाळ, जि. सांगली",
+    "address_preferred_status": "User-confirmed Marathi showroom address (Near SBI Bank, Shivaji Chowk, Kavathe Mahankal, Dist. Sangli).",
     "address_directory_variant": "Shop No. 10, Shivaji Chowk, Patil Gali, Kavathe Mahankal, Maharashtra 416405, India",
     "address_directory_variant_status": "A current verified business-directory listing. Treat the exact shop number and Patil Gali wording as externally sourced until the brand confirms it.",
     "address_registration_variant": "Main Road, Shivaji Chowk, At/Post Kavathe Mahakal, Taluka Kavathe Mahakal, District Sangli, Maharashtra 416405, India",
@@ -582,16 +582,17 @@
   },
   "fixed_footer": {
     "standard_feed_and_reel_lines": [
-      "📍 Kavathe Mahankal, Sangli",
-      "💫 Managed by: @famebrosstudio"
+      "📍 राजलक्ष्मी ज्वेलर्स, SBI बँकेच्या शेजारी, शिवाजी चौक, कवठे महांकाळ, जि. सांगली",
+      "📞 7020551310",
+      "🎥 Managed by: @famebrosstudio"
     ],
     "phone_enabled_option": [
-      "📍 Kavathe Mahankal, Sangli",
-      "📞 +91 70205 51310",
-      "💫 Managed by: @famebrosstudio"
+      "📍 राजलक्ष्मी ज्वेलर्स, SBI बँकेच्या शेजारी, शिवाजी चौक, कवठे महांकाळ, जि. सांगली",
+      "📞 7020551310",
+      "🎥 Managed by: @famebrosstudio"
     ],
-    "footer_status": "The locality is strongly matched. The phone is externally matched and should be brand-reconfirmed before permanent use.",
-    "footer_rule": "Use the two-line standard footer by default. Use the phone-enabled option only after campaign-level confirmation. Do not add an email, website, WhatsApp label or exact shop number without approval.",
+    "footer_status": "Showroom address and phone 7020551310 confirmed by the user (2026-11-16).",
+    "footer_rule": "Use the confirmed Marathi showroom address, phone 7020551310, and Famebros Studio credit in feed/reel captions.",
     "mode_exceptions": [
       "Omit for story copy unless requested",
       "Omit for comments and replies",
@@ -1287,8 +1288,8 @@
       ],
       "location": {
         "city": "Kavathe Mahankal, Sangli district, Maharashtra",
-        "address": "Shop No. 10, Shivaji Chowk, Patil Gali, Kavathe Mahankal, Maharashtra 416405",
-        "landmark": "Beside SBI Bank, Shivaji Chowk, per user-provided brand details"
+        "address": "राजलक्ष्मी ज्वेलर्स, SBI बँकेच्या शेजारी, शिवाजी चौक, कवठे महांकाळ, जि. सांगली",
+        "landmark": "SBI बँकेच्या शेजारी, शिवाजी चौक (Near SBI Bank, Shivaji Chowk)"
       },
       "audience": [
         "Local jewellery shoppers",
@@ -1298,13 +1299,13 @@
       "positioning": null
     },
     "contact": {
-      "phone": "+91 70205 51310",
+      "phone": "7020551310",
       "other_directory_phone": "+91 95619 43310",
-      "phone_note": "The second number appears in a public directory and has not been confirmed by the client. Use the user-provided number unless verified.",
+      "phone_note": "The second number appears in a public directory and has not been confirmed by the client. Always use 7020551310.",
       "whatsapp": null,
       "email": null,
       "website": null,
-      "address": "Shop No. 10, Shivaji Chowk, Patil Gali, Kavathe Mahankal, Maharashtra 416405"
+      "address": "राजलक्ष्मी ज्वेलर्स, SBI बँकेच्या शेजारी, शिवाजी चौक, कवठे महांकाळ, जि. सांगली"
     },
     "social_media": {
       "instagram_url": "https://www.instagram.com/rajlaxmijewellers2012/",
@@ -1361,7 +1362,7 @@
       ],
       "length": "Short to medium."
     },
-    "fixed_footer": "Rajlaxmi Jewellers, Shop No. 10, Shivaji Chowk, Patil Gali, Kavathe Mahankal, Maharashtra 416405 | +91 70205 51310",
+    "fixed_footer": "📍 राजलक्ष्मी ज्वेलर्स, SBI बँकेच्या शेजारी, शिवाजी चौक, कवठे महांकाळ, जि. सांगली\n📞 7020551310\n🎥 Managed by: @famebrosstudio",
     "suggested_hashtag_bank": [
       "#RajlaxmiJewellers",
       "#KavatheMahankal",
