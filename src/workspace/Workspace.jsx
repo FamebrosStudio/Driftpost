@@ -50,6 +50,7 @@ function Icon({ name, size = 16 }) {
     gear: <><circle cx="12" cy="12" r="6.5"/><circle cx="12" cy="12" r="2.4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.93 4.93l2.12 2.12M16.95 16.95l2.12 2.12M19.07 4.93l-2.12 2.12M7.05 16.95l-2.12 2.12"/></>,
     video: <><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m10 9 5 3-5 3z"/></>,
     review: <><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5M7.5 10.5l2 2 4-4"/></>,
+    feed: <><ellipse cx="12" cy="5.5" rx="7.5" ry="3"/><path d="M4.5 5.5v6.5c0 1.66 3.36 3 7.5 3s7.5-1.34 7.5-3V5.5"/><path d="M4.5 12v6.5c0 1.66 3.36 3 7.5 3s7.5-1.34 7.5-3V12"/></>,
     arrowRight: <><path d="M4 12h15M13 6l6 6-6 6"/></>,
     arrowLeft: <><path d="M20 12H5M11 6l-6 6 6 6"/></>,
     sparkles: <><path d="m12 3 1.7 5.3L19 10l-5.3 1.7L12 17l-1.7-5.3L5 10l5.3-1.7L12 3Z"/><path d="m19 14 .9 2.1L22 17l-2.1.9L19 20l-.9-2.1L16 17l2.1-.9L19 14ZM5 3l.7 1.8L7.5 5.5l-1.8.7L5 8l-.7-1.8-1.8-.7 1.8-.7L5 3Z"/></>,
@@ -90,6 +91,7 @@ export function WorkspaceNav({ page, onNavigate, email, onSignOut }) {
     ...(isTeam ? [
       { id: 'team-video', label: 'Team Video', icon: 'video', active: page === 'team-video' },
       { id: 'team-video-review', label: 'Review', icon: 'review', active: page === 'team-video-review' },
+      { id: 'feed-it', label: 'Feed It', icon: 'feed', active: page === 'feed-it' },
     ] : []),
   ];
   const mobilePrimaryIds = isTeam ? ['home', 'create', 'calendar', 'team-video'] : ['home', 'create', 'calendar', 'accounts'];

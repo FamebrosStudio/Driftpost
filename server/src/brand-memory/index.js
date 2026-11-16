@@ -16,7 +16,7 @@ const FULL_PATH = path.join(here, 'brands.full.json');
 const PORTABLE_DATASET_PATH = path.join(here, 'source-data', 'Famebros_Brand_Caption_Dataset.json');
 const MEMORY_PATH = path.join(here, 'memory.json');
 const CUSTOM_PATH = path.join(here, 'brands.custom.json');
-const MAX_AUTO = 50;
+const MAX_AUTO = 200;
 
 let cache = null;
 function loadCustom() {
@@ -29,7 +29,7 @@ function loadCustom() {
 }
 function saveCustom(brands) {
   const raw = JSON.stringify({ version: 1, brands: brands.slice(0, MAX_AUTO) });
-  if (raw.length < 30000) fs.writeFileSync(CUSTOM_PATH, raw);
+  if (raw.length < 250000) fs.writeFileSync(CUSTOM_PATH, raw);
 }
 export function loadBrands() {
   if (!cache) cache = JSON.parse(fs.readFileSync(COMPACT_PATH, 'utf8'));
@@ -893,4 +893,199 @@ export function ensureAutoBrand({ brandParam, brief, assetHint }) {
   // learning memory counts it too
   try { learnBrand(slug, { assetHint: assetHint || topic }); } catch {}
   return { brand: { ...entry, kw: auto.seo_keyword_bank?.length ? auto.seo_keyword_bank : entry.kw }, isNew: entry.count <= 1, auto };
+}
+
+function extractLabeledField(text, labels) {
+  for (const label of labels) {
+    const re = new RegExp(`^\\s*(?:[-*]\\s*)?(?:\\*\\*)?${label}(?:\\*\\*)?\\s*[:\\-]\\s*(.+)$`, 'im');
+    const match = String(text || '').match(re);
+    if (match?.[1]) return match[1].replace(/\*\*/g, '').trim();
+  }
+  return '';
+}
+
+function extractAllPhonesRaw(text) {
+  const found = [];
+  const seen = new Set();
+  const re = /(?:\+91[\s-]?)?[6-9]\d{4}[\s-]?\d{5}/g;
+  let m;
+  while ((m = re.exec(String(text || '')))) {
+    const digits = m[0].replace(/\D/g, '').slice(-10);
+    if (digits.length === 10 && !seen.has(digits)) {
+      seen.add(digits);
+      found.push(digits);
+    }
+    if (found.length >= 4) break;
+  }
+  return found;
+}
+
+export function feedBrand({ brandName = '', rawText = '' } = {}) {
+  const raw = String(rawText || '').trim();
+  const explicitName = String(brandName || '').trim();
+  const inferredName = extractLabeledField(raw, ['Brand Name', 'Business Name', 'Client Name', 'Name'])
+    || raw.split(/\r?\n/).map((line) => line.replace(/^[#*\-\s]+/, '').trim()).find((line) => line.length >= 2 && line.length <= 64 && !/:/.test(line))
+    || '';
+  const name = (explicitName || inferredName).slice(0, 80).trim();
+  if (!name || name.length < 2) throw new Error('Enter a brand name or paste brand details containing the brand name.');
+  if (!raw && !explicitName) throw new Error('Paste the brand details before saving.');
+
+  const slug = slugify(name);
+  const custom = loadCustom();
+  const existingIdx = custom.findIndex((c) => c.id === slug || norm(c.name) === norm(name));
+
+  const category = extractLabeledField(raw, ['Category', 'Niche', 'Industry', 'Business Type']) || 'Local Brand';
+  const location = extractLabeledField(raw, ['Location', 'City', 'Area', 'Address', 'Showroom Address', 'Branches']) || '';
+  const address = extractLabeledField(raw, ['Address', 'Showroom Address', 'Full Address', 'Branches']) || location;
+  const language = extractLabeledField(raw, ['Language', 'Caption Language', 'Preferred Language']) || '';
+  const tone = extractLabeledField(raw, ['Tone', 'Brand Voice', 'Voice']) || 'Warm, authentic, clear, engaging';
+  const igField = extractLabeledField(raw, ['Instagram', 'Instagram Handle', 'IG']);
+  const igHandleMatch = (igField || raw).match(/@[A-Za-z0-9._]{2,30}/);
+  const ig = igHandleMatch ? igHandleMatch[0] : (igField || null);
+  const aliasesRaw = extractLabeledField(raw, ['Aliases', 'Also Known As', 'Short Names']);
+  const aliases = aliasesRaw
+    ? aliasesRaw.split(/[,|]/).map((s) => s.trim()).filter((s) => s && norm(s) !== norm(name)).slice(0, 10)
+    : [];
+  if (ig && !aliases.includes(ig)) aliases.push(ig);
+
+  const phones = extractAllPhonesRaw(raw);
+  const phoneLine = phones.length ? `📞 ${phones.join(' / ')}` : '';
+  const footer = [
+    ...(address ? [`📍 ${address}`] : []),
+    ...(phoneLine ? [phoneLine] : []),
+    '💫 Managed by: @famebrosstudio',
+  ];
+
+  const kwField = extractLabeledField(raw, ['SEO Keywords', 'Keywords', 'Search Phrases']);
+  const bracketMatch = raw.match(/\[([^\[\]\n]{8,300})\]/);
+  const kwSource = kwField || bracketMatch?.[1] || '';
+  const kw = [...new Set([
+    name,
+    ...kwSource.split(',').map((s) => s.trim()).filter(Boolean),
+  ])].slice(0, 12);
+
+  const hashtags = [...new Set((raw.match(/#[\p{L}\p{N}_]{2,40}/gu) || []).map((t) => t.replace(/^#/, '')))].slice(0, 8);
+  const nowIso = new Date().toISOString();
+
+  const entry = {
+    id: slug,
+    name,
+    aliases,
+    cat: category,
+    loc: location,
+    genres: [],
+    tone,
+    lang: language,
+    cta: [],
+    avoid: [],
+    kw,
+    footer,
+    mandatory: [],
+    ex: '',
+    ig,
+    ready: 'fed',
+    auto: false,
+    fed: true,
+    updatedAt: nowIso,
+    rawPreview: raw.slice(0, 400),
+  };
+
+  if (existingIdx >= 0) custom[existingIdx] = { ...custom[existingIdx], ...entry };
+  else custom.push(entry);
+  saveCustom(custom);
+  cache = null;
+
+  const autoPath = path.join(DEEP_DIR, `auto-${slug}.json`);
+  const deep = {
+    schema_version: 'fed-1',
+    brand_id: slug,
+    brand_name: name,
+    aliases,
+    knowledge_scope: `Team-fed brand profile for ${name}. Use all verified details below.`,
+    business: {
+      category,
+      location_area: location,
+      full_address: address || null,
+    },
+    contact: {
+      phone_display: phones.join(' / ') || null,
+      phones,
+      full_address: address || null,
+    },
+    social_media: {
+      instagram_handle: ig,
+    },
+    master_brand_instruction: [
+      `Write only for ${name}${location ? ` (${location})` : ''}.`,
+      language ? `Preferred language: ${language}.` : '',
+      `Tone: ${tone}.`,
+      raw ? `Verified Brand Dossier:\n${raw.slice(0, 6000)}` : '',
+    ].filter(Boolean).join('\n\n'),
+    fixed_footer: { lines: footer },
+    seo_keyword_bank: kw,
+    suggested_hashtag_bank: { brand: hashtags, location: [], topic: [] },
+    raw_fed_text: raw.slice(0, 8000),
+    confirmed: true,
+    updated_at: nowIso,
+  };
+  fs.writeFileSync(autoPath, JSON.stringify(deep, null, 2), 'utf8');
+  deepCache = null;
+
+  return {
+    id: slug,
+    name,
+    category,
+    location,
+    address,
+    phones,
+    ig,
+    language,
+    tone,
+    footer,
+    kw,
+    hashtags,
+    rawText: raw,
+    updatedAt: nowIso,
+  };
+}
+
+export function listFedBrands() {
+  const custom = loadCustom();
+  return custom
+    .filter((entry) => entry.fed || entry.ready === 'fed')
+    .map((entry) => {
+      let deep = null;
+      try {
+        deep = JSON.parse(fs.readFileSync(path.join(DEEP_DIR, `auto-${entry.id}.json`), 'utf8'));
+      } catch {}
+      return {
+        id: entry.id,
+        name: entry.name,
+        category: entry.cat || deep?.business?.category || '',
+        location: entry.loc || deep?.business?.location_area || '',
+        address: deep?.contact?.full_address || deep?.business?.full_address || '',
+        phones: deep?.contact?.phones || [],
+        ig: entry.ig || deep?.social_media?.instagram_handle || null,
+        language: entry.lang || '',
+        tone: entry.tone || '',
+        footer: entry.footer || [],
+        kw: entry.kw || [],
+        hashtags: deep?.suggested_hashtag_bank?.brand || [],
+        rawText: deep?.raw_fed_text || entry.rawPreview || '',
+        updatedAt: entry.updatedAt || deep?.updated_at || null,
+      };
+    })
+    .sort((a, b) => String(b.updatedAt || '').localeCompare(String(a.updatedAt || '')));
+}
+
+export function deleteFedBrand(brandId) {
+  const id = slugify(brandId);
+  const custom = loadCustom();
+  const next = custom.filter((entry) => entry.id !== id);
+  if (next.length === custom.length) return false;
+  saveCustom(next);
+  cache = null;
+  try { fs.rmSync(path.join(DEEP_DIR, `auto-${id}.json`), { force: true }); } catch {}
+  deepCache = null;
+  return true;
 }

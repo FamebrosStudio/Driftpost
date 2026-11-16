@@ -1896,6 +1896,48 @@ app.post('/api/ai/learn', requireUser, requireAiAccess, burstLimit, async (req, 
   }
 });
 
+// Feed It: private team-only brand onboarding (restricted to famebros.studio@gmail.com & kabirsayed.k@gmail.com)
+app.get('/api/ai/feed-it', requireUser, burstLimit, async (req, res) => {
+  if (!canUsePrivateBrandData(req.user)) {
+    return res.status(403).json({ error: 'Feed It is only available to authorized team accounts.' });
+  }
+  try {
+    const { listFedBrands } = await import('./brand-memory/index.js');
+    res.json({ brands: listFedBrands() });
+  } catch {
+    res.status(500).json({ error: 'Could not load fed brands.' });
+  }
+});
+
+app.post('/api/ai/feed-it', requireUser, burstLimit, async (req, res) => {
+  if (!canUsePrivateBrandData(req.user)) {
+    return res.status(403).json({ error: 'Feed It is only available to authorized team accounts.' });
+  }
+  try {
+    const { feedBrand } = await import('./brand-memory/index.js');
+    const brandName = String(req.body?.brandName || '').slice(0, 120);
+    const rawText = String(req.body?.rawText || '').slice(0, 12000);
+    const brand = feedBrand({ brandName, rawText });
+    res.json({ ok: true, brand });
+  } catch (e) {
+    res.status(400).json({ error: e?.message || 'Could not save brand data.' });
+  }
+});
+
+app.delete('/api/ai/feed-it/:brandId', requireUser, burstLimit, async (req, res) => {
+  if (!canUsePrivateBrandData(req.user)) {
+    return res.status(403).json({ error: 'Feed It is only available to authorized team accounts.' });
+  }
+  try {
+    const { deleteFedBrand } = await import('./brand-memory/index.js');
+    const ok = deleteFedBrand(String(req.params.brandId || ''));
+    if (!ok) return res.status(404).json({ error: 'Brand not found.' });
+    res.json({ ok: true });
+  } catch {
+    res.status(500).json({ error: 'Could not delete fed brand.' });
+  }
+});
+
 // Meta deauthorize callback: fired when a user removes Drift Post from their
 // Facebook settings. Verifies the signed_request, purges stored Meta tokens
 // we can attribute, and returns the confirmation Meta's review expects.

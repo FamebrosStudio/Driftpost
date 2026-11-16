@@ -2202,3 +2202,198 @@ body:has(#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ==========================================================================
+   FEED IT PAGE (TEAM-ONLY BRAND ONBOARDING)
+   ========================================================================== */
+#root .feed-it-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  align-items: start;
+}
+
+#root .feed-it-card {
+  display: grid;
+  gap: 14px;
+  padding: 20px;
+}
+
+#root .feed-it-list-card {
+  grid-column: 1 / -1;
+}
+
+#root .feed-it-step-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+#root .feed-it-step-badge {
+  flex: 0 0 auto;
+  padding: 4px 8px;
+  border: 1px solid color-mix(in srgb, var(--go) 45%, var(--line));
+  background: color-mix(in srgb, var(--go) 10%, var(--panel2));
+  color: var(--go);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+#root .feed-it-step-head h2 {
+  margin: 0 0 4px;
+  font-size: 17px;
+}
+
+#root .feed-it-step-head p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+#root .feed-it-form,
+#root .feed-it-field {
+  display: grid;
+  gap: 8px;
+}
+
+#root .feed-it-field > span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+#root .feed-it-field input,
+#root .feed-it-field textarea,
+#root .feed-it-search {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--line-hard);
+  background: var(--input);
+  color: var(--ink);
+  font: inherit;
+  font-size: 13.5px;
+  line-height: 1.55;
+}
+
+#root .feed-it-field textarea {
+  min-height: 220px;
+  resize: vertical;
+}
+
+#root .feed-it-search {
+  max-width: 260px;
+}
+
+#root .feed-it-prompt-box {
+  max-height: 270px;
+  overflow: auto;
+  padding: 12px;
+  border: 1px solid var(--line);
+  background: var(--input);
+}
+
+#root .feed-it-prompt-box pre {
+  margin: 0;
+  color: var(--muted);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+  line-height: 1.55;
+  white-space: pre-wrap;
+}
+
+#root .feed-it-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+#root .feed-it-alert {
+  padding: 10px 12px;
+  border: 1px solid var(--danger);
+  border-left-width: 3px;
+  color: var(--danger);
+  font-size: 13px;
+}
+
+#root .feed-it-success {
+  display: grid;
+  gap: 4px;
+  padding: 11px 12px;
+  border: 1px solid var(--ok);
+  border-left-width: 3px;
+  background: color-mix(in srgb, var(--ok) 8%, var(--panel));
+  color: var(--ok);
+  font-size: 13px;
+}
+
+#root .feed-it-success small {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+#root .feed-it-list {
+  display: grid;
+  gap: 10px;
+}
+
+#root .feed-it-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  background: var(--panel2);
+}
+
+#root .feed-it-item-info {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+#root .feed-it-item-info strong {
+  font-size: 14px;
+}
+
+#root .feed-it-item-info small {
+  color: var(--muted);
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+#root .feed-it-item-actions {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 8px;
+}
+
+#root .feed-it-del {
+  color: var(--danger) !important;
+}
+
+#root .feed-it-empty {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+@media (max-width: 900px) {
+  #root .feed-it-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  #root .feed-it-item {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  #root .feed-it-search {
+    max-width: 100%;
+  }
+}

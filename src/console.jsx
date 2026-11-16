@@ -18,6 +18,7 @@ const AnalyticsPage = lazy(() => import('./workspace/Workspace.jsx').then((modul
 const AutomationsPage = lazy(() => import('./workspace/AutomationsPage.jsx'));
 const TeamVideoPage = lazy(() => import('./workspace/TeamVideoPage.jsx'));
 const TeamVideoReviewPage = lazy(() => import('./workspace/TeamVideoReviewPage.jsx'));
+const FeedItPage = lazy(() => import('./workspace/FeedItPage.jsx'));
 const HistoryPage = lazy(() => import('./history/HistoryPage.jsx'));
 const loadPage = (element, label = 'Loading workspace…') => (
   <Suspense fallback={<PageLoading label={label} />}>{element}</Suspense>
@@ -36,7 +37,7 @@ function loadStage() {
 const CONSOLE_PATHS = {
   '/': ['home', ''], '/console': ['home', ''], '/console/calendar': ['calendar', ''], '/console/analytics': ['analytics', ''],
   '/console/automations': ['automations', ''], '/console/history': ['history', ''],
-  '/console/accounts': ['accounts', ''], '/console/team-video': ['team-video', ''], '/console/team-video/review': ['team-video-review', ''],
+  '/console/accounts': ['accounts', ''], '/console/team-video': ['team-video', ''], '/console/team-video/review': ['team-video-review', ''], '/console/feed-it': ['feed-it', ''],
   '/console/create': ['create', '1'], '/console/create/1': ['create', '1'],
   '/console/create/2': ['create', '2'], '/console/create/3': ['create', '3'],
 };
@@ -142,6 +143,7 @@ export default function Console({ session, onSwitchAccount, onSignOut }) {
   const withBackgroundNotice = (page) => <>{page}<BackgroundPublishNotice notice={backgroundPublishNotice} onDismiss={() => setBackgroundPublishNotice(null)} /></>;
   if (view === 'team-video' && isAiAccount(session.user?.email)) return withBackgroundNotice(loadPage(<TeamVideoPage session={session} onNavigate={navigate} onSignOut={onSignOut} onOpenReview={() => { setView('create'); go('3'); }} />));
   if (view === 'team-video-review' && isAiAccount(session.user?.email)) return withBackgroundNotice(loadPage(<TeamVideoReviewPage session={session} onNavigate={navigate} onSignOut={onSignOut} onOpenStageThree={() => { setView('create'); go('3'); }} />));
+  if (view === 'feed-it' && isAiAccount(session.user?.email)) return withBackgroundNotice(loadPage(<FeedItPage session={session} onNavigate={navigate} onSignOut={onSignOut} />));
   if (view === 'choose-create-mode' && createModePicker && isAiAccount(session.user?.email)) return withBackgroundNotice(<div className="ws"><WorkspaceNav page="create" onNavigate={navigate} email={session.user?.email} onSignOut={onSignOut} /><main className="ws-main ws-create-mode"><div className="ws-heading"><div><span className="ws-eyebrow">Create a post</span><h1>Choose your workflow</h1><p>Pick the posting flow for this video. Your choice only affects this post.</p></div></div><div className="ws-create-mode-grid"><button type="button" className="ws-create-mode-card" onClick={chooseBasic}><span className="ws-eyebrow">BASIC</span><strong>Standard post</strong><span>Use the regular composer to choose accounts, add media, write captions, and review your post.</span><i>Continue to basic posting →</i></button><button type="button" className="ws-create-mode-card ws-create-mode-card--advanced" onClick={() => { setCreateModePicker(false); setView('team-video'); }}><span className="ws-eyebrow">ADVANCED</span><strong>Automated video workflow</strong><span>Send a video into the private team pipeline for video analysis, brand-aware content, covers, and publishing.</span><i>Open advanced workflow →</i></button></div><BorderGlow className="btn-glow ws-btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={22}><button type="button" className="ws-secondary" onClick={() => { setCreateModePicker(false); setView('home'); }}>Back to overview</button></BorderGlow></main></div>);
   if (view === 'home') return withBackgroundNotice(loadPage(<DashboardPage session={session} onNavigate={navigate} onCreate={() => navigate('create')} onSignOut={onSignOut} />));
   if (view === 'calendar') return withBackgroundNotice(loadPage(<CalendarPage session={session} onNavigate={navigate} onCreate={(date) => {
