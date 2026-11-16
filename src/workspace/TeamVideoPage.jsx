@@ -54,7 +54,10 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut, onOpenRe
   const [brandLoading, setBrandLoading] = useState(true);
   const [brandLoadError, setBrandLoadError] = useState('');
   const [accountSearch, setAccountSearch] = useState('');
-  const [file, setFile] = useState(null);
+  const [mediaFiles, setMediaFiles] = useState([]);
+  const file = mediaFiles[0] || null;
+  const isVideoSelection = Boolean(file?.type?.startsWith('video/'));
+  const isImageSelection = mediaFiles.length > 0 && !isVideoSelection;
   const [brandKey, setBrandKey] = useState('');
   const [selectedIds, setSelectedIds] = useState([]);
   const [confirmedAccountIds, setConfirmedAccountIds] = useState([]);
@@ -167,11 +170,41 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut, onOpenRe
     setInstagramStory(true);
     setCollaborators(assigned);
   };
-  const selectVideo = (video) => {
-    if (!video) return;
-    if (!video.type?.startsWith('video/')) { setError('Choose a video file.'); return; }
-    if (video.size > 400 * 1024 * 1024) { setError('The video is larger than Driftpost’s 400 MB upload limit.'); return; }
-    setFile(video);
+  const selectMedia = (fileList) => {
+    const incoming = Array.from(fileList || []).filter(Boolean);
+    if (!incoming.length) return;
+    const videos = incoming.filter((item) => item.type?.startsWith('video/'));
+    const images = incoming.filter((item) => item.type?.startsWith('image/'));
+    if (videos.length && images.length) {
+      setError('Choose either one video or up to 10 images — not both together.');
+      return;
+    }
+    if (videos.length) {
+      if (videos.length > 1) {
+        setError('Upload one video per post.');
+        return;
+      }
+      const video = videos[0];
+      if (video.size > 400 * 1024 * 1024) {
+        setError('The video is larger than Driftpost’s 400 MB upload limit.');
+        return;
+      }
+      setMediaFiles([video]);
+    } else if (images.length) {
+      if (images.length > 10) {
+        setError('Carousels support up to 10 images per post.');
+        return;
+      }
+      const oversized = images.find((img) => img.size > 10 * 1024 * 1024);
+      if (oversized) {
+        setError(`"${oversized.name}" exceeds the 10 MB image limit.`);
+        return;
+      }
+      setMediaFiles(images);
+    } else {
+      setError('Choose a video (MP4, MOV, WebM) or images (JPG, PNG, WebP).');
+      return;
+    }
     setYoutubeThumb(null);
     setInstagramCover(null);
     setFacebookCover(null);
@@ -242,8 +275,10 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut, onOpenRe
   const loadJobForRetry = async (job) => {
     try {
       const media = await readVault(`driftpost-team-video-job:${userId}:${job.id}`);
-      const video = media?.files?.find((entry) => entry.blob instanceof Blob);
-      if (!video) throw new Error('This failed attempt did not save its video. Choose the video again to retry.');
+      const restored = (media?.files || [])
+        .filter((entry) => entry?.blob instanceof Blob)
+        .map((entry, idx) => entry.blob instanceof File ? entry.blob : new File([entry.blob], entry.name || `team-media-${idx + 1}`, { type: entry.type || entry.blob.type || 'video/mp4' }));
+      if (!restored.length) throw new Error('This failed attempt did not save its media. Choose the files again to retry.');
       setBrandKey(job.brandKey || '');
       setSelectedIds(job.accountIds || []);
       setConfirmedAccountIds(job.accountIds || []);
@@ -252,13 +287,13 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut, onOpenRe
       setInstagramStory(!!job.instagramStory);
       setCollaborators(job.collaborators || '');
       setAutoPublish(!!job.autoPublish);
-      setFile(video.blob instanceof File ? video.blob : new File([video.blob], video.name || 'team-video.mp4', { type: video.type || 'video/mp4' }));
+      setMediaFiles(restored);
       const thumb = media.thumb?.blob;
       setYoutubeThumb(thumb instanceof Blob ? (thumb instanceof File ? thumb : new File([thumb], media.thumb.name || 'youtube-cover.jpg', { type: thumb.type || 'image/jpeg' })) : null);
       const asFile = (entry, fallback) => entry?.blob instanceof Blob ? (entry.blob instanceof File ? entry.blob : new File([entry.blob], entry.name || fallback, { type: entry.blob.type || 'image/jpeg' })) : null;
       setInstagramCover(asFile(media.coverMap?.instagram, 'instagram-cover.jpg'));
       setFacebookCover(asFile(media.coverMap?.facebook, 'facebook-cover.jpg'));
-      setError('Video and settings restored. Submit again to retry this analysis.');
+      setError('Media and settings restored. Submit again to retry.');
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (e) { setError(e.message || 'Could not restore this failed job.'); }
   };
@@ -267,9 +302,10 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut, onOpenRe
     event.preventDefault();
     setError('');
     if (!isAiAccount(session.user?.email)) return setError('This private team tool is not available for this account.');
-    if (!brand) return setError('Choose the brand this video belongs to.');
-    if (!file || !file.type.startsWith('video/')) return setError('Choose a video file first.');
-    if (file.size > 400 * 1024 * 1024) return setError('The video is larger than Driftpost’s 400 MB upload limit.');
+    if (!brand) return setError('Choose the brand this post belongs to.');
+    if (!mediaFiles.length) return setError('Choose a video or up to 10 carousel images first.');
+    if (isVideoSelection && file.size > 400 * 1024 * 1024) return setError('The video is larger than Driftpost’s 400 MB upload limit.');
+    if (isImageSelection && selectedPlatforms.includes('youtube')) return setError('YouTube cannot publish photo posts or carousels. Deselect YouTube or upload a video.');
     if (!chosen.length) return setError('Choose at least one account to publish to.');
     if (crosspost && !(selectedPlatforms.includes('instagram') && selectedPlatforms.includes('facebook'))) return setError('Cross-posting needs at least one selected Instagram and Facebook account.');
     const effectiveInstagramStory = instagramStory && selectedPlatforms.includes('instagram');
@@ -285,15 +321,19 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut, onOpenRe
     const id = `team-video-${crypto.randomUUID()}`;
     activeJobIds.current.add(id);
     const snapshot = {
-      id, createdAt: Date.now(), status: 'analyzing', message: 'Extracting frames and transcribing speech…',
-      file, brandKey, brand: brand.label, accountIds: chosen.map((item) => item.id), platforms: [...selectedPlatforms],
+      id, createdAt: Date.now(), status: 'analyzing',
+      message: isVideoSelection ? 'Extracting frames and transcribing speech…' : `Writing captions for ${mediaFiles.length} image${mediaFiles.length === 1 ? '' : 's'}…`,
+      file, mediaFiles: [...mediaFiles], isVideo: isVideoSelection,
+      brandKey, brand: brand.label, accountIds: chosen.map((item) => item.id), platforms: [...selectedPlatforms],
       brief: brief.trim(), crosspost, instagramStory: effectiveInstagramStory, collaborators: effectiveCollaborators, autoPublish,
       manualCovers: { thumb: youtubeThumb, instagram: instagramCover, facebook: facebookCover },
     };
-    setJobs((current) => [{ id, file_name: file.name, brand: brand.label, status: 'analyzing', message: snapshot.message, createdAt: snapshot.createdAt, autoPublish, brandKey, accountIds: snapshot.accountIds, platforms: snapshot.platforms, brief: snapshot.brief, crosspost, instagramStory, collaborators: snapshot.collaborators }, ...current]);
+    const jobFileName = isVideoSelection ? file.name : `${brand.label} · ${mediaFiles.length} image${mediaFiles.length === 1 ? '' : 's'}`;
+    setJobs((current) => [{ id, file_name: jobFileName, brand: brand.label, status: 'analyzing', message: snapshot.message, createdAt: snapshot.createdAt, autoPublish, brandKey, accountIds: snapshot.accountIds, platforms: snapshot.platforms, brief: snapshot.brief, crosspost, instagramStory: effectiveInstagramStory, collaborators: snapshot.collaborators }, ...current]);
     try {
+      const vaultFiles = snapshot.mediaFiles.map((item) => ({ name: item.name, size: item.size, type: item.type, blob: item }));
       await writeVault(`driftpost-team-video-job:${userId}:${id}`, {
-        files: [{ name: file.name, size: file.size, type: file.type, blob: file }],
+        files: vaultFiles,
         thumb: youtubeThumb ? { name: youtubeThumb.name, blob: youtubeThumb } : null,
         coverMap: {
           instagram: instagramCover ? { name: instagramCover.name, blob: instagramCover } : {},
@@ -301,14 +341,14 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut, onOpenRe
         },
       });
       const sourceSaved = await readVault(`driftpost-team-video-job:${userId}:${id}`);
-      if (!sourceSaved?.files?.some((entry) => entry.blob instanceof Blob)) throw new Error('This browser could not save the video for retry. Free some browser storage and retry.');
+      if (!sourceSaved?.files?.some((entry) => entry.blob instanceof Blob)) throw new Error('This browser could not save the media for retry. Free some browser storage and retry.');
       const generated = await requestCaptions(session.access_token, {
         brief: snapshot.brief,
         brand: snapshot.brand,
         brandId: snapshot.brandKey,
-        files: [{ raw: snapshot.file, name: snapshot.file.name, type: snapshot.file.type }],
-        analysis: 'analyze',
-        frameCount: 8,
+        files: snapshot.mediaFiles.map((item) => ({ raw: item, name: item.name, type: item.type })),
+        analysis: snapshot.isVideo ? 'analyze' : 'none',
+        frameCount: snapshot.isVideo ? 8 : 0,
         teamVideo: true,
         platforms: snapshot.platforms,
         tone: 'auto', emoji: 'medium', length: 'medium',
@@ -316,14 +356,14 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut, onOpenRe
       const outputs = mapResponse(generated);
       const group = {
         id,
-        name: `Team video · ${snapshot.brand}`,
+        name: `Team post · ${snapshot.brand}`,
         accountIds: snapshot.accountIds,
         platforms: snapshot.platforms,
         workflow: 'team_video',
       };
       let coverMap = { thumb: null, instagram: null, facebook: null };
       let coverWarning = '';
-      const coverPlatforms = snapshot.platforms.filter((platform) => ['youtube', 'instagram', 'facebook'].includes(platform));
+      const coverPlatforms = snapshot.isVideo ? snapshot.platforms.filter((platform) => ['youtube', 'instagram', 'facebook'].includes(platform)) : [];
       const manualCoversComplete = coverPlatforms.every((platform) => snapshot.manualCovers[platform === 'youtube' ? 'thumb' : platform]);
       if (coverPlatforms.length && !manualCoversComplete) {
         try { coverMap = await chooseDefaultCovers(generated.videoFrames || [], coverPlatforms, snapshot.file.name.replace(/\.[^.]+$/, ''), generated.videoCoverFrameIndex); }
@@ -340,7 +380,7 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut, onOpenRe
         facebook: {}, youtube: {}, x: {},
       };
       const media = {
-        files: [{ name: snapshot.file.name, size: snapshot.file.size, type: snapshot.file.type, blob: snapshot.file }],
+        files: vaultFiles,
         thumb: coverMap.thumb ? { name: coverMap.thumb.name, blob: coverMap.thumb } : null,
         coverMap: {
           instagram: coverMap.instagram ? { name: coverMap.instagram.name, blob: coverMap.instagram } : {},
@@ -406,10 +446,11 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut, onOpenRe
       </section></BorderGlow>
       <form className="team-video-form" onSubmit={submit}>
         <BorderGlow className="bg-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.12} glowRadius={22}><section className="team-video-panel">
-          <div className="team-video-section-title"><span>01</span><div><h2>Choose the brand and video</h2><p>The selected brand controls the facts, voice, and caption rules.</p></div></div>
+          <div className="team-video-section-title"><span>01</span><div><h2>Choose the brand and media</h2><p>Upload a video or up to 10 carousel photos directly — no Google Drive needed.</p></div></div>
           <label className="team-field"><span>Brand profile</span><select value={brandKey} onChange={(event) => selectBrand(event.target.value)} required disabled={brandLoading || !!brandLoadError}><option value="">{brandLoading ? 'Loading saved brand profiles…' : brandLoadError ? 'Brand profiles unavailable' : 'Choose a saved brand profile'}</option>{brands.map((item) => <option key={item.key} value={item.key}>{item.label}</option>)}</select></label>
-          <label className="team-video-drop" onDragOver={(event) => event.preventDefault()} onDrop={(event) => { event.preventDefault(); const dropped = event.dataTransfer.files?.[0]; if (dropped) selectVideo(dropped); }}><span className="team-video-drop-mark">↑</span><b>{file ? file.name : 'Choose or drop a video'}</b><small>{file ? `${(file.size / 1024 / 1024).toFixed(1)} MB · ${file.type || 'video'}` : 'MP4, MOV, WebM · up to 400 MB'}</small><input type="file" accept="video/*" onChange={(event) => { const input = event.currentTarget; selectVideo(input.files?.[0] || null); input.value = ''; }} /></label>
-          <label className="team-field"><span>Optional editor note</span><textarea value={brief} onChange={(event) => setBrief(event.target.value)} rows={3} maxLength={2000} placeholder="Campaign context, key message, or anything the video does not make clear." /></label>
+          <label className="team-video-drop" onDragOver={(event) => event.preventDefault()} onDrop={(event) => { event.preventDefault(); selectMedia(event.dataTransfer.files); }}><span className="team-video-drop-mark">↑</span><b>{!mediaFiles.length ? 'Choose or drop a video or carousel images' : isVideoSelection ? file.name : `${mediaFiles.length} image${mediaFiles.length === 1 ? '' : 's'} selected`}</b><small>{!mediaFiles.length ? 'Video (MP4, MOV, WebM · up to 400 MB) or 1–10 Images (JPG, PNG, WebP)' : isVideoSelection ? `${(file.size / 1024 / 1024).toFixed(1)} MB · ${file.type || 'video'}` : mediaFiles.map((item) => item.name).join(' · ')}</small><input type="file" accept="video/*,image/*" multiple onChange={(event) => { const input = event.currentTarget; selectMedia(input.files); input.value = ''; }} /></label>
+          {mediaFiles.length > 0 && <div className="team-media-clear"><button type="button" onClick={() => setMediaFiles([])}>Clear selected media</button></div>}
+          <label className="team-field"><span>Optional description / AI caption instructions</span><textarea value={brief} onChange={(event) => setBrief(event.target.value)} rows={3} maxLength={2000} placeholder="Optional: Add any changes, offers, prices, dates, or specific instructions for how the AI should write this caption." /></label>
         </section></BorderGlow>
 
         <BorderGlow className="bg-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.12} glowRadius={22}><section className="team-video-panel">
@@ -436,9 +477,9 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut, onOpenRe
         <BorderGlow className="bg-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.12} glowRadius={22}><section className="team-video-panel">
           <div className="team-video-section-title"><span>03</span><div><h2>Destination options</h2><p>Only settings supported by the selected platforms are enabled.</p></div></div>
           <div className="team-options-grid">
-            {file && selectedPlatforms.includes('youtube') && <TeamCoverField title="YouTube thumbnail" value={youtubeThumb} setValue={setYoutubeThumb} platform="youtube" setError={setError} setBusy={(busy) => setCoverBusy('youtube', busy)} />}
-            {file && selectedPlatforms.includes('instagram') && <TeamCoverField title="Instagram Reel cover" value={instagramCover} setValue={setInstagramCover} platform="instagram" setError={setError} setBusy={(busy) => setCoverBusy('instagram', busy)} />}
-            {file && selectedPlatforms.includes('facebook') && <TeamCoverField title="Facebook video cover" value={facebookCover} setValue={setFacebookCover} platform="facebook" setError={setError} setBusy={(busy) => setCoverBusy('facebook', busy)} />}
+            {isVideoSelection && selectedPlatforms.includes('youtube') && <TeamCoverField title="YouTube thumbnail" value={youtubeThumb} setValue={setYoutubeThumb} platform="youtube" setError={setError} setBusy={(busy) => setCoverBusy('youtube', busy)} />}
+            {isVideoSelection && selectedPlatforms.includes('instagram') && <TeamCoverField title="Instagram Reel cover" value={instagramCover} setValue={setInstagramCover} platform="instagram" setError={setError} setBusy={(busy) => setCoverBusy('instagram', busy)} />}
+            {isVideoSelection && selectedPlatforms.includes('facebook') && <TeamCoverField title="Facebook video cover" value={facebookCover} setValue={setFacebookCover} platform="facebook" setError={setError} setBusy={(busy) => setCoverBusy('facebook', busy)} />}
             {selectedPlatforms.includes('instagram') && <label className="team-option"><input type="checkbox" checked={instagramStory} onChange={(event) => setInstagramStory(event.target.checked)} /><span><b>Also publish as an Instagram Story</b><small>Stories expire after 24 hours and use the selected Instagram account(s).</small></span></label>}
             {selectedPlatforms.includes('instagram') && <label className="team-field"><span>Instagram tags &amp; collaborators (up to 3)</span><input value={collaborators} onChange={(event) => setCollaborators(event.target.value)} placeholder="handles separated by commas" aria-invalid={!!collaborators && !!parseInstagramCollaborators(collaborators).error} /><small>{parseInstagramCollaborators(collaborators).error || (brand && formatAssignedInstagramTags({ brandId: brandKey, brandName: brand.label }) ? `Assigned handles for ${brand.label} (${formatAssignedInstagramTags({ brandId: brandKey, brandName: brand.label })}) are applied automatically and verified in Instagram before publishing.` : 'Meta verifies each handle in Instagram before publishing.')}</small></label>}
             {selectedPlatforms.includes('instagram') && selectedPlatforms.includes('facebook') && <label className="team-option"><input type="checkbox" checked={crosspost} onChange={(event) => setCrosspost(event.target.checked)} /><span><b>Cross-post Instagram to Facebook</b><small>Use the selected Facebook accounts as the mirrored destination.</small></span></label>}
@@ -446,7 +487,7 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut, onOpenRe
           <label className="team-option team-auto"><input type="checkbox" checked={autoPublish} onChange={(event) => setAutoPublish(event.target.checked)} /><span><b>Publish automatically after analysis</b><small>Driftpost validates every selected destination before publishing. Turn this off to prepare drafts without publishing.</small></span></label>
         </section></BorderGlow>
         {error && <p className="team-video-error" role="alert">{error}</p>}
-        <div className="team-video-actions"><button type="submit" disabled={activeJobs >= 3 || pendingCoverCount > 0 || connectionsLoading || !connections.length || !brand || !file || !chosen.length}>{pendingCoverCount ? 'Preparing cover…' : activeJobs >= 3 ? 'Three analyses already running' : autoPublish ? 'Analyze and publish' : 'Analyze and review'}</button><small>{activeJobs ? `${activeJobs} analysis${activeJobs === 1 ? '' : 'es'} running. You can start up to 3 at once.` : 'The original post creation flow is unchanged.'}</small></div>
+        <div className="team-video-actions"><button type="submit" disabled={activeJobs >= 3 || pendingCoverCount > 0 || connectionsLoading || !connections.length || !brand || !mediaFiles.length || !chosen.length}>{pendingCoverCount ? 'Preparing cover…' : activeJobs >= 3 ? 'Three analyses already running' : autoPublish ? 'Analyze and publish' : 'Analyze and review'}</button><small>{activeJobs ? `${activeJobs} analysis${activeJobs === 1 ? '' : 'es'} running. You can start up to 3 at once.` : 'The original post creation flow is unchanged.'}</small></div>
       </form>
         {!!jobs.length && <section className="team-video-jobs" aria-label="Video processing jobs"><div className="team-video-section-title"><span>↻</span><div><h2>Video processing jobs</h2><p>Each job keeps its own accounts, captions, covers, and video while other analyses run.</p></div></div>{jobs.map((job) => <article className="team-video-job" key={job.id}><div><b>{job.brand || 'Team video'}</b><small>{job.message || (job.status === 'ready' ? 'Draft ready.' : job.status)}</small>{job.warning && <small className="team-job-warning">{job.warning}</small>}{job.coverWarning && <small className="team-job-warning">{job.coverWarning}</small>}</div>{job.status === 'ready' && <button type="button" onClick={() => openJob(job)}>{job.autoPublish ? 'Open publishing status' : 'Open draft'}</button>}{job.status === 'review' && <button type="button" onClick={() => onNavigate('team-video-review')}>Review video</button>}{job.status === 'failed' && <button type="button" onClick={() => loadJobForRetry(job)}>Load to retry</button>}</article>)}</section>}
     </main>
