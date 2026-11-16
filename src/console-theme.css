@@ -1326,11 +1326,11 @@
 }
 
 #root .stage2 .s2-switch {
-  width: 48px !important;
-  height: 26px !important;
-  min-height: 26px !important;
+  width: 44px !important;
+  height: 24px !important;
+  min-height: 24px !important;
   padding: 0 !important;
-  border-radius: 0 !important;
+  border-radius: 999px !important;
   border: 1px solid var(--line-hard) !important;
   background: var(--panel2) !important;
   box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.35) !important;
@@ -1342,7 +1342,7 @@
 }
 
 #root .stage2 .s2-switch span {
-  border-radius: 0 !important;
+  border-radius: 999px !important;
   background: #ffffff !important;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
 }
@@ -2826,6 +2826,93 @@ body:has(#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-
   #root .feed-it-grid {
     grid-template-columns: 1fr;
   }
+}
+
+/* ==========================================================================
+   STAGE 2 COMPACT MEDIA ACTIONS & CLEAN STUDIO EDITOR OVERHAUL
+   ========================================================================== */
+#root .stage2 .s2-item .acts {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+#root .stage2 .s2-item .acts button {
+  flex: 1 1 0;
+  min-height: 32px !important;
+  padding: 5px 10px !important;
+  border-radius: 8px !important;
+  font-size: 11.5px !important;
+  font-weight: 600 !important;
+  white-space: nowrap !important;
+}
+
+#root .stage2.stage2-editor-route {
+  padding: 0 !important;
+  background: var(--bg) !important;
+}
+
+#root .s2-media-editor-page {
+  background: var(--bg) !important;
+}
+
+#root .s2-media-editor-page .s2-ed-top,
+#root .s2-media-editor-page .s2-ed-transport {
+  background: rgba(17, 17, 20, 0.86) !important;
+  backdrop-filter: blur(20px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(160%) !important;
+  border-color: var(--line) !important;
+}
+
+#root .s2-media-editor-page .s2-ed-side {
+  background: var(--panel) !important;
+  border-color: var(--line) !important;
+}
+
+#root .s2-media-editor-page .s2-ed-card,
+#root .s2-media-editor-page .s2-ed-section {
+  border-radius: 12px !important;
+  border: 1px solid var(--line) !important;
+  background: var(--panel2) !important;
+  padding: 12px !important;
+}
+
+#root .s2-media-editor-page button {
+  border-radius: 9px !important;
+  min-height: 34px;
+  font-weight: 600;
+}
+
+#root .s2-media-editor-page .s2-ed-save,
+#root .s2-media-editor-page .s2-ed-play {
+  background: var(--go) !important;
+  border-color: color-mix(in srgb, var(--go) 70%, white) !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 14px -4px rgba(59, 130, 246, 0.5) !important;
+}
+
+#root .s2-media-editor-page .s2-ed-tabs {
+  gap: 4px;
+  padding: 6px;
+}
+
+#root .s2-media-editor-page .s2-ed-tabs button {
+  border-radius: 9px !important;
+  font-size: 11.5px !important;
+}
+
+#root .s2-media-editor-page .s2-ratio-grid {
+  gap: 6px !important;
+}
+
+#root .s2-media-editor-page .s2-ratio-grid button {
+  padding: 7px 9px !important;
+  border-radius: 9px !important;
+}
+
+#root .s2-media-editor-page .s2-ratio-grid button small {
+  font-size: 10px !important;
+  opacity: 0.72;
 }
 
 /* Real-time Progress Bars & Stop Button */

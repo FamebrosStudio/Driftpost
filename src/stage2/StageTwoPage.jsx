@@ -258,6 +258,36 @@ export default function StageTwoPage({ session, onBack, onSignOut, onNavigate, o
     if (onNext) onNext();
   };
 
+  useEffect(() => {
+    if (editing < 0) return;
+    const onPop = () => setEditing(-1);
+    window.addEventListener('popstate', onPop);
+    return () => window.removeEventListener('popstate', onPop);
+  }, [editing]);
+
+  const openEditor = (idx) => {
+    try { window.history.pushState({ driftpostEditor: idx }, ''); } catch {}
+    setEditing(idx);
+  };
+
+  if (editing >= 0 && files[editing]) {
+    return (
+      <div className="stage2 stage2-editor-route">
+        <Suspense fallback={<PageLoading label="Loading media editor…" />}>
+          <MediaEditor
+            key={editing}
+            entry={files[editing]}
+            token={session.access_token}
+            onClose={() => setEditing(-1)}
+            onApply={(f) => applyEditAt(editing, f)}
+            onApplyMusic={(f, track) => applyMusicAt(editing, f, track)}
+            onRemoveMusic={() => removeMusicAt(editing)}
+          />
+        </Suspense>
+      </div>
+    );
+  }
+
   return (
     <div className="stage2">
       {onNavigate && <WorkspaceNav page="create" onNavigate={onNavigate} email={session.user?.email} onSignOut={onSignOut} />}
@@ -279,7 +309,7 @@ export default function StageTwoPage({ session, onBack, onSignOut, onNavigate, o
           </div>
           <p className="sub">Images or video — shown on every selected platform. Tap Edit on a photo or video to crop it.</p>
           <MediaUploader count={files.length} onFiles={addFiles} canUseAi={canUseAi} />
-          <MediaGallery files={files} onRemove={removeAt} onEdit={setEditing} />
+          <MediaGallery files={files} onRemove={removeAt} onEdit={openEditor} />
         </section>
 
         <section className="s2-sec" aria-label={canUseAi ? 'Write prompt' : 'Write content'}>
@@ -326,11 +356,6 @@ export default function StageTwoPage({ session, onBack, onSignOut, onNavigate, o
         )}
       </div>
       <ContinueButton disabled={!canContinue} saved={saveTick} onClick={cont} />
-      {editing >= 0 && files[editing] && (
-        <Suspense fallback={<PageLoading label="Loading media editor…" />}>
-          <MediaEditor key={editing} entry={files[editing]} token={session.access_token} onClose={() => setEditing(-1)} onApply={(f) => applyEditAt(editing, f)} onApplyMusic={(f, track) => applyMusicAt(editing, f, track)} onRemoveMusic={() => removeMusicAt(editing)} />
-        </Suspense>
-      )}
     </div>
   );
 }
