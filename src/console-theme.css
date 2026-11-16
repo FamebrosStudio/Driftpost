@@ -1526,8 +1526,10 @@
 }
 
 #root .ws-main {
-  padding-right: clamp(24px, 4vw, 64px);
-  padding-left: clamp(24px, 4vw, 64px);
+  max-width: 1320px;
+  margin: 0 auto;
+  padding-right: clamp(24px, 4vw, 56px);
+  padding-left: clamp(24px, 4vw, 56px);
 }
 
 #root .hist-shell > .hist {
@@ -1538,29 +1540,30 @@
 #root .hist > .hist-in {
   box-sizing: border-box;
   width: 100%;
-  max-width: 1360px;
+  max-width: 1320px;
   min-height: 100%;
   margin: 0 auto;
-  padding: 88px clamp(24px, 4vw, 64px) 72px;
+  padding: 88px clamp(24px, 4vw, 56px) 72px;
 }
 
 #root .stage1-in,
 #root .stage2-in,
 #root .stage3-in {
-  max-width: none;
+  max-width: 1360px;
   margin-right: auto;
-  margin-left: 0;
-  padding-right: clamp(24px, 4vw, 64px);
-  padding-left: clamp(24px, 4vw, 64px);
+  margin-left: auto;
+  padding-right: clamp(24px, 4vw, 56px);
+  padding-left: clamp(24px, 4vw, 56px);
   padding-bottom: 130px;
 }
 
 #root .ws.team-video-page > .team-video-main,
 #root .team-review-main {
   width: 100%;
-  margin-left: 0;
-  padding-right: clamp(24px, 4vw, 64px);
-  padding-left: clamp(24px, 4vw, 64px);
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-right: clamp(24px, 4vw, 56px);
+  padding-left: clamp(24px, 4vw, 56px);
 }
 
 /* BorderGlow wrappers */
@@ -2496,4 +2499,53 @@ body:has(#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-
 
 #root .cn-brands-collapse {
   margin-top: 16px;
+}
+
+/* ==========================================================================
+   FINAL PC + MOBILE POLISH (CLEAN SCROLLBARS, DROPZONE & LIGHT THEME PARITY)
+   ========================================================================== */
+#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3, .team-video-page) * {
+  scrollbar-width: thin;
+  scrollbar-color: var(--line-hard) transparent;
+}
+
+#root .dp-collapse > summary:hover {
+  background: color-mix(in srgb, var(--ink) 4%, var(--panel2));
+}
+
+#root .team-video-page .team-video-drop {
+  border: 1px dashed var(--line-hard) !important;
+  background: var(--input) !important;
+  transition: border-color 160ms ease, background-color 160ms ease;
+}
+
+#root .team-video-page .team-video-drop:hover,
+#root .team-video-page .team-video-drop:focus-within {
+  border-color: var(--go) !important;
+  background: color-mix(in srgb, var(--go) 5%, var(--panel2)) !important;
+}
+
+[data-theme="light"] #root .ws-mobile-dock {
+  border-color: rgba(15, 23, 42, 0.12);
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.14);
+}
+
+[data-theme="light"] #root .ws-mobile-dock-btn.active {
+  background: rgba(15, 23, 42, 0.08);
+  border-color: rgba(15, 23, 42, 0.12);
+}
+
+[data-theme="light"] #root .ws-mobile-more-menu {
+  border-color: rgba(15, 23, 42, 0.12);
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.16);
+}
+
+[data-theme="light"] #root .ws-mobile-more-item {
+  background: rgba(15, 23, 42, 0.03);
+}
+
+[data-theme="light"] #root .ws-mobile-more-item.active {
+  background: rgba(15, 23, 42, 0.08);
 }
