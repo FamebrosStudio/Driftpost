@@ -1952,6 +1952,19 @@ body:has(#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-
     border-color: color-mix(in srgb, var(--go) 45%, rgba(255, 255, 255, 0.14)) !important;
   }
 
+  #root .ws-mobile-dock {
+    animation: appleDockRise 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  #root .ws-mobile-more-item {
+    animation: appleMoreItemIn 260ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  #root .ws-mobile-more-item:nth-child(2) { animation-delay: 25ms; }
+  #root .ws-mobile-more-item:nth-child(3) { animation-delay: 50ms; }
+  #root .ws-mobile-more-item:nth-child(4) { animation-delay: 75ms; }
+  #root .ws-mobile-more-item:nth-child(5) { animation-delay: 100ms; }
+  #root .ws-mobile-more-item:nth-child(6) { animation-delay: 125ms; }
+
   #root .ws-mobile-more-item.active svg {
     color: var(--go);
   }
@@ -2664,6 +2677,154 @@ body:has(#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-
   #root .ws .ws-stat > small,
   #root .ws .ws-stat > button {
     display: none !important;
+  }
+}
+
+/* ==========================================================================
+   APPLE-GRADE MACRO & MICRO SPRING ANIMATIONS + TACTILE RESPONSIVENESS
+   ========================================================================== */
+@keyframes appleSpringIn {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes appleCardRise {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.975);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes appleCollapseIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes appleDockRise {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes appleMoreItemIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes appleProgressSweep {
+  0% { filter: brightness(1); }
+  50% { filter: brightness(1.22); }
+  100% { filter: brightness(1); }
+}
+
+/* Macro fluid page & card choreography */
+#root .ws-main,
+#root .hist-in,
+#root .team-video-main,
+#root .team-review-main {
+  animation: appleSpringIn 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+#root .ws-welcome {
+  animation: appleCardRise 460ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+#root .ws-stat-grid > .border-glow-card,
+#root .cn-grid > .border-glow-card,
+#root .feed-it-grid > section {
+  animation: appleCardRise 480ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+#root .ws-stat-grid > .border-glow-card:nth-child(1),
+#root .cn-grid > .border-glow-card:nth-child(1) { animation-delay: 40ms; }
+#root .ws-stat-grid > .border-glow-card:nth-child(2),
+#root .cn-grid > .border-glow-card:nth-child(2) { animation-delay: 90ms; }
+#root .ws-stat-grid > .border-glow-card:nth-child(3),
+#root .cn-grid > .border-glow-card:nth-child(3) { animation-delay: 140ms; }
+#root .ws-stat-grid > .border-glow-card:nth-child(4),
+#root .cn-grid > .border-glow-card:nth-child(4) { animation-delay: 190ms; }
+
+/* Tactile card & interactive element hover/press physics */
+#root :is(.ws-stat, .ws-create-mode-card, .cn-card, .hist-row, .feed-it-item) {
+  transition: transform 240ms cubic-bezier(0.22, 1, 0.36, 1), border-color 200ms ease, background-color 200ms ease, box-shadow 240ms ease !important;
+}
+
+@media (hover: hover) {
+  #root :is(.ws-stat, .ws-create-mode-card, .cn-card, .hist-row, .feed-it-item):hover {
+    transform: translateY(-3px);
+    border-color: var(--line-hard) !important;
+  }
+
+  #root .ws-route-stop {
+    transition: transform 260ms cubic-bezier(0.34, 1.56, 0.64, 1), border-color 180ms ease;
+  }
+
+  #root .ws-route-stop:hover {
+    transform: translateY(-3px) scale(1.06);
+  }
+}
+
+#root :is(.ws-create-mode-card, .ws-primary, .ws-secondary, .ws-topnav-pill, .dp-stop-btn, .team-review-refresh):active:not(:disabled) {
+  transform: scale(0.965) !important;
+  transition-duration: 90ms !important;
+}
+
+/* Spring chevron + animated dropdown reveal */
+#root .dp-collapse > summary > span:first-child::before {
+  transition: transform 240ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+#root .dp-collapse[open] > .dp-collapse-body {
+  animation: appleCollapseIn 260ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Tactile dropzone & active progress pulse */
+#root .team-video-page .team-video-drop {
+  transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1), border-color 180ms ease, background-color 180ms ease;
+}
+
+#root .team-video-page .team-video-drop:hover {
+  transform: scale(1.006);
+}
+
+#root .dp-progress-wrap:is(.is-queued, .is-processing, .is-publishing) .dp-progress-track > i {
+  animation: appleProgressSweep 1.6s ease-in-out infinite;
+}
+
+/* Tablet breakpoint refinement */
+@media (max-width: 1024px) and (min-width: 761px) {
+  #root .ws .ws-stat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  #root .feed-it-grid {
+    grid-template-columns: 1fr;
   }
 }
 
