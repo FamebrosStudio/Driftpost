@@ -153,15 +153,26 @@ export function WorkspaceNav({ page, onNavigate, email, onSignOut }) {
       <div className="ws-mobile-dock-wrap">
         {mobileMoreOpen && (
           <>
-            <div className="ws-mobile-more-backdrop" onClick={() => setMobileMoreOpen(false)} aria-hidden="true" />
-            <div className="ws-mobile-more-menu" role="menu" aria-label="More workspace pages">
+            <div
+              className="ws-mobile-more-backdrop"
+              onPointerDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
+              onClick={(e) => { e.preventDefault(); e.stopPropagation(); setMobileMoreOpen(false); }}
+              aria-hidden="true"
+            />
+            <div
+              className="ws-mobile-more-menu"
+              role="menu"
+              aria-label="More workspace pages"
+              onPointerDown={(e) => e.stopPropagation()}
+              onClick={(e) => e.stopPropagation()}
+            >
               {mobileMoreItems.map((item) => (
                 <button
                   key={item.id}
                   type="button"
                   role="menuitem"
                   className={item.active ? 'ws-mobile-more-item active' : 'ws-mobile-more-item'}
-                  onClick={() => { setMobileMoreOpen(false); onNavigate(item.id); }}
+                  onClick={(e) => { e.stopPropagation(); setMobileMoreOpen(false); onNavigate(item.id); }}
                 >
                   <Icon name={item.icon} size={17} />
                   <span>{item.label}</span>
@@ -170,13 +181,18 @@ export function WorkspaceNav({ page, onNavigate, email, onSignOut }) {
             </div>
           </>
         )}
-        <nav className="ws-mobile-dock" aria-label="Mobile navigation">
+        <nav
+          className="ws-mobile-dock"
+          aria-label="Mobile navigation"
+          onPointerDown={(e) => e.stopPropagation()}
+          onClick={(e) => e.stopPropagation()}
+        >
           {mobilePrimaryItems.map((item) => (
             <button
               key={item.id}
               type="button"
               className={item.active ? 'ws-mobile-dock-btn active' : 'ws-mobile-dock-btn'}
-              onClick={() => { setMobileMoreOpen(false); onNavigate(item.id); }}
+              onClick={(e) => { e.stopPropagation(); setMobileMoreOpen(false); onNavigate(item.id); }}
               aria-label={item.label}
               title={item.label}
             >
@@ -186,7 +202,7 @@ export function WorkspaceNav({ page, onNavigate, email, onSignOut }) {
           <button
             type="button"
             className={mobileMoreOpen || mobileMoreActive ? 'ws-mobile-dock-btn ws-mobile-dock-more active' : 'ws-mobile-dock-btn ws-mobile-dock-more'}
-            onClick={() => setMobileMoreOpen((open) => !open)}
+            onClick={(e) => { e.stopPropagation(); setMobileMoreOpen((open) => !open); }}
             aria-expanded={mobileMoreOpen}
             aria-label="More navigation options"
             title="More"

@@ -109,7 +109,8 @@ export default function Console({ session, onSwitchAccount, onSignOut }) {
   // Stages are strings everywhere ('connect' | '1' | '2' | '3') so the
   // state and localStorage can never drift apart on a number/string mismatch.
   const withTransition = (fn) => {
-    if (typeof document !== 'undefined' && typeof document.startViewTransition === 'function') {
+    const isMobile = typeof document !== 'undefined' && document.documentElement.dataset.device === 'mobile';
+    if (!isMobile && typeof document !== 'undefined' && typeof document.startViewTransition === 'function') {
       try {
         document.startViewTransition(() => {
           flushSync(() => {

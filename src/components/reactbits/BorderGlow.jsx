@@ -72,7 +72,10 @@ const BorderGlow = ({
       card.style.setProperty('--edge-proximity', `${(proximity * 100).toFixed(2)}`);
     };
 
-    const onMove = (e) => updateFromPoint(e.clientX, e.clientY);
+    const onMove = (e) => {
+      if (e.pointerType === 'touch' || document.documentElement.dataset.device === 'mobile') return;
+      updateFromPoint(e.clientX, e.clientY);
+    };
     const onLeave = () => card.style.setProperty('--edge-proximity', '0');
 
     window.addEventListener('pointermove', onMove, { passive: true });

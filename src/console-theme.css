@@ -1882,6 +1882,7 @@ html[data-device="mobile"] #root .ws-mobile-dock-wrap {
   position: fixed;
   inset: auto 0 max(10px, env(safe-area-inset-bottom)) 0;
   z-index: 70;
+  isolation: isolate;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1970,36 +1971,22 @@ html[data-device="mobile"] #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3
 }
 
 html[data-device="mobile"] #root .ws-mobile-dock {
-  animation: appleDockRise 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-
-html[data-device="mobile"] #root .ws-mobile-more-item {
-  animation: appleMoreItemIn 260ms cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-html[data-device="mobile"] #root .ws-mobile-more-item:nth-child(2) { animation-delay: 25ms; }
-html[data-device="mobile"] #root .ws-mobile-more-item:nth-child(3) { animation-delay: 50ms; }
-html[data-device="mobile"] #root .ws-mobile-more-item:nth-child(4) { animation-delay: 75ms; }
-html[data-device="mobile"] #root .ws-mobile-more-item:nth-child(5) { animation-delay: 100ms; }
-html[data-device="mobile"] #root .ws-mobile-more-item:nth-child(6) { animation-delay: 125ms; }
-
-html[data-device="mobile"] #root .ws-mobile-more-item.active svg {
-  color: var(--go);
-}
-
-html[data-device="mobile"] #root .ws-mobile-dock {
   position: relative;
   z-index: 65;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   padding: 6px 8px;
-  border: 1px solid rgba(255, 255, 255, 0.11);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 999px !important;
-  background: color-mix(in srgb, var(--panel) 84%, transparent);
-  backdrop-filter: blur(24px) saturate(160%);
-  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  background: color-mix(in srgb, var(--panel) 88%, transparent);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
   box-shadow: 0 14px 36px rgba(0, 0, 0, 0.6);
   pointer-events: auto;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 html[data-device="mobile"] #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) .ws-mobile-dock-btn {
@@ -2007,10 +1994,10 @@ html[data-device="mobile"] #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 44px !important;
-  min-width: 44px !important;
-  height: 44px !important;
-  min-height: 44px !important;
+  width: 46px !important;
+  min-width: 46px !important;
+  height: 46px !important;
+  min-height: 46px !important;
   padding: 0 !important;
   border: 1px solid transparent !important;
   border-radius: 999px !important;
@@ -2639,7 +2626,7 @@ html[data-device="mobile"] #root :is(.ws, .hist-shell, .connect, .stage1, .stage
     0 14px 36px -18px rgba(0, 0, 0, 0.72) !important;
 }
 
-#root :is(.ws-stat, .ws-create-mode-card, .cn-card, .setup-card, .s2-sec, .s3-work, .team-video-panel, .hist-row, .dp-collapse) {
+html:not([data-device="mobile"]) #root :is(.ws-stat, .ws-create-mode-card, .cn-card, .setup-card, .s2-sec, .s3-work, .team-video-panel, .hist-row, .dp-collapse) {
   border-radius: 16px !important;
   background: linear-gradient(
     145deg,
@@ -2652,6 +2639,14 @@ html[data-device="mobile"] #root :is(.ws, .hist-shell, .connect, .stage1, .stage
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.08),
     0 12px 30px -18px rgba(0, 0, 0, 0.65) !important;
+}
+
+html[data-device="mobile"] #root :is(.ws-stat, .ws-create-mode-card, .cn-card, .setup-card, .s2-sec, .s3-work, .team-video-panel, .hist-row, .dp-collapse) {
+  border-radius: 16px !important;
+  background: var(--panel) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07) !important;
 }
 
 [data-theme="light"] #root :is(.ws-welcome, .ws-topnav, .ws-mobile-dock, .ws-mobile-more-menu),
@@ -3019,8 +3014,11 @@ html[data-device="mobile"] #root .ws .ws-stat > button {
   transform: scaleX(1.18);
 }
 
-#root :is(.ws-main, .hist, .stage1-in, .stage2-in, .stage3-in, .team-video-main, .team-review-main) {
+html:not([data-device="mobile"]) #root :is(.ws-main, .hist, .stage1-in, .stage2-in, .stage3-in, .team-video-main, .team-review-main) {
   scroll-behavior: smooth;
+}
+
+html[data-device="mobile"] #root :is(.ws-main, .hist, .stage1-in, .stage2-in, .stage3-in, .team-video-main, .team-review-main) {
   -webkit-overflow-scrolling: touch;
 }
 
