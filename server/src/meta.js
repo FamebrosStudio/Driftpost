@@ -325,32 +325,170 @@ export function buildInstagramUserTags(handles = []) {
   }));
 }
 
-async function createInstagramMediaContainer(igUserId, baseParams, handles = []) {
+function appendMissingMentionsToCaption(caption = '', handles = []) {
+  const base = String(caption || '').trim();
+  const missing = [...new Set((Array.isArray(handles) ? handles : [])
+    .map((h) => String(h || '').trim().replace(/^@+/, ''))
+    .filter((h) => h && !new RegExp(`@${h.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?![A-Za-z0-9._])`, 'i').test(base)))];
+  if (!missing.length) return base;
+  const line = missing.map((h) => `@${h}`).join(' ');
+  return base ? `${base}\n\n${line}` : line;
+}
+
+async function postInstagramContainer(igUserId, params) {
+  const cRes = await fetch(`${GRAPH}/${igUserId}/media`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(params), signal: AbortSignal.timeout(30000),
+  });
+  const container = await cRes.json().catch(() => ({}));
+  if (cRes.ok && container?.id) return { ok: true, container };
+  return { ok: false, error: container?.error?.message || 'Instagram container failed' };
+}
+
+async function resolveAcceptedHandles(igUserId, baseParams, fieldName, candidates, valueBuilder) {
+  if (!candidates.length) return { accepted: [], rejected: [], container: null };
+  const fullAttempt = await postInstagramContainer(igUserId, { ...baseParams, [fieldName]: valueBuilder(candidates) });
+  if (fullAttempt.ok) {
+    return { accepted: candidates, rejected: [], container: fullAttempt.container };
+  }
+  if (candidates.length === 1) {
+    return { accepted: [], rejected: [{ handle: candidates[0], error: fullAttempt.error }], container: null };
+  }
+  const accepted = [];
+  const rejected = [];
+  let lastSingleContainer = null;
+  for (const handle of candidates) {
+    const single = await postInstagramContainer(igUserId, { ...baseParams, [fieldName]: valueBuilder([handle]) });
+    if (single.ok) {
+      accepted.push(handle);
+      lastSingleContainer = single.container;
+    } else {
+      rejected.push({ handle, error: single.error });
+    }
+  }
+  return {
+    accepted,
+    rejected,
+    container: accepted.length === 1 ? lastSingleContainer : null,
+  };
+}
+
+async function createInstagramMediaContainer(igUserId, baseParams, handles = [], { allowUserTags = false, selfUsername = '' } = {}) {
+  const selfLower = String(selfUsername || '').trim().replace(/^@+/, '').toLowerCase();
   const cleanHandles = [...new Set((Array.isArray(handles) ? handles : [])
     .map((h) => String(h || '').trim().replace(/^@+/, ''))
     .filter(Boolean))].slice(0, 3);
-  const userTags = buildInstagramUserTags(cleanHandles);
-  const attempts = cleanHandles.length
-    ? [
-      { ...baseParams, collaborators: cleanHandles, user_tags: userTags },
-      { ...baseParams, collaborators: cleanHandles },
-      { ...baseParams, user_tags: userTags },
-      baseParams,
-    ]
-    : [baseParams];
-  let lastError = 'Instagram container failed';
-  for (const params of attempts) {
-    const cRes = await fetch(`${GRAPH}/${igUserId}/media`, {
-      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(params), signal: AbortSignal.timeout(30000),
-    });
-    const container = await cRes.json().catch(() => ({}));
-    if (cRes.ok && container?.id) return container;
-    lastError = container?.error?.message || lastError;
+  if (!cleanHandles.length) {
+    const res = await postInstagramContainer(igUserId, baseParams);
+    if (!res.ok) throw new Error(res.error);
+    return { container: res.container, appliedCollaborators: [], appliedUserTags: [], mentionedFallback: [], tagWarnings: [] };
   }
-  throw new Error(lastError);
+
+  const collabCandidates = cleanHandles.filter((h) => h.toLowerCase() !== selfLower);
+  const tagCandidates = allowUserTags ? cleanHandles.filter((h) => h.toLowerCase() !== selfLower) : [];
+
+  // Fast path: try all requested collaborators (and user_tags on single IMAGE) together.
+  if (collabCandidates.length || tagCandidates.length) {
+    const fastParams = {
+      ...baseParams,
+      ...(collabCandidates.length ? { collaborators: collabCandidates } : {}),
+      ...(tagCandidates.length ? { user_tags: buildInstagramUserTags(tagCandidates) } : {}),
+    };
+    const fast = await postInstagramContainer(igUserId, fastParams);
+    if (fast.ok) {
+      const selfSkipped = cleanHandles.filter((h) => h.toLowerCase() === selfLower);
+      const captionWithSelf = selfSkipped.length ? appendMissingMentionsToCaption(baseParams.caption, selfSkipped) : baseParams.caption;
+      if (captionWithSelf !== baseParams.caption) {
+        const withMention = await postInstagramContainer(igUserId, { ...fastParams, caption: captionWithSelf });
+        if (withMention.ok) {
+          return {
+            container: withMention.container,
+            appliedCollaborators: collabCandidates,
+            appliedUserTags: tagCandidates,
+            mentionedFallback: selfSkipped,
+            tagWarnings: [],
+          };
+        }
+      }
+      return {
+        container: fast.container,
+        appliedCollaborators: collabCandidates,
+        appliedUserTags: tagCandidates,
+        mentionedFallback: [],
+        tagWarnings: [],
+      };
+    }
+  }
+
+  // Granular fallback: test collaborators and user_tags independently & per-handle
+  // so one personal/restricted account never drops the other valid accounts.
+  const collabRes = await resolveAcceptedHandles(igUserId, baseParams, 'collaborators', collabCandidates, (list) => list);
+  const tagRes = allowUserTags
+    ? await resolveAcceptedHandles(igUserId, baseParams, 'user_tags', tagCandidates, buildInstagramUserTags)
+    : { accepted: [], rejected: [], container: null };
+
+  const appliedSet = new Set([...collabRes.accepted, ...tagRes.accepted].map((h) => h.toLowerCase()));
+  const unapplied = cleanHandles.filter((h) => !appliedSet.has(h.toLowerCase()));
+  const tagWarnings = [
+    ...collabRes.rejected.map((r) => `@${r.handle} (collab): ${r.error}`),
+    ...tagRes.rejected.map((r) => `@${r.handle} (tag): ${r.error}`),
+  ];
+
+  // If we don't need to modify the caption and already have an exact single-field container, reuse it.
+  if (!unapplied.length && collabRes.accepted.length && !tagRes.accepted.length && collabRes.container) {
+    return {
+      container: collabRes.container,
+      appliedCollaborators: collabRes.accepted,
+      appliedUserTags: [],
+      mentionedFallback: [],
+      tagWarnings,
+    };
+  }
+  if (!unapplied.length && tagRes.accepted.length && !collabRes.accepted.length && tagRes.container) {
+    return {
+      container: tagRes.container,
+      appliedCollaborators: [],
+      appliedUserTags: tagRes.accepted,
+      mentionedFallback: [],
+      tagWarnings,
+    };
+  }
+
+  const updatedCaption = unapplied.length
+    ? appendMissingMentionsToCaption(baseParams.caption, unapplied)
+    : baseParams.caption;
+  const finalParams = {
+    ...baseParams,
+    ...(updatedCaption !== undefined ? { caption: updatedCaption } : {}),
+    ...(collabRes.accepted.length ? { collaborators: collabRes.accepted } : {}),
+    ...(tagRes.accepted.length ? { user_tags: buildInstagramUserTags(tagRes.accepted) } : {}),
+  };
+  const finalRes = await postInstagramContainer(igUserId, finalParams);
+  if (finalRes.ok) {
+    return {
+      container: finalRes.container,
+      appliedCollaborators: collabRes.accepted,
+      appliedUserTags: tagRes.accepted,
+      mentionedFallback: unapplied,
+      tagWarnings,
+    };
+  }
+
+  // Last-resort clean container without collaborators/user_tags, keeping @mentions in caption.
+  const bareRes = await postInstagramContainer(igUserId, {
+    ...baseParams,
+    ...(updatedCaption !== undefined ? { caption: updatedCaption } : {}),
+  });
+  if (!bareRes.ok) throw new Error(bareRes.error);
+  return {
+    container: bareRes.container,
+    appliedCollaborators: [],
+    appliedUserTags: [],
+    mentionedFallback: cleanHandles,
+    tagWarnings: [...tagWarnings, finalRes.error],
+  };
 }
 
-export async function publishInstagram({ igUserId, pageToken, caption, alt, collabs, locationId, mediaUrl, isVideo, coverUrl, onStage }) {
+export async function publishInstagram({ igUserId, pageToken, caption, alt, collabs, locationId, mediaUrl, isVideo, coverUrl, selfUsername = '', onStage }) {
   if (!mediaUrl) throw new Error('Instagram needs a photo or video. Attach media first.');
   const baseParams = {
     caption: caption || '',
@@ -359,7 +497,12 @@ export async function publishInstagram({ igUserId, pageToken, caption, alt, coll
     ...(locationId ? { location_id: String(locationId) } : {}),
     ...(isVideo ? { media_type: 'REELS', video_url: mediaUrl, ...(coverUrl ? { cover_url: coverUrl } : {}) } : { image_url: mediaUrl }),
   };
-  const container = await createInstagramMediaContainer(igUserId, baseParams, collabs);
+  const { container, appliedCollaborators, appliedUserTags, mentionedFallback, tagWarnings } = await createInstagramMediaContainer(
+    igUserId,
+    baseParams,
+    collabs,
+    { allowUserTags: !isVideo, selfUsername },
+  );
   // Instagram can accept container creation before the media is actually
   // ready to publish. Publishing immediately can fail with "Media ID is not
   // available" for photos as well as Reels, so wait for every container.
@@ -370,7 +513,14 @@ export async function publishInstagram({ igUserId, pageToken, caption, alt, coll
   });
   const published = await pRes.json();
   if (!pRes.ok) throw new Error(published.error?.message || 'Instagram publish failed');
-  return { id: published.id, url: await instagramPostUrl(published.id, pageToken) };
+  return {
+    id: published.id,
+    url: await instagramPostUrl(published.id, pageToken),
+    appliedCollaborators,
+    appliedUserTags,
+    mentionedFallback,
+    tagWarnings,
+  };
 }
 
 // --- Instagram Story: single photo/video as a 24h story ---
@@ -402,30 +552,35 @@ export async function publishInstagramStory({ igUserId, pageToken, mediaUrl, isV
 // --- Carousel: 2-10 photos (images only) as one Instagram carousel post ---
 // Meta flow: create one child container per image (is_carousel_item=true),
 // then a parent CAROUSEL container with children=[ids], then media_publish.
-export async function publishInstagramCarousel({ igUserId, pageToken, caption, collabs, locationId, mediaUrls }) {
+export async function publishInstagramCarousel({ igUserId, pageToken, caption, collabs, locationId, mediaUrls, selfUsername = '' }) {
   const urls = (mediaUrls || []).filter(Boolean);
   if (urls.length < 2) throw new Error('Carousel needs at least 2 photos');
   if (urls.length > 10) throw new Error('Carousel allows up to 10 photos');
+  const selfLower = String(selfUsername || '').trim().replace(/^@+/, '').toLowerCase();
+  const cleanHandles = [...new Set((Array.isArray(collabs) ? collabs : [])
+    .map((h) => String(h || '').trim().replace(/^@+/, ''))
+    .filter((h) => h && h.toLowerCase() !== selfLower))].slice(0, 3);
   const childIds = [];
-  const firstItemTags = buildInstagramUserTags(collabs);
+  let appliedChildTags = [];
   for (let index = 0; index < urls.length; index++) {
     const url = urls[index];
     const baseItemParams = { image_url: url, is_carousel_item: true, access_token: pageToken };
-    const itemAttempts = index === 0 && firstItemTags.length
-      ? [{ ...baseItemParams, user_tags: firstItemTags }, baseItemParams]
-      : [baseItemParams];
     let itemContainer = null;
-    let itemErr = 'Instagram carousel item failed';
-    for (const itemParams of itemAttempts) {
-      const cRes = await fetch(`${GRAPH}/${igUserId}/media`, {
-        method: 'POST', headers: { 'Content-Type': 'application/json' }, signal: AbortSignal.timeout(30000),
-        body: JSON.stringify(itemParams),
-      });
-      const c = await cRes.json().catch(() => ({}));
-      if (cRes.ok && c?.id) { itemContainer = c; break; }
-      itemErr = c?.error?.message || itemErr;
+    if (index === 0 && cleanHandles.length) {
+      const tagRes = await resolveAcceptedHandles(igUserId, baseItemParams, 'user_tags', cleanHandles, buildInstagramUserTags);
+      appliedChildTags = tagRes.accepted;
+      if (tagRes.container) {
+        itemContainer = tagRes.container;
+      } else if (tagRes.accepted.length) {
+        const tagged = await postInstagramContainer(igUserId, { ...baseItemParams, user_tags: buildInstagramUserTags(tagRes.accepted) });
+        if (tagged.ok) itemContainer = tagged.container;
+      }
     }
-    if (!itemContainer) throw new Error(itemErr);
+    if (!itemContainer) {
+      const plain = await postInstagramContainer(igUserId, baseItemParams);
+      if (!plain.ok) throw new Error(plain.error || 'Instagram carousel item failed');
+      itemContainer = plain.container;
+    }
     await waitForInstagramContainer({ id: itemContainer.id, pageToken, label: 'carousel photo' });
     childIds.push(itemContainer.id);
   }
@@ -436,7 +591,12 @@ export async function publishInstagramCarousel({ igUserId, pageToken, caption, c
     access_token: pageToken,
     ...(locationId ? { location_id: String(locationId) } : {}),
   };
-  const parent = await createInstagramMediaContainer(igUserId, baseParentParams, collabs);
+  const { container: parent, appliedCollaborators, mentionedFallback, tagWarnings } = await createInstagramMediaContainer(
+    igUserId,
+    baseParentParams,
+    collabs,
+    { allowUserTags: false, selfUsername },
+  );
   await waitForInstagramContainer({ id: parent.id, pageToken, label: 'carousel' });
   const pub = await fetch(`${GRAPH}/${igUserId}/media_publish`, {
     method: 'POST', headers: { 'Content-Type': 'application/json' }, signal: AbortSignal.timeout(30000),
@@ -444,7 +604,14 @@ export async function publishInstagramCarousel({ igUserId, pageToken, caption, c
   });
   const published = await pub.json();
   if (!pub.ok) throw new Error(published.error?.message || 'Instagram carousel publish failed');
-  return { id: published.id, url: await instagramPostUrl(published.id, pageToken) };
+  return {
+    id: published.id,
+    url: await instagramPostUrl(published.id, pageToken),
+    appliedCollaborators,
+    appliedUserTags: appliedChildTags,
+    mentionedFallback,
+    tagWarnings,
+  };
 }
 
 // --- Instagram account lookup (collaborators) ---

@@ -1,6 +1,6 @@
 ﻿import test from 'node:test';
 import assert from 'node:assert/strict';
-import { getMetaPages, metaConnectionErrorMessage, subscribeFacebookWebhooks, facebookAuthorizationUrl, metaBusinessLoginUrl, sendInstagramPrivateReply, metaAuthorizationUrl, publishFacebook, publishFacebookCarousel, resolveInstagramCollaboratorUsernames, subscribeInstagramWebhooks } from '../src/meta.js';
+import { getMetaPages, metaConnectionErrorMessage, subscribeFacebookWebhooks, facebookAuthorizationUrl, metaBusinessLoginUrl, sendInstagramPrivateReply, metaAuthorizationUrl, publishFacebook, publishFacebookCarousel, publishInstagram, publishInstagramCarousel, resolveInstagramCollaboratorUsernames, subscribeInstagramWebhooks } from '../src/meta.js';
 
 test('Facebook login requests only the configured Facebook/Page consent scopes by default', () => {
   const url = new URL(metaAuthorizationUrl('signed-state'));
@@ -266,5 +266,83 @@ test('Business Login for Facebook uses the dedicated configuration when present'
   } finally {
     if (previous === undefined) delete process.env.META_FB_CONFIG_ID;
     else process.env.META_FB_CONFIG_ID = previous;
+  }
+});
+
+test('Instagram Reel keeps valid collaborators when another handle is rejected and falls back to @mention for the rejected handle', async () => {
+  const original = globalThis.fetch;
+  const requests = [];
+  globalThis.fetch = async (url, init = {}) => {
+    const u = String(url);
+    const body = init.body ? JSON.parse(init.body) : {};
+    requests.push({ url: u, body });
+    if (u.endsWith('/media')) {
+      // Meta rejects batch if any collaborator is personal/private ('nikkpawar00057')
+      if (Array.isArray(body.collaborators) && body.collaborators.includes('nikkpawar00057')) {
+        return new Response(JSON.stringify({ error: { message: 'Invalid collaborator nikkpawar00057' } }), { status: 400 });
+      }
+      return new Response(JSON.stringify({ id: 'container-123' }), { status: 200 });
+    }
+    if (u.includes('fields=status_code')) {
+      return new Response(JSON.stringify({ status_code: 'FINISHED' }), { status: 200 });
+    }
+    if (u.endsWith('/media_publish')) {
+      return new Response(JSON.stringify({ id: 'media-123' }), { status: 200 });
+    }
+    if (u.includes('fields=permalink')) {
+      return new Response(JSON.stringify({ permalink: 'https://www.instagram.com/reel/abc/' }), { status: 200 });
+    }
+    return new Response(JSON.stringify({}), { status: 200 });
+  };
+  try {
+    const result = await publishInstagram({
+      igUserId: 'ig-1',
+      pageToken: 'tok',
+      caption: 'Fresh haircut transformation',
+      collabs: ['kuldeepmaurya1209', 'akshadparvalkar', 'nikkpawar00057'],
+      mediaUrl: 'https://cdn.example/reel.mp4',
+      isVideo: true,
+    });
+    assert.deepEqual(result.appliedCollaborators, ['kuldeepmaurya1209', 'akshadparvalkar']);
+    assert.deepEqual(result.mentionedFallback, ['nikkpawar00057']);
+    const finalContainerReq = requests.filter((r) => r.url.endsWith('/media')).at(-1);
+    assert.deepEqual(finalContainerReq.body.collaborators, ['kuldeepmaurya1209', 'akshadparvalkar']);
+    assert.match(finalContainerReq.body.caption, /@nikkpawar00057/);
+    assert.equal(finalContainerReq.body.user_tags, undefined);
+  } finally {
+    globalThis.fetch = original;
+  }
+});
+
+test('Instagram single photo applies both collaborators and user_tags cleanly', async () => {
+  const original = globalThis.fetch;
+  const requests = [];
+  globalThis.fetch = async (url, init = {}) => {
+    const u = String(url);
+    const body = init.body ? JSON.parse(init.body) : {};
+    requests.push({ url: u, body });
+    if (u.endsWith('/media')) return new Response(JSON.stringify({ id: 'container-img' }), { status: 200 });
+    if (u.includes('fields=status_code')) return new Response(JSON.stringify({ status_code: 'FINISHED' }), { status: 200 });
+    if (u.endsWith('/media_publish')) return new Response(JSON.stringify({ id: 'media-img' }), { status: 200 });
+    if (u.includes('fields=permalink')) return new Response(JSON.stringify({ permalink: 'https://www.instagram.com/p/xyz/' }), { status: 200 });
+    return new Response(JSON.stringify({}), { status: 200 });
+  };
+  try {
+    const result = await publishInstagram({
+      igUserId: 'ig-1',
+      pageToken: 'tok',
+      caption: 'Skin glow',
+      collabs: ['browsbyavani'],
+      mediaUrl: 'https://cdn.example/photo.jpg',
+      isVideo: false,
+    });
+    assert.deepEqual(result.appliedCollaborators, ['browsbyavani']);
+    assert.deepEqual(result.appliedUserTags, ['browsbyavani']);
+    assert.deepEqual(result.mentionedFallback, []);
+    const req = requests.find((r) => r.url.endsWith('/media'));
+    assert.deepEqual(req.body.collaborators, ['browsbyavani']);
+    assert.equal(req.body.user_tags[0].username, 'browsbyavani');
+  } finally {
+    globalThis.fetch = original;
   }
 });

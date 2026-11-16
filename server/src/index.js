@@ -2782,7 +2782,12 @@ async function runPublish(job, conn, payload, body, userId) {
       let igCollabs = enabledInstagramCollaborators(body, parseInstagramCollaborators).usernames;
       if (!igCollabs.length && (body.google_drive_intake_job_id || body.telegram_intake_job_id)) {
         const { getAssignedInstagramTags } = await import('./brand-routing.js');
-        igCollabs = getAssignedInstagramTags({ accountName: conn.account_name, accounts: [conn] }).slice(0, 3);
+        igCollabs = getAssignedInstagramTags({
+          brandId: body.brand_id || '',
+          brandName: body.brand_name || '',
+          accountName: conn.account_name,
+          accounts: [conn],
+        }).slice(0, 3);
       }
       const otherConn = async (platform, id, linkedPageId = null) => {
         const matchesPage = (candidate) => {
@@ -2962,12 +2967,14 @@ async function runPublish(job, conn, payload, body, userId) {
         const collabs = igCollabs.length
           ? (await meta.resolveInstagramCollaboratorUsernames({ igUserId: igId, pageToken, handles: igCollabs })).usernames
           : [];
+        const rawSelf = String(tokens.ig_username || tokens.username || conn.account_name || '').trim().replace(/^@+/, '');
+        const selfUsername = /^[A-Za-z0-9._]{1,30}$/.test(rawSelf) ? rawSelf : '';
         const locationId = String(body.ig_location || '').trim() || null;
         let out;
         if (isCarousel) {
           out = await meta.publishInstagramCarousel({
             igUserId: igId, pageToken, caption, collabs, locationId,
-            mediaUrls: publicUrls,
+            mediaUrls: publicUrls, selfUsername,
           });
         } else {
            out = await meta.publishInstagram({
@@ -2975,13 +2982,27 @@ async function runPublish(job, conn, payload, body, userId) {
              alt: String(body.ig_alt || ''), collabs, locationId,
                mediaUrl: publicUrl, isVideo: !!(file?.mimetype || mediaList[0]?.mimetype || '').startsWith('video/'),
              coverUrl: instagramCoverUrl,
+             selfUsername,
              onStage,
            });
         }
         job.url = out.url;
         job.postId = out.id ? String(out.id) : null;
         if (job.postId) job.publishedPosts.push({ platform: job.platform, connectionId: conn.id, postId: job.postId });
-        if (collabs.length) job.warning = `Instagram post published with ${collabs.length === 1 ? 'a collaborator invite' : 'collaborator invites'}. Each person must accept in Instagram.`;
+        if (collabs.length) {
+          const appliedCount = new Set([...(out.appliedCollaborators || []), ...(out.appliedUserTags || [])]).size;
+          const fallbackCount = (out.mentionedFallback || []).length;
+          if (out.tagWarnings?.length) {
+            console.warn('[instagram-tags]', conn.account_name || igId, out.tagWarnings.join(' | '));
+          }
+          if (appliedCount && fallbackCount) {
+            job.warning = `Instagram post published: ${appliedCount} handle(s) tagged/invited natively and ${fallbackCount} tagged via @mention in caption.`;
+          } else if (appliedCount) {
+            job.warning = `Instagram post published with ${appliedCount === 1 ? 'a collaborator/tag' : `${appliedCount} collaborator/tag invites`}.`;
+          } else if (fallbackCount) {
+            job.warning = `Instagram post published with @mention tag(s) in caption (${out.mentionedFallback.map((h) => `@${h}`).join(', ')}).`;
+          }
+        }
         // Optional auto story: same media re-published as a 24h IG story.
         // Runs after the feed post so one tap covers feed + story.
         if (String(body.ig_post_story || '') === '1' && publicUrl) {

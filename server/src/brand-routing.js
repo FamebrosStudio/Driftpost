@@ -36,7 +36,7 @@ export const FAMEBROS_INSTAGRAM_TAGGING_LIST = Object.freeze([
   Object.freeze({
     brandId: 'ali_salon',
     brandName: 'Ali Salon',
-    aliases: Object.freeze(['ali salon', 'ali and hussain salon', 'ali.and.hussain.salon', '@ali.and.hussain.salon']),
+    aliases: Object.freeze(['ali salon', 'ali and hussain salon', 'ali & hussain salon', 'ali hussain salon', 'ali.and.hussain.salon', '@ali.and.hussain.salon']),
     handles: Object.freeze(['hussainshaikh_13_']),
   }),
   Object.freeze({

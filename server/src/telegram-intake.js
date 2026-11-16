@@ -371,6 +371,8 @@ export async function processIntakeJob(supabase, job, options = {}) {
       if (connection.platform === 'instagram') {
         body.ig_caption = String(byPlatform.instagram?.caption || '').trim();
         body.text = body.ig_caption;
+        if (captionTarget?.brand?.id) body.brand_id = String(captionTarget.brand.id);
+        if (captionTarget?.name || captionTarget?.brand?.name) body.brand_name = String(captionTarget?.name || captionTarget?.brand?.name);
         const assignedTags = getAssignedInstagramTags({
           brandId: captionTarget?.brand?.id || job.result?.brand_id,
           brandName: captionTarget?.name || captionTarget?.brand?.name || job.account_name,
