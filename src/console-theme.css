@@ -13,25 +13,25 @@
 #root .welcome,
 #root .team-video-page,
 #root .approval-page {
-  --bg: #05080d;
-  --panel: #0b111b;
-  --panel2: #111a28;
-  --input: #070b12;
-  --ink: #f1f5f9;
-  --muted: #94a3b8;
-  --faint: #64748b;
-  --line: rgba(148, 163, 184, 0.13);
-  --line-hard: rgba(148, 163, 184, 0.23);
-  --hover: rgba(56, 189, 248, 0.08);
+  --bg: #07080a;
+  --panel: #0d0f13;
+  --panel2: #14171d;
+  --input: #090b0e;
+  --ink: #f8fafc;
+  --muted: #9ca3af;
+  --faint: #6b7280;
+  --line: rgba(255, 255, 255, 0.08);
+  --line-hard: rgba(255, 255, 255, 0.16);
+  --hover: rgba(255, 255, 255, 0.05);
   --go: #38bdf8;
   --go-ink: #03111c;
   --acc: var(--go);
   --acc-ink: var(--go-ink);
-  --acc-soft: rgba(56, 189, 248, 0.14);
+  --acc-soft: rgba(56, 189, 248, 0.12);
   --warm: #fbbf24;
   --warm-bg: rgba(251, 191, 36, 0.14);
   --cool: #38bdf8;
-  --cool-bg: rgba(56, 189, 248, 0.14);
+  --cool-bg: rgba(56, 189, 248, 0.12);
   --accent-soft: var(--go);
   --accent-ink: var(--go-ink);
   --danger: #f87171;
@@ -39,8 +39,7 @@
   color: var(--ink);
   background-color: var(--bg);
   background-image:
-    radial-gradient(ellipse 80% 50% at 50% -15%, rgba(56, 189, 248, 0.09), transparent 65%),
-    radial-gradient(ellipse 55% 45% at 90% 10%, rgba(99, 102, 241, 0.06), transparent 60%);
+    radial-gradient(ellipse 70% 40% at 50% -18%, rgba(56, 189, 248, 0.05), transparent 65%);
   font-family: "Poppins", "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
@@ -239,13 +238,11 @@
 }
 
 #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) .ws-topnav-pill.active {
-  color: var(--go-ink) !important;
-  background: linear-gradient(180deg, color-mix(in srgb, var(--go) 84%, white) 0%, var(--go) 100%) !important;
-  border-color: color-mix(in srgb, var(--go) 72%, white) !important;
+  color: var(--ink) !important;
+  background: color-mix(in srgb, var(--ink) 8%, var(--panel2)) !important;
+  border-color: color-mix(in srgb, var(--go) 42%, var(--line-hard)) !important;
   font-weight: 700 !important;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.48),
-    0 4px 14px -4px color-mix(in srgb, var(--go) 55%, transparent) !important;
+  box-shadow: inset 0 -2px 0 var(--go) !important;
 }
 
 .ws-topnav-badge {
@@ -1886,11 +1883,20 @@ body:has(#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-
     width: 100% !important;
     min-height: 0 !important;
     gap: 8px !important;
-    padding: 8px 12px 10px !important;
+    padding: 8px 14px 10px !important;
+  }
+
+  #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar > .ws-wordmark {
+    order: 1;
+  }
+
+  #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar > .ws-user {
+    order: 2;
   }
 
   #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-topnav {
     display: flex !important;
+    order: 3;
     grid-column: 1 / -1;
     justify-content: flex-start;
     width: 100%;
@@ -1908,8 +1914,9 @@ body:has(#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-
 
   #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) .ws-topnav-pill {
     flex: 0 0 auto;
-    padding: 6px 10px;
-    font-size: 12px;
+    min-height: 32px !important;
+    padding: 0 10px !important;
+    font-size: 12px !important;
   }
 
   #root .ws-dock-holder {
@@ -1927,20 +1934,20 @@ body:has(#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-
     width: 100%;
     height: 100dvh;
     margin-left: 0;
-    padding: 108px 14px calc(36px + env(safe-area-inset-bottom));
+    padding: 118px 14px calc(36px + env(safe-area-inset-bottom));
     overflow-x: hidden;
     overflow-y: auto;
   }
 
   #root .hist > .hist-in {
     width: 100%;
-    padding: 108px 14px calc(36px + env(safe-area-inset-bottom));
+    padding: 118px 14px calc(36px + env(safe-area-inset-bottom));
   }
 
   #root .stage1-in,
   #root .stage2-in,
   #root .stage3-in {
-    padding-top: 108px;
+    padding-top: 118px;
     padding-right: 14px;
     padding-left: 14px;
     padding-bottom: calc(155px + env(safe-area-inset-bottom));
@@ -2020,12 +2027,23 @@ body:has(#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-
   }
 
   #root .ws .ws-stat {
-    min-height: 140px;
-    padding: 16px;
+    grid-template-columns: 1fr !important;
+    grid-template-rows: auto auto auto auto;
+    min-height: 136px;
+    padding: 14px;
   }
 
   #root .ws .ws-stat > strong {
-    font-size: 32px;
+    grid-column: 1;
+    margin: 8px 0 4px;
+    font-size: 28px;
+  }
+
+  #root .ws .ws-stat > small {
+    grid-column: 1;
+    text-align: left;
+    margin-bottom: 10px;
+    font-size: 11px;
   }
 }
 
