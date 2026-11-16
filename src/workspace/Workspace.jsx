@@ -4,7 +4,6 @@ import { api, listSchedules, cancelSchedule, moveSchedule, matchesSearchText, PL
 import CampaignComposer from './CampaignComposer.jsx';
 import { readPostLog } from '../history/log.js';
 import { isAiAccount } from '../ai-access.js';
-import Dock from '../components/reactbits/Dock.jsx';
 import BorderGlow from '../components/reactbits/BorderGlow.jsx';
 import './workspace.css';
 
@@ -70,43 +69,11 @@ export function WorkspaceNav({ page, onNavigate, email, onSignOut }) {
     try { return localStorage.getItem('driftpost-console-theme') === 'light' ? 'light' : 'dark'; }
     catch { return 'dark'; }
   });
-  // Compact dock sizing on narrow screens so the full item row still fits.
-  const [compact, setCompact] = useState(() => window.matchMedia('(max-width: 760px)').matches);
-  useEffect(() => {
-    const mq = window.matchMedia('(max-width: 760px)');
-    const onChange = () => setCompact(mq.matches);
-    mq.addEventListener('change', onChange);
-    return () => mq.removeEventListener('change', onChange);
-  }, []);
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
     try { localStorage.setItem('driftpost-console-theme', theme); } catch {}
   }, [theme]);
-  // Cursor-close border glow (MagicBento reference technique) on the main
   const navPage = page === 'connect' ? 'accounts' : page;
-  const dockItems = [
-    ...NAV.map(([id, label, icon]) => ({
-      icon: <Icon name={icon} size={19} />,
-      label,
-      onClick: () => onNavigate(id),
-      active: navPage === id,
-    })),
-    ...(isAiAccount(email) ? [
-      { icon: <Icon name="video" size={19} />, label: 'Team video', onClick: () => onNavigate('team-video'), active: page === 'team-video' },
-      { icon: <Icon name="review" size={19} />, label: 'Video review', onClick: () => onNavigate('team-video-review'), active: page === 'team-video-review' },
-    ] : []),
-    ...(!compact ? [{ separator: true }] : []),
-    {
-      icon: theme === 'dark' ? <SunGlyph /> : <MoonGlyph />,
-      label: theme === 'dark' ? 'Light appearance' : 'Dark appearance',
-      onClick: () => setTheme((value) => value === 'dark' ? 'light' : 'dark'),
-    },
-    ...(onSignOut ? [{
-      icon: <SignOutGlyph />,
-      label: 'Sign out',
-      onClick: onSignOut,
-    }] : []),
-  ];
   const topNavItems = [
     ...NAV.map(([id, label, icon]) => ({
       id,
@@ -165,9 +132,6 @@ export function WorkspaceNav({ page, onNavigate, email, onSignOut }) {
         )}
       </div>
     </header>
-    <div className="ws-dock-holder">
-      <Dock items={dockItems} position="bottom" theme={theme} accentColor="#38bdf8" badgeColor="#38bdf8" baseItemSize={compact ? 34 : 44} magnification={compact ? 46 : 62} />
-    </div>
   </>;
 }
 
