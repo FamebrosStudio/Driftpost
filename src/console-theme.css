@@ -1898,9 +1898,29 @@ body:has(#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-
   }
 
   #root .ws-dock-holder .dock {
-    --dock-gap: 2px !important;
-    transform: scale(0.88);
-    transform-origin: 50% 100%;
+    --dock-gap: 4px !important;
+    max-width: calc(100vw - 16px);
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    transform: none !important;
+    padding: 6px 8px !important;
+  }
+
+  #root .ws-dock-holder .dock::-webkit-scrollbar {
+    display: none;
+  }
+
+  #root .ws-dock-holder .dock-item {
+    width: 38px !important;
+    height: 38px !important;
+    flex: 0 0 auto;
+  }
+
+  /* Hide the workspace dock on Stage 1-3 & Connect on mobile so it never overlaps the fixed bottom action bar */
+  #root :is(.stage1, .stage2, .stage3) .ws-dock-holder,
+  #root .ws:has(> .connect) .ws-dock-holder {
+    display: none !important;
   }
 
   #root .ws > .ws-main,
@@ -1914,38 +1934,90 @@ body:has(#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-
     width: 100%;
     height: 100dvh;
     margin-left: 0;
-    padding: 72px 16px calc(124px + env(safe-area-inset-bottom));
+    padding: 70px 14px calc(108px + env(safe-area-inset-bottom));
     overflow-x: hidden;
     overflow-y: auto;
   }
 
   #root .hist > .hist-in {
     width: 100%;
-    padding: 72px 16px calc(124px + env(safe-area-inset-bottom));
+    padding: 70px 14px calc(108px + env(safe-area-inset-bottom));
   }
 
   #root .stage1-in,
   #root .stage2-in,
   #root .stage3-in {
-    padding-right: 16px;
-    padding-left: 16px;
-    padding-bottom: 245px;
-  }
-
-  #root :is(.stage1, .stage2, .stage3) .ws-dock-holder {
-    inset: auto 0 calc(118px + env(safe-area-inset-bottom)) 0;
+    padding-right: 14px;
+    padding-left: 14px;
+    padding-bottom: calc(165px + env(safe-area-inset-bottom));
   }
 
   #root .ws .ws-heading {
     align-items: flex-start;
   }
 
+  #root .ws .ws-heading h1 {
+    font-size: clamp(24px, 6.8vw, 32px);
+  }
+
   #root .ws .ws-welcome {
     flex-direction: column;
     align-items: stretch;
     gap: 12px;
-    min-height: 200px;
-    padding: 22px 18px;
+    min-height: auto;
+    padding: 20px 16px;
+  }
+
+  #root .ws .ws-create-mode-grid,
+  #root .ws .automation-grid,
+  #root .team-review-layout {
+    grid-template-columns: 1fr !important;
+  }
+
+  #root .ws .ws-create-mode-card {
+    min-height: auto;
+    padding: 18px 16px;
+  }
+
+  #root .ws .ws-calendar-toolbar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  #root .ws .ws-day {
+    min-height: 54px;
+    padding: 4px;
+  }
+
+  #root .team-video-page .drive-intake-ready,
+  #root .team-video-page .drive-intake-connect,
+  #root .team-video-page .drive-jobs-heading {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  #root .team-review-list {
+    max-height: 240px;
+  }
+
+  #root .stage3 .s3-media img,
+  #root .stage3 .s3-media video {
+    max-height: 280px;
+  }
+
+  #root .stage3 .s3-pub {
+    padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
+    gap: 6px;
+  }
+
+  #root .stage3 .s3-pub-hint {
+    font-size: 11px;
+    text-align: center;
+  }
+
+  #root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page) :is(input, select, textarea) {
+    font-size: 16px;
   }
 
   #root .ws .ws-stat-grid {
@@ -1964,26 +2036,33 @@ body:has(#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-
 }
 
 @media (max-width: 600px) {
-  #root .stage2 .s2-settings {
+  #root .stage2 .s2-settings,
+  #root .stage3 .s3-frame-picker {
     grid-template-columns: 1fr;
+  }
+
+  #root .stage3 .s3-frame-picker .s3-mini-btn {
+    grid-column: 1;
   }
 
   #root .stage1 .setup-card,
   #root .stage2 .s2-sec,
   #root .stage3 .s3-work,
-  #root .connect .cn-card {
-    padding: 16px;
+  #root .connect .cn-card,
+  #root .team-video-panel {
+    padding: 14px;
   }
 }
 
 @media (max-width: 380px) {
-  #root .ws-dock-holder .dock {
-    transform: scale(0.8);
+  #root .ws-dock-holder .dock-item {
+    width: 34px !important;
+    height: 34px !important;
   }
   #root .stage1-in,
   #root .stage2-in,
   #root .stage3-in {
-    padding-bottom: 300px;
+    padding-bottom: calc(185px + env(safe-area-inset-bottom));
   }
 }
 
