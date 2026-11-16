@@ -1922,12 +1922,16 @@ html[data-device="mobile"] #root :is(.stage1, .stage2, .stage3, .connect) :is(.c
   right: 14px !important;
   bottom: calc(74px + env(safe-area-inset-bottom)) !important;
   width: auto !important;
-  border-radius: 18px !important;
+  border-radius: 20px !important;
   border: 1px solid rgba(255, 255, 255, 0.14) !important;
-  padding: 10px 12px !important;
+  padding: 6px !important;
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.12),
     0 14px 36px rgba(0, 0, 0, 0.58) !important;
+}
+
+html[data-device="mobile"] #root :is(.stage1, .stage2, .stage3, .connect) :is(.continue-bar, .s2-continue-bar, .s3-pub, .cn-bar) button {
+  border-radius: 14px !important;
 }
 
 html[data-device="mobile"] #root .ws-mobile-more-backdrop {
@@ -2815,6 +2819,50 @@ html:not([data-device="mobile"]) #root .stage3-in {
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+
+#root :is(.s1-step, .s2-step, .s3-step) {
+  border-radius: 12px !important;
+}
+
+#root :is(.s1-step .dot, .s2-step .dot, .s3-step .dot) {
+  border-radius: 999px !important;
+}
+
+#root .setup-icon {
+  border-radius: 10px !important;
+}
+
+#root .stage1-cards,
+#root .stage1-cards > .border-glow-card,
+#root .stage1-cards .border-glow-inner,
+#root .stage1 .setup-card {
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+#root .stage1 .s1-pick {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  max-width: 100%;
+  border-radius: 12px !important;
+}
+
+#root .stage1 .s1-pick b {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+html[data-device="mobile"] #root .stage1 .s1-pick .s1-mini {
+  flex: 1 1 auto;
+  min-height: 36px;
+  border-radius: 9px !important;
+  justify-content: center;
 }
 
 #root .ws .ws-upcoming-row {
