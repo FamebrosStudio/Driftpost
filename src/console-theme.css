@@ -150,8 +150,8 @@
   width: 100% !important;
   min-width: 0;
   height: auto !important;
-  min-height: 64px !important;
-  padding: 8px clamp(16px, 2.5vw, 36px) !important;
+  min-height: 50px !important;
+  padding: 6px clamp(16px, 2.5vw, 36px) !important;
   border: 0 !important;
   border-bottom: 1px solid var(--line) !important;
   background: color-mix(in srgb, var(--panel) 90%, transparent) !important;
@@ -1502,7 +1502,7 @@
   overflow-y: auto;
   overscroll-behavior: contain;
   scrollbar-gutter: stable;
-  padding-top: 88px;
+  padding-top: 64px;
   padding-bottom: 72px;
 }
 
@@ -1525,7 +1525,15 @@
   max-width: none !important;
   min-height: 100%;
   margin: 0 !important;
-  padding: 88px clamp(16px, 2.5vw, 36px) 72px;
+  padding: 64px clamp(16px, 2.5vw, 36px) 72px;
+}
+
+#root :is(.ws-heading, .hist-heading, .team-review-heading) {
+  margin-top: 0 !important;
+}
+
+#root :is(.s1-progress, .s2-progress, .s3-progress) {
+  margin-top: 4px !important;
 }
 
 #root .stage1-in,
@@ -1869,9 +1877,9 @@ body:has(#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-
 html[data-device="mobile"] #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar {
   grid-template-columns: 1fr auto !important;
   width: 100% !important;
-  min-height: 56px !important;
+  min-height: 48px !important;
   gap: 8px !important;
-  padding: 8px 14px !important;
+  padding: 6px 14px !important;
 }
 
 html[data-device="mobile"] #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) .ws-topnav {
@@ -2055,14 +2063,14 @@ html[data-device="mobile"] #root .team-review-main {
   width: 100%;
   height: 100dvh;
   margin-left: 0;
-  padding: 74px 14px calc(92px + env(safe-area-inset-bottom));
+  padding: 60px 14px calc(92px + env(safe-area-inset-bottom));
   overflow-x: hidden;
   overflow-y: auto;
 }
 
 html[data-device="mobile"] #root .hist > .hist-in {
   width: 100%;
-  padding: 74px 14px calc(92px + env(safe-area-inset-bottom));
+  padding: 60px 14px calc(92px + env(safe-area-inset-bottom));
 }
 
 html[data-device="mobile"] #root .ws > .connect {
@@ -2071,14 +2079,14 @@ html[data-device="mobile"] #root .ws > .connect {
 
 html[data-device="mobile"] #root .stage1-in,
 html[data-device="mobile"] #root .stage2-in {
-  padding-top: 74px;
+  padding-top: 60px;
   padding-right: 14px;
   padding-left: 14px;
   padding-bottom: calc(210px + env(safe-area-inset-bottom));
 }
 
 html[data-device="mobile"] #root .stage3-in {
-  padding-top: 74px;
+  padding-top: 60px;
   padding-right: 14px;
   padding-left: 14px;
   padding-bottom: calc(250px + env(safe-area-inset-bottom));
