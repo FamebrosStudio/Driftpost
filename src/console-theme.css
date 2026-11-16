@@ -502,7 +502,7 @@
 }
 
 #root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) :is(
-  .ws-panel, .ws-stat, .ws-metric-card, .ws-welcome, .hist-panel, .hist-row,
+  .ws-panel, .ws-stat, .ws-metric-card, .ws-welcome, .ws-create-mode-card, .hist-panel, .hist-row,
   .hist-activity, .cn-card, .cn-brands, .setup-card, .s2-sec, .s2-out,
   .s2-editor:not(.s2-media-editor), .s2-video-editor-page, .s3-work, .s3-sched, .team-video-panel,
   .team-review-list, .team-review-detail, .team-review-job, .approval-card, .cg-card,
@@ -523,13 +523,13 @@
 }
 
 #root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) :is(
-  .setup-card:hover, .cn-card:hover, .ws-stat:hover, .ws-metric-card:hover, .hist-row:hover
+  .setup-card:hover, .cn-card:hover, .ws-stat:hover, .ws-metric-card:hover, .hist-row:hover, .ws-create-mode-card:hover
 ) {
   border-color: var(--line-hard) !important;
 }
 
 #root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) :is(
-  .setup-card.sel, .ws-campaign-account.selected, .hist-tab.active, .cn-card.linked
+  .setup-card.sel, .ws-campaign-account.selected, .hist-tab.active, .cn-card.linked, .team-review-job.active
 ) {
   border-color: color-mix(in srgb, var(--go) 75%, var(--line-hard)) !important;
   background: linear-gradient(
@@ -540,6 +540,243 @@
   box-shadow:
     inset 0 1px 0 color-mix(in srgb, var(--go) 22%, transparent),
     0 12px 30px -18px color-mix(in srgb, var(--go) 28%, transparent) !important;
+}
+
+/* ==========================================================================
+   INTERACTIVE CARD BUTTONS, DROPZONES & MULTI-LINE ROW BUTTONS
+   Ensure <button> elements that act as cards, dropzones, radio rows, or list
+   items preserve their multi-line left-aligned or column layout and never
+   clip text with white-space: nowrap.
+   ========================================================================== */
+
+/* Choose Your Workflow Cards (.ws-create-mode-card) */
+#root .ws .ws-create-mode {
+  max-width: 1180px;
+}
+
+#root .ws .ws-create-mode-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+  margin: 28px 0 24px;
+}
+
+@media (max-width: 760px) {
+  #root .ws .ws-create-mode-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+#root .ws .ws-create-mode-card {
+  position: relative;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  justify-content: flex-start !important;
+  gap: 14px !important;
+  width: 100%;
+  min-height: 236px !important;
+  padding: 28px !important;
+  text-align: left !important;
+  white-space: normal !important;
+  cursor: pointer;
+}
+
+#root .ws .ws-create-mode-card--advanced {
+  background:
+    radial-gradient(circle at 92% 14%, color-mix(in srgb, var(--go) 14%, transparent), transparent 52%),
+    linear-gradient(165deg, color-mix(in srgb, var(--panel2) 56%, var(--panel)) 0%, var(--panel) 100%) !important;
+}
+
+#root .ws .ws-create-mode-card:hover {
+  border-color: color-mix(in srgb, var(--go) 68%, var(--line-hard)) !important;
+  transform: translateY(-2px);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--go) 25%, transparent),
+    0 18px 38px -18px rgba(0, 0, 0, 0.55),
+    0 0 24px -8px color-mix(in srgb, var(--go) 28%, transparent) !important;
+}
+
+#root .ws .ws-create-mode-card strong {
+  display: block;
+  color: var(--ink);
+  font-size: clamp(20px, 2.1vw, 25px);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+  white-space: normal;
+}
+
+#root .ws .ws-create-mode-card > span:not(.ws-eyebrow) {
+  display: block;
+  max-width: 54ch;
+  color: var(--muted);
+  font-size: 13.5px;
+  font-weight: 450;
+  line-height: 1.65;
+  white-space: normal !important;
+  overflow-wrap: break-word;
+}
+
+#root .ws .ws-create-mode-card i {
+  margin-top: auto;
+  padding-top: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--go);
+  font-style: normal;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+/* Stage 2 Media Upload Dropzone (.s2-drop) & Stage 1 Dashed Action Button (.s1-btn) */
+#root .stage2 .s2-drop {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  width: 100% !important;
+  min-height: 164px !important;
+  padding: 30px 22px !important;
+  border: 1.5px dashed var(--line-hard) !important;
+  background: color-mix(in srgb, var(--panel2) 55%, transparent) !important;
+  box-shadow: none !important;
+  text-align: center !important;
+  white-space: normal !important;
+}
+
+#root .stage2 .s2-drop:hover,
+#root .stage2 .s2-drop.over {
+  border-color: var(--go) !important;
+  background: color-mix(in srgb, var(--go) 9%, var(--panel2)) !important;
+}
+
+#root .stage2 .s2-drop b,
+#root .stage2 .s2-drop small {
+  white-space: normal !important;
+  max-width: 62ch;
+  line-height: 1.55;
+}
+
+#root .stage1 .s1-btn {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100% !important;
+  min-height: 44px !important;
+  padding: 12px 16px !important;
+  border: 1.5px dashed var(--line-hard) !important;
+  background: color-mix(in srgb, var(--panel2) 50%, transparent) !important;
+  color: var(--ink) !important;
+  font-size: 13px !important;
+  font-weight: 650 !important;
+  white-space: normal !important;
+  box-shadow: none !important;
+}
+
+#root .stage1 .s1-btn:hover {
+  border-color: var(--go) !important;
+  background: color-mix(in srgb, var(--go) 10%, var(--panel2)) !important;
+  color: var(--go) !important;
+}
+
+/* Stage 1 Radio Cards (.trio-radio), Brand Rows (.s1-brand), Account Rows (.s1-acct) & Team Review Jobs (.team-review-job) */
+#root .stage1 .trio-radio {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: flex-start !important;
+  justify-content: flex-start !important;
+  gap: 12px !important;
+  width: 100% !important;
+  padding: 12px 14px !important;
+  border: 1px solid var(--line-hard) !important;
+  background: var(--panel2) !important;
+  text-align: left !important;
+  white-space: normal !important;
+  box-shadow: none !important;
+}
+
+#root .stage1 .trio-radio.on {
+  border-color: var(--go) !important;
+  background: color-mix(in srgb, var(--go) 12%, var(--panel2)) !important;
+}
+
+#root .stage1 .trio-radio b,
+#root .stage1 .trio-radio small {
+  white-space: normal !important;
+  overflow-wrap: break-word;
+}
+
+#root .stage1 .s1-brand {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+  width: 100% !important;
+  padding: 12px 14px !important;
+  border: 1px solid var(--line-hard) !important;
+  background: var(--panel2) !important;
+  text-align: left !important;
+  white-space: normal !important;
+  box-shadow: none !important;
+}
+
+#root .stage1 .s1-brand.cur,
+#root .stage1 .s1-brand:hover {
+  border-color: var(--go) !important;
+  background: color-mix(in srgb, var(--go) 12%, var(--panel2)) !important;
+}
+
+#root .stage1 .s1-acct {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 10px !important;
+  width: 100% !important;
+  padding: 10px 12px !important;
+  border: 1px solid var(--line-hard) !important;
+  background: var(--panel2) !important;
+  text-align: left !important;
+  box-shadow: none !important;
+}
+
+#root .stage1 .s1-acct.in,
+#root .stage1 .s1-acct:hover {
+  border-color: var(--go) !important;
+  background: color-mix(in srgb, var(--go) 12%, var(--panel2)) !important;
+}
+
+#root .team-review-job {
+  display: grid !important;
+  gap: 6px !important;
+  width: 100% !important;
+  padding: 14px !important;
+  text-align: left !important;
+  white-space: normal !important;
+}
+
+#root .stage3 .s3-collab-options button {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 10px !important;
+  width: 100% !important;
+  min-height: 36px !important;
+  padding: 8px 12px !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  text-align: left !important;
+  white-space: normal !important;
+}
+
+#root .stage3 .s3-collab-options button:hover {
+  background: color-mix(in srgb, var(--go) 12%, var(--panel2)) !important;
 }
 
 /* Overview Hero & Stat Cards */
@@ -606,15 +843,36 @@
 
 #root .ws .ws-stat > button {
   grid-column: 1 / -1;
-  display: flex;
-  width: 100%;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: 0;
-  padding: 12px 0 0;
-  border-top: 1px solid var(--line);
-  color: var(--ink);
-  text-align: left;
+  display: flex !important;
+  width: 100% !important;
+  min-height: 0 !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  margin: auto 0 0 !important;
+  padding: 12px 0 0 !important;
+  border: 0 !important;
+  border-top: 1px solid var(--line) !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: var(--ink) !important;
+  font-size: 12px !important;
+  font-weight: 650 !important;
+  text-align: left !important;
+}
+
+#root .ws .ws-stat > button:hover {
+  color: var(--go) !important;
+  background: transparent !important;
+  transform: none !important;
+}
+
+#root .ws .ws-stat > button svg {
+  color: var(--go);
+  transition: transform 160ms ease;
+}
+
+#root .ws .ws-stat > button:hover svg {
+  transform: translateX(3px);
 }
 
 /* ==========================================================================
@@ -647,11 +905,66 @@
    ARCHITECTURAL STUDIO BUTTON SYSTEM
    Sharp 0px geometry, multi-stop depth gradients, top-edge micro-bevel,
    directional icon motion, and crisp cyan hover illumination.
+   Uses :where(:not(...)) so exclusions add 0 specificity and never override
+   cards, dropzones, radio rows, tabs, or inline text links.
    ========================================================================== */
 
 /* Standard / Secondary Studio Buttons */
 #root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg)
-  button:not(.ws-nav button):not(.ws-topnav-pill):not(.ws-topbar-icon-btn):not(.ws-text-button):not(.ws-collapse-toggle):not(.ws-theme-toggle):not(.progress-step-button):not(.ws-day):not(.swatch):not(.dock button):not(.ws-wordmark):not(.s2-switch):not(.s2-media-editor-page button):not(.s2-timeline-page button) {
+  button:where(:not(
+    .ws-nav button,
+    .ws-topnav-pill,
+    .ws-topbar-icon-btn,
+    .ws-text-button,
+    .ws-collapse-toggle,
+    .ws-theme-toggle,
+    .progress-step-button,
+    .ws-day,
+    .swatch,
+    .dock button,
+    .ws-wordmark,
+    .s2-switch,
+    .s2-media-editor-page button,
+    .s2-timeline-page button,
+    .ws-create-mode-card,
+    .s2-drop,
+    .trio-radio,
+    .s1-brand,
+    .s1-acct,
+    .s1-btn,
+    .team-review-job,
+    .s3-collab-options button,
+    .ws-stat > button,
+    .ws-empty button,
+    .ws-content-period button,
+    .hist-tab,
+    .s3-tab,
+    .plat-pill,
+    .s2-pill,
+    .s2-mode button,
+    .s3-quick button,
+    .cn-link,
+    .s2-back,
+    .s3-back,
+    .hist-back,
+    .stage1-signout,
+    .s2-signout,
+    .s3-signout,
+    .s3-link,
+    .s3-bulk-clear,
+    .link,
+    .s3-cover-preview button,
+    .bg-publish-notice > button,
+    .s3-light > button,
+    .swipe-act,
+    .s2-trim-handle,
+    .s2-playhead,
+    .ws-account-picker > p button,
+    .ws-content-state button,
+    .ws-metric-error > button,
+    .ws-metric-empty button,
+    .ws-metric-stale button
+  )) {
   position: relative;
   display: inline-flex;
   align-items: center;
@@ -671,8 +984,7 @@
   font-size: 12.5px;
   font-weight: 650;
   letter-spacing: 0.015em;
-  line-height: 1.2;
-  white-space: nowrap;
+  line-height: 1.3;
   user-select: none;
   box-shadow:
     inset 0 1px 0 color-mix(in srgb, var(--ink) 10%, transparent),
@@ -689,13 +1001,119 @@
 }
 
 #root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg)
-  button:not(.ws-nav button):not(.ws-topnav-pill):not(.ws-topbar-icon-btn):not(.ws-text-button):not(.ws-collapse-toggle):not(.ws-theme-toggle):not(.progress-step-button):not(.ws-day):not(.swatch):not(.dock button):not(.ws-wordmark):not(.s2-switch):not(.s2-media-editor-page button):not(.s2-timeline-page button) svg {
+  button:where(:not(
+    .ws-nav button,
+    .ws-topnav-pill,
+    .ws-topbar-icon-btn,
+    .ws-text-button,
+    .ws-collapse-toggle,
+    .ws-theme-toggle,
+    .progress-step-button,
+    .ws-day,
+    .swatch,
+    .dock button,
+    .ws-wordmark,
+    .s2-switch,
+    .s2-media-editor-page button,
+    .s2-timeline-page button,
+    .ws-create-mode-card,
+    .s2-drop,
+    .trio-radio,
+    .s1-brand,
+    .s1-acct,
+    .s1-btn,
+    .team-review-job,
+    .s3-collab-options button,
+    .ws-stat > button,
+    .ws-empty button,
+    .ws-content-period button,
+    .hist-tab,
+    .s3-tab,
+    .plat-pill,
+    .s2-pill,
+    .s2-mode button,
+    .s3-quick button,
+    .cn-link,
+    .s2-back,
+    .s3-back,
+    .hist-back,
+    .stage1-signout,
+    .s2-signout,
+    .s3-signout,
+    .s3-link,
+    .s3-bulk-clear,
+    .link,
+    .s3-cover-preview button,
+    .bg-publish-notice > button,
+    .s3-light > button,
+    .swipe-act,
+    .s2-trim-handle,
+    .s2-playhead,
+    .ws-account-picker > p button,
+    .ws-content-state button,
+    .ws-metric-error > button,
+    .ws-metric-empty button,
+    .ws-metric-stale button
+  )) svg {
   flex-shrink: 0;
   transition: transform 180ms cubic-bezier(0.22, 1, 0.36, 1), opacity 160ms ease;
 }
 
 #root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg)
-  button:not(.ws-nav button):not(.ws-topnav-pill):not(.ws-topbar-icon-btn):not(.ws-text-button):not(.ws-collapse-toggle):not(.ws-theme-toggle):not(.progress-step-button):not(.ws-day):not(.swatch):not(.dock button):not(.ws-wordmark):not(.s2-switch):not(.s2-media-editor-page button):not(.s2-timeline-page button):hover:not(:disabled) {
+  button:where(:not(
+    .ws-nav button,
+    .ws-topnav-pill,
+    .ws-topbar-icon-btn,
+    .ws-text-button,
+    .ws-collapse-toggle,
+    .ws-theme-toggle,
+    .progress-step-button,
+    .ws-day,
+    .swatch,
+    .dock button,
+    .ws-wordmark,
+    .s2-switch,
+    .s2-media-editor-page button,
+    .s2-timeline-page button,
+    .ws-create-mode-card,
+    .s2-drop,
+    .trio-radio,
+    .s1-brand,
+    .s1-acct,
+    .s1-btn,
+    .team-review-job,
+    .s3-collab-options button,
+    .ws-stat > button,
+    .ws-empty button,
+    .ws-content-period button,
+    .hist-tab,
+    .s3-tab,
+    .plat-pill,
+    .s2-pill,
+    .s2-mode button,
+    .s3-quick button,
+    .cn-link,
+    .s2-back,
+    .s3-back,
+    .hist-back,
+    .stage1-signout,
+    .s2-signout,
+    .s3-signout,
+    .s3-link,
+    .s3-bulk-clear,
+    .link,
+    .s3-cover-preview button,
+    .bg-publish-notice > button,
+    .s3-light > button,
+    .swipe-act,
+    .s2-trim-handle,
+    .s2-playhead,
+    .ws-account-picker > p button,
+    .ws-content-state button,
+    .ws-metric-error > button,
+    .ws-metric-empty button,
+    .ws-metric-stale button
+  )):hover:not(:disabled) {
   border-color: color-mix(in srgb, var(--go) 72%, var(--ink));
   background: linear-gradient(
     180deg,
@@ -711,21 +1129,70 @@
 }
 
 #root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg)
-  button:not(.ws-nav button):not(.ws-topnav-pill):not(.ws-topbar-icon-btn):not(.ws-text-button):not(.ws-collapse-toggle):not(.ws-theme-toggle):not(.progress-step-button):not(.ws-day):not(.swatch):not(.dock button):not(.ws-wordmark):not(.s2-switch):not(.s2-media-editor-page button):not(.s2-timeline-page button):hover:not(:disabled) svg:last-child:not(:first-child) {
+  button:where(:not(
+    .ws-nav button,
+    .ws-topnav-pill,
+    .ws-topbar-icon-btn,
+    .ws-text-button,
+    .ws-collapse-toggle,
+    .ws-theme-toggle,
+    .progress-step-button,
+    .ws-day,
+    .swatch,
+    .dock button,
+    .ws-wordmark,
+    .s2-switch,
+    .s2-media-editor-page button,
+    .s2-timeline-page button,
+    .ws-create-mode-card,
+    .s2-drop,
+    .trio-radio,
+    .s1-brand,
+    .s1-acct,
+    .s1-btn,
+    .team-review-job,
+    .s3-collab-options button,
+    .ws-stat > button,
+    .ws-empty button,
+    .ws-content-period button,
+    .hist-tab,
+    .s3-tab,
+    .plat-pill,
+    .s2-pill,
+    .s2-mode button,
+    .s3-quick button,
+    .cn-link,
+    .s2-back,
+    .s3-back,
+    .hist-back,
+    .stage1-signout,
+    .s2-signout,
+    .s3-signout,
+    .s3-link,
+    .s3-bulk-clear,
+    .link,
+    .s3-cover-preview button,
+    .bg-publish-notice > button,
+    .s3-light > button,
+    .swipe-act,
+    .s2-trim-handle,
+    .s2-playhead,
+    .ws-account-picker > p button,
+    .ws-content-state button,
+    .ws-metric-error > button,
+    .ws-metric-empty button,
+    .ws-metric-stale button
+  )):hover:not(:disabled) svg:last-child:not(:first-child) {
   transform: translateX(2.5px);
-}
-
-#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg)
-  button:not(.ws-nav button):not(.ws-topnav-pill):not(.ws-topbar-icon-btn):not(.ws-text-button):not(.ws-collapse-toggle):not(.ws-theme-toggle):not(.progress-step-button):not(.ws-day):not(.swatch):not(.dock button):not(.ws-wordmark):not(.s2-switch):not(.s2-media-editor-page button):not(.s2-timeline-page button):active:not(:disabled) {
-  transform: translateY(0) scale(0.985) !important;
 }
 
 /* Primary Action CTAs */
 #root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) :is(
   .ws-primary, .ws-nav-create, .s1-primary, .continue-btn, .s1-continue,
   .s2-continue-btn, .s2-continue, .s2-generate, .s2-done,
-  .s3-review-all, .s3-acts button.go, .s3-postall, .s3-schedall, .s3-publish,
-  .cn-connect, .cn-next, .cg-acts button:first-child
+  .s3-review-all:not(.done), .s3-acts button.go, .s3-postall, .s3-publish, .s3-new,
+  .cn-connect:not(.ghost), .cn-next, .cg-acts button.go, .cg-acts button:first-child,
+  .team-video-actions button, .drive-intake-connect button, .team-review-actions .team-review-send
 ) {
   min-height: 42px;
   padding: 10px 22px;
@@ -750,8 +1217,9 @@
 #root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) :is(
   .ws-primary, .ws-nav-create, .s1-primary, .continue-btn, .s1-continue,
   .s2-continue-btn, .s2-continue, .s2-generate, .s2-done,
-  .s3-review-all, .s3-acts button.go, .s3-postall, .s3-schedall, .s3-publish,
-  .cn-connect, .cn-next, .cg-acts button:first-child
+  .s3-review-all:not(.done), .s3-acts button.go, .s3-postall, .s3-publish, .s3-new,
+  .cn-connect:not(.ghost), .cn-next, .cg-acts button.go, .cg-acts button:first-child,
+  .team-video-actions button, .drive-intake-connect button, .team-review-actions .team-review-send
 ):hover:not(:disabled) {
   border-color: #ffffff !important;
   background: linear-gradient(
@@ -768,12 +1236,76 @@
     0 0 20px -4px color-mix(in srgb, var(--go) 48%, transparent) !important;
 }
 
-/* Ghost / Text Action Buttons (.ws-text-button) */
-#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3) .ws-text-button {
+/* Segmented Controls, Filter Tabs & Pill Selectors */
+#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3) :is(
+  .plat-pill, .s2-pill, .s3-tab, .hist-tab, .s3-quick button
+) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 38px;
+  padding: 8px 16px;
+  border: 1px solid var(--line-hard);
+  border-radius: 0 !important;
+  background: var(--panel2);
+  color: var(--muted);
+  font-size: 12.5px;
+  font-weight: 650;
+  transition: border-color 150ms ease, background 150ms ease, color 150ms ease;
+}
+
+#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3) :is(
+  .plat-pill:hover, .s2-pill:hover, .s3-tab:hover, .hist-tab:hover, .s3-quick button:hover
+):not(:disabled) {
+  border-color: color-mix(in srgb, var(--go) 60%, var(--line-hard));
+  color: var(--ink);
+}
+
+#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3) :is(
+  .plat-pill.on, .s2-pill.on, .s3-tab.on, .hist-tab.on, .s3-quick button[aria-pressed="true"]
+) {
+  border-color: var(--go) !important;
+  background: color-mix(in srgb, var(--go) 16%, var(--panel2)) !important;
+  color: var(--go) !important;
+  font-weight: 700;
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--go) 28%, transparent);
+}
+
+#root .ws .ws-content-period {
+  border-radius: 0 !important;
+  border: 1px solid var(--line-hard);
+  background: var(--panel2);
+  padding: 3px;
+  gap: 3px;
+}
+
+#root .ws .ws-content-period button {
+  min-height: 30px;
+  padding: 0 11px;
+  border: 1px solid transparent;
+  border-radius: 0 !important;
+  background: transparent;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 650;
+  box-shadow: none;
+}
+
+#root .ws .ws-content-period button.active {
+  border-color: color-mix(in srgb, var(--go) 60%, transparent);
+  background: color-mix(in srgb, var(--go) 15%, var(--panel));
+  color: var(--go);
+}
+
+/* Ghost / Text Action Buttons (.ws-text-button, .ws-empty button, .cn-link, .s2-back, .s3-back, .hist-back) */
+#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3) :is(
+  .ws-text-button, .ws-empty button, .cn-link, .s2-back, .s3-back, .hist-back
+) {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  min-height: 30px;
+  min-height: 32px;
   padding: 4px 10px;
   border: 1px solid transparent;
   border-radius: 0 !important;
@@ -782,10 +1314,13 @@
   font-size: 12px;
   font-weight: 680;
   letter-spacing: 0.015em;
+  box-shadow: none;
   transition: border-color 150ms ease, background 150ms ease, color 150ms ease, transform 150ms ease;
 }
 
-#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3) .ws-text-button:hover:not(:disabled) {
+#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3) :is(
+  .ws-text-button, .ws-empty button, .cn-link, .s2-back, .s3-back, .hist-back
+):hover:not(:disabled) {
   border-color: color-mix(in srgb, var(--go) 42%, var(--line-hard));
   background: color-mix(in srgb, var(--go) 12%, transparent);
   color: color-mix(in srgb, var(--go) 80%, white);
