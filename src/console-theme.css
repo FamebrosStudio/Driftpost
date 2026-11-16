@@ -1502,10 +1502,11 @@
 }
 
 #root .ws-main {
-  max-width: 1320px;
-  margin: 0 auto;
-  padding-right: clamp(24px, 4vw, 56px);
-  padding-left: clamp(24px, 4vw, 56px);
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding-right: max(clamp(24px, 4vw, 56px), calc((100% - 1320px) / 2));
+  padding-left: max(clamp(24px, 4vw, 56px), calc((100% - 1320px) / 2));
 }
 
 #root .hist-shell > .hist {
@@ -1525,21 +1526,21 @@
 #root .stage1-in,
 #root .stage2-in,
 #root .stage3-in {
-  max-width: 1360px;
-  margin-right: auto;
-  margin-left: auto;
-  padding-right: clamp(24px, 4vw, 56px);
-  padding-left: clamp(24px, 4vw, 56px);
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding-right: max(clamp(24px, 4vw, 56px), calc((100% - 1360px) / 2));
+  padding-left: max(clamp(24px, 4vw, 56px), calc((100% - 1360px) / 2));
   padding-bottom: 130px;
 }
 
 #root .ws.team-video-page > .team-video-main,
 #root .team-review-main {
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding-right: clamp(24px, 4vw, 56px);
-  padding-left: clamp(24px, 4vw, 56px);
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding-right: max(clamp(24px, 4vw, 56px), calc((100% - 1200px) / 2));
+  padding-left: max(clamp(24px, 4vw, 56px), calc((100% - 1200px) / 2));
 }
 
 /* BorderGlow wrappers */
