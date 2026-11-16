@@ -6,7 +6,7 @@ import { pipeline } from 'node:stream/promises';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { decryptJson, encryptJson } from './crypto.js';
-import { processIntakeJob } from './telegram-intake.js';
+import { processIntakeJob } from './intake-processor.js';
 import { inferLikelyVideoBrands } from './ai.js';
 import { getAssignedInstagramTags, mapBrandDestinations, matchDriveAccounts, resolveDriveBrand } from './brand-routing.js';
 

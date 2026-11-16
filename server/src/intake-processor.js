@@ -1,5 +1,3 @@
-import crypto from 'node:crypto';
-import express from 'express';
 import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
@@ -14,69 +12,9 @@ import { getAssignedInstagramTags } from './brand-routing.js';
 
 const execFileAsync = promisify(execFile);
 const MAX_VIDEO_BYTES = 400 * 1024 * 1024;
-const TELEGRAM_HOSTED_DOWNLOAD_BYTES = 20 * 1024 * 1024;
 const PLATFORMS = new Set(['youtube', 'instagram', 'facebook', 'x']);
 const clean = (value) => String(value || '').trim();
 const normalize = (value) => clean(value).toLowerCase().replace(/^@/, '').replace(/[^\p{L}\p{N}]+/gu, '');
-
-function botBase() {
-  return String(process.env.TELEGRAM_BOT_API_URL || 'https://api.telegram.org').replace(/\/$/, '');
-}
-
-async function telegram(method, payload, { timeout = 20_000 } = {}) {
-  const token = process.env.TELEGRAM_BOT_TOKEN;
-  if (!token) throw new Error('Telegram intake is not configured.');
-  const response = await fetch(`${botBase()}/bot${token}/${method}`, {
-    method: 'POST',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify(payload),
-    signal: AbortSignal.timeout(timeout),
-  });
-  const data = await response.json().catch(() => ({}));
-  if (!response.ok || !data.ok) throw new Error(data.description || `Telegram ${method} failed.`);
-  return data.result;
-}
-
-async function reply(chatId, text, replyToMessageId) {
-  try {
-    await telegram('sendMessage', {
-      chat_id: chatId,
-      text: String(text).slice(0, 4000),
-      ...(replyToMessageId ? { reply_to_message_id: replyToMessageId, allow_sending_without_reply: true } : {}),
-    });
-  } catch (error) {
-    console.warn('[telegram-intake] reply failed:', String(error?.message || error).slice(0, 180));
-  }
-}
-
-function parseVideoMessage(message) {
-  const video = message.video || (message.document?.mime_type?.startsWith('video/') ? message.document : null);
-  if (!video?.file_id) return null;
-  const text = clean(message.caption || message.caption_entities?.map((entity) => entity.text).join(' '));
-  const account = text.match(/^(?:account|brand|post\s+to)\s*:\s*(.+)$/im)?.[1]?.trim() || text.split(/\r?\n/).map(clean).find(Boolean) || '';
-  return {
-    fileId: video.file_id,
-    fileSize: Number(video.file_size) || 0,
-    fileName: clean(message.document?.file_name) || `telegram-${message.message_id}.mp4`,
-    mimeType: clean(message.document?.mime_type) || 'video/mp4',
-    accountName: account.slice(0, 180),
-  };
-}
-
-async function getTelegramVideo(fileId, destination) {
-  const info = await telegram('getFile', { file_id: fileId }, { timeout: 45_000 });
-  if (!info?.file_path || (Number(info.file_size) || 0) > MAX_VIDEO_BYTES) throw new Error('This video is larger than Driftpost’s 400 MB limit.');
-  const response = await fetch(`${botBase()}/file/bot${process.env.TELEGRAM_BOT_TOKEN}/${info.file_path}`, {
-    signal: AbortSignal.timeout(15 * 60 * 1000),
-  });
-  if (!response.ok || !response.body) throw new Error('Telegram could not provide the uploaded video. Please send it again.');
-  const { pipeline } = await import('node:stream/promises');
-  const { createWriteStream } = await import('node:fs');
-  await pipeline(response.body, createWriteStream(destination, { flags: 'wx' }));
-  const stat = await fs.stat(destination);
-  if (!stat.size || stat.size > MAX_VIDEO_BYTES) throw new Error('The received video is empty or larger than 400 MB.');
-  return stat.size;
-}
 
 async function sampleFrames(videoPath, directory) {
   const { stdout } = await execFileAsync('ffprobe', [
@@ -144,8 +82,8 @@ export async function saveBrandReview(supabase, table, job, reason, result) {
 
 export async function processIntakeJob(supabase, job, options = {}) {
   const ownerId = job.owner_user_id;
-  const table = options.table || 'telegram_video_jobs';
-  const intakeKey = options.intakeKey || 'telegram_intake_job_id';
+  const table = options.table || 'google_drive_video_jobs';
+  const intakeKey = options.intakeKey || 'google_drive_intake_job_id';
   const notify = options.notify || ((message) => reply(job.chat_id, message, job.message_id));
   const progress = async (stage, detail = '') => { if (options.progress) await options.progress(stage, detail); };
   const isCarousel = job.result?.media_kind === 'carousel';
@@ -161,7 +99,7 @@ export async function processIntakeJob(supabase, job, options = {}) {
     const { error: updateError } = await supabase.from(table).update({
       status: 'publishing', result: { ...(job.result || {}), destinations: alreadyQueued }, updated_at: new Date().toISOString(),
     }).eq('id', job.id);
-    if (updateError) console.error('[telegram-intake] could not reconcile queued publish rows:', updateError.message);
+    if (updateError) console.error('[intake] could not reconcile queued publish rows:', updateError.message);
     await notify(`This media is already queued for ${alreadyQueued.length} destination${alreadyQueued.length === 1 ? '' : 's'}. I will send the result when publishing finishes.`);
     return;
   }
@@ -213,7 +151,7 @@ export async function processIntakeJob(supabase, job, options = {}) {
   }
   if (!destinations.length && !needsBrandInference) throw new Error(`“${accountName}” does not exactly match a connected account. Send the connected account name or handle.`);
 
-  const directory = await fs.mkdtemp(path.join(os.tmpdir(), 'driftpost-telegram-'));
+  const directory = await fs.mkdtemp(path.join(os.tmpdir(), 'driftpost-intake-'));
   const videoPath = path.join(directory, path.basename(job.file_name || 'incoming-video.mp4').replace(/[^a-z0-9._-]/gi, '_').slice(-140));
   const storedPaths = [];
   try {
@@ -227,7 +165,7 @@ export async function processIntakeJob(supabase, job, options = {}) {
       if (!mediaFiles.length || mediaFiles.length > 10) throw new Error('A carousel needs between 1 and 10 supported images.');
       frames = await Promise.all(mediaFiles.slice(0, 8).map(async (item) => ({ ...item, base64: (await fs.readFile(item.path)).toString('base64') })));
     } else {
-      const byteSize = options.download ? await options.download(job, videoPath) : await getTelegramVideo(job.telegram_file_id, videoPath);
+      const byteSize = options.download ? await options.download(job, videoPath) : (() => { throw new Error('Direct download handler is required.'); })();
       mediaFiles = [{ path: videoPath, name: path.basename(videoPath), mimetype: job.mime_type || 'video/mp4', size: byteSize }];
       await progress('analyzing', 'Extracting video frames');
       // Start speech transcription while FFmpeg samples frames. These are
@@ -235,7 +173,7 @@ export async function processIntakeJob(supabase, job, options = {}) {
       transcriptWork = transcribeVideo(videoPath, path.basename(videoPath), job.mime_type || 'video/mp4')
         .then((result) => ({ text: result.text || '', warning: '' }))
         .catch((error) => {
-          console.warn('[telegram-intake] transcription unavailable:', String(error?.message || error).slice(0, 220));
+          console.warn('[intake] transcription unavailable:', String(error?.message || error).slice(0, 220));
           return { text: '', warning: targetGroups.some((target) => target.brand?.id)
             ? 'Speech transcription was unavailable; captions use the video frames and saved brand profiles.'
             : 'Speech transcription was unavailable; captions use the video frames only.' };
@@ -430,7 +368,7 @@ export async function processIntakeJob(supabase, job, options = {}) {
       result: { ...(job.result || {}), brand: targetGroups.map((target) => target.name).join(', '), brands: targetGroups.map((target) => ({ id: target.brand?.id || null, name: target.name })), destinations: scheduled, transcript: !!transcript, speechWarning, media_kind: isCarousel ? 'carousel' : 'video', progress: { stage: 'publishing', detail: `Queued to ${scheduled.length} destination${scheduled.length === 1 ? '' : 's'}`, updated_at: new Date().toISOString() } },
       updated_at: new Date().toISOString(),
     }).eq('id', job.id);
-    if (intakeUpdateError) console.error('[telegram-intake] queued posts but could not update intake status:', intakeUpdateError.message);
+    if (intakeUpdateError) console.error('[intake] queued posts but could not update intake status:', intakeUpdateError.message);
     await notify(`✅ ${isCarousel ? `${mediaFiles.length}-image carousel` : 'Video'} processed for ${targetGroups.map((target) => target.name).join(', ')}. Queued ${scheduled.length} destination${scheduled.length === 1 ? '' : 's'} for automatic publishing.${speechWarning ? `\n\nNote: ${speechWarning}` : ''}`);
   } catch (error) {
     await supabase.storage.from(process.env.MEDIA_BUCKET || 'driftpost-media').remove(storedPaths).catch(() => {});
@@ -443,166 +381,4 @@ export async function processIntakeJob(supabase, job, options = {}) {
 export function platformsNeedingGeneratedCovers(isCarousel, platforms) {
   if (isCarousel) return [];
   return [...new Set(platforms)].filter((platform) => ['youtube', 'instagram', 'facebook'].includes(platform));
-}
-
-export function createTelegramIntakeRouter(supabase) {
-  const router = express.Router();
-  const configuredChatIds = new Set(String(process.env.TELEGRAM_ALLOWED_CHAT_IDS || '').split(',').map((id) => id.trim()).filter(Boolean));
-  const configuredSenderIds = new Set(String(process.env.TELEGRAM_ALLOWED_USER_IDS || '').split(',').map((id) => id.trim()).filter(Boolean));
-  const ownerId = String(process.env.TELEGRAM_DRIFTPOST_USER_ID || '');
-  let workerRunning = false;
-  let outcomeCheckRunning = false;
-
-  router.post('/webhook', async (req, res) => {
-    const expectedSecret = String(process.env.TELEGRAM_WEBHOOK_SECRET || '');
-    const providedSecret = String(req.get('X-Telegram-Bot-Api-Secret-Token') || '');
-    if (!expectedSecret || providedSecret.length !== expectedSecret.length
-      || !crypto.timingSafeEqual(Buffer.from(providedSecret), Buffer.from(expectedSecret))) return res.sendStatus(403);
-    const update = req.body || {};
-    const message = update.message || update.channel_post;
-    if (!message) return res.sendStatus(200);
-    const chatId = String(message.chat?.id || '');
-    const senderId = String(message.from?.id || '');
-    if (!configuredChatIds.has(chatId) || !configuredSenderIds.has(senderId)) {
-      await reply(chatId, 'This intake chat is not authorized to submit Driftpost videos.', message.message_id);
-      return res.sendStatus(200);
-    }
-    const incoming = parseVideoMessage(message);
-    if (!incoming) {
-      await reply(chatId, 'Send one video with its destination account name in the caption, for example:\nAccount: Famebros Studio', message.message_id);
-      return res.sendStatus(200);
-    }
-    if (incoming.fileSize > MAX_VIDEO_BYTES) {
-      await reply(chatId, 'This video is over Driftpost’s 400 MB limit. Send a smaller export.', message.message_id);
-      return res.sendStatus(200);
-    }
-    if (incoming.fileSize > TELEGRAM_HOSTED_DOWNLOAD_BYTES
-      && (!process.env.TELEGRAM_BOT_API_URL || /api\.telegram\.org/i.test(process.env.TELEGRAM_BOT_API_URL))) {
-      await reply(chatId, 'This video is larger than Telegram’s hosted bot download limit. The admin must finish connecting Driftpost’s private Telegram file server before large videos can be submitted.', message.message_id);
-      return res.sendStatus(200);
-    }
-    if (!ownerId) {
-      await reply(chatId, 'The Driftpost intake has not been configured yet. Ask the admin to finish setup.', message.message_id);
-      return res.sendStatus(200);
-    }
-    const id = crypto.randomUUID();
-    const { error } = await supabase.from('telegram_video_jobs').insert({
-      id,
-      update_id: String(update.update_id || ''),
-      owner_user_id: ownerId,
-      chat_id: chatId,
-      sender_id: senderId,
-      message_id: String(message.message_id || ''),
-      telegram_file_id: incoming.fileId,
-      file_name: incoming.fileName,
-      mime_type: incoming.mimeType,
-      file_size: incoming.fileSize,
-      account_name: incoming.accountName,
-      status: 'queued',
-    });
-    if (error) {
-      if (/duplicate|unique/i.test(error.message || '')) return res.sendStatus(200);
-      console.error('[telegram-intake] could not queue incoming video:', error.message);
-      return res.sendStatus(503);
-    }
-    await reply(chatId, `📥 Received ${incoming.fileName}. ${incoming.accountName ? `Preparing automatic post for “${incoming.accountName}”.` : 'Tell me the destination with a caption such as “Account: Famebros Studio”.'}`, message.message_id);
-    res.sendStatus(200);
-  });
-
-  const runWorker = async () => {
-    if (workerRunning || !process.env.TELEGRAM_BOT_TOKEN || !ownerId) return;
-    workerRunning = true;
-    try {
-      const staleBefore = new Date(Date.now() - 30 * 60 * 1000).toISOString();
-      await supabase.from('telegram_video_jobs').update({ status: 'queued', updated_at: new Date().toISOString() })
-        .eq('status', 'processing').lt('updated_at', staleBefore);
-      const { data: pending, error } = await supabase.from('telegram_video_jobs').select('*').eq('status', 'queued').order('created_at', { ascending: true }).limit(1);
-      if (error || !pending?.length) return;
-      const job = pending[0];
-      const { data: claimed, error: claimError } = await supabase.from('telegram_video_jobs')
-        .update({ status: 'processing', updated_at: new Date().toISOString() })
-        .eq('id', job.id).eq('status', 'queued').select().maybeSingle();
-      if (claimError || !claimed) return;
-      await reply(job.chat_id, `🎬 Starting video analysis for ${job.account_name || 'the selected account'}…`, job.message_id);
-      const heartbeat = setInterval(() => {
-        void supabase.from('telegram_video_jobs').update({ updated_at: new Date().toISOString() })
-          .eq('id', job.id).eq('status', 'processing').then(({ error: heartbeatError }) => {
-            if (heartbeatError) console.warn('[telegram-intake] heartbeat failed:', heartbeatError.message);
-          }).catch((error) => console.warn('[telegram-intake] heartbeat failed:', error?.message || error));
-      }, 60_000);
-      heartbeat.unref();
-      try {
-        await processIntakeJob(supabase, claimed);
-      } catch (error) {
-        const message = String(error?.message || 'Could not prepare the automatic post.').slice(0, 800);
-        await supabase.from('telegram_video_jobs').update({ status: 'failed', error: message, updated_at: new Date().toISOString() }).eq('id', job.id);
-        await reply(job.chat_id, `⚠️ Video not published: ${message}`, job.message_id);
-        console.error('[telegram-intake] job failed:', job.id, message);
-      } finally {
-        clearInterval(heartbeat);
-      }
-    } catch (error) {
-      console.error('[telegram-intake] worker error:', String(error?.message || error).slice(0, 250));
-    } finally {
-      workerRunning = false;
-    }
-  };
-  const checkOutcomes = async () => {
-    if (outcomeCheckRunning || !process.env.TELEGRAM_BOT_TOKEN || !ownerId) return;
-    outcomeCheckRunning = true;
-    try {
-      const { data: active, error } = await supabase.from('telegram_video_jobs').select('id, chat_id, message_id, result')
-        .eq('status', 'publishing').order('created_at', { ascending: true }).limit(10);
-      if (error || !active?.length) return;
-      for (const intake of active) {
-        const schedules = Array.isArray(intake.result?.destinations) ? intake.result.destinations : [];
-        if (!schedules.length) continue;
-        const { data: rows, error: rowError } = await supabase.from('scheduled_posts').select('id, platform, status, result_url, error')
-          .in('id', schedules.map((item) => item.id));
-        if (rowError || !rows || rows.length !== schedules.length || rows.some((row) => ['scheduled', 'publishing'].includes(row.status))) continue;
-        const published = rows.filter((row) => row.status === 'published');
-        const failed = rows.filter((row) => row.status !== 'published');
-        const links = published.filter((row) => row.result_url).map((row) => `${row.platform}: ${row.result_url}`);
-        const speechWarning = intake.result?.speechWarning;
-        const summary = `${published.length} destination${published.length === 1 ? '' : 's'} published; ${failed.length} failed.`;
-        await reply(intake.chat_id, `${published.length && !failed.length ? '✅' : published.length ? '⚠️' : '❌'} ${summary}${links.length ? `\n${links.join('\n')}` : ''}${failed.length ? `\n${failed.map((row) => `${row.platform}: ${row.error || 'Publishing failed'}`).join('\n')}` : ''}${speechWarning ? `\n\n${speechWarning}` : ''}`, intake.message_id);
-        await supabase.from('telegram_video_jobs').update({ status: failed.length ? 'partial' : 'completed', updated_at: new Date().toISOString() }).eq('id', intake.id).eq('status', 'publishing');
-      }
-    } catch (error) {
-      console.error('[telegram-intake] outcome check failed:', String(error?.message || error).slice(0, 200));
-    } finally {
-      outcomeCheckRunning = false;
-    }
-  };
-  setInterval(() => { void runWorker(); }, 3000).unref();
-  setInterval(() => { void checkOutcomes(); }, 15_000).unref();
-  setTimeout(() => { void runWorker(); }, 1000).unref();
-  return router;
-}
-
-let telegramWebhookReady = false;
-let telegramWebhookRegistering = false;
-export async function registerTelegramWebhook() {
-  if (telegramWebhookReady) return true;
-  const url = clean(process.env.TELEGRAM_WEBHOOK_URL);
-  const secret = clean(process.env.TELEGRAM_WEBHOOK_SECRET);
-  if (!process.env.TELEGRAM_BOT_TOKEN || !url || !secret) return false;
-  if (telegramWebhookRegistering) return false;
-  telegramWebhookRegistering = true;
-  try {
-    await telegram('setWebhook', {
-      url,
-      secret_token: secret,
-      allowed_updates: ['message', 'channel_post'],
-      drop_pending_updates: false,
-    });
-    telegramWebhookReady = true;
-    console.info('[telegram-intake] webhook registered');
-    return true;
-  } catch (error) {
-    console.error('[telegram-intake] webhook registration failed:', String(error?.message || error).slice(0, 250));
-    return false;
-  } finally {
-    telegramWebhookRegistering = false;
-  }
 }

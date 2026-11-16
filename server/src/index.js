@@ -33,7 +33,6 @@ import { enabledInstagramCollaborators, instagramCaptionRequiredError, nonEmptyC
 import { createTemporaryMediaUrl, isOwnedMediaPath, isValidPreuploadedMedia } from './media-links.js';
 import { canUsePrivateBrandData } from './brand-access.js';
 import { isAllowedOrigin, normalizeHttpOrigin } from './cors-policy.js';
-import { createTelegramIntakeRouter, registerTelegramWebhook } from './telegram-intake.js';
 import { enqueueDirectUpload, getDriveReviewFile, getDriveScanError, startGoogleDriveIntake, streamDriveReviewFile, triggerDriveScan } from './google-drive-intake.js';
 import { authorizeMcpDevice, createMcpDeviceAuthorization, findMcpAccessToken, pollMcpDeviceAuthorization } from './mcp-auth.js';
 
@@ -411,7 +410,7 @@ const aiImageUpload = multer({
 
 app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: false, limit: '1mb' }));
-app.use('/api/intake/telegram', createTelegramIntakeRouter(supabase));
+// Instagram/Facebook webhooks handle incoming DMs & comments.
 
 async function requireUser(req, res, next) {
   const token = req.headers.authorization?.replace(/^Bearer\s+/i, '');
@@ -777,7 +776,6 @@ app.get('/api/config', (_req, res) => res.set('Cache-Control', 'no-store').json(
   ai: !!resolveProvider().hasKey,
   aiProvider: resolveProvider().id,
   supabase: !!(process.env.SUPABASE_URL && process.env.SUPABASE_SECRET_KEY),
-  telegram: !!process.env.TELEGRAM_BOT_TOKEN,
   drive: !!(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET),
 }));
 
@@ -2841,7 +2839,7 @@ async function runPublish(job, conn, payload, body, userId) {
       const pageToken = tokens.access_token;
       const pageId = tokens.page_id || conn.platform_account_id;
       let igCollabs = enabledInstagramCollaborators(body, parseInstagramCollaborators).usernames;
-      if (!igCollabs.length && (body.google_drive_intake_job_id || body.telegram_intake_job_id)) {
+      if (!igCollabs.length && body.google_drive_intake_job_id) {
         const { getAssignedInstagramTags } = await import('./brand-routing.js');
         igCollabs = getAssignedInstagramTags({
           brandId: body.brand_id || '',
@@ -3701,6 +3699,4 @@ app.use((err, _req, res, _next) => {
 app.listen(port, '0.0.0.0', () => {
   console.log(`Driftpost API on :${port}`);
   startGoogleDriveIntake(supabase);
-  void registerTelegramWebhook();
-  setInterval(() => { void registerTelegramWebhook(); }, 60_000).unref();
 });

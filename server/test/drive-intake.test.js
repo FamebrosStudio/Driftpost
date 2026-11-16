@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { platformsNeedingGeneratedCovers, saveBrandReview } from '../src/telegram-intake.js';
+import { platformsNeedingGeneratedCovers, saveBrandReview } from '../src/intake-processor.js';
 import {
   CAROUSEL_IMAGE_MIME_TYPES,
   carouselImageLimitBytes,
