@@ -2041,6 +2041,48 @@ app.post('/api/intake/direct', requireUser, upload.array('media', 10), async (re
   }
 });
 
+app.post('/api/intake/drive/jobs/:jobId/stop', requireUser, async (req, res) => {
+  if (!canUsePrivateBrandData(req.user)) return res.status(403).json({ error: 'Private team access required.' });
+  const jobId = String(req.params.jobId || '');
+  const { data: job, error: jobError } = await supabase.from('google_drive_video_jobs')
+    .select('id, owner_user_id, status, result, updated_at')
+    .eq('id', jobId).eq('owner_user_id', req.user.id).maybeSingle();
+  if (jobError) return res.status(503).json({ error: 'Could not load this job.' });
+  if (!job) return res.status(404).json({ error: 'Job not found.' });
+  if (['completed', 'stopped'].includes(job.status)) {
+    return res.status(409).json({ error: 'This post has already finished or been stopped.' });
+  }
+  if (job.status === 'publishing') {
+    const destinations = Array.isArray(job.result?.destinations) ? job.result.destinations.map((d) => d.id).filter(Boolean) : [];
+    const { data: rows } = destinations.length
+      ? await supabase.from('scheduled_posts').select('id, status, updated_at').in('id', destinations)
+      : { data: [] };
+    const staleBefore = Date.now() - 5 * 60 * 1000;
+    const activelyPublishing = (rows || []).some((r) => r.status === 'publishing' && Date.parse(r.updated_at || 0) > staleBefore);
+    if (activelyPublishing) {
+      return res.status(409).json({ error: 'Already publishing to the platforms — too late to stop.' });
+    }
+    if (destinations.length) {
+      await supabase.from('scheduled_posts')
+        .update({ status: 'failed', error: 'Stopped by user.', updated_at: new Date().toISOString() })
+        .in('id', destinations)
+        .in('status', ['scheduled', 'publishing']);
+    }
+  }
+  const nowIso = new Date().toISOString();
+  const { error: updateError } = await supabase.from('google_drive_video_jobs').update({
+    status: 'stopped',
+    error: 'Stopped by user.',
+    result: { ...(job.result || {}), progress: { stage: 'stopped', detail: 'Stopped by user', percent: 100, updated_at: nowIso } },
+    updated_at: nowIso,
+  }).eq('id', jobId).eq('owner_user_id', req.user.id);
+  if (updateError) return res.status(503).json({ error: 'Could not stop this job.' });
+  if (Array.isArray(job.result?.direct_storage_paths) && job.result.direct_storage_paths.length) {
+    await supabase.storage.from(process.env.MEDIA_BUCKET || 'driftpost-media').remove(job.result.direct_storage_paths).catch(() => {});
+  }
+  res.json({ ok: true, status: 'stopped' });
+});
+
 const LEGACY_BRAND_REVIEW_ERROR = 'Automatic brand verification stopped the post, but Driftpost could not save the result.';
 const hasBrandReviewData = (job) => !['stopped', 'send'].includes(job?.result?.review_decision?.action) && (
   Array.isArray(job?.result?.brand_reviews) || (

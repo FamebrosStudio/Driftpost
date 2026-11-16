@@ -16,11 +16,15 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut }) {
   const [mediaFiles, setMediaFiles] = useState([]);
   const [description, setDescription] = useState('');
   const [uploading, setUploading] = useState(false);
+  const [uploadPercent, setUploadPercent] = useState(0);
+  const [stoppingJobId, setStoppingJobId] = useState('');
+  const [inboxOpen, setInboxOpen] = useState(false);
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
 
   const file = mediaFiles[0] || null;
   const isVideoSelection = Boolean(file?.type?.startsWith('video/'));
+  const hasActiveJobs = driveJobs.some((job) => ['queued', 'processing', 'publishing'].includes(job?.status));
 
   useEffect(() => {
     let active = true;
@@ -37,9 +41,9 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut }) {
         .catch((e) => { if (active) setDriveScanError(e?.message || 'Could not load inbox.'); });
     };
     refresh(driveScanTick > 0);
-    const timer = window.setInterval(() => refresh(false), 5_000);
+    const timer = window.setInterval(() => refresh(false), hasActiveJobs ? 2_500 : 5_000);
     return () => { active = false; window.clearInterval(timer); };
-  }, [session.access_token, driveScanTick]);
+  }, [session.access_token, driveScanTick, hasActiveJobs]);
 
   const connectDrive = async () => {
     setDriveBusy(true);
@@ -99,19 +103,33 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut }) {
     if (!mediaFiles.length) return setError('Choose a video or up to 10 carousel images first.');
 
     setUploading(true);
+    setUploadPercent(0);
     try {
       const form = new FormData();
       for (const item of mediaFiles) form.append('media', item, item.name);
       if (description.trim()) form.append('description', description.trim());
-      const response = await fetch(apiRequestUrl('/api/intake/direct'), {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${session.access_token}` },
-        body: form,
+      const data = await new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', apiRequestUrl('/api/intake/direct'));
+        xhr.setRequestHeader('Authorization', `Bearer ${session.access_token}`);
+        xhr.upload.onprogress = (e) => {
+          if (e.lengthComputable && e.total > 0) {
+            setUploadPercent(Math.min(99, Math.round((e.loaded / e.total) * 100)));
+          }
+        };
+        xhr.onload = () => {
+          let parsed = {};
+          try { parsed = JSON.parse(xhr.responseText || '{}'); } catch {}
+          if (xhr.status >= 200 && xhr.status < 300) resolve(parsed);
+          else reject(new Error(parsed?.error || 'Could not queue your upload.'));
+        };
+        xhr.onerror = () => reject(new Error('Network error while uploading.'));
+        xhr.send(form);
       });
-      const data = await response.json().catch(() => ({}));
-      if (!response.ok) throw new Error(data?.error || 'Could not queue your upload.');
+      setUploadPercent(100);
       setMediaFiles([]);
       setDescription('');
+      setInboxOpen(true);
       setNotice(`Queued ${data.kind === 'carousel' ? `${data.count}-image carousel` : 'video'}! Driftpost is automatically routing, writing captions, applying tags & Story, and publishing.`);
       setDriveScanTick((t) => t + 1);
     } catch (e) {
@@ -119,6 +137,30 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut }) {
     } finally {
       setUploading(false);
     }
+  };
+
+  const stopJob = async (jobId) => {
+    setStoppingJobId(jobId);
+    setError('');
+    try {
+      await api(`/api/intake/drive/jobs/${encodeURIComponent(jobId)}/stop`, session.access_token, { method: 'POST' });
+      setDriveScanTick((t) => t + 1);
+    } catch (e) {
+      setError(e?.message || 'Could not stop this post.');
+    } finally {
+      setStoppingJobId('');
+    }
+  };
+
+  const jobProgressPercent = (job) => {
+    const p = Number(job?.result?.progress?.percent);
+    if (Number.isFinite(p) && p > 0) return Math.min(100, p);
+    const s = String(job?.status || '').toLowerCase();
+    if (s === 'queued') return 10;
+    if (s === 'processing') return 45;
+    if (s === 'publishing') return 92;
+    if (['completed', 'partial', 'failed', 'stopped'].includes(s)) return 100;
+    return 15;
   };
 
   return (
@@ -192,12 +234,24 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut }) {
                 />
               </label>
 
+              {uploading && (
+                <div className="dp-progress-wrap" aria-live="polite">
+                  <div className="dp-progress-head">
+                    <span>Uploading media to Driftpost…</span>
+                    <b>{uploadPercent}%</b>
+                  </div>
+                  <div className="dp-progress-track">
+                    <i style={{ width: `${uploadPercent}%` }} />
+                  </div>
+                </div>
+              )}
+
               {error && <p className="team-video-error" role="alert">{error}</p>}
               {notice && <div className="feed-it-success" role="status">{notice}</div>}
 
               <div className="team-video-actions">
                 <button type="submit" disabled={uploading || !mediaFiles.length || !isAiAccount(session.user?.email)}>
-                  {uploading ? 'Uploading & queuing…' : 'Send to automated pipeline'}
+                  {uploading ? `Uploading (${uploadPercent}%)…` : 'Send to automated pipeline'}
                 </button>
               </div>
             </section>
@@ -228,7 +282,7 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut }) {
               </div>
             )}
 
-            <details className="dp-collapse">
+            <details className="dp-collapse" open={inboxOpen || hasActiveJobs} onToggle={(e) => setInboxOpen(e.currentTarget.open)}>
               <summary>
                 <span>Live inbox and posting status ({driveJobs.length})</span>
                 <button
@@ -244,27 +298,51 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut }) {
                   {driveScanError && <small className="drive-job-error">{driveScanError}</small>}
                   {driveJobs.length ? driveJobs.slice(0, 12).map((job) => {
                     const progress = job.result?.progress;
+                    const percent = jobProgressPercent(job);
                     const isCarousel = job.result?.media_kind === 'carousel' || job.mime_type === 'image/carousel';
                     const timestamp = new Date(job.updated_at || job.created_at).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+                    const updatedMs = Date.parse(job.updated_at || job.created_at || 0);
+                    const canStop = ['queued', 'processing', 'review'].includes(job.status)
+                      || (job.status === 'publishing' && (!updatedMs || Date.now() - updatedMs > 5 * 60 * 1000));
                     const autoInstagramTags = (Array.isArray(job.result?.instagram_tags) && job.result.instagram_tags.length
                       ? job.result.instagram_tags
                       : getAssignedInstagramTagsForBrand({ brandId: job.result?.brand_id, brandName: job.account_name, accountName: job.file_name })
                     ).map((h) => `@${String(h).replace(/^@+/, '')}`);
                     return (
                       <div key={job.id} className={!!job.result?.review ? 'drive-job-needs-review' : ''}>
-                        <span>
-                          <strong>{job.file_name}</strong>
-                          <small>
-                            {job.account_name} · {(job.platforms || []).join(', ') || 'Destination needs correction'} · {isCarousel ? `${job.result?.source_drive_files?.length || 'Photo'}-image carousel` : job.mime_type || 'Video'} · {(Number(job.file_size || 0) / 1024 / 1024).toFixed(1)} MB
-                            {autoInstagramTags.length ? ` · Auto-tags: ${autoInstagramTags.join(', ')}` : ''}
-                          </small>
-                        </span>
-                        <em className={`drive-job-status ${job.status || 'unknown'}`}>
-                          {job.result?.brand_reviews?.length ? 'brand decision needed' : job.result?.review ? 'needs correction' : String(job.status || 'unknown').replaceAll('_', ' ')}
-                        </em>
-                        <small className="drive-job-progress">
-                          {progress?.detail || (job.status === 'queued' ? 'Waiting for the intake worker…' : job.status === 'publishing' ? 'Publishing to selected accounts…' : job.status === 'completed' ? 'Published successfully.' : job.status === 'partial' ? 'Some accounts published; check the post history.' : job.status === 'review' || job.result?.brand_reviews?.length ? 'Held before publishing. Open Video review to inspect the video and decide.' : job.status === 'failed' ? 'Needs attention.' : job.status === 'stopped' ? 'Stopped; this video was not published.' : 'Preparing media…')} · Updated {timestamp}
-                        </small>
+                        <div className="dp-job-top">
+                          <span>
+                            <strong>{job.file_name}</strong>
+                            <small>
+                              {job.account_name} · {(job.platforms || []).join(', ') || 'Destination needs correction'} · {isCarousel ? `${job.result?.source_drive_files?.length || 'Photo'}-image carousel` : job.mime_type || 'Video'} · {(Number(job.file_size || 0) / 1024 / 1024).toFixed(1)} MB
+                              {autoInstagramTags.length ? ` · Auto-tags: ${autoInstagramTags.join(', ')}` : ''}
+                            </small>
+                          </span>
+                          <div className="dp-job-badges">
+                            <em className={`drive-job-status ${job.status || 'unknown'}`}>
+                              {job.result?.brand_reviews?.length ? 'brand decision needed' : job.result?.review ? 'needs correction' : String(job.status || 'unknown').replaceAll('_', ' ')}
+                            </em>
+                            {canStop && (
+                              <button
+                                type="button"
+                                className="dp-stop-btn"
+                                disabled={stoppingJobId === job.id}
+                                onClick={() => stopJob(job.id)}
+                              >
+                                {stoppingJobId === job.id ? 'Stopping…' : 'Stop'}
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                        <div className={`dp-progress-wrap is-${job.status || 'queued'}`}>
+                          <div className="dp-progress-head">
+                            <span>{progress?.detail || (job.status === 'queued' ? 'Waiting for the intake worker…' : job.status === 'publishing' ? 'Publishing to selected accounts…' : job.status === 'completed' ? 'Published successfully.' : job.status === 'partial' ? 'Some accounts published; check the post history.' : job.status === 'review' || job.result?.brand_reviews?.length ? 'Held before publishing. Open Video review to inspect the video and decide.' : job.status === 'failed' ? 'Needs attention.' : job.status === 'stopped' ? 'Stopped; this post was not published.' : 'Preparing media…')}</span>
+                            <b>{percent}% · {timestamp}</b>
+                          </div>
+                          <div className="dp-progress-track">
+                            <i style={{ width: `${percent}%` }} />
+                          </div>
+                        </div>
                         {!!progress?.destinations?.length && (
                           <small className="drive-job-destinations">
                             {progress.destinations.map((target) => `${target.platform} · ${target.account}: ${target.status}${target.error ? ` (${target.error})` : ''}`).join('  |  ')}

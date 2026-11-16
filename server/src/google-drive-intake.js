@@ -604,6 +604,19 @@ async function downloadDriveCarousel(supabase, job, directory) {
   return media;
 }
 
+function progressPercentFor(stage, detail = '') {
+  const s = String(stage || '').toLowerCase();
+  const d = String(detail || '').toLowerCase();
+  if (s === 'queued') return 10;
+  if (s === 'downloading') return 25;
+  if (s === 'analyzing') return d.includes('extract') ? 40 : 55;
+  if (s === 'preparing') return 75;
+  if (s === 'queueing') return 90;
+  if (s === 'publishing') return 94;
+  if (s === 'completed' || s === 'partial' || s === 'failed' || s === 'stopped') return 100;
+  return 15;
+}
+
 async function runClaimedIntakeJob(supabase, job) {
   const heartbeat = setInterval(() => { void supabase.from(TABLE).update({ updated_at: new Date().toISOString() }).eq('id', job.id).eq('status', 'processing'); }, 60_000);
   heartbeat.unref();
@@ -620,13 +633,14 @@ async function runClaimedIntakeJob(supabase, job) {
       download: (current, destination) => downloadDriveVideo(supabase, current, destination),
       downloadMedia: (current, directory) => downloadDriveCarousel(supabase, current, directory),
       progress: async (stage, detail) => {
-        await supabase.from(TABLE).update({ result: { ...(job.result || {}), progress: { stage, detail, updated_at: new Date().toISOString() } }, updated_at: new Date().toISOString() }).eq('id', job.id).eq('status', 'processing');
+        const percent = progressPercentFor(stage, detail);
+        await supabase.from(TABLE).update({ result: { ...(job.result || {}), progress: { stage, detail, percent, updated_at: new Date().toISOString() } }, updated_at: new Date().toISOString() }).eq('id', job.id).eq('status', 'processing');
       },
       notify: async () => {},
     });
   } catch (error) {
     const message = String(error?.message || 'Could not prepare the automatic post.').slice(0, 800);
-    await supabase.from(TABLE).update({ status: 'failed', error: message, updated_at: new Date().toISOString() }).eq('id', job.id);
+    await supabase.from(TABLE).update({ status: 'failed', error: message, updated_at: new Date().toISOString() }).eq('id', job.id).neq('status', 'stopped');
     console.error('[drive-intake] job failed:', job.id, message);
   } finally {
     clearInterval(heartbeat);
@@ -746,7 +760,12 @@ export function startGoogleDriveIntake(supabase) {
     console.info('[drive-intake] disabled; DRIFTPOST_DRIVE_FOLDER_ID is not set.');
     return;
   }
-  // Recover any jobs left in 'processing' from a previous server restart.
+  // Recover any jobs left in 'processing' or stale 'scheduled_posts' left in 'publishing' from a previous server restart.
+  void supabase.from('scheduled_posts')
+    .update({ status: 'failed', error: 'Publishing was interrupted by a server restart. Please retry or stop.', updated_at: new Date().toISOString() })
+    .eq('status', 'publishing')
+    .then(() => { void checkPublishOutcomes(supabase); })
+    .catch(() => {});
   void supabase.from(TABLE)
     .update({ status: 'queued', updated_at: new Date().toISOString() })
     .eq('status', 'processing')

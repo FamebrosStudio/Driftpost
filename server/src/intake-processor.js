@@ -361,6 +361,11 @@ export async function processIntakeJob(supabase, job, options = {}) {
       };
     });
     if (rows.length > 25) throw new Error('This account name matched too many destinations. Refine the connected account names before sending.');
+    const { data: currentStatusRow } = await supabase.from(table).select('status').eq('id', job.id).maybeSingle();
+    if (currentStatusRow?.status === 'stopped') {
+      await supabase.storage.from(process.env.MEDIA_BUCKET || 'driftpost-media').remove(storedPaths).catch(() => {});
+      return { stopped: true, reason: 'Stopped by user.' };
+    }
     const { data: scheduled, error: scheduleError } = await supabase.from('scheduled_posts').insert(rows).select('id, platform');
     if (scheduleError || !scheduled || scheduled.length !== rows.length) throw new Error('The video was prepared, but Driftpost could not add every destination to its publishing queue.');
     const { error: intakeUpdateError } = await supabase.from(table).update({

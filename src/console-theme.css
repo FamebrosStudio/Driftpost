@@ -2573,3 +2573,94 @@ body:has(#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-
   background: rgba(255, 255, 255, 0.08) !important;
   border-color: rgba(255, 255, 255, 0.24) !important;
 }
+
+/* Real-time Progress Bars & Stop Button */
+#root .dp-job-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+}
+
+#root .dp-job-top > span {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+#root .dp-job-badges {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+#root .dp-stop-btn {
+  min-height: 28px !important;
+  padding: 4px 11px !important;
+  border: 1px solid color-mix(in srgb, var(--danger) 55%, transparent) !important;
+  border-radius: 8px !important;
+  background: color-mix(in srgb, var(--danger) 12%, var(--panel)) !important;
+  color: var(--danger) !important;
+  font-size: 11.5px !important;
+  font-weight: 650 !important;
+  cursor: pointer;
+}
+
+#root .dp-stop-btn:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--danger) 22%, var(--panel)) !important;
+  border-color: var(--danger) !important;
+}
+
+#root .dp-progress-wrap {
+  display: grid;
+  gap: 6px;
+  width: 100%;
+  margin-top: 6px;
+}
+
+#root .dp-progress-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 11.5px;
+  color: var(--muted);
+}
+
+#root .dp-progress-head b {
+  color: var(--ink);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+#root .dp-progress-track {
+  width: 100%;
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+#root .dp-progress-track > i {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--go);
+  transition: width 320ms ease;
+}
+
+#root .dp-progress-wrap.is-completed .dp-progress-track > i {
+  background: var(--ok);
+}
+
+#root .dp-progress-wrap.is-failed .dp-progress-track > i,
+#root .dp-progress-wrap.is-stopped .dp-progress-track > i {
+  background: var(--danger);
+}
+
+#root .dp-progress-wrap.is-partial .dp-progress-track > i {
+  background: var(--warm);
+}
