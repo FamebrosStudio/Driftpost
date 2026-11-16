@@ -103,36 +103,46 @@ export default function Console({ session, onSwitchAccount, onSignOut }) {
   }, []);
   // Stages are strings everywhere ('connect' | '1' | '2' | '3') so the
   // state and localStorage can never drift apart on a number/string mismatch.
+  const withTransition = (fn) => {
+    if (typeof document !== 'undefined' && typeof document.startViewTransition === 'function') {
+      try { document.startViewTransition(() => fn()); return; } catch {}
+    }
+    fn();
+  };
   const go = (next) => {
     const n = String(next);
-    setStage(n);
-    try {
-      if (n === 'connect') localStorage.removeItem('driftpost-stage');
-      else localStorage.setItem('driftpost-stage', n);
-    } catch {}
-    try { window.scrollTo(0, 0); } catch {}
-    try { window.history.pushState({}, '', routeFor('create', n)); } catch {}
+    withTransition(() => {
+      setStage(n);
+      try {
+        if (n === 'connect') localStorage.removeItem('driftpost-stage');
+        else localStorage.setItem('driftpost-stage', n);
+      } catch {}
+      try { window.scrollTo(0, 0); } catch {}
+      try { window.history.pushState({}, '', routeFor('create', n)); } catch {}
+    });
   };
   const navigate = (next) => {
-    try { window.scrollTo(0, 0); } catch {}
-    if (next === 'create') {
-      if (isAiAccount(session.user?.email)) {
-        setCreateModePicker(true);
-        setView('choose-create-mode');
-        try { window.history.pushState({}, '', '/console/create'); } catch {}
+    withTransition(() => {
+      try { window.scrollTo(0, 0); } catch {}
+      if (next === 'create') {
+        if (isAiAccount(session.user?.email)) {
+          setCreateModePicker(true);
+          setView('choose-create-mode');
+          try { window.history.pushState({}, '', '/console/create'); } catch {}
+          return;
+        }
+        setView('create');
+        go('1');
         return;
       }
-      setView('create');
-      go('1');
-      return;
-    }
-    if (next === 'team-video' && !isAiAccount(session.user?.email)) {
-      setView('home');
-      return;
-    }
-    setCreateModePicker(false);
-    setView(next);
-    try { window.history.pushState({}, '', routeFor(next, stage)); } catch {}
+      if (next === 'team-video' && !isAiAccount(session.user?.email)) {
+        setView('home');
+        return;
+      }
+      setCreateModePicker(false);
+      setView(next);
+      try { window.history.pushState({}, '', routeFor(next, stage)); } catch {}
+    });
   };
   const chooseBasic = () => {
     setCreateModePicker(false);

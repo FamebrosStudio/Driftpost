@@ -2828,6 +2828,49 @@ body:has(#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-
   }
 }
 
+/* Native View Transitions + Stage & Editor Apple Spring Transitions */
+::view-transition-old(root) {
+  animation: vtFadeOut 180ms cubic-bezier(0.4, 0, 1, 1) both;
+}
+
+::view-transition-new(root) {
+  animation: vtFadeIn 280ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes vtFadeOut {
+  from { opacity: 1; transform: scale(1); }
+  to { opacity: 0; transform: scale(0.992); }
+}
+
+@keyframes vtFadeIn {
+  from { opacity: 0; transform: scale(1.008); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes appleEditorEnter {
+  from {
+    opacity: 0;
+    transform: scale(0.975) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+#root .stage2.stage2-editor-route > .s2-media-editor-page {
+  animation: appleEditorEnter 320ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+#root :is(.ws-topnav-pill, .plat-pill, .s2-pill, .s3-tab, .hist-tab) {
+  transition: transform 180ms cubic-bezier(0.22, 1, 0.36, 1), background-color 200ms ease, border-color 200ms ease, color 180ms ease !important;
+}
+
+#root .stage2 .s2-switch,
+#root .stage2 .s2-switch span {
+  transition: transform 240ms cubic-bezier(0.34, 1.56, 0.64, 1), background-color 200ms ease, border-color 200ms ease !important;
+}
+
 /* ==========================================================================
    STAGE 2 COMPACT MEDIA ACTIONS & CLEAN STUDIO EDITOR OVERHAUL
    ========================================================================== */

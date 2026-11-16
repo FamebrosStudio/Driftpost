@@ -194,7 +194,7 @@ export function WorkspaceNav({ page, onNavigate, email, onSignOut }) {
 
 function PageFrame({ page, onNavigate, email, onSignOut, eyebrow, title, intro, children, action }) {
   return <div className="ws"><WorkspaceNav page={page} onNavigate={onNavigate} email={email} onSignOut={onSignOut} />
-    <main className="ws-main"><div className="ws-heading"><div><span className="ws-eyebrow">{eyebrow}</span><h1>{title}</h1>{intro && <p>{intro}</p>}</div>{action && <div className="ws-heading-action">{action}</div>}</div>{children}</main>
+    <main className="ws-main" key={page}><div className="ws-heading"><div><span className="ws-eyebrow">{eyebrow}</span><h1>{title}</h1>{intro && <p>{intro}</p>}</div>{action && <div className="ws-heading-action">{action}</div>}</div>{children}</main>
   </div>;
 }
 
