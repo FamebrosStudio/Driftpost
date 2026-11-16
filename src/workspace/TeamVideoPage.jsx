@@ -301,9 +301,9 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut }) {
                     const percent = jobProgressPercent(job);
                     const isCarousel = job.result?.media_kind === 'carousel' || job.mime_type === 'image/carousel';
                     const timestamp = new Date(job.updated_at || job.created_at).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
-                    const updatedMs = Date.parse(job.updated_at || job.created_at || 0);
+                    const createdMs = Date.parse(job.created_at || job.updated_at || 0);
                     const canStop = ['queued', 'processing', 'review'].includes(job.status)
-                      || (job.status === 'publishing' && (!updatedMs || Date.now() - updatedMs > 5 * 60 * 1000));
+                      || (job.status === 'publishing' && (!createdMs || Date.now() - createdMs > 2 * 60 * 1000));
                     const autoInstagramTags = (Array.isArray(job.result?.instagram_tags) && job.result.instagram_tags.length
                       ? job.result.instagram_tags
                       : getAssignedInstagramTagsForBrand({ brandId: job.result?.brand_id, brandName: job.account_name, accountName: job.file_name })

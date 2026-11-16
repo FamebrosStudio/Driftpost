@@ -2057,7 +2057,7 @@ app.post('/api/intake/drive/jobs/:jobId/stop', requireUser, async (req, res) => 
     const { data: rows } = destinations.length
       ? await supabase.from('scheduled_posts').select('id, status, updated_at').in('id', destinations)
       : { data: [] };
-    const staleBefore = Date.now() - 5 * 60 * 1000;
+    const staleBefore = Date.now() - 2 * 60 * 1000;
     const activelyPublishing = (rows || []).some((r) => r.status === 'publishing' && Date.parse(r.updated_at || 0) > staleBefore);
     if (activelyPublishing) {
       return res.status(409).json({ error: 'Already publishing to the platforms — too late to stop.' });
@@ -3740,5 +3740,11 @@ app.use((err, _req, res, _next) => {
 });
 app.listen(port, '0.0.0.0', () => {
   console.log(`Driftpost API on :${port}`);
+  // Recover any scheduled_posts stranded in 'publishing' from a previous server restart.
+  void supabase.from('scheduled_posts')
+    .update({ status: 'failed', error: 'Publishing was interrupted by a server restart. Please retry or stop.', updated_at: new Date().toISOString() })
+    .eq('status', 'publishing')
+    .then(() => {})
+    .catch(() => {});
   startGoogleDriveIntake(supabase);
 });

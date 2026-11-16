@@ -703,8 +703,20 @@ async function checkPublishOutcomes(supabase) {
     for (const job of jobs) {
       const destinations = Array.isArray(job.result?.destinations) ? job.result.destinations : [];
       if (!destinations.length) continue;
-      const { data: rows, error: rowError } = await supabase.from('scheduled_posts').select('id, platform, connection_id, status, result_url, error').in('id', destinations.map((item) => item.id));
-      if (rowError || !rows || rows.length !== destinations.length) continue;
+      const { data: rows, error: rowError } = await supabase.from('scheduled_posts').select('id, platform, connection_id, status, result_url, error, updated_at').in('id', destinations.map((item) => item.id));
+      if (rowError || !rows) continue;
+      if (!rows.length) {
+        await supabase.from(TABLE).update({ status: 'failed', error: 'Scheduled destinations were removed.', result: { ...(job.result || {}), progress: { stage: 'failed', detail: 'Destinations removed', percent: 100, updated_at: new Date().toISOString() } }, updated_at: new Date().toISOString() }).eq('id', job.id).eq('status', 'publishing');
+        continue;
+      }
+      const stalePublishBefore = Date.now() - 10 * 60 * 1000;
+      for (const row of rows) {
+        if (row.status === 'publishing' && Date.parse(row.updated_at || 0) < stalePublishBefore) {
+          await supabase.from('scheduled_posts').update({ status: 'failed', error: 'Timed out waiting for platform response.', updated_at: new Date().toISOString() }).eq('id', row.id).eq('status', 'publishing');
+          row.status = 'failed';
+          row.error = 'Timed out waiting for platform response.';
+        }
+      }
       const connectionIds = rows.map((row) => row.connection_id).filter(Boolean);
       const { data: accounts } = connectionIds.length
         ? await supabase.from('platform_connections').select('id, account_name').in('id', connectionIds)
@@ -713,8 +725,10 @@ async function checkPublishOutcomes(supabase) {
       const destinationProgress = rows.map((row) => ({ platform: row.platform, account: accountNames.get(row.connection_id) || 'Connected account', status: row.status, ...(row.error ? { error: row.error } : {}), ...(row.result_url ? { url: row.result_url } : {}) }));
       if (rows.some((row) => ['scheduled', 'publishing'].includes(row.status))) {
         const active = destinationProgress.filter((item) => ['scheduled', 'publishing'].includes(item.status));
+        const settledCount = rows.length - active.length;
+        const percent = Math.min(99, 90 + Math.round((settledCount / Math.max(1, rows.length)) * 9));
         await supabase.from(TABLE).update({
-          result: { ...(job.result || {}), progress: { stage: 'publishing', detail: active.map((item) => `${item.platform} · ${item.account}: ${item.status}`).join(' | '), destinations: destinationProgress, updated_at: new Date().toISOString() } },
+          result: { ...(job.result || {}), progress: { stage: 'publishing', detail: active.map((item) => `${item.platform} · ${item.account}: ${item.status}`).join(' | '), percent, destinations: destinationProgress, updated_at: new Date().toISOString() } },
           updated_at: new Date().toISOString(),
         }).eq('id', job.id).eq('status', 'publishing');
         continue;
@@ -722,7 +736,7 @@ async function checkPublishOutcomes(supabase) {
       const published = rows.filter((row) => row.status === 'published');
       const failed = rows.filter((row) => row.status !== 'published');
       const status = failed.length ? (published.length ? 'partial' : 'failed') : 'completed';
-      await supabase.from(TABLE).update({ status, result: { ...(job.result || {}), progress: { stage: status, detail: status === 'completed' ? `Published to ${published.length} destination${published.length === 1 ? '' : 's'}` : `${published.length} published, ${failed.length} need attention`, destinations: destinationProgress, updated_at: new Date().toISOString() } }, updated_at: new Date().toISOString() }).eq('id', job.id).eq('status', 'publishing');
+      await supabase.from(TABLE).update({ status, result: { ...(job.result || {}), progress: { stage: status, detail: status === 'completed' ? `Published to ${published.length} destination${published.length === 1 ? '' : 's'}` : `${published.length} published, ${failed.length} need attention`, percent: 100, destinations: destinationProgress, updated_at: new Date().toISOString() } }, updated_at: new Date().toISOString() }).eq('id', job.id).eq('status', 'publishing');
     }
   } catch (error) { console.error('[drive-intake] outcome check failed:', String(error?.message || error).slice(0, 220)); }
   finally { outcomeBusy = false; }
