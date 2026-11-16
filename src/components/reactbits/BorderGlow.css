@@ -22,32 +22,33 @@
   content: none !important;
 }
 
-/* Smooth circular cursor-tracked edge spotlight */
+/* Edge-only cursor-tracked border glow (no interior torch fill) */
 .border-glow-card > .edge-light {
   position: absolute;
   inset: 0;
   pointer-events: none;
   z-index: 2;
-  border-radius: 0 !important;
+  border-radius: 14px;
+  background: transparent;
   opacity: clamp(0, calc(var(--edge-proximity) / 100), 1);
-  transition: opacity 180ms ease-out;
-  background: radial-gradient(
-    220px circle at var(--cursor-x, 50%) var(--cursor-y, 50%),
-    color-mix(in srgb, var(--go, #38bdf8) 12%, transparent) 0%,
-    transparent 70%
-  );
+  transition: opacity 160ms ease-out;
+}
+
+.border-glow-card.ws-btn-glow > .edge-light,
+.border-glow-card.ws-btn-glow > .edge-light::before {
+  border-radius: 10px;
 }
 
 .border-glow-card > .edge-light::before {
   content: "";
   position: absolute;
   inset: 0;
-  border-radius: 0 !important;
-  padding: 1px;
+  border-radius: 14px;
+  padding: 1.25px;
   background: radial-gradient(
-    200px circle at var(--cursor-x, 50%) var(--cursor-y, 50%),
-    var(--go, #38bdf8) 0%,
-    color-mix(in srgb, var(--go, #38bdf8) 45%, transparent) 45%,
+    180px circle at var(--cursor-x, 50%) var(--cursor-y, 50%),
+    var(--go, #3b82f6) 0%,
+    color-mix(in srgb, var(--go, #3b82f6) 40%, transparent) 45%,
     transparent 100%
   );
   -webkit-mask:

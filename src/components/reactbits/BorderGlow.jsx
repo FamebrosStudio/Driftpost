@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useCallback, useEffect } from 'react';
+import { useRef, useEffect } from 'react';
 import './BorderGlow.css';
 
 function parseHSL(hslStr) {
@@ -47,46 +47,49 @@ const BorderGlow = ({
 }) => {
   const cardRef = useRef(null);
 
-  const handlePointerMove = useCallback((e) => {
-    const card = cardRef.current;
-    if (!card) return;
-
-    const rect = card.getBoundingClientRect();
-    if (!rect.width || !rect.height) return;
-
-    const x = Math.max(0, Math.min(rect.width, e.clientX - rect.left));
-    const y = Math.max(0, Math.min(rect.height, e.clientY - rect.top));
-
-    const distToEdge = Math.min(x, y, rect.width - x, rect.height - y);
-    const range = Math.max(64, Math.min(140, Math.min(rect.width, rect.height) * 0.65));
-    const proximity = Math.max(0, Math.min(1, 1 - distToEdge / range));
-
-    card.style.setProperty('--cursor-x', `${x.toFixed(1)}px`);
-    card.style.setProperty('--cursor-y', `${y.toFixed(1)}px`);
-    card.style.setProperty('--edge-proximity', `${(proximity * 100).toFixed(2)}`);
-  }, []);
-
-  const handlePointerLeave = useCallback(() => {
-    const card = cardRef.current;
-    if (!card) return;
-    card.style.setProperty('--edge-proximity', '0');
-  }, []);
-
   useEffect(() => {
     const card = cardRef.current;
     if (!card) return;
     card.style.setProperty('--edge-proximity', '0');
+
+    const updateFromPoint = (clientX, clientY) => {
+      const rect = card.getBoundingClientRect();
+      if (!rect.width || !rect.height) return;
+      const dx = clientX < rect.left ? rect.left - clientX : clientX > rect.right ? clientX - rect.right : 0;
+      const dy = clientY < rect.top ? rect.top - clientY : clientY > rect.bottom ? clientY - rect.bottom : 0;
+      const outsideDist = Math.hypot(dx, dy);
+      const x = clientX - rect.left;
+      const y = clientY - rect.top;
+      const insideDist = (dx === 0 && dy === 0) ? Math.min(x, y, rect.width - x, rect.height - y) : Infinity;
+      const distToEdge = outsideDist > 0 ? outsideDist : insideDist;
+      const range = 130;
+      const proximity = Math.max(0, Math.min(1, 1 - distToEdge / range));
+
+      if (proximity > 0) {
+        card.style.setProperty('--cursor-x', `${x.toFixed(1)}px`);
+        card.style.setProperty('--cursor-y', `${y.toFixed(1)}px`);
+      }
+      card.style.setProperty('--edge-proximity', `${(proximity * 100).toFixed(2)}`);
+    };
+
+    const onMove = (e) => updateFromPoint(e.clientX, e.clientY);
+    const onLeave = () => card.style.setProperty('--edge-proximity', '0');
+
+    window.addEventListener('pointermove', onMove, { passive: true });
+    document.addEventListener('pointerleave', onLeave);
+    return () => {
+      window.removeEventListener('pointermove', onMove);
+      document.removeEventListener('pointerleave', onLeave);
+    };
   }, [animated]);
 
   const glowVars = buildGlowVars(glowColor, glowIntensity);
   const lightSurface = isLightColor(backgroundColor);
-  const primaryAccent = (Array.isArray(colors) && colors[0]) || '#38bdf8';
+  const primaryAccent = (Array.isArray(colors) && colors[0]) || '#3b82f6';
 
   return (
     <div
       ref={cardRef}
-      onPointerMove={handlePointerMove}
-      onPointerLeave={handlePointerLeave}
       className={`border-glow-card${lightSurface ? ' border-glow-card--light' : ''} ${className}`.trim()}
       style={{
         '--card-bg': backgroundColor,
