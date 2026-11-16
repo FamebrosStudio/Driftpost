@@ -392,6 +392,8 @@ export async function processIntakeJob(supabase, job, options = {}) {
           body.ig_collabs = igTags.join(',');
           body.ig_user_tags = igTags.join(',');
         }
+        // Always cross-post automated workflow items to Instagram Story (for carousels, index.js publishes the first image).
+        body.ig_post_story = '1';
       } else if (connection.platform === 'facebook') {
         body.fb_message = String(byPlatform.facebook?.message || '').trim();
         body.text = body.fb_message;

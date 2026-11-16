@@ -3010,12 +3010,14 @@ async function runPublish(job, conn, payload, body, userId) {
           }
         }
         // Optional auto story: same media re-published as a 24h IG story.
-        // Runs after the feed post so one tap covers feed + story.
-        if (String(body.ig_post_story || '') === '1' && publicUrl) {
+        // For carousels, only the first image (publicUrls[0]) is posted to the story.
+        const storyMediaUrl = isCarousel ? (publicUrls[0] || publicUrl) : publicUrl;
+        const storyIsVideo = !isCarousel && !!(file?.mimetype || mediaList[0]?.mimetype || '').startsWith('video/');
+        if (String(body.ig_post_story || '') === '1' && storyMediaUrl) {
           try {
             await meta.publishInstagramStory({
               igUserId: igId, pageToken,
-              mediaUrl: publicUrl, isVideo: !!(file?.mimetype || mediaList[0]?.mimetype || '').startsWith('video/'),
+              mediaUrl: storyMediaUrl, isVideo: storyIsVideo,
               onStage,
             });
             job.warning = [job.warning, 'Also posted as a story.'].filter(Boolean).join(' ');

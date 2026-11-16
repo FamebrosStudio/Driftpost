@@ -59,7 +59,7 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut, onOpenRe
   const [selectedIds, setSelectedIds] = useState([]);
   const [confirmedAccountIds, setConfirmedAccountIds] = useState([]);
   const [brief, setBrief] = useState('');
-  const [instagramStory, setInstagramStory] = useState(false);
+  const [instagramStory, setInstagramStory] = useState(true);
   const [crosspost, setCrosspost] = useState(false);
   const [collaborators, setCollaborators] = useState('');
   const [youtubeThumb, setYoutubeThumb] = useState(null);
@@ -164,7 +164,7 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut, onOpenRe
     setSelectedIds([]);
     setConfirmedAccountIds([]);
     setCrosspost(false);
-    setInstagramStory(false);
+    setInstagramStory(true);
     setCollaborators(assigned);
   };
   const selectVideo = (video) => {
@@ -272,7 +272,7 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut, onOpenRe
     if (file.size > 400 * 1024 * 1024) return setError('The video is larger than Driftpost’s 400 MB upload limit.');
     if (!chosen.length) return setError('Choose at least one account to publish to.');
     if (crosspost && !(selectedPlatforms.includes('instagram') && selectedPlatforms.includes('facebook'))) return setError('Cross-posting needs at least one selected Instagram and Facebook account.');
-    if (instagramStory && !selectedPlatforms.includes('instagram')) return setError('Select an Instagram account to publish a Story.');
+    const effectiveInstagramStory = instagramStory && selectedPlatforms.includes('instagram');
     const assignedBrandTags = formatAssignedInstagramTags({ brandId: brandKey, brandName: brand.label, accounts: chosen });
     const effectiveCollaborators = (collaborators.trim() || assignedBrandTags).trim();
     if (effectiveCollaborators && selectedPlatforms.includes('instagram')) {
@@ -287,7 +287,7 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut, onOpenRe
     const snapshot = {
       id, createdAt: Date.now(), status: 'analyzing', message: 'Extracting frames and transcribing speech…',
       file, brandKey, brand: brand.label, accountIds: chosen.map((item) => item.id), platforms: [...selectedPlatforms],
-      brief: brief.trim(), crosspost, instagramStory, collaborators: effectiveCollaborators, autoPublish,
+      brief: brief.trim(), crosspost, instagramStory: effectiveInstagramStory, collaborators: effectiveCollaborators, autoPublish,
       manualCovers: { thumb: youtubeThumb, instagram: instagramCover, facebook: facebookCover },
     };
     setJobs((current) => [{ id, file_name: file.name, brand: brand.label, status: 'analyzing', message: snapshot.message, createdAt: snapshot.createdAt, autoPublish, brandKey, accountIds: snapshot.accountIds, platforms: snapshot.platforms, brief: snapshot.brief, crosspost, instagramStory, collaborators: snapshot.collaborators }, ...current]);
