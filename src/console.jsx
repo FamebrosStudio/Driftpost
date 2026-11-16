@@ -1,5 +1,6 @@
 import BorderGlow from './components/reactbits/BorderGlow.jsx';
 import React, { lazy, Suspense, useEffect, useState } from 'react';
+import { flushSync } from 'react-dom';
 import PageLoading from './PageLoading.jsx';
 import { isAiAccount } from './ai-access.js';
 // Load Team Video styles with the console shell instead of relying on a
@@ -105,13 +106,20 @@ export default function Console({ session, onSwitchAccount, onSignOut }) {
   // state and localStorage can never drift apart on a number/string mismatch.
   const withTransition = (fn) => {
     if (typeof document !== 'undefined' && typeof document.startViewTransition === 'function') {
-      try { document.startViewTransition(() => fn()); return; } catch {}
+      try {
+        document.startViewTransition(() => {
+          flushSync(() => {
+            fn();
+          });
+        });
+        return;
+      } catch {}
     }
     fn();
   };
-  const go = (next) => {
+  const go = (next, skipTransition = false) => {
     const n = String(next);
-    withTransition(() => {
+    const apply = () => {
       setStage(n);
       try {
         if (n === 'connect') localStorage.removeItem('driftpost-stage');
@@ -119,7 +127,9 @@ export default function Console({ session, onSwitchAccount, onSignOut }) {
       } catch {}
       try { window.scrollTo(0, 0); } catch {}
       try { window.history.pushState({}, '', routeFor('create', n)); } catch {}
-    });
+    };
+    if (skipTransition) apply();
+    else withTransition(apply);
   };
   const navigate = (next) => {
     withTransition(() => {
@@ -132,7 +142,7 @@ export default function Console({ session, onSwitchAccount, onSignOut }) {
           return;
         }
         setView('create');
-        go('1');
+        go('1', true);
         return;
       }
       if (next === 'team-video' && !isAiAccount(session.user?.email)) {

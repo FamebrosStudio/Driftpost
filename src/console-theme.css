@@ -1892,7 +1892,7 @@ body:has(#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-
   }
 
   #root :is(.stage1, .stage2, .stage3, .connect) :is(.continue-bar, .s2-continue-bar, .s3-pub, .cn-bar) {
-    bottom: calc(68px + env(safe-area-inset-bottom)) !important;
+    bottom: calc(78px + env(safe-area-inset-bottom)) !important;
   }
 
   #root .ws-mobile-dock-wrap {
@@ -1911,11 +1911,14 @@ body:has(#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-
 
   #root .ws-mobile-more-menu {
     position: relative;
-    z-index: 61;
+    z-index: 65;
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 6px;
     width: min(320px, calc(100vw - 28px));
+    max-height: calc(100dvh - 130px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
     padding: 10px;
     border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 18px !important;
@@ -1971,7 +1974,7 @@ body:has(#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-
 
   #root .ws-mobile-dock {
     position: relative;
-    z-index: 61;
+    z-index: 65;
     display: inline-flex;
     align-items: center;
     gap: 6px;
@@ -2061,13 +2064,23 @@ body:has(#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-
     padding: 74px 14px calc(92px + env(safe-area-inset-bottom));
   }
 
+  #root .ws > .connect {
+    padding-bottom: calc(210px + env(safe-area-inset-bottom));
+  }
+
   #root .stage1-in,
-  #root .stage2-in,
+  #root .stage2-in {
+    padding-top: 74px;
+    padding-right: 14px;
+    padding-left: 14px;
+    padding-bottom: calc(210px + env(safe-area-inset-bottom));
+  }
+
   #root .stage3-in {
     padding-top: 74px;
     padding-right: 14px;
     padding-left: 14px;
-    padding-bottom: calc(155px + env(safe-area-inset-bottom));
+    padding-bottom: calc(250px + env(safe-area-inset-bottom));
   }
 
   #root .ws .ws-heading {
@@ -2645,7 +2658,15 @@ body:has(#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-
     margin-top: 12px;
   }
 
-  #root .ws .ws-welcome-actions .ws-btn-glow,
+  #root .ws .ws-welcome-actions .ws-btn-glow {
+    width: 100% !important;
+    padding: 0 !important;
+  }
+
+  #root .ws .ws-welcome-actions .ws-btn-glow .border-glow-inner {
+    width: 100%;
+  }
+
   #root .ws .ws-welcome-actions button {
     width: 100% !important;
     justify-content: center;
@@ -2829,6 +2850,19 @@ body:has(#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-
 }
 
 /* Native View Transitions + Stage & Editor Apple Spring Transitions */
+::view-transition,
+::view-transition-group(*),
+::view-transition-image-pair(*),
+::view-transition-old(*),
+::view-transition-new(*) {
+  pointer-events: none !important;
+}
+
+#root :is(button, a, summary, [role="button"], [role="tab"], [role="menuitem"], input, select, textarea, label) {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
 ::view-transition-old(root) {
   animation: vtFadeOut 180ms cubic-bezier(0.4, 0, 1, 1) both;
 }
