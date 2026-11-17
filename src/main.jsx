@@ -8,6 +8,19 @@ import './pointer-proximity.js';
 import { applyDeviceAttributes } from './utils/device.js';
 
 applyDeviceAttributes();
+try {
+  const savedMood = localStorage.getItem('driftpost-console-mood');
+  const savedTheme = localStorage.getItem('driftpost-console-theme');
+  if (savedMood) {
+    document.documentElement.dataset.mood = savedMood;
+    document.documentElement.dataset.theme = savedMood === 'light' ? 'light' : 'dark';
+  } else if (savedTheme) {
+    document.documentElement.dataset.theme = savedTheme;
+  }
+  if (localStorage.getItem('driftpost-reduced-motion') === 'true') {
+    document.documentElement.dataset.motion = 'reduced';
+  }
+} catch {}
 
 // A tab can keep an older HTML/app bundle open after a deployment while the
 // server has already replaced its lazy-loaded chunks. Recover once instead of

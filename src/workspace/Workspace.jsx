@@ -68,13 +68,38 @@ const MoonGlyph = () => <Glyph><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21
 const SignOutGlyph = () => <Glyph><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><polyline points="16 17 21 12 16 7" /><line x1="21" y1="12" x2="9" y2="12" /></Glyph>;
 const MoreGridGlyph = () => <Glyph><rect x="4" y="4" width="6" height="6" rx="1" /><rect x="14" y="4" width="6" height="6" rx="1" /><rect x="4" y="14" width="6" height="6" rx="1" /><rect x="14" y="14" width="6" height="6" rx="1" /></Glyph>;
 
+const MOOD_THEMES = [
+  { id: 'dark', label: 'Midnight', color: '#3b82f6' },
+  { id: 'light', label: 'Daylight', color: '#2563eb' },
+  { id: 'osien', label: 'OSIEN', color: '#f5a623' },
+  { id: 'tokyo-drift', label: 'Tokyo Drift', color: '#ff2a85' },
+  { id: 'sea', label: 'Sea', color: '#14b8a6' },
+  { id: 'perfect', label: 'Perfect', color: '#38bdf8' },
+  { id: 'cute', label: 'Cute', color: '#f472b6' },
+  { id: 'clumsy', label: 'Clumsy', color: '#fb923c' },
+  { id: 'funny', label: 'Funny', color: '#a3e635' },
+  { id: 'sad', label: 'Sad', color: '#60a5fa' },
+  { id: 'bad', label: 'Bad', color: '#ef4444' },
+  { id: 'slow', label: 'Slow', color: '#34d399' },
+];
+
 export function WorkspaceNav({ page, onNavigate, email, onSignOut }) {
   const device = useDevice();
   const isMobileDevice = device === 'mobile';
-  const [theme, setTheme] = useState(() => {
-    try { return localStorage.getItem('driftpost-console-theme') === 'light' ? 'light' : 'dark'; }
-    catch { return 'dark'; }
+  const [mood, setMood] = useState(() => {
+    try {
+      const saved = localStorage.getItem('driftpost-console-mood');
+      if (saved && MOOD_THEMES.some((m) => m.id === saved)) return saved;
+      return localStorage.getItem('driftpost-console-theme') === 'light' ? 'light' : 'dark';
+    } catch {
+      return 'dark';
+    }
   });
+  const theme = mood === 'light' ? 'light' : 'dark';
+  const setTheme = (next) => {
+    const resolved = typeof next === 'function' ? next(theme) : next;
+    setMood(resolved === 'light' ? 'light' : (mood === 'light' ? 'dark' : mood));
+  };
   const [mobileMoreOpen, setMobileMoreOpen] = useState(false);
   const [pcMoreOpen, setPcMoreOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -90,8 +115,12 @@ export function WorkspaceNav({ page, onNavigate, email, onSignOut }) {
   }, [page]);
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
-    try { localStorage.setItem('driftpost-console-theme', theme); } catch {}
-  }, [theme]);
+    document.documentElement.dataset.mood = mood;
+    try {
+      localStorage.setItem('driftpost-console-theme', theme);
+      localStorage.setItem('driftpost-console-mood', mood);
+    } catch {}
+  }, [theme, mood]);
   useEffect(() => {
     document.documentElement.dataset.motion = reducedMotion ? 'reduced' : 'full';
     try { localStorage.setItem('driftpost-reduced-motion', reducedMotion ? 'true' : 'false'); } catch {}
@@ -177,14 +206,25 @@ export function WorkspaceNav({ page, onNavigate, email, onSignOut }) {
               </div>
               <span className="ws-settings-pill">{isTeam ? 'Team' : 'Personal'}</span>
             </div>
-            <div className="ws-settings-row">
+            <div className="ws-settings-row ws-settings-row-col">
               <div>
-                <b>Appearance</b>
-                <small>Switch between dark and light glass surfaces</small>
+                <b>Theme & Mood</b>
+                <small>Pick a color mood (including OSIEN from osien.is-a.dev)</small>
               </div>
-              <div className="ws-settings-seg">
-                <button type="button" className={theme === 'dark' ? 'on' : ''} onClick={() => setTheme('dark')}>Dark</button>
-                <button type="button" className={theme === 'light' ? 'on' : ''} onClick={() => setTheme('light')}>Light</button>
+              <div className="ws-mood-grid" role="radiogroup" aria-label="Color theme mood">
+                {MOOD_THEMES.map((item) => (
+                  <button
+                    key={item.id}
+                    type="button"
+                    role="radio"
+                    aria-checked={mood === item.id}
+                    className={mood === item.id ? 'ws-mood-chip active' : 'ws-mood-chip'}
+                    onClick={() => setMood(item.id)}
+                  >
+                    <span className="ws-mood-dot" style={{ background: item.color }} aria-hidden="true" />
+                    <span>{item.label}</span>
+                  </button>
+                ))}
               </div>
             </div>
             <div className="ws-settings-row">

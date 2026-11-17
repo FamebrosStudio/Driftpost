@@ -3038,6 +3038,224 @@ html[data-motion="reduced"] *::after {
   background: rgba(15, 23, 42, 0.03);
 }
 
+/* Settings Modal Mood Theme Grid */
+#root .ws-settings-row-col {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+}
+
+#root .ws-mood-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+}
+
+#root .ws-mood-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 34px !important;
+  padding: 0 10px !important;
+  border-radius: 10px !important;
+  border: 1px solid var(--line-hard) !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+  color: var(--muted) !important;
+  font-size: 11.5px !important;
+  font-weight: 600 !important;
+  box-shadow: none !important;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+#root .ws-mood-chip.active {
+  color: var(--ink) !important;
+  border-color: var(--go) !important;
+  background: color-mix(in srgb, var(--go) 16%, transparent) !important;
+}
+
+#root .ws-mood-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  flex-shrink: 0;
+  box-shadow: 0 0 8px currentColor;
+}
+
+/* ==========================================================================
+   MOOD & AESTHETIC COLOR THEME VARIATIONS
+   ========================================================================== */
+html[data-mood="osien"] #root {
+  --bg: #05050a;
+  --panel: #0b0b12;
+  --panel2: #12121d;
+  --input: #08080f;
+  --line: #1c1c2b;
+  --line-hard: #2d2c42;
+  --ink: #e8e6e3;
+  --muted: #b3afa6;
+  --faint: #75726d;
+  --go: #f5a623;
+  --go-ink: #140d02;
+  --ok: #2dd4bf;
+  --warm: #f5a623;
+  --danger: #f87171;
+}
+
+html[data-mood="tokyo-drift"] #root {
+  --bg: #08070d;
+  --panel: #100e1a;
+  --panel2: #181426;
+  --input: #0c0a14;
+  --line: #261e38;
+  --line-hard: #3c2c57;
+  --ink: #f5f3ff;
+  --muted: #b8afd4;
+  --faint: #7b709c;
+  --go: #ff2a85;
+  --go-ink: #ffffff;
+  --ok: #22d3ee;
+  --warm: #f59e0b;
+  --danger: #fb7185;
+}
+
+html[data-mood="sea"] #root {
+  --bg: #041018;
+  --panel: #081924;
+  --panel2: #0d2433;
+  --input: #06141d;
+  --line: #153447;
+  --line-hard: #234e68;
+  --ink: #ecfeff;
+  --muted: #99cbd9;
+  --faint: #5b8fa1;
+  --go: #14b8a6;
+  --go-ink: #031917;
+  --ok: #34d399;
+  --warm: #38bdf8;
+  --danger: #fb7185;
+}
+
+html[data-mood="perfect"] #root {
+  --bg: #09090b;
+  --panel: #111114;
+  --panel2: #19191e;
+  --input: #0d0d10;
+  --line: #27272a;
+  --line-hard: #3f3f46;
+  --ink: #fafafa;
+  --muted: #a1a1aa;
+  --faint: #71717a;
+  --go: #38bdf8;
+  --go-ink: #041824;
+  --ok: #22c55e;
+  --warm: #f59e0b;
+  --danger: #ef4444;
+}
+
+html[data-mood="cute"] #root {
+  --bg: #140e18;
+  --panel: #1c1322;
+  --panel2: #251a2d;
+  --input: #17101c;
+  --line: #362442;
+  --line-hard: #4d355e;
+  --ink: #fdf2f8;
+  --muted: #e5bdd5;
+  --faint: #a17793;
+  --go: #f472b6;
+  --go-ink: #290719;
+  --ok: #6ee7b7;
+  --warm: #fbbf24;
+  --danger: #fb7185;
+}
+
+html[data-mood="clumsy"] #root {
+  --bg: #12100e;
+  --panel: #1b1714;
+  --panel2: #251f1b;
+  --input: #151210;
+  --line: #362c24;
+  --line-hard: #4d3e32;
+  --ink: #fff7ed;
+  --muted: #d6c3b0;
+  --faint: #96816e;
+  --go: #fb923c;
+  --go-ink: #291102;
+  --ok: #4ade80;
+  --warm: #facc15;
+  --danger: #f87171;
+}
+
+html[data-mood="funny"] #root {
+  --bg: #0c110d;
+  --panel: #131b15;
+  --panel2: #1b261d;
+  --input: #0f1510;
+  --line: #253628;
+  --line-hard: #37503b;
+  --ink: #f7fee7;
+  --muted: #bdd4b6;
+  --faint: #7a9474;
+  --go: #a3e635;
+  --go-ink: #111c02;
+  --ok: #34d399;
+  --warm: #fde047;
+  --danger: #fb7185;
+}
+
+html[data-mood="sad"] #root {
+  --bg: #0a0e17;
+  --panel: #101624;
+  --panel2: #172033;
+  --input: #0d121d;
+  --line: #212c42;
+  --line-hard: #334363;
+  --ink: #e2e8f0;
+  --muted: #94a3b8;
+  --faint: #64748b;
+  --go: #60a5fa;
+  --go-ink: #061529;
+  --ok: #38bdf8;
+  --warm: #94a3b8;
+  --danger: #f87171;
+}
+
+html[data-mood="bad"] #root {
+  --bg: #0d0709;
+  --panel: #160c0f;
+  --panel2: #211116;
+  --input: #11090c;
+  --line: #361921;
+  --line-hard: #522430;
+  --ink: #fafafa;
+  --muted: #d4b8be;
+  --faint: #8f6b73;
+  --go: #ef4444;
+  --go-ink: #ffffff;
+  --ok: #22c55e;
+  --warm: #f97316;
+  --danger: #ef4444;
+}
+
+html[data-mood="slow"] #root {
+  --bg: #0c110f;
+  --panel: #131b18;
+  --panel2: #1b2622;
+  --input: #0f1513;
+  --line: #24342e;
+  --line-hard: #354c43;
+  --ink: #ecfdf5;
+  --muted: #a7c4b8;
+  --faint: #6b8a7d;
+  --go: #34d399;
+  --go-ink: #031c12;
+  --ok: #6ee7b7;
+  --warm: #fcd34d;
+  --danger: #fca5a5;
+}
+
 /* Clean Card & Row Breathing Room (History, Upcoming, Team Lists) */
 #root .hist-activity {
   display: flex;
