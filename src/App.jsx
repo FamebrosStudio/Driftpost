@@ -10,6 +10,7 @@ import { NotFoundPage, OfflinePage, ServerStartingPage, useConnectivity, useServ
 import { apiRequestUrl } from './lib.js';
 import CursorGrid from './components/reactbits/CursorGrid.jsx';
 import BorderGlow from './components/reactbits/BorderGlow.jsx';
+import DriftIcon from './components/DriftIcons.jsx';
 
 const Console = lazy(() => import('./console.jsx'));
 
@@ -350,35 +351,52 @@ function Landing({ onEnter, session, pubPage, setPubPage }) {
     { id: 'x', t: 'X, handled', d: '280 characters, polls, reply controls and media, with one tailored post for each connected platform.' },
   ];
   const steps = [
-    { n: '01', t: 'Connect once', d: 'Each brand owner links YouTube, Facebook, Instagram and X one time. Tokens stay encrypted; reconnects are one click.' },
-    { n: '02', t: 'Pick the brand', d: 'Choose Hair Match Salon, SK Furniture, Velvet Salon — Driftpost auto-loads that brand on all four platforms.' },
-    { n: '03', t: 'Drop and write', d: 'Add media and start with one caption, then fine-tune text and media for each platform before publishing.' },
-    { n: '04', t: 'Publish or plan ahead', d: 'Publish now, import caption batches, set a weekly or monthly repeat, or hold a post for review. Check the calendar and available account totals in your workspace.' },
+    { n: '01', icon: 'users', t: 'Connect once', d: 'Each brand owner links YouTube, Facebook, Instagram and X one time. Tokens stay encrypted; reconnects are one click.' },
+    { n: '02', icon: 'brand', t: 'Pick the brand', d: 'Choose Hair Match Salon, SK Furniture, Velvet Salon — Driftpost auto-loads that brand on all four platforms.' },
+    { n: '03', icon: 'sparkles', t: 'Drop and write', d: 'Add media and start with one caption, then fine-tune text and media for each platform before publishing.' },
+    { n: '04', icon: 'calendar', t: 'Publish or plan ahead', d: 'Publish now, import caption batches, set a weekly or monthly repeat, or hold a post for review.' },
   ];
   return (
-    <div className="landing" ref={rootRef}>
-      <div className="landing-cbg" aria-hidden="true"><CursorGrid color="#7dd3fc" gridColor="#081b23" cellSize={64} radius={160} /></div>
-      <nav className="land-nav">
-        <button className="land-logo" onClick={() => setPubPage('home')} title="Driftpost home"><img className="logo-img logo-d" src="/logo-dark-620.png" srcSet="/logo-dark-620.png 620w, /logo-dark.png 1984w" sizes="248px" width="1984" height="512" fetchpriority="high" decoding="async" alt="Driftpost" /></button>
+    <div className="landing landing-apple" ref={rootRef}>
+      <div className="landing-cbg" aria-hidden="true">
+        <div className="landing-ambient-glow" />
+        <CursorGrid color="rgba(125, 211, 252, 0.28)" gridColor="rgba(148, 163, 184, 0.08)" cellSize={64} radius={160} />
+      </div>
+
+      <nav className="land-nav land-nav-apple">
+        <button className="land-logo" onClick={() => setPubPage('home')} title="Driftpost home">
+          <img className="logo-img logo-d" src="/logo-dark-620.png" srcSet="/logo-dark-620.png 620w, /logo-dark.png 1984w" sizes="180px" width="1984" height="512" fetchpriority="high" decoding="async" alt="Driftpost" />
+          <img className="logo-img logo-l" src="/logo-light.png" width="1908" height="512" decoding="async" alt="Driftpost" />
+        </button>
         <div className="land-links">
           {PUB_PAGES.filter((p) => !p.hidden).map((p) => (
             <button key={p.id} className={pubPage === p.id ? 'on' : ''} onClick={() => setPubPage(p.id)}>{p.label}</button>
           ))}
         </div>
-        <BorderGlow className="btn-glow" backgroundColor="#071019" borderRadius={8} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.35} glowRadius={24}>
-          <button className="skew-btn grad" onClick={onEnter}><span>{session ? 'Enter console' : 'Get started ’'}</span></button>
-        </BorderGlow>
+        <button className="land-cta-btn" onClick={onEnter}>
+          <span>{session ? 'Enter console' : 'Get started'}</span>
+          <DriftIcon name="arrowRight" size={14} />
+        </button>
       </nav>
+
       {pubPage === 'home' ? <>
-      <header className="landing-in">
-        <div className="landing-kicker">A Famebros Studio product · One workspace. Four platforms.</div>
-        <h1><SpotLine text="Post once." /><br /><SpotLine text="Everywhere." /></h1>
-        <p>Schedule and publish social media posts across Instagram, Facebook, YouTube and X. Manage multiple brands and accounts in one workspace, with content tailored to each platform. Optional Google Drive intake reads media from a connected team folder to prepare posts for the accounts you select.</p>
-        <div className="landing-cta">
-          <BorderGlow className="btn-glow" backgroundColor="#071019" borderRadius={8} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.35} glowRadius={24}>
-            <button className="skew-btn grad" onClick={onEnter}><span>{session ? 'Enter console' : 'Get started free ’'}</span></button>
-          </BorderGlow>
+      <header className="landing-in land-hero-apple">
+        <div className="landing-kicker land-pill-badge">
+          <DriftIcon name="sparkles" size={14} />
+          <span>Famebros Studio · One workspace. Four platforms.</span>
         </div>
+        <h1><SpotLine text="Post once." /><br /><SpotLine text="Everywhere." /></h1>
+        <p>Schedule and publish across Instagram, Facebook, YouTube and X from one calm, unified workspace — with captions, covers, and approvals tailored to every brand.</p>
+        <div className="landing-cta">
+          <button className="land-cta-btn land-cta-hero" onClick={onEnter}>
+            <span>{session ? 'Enter console' : 'Get started free'}</span>
+            <DriftIcon name="arrowRight" size={16} />
+          </button>
+          <button className="land-cta-ghost" onClick={() => setPubPage('how')}>
+            <span>Explore workflow</span>
+          </button>
+        </div>
+
         <div className="social-dock">
           {dock.map((d) => (
             <span key={d.id} className="icon-content">
@@ -387,46 +405,70 @@ function Landing({ onEnter, session, pubPage, setPubPage }) {
             </span>
           ))}
         </div>
-        <div className="landing-stats">
-          <span><b>4</b>platforms</span>
-          <span><b>47</b>brands</span>
-          <span><b>1</b>screen</span>
+
+        <div className="landing-stats land-stats-apple">
+          <span><b>4</b><small>Platforms</small></span>
+          <span><b>47</b><small>Brands</small></span>
+          <span><b>1</b><small>Unified Screen</small></span>
         </div>
-        <div className="scroll-hint">Scroll to explore ↓</div>
       </header>
-      <div className="hstrip-wrap">
-        <div className="hstrip-label">Every platform, covered</div>
-        <div className="hstrip">
+
+      <section className="land-bento-wrap">
+        <div className="land-section-head">
+          <span className="land-eyebrow">Built for every channel</span>
+          <h2>Every platform, covered</h2>
+        </div>
+        <div className="land-bento-grid">
           {cards.map((c) => (
-            <BorderGlow key={c.id} className="bg-glow" backgroundColor="#0b0b0e" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.12} glowRadius={22}><div  className="hcard">
-              <span className="hcard-ic"><BrandIcon id={c.id} size={26} /></span>
+            <div key={c.id} className="land-bento-card">
+              <span className="land-bento-ic"><BrandIcon id={c.id} size={24} /></span>
               <b>{c.t}</b>
               <p>{c.d}</p>
-            </div></BorderGlow>
+            </div>
           ))}
-          <BorderGlow className="bg-glow" backgroundColor="#0b0b0e" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.12} glowRadius={22}><div className="hcard hot">
-            <b>One workspace, more control</b>
-            <p>CSV batches, finite repeats, shareable approvals and available account metrics, alongside your connected brands.</p>
-          </div></BorderGlow>
-        </div>
-      </div>
-      <section className="zig">
-        {steps.map((s, i) => (
-          <div key={s.n} className={i % 2 ? 'zig-row flip' : 'zig-row'}>
-            <div className="zig-copy"><span className="zig-n">{s.n}</span><h2>{s.t}</h2><p>{s.d}</p></div>
-            <div className="zig-art"><span className="zig-big">{s.n}</span></div>
+          <div className="land-bento-card land-bento-wide">
+            <span className="land-bento-ic land-bento-ic-accent"><DriftIcon name="trio" size={22} /></span>
+            <div>
+              <b>One workspace, total control</b>
+              <p>CSV batches, finite repeats, shareable approval links, Google Drive team intake, and live account metrics — all alongside your connected brands.</p>
+            </div>
           </div>
-        ))}
+        </div>
       </section>
+
+      <section className="land-steps-wrap">
+        <div className="land-section-head">
+          <span className="land-eyebrow">Workflow</span>
+          <h2>From drop to published in four steps</h2>
+        </div>
+        <div className="land-steps-grid">
+          {steps.map((s) => (
+            <div key={s.n} className="land-step-card">
+              <div className="land-step-top">
+                <span className="land-step-num">{s.n}</span>
+                <span className="land-step-ic"><DriftIcon name={s.icon} size={16} /></span>
+              </div>
+              <h3>{s.t}</h3>
+              <p>{s.d}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
       <div className="marquee" aria-hidden="true"><div className="marquee-in">
-        {['Velvet Salon', 'SK Furniture', 'Kanchanmala Jewellers', 'Sarang Hospital', 'Luxxe Nail Studio', 'MAP Clothing', 'Pixi Grow', 'Anand Furniture', 'Velvet Salon', 'SK Furniture', 'Kanchanmala Jewellers', 'Sarang Hospital', 'Luxxe Nail Studio', 'MAP Clothing', 'Pixi Grow', 'Anand Furniture'].map((b, i) => <span key={i}>{b} …</span>)}
+        {['Velvet Salon', 'SK Furniture', 'Kanchanmala Jewellers', 'Sarang Hospital', 'Luxxe Nail Studio', 'MAP Clothing', 'Pixi Grow', 'Anand Furniture', 'Velvet Salon', 'SK Furniture', 'Kanchanmala Jewellers', 'Sarang Hospital', 'Luxxe Nail Studio', 'MAP Clothing', 'Pixi Grow', 'Anand Furniture'].map((b, i) => <span key={i}>{b} ·</span>)}
       </div></div>
       </> : <DocPage page={pubPage} />}
-      <footer className="land-foot">
-        <h2>Plan and publish from one workspace.</h2>
-        <BorderGlow className="btn-glow" backgroundColor="#071019" borderRadius={8} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.35} glowRadius={24}>
-          <button className="skew-btn grad" onClick={onEnter}><span>{session ? 'Enter console' : 'Start free ’'}</span></button>
-        </BorderGlow>
+
+      <footer className="land-foot land-foot-apple">
+        <div className="land-foot-card">
+          <h2>Plan and publish from one workspace.</h2>
+          <p>Start organizing your brands, schedules, and approvals in seconds.</p>
+          <button className="land-cta-btn land-cta-hero" onClick={onEnter}>
+            <span>{session ? 'Enter console' : 'Start free'}</span>
+            <DriftIcon name="arrowRight" size={16} />
+          </button>
+        </div>
         <div className="land-fine">
           <span>Free while in beta · Your logins never leave the platforms · © {new Date().getFullYear()} Driftpost · Made by Famebros Studio</span>
           <span className="land-legal"><button className="link" onClick={() => setPubPage('terms')}>Terms</button> · <a className="link" href="/privacy">Privacy Policy</a> · <button className="link" onClick={() => setPubPage('cookies')}>Cookies</button> · <button className="link" onClick={() => setPubPage('acceptable-use')}>Acceptable Use</button> · <button className="link" onClick={() => setPubPage('ai-disclaimer')}>AI Disclaimer</button> · <button className="link" onClick={() => setPubPage('platforms-disclaimer')}>Platforms</button> · <button className="link" onClick={() => setPubPage('copyright')}>Copyright</button> · <button className="link" onClick={() => setPubPage('refunds')}>Refunds</button> · <button className="link" onClick={() => setPubPage('data-deletion')}>Data Deletion</button> · <button className="link" onClick={() => setPubPage('security')}>Security</button> · <button className="link" onClick={() => setPubPage('contact')}>Contact</button></span>

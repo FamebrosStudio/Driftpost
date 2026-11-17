@@ -4313,3 +4313,543 @@ html[data-reduced-motion="true"] #root .ws-stat-icon > svg {
 #root .ws-cursor-preview svg {
   display: block;
 }
+
+/* ==========================================================================
+   GLOBAL THEME PROPAGATION (Loading, Landing, Auth, Welcome, Recovery)
+   ========================================================================== */
+:root {
+  --bg: #09090b;
+  --panel: #111114;
+  --panel2: #18181b;
+  --input: #0d0d10;
+  --ink: #fafafa;
+  --muted: #a1a1aa;
+  --faint: #71717a;
+  --line: rgba(255, 255, 255, 0.08);
+  --line-hard: rgba(255, 255, 255, 0.14);
+  --go: #3b82f6;
+  --go-ink: #ffffff;
+}
+
+html[data-theme="light"] {
+  --bg: #f4f7fb;
+  --panel: #ffffff;
+  --panel2: #edf2f8;
+  --input: #ffffff;
+  --ink: #0f172a;
+  --muted: #475569;
+  --faint: #64748b;
+  --line: rgba(15, 23, 42, 0.09);
+  --line-hard: rgba(15, 23, 42, 0.16);
+  --go: #2563eb;
+  --go-ink: #ffffff;
+}
+
+html[data-mood="osien"] {
+  --bg: #05050a; --panel: #0c0a16; --panel2: #141024; --input: #080711;
+  --line: #211b38; --line-hard: #352b59; --ink: #f3f1ff; --muted: #b5add4; --faint: #787099;
+  --go: #8b5cf6; --go-ink: #ffffff;
+}
+
+html[data-mood="tokyo-drift"] {
+  --bg: #0b0d13; --panel: #131722; --panel2: #1b2130; --input: #0e1118;
+  --line: rgba(255, 255, 255, 0.09); --line-hard: rgba(255, 255, 255, 0.16);
+  --ink: #f8fafc; --muted: #94a3b8; --faint: #64748b;
+  --go: #f43f5e; --go-ink: #ffffff;
+}
+
+html[data-mood="sea"] {
+  --bg: #050e14; --panel: #0a1822; --panel2: #0f2230; --input: #07131c;
+  --line: rgba(125, 211, 252, 0.12); --line-hard: rgba(125, 211, 252, 0.22);
+  --ink: #f0f9ff; --muted: #93c5fd; --faint: #64748b;
+  --go: #06b6d4; --go-ink: #042f2e;
+}
+
+html[data-mood="perfect"] {
+  --bg: #0b0b0c; --panel: #141416; --panel2: #1c1c20; --input: #0f0f11;
+  --line: rgba(255, 255, 255, 0.09); --line-hard: rgba(255, 255, 255, 0.18);
+  --ink: #fafafa; --muted: #a1a1aa; --faint: #71717a;
+  --go: #e4e4e7; --go-ink: #09090b;
+}
+
+html[data-mood="cute"] {
+  --bg: #130b12; --panel: #1d111b; --panel2: #271725; --input: #170d16;
+  --line: rgba(244, 114, 182, 0.14); --line-hard: rgba(244, 114, 182, 0.24);
+  --ink: #fdf2f8; --muted: #f9a8d4; --faint: #9d6b89;
+  --go: #ec4899; --go-ink: #ffffff;
+}
+
+html[data-mood="clumsy"] {
+  --bg: #120d08; --panel: #1c140c; --panel2: #261c11; --input: #16100a;
+  --line: rgba(251, 146, 60, 0.14); --line-hard: rgba(251, 146, 60, 0.24);
+  --ink: #fff7ed; --muted: #fdba74; --faint: #9a6e4a;
+  --go: #f97316; --go-ink: #ffffff;
+}
+
+html[data-mood="funny"] {
+  --bg: #100e07; --panel: #19160c; --panel2: #242012; --input: #141109;
+  --line: rgba(250, 204, 21, 0.14); --line-hard: rgba(250, 204, 21, 0.24);
+  --ink: #fefce8; --muted: #fde047; --faint: #8f8046;
+  --go: #eab308; --go-ink: #1c1917;
+}
+
+html[data-mood="sad"] {
+  --bg: #080b12; --panel: #101521; --panel2: #161d2e; --input: #0b0f18;
+  --line: rgba(148, 163, 184, 0.12); --line-hard: rgba(148, 163, 184, 0.22);
+  --ink: #e2e8f0; --muted: #94a3b8; --faint: #64748b;
+  --go: #6366f1; --go-ink: #ffffff;
+}
+
+html[data-mood="bad"] {
+  --bg: #0e0708; --panel: #190d0f; --panel2: #241316; --input: #12090b;
+  --line: rgba(248, 113, 113, 0.14); --line-hard: rgba(248, 113, 113, 0.24);
+  --ink: #fef2f2; --muted: #fca5a5; --faint: #995c5c;
+  --go: #ef4444; --go-ink: #ffffff;
+}
+
+html[data-mood="slow"] {
+  --bg: #070e0b; --panel: #0e1914; --panel2: #14241d; --input: #09120e;
+  --line: rgba(52, 211, 153, 0.12); --line-hard: rgba(52, 211, 153, 0.22);
+  --ink: #ecfdf5; --muted: #6ee7b7; --faint: #4b7d69;
+  --go: #10b981; --go-ink: #022c22;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--ink);
+  transition: background-color 280ms ease, color 220ms ease;
+}
+
+/* Loading screen inherits active theme/mood */
+#root .page-loading,
+.page-loading {
+  background: var(--bg) !important;
+  background-image:
+    radial-gradient(ellipse 65% 45% at 50% 35%, color-mix(in srgb, var(--go) 14%, transparent), transparent 65%) !important;
+  color: var(--ink) !important;
+}
+
+.page-loading .page-loading-mark {
+  border-color: color-mix(in srgb, var(--go) 24%, var(--line)) !important;
+  border-top-color: var(--go) !important;
+  box-shadow: 0 0 24px color-mix(in srgb, var(--go) 26%, transparent);
+}
+
+.page-loading .page-loading-recovery button {
+  background: var(--go);
+  color: var(--go-ink);
+  border: 0;
+  border-radius: 12px;
+  padding: 10px 18px;
+  font-weight: 600;
+}
+
+/* Auth screen inherits active theme/mood */
+#root .auth-wrap,
+.auth-wrap {
+  background: var(--bg) !important;
+  background-image:
+    radial-gradient(ellipse 70% 50% at 20% 0%, color-mix(in srgb, var(--go) 14%, transparent), transparent 60%) !important;
+  color: var(--ink) !important;
+}
+
+#root .auth-card {
+  background: color-mix(in srgb, var(--panel) 84%, transparent) !important;
+  border: 1px solid var(--line-hard) !important;
+  border-radius: 24px !important;
+  backdrop-filter: blur(22px) saturate(145%);
+  -webkit-backdrop-filter: blur(22px) saturate(145%);
+}
+
+/* ==========================================================================
+   APPLE-GRADE THEME-REACTIVE LANDING PAGE
+   ========================================================================== */
+#root .landing.landing-apple {
+  position: relative;
+  min-height: 100vh;
+  background: var(--bg) !important;
+  color: var(--ink) !important;
+  padding-bottom: 48px;
+  overflow-x: hidden;
+}
+
+#root .landing-apple .landing-ambient-glow {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 75% 48% at 20% -5%, color-mix(in srgb, var(--go) 18%, transparent), transparent 62%),
+    radial-gradient(ellipse 60% 42% at 85% 10%, color-mix(in srgb, var(--go) 10%, transparent), transparent 58%);
+}
+
+#root .land-nav.land-nav-apple {
+  position: sticky;
+  top: 16px;
+  z-index: 40;
+  width: min(1160px, calc(100% - 32px));
+  margin: 16px auto 0;
+  padding: 10px 16px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  background: color-mix(in srgb, var(--panel) 76%, transparent);
+  border: 1px solid var(--line);
+  backdrop-filter: blur(22px) saturate(150%);
+  -webkit-backdrop-filter: blur(22px) saturate(150%);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+}
+
+#root .land-nav-apple .land-logo {
+  background: transparent;
+  border: 0;
+  padding: 4px;
+  display: inline-flex;
+  align-items: center;
+}
+
+#root .land-nav-apple .land-logo img.logo-img {
+  height: 30px;
+  width: auto;
+}
+
+#root .land-nav-apple .land-links {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+#root .land-nav-apple .land-links button {
+  padding: 7px 12px;
+  border-radius: 10px;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+#root .land-nav-apple .land-links button:hover,
+#root .land-nav-apple .land-links button.on {
+  color: var(--ink);
+  background: color-mix(in srgb, var(--go) 14%, transparent);
+}
+
+#root .land-cta-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: 13px;
+  border: 1px solid color-mix(in srgb, var(--go) 45%, transparent);
+  background: var(--go);
+  color: var(--go-ink);
+  font-size: 13.5px;
+  font-weight: 600;
+  box-shadow: 0 8px 24px -8px color-mix(in srgb, var(--go) 55%, transparent);
+}
+
+#root .land-cta-btn.land-cta-hero {
+  padding: 13px 24px;
+  font-size: 15px;
+  border-radius: 15px;
+}
+
+#root .land-cta-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 13px 22px;
+  border-radius: 15px;
+  border: 1px solid var(--line-hard);
+  background: color-mix(in srgb, var(--panel) 72%, transparent);
+  color: var(--ink);
+  font-size: 15px;
+  font-weight: 500;
+  backdrop-filter: blur(14px);
+}
+
+#root .land-hero-apple {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 72px 24px 44px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#root .land-pill-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 14px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--panel) 80%, transparent);
+  border: 1px solid var(--line-hard);
+  color: var(--muted);
+  font-size: 12.5px;
+  font-weight: 500;
+  margin-bottom: 22px;
+  backdrop-filter: blur(14px);
+}
+
+#root .land-pill-badge .dp-icon {
+  color: var(--go);
+}
+
+#root .land-hero-apple h1 {
+  font-size: clamp(2.8rem, 7vw, 5.1rem);
+  line-height: 1.04;
+  letter-spacing: -0.04em;
+  font-weight: 700;
+  margin: 0 0 20px;
+  color: var(--ink);
+}
+
+#root .land-hero-apple > p {
+  max-width: 640px;
+  font-size: clamp(1rem, 1.8vw, 1.16rem);
+  line-height: 1.65;
+  color: var(--muted);
+  margin: 0 0 30px;
+}
+
+#root .land-hero-apple .landing-cta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 30px;
+}
+
+#root .land-stats-apple {
+  display: inline-flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 22px;
+}
+
+#root .land-stats-apple > span {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--panel) 78%, transparent);
+  border: 1px solid var(--line);
+  backdrop-filter: blur(14px);
+}
+
+#root .land-stats-apple > span b {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--go);
+}
+
+#root .land-stats-apple > span small {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+#root .land-bento-wrap,
+#root .land-steps-wrap {
+  width: min(1160px, calc(100% - 32px));
+  margin: 48px auto;
+}
+
+#root .land-section-head {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+#root .land-eyebrow {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--go);
+  margin-bottom: 8px;
+}
+
+#root .land-section-head h2 {
+  font-size: clamp(1.7rem, 3.2vw, 2.4rem);
+  letter-spacing: -0.03em;
+  margin: 0;
+  color: var(--ink);
+}
+
+#root .land-bento-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+#root .land-bento-card {
+  padding: 24px;
+  border-radius: 22px;
+  background: color-mix(in srgb, var(--panel) 78%, transparent);
+  border: 1px solid var(--line);
+  backdrop-filter: blur(20px) saturate(145%);
+  -webkit-backdrop-filter: blur(20px) saturate(145%);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: border-color 240ms ease, background-color 240ms ease;
+}
+
+#root .land-bento-card:hover {
+  border-color: color-mix(in srgb, var(--go) 42%, var(--line-hard));
+}
+
+#root .land-bento-card b {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+#root .land-bento-card p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+#root .land-bento-ic {
+  width: 44px;
+  height: 44px;
+  border-radius: 13px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, var(--panel2) 90%, transparent);
+  border: 1px solid var(--line);
+  color: var(--ink);
+}
+
+#root .land-bento-ic-accent {
+  background: color-mix(in srgb, var(--go) 16%, transparent);
+  border-color: color-mix(in srgb, var(--go) 35%, transparent);
+  color: var(--go);
+}
+
+#root .land-bento-wide {
+  grid-column: 1 / -1;
+  flex-direction: row;
+  align-items: center;
+  gap: 18px;
+}
+
+#root .land-steps-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+#root .land-step-card {
+  padding: 22px;
+  border-radius: 22px;
+  background: color-mix(in srgb, var(--panel) 78%, transparent);
+  border: 1px solid var(--line);
+  backdrop-filter: blur(18px);
+}
+
+#root .land-step-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+#root .land-step-num {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--go);
+}
+
+#root .land-step-ic {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, var(--go) 14%, transparent);
+  color: var(--go);
+}
+
+#root .land-step-card h3 {
+  margin: 0 0 8px;
+  font-size: 16.5px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+#root .land-step-card p {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+#root .land-foot-apple {
+  width: min(1160px, calc(100% - 32px));
+  margin: 56px auto 0;
+}
+
+#root .land-foot-card {
+  padding: 42px 28px;
+  border-radius: 26px;
+  text-align: center;
+  background: color-mix(in srgb, var(--panel) 84%, transparent);
+  border: 1px solid var(--line-hard);
+  backdrop-filter: blur(22px) saturate(145%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+#root .land-foot-card h2 {
+  margin: 0;
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  letter-spacing: -0.03em;
+  color: var(--ink);
+}
+
+#root .land-foot-card p {
+  margin: 0 0 6px;
+  color: var(--muted);
+  font-size: 15px;
+}
+
+@media (max-width: 900px) {
+  #root .land-steps-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 680px) {
+  #root .land-nav.land-nav-apple {
+    flex-wrap: wrap;
+    padding: 10px 12px;
+  }
+  #root .land-nav-apple .land-links {
+    display: none;
+  }
+  #root .land-bento-grid,
+  #root .land-steps-grid {
+    grid-template-columns: 1fr;
+  }
+  #root .land-bento-wide {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
