@@ -6,6 +6,7 @@ import { readPostLog } from '../history/log.js';
 import { isAiAccount } from '../ai-access.js';
 import BorderGlow from '../components/reactbits/BorderGlow.jsx';
 import { useDevice } from '../utils/device.js';
+import { isSfxEnabled, setSfxEnabled } from '../utils/sfx.js';
 import './workspace.css';
 
 const NAV = [
@@ -76,14 +77,25 @@ export function WorkspaceNav({ page, onNavigate, email, onSignOut }) {
   });
   const [mobileMoreOpen, setMobileMoreOpen] = useState(false);
   const [pcMoreOpen, setPcMoreOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [sfxOn, setSfxOn] = useState(() => isSfxEnabled());
+  const [reducedMotion, setReducedMotion] = useState(() => {
+    try { return localStorage.getItem('driftpost-reduced-motion') === 'true'; }
+    catch { return false; }
+  });
   useEffect(() => {
     setMobileMoreOpen(false);
     setPcMoreOpen(false);
+    setSettingsOpen(false);
   }, [page]);
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
     try { localStorage.setItem('driftpost-console-theme', theme); } catch {}
   }, [theme]);
+  useEffect(() => {
+    document.documentElement.dataset.motion = reducedMotion ? 'reduced' : 'full';
+    try { localStorage.setItem('driftpost-reduced-motion', reducedMotion ? 'true' : 'false'); } catch {}
+  }, [reducedMotion]);
   const navPage = page === 'connect' ? 'accounts' : page;
   const isTeam = isAiAccount(email);
   const topNavItems = [
@@ -119,10 +131,16 @@ export function WorkspaceNav({ page, onNavigate, email, onSignOut }) {
         >
           {theme === 'dark' ? <SunGlyph /> : <MoonGlyph />}
         </button>
-        <div className="ws-user-badge" title={email || 'Workspace'}>
-          <span className="ws-user-dot">{(email || 'U')[0].toUpperCase()}</span>
-          <span className="ws-user-email">{email || 'Workspace'}</span>
-        </div>
+        <button
+          type="button"
+          className={settingsOpen ? 'ws-topbar-icon-btn active' : 'ws-topbar-icon-btn'}
+          onClick={() => setSettingsOpen((open) => !open)}
+          title="Settings"
+          aria-label="Settings"
+          aria-expanded={settingsOpen}
+        >
+          <Icon name="gear" size={16} />
+        </button>
         {onSignOut && (
           <button
             type="button"
@@ -136,6 +154,85 @@ export function WorkspaceNav({ page, onNavigate, email, onSignOut }) {
         )}
       </div>
     </header>
+    {settingsOpen && (
+      <div
+        className="ws-settings-backdrop"
+        onClick={(e) => { if (e.target === e.currentTarget) setSettingsOpen(false); }}
+      >
+        <section className="ws-settings-modal" role="dialog" aria-modal="true" aria-label="Workspace settings">
+          <div className="ws-settings-head">
+            <div>
+              <span className="ws-eyebrow">Preferences</span>
+              <h2>Settings</h2>
+            </div>
+            <button type="button" className="ws-topbar-icon-btn" onClick={() => setSettingsOpen(false)} aria-label="Close settings">
+              <span aria-hidden="true">✕</span>
+            </button>
+          </div>
+          <div className="ws-settings-list">
+            <div className="ws-settings-row">
+              <div>
+                <b>Account</b>
+                <small>{email || 'Workspace'} · {isTeam ? 'Team Studio' : 'Standard'}</small>
+              </div>
+              <span className="ws-settings-pill">{isTeam ? 'Team' : 'Personal'}</span>
+            </div>
+            <div className="ws-settings-row">
+              <div>
+                <b>Appearance</b>
+                <small>Switch between dark and light glass surfaces</small>
+              </div>
+              <div className="ws-settings-seg">
+                <button type="button" className={theme === 'dark' ? 'on' : ''} onClick={() => setTheme('dark')}>Dark</button>
+                <button type="button" className={theme === 'light' ? 'on' : ''} onClick={() => setTheme('light')}>Light</button>
+              </div>
+            </div>
+            <div className="ws-settings-row">
+              <div>
+                <b>Interface Sound (SFX)</b>
+                <small>Subtle tactile audio feedback on taps & actions</small>
+              </div>
+              <button
+                type="button"
+                className={sfxOn ? 'ws-settings-toggle on' : 'ws-settings-toggle'}
+                onClick={() => {
+                  const next = !sfxOn;
+                  setSfxOn(next);
+                  setSfxEnabled(next);
+                }}
+                aria-pressed={sfxOn}
+              >
+                <span>{sfxOn ? 'On' : 'Off'}</span>
+              </button>
+            </div>
+            <div className="ws-settings-row">
+              <div>
+                <b>Reduce Motion</b>
+                <small>Minimize spring animations & page transitions</small>
+              </div>
+              <button
+                type="button"
+                className={reducedMotion ? 'ws-settings-toggle on' : 'ws-settings-toggle'}
+                onClick={() => setReducedMotion((v) => !v)}
+                aria-pressed={reducedMotion}
+              >
+                <span>{reducedMotion ? 'On' : 'Off'}</span>
+              </button>
+            </div>
+          </div>
+          <div className="ws-settings-foot">
+            <button type="button" className="ws-secondary" onClick={() => { setSettingsOpen(false); onNavigate('accounts'); }}>
+              Connected accounts
+            </button>
+            {onSignOut && (
+              <button type="button" className="ws-secondary ws-settings-signout" onClick={() => { setSettingsOpen(false); onSignOut(); }}>
+                Sign out
+              </button>
+            )}
+          </div>
+        </section>
+      </div>
+    )}
     {!isMobileDevice && (
       <div className="ws-pc-dock-wrap">
         {pcMoreOpen && (

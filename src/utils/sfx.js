@@ -1,6 +1,21 @@
 // Subtle, crisp Apple-inspired Web Audio API micro-SFX engine (zero external assets).
 let audioCtx = null;
 let lastClickAt = 0;
+const SFX_STORAGE_KEY = 'driftpost-sfx-enabled';
+
+export function isSfxEnabled() {
+  try {
+    return localStorage.getItem(SFX_STORAGE_KEY) !== 'false';
+  } catch {
+    return true;
+  }
+}
+
+export function setSfxEnabled(enabled) {
+  try {
+    localStorage.setItem(SFX_STORAGE_KEY, enabled ? 'true' : 'false');
+  } catch {}
+}
 
 function getCtx() {
   if (typeof window === 'undefined') return null;
@@ -20,6 +35,7 @@ function getCtx() {
 }
 
 export function playSfx(kind = 'tap') {
+  if (!isSfxEnabled()) return;
   const ctx = getCtx();
   if (!ctx || ctx.state !== 'running') return;
 
