@@ -337,11 +337,8 @@
 #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) .ws-topbar-icon-btn svg {
   width: 16px;
   height: 16px;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.9;
-  stroke-linecap: round;
-  stroke-linejoin: round;
+  fill: currentColor;
+  stroke: none;
 }
 
 #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar .ws-user-badge {

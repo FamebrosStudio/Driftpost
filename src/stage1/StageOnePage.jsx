@@ -9,20 +9,16 @@ import ExistingGroupSelector from './ExistingGroupSelector.jsx';
 import ContinueButton from './ContinueButton.jsx';
 import './stage1.css';
 import { WorkspaceNav } from '../workspace/Workspace.jsx';
+import DriftIcon from '../components/DriftIcons.jsx';
 
 const BrandSelectorModal = lazy(() => import('./BrandSelectorModal.jsx'));
 const GroupBuilder = lazy(() => import('./GroupBuilder.jsx'));
 
-const Svg = ({ d }) => (
-  <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-    <path d={d} />
-  </svg>
-);
 const ICONS = {
-  brand: <Svg d="M4 7l1.2-4h13.6L20 7 M4 7h16 M4 7v13h16V7 M9.5 20v-6h5v6" />,
-  platforms: <Svg d="M4 4h7v7H4z M13 4h7v7h-7z M4 13h7v7H4z M13 13h7v7h-7z" />,
-  trio: <Svg d="M12 3l9 5-9 5-9-5z M3 12.5l9 5 9-5 M3 17l9 5 9-5" />,
-  saved: <Svg d="M7 3h10v18l-5-4-5 4z" />,
+  brand: <DriftIcon name="brand" size={20} />,
+  platforms: <DriftIcon name="platforms" size={20} />,
+  trio: <DriftIcon name="trio" size={20} />,
+  saved: <DriftIcon name="saved" size={20} />,
 };
 
 function load(key, fallback) {
