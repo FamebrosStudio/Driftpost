@@ -3801,3 +3801,11 @@ app.listen(port, '0.0.0.0', () => {
   void hydrateFedBrandsFromCloud();
   startGoogleDriveIntake(supabase);
 });
+
+process.on('unhandledRejection', (reason) => {
+  console.error('[process] Unhandled promise rejection:', reason);
+});
+
+process.on('uncaughtException', (err) => {
+  console.error('[process] Uncaught exception:', err);
+});

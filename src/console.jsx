@@ -123,6 +123,13 @@ export default function Console({ session, onSwitchAccount, onSignOut }) {
     }
     fn();
   };
+  const scrollAllToTop = () => {
+    try { window.scrollTo(0, 0); } catch {}
+    try {
+      document.querySelectorAll('.ws-main, .hist, .stage1-in, .stage2-in, .stage3-in, .team-video-main, .team-review-main')
+        .forEach((el) => { el.scrollTop = 0; });
+    } catch {}
+  };
   const go = (next, skipTransition = false) => {
     const n = String(next);
     const apply = () => {
@@ -131,7 +138,7 @@ export default function Console({ session, onSwitchAccount, onSignOut }) {
         if (n === 'connect') localStorage.removeItem('driftpost-stage');
         else localStorage.setItem('driftpost-stage', n);
       } catch {}
-      try { window.scrollTo(0, 0); } catch {}
+      scrollAllToTop();
       try { window.history.pushState({}, '', routeFor('create', n)); } catch {}
     };
     if (skipTransition) apply();
@@ -139,7 +146,7 @@ export default function Console({ session, onSwitchAccount, onSignOut }) {
   };
   const navigate = (next) => {
     withTransition(() => {
-      try { window.scrollTo(0, 0); } catch {}
+      scrollAllToTop();
       if (next === 'create') {
         if (isAiAccount(session.user?.email)) {
           setCreateModePicker(true);

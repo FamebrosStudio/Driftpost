@@ -9,6 +9,18 @@ export default class AppErrorBoundary extends React.Component {
 
   componentDidCatch(error, info) {
     console.error('[Driftpost] Page failed to render:', error, info.componentStack);
+    const msg = String(error?.message || '');
+    if (/dynamically imported module|loading chunk|importing a module script/i.test(msg)) {
+      try {
+        const key = 'driftpost:boundary-reload-at';
+        const prev = Number(sessionStorage.getItem(key) || 0);
+        if (!prev || Date.now() - prev > 30_000) {
+          sessionStorage.setItem(key, String(Date.now()));
+          window.location.reload();
+          return;
+        }
+      } catch {}
+    }
     this.setState({ error, componentStack: info.componentStack || '' });
   }
 
