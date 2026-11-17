@@ -507,8 +507,18 @@ export async function api(path, token, options = {}) {
     const timer = setTimeout(() => ctrl.abort(), timeoutMs);
     try {
       const requestUrl = apiRequestUrl(path, method);
+      const rawBody = options.body;
+      const isBinaryOrEncoded = rawBody == null
+        || typeof rawBody === 'string'
+        || rawBody instanceof FormData
+        || rawBody instanceof Blob
+        || rawBody instanceof URLSearchParams
+        || rawBody instanceof ArrayBuffer
+        || ArrayBuffer.isView(rawBody);
+      const normalizedBody = isBinaryOrEncoded ? rawBody : JSON.stringify(rawBody);
       const res = await fetch(requestUrl, {
         ...options,
+        ...(normalizedBody !== undefined ? { body: normalizedBody } : {}),
         signal: ctrl.signal,
         headers: {
           ...(options.headers || {}),

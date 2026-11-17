@@ -3730,6 +3730,9 @@ app.use((err, _req, res, _next) => {
   if (err && err.message === 'Not allowed by CORS') {
     return res.status(403).json({ error: 'CORS policy blocked this request' });
   }
+  if (err?.type === 'entity.parse.failed') {
+    return res.status(400).json({ error: 'Invalid JSON request body.' });
+  }
   if (err?.type === 'entity.too.large') {
     return res.status(413).json({ error: 'Upload is too large. Reload the app and try again.' });
   }

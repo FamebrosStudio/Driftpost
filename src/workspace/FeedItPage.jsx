@@ -84,7 +84,7 @@ export default function FeedItPage({ session, onNavigate, onSignOut }) {
     try {
       const data = await api('/api/ai/feed-it', session.access_token, {
         method: 'POST',
-        body: { brandName: brandName.trim(), rawText: rawText.trim() },
+        body: JSON.stringify({ brandName: brandName.trim(), rawText: rawText.trim() }),
       });
       setSavedBrand(data?.brand || null);
       setBrandName('');
