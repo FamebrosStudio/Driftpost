@@ -1,4 +1,4 @@
-﻿import test from 'node:test';
+import test from 'node:test';
 import assert from 'node:assert/strict';
 import { getMetaPages, metaConnectionErrorMessage, subscribeFacebookWebhooks, facebookAuthorizationUrl, metaBusinessLoginUrl, sendInstagramPrivateReply, metaAuthorizationUrl, publishFacebook, publishFacebookCarousel, publishInstagram, publishInstagramCarousel, resolveInstagramCollaboratorUsernames, subscribeInstagramWebhooks } from '../src/meta.js';
 

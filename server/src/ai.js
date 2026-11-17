@@ -1,4 +1,4 @@
-﻿// AI caption writer + Famebros brand memory. The provider key lives only on the
+// AI caption writer + Famebros brand memory. The provider key lives only on the
 // server. STORAGE: server/src/brand-memory/ holds EVERYTHING — brands.full.json
 // (every phone, address, footer, fact, CTA, keyword, example for all 41
 // brands), brands.compact.json (resolver index), memory.json (learned owner

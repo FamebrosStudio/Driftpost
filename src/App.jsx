@@ -1,4 +1,4 @@
-﻿import React, { Suspense, lazy, useEffect, useRef, useState } from 'react';
+import React, { Suspense, lazy, useEffect, useRef, useState } from 'react';
 import { useSession, getSupabase, pokeSession } from './session.js';
 import { friendlyAuthError } from './authMessages.js';
 import BrandIcon from './brand.jsx';
@@ -386,7 +386,7 @@ function Landing({ onEnter, session, pubPage, setPubPage }) {
           <span>Famebros Studio · One workspace. Four platforms.</span>
         </div>
         <h1><SpotLine text="Post once." /><br /><SpotLine text="Everywhere." /></h1>
-        <p>Schedule and publish across Instagram, Facebook, YouTube and X from one calm, unified workspace — with captions, covers, and approvals tailored to every brand.</p>
+        <p>Schedule and publish across Instagram, Facebook, YouTube and X from one calm, unified workspace, with captions, covers, and approvals tailored to every brand.</p>
         <div className="landing-cta">
           <button className="land-cta-btn land-cta-hero" onClick={onEnter}>
             <span>{session ? 'Enter console' : 'Get started free'}</span>
@@ -430,7 +430,7 @@ function Landing({ onEnter, session, pubPage, setPubPage }) {
             <span className="land-bento-ic land-bento-ic-accent"><DriftIcon name="trio" size={22} /></span>
             <div>
               <b>One workspace, total control</b>
-              <p>CSV batches, finite repeats, shareable approval links, Google Drive team intake, and live account metrics — all alongside your connected brands.</p>
+              <p>CSV batches, finite repeats, shareable approval links, Google Drive team intake, and live account metrics alongside your connected brands.</p>
             </div>
           </div>
         </div>

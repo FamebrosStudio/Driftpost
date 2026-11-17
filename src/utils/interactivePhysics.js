@@ -1,4 +1,4 @@
-// Apple-style hold-and-nudge elastic physics + hardware-composited 0ms-lag SVG cursor system for every event.
+// Driftpost hold-and-nudge elastic physics + hardware-composited SVG cursor system.
 const HOLD_SELECTOR = [
   '.ws-stat', '.ws-welcome', '.ws-create-mode-card', '.cn-card', '.hist-row',
   '.setup-card', '.ws-mood-card', '.ws-cursor-card', '.feed-it-item', '.ws-panel',
@@ -62,7 +62,7 @@ export const CURSOR_STYLES = [
   {
     id: 'glass',
     label: 'Liquid Glass',
-    note: 'Translucent Apple-style prism pointer with full event suite',
+    note: 'Translucent frosted prism pointer with specular sheen',
     hotspot: { x: 2, y: 2 },
     palette: { fill: '#e2e8f0', stroke: '#0f172a' },
     svg: `<svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none"><defs><linearGradient id="g1" x1="2" y1="2" x2="18" y2="20" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#ffffff" stop-opacity="0.94"/><stop offset="55%" stop-color="#cbd5e1" stop-opacity="0.58"/><stop offset="100%" stop-color="__ACCENT__" stop-opacity="0.78"/></linearGradient></defs><path d="M2.5 2.2L19.5 10.5L12.1 12.9L9.3 20.2L2.5 2.2Z" fill="url(#g1)" stroke="#ffffff" stroke-width="1.35" stroke-linejoin="round"/></svg>`,

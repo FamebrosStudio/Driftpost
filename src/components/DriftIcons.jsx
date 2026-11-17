@@ -1,6 +1,6 @@
 import React from 'react';
 
-// Solid-fill rounded Uicons-style SVG icon system (fill="currentColor", clean cutouts).
+// Solid-fill rounded SVG icon system (fill="currentColor").
 export function DriftIcon({ name, size = 16, className = '' }) {
   const props = {
     width: size,
