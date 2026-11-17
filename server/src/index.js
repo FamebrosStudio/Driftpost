@@ -1902,7 +1902,8 @@ app.get('/api/ai/feed-it', requireUser, burstLimit, async (req, res) => {
   try {
     const { listFedBrands } = await import('./brand-memory/index.js');
     res.json({ brands: listFedBrands() });
-  } catch {
+  } catch (e) {
+    console.error('[feed-it] list failed:', e);
     res.status(500).json({ error: 'Could not load fed brands.' });
   }
 });
@@ -1918,6 +1919,7 @@ app.post('/api/ai/feed-it', requireUser, burstLimit, async (req, res) => {
     const brand = feedBrand({ brandName, rawText });
     res.json({ ok: true, brand });
   } catch (e) {
+    console.error('[feed-it] save failed:', e);
     res.status(400).json({ error: e?.message || 'Could not save brand data.' });
   }
 });
@@ -1931,7 +1933,8 @@ app.delete('/api/ai/feed-it/:brandId', requireUser, burstLimit, async (req, res)
     const ok = deleteFedBrand(String(req.params.brandId || ''));
     if (!ok) return res.status(404).json({ error: 'Brand not found.' });
     res.json({ ok: true });
-  } catch {
+  } catch (e) {
+    console.error('[feed-it] delete failed:', e);
     res.status(500).json({ error: 'Could not delete fed brand.' });
   }
 });

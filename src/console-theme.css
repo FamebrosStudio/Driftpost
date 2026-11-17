@@ -160,7 +160,15 @@
   pointer-events: none;
 }
 
-#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar > .ws-wordmark {
+#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar::before {
+  content: "";
+  position: fixed;
+  inset: 0 0 auto 0;
+  height: 76px;
+  background: linear-gradient(to bottom, color-mix(in srgb, var(--bg) 92%, transparent) 28%, transparent);
+  pointer-events: none;
+  z-index: -1;
+}
   display: inline-flex !important;
   align-items: center !important;
   align-self: center !important;
@@ -254,7 +262,7 @@
   min-width: 18px;
   height: 18px;
   padding: 0 5px;
-  border-radius: 0 !important;
+  border-radius: 999px !important;
   background: color-mix(in srgb, var(--go) 22%, var(--panel));
   color: var(--go);
   font-size: 10.5px;
@@ -975,7 +983,7 @@
   min-height: 40px;
   padding: 9px 18px;
   border: 1px solid color-mix(in srgb, var(--line-hard) 92%, var(--ink));
-  border-radius: 0 !important;
+  border-radius: 10px !important;
   background: linear-gradient(
     180deg,
     color-mix(in srgb, var(--panel2) 86%, var(--ink) 7%) 0%,
@@ -1259,7 +1267,7 @@
 }
 
 #root .ws .ws-content-period {
-  border-radius: 0 !important;
+  border-radius: 999px !important;
   border: 1px solid var(--line-hard);
   background: var(--panel2);
   padding: 3px;
@@ -1270,7 +1278,7 @@
   min-height: 30px;
   padding: 0 11px;
   border: 1px solid transparent;
-  border-radius: 0 !important;
+  border-radius: 999px !important;
   background: transparent;
   color: var(--muted);
   font-size: 11px;
@@ -1294,7 +1302,7 @@
   min-height: 32px;
   padding: 4px 10px;
   border: 1px solid transparent;
-  border-radius: 0 !important;
+  border-radius: 10px !important;
   background: transparent;
   color: var(--go);
   font-size: 12px;
@@ -1330,7 +1338,7 @@
   .plat-pill, .s2-pill, .s3-pill, .s3-tab, .hist-tab, .cn-pill, .cn-step,
   .ws-status, .ws-live-status, .s2-kind, .s2-music-badge
 ) {
-  border-radius: 0 !important;
+  border-radius: 999px !important;
 }
 
 #root .stage2 .s2-switch {
@@ -1359,11 +1367,11 @@
    CALENDAR, STAGE PIPELINE & FLOATING BOTTOM ACTION BARS
    ========================================================================== */
 #root .ws .ws-day {
-  border-radius: 0 !important;
+  border-radius: 10px !important;
 }
 
 #root .ws .ws-day-number {
-  border-radius: 0 !important;
+  border-radius: 999px !important;
 }
 
 #root .ws .ws-day.today .ws-day-number,
@@ -1374,7 +1382,7 @@
 }
 
 #root .ws .ws-event {
-  border-radius: 0 !important;
+  border-radius: 8px !important;
   border-left: 3px solid var(--go);
   color: var(--ink);
   background: var(--panel2);
@@ -1402,7 +1410,7 @@
 #root :is(.connect, .welcome, .stage1, .stage2, .stage3) :is(
   .cn-empty, .s1-drop, .s2-drop, .s3-grey-note
 ) {
-  border-radius: 0 !important;
+  border-radius: 14px !important;
   border-color: var(--line-hard);
   background: color-mix(in srgb, var(--panel2) 65%, transparent);
 }
@@ -1510,7 +1518,7 @@
   overflow-y: auto;
   overscroll-behavior: contain;
   scrollbar-gutter: stable;
-  padding-top: 64px;
+  padding-top: 72px;
   padding-bottom: 72px;
 }
 
@@ -1533,7 +1541,7 @@
   max-width: none !important;
   min-height: 100%;
   margin: 0 !important;
-  padding: 64px clamp(16px, 2.5vw, 36px) 72px;
+  padding: 72px clamp(16px, 2.5vw, 36px) 72px;
 }
 
 #root :is(.ws-heading, .hist-heading, .team-review-heading) {

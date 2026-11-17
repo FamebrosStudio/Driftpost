@@ -29,7 +29,9 @@ function loadCustom() {
 }
 function saveCustom(brands) {
   const raw = JSON.stringify({ version: 1, brands: brands.slice(0, MAX_AUTO) });
-  if (raw.length < 250000) fs.writeFileSync(CUSTOM_PATH, raw);
+  if (raw.length >= 250000) throw new Error('Custom brand store limit reached.');
+  fs.mkdirSync(path.dirname(CUSTOM_PATH), { recursive: true });
+  fs.writeFileSync(CUSTOM_PATH, raw);
 }
 export function loadBrands() {
   if (!cache) cache = JSON.parse(fs.readFileSync(COMPACT_PATH, 'utf8'));
@@ -1028,6 +1030,7 @@ export function feedBrand({ brandName = '', rawText = '' } = {}) {
     confirmed: true,
     updated_at: nowIso,
   };
+  fs.mkdirSync(DEEP_DIR, { recursive: true });
   fs.writeFileSync(autoPath, JSON.stringify(deep, null, 2), 'utf8');
   deepCache = null;
 
