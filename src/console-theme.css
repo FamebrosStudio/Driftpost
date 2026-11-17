@@ -4018,3 +4018,64 @@ html[data-device="mobile"] #root :is(.ws-main, .hist, .stage1-in, .stage2-in, .s
 #root .dp-progress-wrap.is-partial .dp-progress-track > i {
   background: var(--warm);
 }
+
+/* Selective text selection: unselectable UI chrome/cards/buttons, selectable inputs & copy */
+#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3, .connect) {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+#root :is(.ws, .hist-shell, .stage1, .stage2, .stage3, .connect) :is(input, textarea, select, pre, code, [contenteditable="true"], .s2-out-body, .hist-body, .ws-content-copy) {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+/* Precision professional vector cursor (desktop fine pointer) */
+html[data-cursor="custom"],
+html[data-cursor="custom"] body,
+html[data-cursor="custom"] #root,
+html[data-cursor="custom"] #root * {
+  cursor: none !important;
+}
+
+html[data-cursor="custom"] :is(input, textarea, select, option, [contenteditable="true"]) {
+  cursor: text !important;
+}
+
+#dp-pro-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 99999;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 140ms ease;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.45));
+  will-change: transform, opacity;
+}
+
+#dp-pro-cursor.is-visible {
+  opacity: 1;
+}
+
+#dp-pro-cursor.is-hidden {
+  opacity: 0;
+}
+
+#dp-pro-cursor svg {
+  display: block;
+  transform-origin: 2px 2px;
+  transition: transform 160ms cubic-bezier(0.22, 1.38, 0.36, 1);
+}
+
+#dp-pro-cursor.is-down svg {
+  transform: scale(0.86);
+}
+
+#dp-pro-cursor.is-pointer path {
+  stroke: var(--go, #3b82f6);
+}
+
+.dp-hold-nudging {
+  will-change: transform;
+}

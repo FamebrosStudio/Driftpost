@@ -6,8 +6,10 @@ import './styles.css';
 import './console-theme.css';
 import './pointer-proximity.js';
 import { applyDeviceAttributes } from './utils/device.js';
+import { installInteractivePhysics } from './utils/interactivePhysics.js';
 
 applyDeviceAttributes();
+installInteractivePhysics();
 try {
   const savedMood = localStorage.getItem('driftpost-console-mood');
   const savedTheme = localStorage.getItem('driftpost-console-theme');
