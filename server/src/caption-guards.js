@@ -174,7 +174,16 @@ export function separateManagedByFooter(text) {
 // Give contact details, each branch location, and the agency credit distinct
 // visual blocks while leaving the verified wording of every footer line intact.
 export function formatBrandFooter(lines = []) {
-  const entries = (Array.isArray(lines) ? lines : [lines]).map((line) => String(line || '').trim()).filter(Boolean);
+  const seen = new Set();
+  const entries = (Array.isArray(lines) ? lines : [lines])
+    .map((line) => String(line || '').trim())
+    .filter((line) => {
+      if (!line) return false;
+      const key = line.toLowerCase().replace(/\s+/g, ' ');
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
   const blocks = [];
   for (const line of entries) {
     const isManager = /managed\s+by\s*:/i.test(line);
