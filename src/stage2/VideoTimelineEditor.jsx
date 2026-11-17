@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import DriftIcon from '../components/DriftIcons.jsx';
 
 const MIN_CLIP_SECONDS = 0.5;
 const SPEEDS = [0.5, 0.75, 1, 1.25, 1.5, 2];
@@ -494,7 +495,7 @@ export default function VideoTimelineEditor({ file, onApply, onClose }) {
                   onClick={() => setMuted((m) => !m)}
                   disabled={busy}
                 >
-                  {muted ? '🔇 Muted' : '🔊 Audio On'}
+                  <DriftIcon name={muted ? 'volumeOff' : 'volumeOn'} size={14} /> {muted ? 'Muted' : 'Audio On'}
                 </button>
                 <input
                   type="range"

@@ -17,6 +17,7 @@ const WorkspaceNav = lazy(() => import('./workspace/Workspace.jsx').then((module
 const DashboardPage = lazy(() => import('./workspace/Workspace.jsx').then((module) => ({ default: module.DashboardPage })));
 const CalendarPage = lazy(() => import('./workspace/Workspace.jsx').then((module) => ({ default: module.CalendarPage })));
 const AnalyticsPage = lazy(() => import('./workspace/Workspace.jsx').then((module) => ({ default: module.AnalyticsPage })));
+const SettingsPage = lazy(() => import('./workspace/Workspace.jsx').then((module) => ({ default: module.SettingsPage })));
 const AutomationsPage = lazy(() => import('./workspace/AutomationsPage.jsx'));
 const TeamVideoPage = lazy(() => import('./workspace/TeamVideoPage.jsx'));
 const TeamVideoReviewPage = lazy(() => import('./workspace/TeamVideoReviewPage.jsx'));
@@ -39,7 +40,7 @@ function loadStage() {
 const CONSOLE_PATHS = {
   '/': ['home', ''], '/console': ['home', ''], '/console/calendar': ['calendar', ''], '/console/analytics': ['analytics', ''],
   '/console/automations': ['automations', ''], '/console/history': ['history', ''],
-  '/console/accounts': ['accounts', ''], '/console/team-video': ['team-video', ''], '/console/team-video/review': ['team-video-review', ''], '/console/feed-it': ['feed-it', ''],
+  '/console/accounts': ['accounts', ''], '/console/settings': ['settings', ''], '/console/team-video': ['team-video', ''], '/console/team-video/review': ['team-video-review', ''], '/console/feed-it': ['feed-it', ''],
   '/console/create': ['create', '1'], '/console/create/1': ['create', '1'],
   '/console/create/2': ['create', '2'], '/console/create/3': ['create', '3'],
 };
@@ -176,6 +177,7 @@ export default function Console({ session, onSwitchAccount, onSignOut }) {
     navigate('create');
   }} onSignOut={onSignOut} />));
   if (view === 'analytics') return withBackgroundNotice(loadPage(<AnalyticsPage session={session} onNavigate={navigate} onSignOut={onSignOut} />));
+  if (view === 'settings') return withBackgroundNotice(loadPage(<SettingsPage session={session} onNavigate={navigate} onSignOut={onSignOut} />));
   if (view === 'automations') return withBackgroundNotice(loadPage(<AutomationsPage session={session} onNavigate={navigate} onSignOut={onSignOut} />));
   if (view === 'history') return withBackgroundNotice(
     <Suspense fallback={<PageLoading label="Loading History…" />}>

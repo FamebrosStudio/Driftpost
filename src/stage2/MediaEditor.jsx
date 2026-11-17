@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import EpidemicCatalog from '../music/EpidemicCatalog.jsx';
 import VideoTimelineEditor from './VideoTimelineEditor.jsx';
+import DriftIcon from '../components/DriftIcons.jsx';
 
 const RATIOS = [
   ['Free', 0, 'Custom crop'],
@@ -1542,7 +1543,7 @@ export default function MediaEditor({
             disabled={saving}
             title="Press and hold to view unedited original"
           >
-            👁 Compare
+            <DriftIcon name="eye" size={14} /> Compare
           </button>
           <button
             type="button"
@@ -1596,7 +1597,7 @@ export default function MediaEditor({
               disabled={saving}
               onClick={() => setIdx(i)}
             >
-              {(f.type || f.raw?.type || '').startsWith('video/') ? '🎬' : '🖼️'} #{i + 1} · {(f.name || '').slice(0, 18)}
+              <DriftIcon name={(f.type || f.raw?.type || '').startsWith('video/') ? 'film' : 'photo'} size={13} /> #{i + 1} · {(f.name || '').slice(0, 18)}
             </button>
           ))}
         </div>
@@ -1664,7 +1665,7 @@ export default function MediaEditor({
                       className={!pad ? 'on' : ''}
                       onClick={() => selectFramingMode(false)}
                     >
-                      ✂ Crop to Fill
+                      <DriftIcon name="crop" size={14} /> Crop to Fill
                     </button>
                     <button
                       type="button"
@@ -2468,7 +2469,7 @@ export default function MediaEditor({
                       <div className="s2-slider-head">
                         <span>Original Audio Volume</span>
                         <button type="button" onClick={() => setVideoMuted((m) => !m)}>
-                          {videoMuted ? '🔇 Muted' : `🔊 ${videoVolume}%`}
+                          <DriftIcon name={videoMuted ? 'volumeOff' : 'volumeOn'} size={14} /> {videoMuted ? 'Muted' : `${videoVolume}%`}
                         </button>
                       </div>
                       <input
@@ -2511,7 +2512,7 @@ export default function MediaEditor({
                         setTimelineEditorOpen(true);
                       }}
                     >
-                      ✂ Open Full-Screen Filmstrip Trimmer
+                      <DriftIcon name="crop" size={14} /> Open Full-Screen Filmstrip Trimmer
                     </button>
                   </section>
                 )}
@@ -2524,7 +2525,7 @@ export default function MediaEditor({
                   {file?.musicTrack && (
                     <div className="s2-sub-group" style={{ paddingTop: 0, borderTop: 0 }}>
                       <div className="s2-color-head">
-                        <span>🎵 {file.musicTrack.title || file.musicTrack.name || 'Mixed soundtrack'}</span>
+                        <span><DriftIcon name="music" size={13} /> {file.musicTrack.title || file.musicTrack.name || 'Mixed soundtrack'}</span>
                         {onRemoveMusic && (
                           <button
                             type="button"
@@ -2706,7 +2707,7 @@ export default function MediaEditor({
                 onClick={() => setVideoMuted((m) => !m)}
                 title={videoMuted ? 'Unmute preview' : 'Mute preview'}
               >
-                {videoMuted ? '🔇' : '🔊'}
+                <DriftIcon name={videoMuted ? 'volumeOff' : 'volumeOn'} size={14} />
               </button>
               <button
                 type="button"
@@ -2718,7 +2719,7 @@ export default function MediaEditor({
                   setTimelineEditorOpen(true);
                 }}
               >
-                ✂ Filmstrip Trim
+                <DriftIcon name="crop" size={14} /> Filmstrip Trim
               </button>
             </div>
           )}

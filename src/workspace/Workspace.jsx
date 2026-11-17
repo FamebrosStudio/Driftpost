@@ -5,6 +5,7 @@ import CampaignComposer from './CampaignComposer.jsx';
 import { readPostLog } from '../history/log.js';
 import { isAiAccount } from '../ai-access.js';
 import BorderGlow from '../components/reactbits/BorderGlow.jsx';
+import DriftIcon from '../components/DriftIcons.jsx';
 import { useDevice } from '../utils/device.js';
 import { isSfxEnabled, setSfxEnabled } from '../utils/sfx.js';
 import './workspace.css';
@@ -40,48 +41,38 @@ function metricIssue(account) {
 }
 
 function Icon({ name, size = 16 }) {
-  const common = { fill: 'none', stroke: 'currentColor', strokeWidth: 1.8, strokeLinecap: 'round', strokeLinejoin: 'round' };
-  const shapes = {
-    home: <><path d="m3 10 9-7 9 7"/><path d="M5 9v11h14V9M9 20v-6h6v6"/></>,
-    plus: <path d="M12 5v14M5 12h14"/>,
-    calendar: <><rect x="3.5" y="5" width="17" height="16" rx="1.5"/><path d="M7.5 3v4M16.5 3v4M3.5 10h17M8 14h.01M12 14h.01M16 14h.01M8 17h.01M12 17h.01"/></>,
-    chart: <><path d="M4 19V5M4 19h17"/><path d="m7 15 4-4 3 2 6-7"/></>,
-    clock: <><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></>,
-    users: <><circle cx="9" cy="8" r="3"/><path d="M3.5 20a5.5 5.5 0 0 1 11 0M16 5.5a3 3 0 0 1 0 5.8M17 14a5 5 0 0 1 3.5 4.8"/></>,
-    sliders: <><path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h9M17 18h3"/><circle cx="15" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="15" cy="18" r="2"/></>,
-    gear: <><circle cx="12" cy="12" r="6.5"/><circle cx="12" cy="12" r="2.4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.93 4.93l2.12 2.12M16.95 16.95l2.12 2.12M19.07 4.93l-2.12 2.12M7.05 16.95l-2.12 2.12"/></>,
-    video: <><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m10 9 5 3-5 3z"/></>,
-    review: <><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5M7.5 10.5l2 2 4-4"/></>,
-    feed: <><ellipse cx="12" cy="5.5" rx="7.5" ry="3"/><path d="M4.5 5.5v6.5c0 1.66 3.36 3 7.5 3s7.5-1.34 7.5-3V5.5"/><path d="M4.5 12v6.5c0 1.66 3.36 3 7.5 3s7.5-1.34 7.5-3V12"/></>,
-    arrowRight: <><path d="M4 12h15M13 6l6 6-6 6"/></>,
-    arrowLeft: <><path d="M20 12H5M11 6l-6 6 6 6"/></>,
-    sparkles: <><path d="m12 3 1.7 5.3L19 10l-5.3 1.7L12 17l-1.7-5.3L5 10l5.3-1.7L12 3Z"/><path d="m19 14 .9 2.1L22 17l-2.1.9L19 20l-.9-2.1L16 17l2.1-.9L19 14ZM5 3l.7 1.8L7.5 5.5l-1.8.7L5 8l-.7-1.8-1.8-.7 1.8-.7L5 3Z"/></>,
-  };
-  return <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true" focusable="false" {...common}>{shapes[name] || shapes.sparkles}</svg>;
+  return <DriftIcon name={name} size={size} />;
 }
 
-const Glyph = ({ d, children }) => (
-  <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false">{children}</svg>
-);
-const SunGlyph = () => <Glyph><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" /></Glyph>;
-const MoonGlyph = () => <Glyph><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" /></Glyph>;
-const SignOutGlyph = () => <Glyph><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><polyline points="16 17 21 12 16 7" /><line x1="21" y1="12" x2="9" y2="12" /></Glyph>;
-const MoreGridGlyph = () => <Glyph><rect x="4" y="4" width="6" height="6" rx="1" /><rect x="14" y="4" width="6" height="6" rx="1" /><rect x="4" y="14" width="6" height="6" rx="1" /><rect x="14" y="14" width="6" height="6" rx="1" /></Glyph>;
+const SunGlyph = () => <DriftIcon name="sun" size={18} />;
+const MoonGlyph = () => <DriftIcon name="moon" size={18} />;
+const SignOutGlyph = () => <DriftIcon name="signOut" size={18} />;
+const MoreGridGlyph = () => <DriftIcon name="moreGrid" size={18} />;
 
 const MOOD_THEMES = [
-  { id: 'dark', label: 'Midnight', color: '#3b82f6' },
-  { id: 'light', label: 'Daylight', color: '#2563eb' },
-  { id: 'osien', label: 'OSIEN', color: '#f5a623' },
-  { id: 'tokyo-drift', label: 'Tokyo Drift', color: '#ff2a85' },
-  { id: 'sea', label: 'Sea', color: '#14b8a6' },
-  { id: 'perfect', label: 'Perfect', color: '#38bdf8' },
-  { id: 'cute', label: 'Cute', color: '#f472b6' },
-  { id: 'clumsy', label: 'Clumsy', color: '#fb923c' },
-  { id: 'funny', label: 'Funny', color: '#a3e635' },
-  { id: 'sad', label: 'Sad', color: '#60a5fa' },
-  { id: 'bad', label: 'Bad', color: '#ef4444' },
-  { id: 'slow', label: 'Slow', color: '#34d399' },
+  { id: 'dark', label: 'Midnight', note: 'Obsidian & Blue', bg: '#09090b', panel: '#111114', color: '#3b82f6' },
+  { id: 'light', label: 'Daylight', note: 'Crisp Alabaster', bg: '#f4f7fb', panel: '#ffffff', color: '#0284c7' },
+  { id: 'osien', label: 'OSIEN', note: 'osien.is-a.dev', bg: '#05050a', panel: '#0b0b12', color: '#f5a623' },
+  { id: 'tokyo-drift', label: 'Tokyo Drift', note: 'Neon Shibuya', bg: '#08070d', panel: '#100e1a', color: '#ff2a85' },
+  { id: 'sea', label: 'Sea', note: 'Deep Pelagic', bg: '#041018', panel: '#081924', color: '#14b8a6' },
+  { id: 'perfect', label: 'Perfect', note: 'Titanium Pro', bg: '#09090b', panel: '#111114', color: '#38bdf8' },
+  { id: 'cute', label: 'Cute', note: 'Sakura Velvet', bg: '#140e18', panel: '#1c1322', color: '#f472b6' },
+  { id: 'clumsy', label: 'Clumsy', note: 'Warm Tangerine', bg: '#12100e', panel: '#1b1714', color: '#fb923c' },
+  { id: 'funny', label: 'Funny', note: 'Electric Volt', bg: '#0c110d', panel: '#131b15', color: '#a3e635' },
+  { id: 'sad', label: 'Sad', note: 'Rainy Indigo', bg: '#0a0e17', panel: '#101624', color: '#60a5fa' },
+  { id: 'bad', label: 'Bad', note: 'Crimson Edge', bg: '#0d0709', panel: '#160c0f', color: '#ef4444' },
+  { id: 'slow', label: 'Slow', note: 'Lo-Fi Matcha', bg: '#0c110f', panel: '#131b18', color: '#34d399' },
 ];
+
+function applyMoodSelection(moodId) {
+  const theme = moodId === 'light' ? 'light' : 'dark';
+  document.documentElement.dataset.theme = theme;
+  document.documentElement.dataset.mood = moodId;
+  try {
+    localStorage.setItem('driftpost-console-theme', theme);
+    localStorage.setItem('driftpost-console-mood', moodId);
+  } catch {}
+}
 
 export function WorkspaceNav({ page, onNavigate, email, onSignOut }) {
   const device = useDevice();
@@ -102,29 +93,13 @@ export function WorkspaceNav({ page, onNavigate, email, onSignOut }) {
   };
   const [mobileMoreOpen, setMobileMoreOpen] = useState(false);
   const [pcMoreOpen, setPcMoreOpen] = useState(false);
-  const [settingsOpen, setSettingsOpen] = useState(false);
-  const [sfxOn, setSfxOn] = useState(() => isSfxEnabled());
-  const [reducedMotion, setReducedMotion] = useState(() => {
-    try { return localStorage.getItem('driftpost-reduced-motion') === 'true'; }
-    catch { return false; }
-  });
   useEffect(() => {
     setMobileMoreOpen(false);
     setPcMoreOpen(false);
-    setSettingsOpen(false);
   }, [page]);
   useEffect(() => {
-    document.documentElement.dataset.theme = theme;
-    document.documentElement.dataset.mood = mood;
-    try {
-      localStorage.setItem('driftpost-console-theme', theme);
-      localStorage.setItem('driftpost-console-mood', mood);
-    } catch {}
-  }, [theme, mood]);
-  useEffect(() => {
-    document.documentElement.dataset.motion = reducedMotion ? 'reduced' : 'full';
-    try { localStorage.setItem('driftpost-reduced-motion', reducedMotion ? 'true' : 'false'); } catch {}
-  }, [reducedMotion]);
+    applyMoodSelection(mood);
+  }, [mood]);
   const navPage = page === 'connect' ? 'accounts' : page;
   const isTeam = isAiAccount(email);
   const topNavItems = [
@@ -162,11 +137,10 @@ export function WorkspaceNav({ page, onNavigate, email, onSignOut }) {
         </button>
         <button
           type="button"
-          className={settingsOpen ? 'ws-topbar-icon-btn active' : 'ws-topbar-icon-btn'}
-          onClick={() => setSettingsOpen((open) => !open)}
+          className={page === 'settings' ? 'ws-topbar-icon-btn active' : 'ws-topbar-icon-btn'}
+          onClick={() => onNavigate('settings')}
           title="Settings"
           aria-label="Settings"
-          aria-expanded={settingsOpen}
         >
           <Icon name="gear" size={16} />
         </button>
@@ -183,96 +157,6 @@ export function WorkspaceNav({ page, onNavigate, email, onSignOut }) {
         )}
       </div>
     </header>
-    {settingsOpen && (
-      <div
-        className="ws-settings-backdrop"
-        onClick={(e) => { if (e.target === e.currentTarget) setSettingsOpen(false); }}
-      >
-        <section className="ws-settings-modal" role="dialog" aria-modal="true" aria-label="Workspace settings">
-          <div className="ws-settings-head">
-            <div>
-              <span className="ws-eyebrow">Preferences</span>
-              <h2>Settings</h2>
-            </div>
-            <button type="button" className="ws-topbar-icon-btn" onClick={() => setSettingsOpen(false)} aria-label="Close settings">
-              <span aria-hidden="true">✕</span>
-            </button>
-          </div>
-          <div className="ws-settings-list">
-            <div className="ws-settings-row">
-              <div>
-                <b>Account</b>
-                <small>{email || 'Workspace'} · {isTeam ? 'Team Studio' : 'Standard'}</small>
-              </div>
-              <span className="ws-settings-pill">{isTeam ? 'Team' : 'Personal'}</span>
-            </div>
-            <div className="ws-settings-row ws-settings-row-col">
-              <div>
-                <b>Theme & Mood</b>
-                <small>Pick a color mood (including OSIEN from osien.is-a.dev)</small>
-              </div>
-              <div className="ws-mood-grid" role="radiogroup" aria-label="Color theme mood">
-                {MOOD_THEMES.map((item) => (
-                  <button
-                    key={item.id}
-                    type="button"
-                    role="radio"
-                    aria-checked={mood === item.id}
-                    className={mood === item.id ? 'ws-mood-chip active' : 'ws-mood-chip'}
-                    onClick={() => setMood(item.id)}
-                  >
-                    <span className="ws-mood-dot" style={{ background: item.color }} aria-hidden="true" />
-                    <span>{item.label}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-            <div className="ws-settings-row">
-              <div>
-                <b>Interface Sound (SFX)</b>
-                <small>Subtle tactile audio feedback on taps & actions</small>
-              </div>
-              <button
-                type="button"
-                className={sfxOn ? 'ws-settings-toggle on' : 'ws-settings-toggle'}
-                onClick={() => {
-                  const next = !sfxOn;
-                  setSfxOn(next);
-                  setSfxEnabled(next);
-                }}
-                aria-pressed={sfxOn}
-              >
-                <span>{sfxOn ? 'On' : 'Off'}</span>
-              </button>
-            </div>
-            <div className="ws-settings-row">
-              <div>
-                <b>Reduce Motion</b>
-                <small>Minimize spring animations & page transitions</small>
-              </div>
-              <button
-                type="button"
-                className={reducedMotion ? 'ws-settings-toggle on' : 'ws-settings-toggle'}
-                onClick={() => setReducedMotion((v) => !v)}
-                aria-pressed={reducedMotion}
-              >
-                <span>{reducedMotion ? 'On' : 'Off'}</span>
-              </button>
-            </div>
-          </div>
-          <div className="ws-settings-foot">
-            <button type="button" className="ws-secondary" onClick={() => { setSettingsOpen(false); onNavigate('accounts'); }}>
-              Connected accounts
-            </button>
-            {onSignOut && (
-              <button type="button" className="ws-secondary ws-settings-signout" onClick={() => { setSettingsOpen(false); onSignOut(); }}>
-                Sign out
-              </button>
-            )}
-          </div>
-        </section>
-      </div>
-    )}
     {!isMobileDevice && (
       <div className="ws-pc-dock-wrap">
         {pcMoreOpen && (
@@ -669,4 +553,147 @@ export function AnalyticsPage({ session, onNavigate, onSignOut }) {
       <footer className="ws-footnote">Account totals come from connected platform APIs when the account and granted permissions support them. Publishing cadence comes from this browser's saved post history.</footer>
     </>}
   </PageFrame>;
+}
+
+export function SettingsPage({ session, onNavigate, onSignOut }) {
+  const email = session?.user?.email || '';
+  const isTeam = isAiAccount(email);
+  const [mood, setMood] = useState(() => {
+    try {
+      const saved = localStorage.getItem('driftpost-console-mood');
+      if (saved && MOOD_THEMES.some((m) => m.id === saved)) return saved;
+      return localStorage.getItem('driftpost-console-theme') === 'light' ? 'light' : 'dark';
+    } catch {
+      return 'dark';
+    }
+  });
+  const [sfxOn, setSfxOn] = useState(() => isSfxEnabled());
+  const [reducedMotion, setReducedMotion] = useState(() => {
+    try { return localStorage.getItem('driftpost-reduced-motion') === 'true'; }
+    catch { return false; }
+  });
+
+  const selectMood = (id) => {
+    setMood(id);
+    applyMoodSelection(id);
+  };
+
+  useEffect(() => {
+    document.documentElement.dataset.motion = reducedMotion ? 'reduced' : 'full';
+    try { localStorage.setItem('driftpost-reduced-motion', reducedMotion ? 'true' : 'false'); } catch {}
+  }, [reducedMotion]);
+
+  return (
+    <PageFrame
+      page="settings"
+      onNavigate={onNavigate}
+      email={email}
+      onSignOut={onSignOut}
+      eyebrow="Preferences"
+      title="Settings"
+      intro="Customize your workspace mood, sound feedback, motion, and account."
+    >
+      <div className="ws-settings-page">
+        <section className="ws-panel ws-settings-section">
+          <div className="ws-settings-section-head">
+            <div>
+              <span className="ws-eyebrow">Theme Studio</span>
+              <h2>Color Themes & Moods</h2>
+            </div>
+            <span className="ws-settings-pill">{MOOD_THEMES.find((m) => m.id === mood)?.label || 'Midnight'}</span>
+          </div>
+          <div className="ws-mood-studio-grid" role="radiogroup" aria-label="Color theme mood">
+            {MOOD_THEMES.map((item) => (
+              <button
+                key={item.id}
+                type="button"
+                role="radio"
+                aria-checked={mood === item.id}
+                className={mood === item.id ? 'ws-mood-card active' : 'ws-mood-card'}
+                onClick={() => selectMood(item.id)}
+              >
+                <span className="ws-mood-swatches" aria-hidden="true">
+                  <i style={{ background: item.bg }} />
+                  <i style={{ background: item.panel }} />
+                  <i style={{ background: item.color }} />
+                </span>
+                <span className="ws-mood-card-copy">
+                  <b>{item.label}</b>
+                  <small>{item.note}</small>
+                </span>
+              </button>
+            ))}
+          </div>
+        </section>
+
+        <div className="ws-settings-two-col">
+          <section className="ws-panel ws-settings-section">
+            <span className="ws-eyebrow">Experience</span>
+            <h2>Audio & Motion</h2>
+            <div className="ws-settings-list">
+              <div className="ws-settings-row">
+                <div>
+                  <b>Interface Sound (SFX)</b>
+                  <small>Crisp tactile audio feedback on taps and actions</small>
+                </div>
+                <button
+                  type="button"
+                  className={sfxOn ? 'ws-settings-toggle on' : 'ws-settings-toggle'}
+                  onClick={() => {
+                    const next = !sfxOn;
+                    setSfxOn(next);
+                    setSfxEnabled(next);
+                  }}
+                  aria-pressed={sfxOn}
+                >
+                  <span>{sfxOn ? 'On' : 'Off'}</span>
+                </button>
+              </div>
+              <div className="ws-settings-row">
+                <div>
+                  <b>Reduce Motion</b>
+                  <small>Minimize spring animations and page transitions</small>
+                </div>
+                <button
+                  type="button"
+                  className={reducedMotion ? 'ws-settings-toggle on' : 'ws-settings-toggle'}
+                  onClick={() => setReducedMotion((v) => !v)}
+                  aria-pressed={reducedMotion}
+                >
+                  <span>{reducedMotion ? 'On' : 'Off'}</span>
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <section className="ws-panel ws-settings-section">
+            <span className="ws-eyebrow">Identity</span>
+            <h2>Account & Shortcuts</h2>
+            <div className="ws-settings-list">
+              <div className="ws-settings-row">
+                <div>
+                  <b>Signed in as</b>
+                  <small>{email || 'Workspace account'}</small>
+                </div>
+                <span className="ws-settings-pill">{isTeam ? 'Team Studio' : 'Personal'}</span>
+              </div>
+              <div className="ws-settings-foot">
+                <button type="button" className="ws-secondary" onClick={() => onNavigate('accounts')}>
+                  Connected accounts
+                </button>
+                <button type="button" className="ws-secondary" onClick={() => onNavigate('history')}>
+                  Publishing history
+                </button>
+                {onSignOut && (
+                  <button type="button" className="ws-secondary ws-settings-signout" onClick={onSignOut}>
+                    Sign out
+                  </button>
+                )}
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </PageFrame>
+  );
 }

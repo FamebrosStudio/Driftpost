@@ -3083,10 +3083,118 @@ html[data-motion="reduced"] *::after {
   box-shadow: 0 0 8px currentColor;
 }
 
+/* Dedicated Settings Page */
+#root .ws-settings-page {
+  display: grid;
+  gap: 18px;
+}
+
+#root .ws-settings-section {
+  display: grid;
+  gap: 14px;
+  padding: 20px !important;
+}
+
+#root .ws-settings-section h2 {
+  margin: 2px 0 0;
+  font-size: 18px;
+}
+
+#root .ws-settings-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+#root .ws-settings-two-col {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+@media (max-width: 760px) {
+  #root .ws-settings-two-col {
+    grid-template-columns: 1fr;
+  }
+}
+
+#root .ws-mood-studio-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
+  gap: 10px;
+}
+
+#root .ws-mood-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px !important;
+  border-radius: 14px !important;
+  border: 1px solid var(--line-hard) !important;
+  background: var(--panel2) !important;
+  color: var(--ink) !important;
+  text-align: left;
+  box-shadow: none !important;
+  cursor: pointer;
+}
+
+#root .ws-mood-card.active {
+  border-color: var(--go) !important;
+  background: color-mix(in srgb, var(--go) 14%, var(--panel2)) !important;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--go) 45%, transparent), 0 8px 24px -12px color-mix(in srgb, var(--go) 40%, transparent) !important;
+}
+
+#root .ws-mood-swatches {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 4px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  flex-shrink: 0;
+}
+
+#root .ws-mood-swatches i {
+  display: block;
+  width: 11px;
+  height: 11px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+#root .ws-mood-card-copy {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+#root .ws-mood-card-copy b {
+  font-size: 13px;
+  color: var(--ink);
+}
+
+#root .ws-mood-card-copy small {
+  font-size: 11px;
+  color: var(--muted);
+}
+
 /* ==========================================================================
-   MOOD & AESTHETIC COLOR THEME VARIATIONS
+   MOOD & AESTHETIC COLOR THEME VARIATIONS (Overrides #root + all page shells)
    ========================================================================== */
-html[data-mood="osien"] #root {
+html[data-mood] #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3, .connect, .welcome, .team-video-page, .approval-page) {
+  --acc: var(--go);
+  --acc-ink: var(--go-ink);
+  --acc-soft: color-mix(in srgb, var(--go) 15%, transparent);
+  --accent-soft: var(--go);
+  --accent-ink: var(--go-ink);
+  --cool: var(--go);
+  --cool-bg: color-mix(in srgb, var(--go) 14%, transparent);
+}
+
+html[data-mood="osien"] #root,
+html[data-mood="osien"] #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3, .connect, .welcome, .team-video-page, .approval-page) {
   --bg: #05050a;
   --panel: #0b0b12;
   --panel2: #12121d;
@@ -3103,7 +3211,8 @@ html[data-mood="osien"] #root {
   --danger: #f87171;
 }
 
-html[data-mood="tokyo-drift"] #root {
+html[data-mood="tokyo-drift"] #root,
+html[data-mood="tokyo-drift"] #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3, .connect, .welcome, .team-video-page, .approval-page) {
   --bg: #08070d;
   --panel: #100e1a;
   --panel2: #181426;
@@ -3120,7 +3229,8 @@ html[data-mood="tokyo-drift"] #root {
   --danger: #fb7185;
 }
 
-html[data-mood="sea"] #root {
+html[data-mood="sea"] #root,
+html[data-mood="sea"] #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3, .connect, .welcome, .team-video-page, .approval-page) {
   --bg: #041018;
   --panel: #081924;
   --panel2: #0d2433;
@@ -3137,7 +3247,8 @@ html[data-mood="sea"] #root {
   --danger: #fb7185;
 }
 
-html[data-mood="perfect"] #root {
+html[data-mood="perfect"] #root,
+html[data-mood="perfect"] #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3, .connect, .welcome, .team-video-page, .approval-page) {
   --bg: #09090b;
   --panel: #111114;
   --panel2: #19191e;
@@ -3154,7 +3265,8 @@ html[data-mood="perfect"] #root {
   --danger: #ef4444;
 }
 
-html[data-mood="cute"] #root {
+html[data-mood="cute"] #root,
+html[data-mood="cute"] #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3, .connect, .welcome, .team-video-page, .approval-page) {
   --bg: #140e18;
   --panel: #1c1322;
   --panel2: #251a2d;
@@ -3171,7 +3283,8 @@ html[data-mood="cute"] #root {
   --danger: #fb7185;
 }
 
-html[data-mood="clumsy"] #root {
+html[data-mood="clumsy"] #root,
+html[data-mood="clumsy"] #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3, .connect, .welcome, .team-video-page, .approval-page) {
   --bg: #12100e;
   --panel: #1b1714;
   --panel2: #251f1b;
@@ -3188,7 +3301,8 @@ html[data-mood="clumsy"] #root {
   --danger: #f87171;
 }
 
-html[data-mood="funny"] #root {
+html[data-mood="funny"] #root,
+html[data-mood="funny"] #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3, .connect, .welcome, .team-video-page, .approval-page) {
   --bg: #0c110d;
   --panel: #131b15;
   --panel2: #1b261d;
@@ -3205,7 +3319,8 @@ html[data-mood="funny"] #root {
   --danger: #fb7185;
 }
 
-html[data-mood="sad"] #root {
+html[data-mood="sad"] #root,
+html[data-mood="sad"] #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3, .connect, .welcome, .team-video-page, .approval-page) {
   --bg: #0a0e17;
   --panel: #101624;
   --panel2: #172033;
@@ -3222,7 +3337,8 @@ html[data-mood="sad"] #root {
   --danger: #f87171;
 }
 
-html[data-mood="bad"] #root {
+html[data-mood="bad"] #root,
+html[data-mood="bad"] #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3, .connect, .welcome, .team-video-page, .approval-page) {
   --bg: #0d0709;
   --panel: #160c0f;
   --panel2: #211116;
@@ -3239,7 +3355,8 @@ html[data-mood="bad"] #root {
   --danger: #ef4444;
 }
 
-html[data-mood="slow"] #root {
+html[data-mood="slow"] #root,
+html[data-mood="slow"] #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3, .connect, .welcome, .team-video-page, .approval-page) {
   --bg: #0c110f;
   --panel: #131b18;
   --panel2: #1b2622;
