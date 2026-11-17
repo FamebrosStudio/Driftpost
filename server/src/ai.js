@@ -776,38 +776,40 @@ export async function generateCaptions(summary, opts = {}) {
     } catch {}
     const nameRe = new RegExp(`^${brand.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*$`, 'i');
     const footerNormalizedList = [...footerKeys].filter((k) => k.length >= 20);
-    const seenBodyLines = new Set();
-    const stripToBody = (s) => String(s || '')
-      .replace(/([\u{1F300}-\u{1FAFF}])([\u2640\u2642]\uFE0F?)/gu, '$1\u200D$2')
-      .replace(/\[[^\]]*\]/g, ' ')
-      .replace(/@[\w.]+/g, (m) => {
-        const h = m.slice(1).toLowerCase();
-        return (h === ownHandle || h === 'famebrosstudio' || briefHandles.has(h)) ? m : '';
-      })
-      .split('\n')
-      .filter((l) => {
-        const t = l.trim();
-        if (!t) return false;
-        const normLine = normalizeLine(t);
-        // The model sometimes copies the stored contact CTA or branch address into its body;
-        // the canonical footer below adds it once in the correct position.
-        if (footerKeys.has(normLine)) return false;
-        if (normLine.length >= 20 && footerNormalizedList.some((fk) => fk.includes(normLine) || normLine.includes(fk))) return false;
-        if (/^[#@]/.test(t) && /^[@#\w\s]+$/.test(t)) return false;
-        if (/📍|📞|🎥|managed by/i.test(t)) return false;
-        if (nameRe.test(t)) return false;
-        if (/^(?:shop no\.|shop \d|ground floor\b|first floor\b|second floor\b|third floor\b|\d+(?:st|nd|rd|th)\s+floor\b)/i.test(t)) return false;
-        if (/^(?:[a-z\s]{2,28}\s+branch|branch\s*:|address\s*:|location\s*:)/i.test(t)) return false;
-        if (/\bmaharashtra\s*\d{6}\b/i.test(t)) return false;
-        if (/^[\d\s+/\-()]{8,}$/.test(t)) return false;
-        if (seenBodyLines.has(normLine)) return false;
-        seenBodyLines.add(normLine);
-        return true;
-      })
-      .join('\n')
-      .replace(/[ \t]{2,}/g, ' ')
-      .replace(/\n{3,}/g, '\n\n')
-      .trim();
+    const stripToBody = (s) => {
+      const seenBodyLines = new Set();
+      return String(s || '')
+        .replace(/([\u{1F300}-\u{1FAFF}])([\u2640\u2642]\uFE0F?)/gu, '$1\u200D$2')
+        .replace(/\[[^\]]*\]/g, ' ')
+        .replace(/@[\w.]+/g, (m) => {
+          const h = m.slice(1).toLowerCase();
+          return (h === ownHandle || h === 'famebrosstudio' || briefHandles.has(h)) ? m : '';
+        })
+        .split('\n')
+        .filter((l) => {
+          const t = l.trim();
+          if (!t) return false;
+          const normLine = normalizeLine(t);
+          // The model sometimes copies the stored contact CTA or branch address into its body;
+          // the canonical footer below adds it once in the correct position.
+          if (footerKeys.has(normLine)) return false;
+          if (normLine.length >= 20 && footerNormalizedList.some((fk) => fk.includes(normLine) || normLine.includes(fk))) return false;
+          if (/^[#@]/.test(t) && /^[@#\w\s]+$/.test(t)) return false;
+          if (/📍|📞|🎥|managed by/i.test(t)) return false;
+          if (nameRe.test(t)) return false;
+          if (/^(?:shop no\.|shop \d|ground floor\b|first floor\b|second floor\b|third floor\b|\d+(?:st|nd|rd|th)\s+floor\b)/i.test(t)) return false;
+          if (/^(?:[a-z\s]{2,28}\s+branch|branch\s*:|address\s*:|location\s*:)/i.test(t)) return false;
+          if (/\bmaharashtra\s*\d{6}\b/i.test(t)) return false;
+          if (/^[\d\s+/\-()]{8,}$/.test(t)) return false;
+          if (seenBodyLines.has(normLine)) return false;
+          seenBodyLines.add(normLine);
+          return true;
+        })
+        .join('\n')
+        .replace(/[ \t]{2,}/g, ' ')
+        .replace(/\n{3,}/g, '\n\n')
+        .trim();
+    };
     // Hashtags are rebuilt from the selected brand's facts and topic bank.
     // Sanitize model output, drop other brands, and force the selected brand first.
     const suggestedBank = deep?.suggested_hashtag_bank;
