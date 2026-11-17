@@ -824,22 +824,26 @@ export async function generateCaptions(summary, opts = {}) {
       otherBrands,
     });
     const hashLine = igTags.length ? igTags.map((t) => `#${t}`).join(' ') : '';
-    const igBody = compactCaptionOpening(normalizeCaptionParagraphs(enforceCleanFirstLine(moveLeadingContactToEnd(dedupeRepeatedSentences(stripToBody(igCap))))));
-    igCap = fitCaption(igBody, `${footer}${hashLine ? `\n\n${hashLine}` : ''}${kwLine ? `\n\n${kwLine}` : ''}`, 2200, 'Instagram');
-    // Facebook: body + footer + max 2 hashtags, never the bracket
     const fbTags = igTags.slice(0, 2).map((t) => `#${t}`).join(' ');
-    const fbBody = compactCaptionOpening(normalizeCaptionParagraphs(enforceCleanFirstLine(moveLeadingContactToEnd(dedupeRepeatedSentences(stripToBody(fbMsg))))));
-    fbMsg = fitCaption(fbBody, `${footer}${fbTags ? `\n\n${fbTags}` : ''}`, 2000, 'Facebook');
-    // YouTube: body + footer (fall back cleanly to igBody/fbBody/youtubeFallbackDescription if cleaned body is too short)
-    let ytBody = compactCaptionOpening(normalizeCaptionParagraphs(enforceCleanFirstLine(moveLeadingContactToEnd(dedupeRepeatedSentences(stripToBody(ytDesc))))));
-    if (visibleBodyLen(ytBody, brand?.name) < 24) {
-      const siblingBody = [igBody, fbBody].find((candidate) => visibleBodyLen(candidate, brand?.name) >= 24);
-      ytBody = siblingBody || youtubeFallbackDescription({
+    const cleanPlatformBody = (raw) => compactCaptionOpening(
+      normalizeCaptionParagraphs(enforceCleanFirstLine(moveLeadingContactToEnd(dedupeRepeatedSentences(stripToBody(raw))))),
+    );
+    let igBody = cleanPlatformBody(igCap);
+    let fbBody = cleanPlatformBody(fbMsg);
+    let ytBody = cleanPlatformBody(ytDesc);
+    const fallbackBody = [igBody, fbBody, ytBody].find((candidate) => visibleBodyLen(candidate, brand?.name) >= 28)
+      || youtubeFallbackDescription({
         title: ytTitle,
         brandName: brand?.name,
         brief: seoTopic || brief,
       });
-    }
+    if (visibleBodyLen(igBody, brand?.name) < 28) igBody = fallbackBody;
+    if (visibleBodyLen(fbBody, brand?.name) < 20) fbBody = fallbackBody;
+    if (visibleBodyLen(ytBody, brand?.name) < 24) ytBody = fallbackBody;
+    igCap = fitCaption(igBody, `${footer}${hashLine ? `\n\n${hashLine}` : ''}${kwLine ? `\n\n${kwLine}` : ''}`, 2200, 'Instagram');
+    // Facebook: body + footer + max 2 hashtags, never the bracket
+    fbMsg = fitCaption(fbBody, `${footer}${fbTags ? `\n\n${fbTags}` : ''}`, 2000, 'Facebook');
+    // YouTube: body + footer
     ytDesc = fitCaption(ytBody, footer, 2000, 'YouTube');
     if (!ytTags.length && kwBank.length) {
       ytTags = kwBank.map((k) => k.toLowerCase().replace(/[^a-z0-9 ]/g, '').trim().replace(/\s+/g, ' ')).filter(Boolean).slice(0, 8);
@@ -880,6 +884,13 @@ export async function generateCaptions(summary, opts = {}) {
     .replace(/\n{3,}/g, '\n\n')
     .trim();
   xText = compactCaptionOpening(normalizeCaptionParagraphs(xText));
+  if (visibleBodyLen(xText, brand?.name) < 12) {
+    const xFallback = String(igCap || fbMsg || ytDesc || ytTitle || brief || '')
+      .split('\n')
+      .map((line) => line.trim())
+      .find((line) => line.length >= 12 && !/^[#@📍📞🎥]/.test(line) && !/managed by/i.test(line));
+    if (xFallback) xText = xFallback.slice(0, 240);
+  }
   xText = fitCaption(xText, xTags.map((tag) => `#${tag}`).join(' '), 280, 'X').replace(/\n\n/g, ' ');
 
   // Zero-LLM memory upgrade: record that this brand was used + asset hint.
