@@ -1,5 +1,4 @@
-import { getDeepForCompact } from './brand-memory/index.js';
-import { loadBrands } from './brand-memory/index.js';
+import { getDeepForCompact, loadBrands } from './brand-memory/index.js';
 
 const PLATFORMS = ['youtube', 'instagram', 'facebook', 'x'];
 const norm = (value) => String(value || '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
