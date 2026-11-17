@@ -194,7 +194,6 @@
 
 #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar > .ws-wordmark:hover {
   border-color: var(--line-hard) !important;
-  transform: translateY(-1px) scale(1.02);
 }
 
 #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3) > .ws-topbar > .ws-wordmark:active {
@@ -612,7 +611,6 @@
 
 #root .ws .ws-create-mode-card:hover {
   border-color: color-mix(in srgb, var(--go) 68%, var(--line-hard)) !important;
-  transform: translateY(-2px);
   box-shadow:
     inset 0 1px 0 color-mix(in srgb, var(--go) 25%, transparent),
     0 18px 38px -18px rgba(0, 0, 0, 0.55),
@@ -1143,7 +1141,6 @@
     color-mix(in srgb, var(--go) 5%, var(--panel)) 100%
   );
   color: var(--ink);
-  transform: translateY(-1px);
   box-shadow:
     inset 0 1px 0 color-mix(in srgb, var(--go) 35%, rgba(255, 255, 255, 0.2)),
     0 8px 20px -6px rgba(0, 0, 0, 0.45),
@@ -1238,7 +1235,6 @@
   border-color: color-mix(in srgb, var(--go) 50%, white) !important;
   background: #2563eb !important;
   color: #ffffff !important;
-  transform: translateY(-1px);
   box-shadow: 0 10px 24px -6px rgba(59, 130, 246, 0.65) !important;
 }
 
@@ -3274,21 +3270,12 @@ html[data-mood="osien"] #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3, .
 
 @media (hover: hover) {
   #root :is(.ws-stat, .ws-create-mode-card, .cn-card, .hist-row, .setup-card, .ws-mood-card, .feed-it-item):hover {
-    transform: translateY(-4px) scale(1.008) !important;
+    border-color: var(--line-hard) !important;
   }
 
   #root .ws .ws-route-stop:hover > svg {
-    transform: translateY(-4px) scale(1.08) !important;
     border-color: color-mix(in srgb, var(--go) 55%, var(--line-hard)) !important;
     box-shadow: 0 12px 24px -10px color-mix(in srgb, var(--go) 35%, transparent) !important;
-  }
-
-  #root :is(.ws-primary, .continue-btn, .s2-continue-btn, .cn-next, .s3-postall):hover:not(:disabled) {
-    transform: translateY(-2px) scale(1.018) !important;
-  }
-
-  #root :is(.ws-topnav-pill, .ws-mobile-dock-btn, .ws-topbar-icon-btn, .ws-mood-chip):hover:not(:disabled) {
-    transform: translateY(-2px) scale(1.05) !important;
   }
 }
 
@@ -3725,16 +3712,7 @@ html[data-device="mobile"] #root .ws .ws-stat > button {
 
 @media (hover: hover) {
   #root :is(.ws-stat, .ws-create-mode-card, .cn-card, .hist-row, .feed-it-item):hover {
-    transform: translateY(-3px);
     border-color: var(--line-hard) !important;
-  }
-
-  #root .ws-route-stop {
-    transition: transform 260ms cubic-bezier(0.34, 1.56, 0.64, 1), border-color 180ms ease;
-  }
-
-  #root .ws-route-stop:hover {
-    transform: translateY(-3px) scale(1.06);
   }
 }
 
@@ -3745,12 +3723,6 @@ html[data-device="mobile"] #root .ws .ws-stat > button {
 #root :is(.ws-create-mode-card, .ws-primary, .ws-secondary, .ws-topnav-pill, .ws-mobile-dock-btn, .ws-mobile-more-item, .ws-topbar-icon-btn, .continue-btn, .cn-next, .s3-postall, .dp-stop-btn, .team-review-refresh):active:not(:disabled) {
   transform: scale(0.94) !important;
   transition-duration: 90ms !important;
-}
-
-@media (hover: hover) {
-  #root :is(.ws-topnav-pill, .ws-mobile-dock-btn):hover:not(.active) {
-    transform: translateY(-2px) scale(1.04);
-  }
 }
 
 #root .stage2 .s2-switch:active span {
@@ -3795,7 +3767,7 @@ html[data-device="mobile"] #root :is(.ws-main, .hist, .stage1-in, .stage2-in, .s
 }
 
 #root .team-video-page .team-video-drop:hover {
-  transform: scale(1.006);
+  border-color: var(--go);
 }
 
 #root .dp-progress-wrap:is(.is-queued, .is-processing, .is-publishing) .dp-progress-track > i {
