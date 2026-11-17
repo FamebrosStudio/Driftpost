@@ -201,7 +201,10 @@ export default function FeedItPage({ session, onNavigate, onSignOut }) {
                 {error && <div className="feed-it-alert" role="alert">{error}</div>}
                 {savedBrand && (
                   <div className="feed-it-success" role="status">
-                    <strong>Saved "{savedBrand.name}" to Driftpost!</strong>
+                    <strong>
+                      Saved "{savedBrand.name}" to Driftpost
+                      {savedBrand.persisted === 'cloud' ? ' (cloud-synced)' : ' (local only)'}!
+                    </strong>
                     <small>
                       {[
                         savedBrand.ig ? `IG: ${savedBrand.ig}` : '',

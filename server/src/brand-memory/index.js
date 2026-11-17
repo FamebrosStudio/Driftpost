@@ -925,10 +925,14 @@ function extractAllPhonesRaw(text) {
 export function feedBrand({ brandName = '', rawText = '' } = {}) {
   const raw = String(rawText || '').trim();
   const explicitName = String(brandName || '').trim();
-  const inferredName = extractLabeledField(raw, ['Brand Name', 'Business Name', 'Client Name', 'Name'])
-    || raw.split(/\r?\n/).map((line) => line.replace(/^[#*\-\s]+/, '').trim()).find((line) => line.length >= 2 && line.length <= 64 && !/:/.test(line))
-    || '';
-  const name = (explicitName || inferredName).slice(0, 80).trim();
+  const labeledName = extractLabeledField(raw, ['Brand Name', 'Business Name', 'Client Name', 'Store Name', 'Name']);
+  const firstCleanLine = raw
+    .split(/\r?\n/)
+    .map((line) => line.replace(/^[#*\-\s]+/, '').trim())
+    .find((line) => line.length >= 2 && line.length <= 64 && !/:/.test(line) && !/^@/.test(line) && !/^[a-z0-9._]{3,40}$/.test(line)) || '';
+  const matchedExisting = !explicitName && !labeledName ? resolveBrand(raw) : null;
+  const inferredName = labeledName || matchedExisting?.name || firstCleanLine || '';
+  const name = (explicitName || inferredName).replace(/^@+/, '').slice(0, 80).trim();
   if (!name || name.length < 2) throw new Error('Enter a brand name or paste brand details containing the brand name.');
   if (!raw && !explicitName) throw new Error('Paste the brand details before saving.');
 
@@ -1091,4 +1095,50 @@ export function deleteFedBrand(brandId) {
   try { fs.rmSync(path.join(DEEP_DIR, `auto-${id}.json`), { force: true }); } catch {}
   deepCache = null;
   return true;
+}
+
+export function exportFedBrandsBundle() {
+  const customEntries = loadCustom().filter((entry) => entry.fed || entry.ready === 'fed');
+  const deepFiles = {};
+  for (const entry of customEntries) {
+    const file = `auto-${entry.id}.json`;
+    try {
+      deepFiles[file] = JSON.parse(fs.readFileSync(path.join(DEEP_DIR, file), 'utf8'));
+    } catch {}
+  }
+  return {
+    version: 1,
+    updatedAt: new Date().toISOString(),
+    customEntries,
+    deepFiles,
+  };
+}
+
+export function hydrateFedBrandsBundle(bundle) {
+  if (!bundle || typeof bundle !== 'object') return 0;
+  const incoming = Array.isArray(bundle.customEntries) ? bundle.customEntries : [];
+  if (!incoming.length) return 0;
+  const existing = loadCustom();
+  const nonFed = existing.filter((entry) => !(entry.fed || entry.ready === 'fed'));
+  const merged = [...nonFed];
+  const byId = new Map(merged.map((entry, idx) => [entry.id, idx]));
+  for (const entry of incoming) {
+    if (!entry?.id || !entry?.name) continue;
+    const idx = byId.get(entry.id);
+    if (idx !== undefined) merged[idx] = entry;
+    else {
+      byId.set(entry.id, merged.length);
+      merged.push(entry);
+    }
+  }
+  saveCustom(merged);
+  cache = null;
+  fs.mkdirSync(DEEP_DIR, { recursive: true });
+  const deepFiles = bundle.deepFiles && typeof bundle.deepFiles === 'object' ? bundle.deepFiles : {};
+  for (const [file, content] of Object.entries(deepFiles)) {
+    if (!/^auto-[a-z0-9-]+\.json$/.test(file) || !content || typeof content !== 'object') continue;
+    fs.writeFileSync(path.join(DEEP_DIR, file), JSON.stringify(content, null, 2), 'utf8');
+  }
+  deepCache = null;
+  return incoming.length;
 }

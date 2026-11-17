@@ -1895,11 +1895,53 @@ app.post('/api/ai/learn', requireUser, requireAiAccess, burstLimit, async (req, 
 });
 
 // Feed It: private team-only brand onboarding (restricted to famebros.studio@gmail.com & kabirsayed.k@gmail.com)
+const FED_BRANDS_STORAGE_KEY = 'system/fed-brands-registry.json';
+let fedBrandsHydrated = false;
+
+async function hydrateFedBrandsFromCloud() {
+  if (fedBrandsHydrated) return;
+  try {
+    const { data, error } = await supabase.storage.from(BUCKET).download(FED_BRANDS_STORAGE_KEY);
+    if (error || !data) {
+      fedBrandsHydrated = true;
+      return;
+    }
+    const text = await data.text();
+    const bundle = JSON.parse(text);
+    const { hydrateFedBrandsBundle } = await import('./brand-memory/index.js');
+    hydrateFedBrandsBundle(bundle);
+    fedBrandsHydrated = true;
+  } catch (e) {
+    console.warn('[feed-it] cloud hydrate skipped:', e?.message || e);
+  }
+}
+
+async function syncFedBrandsToCloud() {
+  try {
+    const { exportFedBrandsBundle } = await import('./brand-memory/index.js');
+    const payload = Buffer.from(JSON.stringify(exportFedBrandsBundle()), 'utf8');
+    const { error } = await supabase.storage.from(BUCKET).upload(FED_BRANDS_STORAGE_KEY, payload, {
+      contentType: 'application/json',
+      upsert: true,
+    });
+    if (error) {
+      console.warn('[feed-it] cloud sync failed:', error.message);
+      return false;
+    }
+    fedBrandsHydrated = true;
+    return true;
+  } catch (e) {
+    console.warn('[feed-it] cloud sync failed:', e?.message || e);
+    return false;
+  }
+}
+
 app.get('/api/ai/feed-it', requireUser, burstLimit, async (req, res) => {
   if (!canUsePrivateBrandData(req.user)) {
     return res.status(403).json({ error: 'Feed It is only available to authorized team accounts.' });
   }
   try {
+    await hydrateFedBrandsFromCloud();
     const { listFedBrands } = await import('./brand-memory/index.js');
     res.json({ brands: listFedBrands() });
   } catch (e) {
@@ -1913,11 +1955,13 @@ app.post('/api/ai/feed-it', requireUser, burstLimit, async (req, res) => {
     return res.status(403).json({ error: 'Feed It is only available to authorized team accounts.' });
   }
   try {
+    await hydrateFedBrandsFromCloud();
     const { feedBrand } = await import('./brand-memory/index.js');
     const brandName = String(req.body?.brandName || '').slice(0, 120);
     const rawText = String(req.body?.rawText || '').slice(0, 12000);
     const brand = feedBrand({ brandName, rawText });
-    res.json({ ok: true, brand });
+    const cloudSaved = await syncFedBrandsToCloud();
+    res.json({ ok: true, brand: { ...brand, persisted: cloudSaved ? 'cloud' : 'local' } });
   } catch (e) {
     console.error('[feed-it] save failed:', e);
     res.status(400).json({ error: e?.message || 'Could not save brand data.' });
@@ -1929,9 +1973,11 @@ app.delete('/api/ai/feed-it/:brandId', requireUser, burstLimit, async (req, res)
     return res.status(403).json({ error: 'Feed It is only available to authorized team accounts.' });
   }
   try {
+    await hydrateFedBrandsFromCloud();
     const { deleteFedBrand } = await import('./brand-memory/index.js');
     const ok = deleteFedBrand(String(req.params.brandId || ''));
     if (!ok) return res.status(404).json({ error: 'Brand not found.' });
+    await syncFedBrandsToCloud();
     res.json({ ok: true });
   } catch (e) {
     console.error('[feed-it] delete failed:', e);
@@ -3752,5 +3798,6 @@ app.listen(port, '0.0.0.0', () => {
     .eq('status', 'publishing')
     .then(() => {})
     .catch(() => {});
+  void hydrateFedBrandsFromCloud();
   startGoogleDriveIntake(supabase);
 });
