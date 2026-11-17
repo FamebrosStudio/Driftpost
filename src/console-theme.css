@@ -2774,16 +2774,38 @@ html:not([data-device="mobile"])[data-theme="light"] #root :is(.ws, .hist-shell,
 }
 
 html:not([data-device="mobile"]) #root :is(.stage1, .stage2, .stage3, .connect) :is(.continue-bar, .s2-continue-bar, .s3-pub, .cn-bar) {
-  left: 50% !important;
-  right: auto !important;
-  bottom: 78px !important;
-  transform: translateX(-50%);
-  width: min(760px, calc(100vw - 48px));
-  border-radius: 18px !important;
-  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  left: auto !important;
+  right: clamp(16px, 2.5vw, 32px) !important;
+  bottom: max(16px, env(safe-area-inset-bottom)) !important;
+  transform: none !important;
+  width: fit-content !important;
+  max-width: min(520px, calc(100vw - 48px)) !important;
+  display: flex !important;
+  flex-direction: column;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px;
+  padding: 6px !important;
+  border-radius: 22px !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.12),
     0 18px 40px -12px rgba(0, 0, 0, 0.65) !important;
+}
+
+html:not([data-device="mobile"]) #root :is(.stage1, .stage2, .stage3, .connect) :is(.continue-bar, .s2-continue-bar, .s3-pub, .cn-bar) :is(.continue-btn, .s2-continue-btn, .cn-next) {
+  min-width: 190px;
+  border-radius: 16px !important;
+  margin: 0 !important;
+}
+
+html:not([data-device="mobile"]) #root .stage3 .s3-pub-actions {
+  width: auto !important;
+  justify-content: center;
+}
+
+html:not([data-device="mobile"]) #root .stage3 .s3-pub-actions button {
+  border-radius: 16px !important;
 }
 
 html:not([data-device="mobile"]) #root .ws > .ws-main,
