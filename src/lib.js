@@ -678,6 +678,14 @@ export async function fetchWithAuth(url, token, init = {}) {
       const xhr = new XMLHttpRequest();
       xhr.open('POST', requestUrl);
       xhr.setRequestHeader('Authorization', `Bearer ${t}`);
+      if (rest.headers && typeof rest.headers === 'object') {
+        for (const [k, v] of Object.entries(rest.headers)) {
+          if (v == null) continue;
+          const lower = k.toLowerCase();
+          if (lower === 'authorization' || lower === 'content-type') continue;
+          xhr.setRequestHeader(k, String(v));
+        }
+      }
       if (xhr.upload && onUploadProgress) {
         xhr.upload.onprogress = (e) => {
           if (e.lengthComputable && e.total > 0) {

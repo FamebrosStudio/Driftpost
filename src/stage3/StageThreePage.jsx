@@ -664,12 +664,17 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
       onSubmitted?.({ accepted, platform: pid, connectionId });
     };
     let res; let data; let refreshedToken;
+    const idempotencyKey = typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+      ? crypto.randomUUID()
+      : `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
     try {
        ({ res, data, refreshedToken } = await withPublishSlot(async () => {
          let form = await buildForm(pid, { connectionId, skipCrossPost, mediaOverride });
          if (connectionId) form.set('connection_id', connectionId);
+         form.set('idempotency_key', idempotencyKey);
          const submit = (requestForm) => fetchWithAuth(`${apiUrl}/api/publish`, session.access_token, {
            method: 'POST',
+           headers: { 'Idempotency-Key': idempotencyKey },
            body: requestForm,
           // Limit simultaneous browser uploads, then let every accepted job
           // poll independently while the server's bounded worker queue runs.
@@ -686,6 +691,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
            try { localStorage.removeItem(cloudCacheKey); } catch {}
            form = await buildForm(pid, { connectionId, skipCrossPost, mediaOverride, forceMultipart: true });
            if (connectionId) form.set('connection_id', connectionId);
+           form.set('idempotency_key', idempotencyKey);
            result = await submit(form);
          }
          return result;
@@ -853,7 +859,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
   };
 
   const publishOne = async (pid) => {
-    if (busy[pid] || greyed(pid) || !claim(`post:${pid}`)) return;
+    if (busy[pid] || greyed(pid) || firing.current.has('all') || results[pid]?.state === 'completed' || !claim(`post:${pid}`)) return;
     if (isGroupFlow && !groupMemberIds(pid).length) { release(`post:${pid}`); return; }
     if (!isGroupFlow && !accountFor(pid)) { release(`post:${pid}`); return; }
     const mirrorPid = pid === 'instagram' && mirrorTarget === 'facebook'
@@ -890,7 +896,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
   // YouTube takes a video, never a bare photo, so encode the still first and
   // publish that. The user's photos are untouched in Stage 2.
   const publishPhotoAsVideo = async (pid) => {
-    if (busy[pid] || greyed(pid) || !claim(`photo:${pid}`)) return;
+    if (busy[pid] || greyed(pid) || firing.current.has('all') || results[pid]?.state === 'completed' || !claim(`photo:${pid}`)) return;
     if (isGroupFlow && !groupMemberIds(pid).length) { release(`photo:${pid}`); return; }
     if (!isGroupFlow && !accountFor(pid)) { release(`photo:${pid}`); return; }
     const photo = files.find((f) => f?.raw && f.type.startsWith('image/'))?.raw;
@@ -925,16 +931,21 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
     // publish there as a secondary action. Post All needs an independent job
     // for every selected platform so a secondary API failure cannot be
     // reported as a successful all-platform batch.
-    const targets = publishTargets.filter((pid) => (isGroupFlow ? groupMemberIds(pid).length > 0 : accountFor(pid)));
+    const readyTargets = publishTargets.filter((pid) => (isGroupFlow ? groupMemberIds(pid).length > 0 : accountFor(pid)));
     setPubMsg('');
     // Never die silently: every early exit explains itself on the button bar.
-    if (!targets.length) {
+    if (!readyTargets.length) {
       setPubMsg(connsError || !connections.length
         ? 'No accounts ready — accounts are still loading or failed to load. Wait a few seconds, then retry.'
         : 'No accounts selected for these platforms — check Stage 1.');
       return;
     }
-    if (targets.some((pid) => busy[pid]) || !claim('all')) {
+    const targets = readyTargets.filter((pid) => results[pid]?.state !== 'completed');
+    if (!targets.length) {
+      setPubMsg('Already posted to all selected platforms.');
+      return;
+    }
+    if (targets.some((pid) => busy[pid] || firing.current.has(`post:${pid}`) || firing.current.has(`photo:${pid}`)) || !claim('all')) {
       setPubMsg('Already posting — wait for it to finish.');
       return;
     }

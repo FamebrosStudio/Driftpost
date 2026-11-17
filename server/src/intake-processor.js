@@ -366,8 +366,19 @@ export async function processIntakeJob(supabase, job, options = {}) {
       await supabase.storage.from(process.env.MEDIA_BUCKET || 'driftpost-media').remove(storedPaths).catch(() => {});
       return { stopped: true, reason: 'Stopped by user.' };
     }
-    const { data: scheduled, error: scheduleError } = await supabase.from('scheduled_posts').insert(rows).select('id, platform');
-    if (scheduleError || !scheduled || scheduled.length !== rows.length) throw new Error('The video was prepared, but Driftpost could not add every destination to its publishing queue.');
+    const { data: existingScheduled } = await supabase
+      .from('scheduled_posts')
+      .select('id, platform')
+      .eq('user_id', ownerId)
+      .filter(`body->>${intakeKey}`, 'eq', String(job.id));
+    let scheduled = Array.isArray(existingScheduled) && existingScheduled.length ? existingScheduled : null;
+    if (scheduled) {
+      await supabase.storage.from(process.env.MEDIA_BUCKET || 'driftpost-media').remove(storedPaths).catch(() => {});
+    } else {
+      const { data: insertedScheduled, error: scheduleError } = await supabase.from('scheduled_posts').insert(rows).select('id, platform');
+      if (scheduleError || !insertedScheduled || insertedScheduled.length !== rows.length) throw new Error('The video was prepared, but Driftpost could not add every destination to its publishing queue.');
+      scheduled = insertedScheduled;
+    }
     const { error: intakeUpdateError } = await supabase.from(table).update({
       status: 'publishing',
       result: { ...(job.result || {}), brand: targetGroups.map((target) => target.name).join(', '), brands: targetGroups.map((target) => ({ id: target.brand?.id || null, name: target.name })), destinations: scheduled, transcript: !!transcript, speechWarning, media_kind: isCarousel ? 'carousel' : 'video', progress: { stage: 'publishing', detail: `Queued to ${scheduled.length} destination${scheduled.length === 1 ? '' : 's'}`, updated_at: new Date().toISOString() } },

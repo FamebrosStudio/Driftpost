@@ -52,6 +52,76 @@ const ACCEPTED_MEDIA_TYPES = new Set([
 ]);
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SECRET_KEY, { auth: { persistSession: false, autoRefreshToken: false } });
 const jobs = new Map();
+const publishIdempotencyMap = new Map();
+const publishFingerprintMap = new Map();
+const PUBLISH_DEDUPE_TTL_MS = 2 * 60 * 60 * 1000;
+const PUBLISH_FINGERPRINT_WINDOW_MS = 10 * 60 * 1000;
+
+function prunePublishDedupeMaps(now = Date.now()) {
+  for (const [k, entry] of publishIdempotencyMap) {
+    if (!entry || now - entry.createdAt > PUBLISH_DEDUPE_TTL_MS) publishIdempotencyMap.delete(k);
+  }
+  for (const [k, entry] of publishFingerprintMap) {
+    if (!entry || now - entry.createdAt > PUBLISH_DEDUPE_TTL_MS) publishFingerprintMap.delete(k);
+  }
+}
+
+function buildPublishFingerprint(userId, platform, connectionId, body = {}, files = []) {
+  const caption = [
+    body.yt_title || body.title || '',
+    body.yt_description || '',
+    body.ig_caption || '',
+    body.fb_message || '',
+    body.x_text || '',
+    body.text || '',
+  ].map((s) => String(s).trim()).join('|');
+  const mediaParts = [];
+  if (body.hasPreuploadedMedia === '1') {
+    for (let i = 0; i < 20; i++) {
+      const p = String(body[`mediaPath${i}`] || '');
+      if (!p) break;
+      mediaParts.push(`${p}:${body[`mediaSize${i}`] || ''}:${body[`mediaType${i}`] || ''}`);
+    }
+  } else {
+    for (const f of files) {
+      mediaParts.push(`${f.originalname || ''}:${f.size || 0}:${f.mimetype || ''}`);
+    }
+  }
+  return crypto
+    .createHash('sha256')
+    .update(`${userId}\n${platform}\n${connectionId}\n${mediaParts.join(',')}\n${caption}`)
+    .digest('hex');
+}
+
+function findDuplicatePublishJob(userId, idempotencyKey, fingerprint) {
+  const now = Date.now();
+  prunePublishDedupeMaps(now);
+  if (idempotencyKey) {
+    const entry = publishIdempotencyMap.get(`${userId}:${idempotencyKey}`);
+    if (entry) {
+      const existing = jobs.get(entry.jobId);
+      if (existing && existing.state !== 'failed') return existing;
+    }
+  }
+  if (fingerprint) {
+    const entry = publishFingerprintMap.get(`${userId}:${fingerprint}`);
+    if (entry) {
+      const existing = jobs.get(entry.jobId);
+      if (existing && existing.state !== 'failed') {
+        const isActive = existing.state === 'queued' || existing.state === 'uploading' || existing.state === 'publishing';
+        const isRecentCompleted = existing.state === 'completed' && (now - (existing.completedAt || existing.createdAt || now) < PUBLISH_FINGERPRINT_WINDOW_MS);
+        if (isActive || isRecentCompleted) return existing;
+      }
+    }
+  }
+  return null;
+}
+
+function recordPublishDedupe(userId, idempotencyKey, fingerprint, jobId) {
+  const now = Date.now();
+  if (idempotencyKey) publishIdempotencyMap.set(`${userId}:${idempotencyKey}`, { jobId, createdAt: now });
+  if (fingerprint) publishFingerprintMap.set(`${userId}:${fingerprint}`, { jobId, createdAt: now });
+}
 const scheduleWorkerHealth = {
   running: false,
   lastTickAt: null,
@@ -77,7 +147,7 @@ const corsOptions = {
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Driftpost-AI-Grant', 'X-Driftpost-Team-Video'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Idempotency-Key', 'X-Driftpost-AI-Grant', 'X-Driftpost-Team-Video'],
 };
 
 function parseInstagramCollaborators(raw) {
@@ -2487,6 +2557,12 @@ app.post('/api/publish', requireUser, publishRequestBurstLimit, publishQueueLimi
     await cleanup();
     return res.status(400).json({ error: 'Pick YouTube, Instagram, Facebook or X' });
   }
+  const idempotencyKey = String(req.get('idempotency-key') || req.body?.idempotency_key || '').trim().slice(0, 128);
+  const earlyDup = idempotencyKey ? findDuplicatePublishJob(req.user.id, idempotencyKey, '') : null;
+  if (earlyDup) {
+    await cleanup();
+    return res.status(202).json({ job: earlyDup, deduplicated: true });
+  }
   // Hosted media references must point to random object keys inside the
   // authenticated user's private storage folder. Meta gets short-lived URLs;
   // YouTube and X download the same object to a bounded local temp file.
@@ -2638,9 +2714,16 @@ app.post('/api/publish', requireUser, publishRequestBurstLimit, publishQueueLimi
     await cleanup();
     return res.status(409).json({ error: `Connect a ${platform} account first` });
   }
+  const fingerprint = buildPublishFingerprint(req.user.id, platform, conn.id, req.body, files);
+  const dupJob = findDuplicatePublishJob(req.user.id, idempotencyKey, fingerprint);
+  if (dupJob) {
+    await cleanup();
+    return res.status(202).json({ job: dupJob, deduplicated: true });
+  }
   const id = crypto.randomUUID();
   const job = { id, userId: req.user.id, platform, connectionId: conn.id, publishedPosts: [], state: 'queued', progress: 0, message: 'Queued', createdAt: Date.now() };
   jobs.set(id, job);
+  recordPublishDedupe(req.user.id, idempotencyKey, fingerprint, id);
   res.status(202).json({ job });
   void queuePublish(() => runPublish(job, conn, { files, instagramFiles, facebookFiles, thumbFile, coverFiles }, req.body, req.user.id), job).catch((error) => {
     console.error('[publish] unexpected job failure', job.id, error);
