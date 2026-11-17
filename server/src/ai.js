@@ -775,7 +775,6 @@ export async function generateCaptions(summary, opts = {}) {
       otherBrands.push(...mem.loadBrands());
     } catch {}
     const nameRe = new RegExp(`^${brand.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*$`, 'i');
-    const footerNormalizedList = [...footerKeys].filter((k) => k.length >= 20);
     const stripToBody = (s) => {
       const seenBodyLines = new Set();
       return String(s || '')
@@ -793,13 +792,11 @@ export async function generateCaptions(summary, opts = {}) {
           // The model sometimes copies the stored contact CTA or branch address into its body;
           // the canonical footer below adds it once in the correct position.
           if (footerKeys.has(normLine)) return false;
-          if (normLine.length >= 20 && footerNormalizedList.some((fk) => fk.includes(normLine) || normLine.includes(fk))) return false;
           if (/^[#@]/.test(t) && /^[@#\w\s]+$/.test(t)) return false;
           if (/📍|📞|🎥|managed by/i.test(t)) return false;
           if (nameRe.test(t)) return false;
-          if (/^(?:shop no\.|shop \d|ground floor\b|first floor\b|second floor\b|third floor\b|\d+(?:st|nd|rd|th)\s+floor\b)/i.test(t)) return false;
-          if (/^(?:[a-z\s]{2,28}\s+branch|branch\s*:|address\s*:|location\s*:)/i.test(t)) return false;
-          if (/\bmaharashtra\s*\d{6}\b/i.test(t)) return false;
+          if (t.length <= 140 && /^(?:shop no\.|shop \d|ground floor\b|first floor\b|second floor\b|third floor\b|\d+(?:st|nd|rd|th)\s+floor\b)/i.test(t)) return false;
+          if (t.length <= 120 && /^(?:[a-z\s]{2,28}\s+branch\b|branch\s*:|address\s*:|location\s*:)/i.test(t)) return false;
           if (/^[\d\s+/\-()]{8,}$/.test(t)) return false;
           if (seenBodyLines.has(normLine)) return false;
           seenBodyLines.add(normLine);
@@ -833,8 +830,16 @@ export async function generateCaptions(summary, opts = {}) {
     const fbTags = igTags.slice(0, 2).map((t) => `#${t}`).join(' ');
     const fbBody = compactCaptionOpening(normalizeCaptionParagraphs(enforceCleanFirstLine(moveLeadingContactToEnd(dedupeRepeatedSentences(stripToBody(fbMsg))))));
     fbMsg = fitCaption(fbBody, `${footer}${fbTags ? `\n\n${fbTags}` : ''}`, 2000, 'Facebook');
-    // YouTube: body + footer
-    const ytBody = compactCaptionOpening(normalizeCaptionParagraphs(enforceCleanFirstLine(moveLeadingContactToEnd(dedupeRepeatedSentences(stripToBody(ytDesc))))));
+    // YouTube: body + footer (fall back cleanly to igBody/fbBody/youtubeFallbackDescription if cleaned body is too short)
+    let ytBody = compactCaptionOpening(normalizeCaptionParagraphs(enforceCleanFirstLine(moveLeadingContactToEnd(dedupeRepeatedSentences(stripToBody(ytDesc))))));
+    if (visibleBodyLen(ytBody, brand?.name) < 24) {
+      const siblingBody = [igBody, fbBody].find((candidate) => visibleBodyLen(candidate, brand?.name) >= 24);
+      ytBody = siblingBody || youtubeFallbackDescription({
+        title: ytTitle,
+        brandName: brand?.name,
+        brief: seoTopic || brief,
+      });
+    }
     ytDesc = fitCaption(ytBody, footer, 2000, 'YouTube');
     if (!ytTags.length && kwBank.length) {
       ytTags = kwBank.map((k) => k.toLowerCase().replace(/[^a-z0-9 ]/g, '').trim().replace(/\s+/g, ' ')).filter(Boolean).slice(0, 8);
