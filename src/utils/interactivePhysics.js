@@ -216,6 +216,18 @@ export function installInteractivePhysics() {
     if (e.pointerType === 'touch' || e.button !== 0) return;
     document.documentElement.classList.add('dp-is-pressing');
     const targetEl = e.target && e.target.nodeType === 1 ? e.target : null;
+    if (
+      document.documentElement.dataset.motion !== 'reduced'
+      && document.documentElement.dataset.reducedMotion !== 'true'
+      && targetEl?.closest?.('button, a, [role="button"], [role="tab"], [role="radio"], .ws-mood-card, .ws-cursor-card, .ws-topnav-pill')
+    ) {
+      const burst = document.createElement('span');
+      burst.className = 'dp-click-burst';
+      burst.style.left = `${e.clientX}px`;
+      burst.style.top = `${e.clientY}px`;
+      document.body.appendChild(burst);
+      window.setTimeout(() => burst.remove(), 400);
+    }
     if (targetEl?.closest?.(TEXT_INPUT_SELECTOR) || targetEl?.closest?.(NATIVE_DRAG_IGNORE)) return;
     const target = targetEl?.closest?.(HOLD_SELECTOR);
     if (!target || target.disabled) return;

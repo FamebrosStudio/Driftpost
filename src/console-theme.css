@@ -4840,3 +4840,184 @@ body {
     align-items: flex-start;
   }
 }
+
+/* ==========================================================================
+   APPLE-GRADE MICRO-ANIMATIONS SUITE (STAGGER, SHEEN, BURST, AMBIENT)
+   ========================================================================== */
+@keyframes dpCardArrive {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.982);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes dpMenuSpring {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes dpAmbientDrift {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 0.92;
+  }
+  100% {
+    transform: translate3d(1.5%, -1.5%, 0) scale(1.04);
+    opacity: 1;
+  }
+}
+
+@keyframes dpShimmerSweep {
+  0% {
+    transform: translateX(-140%) skewX(-18deg);
+  }
+  100% {
+    transform: translateX(240%) skewX(-18deg);
+  }
+}
+
+@keyframes dpPillBreathe {
+  0%, 100% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--go, #3b82f6) 28%, transparent);
+  }
+  50% {
+    box-shadow: 0 0 0 5px color-mix(in srgb, var(--go, #3b82f6) 0%, transparent);
+  }
+}
+
+@keyframes dpClickBurst {
+  0% {
+    opacity: 0.72;
+    transform: translate3d(-50%, -50%, 0) scale(0.35);
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(-50%, -50%, 0) scale(1.65);
+  }
+}
+
+/* Staggered card & panel entrances */
+#root :is(
+  .ws-stat, .ws-create-mode-card, .cn-card, .ws-mood-card, .ws-cursor-card,
+  .land-bento-card, .land-step-card, .hist-row, .setup-card, .feed-it-item
+) {
+  animation: dpCardArrive 440ms cubic-bezier(0.22, 1.24, 0.36, 1) both;
+}
+
+#root :is(.ws-stat, .ws-mood-card, .ws-cursor-card, .land-bento-card, .land-step-card, .cn-card, .hist-row):nth-child(1) { animation-delay: 20ms; }
+#root :is(.ws-stat, .ws-mood-card, .ws-cursor-card, .land-bento-card, .land-step-card, .cn-card, .hist-row):nth-child(2) { animation-delay: 55ms; }
+#root :is(.ws-stat, .ws-mood-card, .ws-cursor-card, .land-bento-card, .land-step-card, .cn-card, .hist-row):nth-child(3) { animation-delay: 90ms; }
+#root :is(.ws-stat, .ws-mood-card, .ws-cursor-card, .land-bento-card, .land-step-card, .cn-card, .hist-row):nth-child(4) { animation-delay: 125ms; }
+#root :is(.ws-stat, .ws-mood-card, .ws-cursor-card, .land-bento-card, .land-step-card, .cn-card, .hist-row):nth-child(5) { animation-delay: 160ms; }
+#root :is(.ws-stat, .ws-mood-card, .ws-cursor-card, .land-bento-card, .land-step-card, .cn-card, .hist-row):nth-child(6) { animation-delay: 195ms; }
+#root :is(.ws-stat, .ws-mood-card, .ws-cursor-card, .land-bento-card, .land-step-card, .cn-card, .hist-row):nth-child(7) { animation-delay: 230ms; }
+#root :is(.ws-stat, .ws-mood-card, .ws-cursor-card, .land-bento-card, .land-step-card, .cn-card, .hist-row):nth-child(8) { animation-delay: 265ms; }
+
+/* Dock & mobile More dropdown spring entrance */
+#root .ws-pc-more-menu,
+#root .ws-mobile-more-menu {
+  animation: dpMenuSpring 260ms cubic-bezier(0.22, 1.32, 0.36, 1) both;
+  transform-origin: bottom center;
+}
+
+/* Ambient drift on landing glow */
+#root .landing-apple .landing-ambient-glow {
+  animation: dpAmbientDrift 16s ease-in-out infinite alternate;
+}
+
+/* Specular sheen sweep on primary CTAs & active selection cards */
+#root :is(.ws-primary, .land-cta-btn) {
+  position: relative;
+  overflow: hidden;
+}
+
+#root :is(.ws-primary, .land-cta-btn)::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  width: 45%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.24), transparent);
+  transform: translateX(-140%) skewX(-18deg);
+  pointer-events: none;
+}
+
+#root :is(.ws-primary, .land-cta-btn):not(:disabled):hover::after {
+  animation: dpShimmerSweep 720ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Landing bento & step icon micro-motion on card hover */
+#root .land-bento-ic,
+#root .land-step-ic {
+  transition: transform 360ms cubic-bezier(0.22, 1.38, 0.36, 1), background-color 220ms ease, border-color 220ms ease;
+}
+
+#root .land-bento-card:hover .land-bento-ic {
+  transform: scale(1.08) rotate(-4deg);
+  border-color: color-mix(in srgb, var(--go) 48%, transparent);
+}
+
+#root .land-step-card:hover .land-step-ic {
+  transform: scale(1.1) rotate(6deg);
+}
+
+/* Cursor preview & mood swatch micro-motion on hover */
+#root .ws-cursor-preview svg,
+#root .ws-mood-swatches i {
+  transition: transform 340ms cubic-bezier(0.22, 1.38, 0.36, 1);
+}
+
+#root .ws-cursor-card:hover .ws-cursor-preview svg {
+  transform: scale(1.14) rotate(-6deg);
+}
+
+#root .ws-mood-card:hover .ws-mood-swatches i:nth-child(1) { transform: translateY(-2px); }
+#root .ws-mood-card:hover .ws-mood-swatches i:nth-child(2) { transform: translateY(-3px) scale(1.06); transition-delay: 30ms; }
+#root .ws-mood-card:hover .ws-mood-swatches i:nth-child(3) { transform: translateY(-2px); transition-delay: 60ms; }
+
+/* Breathing accent ring on active pill badges */
+#root .land-pill-badge,
+#root .ws-settings-pill {
+  animation: dpPillBreathe 3.2s ease-in-out infinite;
+}
+
+/* Crisp focus halo on inputs/textareas/selects */
+#root :is(input, textarea, select):focus {
+  transition: border-color 200ms ease, box-shadow 240ms cubic-bezier(0.22, 1, 0.36, 1);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--go, #3b82f6) 22%, transparent);
+}
+
+/* Tactile click burst ring */
+.dp-click-burst {
+  position: fixed;
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  border: 1.5px solid var(--go, #7dd3fc);
+  pointer-events: none;
+  z-index: 99998;
+  animation: dpClickBurst 380ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #root *,
+  .dp-click-burst {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+html[data-motion="reduced"] #root *,
+html[data-reduced-motion="true"] #root * {
+  animation: none !important;
+  transition-duration: 0.01ms !important;
+}
