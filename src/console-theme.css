@@ -4033,54 +4033,90 @@ html[data-device="mobile"] #root :is(.ws-main, .hist, .stage1-in, .stage2-in, .s
 /* Hardware-composited 0ms-lag SVG cursors for every event (desktop fine pointer) */
 html[data-cursor="custom"],
 html[data-cursor="custom"] body,
-html[data-cursor="custom"] #root {
-  cursor: var(--dp-cursor-default, auto);
+html[data-cursor="custom"] #root,
+html[data-cursor="custom"] #root * {
+  cursor: var(--dp-cursor-default, auto) !important;
 }
 
-html[data-cursor="custom"] :is(
-  button, a, summary, [role="button"], [role="tab"], [role="menuitem"], [role="radio"],
+html[data-cursor="custom"] #root :is(
+  button, a, summary, label[for], [role="button"], [role="tab"], [role="menuitem"],
+  [role="radio"], [role="switch"], [role="checkbox"], [tabindex]:not([tabindex="-1"]),
   .ws-wordmark, .s2-switch, .ws-mood-card, .ws-cursor-card, .ws-create-mode-card,
   .ws-topnav-pill, .ws-topbar-icon-btn, .ws-pc-more-item, .ws-mobile-more-item,
-  .land-cta-btn, .land-cta-ghost, .land-bento-card
-) {
+  .ws-settings-tab, .ws-settings-toggle, .ws-primary, .ws-secondary, .ws-route-stop,
+  .plat-pill, .s2-pill, .s3-tab, .hist-tab, .cn-card, .cn-btn, .cn-link,
+  .continue-btn, .s2-continue-btn, .cn-next, .s3-postall, .s3-schedall,
+  .team-video-drop, .land-cta-btn, .land-cta-ghost, .land-bento-card,
+  .land-links button, .icon-content a
+),
+html[data-cursor="custom"] #root :is(
+  button, a, summary, label[for], [role="button"], [role="tab"], [role="menuitem"],
+  [role="radio"], [role="switch"], [role="checkbox"], [tabindex]:not([tabindex="-1"]),
+  .ws-wordmark, .s2-switch, .ws-mood-card, .ws-cursor-card, .ws-create-mode-card,
+  .ws-topnav-pill, .ws-topbar-icon-btn, .ws-pc-more-item, .ws-mobile-more-item,
+  .ws-settings-tab, .ws-settings-toggle, .ws-primary, .ws-secondary, .ws-route-stop,
+  .plat-pill, .s2-pill, .s3-tab, .hist-tab, .cn-card, .cn-btn, .cn-link,
+  .continue-btn, .s2-continue-btn, .cn-next, .s3-postall, .s3-schedall,
+  .team-video-drop, .land-cta-btn, .land-cta-ghost, .land-bento-card,
+  .land-links button, .icon-content a
+) * {
   cursor: var(--dp-cursor-pointer, pointer) !important;
 }
 
-html[data-cursor="custom"] :is(
-  input, textarea, select, option, [contenteditable="true"],
+html[data-cursor="custom"] #root :is(
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):not([type="button"]):not([type="submit"]),
+  textarea, select, option, [contenteditable="true"],
   .s2-out-body, .hist-body, .ws-content-copy, pre, code
-) {
+),
+html[data-cursor="custom"] #root :is(
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):not([type="button"]):not([type="submit"]),
+  textarea, select, option, [contenteditable="true"],
+  .s2-out-body, .hist-body, .ws-content-copy, pre, code
+) * {
   cursor: var(--dp-cursor-text, text) !important;
 }
 
-html[data-cursor="custom"] :is([draggable="true"], .s2-timeline-track, .crop-box) {
+html[data-cursor="custom"] #root :is([draggable="true"], .s2-timeline-track, .crop-box),
+html[data-cursor="custom"] #root :is([draggable="true"], .s2-timeline-track, .crop-box) * {
   cursor: var(--dp-cursor-grab, grab) !important;
 }
 
 html[data-cursor="custom"].dp-is-dragging,
-html[data-cursor="custom"].dp-is-dragging *,
-html[data-cursor="custom"] :is([draggable="true"], .s2-timeline-track, .crop-box):active {
+html[data-cursor="custom"].dp-is-dragging #root,
+html[data-cursor="custom"].dp-is-dragging #root *,
+html[data-cursor="custom"] #root :is([draggable="true"], .s2-timeline-track, .crop-box):active,
+html[data-cursor="custom"] #root :is([draggable="true"], .s2-timeline-track, .crop-box):active * {
   cursor: var(--dp-cursor-grabbing, grabbing) !important;
 }
 
-html[data-cursor="custom"] :is(canvas, .s2-crop-stage, .crop-area) {
+html[data-cursor="custom"] #root :is(canvas, .s2-crop-stage, .crop-area) {
   cursor: var(--dp-cursor-crosshair, crosshair) !important;
 }
 
-html[data-cursor="custom"] :is(:disabled, [aria-disabled="true"], .is-disabled) {
+html[data-cursor="custom"] #root :is(:disabled, [aria-disabled="true"], .is-disabled),
+html[data-cursor="custom"] #root :is(:disabled, [aria-disabled="true"], .is-disabled) * {
   cursor: var(--dp-cursor-not-allowed, not-allowed) !important;
 }
 
-html[data-cursor="custom"] :is([aria-busy="true"], .is-loading, .is-publishing, .page-loading) {
+html[data-cursor="custom"] #root :is([aria-busy="true"], .is-loading, .is-publishing, .page-loading),
+html[data-cursor="custom"] #root :is([aria-busy="true"], .is-loading, .is-publishing, .page-loading) * {
   cursor: var(--dp-cursor-wait, wait) !important;
 }
 
-html[data-cursor="custom"].dp-is-pressing,
-html[data-cursor="custom"].dp-is-pressing :is(
-  button, a, summary, [role="button"], [role="tab"], [role="menuitem"], [role="radio"],
+html[data-cursor="custom"].dp-is-pressing #root :is(
+  button, a, summary, label[for], [role="button"], [role="tab"], [role="menuitem"],
+  [role="radio"], [role="switch"], [role="checkbox"],
   .ws-wordmark, .s2-switch, .ws-mood-card, .ws-cursor-card, .ws-create-mode-card,
-  .ws-topnav-pill, .ws-topbar-icon-btn, .land-cta-btn, .land-cta-ghost
-):not(:disabled) {
+  .ws-topnav-pill, .ws-topbar-icon-btn, .ws-settings-tab, .ws-settings-toggle,
+  .ws-primary, .ws-secondary, .land-cta-btn, .land-cta-ghost
+):not(:disabled),
+html[data-cursor="custom"].dp-is-pressing #root :is(
+  button, a, summary, label[for], [role="button"], [role="tab"], [role="menuitem"],
+  [role="radio"], [role="switch"], [role="checkbox"],
+  .ws-wordmark, .s2-switch, .ws-mood-card, .ws-cursor-card, .ws-create-mode-card,
+  .ws-topnav-pill, .ws-topbar-icon-btn, .ws-settings-tab, .ws-settings-toggle,
+  .ws-primary, .ws-secondary, .land-cta-btn, .land-cta-ghost
+):not(:disabled) * {
   cursor: var(--dp-cursor-active, pointer) !important;
 }
 
