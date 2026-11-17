@@ -8,6 +8,7 @@ import BorderGlow from '../components/reactbits/BorderGlow.jsx';
 import DriftIcon from '../components/DriftIcons.jsx';
 import { useDevice } from '../utils/device.js';
 import { isSfxEnabled, setSfxEnabled } from '../utils/sfx.js';
+import { CURSOR_STYLES, getCursorStyle, setCursorStyle } from '../utils/interactivePhysics.js';
 import './workspace.css';
 
 const NAV = [
@@ -114,6 +115,7 @@ export function WorkspaceNav({ page, onNavigate, email, onSignOut }) {
       { id: 'team-video-review', label: 'Review', icon: 'review', active: page === 'team-video-review' },
       { id: 'feed-it', label: 'Feed It', icon: 'feed', active: page === 'feed-it' },
     ] : []),
+    { id: 'settings', label: 'Settings', icon: 'gear', active: page === 'settings' },
   ];
   const mobilePrimaryIds = isTeam ? ['home', 'create', 'calendar', 'team-video'] : ['home', 'create', 'calendar', 'accounts'];
   const mobilePrimaryItems = topNavItems.filter((item) => mobilePrimaryIds.includes(item.id));
@@ -558,6 +560,7 @@ export function AnalyticsPage({ session, onNavigate, onSignOut }) {
 export function SettingsPage({ session, onNavigate, onSignOut }) {
   const email = session?.user?.email || '';
   const isTeam = isAiAccount(email);
+  const [tab, setTab] = useState('appearance');
   const [mood, setMood] = useState(() => {
     try {
       const saved = localStorage.getItem('driftpost-console-mood');
@@ -567,6 +570,7 @@ export function SettingsPage({ session, onNavigate, onSignOut }) {
       return 'dark';
     }
   });
+  const [cursorStyle, setCursorStyleState] = useState(() => getCursorStyle());
   const [sfxOn, setSfxOn] = useState(() => isSfxEnabled());
   const [reducedMotion, setReducedMotion] = useState(() => {
     try { return localStorage.getItem('driftpost-reduced-motion') === 'true'; }
@@ -576,6 +580,10 @@ export function SettingsPage({ session, onNavigate, onSignOut }) {
   const selectMood = (id) => {
     setMood(id);
     applyMoodSelection(id);
+  };
+
+  const selectCursor = (id) => {
+    setCursorStyleState(setCursorStyle(id));
   };
 
   useEffect(() => {
@@ -591,45 +599,97 @@ export function SettingsPage({ session, onNavigate, onSignOut }) {
       onSignOut={onSignOut}
       eyebrow="Preferences"
       title="Settings"
-      intro="Customize your workspace mood, sound feedback, motion, and account."
+      intro="Customize your workspace appearance, cursor, feedback, and account."
     >
       <div className="ws-settings-page">
-        <section className="ws-panel ws-settings-section">
-          <div className="ws-settings-section-head">
-            <div>
-              <span className="ws-eyebrow">Theme Studio</span>
-              <h2>Color Themes & Moods</h2>
-            </div>
-            <span className="ws-settings-pill">{MOOD_THEMES.find((m) => m.id === mood)?.label || 'Midnight'}</span>
-          </div>
-          <div className="ws-mood-studio-grid" role="radiogroup" aria-label="Color theme mood">
-            {MOOD_THEMES.map((item) => (
-              <button
-                key={item.id}
-                type="button"
-                role="radio"
-                aria-checked={mood === item.id}
-                className={mood === item.id ? 'ws-mood-card active' : 'ws-mood-card'}
-                onClick={() => selectMood(item.id)}
-              >
-                <span className="ws-mood-swatches" aria-hidden="true">
-                  <i style={{ background: item.bg }} />
-                  <i style={{ background: item.panel }} />
-                  <i style={{ background: item.color }} />
-                </span>
-                <span className="ws-mood-card-copy">
-                  <b>{item.label}</b>
-                  <small>{item.note}</small>
-                </span>
-              </button>
-            ))}
-          </div>
-        </section>
+        <div className="ws-settings-tabs" role="tablist" aria-label="Settings categories">
+          {[
+            { id: 'appearance', label: 'Appearance & Cursor', icon: 'sparkles' },
+            { id: 'experience', label: 'Sound & Motion', icon: 'volumeOn' },
+            { id: 'account', label: 'Account', icon: 'users' },
+          ].map((item) => (
+            <button
+              key={item.id}
+              type="button"
+              role="tab"
+              aria-selected={tab === item.id}
+              className={tab === item.id ? 'ws-settings-tab active' : 'ws-settings-tab'}
+              onClick={() => setTab(item.id)}
+            >
+              <Icon name={item.icon} size={15} />
+              <span>{item.label}</span>
+            </button>
+          ))}
+        </div>
 
-        <div className="ws-settings-two-col">
+        {tab === 'appearance' && (
+          <>
+            <section className="ws-panel ws-settings-section">
+              <div className="ws-settings-section-head">
+                <div>
+                  <span className="ws-eyebrow">Theme Studio</span>
+                  <h2>Color Themes & Moods</h2>
+                </div>
+                <span className="ws-settings-pill">{MOOD_THEMES.find((m) => m.id === mood)?.label || 'Midnight'}</span>
+              </div>
+              <div className="ws-mood-studio-grid" role="radiogroup" aria-label="Color theme mood">
+                {MOOD_THEMES.map((item) => (
+                  <button
+                    key={item.id}
+                    type="button"
+                    role="radio"
+                    aria-checked={mood === item.id}
+                    className={mood === item.id ? 'ws-mood-card active' : 'ws-mood-card'}
+                    onClick={() => selectMood(item.id)}
+                  >
+                    <span className="ws-mood-swatches" aria-hidden="true">
+                      <i style={{ background: item.bg }} />
+                      <i style={{ background: item.panel }} />
+                      <i style={{ background: item.color }} />
+                    </span>
+                    <span className="ws-mood-card-copy">
+                      <b>{item.label}</b>
+                      <small>{item.note}</small>
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </section>
+
+            <section className="ws-panel ws-settings-section">
+              <div className="ws-settings-section-head">
+                <div>
+                  <span className="ws-eyebrow">Pointer Studio</span>
+                  <h2>Cursor Varieties</h2>
+                </div>
+                <span className="ws-settings-pill">{CURSOR_STYLES.find((c) => c.id === cursorStyle)?.label || 'Precision Vector'}</span>
+              </div>
+              <div className="ws-cursor-grid" role="radiogroup" aria-label="Cursor style">
+                {CURSOR_STYLES.map((item) => (
+                  <button
+                    key={item.id}
+                    type="button"
+                    role="radio"
+                    aria-checked={cursorStyle === item.id}
+                    className={cursorStyle === item.id ? 'ws-cursor-card active' : 'ws-cursor-card'}
+                    onClick={() => selectCursor(item.id)}
+                  >
+                    <span className="ws-cursor-preview" aria-hidden="true" dangerouslySetInnerHTML={{ __html: item.svg }} />
+                    <span className="ws-mood-card-copy">
+                      <b>{item.label}</b>
+                      <small>{item.note}</small>
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </section>
+          </>
+        )}
+
+        {tab === 'experience' && (
           <section className="ws-panel ws-settings-section">
             <span className="ws-eyebrow">Experience</span>
-            <h2>Audio & Motion</h2>
+            <h2>Sound & Motion</h2>
             <div className="ws-settings-list">
               <div className="ws-settings-row">
                 <div>
@@ -665,7 +725,9 @@ export function SettingsPage({ session, onNavigate, onSignOut }) {
               </div>
             </div>
           </section>
+        )}
 
+        {tab === 'account' && (
           <section className="ws-panel ws-settings-section">
             <span className="ws-eyebrow">Identity</span>
             <h2>Account & Shortcuts</h2>
@@ -692,7 +754,7 @@ export function SettingsPage({ session, onNavigate, onSignOut }) {
               </div>
             </div>
           </section>
-        </div>
+        )}
       </div>
     </PageFrame>
   );

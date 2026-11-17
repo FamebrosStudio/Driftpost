@@ -4049,9 +4049,9 @@ html[data-cursor="custom"] :is(input, textarea, select, option, [contenteditable
   z-index: 99999;
   pointer-events: none;
   opacity: 0;
-  transition: opacity 140ms ease;
-  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.45));
-  will-change: transform, opacity;
+  filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.42));
+  will-change: transform;
+  contain: layout style;
 }
 
 #dp-pro-cursor.is-visible {
@@ -4065,15 +4065,36 @@ html[data-cursor="custom"] :is(input, textarea, select, option, [contenteditable
 #dp-pro-cursor svg {
   display: block;
   transform-origin: 2px 2px;
-  transition: transform 160ms cubic-bezier(0.22, 1.38, 0.36, 1);
+  transition: transform 140ms cubic-bezier(0.22, 1.38, 0.36, 1);
 }
 
 #dp-pro-cursor.is-down svg {
   transform: scale(0.86);
 }
 
-#dp-pro-cursor.is-pointer path {
+#dp-pro-cursor.is-pointer[data-style="precision"] path,
+#dp-pro-cursor.is-pointer[data-style="glass"] path {
   stroke: var(--go, #3b82f6);
+}
+
+#dp-pro-cursor[data-style="reticle"] .dp-cur-ring,
+#dp-pro-cursor[data-style="halo"] .dp-cur-ring {
+  transform-origin: 13px 13px;
+  transition: transform 240ms cubic-bezier(0.22, 1.38, 0.36, 1), stroke 180ms ease;
+}
+
+#dp-pro-cursor.is-pointer[data-style="reticle"] .dp-cur-ring {
+  transform: rotate(45deg) scale(1.16);
+}
+
+#dp-pro-cursor.is-pointer[data-style="halo"] .dp-cur-ring {
+  transform: scale(1.24);
+  stroke: var(--go, #3b82f6);
+}
+
+#dp-pro-cursor.is-down[data-style="halo"] .dp-cur-ring,
+#dp-pro-cursor.is-down[data-style="reticle"] .dp-cur-ring {
+  transform: scale(0.82);
 }
 
 .dp-hold-nudging {
@@ -4207,4 +4228,88 @@ html[data-reduced-motion="true"] #root .ws-stat-icon > svg {
   transition: none !important;
   animation: none !important;
   transform: none !important;
+}
+
+/* Apple-style Segmented Settings Tabs & Cursor Variety Picker */
+#root .ws-settings-tabs {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 6px;
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--panel, #11131a) 78%, transparent);
+  border: 1px solid var(--line, rgba(255, 255, 255, 0.08));
+  backdrop-filter: blur(18px) saturate(145%);
+  -webkit-backdrop-filter: blur(18px) saturate(145%);
+  margin-bottom: 18px;
+}
+
+#root .ws-settings-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 16px;
+  border-radius: 11px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--muted, #9ca3af);
+  font-size: 13.5px;
+  font-weight: 500;
+  transition: background-color 220ms ease, color 220ms ease, border-color 220ms ease, box-shadow 220ms ease;
+}
+
+#root .ws-settings-tab:hover {
+  color: var(--ink, #f8fafc);
+}
+
+#root .ws-settings-tab.active {
+  background: color-mix(in srgb, var(--go, #3b82f6) 16%, var(--panel, #161922));
+  border-color: color-mix(in srgb, var(--go, #3b82f6) 40%, transparent);
+  color: var(--ink, #f8fafc);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.22);
+}
+
+#root .ws-cursor-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+#root .ws-cursor-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  text-align: left;
+  background: color-mix(in srgb, var(--panel, #11131a) 72%, transparent);
+  border: 1px solid var(--line, rgba(255, 255, 255, 0.08));
+  color: var(--ink, #f8fafc);
+  transition: border-color 220ms ease, background-color 220ms ease, box-shadow 220ms ease;
+}
+
+#root .ws-cursor-card:hover {
+  border-color: color-mix(in srgb, var(--go, #3b82f6) 42%, transparent);
+}
+
+#root .ws-cursor-card.active {
+  background: color-mix(in srgb, var(--go, #3b82f6) 14%, var(--panel, #11131a));
+  border-color: var(--go, #3b82f6);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--go, #3b82f6) 35%, transparent), 0 8px 24px rgba(0, 0, 0, 0.24);
+}
+
+#root .ws-cursor-preview {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--bg, #07080d) 78%, transparent);
+  border: 1px solid var(--line, rgba(255, 255, 255, 0.09));
+}
+
+#root .ws-cursor-preview svg {
+  display: block;
 }
