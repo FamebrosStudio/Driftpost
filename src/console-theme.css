@@ -4030,71 +4030,24 @@ html[data-device="mobile"] #root :is(.ws-main, .hist, .stage1-in, .stage2-in, .s
   user-select: text;
 }
 
-/* Precision professional vector cursor (desktop fine pointer) */
+/* Hardware-composited 0ms-lag SVG cursor (desktop fine pointer) */
 html[data-cursor="custom"],
 html[data-cursor="custom"] body,
-html[data-cursor="custom"] #root,
-html[data-cursor="custom"] #root * {
-  cursor: none !important;
+html[data-cursor="custom"] #root {
+  cursor: var(--dp-cursor-default, auto);
+}
+
+html[data-cursor="custom"] :is(
+  button, a, summary, [role="button"], [role="tab"], [role="menuitem"], [role="radio"],
+  .ws-wordmark, .s2-switch, .ws-mood-card, .ws-cursor-card, .ws-create-mode-card,
+  .ws-topnav-pill, .ws-topbar-icon-btn, .ws-pc-more-item, .ws-mobile-more-item,
+  .land-cta-btn, .land-cta-ghost, .land-bento-card
+) {
+  cursor: var(--dp-cursor-pointer, pointer) !important;
 }
 
 html[data-cursor="custom"] :is(input, textarea, select, option, [contenteditable="true"]) {
   cursor: text !important;
-}
-
-#dp-pro-cursor {
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 99999;
-  pointer-events: none;
-  opacity: 0;
-  filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.42));
-  will-change: transform;
-  contain: layout style;
-}
-
-#dp-pro-cursor.is-visible {
-  opacity: 1;
-}
-
-#dp-pro-cursor.is-hidden {
-  opacity: 0;
-}
-
-#dp-pro-cursor svg {
-  display: block;
-  transform-origin: 2px 2px;
-  transition: transform 140ms cubic-bezier(0.22, 1.38, 0.36, 1);
-}
-
-#dp-pro-cursor.is-down svg {
-  transform: scale(0.86);
-}
-
-#dp-pro-cursor.is-pointer[data-style="precision"] path,
-#dp-pro-cursor.is-pointer[data-style="glass"] path {
-  stroke: var(--go, #3b82f6);
-}
-
-#dp-pro-cursor[data-style="reticle"] .dp-cur-ring,
-#dp-pro-cursor[data-style="halo"] .dp-cur-ring {
-  transform-origin: 13px 13px;
-  transition: transform 240ms cubic-bezier(0.22, 1.38, 0.36, 1), stroke 180ms ease;
-}
-
-#dp-pro-cursor.is-pointer[data-style="reticle"] .dp-cur-ring {
-  transform: rotate(45deg) scale(1.16);
-}
-
-#dp-pro-cursor.is-pointer[data-style="halo"] .dp-cur-ring {
-  transform: scale(1.24);
-  stroke: var(--go, #3b82f6);
-}
-
-#dp-pro-cursor.is-down[data-style="halo"] .dp-cur-ring,
-#dp-pro-cursor.is-down[data-style="reticle"] .dp-cur-ring {
-  transform: scale(0.82);
 }
 
 .dp-hold-nudging {

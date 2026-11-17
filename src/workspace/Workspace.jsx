@@ -674,7 +674,7 @@ export function SettingsPage({ session, onNavigate, onSignOut }) {
                     className={cursorStyle === item.id ? 'ws-cursor-card active' : 'ws-cursor-card'}
                     onClick={() => selectCursor(item.id)}
                   >
-                    <span className="ws-cursor-preview" aria-hidden="true" dangerouslySetInnerHTML={{ __html: item.svg }} />
+                    <span className="ws-cursor-preview" aria-hidden="true" dangerouslySetInnerHTML={{ __html: item.svg.replaceAll('__ACCENT__', 'var(--go, #7dd3fc)') }} />
                     <span className="ws-mood-card-copy">
                       <b>{item.label}</b>
                       <small>{item.note}</small>
