@@ -10,6 +10,7 @@ export function DriftIcon({ name, size = 16, className = '' }) {
     fillRule: 'evenodd',
     clipRule: 'evenodd',
     className: className ? `dp-icon ${className}` : 'dp-icon',
+    'data-icon': name,
     'aria-hidden': 'true',
     focusable: 'false',
   };
