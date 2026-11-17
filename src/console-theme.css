@@ -4030,7 +4030,7 @@ html[data-device="mobile"] #root :is(.ws-main, .hist, .stage1-in, .stage2-in, .s
   user-select: text;
 }
 
-/* Hardware-composited 0ms-lag SVG cursor (desktop fine pointer) */
+/* Hardware-composited 0ms-lag SVG cursors for every event (desktop fine pointer) */
 html[data-cursor="custom"],
 html[data-cursor="custom"] body,
 html[data-cursor="custom"] #root {
@@ -4046,8 +4046,42 @@ html[data-cursor="custom"] :is(
   cursor: var(--dp-cursor-pointer, pointer) !important;
 }
 
-html[data-cursor="custom"] :is(input, textarea, select, option, [contenteditable="true"]) {
-  cursor: text !important;
+html[data-cursor="custom"] :is(
+  input, textarea, select, option, [contenteditable="true"],
+  .s2-out-body, .hist-body, .ws-content-copy, pre, code
+) {
+  cursor: var(--dp-cursor-text, text) !important;
+}
+
+html[data-cursor="custom"] :is([draggable="true"], .s2-timeline-track, .crop-box) {
+  cursor: var(--dp-cursor-grab, grab) !important;
+}
+
+html[data-cursor="custom"].dp-is-dragging,
+html[data-cursor="custom"].dp-is-dragging *,
+html[data-cursor="custom"] :is([draggable="true"], .s2-timeline-track, .crop-box):active {
+  cursor: var(--dp-cursor-grabbing, grabbing) !important;
+}
+
+html[data-cursor="custom"] :is(canvas, .s2-crop-stage, .crop-area) {
+  cursor: var(--dp-cursor-crosshair, crosshair) !important;
+}
+
+html[data-cursor="custom"] :is(:disabled, [aria-disabled="true"], .is-disabled) {
+  cursor: var(--dp-cursor-not-allowed, not-allowed) !important;
+}
+
+html[data-cursor="custom"] :is([aria-busy="true"], .is-loading, .is-publishing, .page-loading) {
+  cursor: var(--dp-cursor-wait, wait) !important;
+}
+
+html[data-cursor="custom"].dp-is-pressing,
+html[data-cursor="custom"].dp-is-pressing :is(
+  button, a, summary, [role="button"], [role="tab"], [role="menuitem"], [role="radio"],
+  .ws-wordmark, .s2-switch, .ws-mood-card, .ws-cursor-card, .ws-create-mode-card,
+  .ws-topnav-pill, .ws-topbar-icon-btn, .land-cta-btn, .land-cta-ghost
+):not(:disabled) {
+  cursor: var(--dp-cursor-active, pointer) !important;
 }
 
 .dp-hold-nudging {
