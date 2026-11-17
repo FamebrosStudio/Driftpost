@@ -5116,3 +5116,71 @@ html[data-reduced-motion="true"] #root * {
   animation: none !important;
   transition-duration: 0.01ms !important;
 }
+
+/* Calendar breathing room & rounded day card spacing */
+#root .ws .ws-calendar-panel {
+  padding: clamp(18px, 2.6vw, 28px);
+}
+
+#root .ws .ws-weekdays {
+  gap: 8px;
+  padding-bottom: 12px;
+}
+
+#root .ws .ws-days {
+  gap: 8px;
+  border: 0 !important;
+}
+
+#root .ws .ws-day {
+  min-height: clamp(88px, 9.5vw, 118px);
+  padding: 10px 10px 11px;
+  gap: 6px;
+  border: 1px solid var(--line) !important;
+  border-radius: 14px !important;
+  background: color-mix(in srgb, var(--panel) 55%, transparent);
+}
+
+#root .ws .ws-day:hover {
+  border-color: var(--line-hard) !important;
+}
+
+#root .ws .ws-day.selected {
+  border-color: var(--go) !important;
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--go) 45%, transparent) !important;
+  background: color-mix(in srgb, var(--go) 9%, var(--panel));
+}
+
+#root .ws .ws-day-number {
+  margin-bottom: 2px;
+}
+
+#root .ws .ws-event {
+  padding: 5px 8px;
+  gap: 6px;
+  border-radius: 9px;
+}
+
+#root .ws .ws-more {
+  padding: 2px 4px 0;
+  font-size: 10px;
+}
+
+@media (max-width: 680px) {
+  #root .ws .ws-weekdays,
+  #root .ws .ws-days {
+    gap: 4px;
+  }
+
+  #root .ws .ws-day {
+    min-height: clamp(64px, 16vw, 84px);
+    padding: 6px 5px;
+    gap: 4px;
+    border-radius: 10px !important;
+  }
+
+  #root .ws .ws-event {
+    padding: 4px;
+    border-radius: 7px;
+  }
+}
