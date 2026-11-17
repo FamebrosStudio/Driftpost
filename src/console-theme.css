@@ -4467,6 +4467,65 @@ body {
   font-weight: 600;
 }
 
+/* Recovery / Server Starting / Offline / 404 screens inherit active theme & mood */
+#root .recovery-page,
+#root .recovery-starting,
+#root .recovery-offline {
+  --rec-bg: var(--bg) !important;
+  --rec-panel: var(--panel) !important;
+  --rec-line: var(--line-hard) !important;
+  --rec-accent: var(--go) !important;
+  background-color: var(--bg) !important;
+  background-image:
+    radial-gradient(ellipse 68% 48% at 50% 38%, color-mix(in srgb, var(--go) 16%, transparent), transparent 64%),
+    radial-gradient(ellipse 50% 38% at 85% 10%, color-mix(in srgb, var(--go) 9%, transparent), transparent 56%) !important;
+  color: var(--ink) !important;
+}
+
+#root .recovery-starting .recovery-copy,
+#root .recovery-page .recovery-copy {
+  color: var(--muted) !important;
+}
+
+#root .recovery-starting .starting-progress,
+#root .recovery-page .starting-progress {
+  background: var(--line-hard) !important;
+}
+
+#root .recovery-starting .starting-progress i,
+#root .recovery-page .starting-progress i {
+  background: var(--go) !important;
+  box-shadow: 0 0 14px color-mix(in srgb, var(--go) 65%, transparent) !important;
+}
+
+#root .recovery-starting .starting-caption,
+#root .recovery-page .starting-caption {
+  color: var(--muted) !important;
+}
+
+#root .recovery-starting .starting-live-dot,
+#root .recovery-page .starting-live-dot {
+  background: var(--go) !important;
+  box-shadow: 0 0 12px color-mix(in srgb, var(--go) 75%, transparent) !important;
+}
+
+#root .recovery-page .recovery-kicker,
+#root .recovery-page .offline-tip span {
+  color: var(--go) !important;
+}
+
+#root .recovery-page .recovery-primary {
+  background: var(--go) !important;
+  color: var(--go-ink) !important;
+  box-shadow: 0 10px 28px color-mix(in srgb, var(--go) 34%, transparent) !important;
+}
+
+#root .recovery-page .recovery-secondary {
+  color: var(--ink) !important;
+  border-color: var(--line-hard) !important;
+  background: color-mix(in srgb, var(--panel) 72%, transparent) !important;
+}
+
 /* Auth screen inherits active theme/mood */
 #root .auth-wrap,
 .auth-wrap {
