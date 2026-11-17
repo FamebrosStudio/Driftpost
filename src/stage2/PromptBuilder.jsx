@@ -17,7 +17,15 @@ export default function PromptBuilder({ brief, setBrief, tone, setTone, emoji, s
         onChange={(e) => setBrief(e.target.value)}
         placeholder="Example: Create a premium festive post for my jewellery brand…"
       />
-      <AISettings tone={tone} setTone={setTone} emoji={emoji} setEmoji={setEmoji} length={length} setLength={setLength} analysis={analysis} setAnalysis={setAnalysis} />
+      <details className="dp-collapse s2-style-collapse">
+        <summary>
+          <span>Customize AI style (optional)</span>
+          <small>{tone} · {length}</small>
+        </summary>
+        <div className="dp-collapse-body">
+          <AISettings tone={tone} setTone={setTone} emoji={emoji} setEmoji={setEmoji} length={length} setLength={setLength} analysis={analysis} setAnalysis={setAnalysis} />
+        </div>
+      </details>
       <GenerateButton disabled={!canGenerate || busy} busy={busy} onClick={onGenerate} />
     </div>
   );

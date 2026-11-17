@@ -75,8 +75,10 @@ export function WorkspaceNav({ page, onNavigate, email, onSignOut }) {
     catch { return 'dark'; }
   });
   const [mobileMoreOpen, setMobileMoreOpen] = useState(false);
+  const [pcMoreOpen, setPcMoreOpen] = useState(false);
   useEffect(() => {
     setMobileMoreOpen(false);
+    setPcMoreOpen(false);
   }, [page]);
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
@@ -135,19 +137,54 @@ export function WorkspaceNav({ page, onNavigate, email, onSignOut }) {
       </div>
     </header>
     {!isMobileDevice && (
-      <nav className="ws-topnav" aria-label="Workspace navigation">
-        {topNavItems.map((item) => (
+      <div className="ws-pc-dock-wrap">
+        {pcMoreOpen && (
+          <>
+            <div
+              className="ws-pc-more-backdrop"
+              onClick={() => setPcMoreOpen(false)}
+              aria-hidden="true"
+            />
+            <div className="ws-pc-more-menu" role="menu" aria-label="More workspace pages">
+              {mobileMoreItems.map((item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  role="menuitem"
+                  className={item.active ? 'ws-pc-more-item active' : 'ws-pc-more-item'}
+                  onClick={() => { setPcMoreOpen(false); onNavigate(item.id); }}
+                >
+                  <Icon name={item.icon} size={16} />
+                  <span>{item.label}</span>
+                </button>
+              ))}
+            </div>
+          </>
+        )}
+        <nav className="ws-topnav" aria-label="Workspace navigation">
+          {mobilePrimaryItems.map((item) => (
+            <button
+              key={item.id}
+              type="button"
+              className={item.active ? 'ws-topnav-pill active' : 'ws-topnav-pill'}
+              onClick={() => { setPcMoreOpen(false); onNavigate(item.id); }}
+            >
+              <Icon name={item.icon} size={15} />
+              <span>{item.label}</span>
+            </button>
+          ))}
           <button
-            key={item.id}
             type="button"
-            className={item.active ? 'ws-topnav-pill active' : 'ws-topnav-pill'}
-            onClick={() => onNavigate(item.id)}
+            className={pcMoreOpen || mobileMoreActive ? 'ws-topnav-pill ws-topnav-more active' : 'ws-topnav-pill ws-topnav-more'}
+            onClick={() => setPcMoreOpen((open) => !open)}
+            aria-expanded={pcMoreOpen}
+            aria-label="More workspace pages"
           >
-            <Icon name={item.icon} size={15} />
-            <span>{item.label}</span>
+            <MoreGridGlyph />
+            <span>More</span>
           </button>
-        ))}
-      </nav>
+        </nav>
+      </div>
     )}
     {isMobileDevice && (
       <div className="ws-mobile-dock-wrap">
