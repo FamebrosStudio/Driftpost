@@ -52,7 +52,7 @@ const MoreGridGlyph = () => <DriftIcon name="moreGrid" size={18} />;
 const MOOD_THEMES = [
   { id: 'dark', label: 'Midnight', note: 'Obsidian & Blue', bg: '#09090b', panel: '#111114', color: '#3b82f6' },
   { id: 'light', label: 'Daylight', note: 'Crisp Alabaster', bg: '#f4f7fb', panel: '#ffffff', color: '#0284c7' },
-  { id: 'osien', label: 'OSIEN', note: 'osien.is-a.dev', bg: '#05050a', panel: '#0b0b12', color: '#f5a623' },
+  { id: 'osien', label: 'OSIEN', note: 'Obsidian & Violet', bg: '#05050a', panel: '#120d22', color: '#8b5cf6' },
   { id: 'tokyo-drift', label: 'Tokyo Drift', note: 'Neon Shibuya', bg: '#08070d', panel: '#100e1a', color: '#ff2a85' },
   { id: 'sea', label: 'Sea', note: 'Deep Pelagic', bg: '#041018', panel: '#081924', color: '#14b8a6' },
   { id: 'perfect', label: 'Perfect', note: 'Titanium Pro', bg: '#09090b', panel: '#111114', color: '#38bdf8' },

@@ -3196,19 +3196,22 @@ html[data-mood] #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3, .connect,
 html[data-mood="osien"] #root,
 html[data-mood="osien"] #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3, .connect, .welcome, .team-video-page, .approval-page) {
   --bg: #05050a;
-  --panel: #0b0b12;
-  --panel2: #12121d;
-  --input: #08080f;
-  --line: #1c1c2b;
-  --line-hard: #2d2c42;
-  --ink: #e8e6e3;
-  --muted: #b3afa6;
-  --faint: #75726d;
-  --go: #f5a623;
-  --go-ink: #140d02;
-  --ok: #2dd4bf;
-  --warm: #f5a623;
+  --panel: #0c0a16;
+  --panel2: #141024;
+  --input: #080711;
+  --line: #211b38;
+  --line-hard: #352b59;
+  --ink: #f3f1ff;
+  --muted: #b5add4;
+  --faint: #787099;
+  --go: #8b5cf6;
+  --go-ink: #ffffff;
+  --ok: #38bdf8;
+  --warm: #a78bfa;
   --danger: #f87171;
+  background-image:
+    radial-gradient(ellipse 75% 50% at 15% -10%, rgba(139, 92, 246, 0.14), transparent 60%),
+    radial-gradient(ellipse 60% 45% at 88% 8%, rgba(59, 130, 246, 0.09), transparent 58%);
 }
 
 html[data-mood="tokyo-drift"] #root,
