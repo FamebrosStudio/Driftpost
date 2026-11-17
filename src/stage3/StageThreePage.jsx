@@ -81,6 +81,16 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
   const [schedOpen, setSchedOpen] = useState(false);
   const [schedBusy, setSchedBusy] = useState(false);
   const [encoding, setEncoding] = useState(false);
+  useEffect(() => {
+    const isUploadingOrPublishing = encoding || Object.values(busy).some(Boolean);
+    if (!isUploadingOrPublishing) return;
+    const onBeforeUnload = (e) => {
+      e.preventDefault();
+      e.returnValue = '';
+    };
+    window.addEventListener('beforeunload', onBeforeUnload);
+    return () => window.removeEventListener('beforeunload', onBeforeUnload);
+  }, [encoding, busy]);
   const [schedMsg, setSchedMsg] = useState('');
   // The modal stays open when a schedule is rejected, so the reason has to be
   // shown inside it - not only on the bar behind it.
