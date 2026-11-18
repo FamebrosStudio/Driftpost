@@ -1590,6 +1590,7 @@ app.delete('/api/connections/:id', requireUser, connectionsLimit, async (req, re
       await Promise.allSettled([
         supabase.from('instagram_automations').delete().eq('connection_id', connId).eq('user_id', req.user.id),
         supabase.from('instagram_automation_events').delete().eq('connection_id', connId).eq('user_id', req.user.id),
+        supabase.from('google_business_locations').delete().eq('connection_id', connId).eq('user_id', req.user.id),
       ]);
       ({ data, error } = await supabase.from('platform_connections').delete()
         .eq('id', connId).eq('user_id', req.user.id).select('id').maybeSingle());

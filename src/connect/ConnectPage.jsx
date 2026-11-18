@@ -188,7 +188,7 @@ export default function ConnectPage({ session, onContinue, onHistory, onSignOut,
                                 {confirmDropId === c.id ? (
                                   <span className="cn-drop-actions">
                                     <button type="button" className="cn-drop danger" disabled={!!busy} onClick={() => disconnect(c)}>
-                                      {busy === c.id ? '…' : 'Confirm'}
+                                      {busy === c.id ? 'Disconnecting…' : 'Yes, disconnect'}
                                     </button>
                                     <button type="button" className="cn-drop" disabled={!!busy} onClick={() => setConfirmDropId('')}>
                                       Cancel

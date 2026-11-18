@@ -229,8 +229,11 @@ export function installInteractivePhysics() {
       window.setTimeout(() => burst.remove(), 400);
     }
     if (targetEl?.closest?.(TEXT_INPUT_SELECTOR) || targetEl?.closest?.(NATIVE_DRAG_IGNORE)) return;
+    // Never nudge/drag an outer card when the user is clicking a button, link, or dropdown inside it.
+    const innerControl = targetEl?.closest?.('button, a, summary, [role="button"], .dp-collapse, .cn-acct, .cn-drop');
     const target = targetEl?.closest?.(HOLD_SELECTOR);
     if (!target || target.disabled) return;
+    if (innerControl && innerControl !== target && target.contains(innerControl)) return;
     const glowWrapper = target.parentElement?.classList?.contains('border-glow-inner')
       ? target.closest('.border-glow-card')
       : null;
