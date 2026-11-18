@@ -569,6 +569,15 @@ function Landing({ onEnter, session, pubPage, setPubPage }) {
           </button>
         </div>
         <div className="land-fine">
+          <a
+            className="land-osien-pill"
+            href="https://github.com/kabirprokk/OSIEN"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <DriftIcon name="bolt" size={13} />
+            <span>Picked from the trench of OSIEN</span>
+          </a>
           <span>Free while in beta · Your logins never leave the platforms · © {new Date().getFullYear()} Driftpost · Made by Famebros Studio</span>
           <span className="land-legal"><button className="link" onClick={() => setPubPage('terms')}>Terms</button> · <a className="link" href="/privacy">Privacy Policy</a> · <button className="link" onClick={() => setPubPage('cookies')}>Cookies</button> · <button className="link" onClick={() => setPubPage('acceptable-use')}>Acceptable Use</button> · <button className="link" onClick={() => setPubPage('ai-disclaimer')}>AI Disclaimer</button> · <button className="link" onClick={() => setPubPage('platforms-disclaimer')}>Platforms</button> · <button className="link" onClick={() => setPubPage('copyright')}>Copyright</button> · <button className="link" onClick={() => setPubPage('refunds')}>Refunds</button> · <button className="link" onClick={() => setPubPage('data-deletion')}>Data Deletion</button> · <button className="link" onClick={() => setPubPage('security')}>Security</button> · <button className="link" onClick={() => setPubPage('contact')}>Contact</button></span>
         </div>

@@ -5365,3 +5365,30 @@ html {
 #root :is(.ws-upcoming-row, .cn-acct):hover {
   background: color-mix(in srgb, var(--go, #3b82f6) 6%, transparent);
 }
+
+/* OSIEN trench footer badge */
+#root .land-osien-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 14px;
+  margin-bottom: 10px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--go, #8b5cf6) 42%, var(--line-hard));
+  background: color-mix(in srgb, var(--go, #8b5cf6) 14%, var(--panel));
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  box-shadow: 0 4px 18px -6px color-mix(in srgb, var(--go, #8b5cf6) 45%, transparent);
+}
+
+#root .land-osien-pill .dp-icon {
+  color: var(--go);
+}
+
+#root .land-osien-pill:hover {
+  border-color: var(--go);
+  background: color-mix(in srgb, var(--go, #8b5cf6) 22%, var(--panel));
+}
