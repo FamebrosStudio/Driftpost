@@ -5366,13 +5366,54 @@ html {
   background: color-mix(in srgb, var(--go, #3b82f6) 6%, transparent);
 }
 
-/* OSIEN trench footer badge */
+/* Clean, centered Apple-style footer bottom & OSIEN trench badge */
+#root .land-foot-apple .land-fine {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  text-align: center;
+  padding: 12px 16px 8px;
+  font-family: inherit;
+}
+
+#root .land-foot-apple .land-fine > span {
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+#root .land-foot-apple .land-legal {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 6px 14px;
+  font-size: 12px;
+  color: var(--faint);
+}
+
+#root .land-foot-apple .land-legal :is(button.link, a.link) {
+  text-decoration: none;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 500;
+  padding: 2px 4px;
+  border-radius: 6px;
+}
+
+#root .land-foot-apple .land-legal :is(button.link, a.link):hover {
+  color: var(--ink);
+  background: color-mix(in srgb, var(--go, #8b5cf6) 12%, transparent);
+}
+
 #root .land-osien-pill {
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  padding: 6px 14px;
-  margin-bottom: 10px;
+  padding: 7px 15px;
+  margin: 0;
   border-radius: 999px;
   border: 1px solid color-mix(in srgb, var(--go, #8b5cf6) 42%, var(--line-hard));
   background: color-mix(in srgb, var(--go, #8b5cf6) 14%, var(--panel));
