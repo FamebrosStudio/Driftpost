@@ -284,6 +284,10 @@ export async function enqueueFiles(supabase, connection, files) {
       brief: file.brief || '',
       directStoragePaths: file.directStoragePaths || [],
       customCoverStoragePath: file.customCoverStoragePath || '',
+      scheduledAt: file.scheduledAt || '',
+      repeatEveryDays: file.repeatEveryDays || 0,
+      repeatRemaining: file.repeatRemaining || 0,
+      customCaptions: file.customCaptions || null,
     })),
     ...readyFolders.map((folder) => ({
       files: [...folder.children].sort((a, b) => String(a.name).localeCompare(String(b.name), undefined, { numeric: true })),
@@ -292,6 +296,11 @@ export async function enqueueFiles(supabase, connection, files) {
       folderId: folder.id,
       brief: folder.brief || '',
       directStoragePaths: folder.directStoragePaths || [],
+      customCoverStoragePath: folder.customCoverStoragePath || '',
+      scheduledAt: folder.scheduledAt || '',
+      repeatEveryDays: folder.repeatEveryDays || 0,
+      repeatRemaining: folder.repeatRemaining || 0,
+      customCaptions: folder.customCaptions || null,
     })),
     ...readyGroups.map((group) => ({ files: group.files.sort((a, b) => String(a.name).localeCompare(String(b.name), undefined, { numeric: true })), parsed: group.parsed, kind: 'image' })),
   ];
@@ -407,6 +416,9 @@ export async function enqueueFiles(supabase, connection, files) {
         ...(batch.brief ? { brief: batch.brief } : {}),
         ...(batch.directStoragePaths?.length ? { direct_storage_paths: batch.directStoragePaths } : {}),
         ...(batch.customCoverStoragePath ? { custom_cover_storage_path: batch.customCoverStoragePath } : {}),
+        ...(batch.scheduledAt ? { scheduled_at: batch.scheduledAt } : {}),
+        ...(batch.repeatEveryDays > 0 ? { repeat_every_days: batch.repeatEveryDays, repeat_remaining: batch.repeatRemaining } : {}),
+        ...(batch.customCaptions ? { custom_captions: batch.customCaptions } : {}),
         ...(batch.kind === 'image' ? { media_kind: 'carousel', source_drive_files: batchFiles.map((item) => ({ id: item.id, name: item.name, mime_type: item.mimeType, size: Number(item.size) || 0, ...(item.storage_path ? { storage_path: item.storage_path } : {}) })) } : {}),
       },
       status: errorMessage && !needsBrandInference ? 'failed' : 'queued',
@@ -416,7 +428,7 @@ export async function enqueueFiles(supabase, connection, files) {
   }
 }
 
-export async function enqueueDirectUpload(supabase, userId, uploadedFiles, description = '', { coverFile = null } = {}) {
+export async function enqueueDirectUpload(supabase, userId, uploadedFiles, description = '', { coverFile = null, scheduledAt = '', repeatEveryDays = 0, repeatRemaining = 0, customCaptions = null } = {}) {
   const incoming = Array.isArray(uploadedFiles) ? uploadedFiles.filter(Boolean) : [];
   if (!incoming.length) throw new Error('Choose a video or up to 10 carousel images first.');
   const videos = incoming.filter((f) => String(f.mimetype || '').startsWith('video/') || isIntakeVideoFile({ name: f.originalname, mimeType: f.mimetype }));
@@ -487,6 +499,10 @@ export async function enqueueDirectUpload(supabase, userId, uploadedFiles, descr
         children: files,
         brief,
         directStoragePaths: storagePaths,
+        ...(customCoverStoragePath ? { customCoverStoragePath } : {}),
+        ...(scheduledAt ? { scheduledAt } : {}),
+        ...(repeatEveryDays > 0 ? { repeatEveryDays, repeatRemaining } : {}),
+        ...(customCaptions ? { customCaptions } : {}),
       }]);
     } else {
       await enqueueFiles(supabase, connection, [{
@@ -495,10 +511,13 @@ export async function enqueueDirectUpload(supabase, userId, uploadedFiles, descr
         brief,
         directStoragePaths: storagePaths,
         ...(customCoverStoragePath ? { customCoverStoragePath } : {}),
+        ...(scheduledAt ? { scheduledAt } : {}),
+        ...(repeatEveryDays > 0 ? { repeatEveryDays, repeatRemaining } : {}),
+        ...(customCaptions ? { customCaptions } : {}),
       }]);
     }
     void processQueued(supabase);
-    return { ok: true, count: files.length, kind: isCarousel ? 'carousel' : 'video', hasCustomCover: Boolean(customCoverStoragePath) };
+    return { ok: true, count: files.length, kind: isCarousel ? 'carousel' : 'video', hasCustomCover: Boolean(customCoverStoragePath), scheduledAt: scheduledAt || null };
   } catch (err) {
     if (storagePaths.length) await supabase.storage.from(bucket).remove(storagePaths).catch(() => {});
     throw err;

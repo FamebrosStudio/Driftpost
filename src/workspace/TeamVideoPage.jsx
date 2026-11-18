@@ -32,6 +32,11 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut }) {
   const [captionMeta, setCaptionMeta] = useState({ brand: null, platforms: [], instagramTags: [], usedDesc: false });
   const [captionPlatform, setCaptionPlatform] = useState('instagram');
   const [copiedKey, setCopiedKey] = useState('');
+  const [schedOpen, setSchedOpen] = useState(false);
+  const [schedDate, setSchedDate] = useState('');
+  const [schedTime, setSchedTime] = useState('19:00');
+  const [schedRepeatDays, setSchedRepeatDays] = useState(0);
+  const [schedRepeatCount, setSchedRepeatCount] = useState(3);
   const [stoppingJobId, setStoppingJobId] = useState('');
   const [inboxOpen, setInboxOpen] = useState(false);
   const [error, setError] = useState('');
@@ -252,8 +257,36 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut }) {
     setNotice('');
   };
 
-  const submit = async (event) => {
-    event.preventDefault();
+  const pad2 = (n) => String(n).padStart(2, '0');
+  const toLocalDateInput = (d) => `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+  const toLocalTimeInput = (d) => `${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
+
+  const openScheduleSheet = () => {
+    setError('');
+    if (!schedDate) {
+      const def = new Date(Date.now() + 60 * 60 * 1000);
+      def.setMinutes(0, 0, 0);
+      setSchedDate(toLocalDateInput(def));
+      setSchedTime(toLocalTimeInput(def));
+    }
+    setSchedOpen(true);
+  };
+
+  const applySchedulePreset = (hoursFromNow, fixedHour = null) => {
+    const d = new Date();
+    if (fixedHour !== null) {
+      if (hoursFromNow >= 24) d.setDate(d.getDate() + 1);
+      else if (d.getHours() >= fixedHour) d.setDate(d.getDate() + 1);
+      d.setHours(fixedHour, 0, 0, 0);
+    } else {
+      d.setTime(d.getTime() + hoursFromNow * 60 * 60 * 1000);
+      d.setMinutes(Math.ceil(d.getMinutes() / 15) * 15, 0, 0);
+    }
+    setSchedDate(toLocalDateInput(d));
+    setSchedTime(toLocalTimeInput(d));
+  };
+
+  const submitPipeline = async ({ scheduledIso = '', repeatDays = 0, repeatCount = 1 } = {}) => {
     setError('');
     setNotice('');
     if (!isAiAccount(session.user?.email)) return setError('This private team workflow is not available for this account.');
@@ -268,6 +301,14 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut }) {
         form.append('cover', coverFile, coverFile.name || 'manual-cover.jpg');
       }
       if (description.trim()) form.append('description', description.trim());
+      if (generatedCaptions) form.append('captions', JSON.stringify(generatedCaptions));
+      if (scheduledIso) {
+        form.append('scheduledAt', scheduledIso);
+        if (repeatDays > 0) {
+          form.append('repeatEveryDays', String(repeatDays));
+          form.append('repeatRemaining', String(repeatCount));
+        }
+      }
       const data = await new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
         xhr.open('POST', apiRequestUrl('/api/intake/direct'));
@@ -290,14 +331,39 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut }) {
       setMediaFiles([]);
       resetCoverState();
       setDescription('');
+      setSchedOpen(false);
       setInboxOpen(true);
-      setNotice(`Queued ${data.kind === 'carousel' ? `${data.count}-image carousel` : 'video'}! Driftpost is automatically routing, writing captions, applying tags & Story, and publishing.`);
+      const kindLabel = data.kind === 'carousel' ? `${data.count}-image carousel` : 'video';
+      if (scheduledIso) {
+        const whenStr = new Date(scheduledIso).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' });
+        setNotice(`Scheduled ${kindLabel} for ${whenStr}! Driftpost is preparing captions, cover, tags & Story for that slot.`);
+      } else {
+        setNotice(`Queued ${kindLabel}! Driftpost is automatically routing, writing captions, applying tags & Story, and publishing.`);
+      }
       setDriveScanTick((t) => t + 1);
     } catch (e) {
       setError(e?.message || 'Upload failed.');
     } finally {
       setUploading(false);
     }
+  };
+
+  const submit = (event) => {
+    event.preventDefault();
+    void submitPipeline();
+  };
+
+  const confirmSchedule = () => {
+    if (!schedDate || !schedTime) return setError('Pick a date and time to schedule.');
+    const target = new Date(`${schedDate}T${schedTime}`);
+    if (Number.isNaN(target.getTime()) || target.getTime() < Date.now() + 60_000) {
+      return setError('Choose a future date and time (at least 1 minute from now).');
+    }
+    void submitPipeline({
+      scheduledIso: target.toISOString(),
+      repeatDays: schedRepeatDays,
+      repeatCount: schedRepeatCount,
+    });
   };
 
   const stopJob = async (jobId) => {
@@ -573,6 +639,14 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut }) {
                   onClick={handleGenerateCaptions}
                 >
                   {generatingCaptions ? (captionStage || 'Generating captions…') : 'Generate captions'}
+                </button>
+                <button
+                  type="button"
+                  className="team-video-schedule-btn"
+                  disabled={uploading || generatingCaptions || !mediaFiles.length || !isAiAccount(session.user?.email)}
+                  onClick={openScheduleSheet}
+                >
+                  Schedule
                 </button>
               </div>
 
@@ -895,6 +969,90 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut }) {
           </section>
         </BorderGlow>
       </main>
+
+      {schedOpen && (
+        <div
+          className="team-sched-backdrop"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Schedule Team Video post"
+          onClick={(e) => { if (e.target === e.currentTarget && !uploading) setSchedOpen(false); }}
+        >
+          <div className="team-sched-sheet">
+            <span className="team-sched-handle" aria-hidden="true" />
+            <div className="team-sched-head">
+              <div>
+                <h3>Schedule automated post</h3>
+                <small>Choose when Driftpost should publish this {isVideoSelection ? 'video' : 'carousel'}.</small>
+              </div>
+              <button type="button" className="team-sched-close" disabled={uploading} onClick={() => setSchedOpen(false)} aria-label="Close schedule modal">✕</button>
+            </div>
+
+            <div className="team-sched-presets" role="group" aria-label="Quick time presets">
+              <button type="button" onClick={() => applySchedulePreset(1, null)}>In 1 hour</button>
+              <button type="button" onClick={() => applySchedulePreset(0, 20)}>Tonight 8:00 PM</button>
+              <button type="button" onClick={() => applySchedulePreset(24, 10)}>Tomorrow 10:00 AM</button>
+              <button type="button" onClick={() => applySchedulePreset(24, 19)}>Tomorrow 7:00 PM</button>
+            </div>
+
+            <div className="team-sched-inputs">
+              <label>
+                <span>Date</span>
+                <input
+                  type="date"
+                  value={schedDate}
+                  min={toLocalDateInput(new Date())}
+                  onChange={(e) => setSchedDate(e.target.value)}
+                />
+              </label>
+              <label>
+                <span>Time</span>
+                <input
+                  type="time"
+                  value={schedTime}
+                  onChange={(e) => setSchedTime(e.target.value)}
+                />
+              </label>
+            </div>
+
+            <div className="team-sched-repeat">
+              <label>
+                <span>Repeat</span>
+                <select value={schedRepeatDays} onChange={(e) => setSchedRepeatDays(Number(e.target.value))}>
+                  <option value={0}>Does not repeat</option>
+                  <option value={2}>Every 2 days</option>
+                  <option value={7}>Every week</option>
+                  <option value={30}>Every month</option>
+                </select>
+              </label>
+              {schedRepeatDays > 0 && (
+                <label>
+                  <span>Times</span>
+                  <select value={schedRepeatCount} onChange={(e) => setSchedRepeatCount(Number(e.target.value))}>
+                    {[2, 3, 4, 6, 8, 12].map((n) => <option key={n} value={n}>{n} posts</option>)}
+                  </select>
+                </label>
+              )}
+            </div>
+
+            {schedDate && schedTime && (
+              <div className="team-sched-summary">
+                <span>Scheduled for</span>
+                <b>{new Date(`${schedDate}T${schedTime}`).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}</b>
+              </div>
+            )}
+
+            {error && <p className="team-video-error" role="alert">{error}</p>}
+
+            <div className="team-sched-footer">
+              <button type="button" className="team-sched-cancel" disabled={uploading} onClick={() => setSchedOpen(false)}>Cancel</button>
+              <button type="button" className="team-sched-confirm" disabled={uploading || !schedDate || !schedTime} onClick={confirmSchedule}>
+                {uploading ? `Scheduling (${uploadPercent}%)…` : 'Schedule post'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

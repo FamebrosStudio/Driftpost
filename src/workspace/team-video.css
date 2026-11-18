@@ -673,3 +673,261 @@
   flex-direction: column;
   gap: 14px;
 }
+
+#root .team-video-page .team-video-schedule-btn {
+  border: 1px solid rgba(52, 211, 153, 0.45);
+  background: rgba(16, 185, 129, 0.14);
+  color: #a7f3d0;
+  box-shadow: none;
+  padding: 11px 18px;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+#root .team-video-page .team-video-schedule-btn:hover:not(:disabled) {
+  background: rgba(16, 185, 129, 0.28);
+  border-color: rgba(110, 231, 183, 0.78);
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.22);
+  color: #ecfdf5;
+}
+
+#root .team-video-page .team-video-schedule-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* PC Centered Modal + Mobile Bottom Sheet for Team Video Schedule */
+#root .team-sched-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 260;
+  background: rgba(4, 7, 13, 0.72);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: grid;
+  place-items: center;
+  padding: 20px;
+}
+
+#root .team-sched-sheet {
+  width: min(480px, 100%);
+  border-radius: 20px;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  background: linear-gradient(180deg, rgba(18, 24, 38, 0.96), rgba(10, 14, 22, 0.98));
+  box-shadow: 0 28px 64px rgba(0, 0, 0, 0.58), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  animation: appleModalBounce 280ms cubic-bezier(0.22, 1.3, 0.36, 1) both;
+}
+
+#root .team-sched-handle {
+  display: none;
+  width: 40px;
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.35);
+  margin: -4px auto 2px;
+}
+
+#root .team-sched-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+#root .team-sched-head h3 {
+  margin: 0;
+  font-size: 1.06rem;
+  font-weight: 700;
+  color: #f8fafc;
+}
+
+#root .team-sched-head small {
+  display: block;
+  margin-top: 3px;
+  font-size: 0.82rem;
+  color: rgba(203, 213, 225, 0.74);
+}
+
+#root .team-sched-close {
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  background: rgba(255, 255, 255, 0.05);
+  color: #cbd5e1;
+  width: 34px;
+  height: 34px;
+  min-height: 34px;
+  padding: 0;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  box-shadow: none;
+  cursor: pointer;
+}
+
+#root .team-sched-presets {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+#root .team-sched-presets button {
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  background: rgba(255, 255, 255, 0.045);
+  color: #e2e8f0;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 9px 12px;
+  border-radius: 10px;
+  box-shadow: none;
+  cursor: pointer;
+}
+
+#root .team-sched-presets button:hover {
+  border-color: rgba(96, 165, 250, 0.5);
+  background: rgba(37, 99, 235, 0.18);
+  color: #ffffff;
+}
+
+#root .team-sched-inputs,
+#root .team-sched-repeat {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+#root .team-sched-inputs label,
+#root .team-sched-repeat label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+#root .team-sched-inputs span,
+#root .team-sched-repeat span {
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: rgba(203, 213, 225, 0.8);
+}
+
+#root .team-sched-inputs input,
+#root .team-sched-repeat select {
+  width: 100%;
+  box-sizing: border-box;
+  border-radius: 10px;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  background: rgba(5, 8, 15, 0.86);
+  color: #f8fafc;
+  font: inherit;
+  font-size: 0.9rem;
+  padding: 10px 12px;
+  min-height: 44px;
+}
+
+#root .team-sched-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 11px;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(52, 211, 153, 0.28);
+  font-size: 0.84rem;
+}
+
+#root .team-sched-summary span {
+  color: rgba(167, 243, 208, 0.85);
+}
+
+#root .team-sched-summary b {
+  color: #ecfdf5;
+}
+
+#root .team-sched-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 2px;
+}
+
+#root .team-sched-cancel {
+  border: 1px solid rgba(148, 163, 184, 0.24);
+  background: rgba(255, 255, 255, 0.05);
+  color: #e2e8f0;
+  padding: 10px 16px;
+  border-radius: 10px;
+  box-shadow: none;
+}
+
+#root .team-sched-confirm {
+  border: 1px solid rgba(52, 211, 153, 0.65);
+  background: linear-gradient(135deg, #059669, #10b981);
+  color: #ffffff;
+  font-weight: 700;
+  padding: 10px 20px;
+  border-radius: 10px;
+  box-shadow: 0 8px 22px -6px rgba(16, 185, 129, 0.55);
+}
+
+#root .team-sched-confirm:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@media (max-width: 640px) {
+  #root .team-video-page .team-video-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+  #root .team-video-page .team-video-actions > button[type="submit"] {
+    grid-column: 1 / -1;
+    width: 100%;
+    min-height: 48px;
+  }
+  #root .team-video-page .team-video-generate-btn,
+  #root .team-video-page .team-video-schedule-btn {
+    width: 100%;
+    min-height: 46px;
+    padding: 10px 12px;
+    font-size: 0.84rem;
+  }
+  #root .team-sched-backdrop {
+    padding: 0;
+    align-items: end;
+  }
+  #root .team-sched-sheet {
+    width: 100%;
+    border-radius: 22px 22px 0 0;
+    padding: 14px 16px calc(18px + env(safe-area-inset-bottom));
+    max-height: 90dvh;
+    overflow-y: auto;
+  }
+  #root .team-sched-handle {
+    display: block;
+  }
+  #root .team-sched-inputs,
+  #root .team-sched-repeat {
+    grid-template-columns: 1fr;
+  }
+  #root .team-sched-inputs input,
+  #root .team-sched-repeat select {
+    font-size: 16px;
+    min-height: 48px;
+  }
+  #root .team-sched-footer {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr;
+  }
+  #root .team-sched-cancel,
+  #root .team-sched-confirm {
+    min-height: 48px;
+    width: 100%;
+  }
+}

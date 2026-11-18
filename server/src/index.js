@@ -2213,7 +2213,31 @@ app.post('/api/intake/direct', requireUser, upload.fields([{ name: 'media', maxC
     return res.status(403).json({ error: 'Private team access required.' });
   }
   try {
-    const out = await enqueueDirectUpload(supabase, req.user.id, mediaFiles, String(req.body?.description || ''), { coverFile });
+    const scheduledAtRaw = String(req.body?.scheduledAt || '').trim();
+    let scheduledAt = '';
+    if (scheduledAtRaw) {
+      const parsedMs = Date.parse(scheduledAtRaw);
+      if (!Number.isFinite(parsedMs) || parsedMs < Date.now() - 60_000) {
+        return res.status(400).json({ error: 'Choose a valid future date and time to schedule.' });
+      }
+      scheduledAt = new Date(parsedMs).toISOString();
+    }
+    const repeatEveryDays = Math.max(0, Math.min(365, parseInt(req.body?.repeatEveryDays || '0', 10) || 0));
+    const repeatRemaining = repeatEveryDays > 0 ? Math.max(1, Math.min(50, parseInt(req.body?.repeatRemaining || '1', 10) || 1)) : 0;
+    let customCaptions = null;
+    if (req.body?.captions) {
+      try {
+        const parsedCaps = typeof req.body.captions === 'string' ? JSON.parse(req.body.captions) : req.body.captions;
+        if (parsedCaps && typeof parsedCaps === 'object') customCaptions = parsedCaps;
+      } catch {}
+    }
+    const out = await enqueueDirectUpload(supabase, req.user.id, mediaFiles, String(req.body?.description || ''), {
+      coverFile,
+      scheduledAt,
+      repeatEveryDays,
+      repeatRemaining,
+      customCaptions,
+    });
     res.json(out);
   } catch (e) {
     res.status(400).json({ error: e?.message || 'Could not queue your upload.' });

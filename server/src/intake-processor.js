@@ -237,8 +237,14 @@ export async function processIntakeJob(supabase, job, options = {}) {
     }
     // Each brand gets captions from its own complete saved profile. Generate
     // those independent caption sets concurrently without mixing brand facts.
-    const captionTargets = reviewApproval
-      ? targetGroups.map((target) => ({ ...target, captions: reviewApproval.captions || {} }))
+    const scheduledAtIso = job.result?.scheduled_at && Number.isFinite(Date.parse(job.result.scheduled_at))
+      ? new Date(job.result.scheduled_at).toISOString()
+      : new Date(Date.now() - 2000).toISOString();
+    const repeatEveryDays = Number(job.result?.repeat_every_days) > 0 ? Number(job.result.repeat_every_days) : null;
+    const repeatRemaining = repeatEveryDays ? Math.max(1, Number(job.result?.repeat_remaining) || 1) : null;
+    const customCaps = job.result?.custom_captions && typeof job.result.custom_captions === 'object' ? job.result.custom_captions : null;
+    const captionTargets = (reviewApproval || customCaps)
+      ? targetGroups.map((target) => ({ ...target, captions: reviewApproval?.captions || customCaps || {} }))
       : await Promise.all(targetGroups.map(async (target) => {
       const targetPlatforms = [...new Set(target.destinations.filter((item) => supportedDestinations.some((dest) => dest.id === item.id)).map((item) => item.platform))];
       const customBrief = String(job.result?.brief || '').trim();
@@ -376,7 +382,8 @@ export async function processIntakeJob(supabase, job, options = {}) {
         user_id: ownerId,
         platform: connection.platform,
         connection_id: connection.id,
-        scheduled_at: new Date(Date.now() - 2000).toISOString(),
+        scheduled_at: scheduledAtIso,
+        ...(repeatEveryDays ? { repeat_every_days: repeatEveryDays, repeat_remaining: repeatRemaining } : {}),
         status: 'scheduled',
         body,
         media: storedMedia,
