@@ -66,3 +66,20 @@ test('AI brand suggestions are restricted to supplied catalogue IDs and deduplic
   ] }), brands);
   assert.deepEqual(suggestions.map(({ id, name }) => ({ id, name })), [{ id: 'brand-b', name: 'Brand B' }, { id: 'brand-a', name: 'Brand A' }]);
 });
+
+test('cover RAG guidance resolves all 47 brands with category and reference grid alignment', async () => {
+  const { loadBrands, getBrandCoverGuidance } = await import('../src/brand-memory/index.js');
+  const brands = loadBrands();
+  assert.equal(brands.length, 47);
+  for (const brand of brands) {
+    const guidance = getBrandCoverGuidance(brand);
+    assert.ok(guidance.promptText.includes(brand.name), `${brand.id} cover RAG must include brand name`);
+    assert.ok(guidance.universalRules.length >= 3, `${brand.id} cover RAG must include universal rules`);
+  }
+  assert.equal(getBrandCoverGuidance('almas_bridal_gallery').archetype, 'luxury_bridal_editorial');
+  assert.equal(getBrandCoverGuidance('cotton_plus').archetype, 'family_apparel_retail');
+  assert.equal(getBrandCoverGuidance('kanchanmala_chembur').archetype, 'jewellery_showroom');
+  assert.equal(getBrandCoverGuidance('zivara_salon').archetype, 'salon_beauty_wellness');
+  assert.equal(getBrandCoverGuidance('roopali_saree').archetype, 'ethnic_fashion_showcase');
+  assert.equal(getBrandCoverGuidance('zam_zam_motors').archetype, 'automotive_dealership');
+});

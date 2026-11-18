@@ -1312,3 +1312,87 @@ export function updateSavedCaptionData(brandId, patch = {}) {
   deepCache = null;
   return listEditableCaptionBrands().find((b) => b.id === cleanId);
 }
+
+const COVER_RAG_PATH = path.join(here, 'cover-rag.json');
+let coverRagCache = null;
+let coverRagMtime = 0;
+
+function loadCoverRag() {
+  try {
+    const mtime = fs.statSync(COVER_RAG_PATH).mtimeMs;
+    if (!coverRagCache || coverRagMtime < mtime) {
+      coverRagCache = JSON.parse(fs.readFileSync(COVER_RAG_PATH, 'utf8'));
+      coverRagMtime = mtime;
+    }
+    return coverRagCache;
+  } catch {
+    return coverRagCache || { universal_rules: [], archetypes: {}, brand_overrides: {} };
+  }
+}
+
+export function getBrandCoverGuidance(brandOrId, { brief = '', transcript = '' } = {}) {
+  const rag = loadCoverRag();
+  const brand = typeof brandOrId === 'string'
+    ? (getBrandById(brandOrId) || { id: brandOrId, name: brandOrId })
+    : (brandOrId || null);
+  const brandId = brand?.id || brand?.brand_id || '';
+  const deep = brand ? (getDeepForCompact(brand) || getDeepBrand(brandId)) : null;
+  const full = brandId ? getFullBrand(brandId) : null;
+  const override = brandId ? rag.brand_overrides?.[brandId] : null;
+
+  let archetypeKey = override?.archetype || '';
+  if (!archetypeKey) {
+    const hay = [
+      brand?.name,
+      brand?.cat,
+      full?.category,
+      deep?.business?.category,
+      deep?.business?.genre,
+      deep?.business?.industry,
+    ].filter((v) => typeof v === 'string' && v.trim()).join(' ').toLowerCase();
+
+    let bestScore = 0;
+    for (const [key, spec] of Object.entries(rag.archetypes || {})) {
+      const kws = Array.isArray(spec.match_keywords) ? spec.match_keywords : [];
+      const score = kws.reduce((sum, kw) => (hay.includes(String(kw).toLowerCase()) ? sum + kw.length : sum), 0);
+      if (score > bestScore) {
+        bestScore = score;
+        archetypeKey = key;
+      }
+    }
+  }
+
+  const archetype = (archetypeKey && rag.archetypes?.[archetypeKey]) || null;
+  const universalRules = Array.isArray(rag.universal_rules) ? rag.universal_rules : [];
+  const visualGuidance = deep?.visual_and_asset_guidance
+    ? Object.entries(deep.visual_and_asset_guidance)
+        .filter(([k, v]) => VISUAL_KEEP.test(k) && !isBlank(v))
+        .slice(0, 4)
+        .map(([k, v]) => `${human(k)}: ${fmt(v)}`)
+        .join('; ')
+    : '';
+  const contextText = [brief, transcript].filter((v) => typeof v === 'string' && v.trim()).join(' ').trim();
+
+  const lines = [
+    brand?.name ? `BRAND COVER PROFILE: ${brand.name}${archetypeKey ? ` (${archetypeKey.replace(/_/g, ' ')})` : ''}` : null,
+    archetype?.cover_style ? `Style goal: ${archetype.cover_style}` : null,
+    override?.grid_notes ? `Brand grid reference: ${override.grid_notes}` : null,
+    archetype?.priority_signals?.length ? `Prefer frames with: ${archetype.priority_signals.join('; ')}` : null,
+    archetype?.avoid?.length ? `Avoid for this brand: ${archetype.avoid.join('; ')}` : null,
+    visualGuidance ? `Brand visual notes: ${visualGuidance}` : null,
+    contextText ? `Post/video topic context: ${contextText.slice(0, 350)}` : null,
+    universalRules.length ? `Universal cover rules: ${universalRules.join(' ')}` : null,
+  ].filter(Boolean);
+
+  return {
+    brandId,
+    archetype: archetypeKey || 'general',
+    universalRules,
+    coverStyle: archetype?.cover_style || '',
+    prioritySignals: archetype?.priority_signals || [],
+    avoid: archetype?.avoid || [],
+    gridNotes: override?.grid_notes || '',
+    visualGuidance,
+    promptText: lines.join('\n'),
+  };
+}

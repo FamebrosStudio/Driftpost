@@ -1715,7 +1715,12 @@ app.post('/api/ai/captions', requireUser, requireCaptionAiAccess, (req, res, nex
           name: file.originalname,
           mimetype: file.mimetype,
           base64: (await fs.readFile(file.path)).toString('base64'),
-        }))));
+        }))), {
+          brand: brandRecord,
+          brandId: brandRecord?.id || requestedBrandId,
+          brief: req.body?.summary,
+          transcript,
+        });
         if (videoCoverFrameIndex === null) videoCoverSelectionWarning = 'AI could not select a cover frame; a balanced middle frame will be used.';
       } catch (error) {
         videoCoverSelectionWarning = 'AI cover selection was unavailable; a balanced middle frame will be used.';

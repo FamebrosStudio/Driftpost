@@ -1,0 +1,128 @@
+{
+  "version": 1,
+  "description": "Visual cover & thumbnail RAG knowledge base derived from Driftpost brand Instagram grid references and category best practices.",
+  "universal_rules": [
+    "Never pick blurry, mid-transition, dark/underexposed, black/blank, or mid-blink/awkward mouth-open frames.",
+    "Ensure the main subject (person, garment, jewellery, car, or product) is upright, well-lit, unobstructed, and centered inside both 4:5 / 9:16 Instagram grid crops and 16:9 YouTube thumbnails.",
+    "Never default to frame index 0 unless it genuinely scores highest on visual hook, sharpness, and brand fit.",
+    "When a frame has an intentional, clean, high-contrast title/hook overlay that matches the brand's Instagram grid style (without covering the hero subject's face or product), score it higher than plain mid-speech frames."
+  ],
+  "archetypes": {
+    "luxury_bridal_editorial": {
+      "match_keywords": ["bridal", "luxury", "couture", "designer", "boutique", "lehenga"],
+      "cover_style": "Clean, editorial, luxury boutique aesthetic. Prefer warm, rich lighting, crisp hero bridal garment or storefront/logo reveal, or candid designer/client moment. Reject cluttered or loud promotional sticker banners.",
+      "priority_signals": [
+        "Hero bridal lehenga/couture outfit in sharp focus",
+        "Clean luxury storefront, logo, or brand reveal card",
+        "Candid warm interaction or confident designer/bride portrait"
+      ],
+      "avoid": ["Loud yellow/red discount banners", "Messy background clutter", "Mid-blink faces"]
+    },
+    "ethnic_fashion_showcase": {
+      "match_keywords": ["saree", "ethnic", "kurta", "pakistani", "menswear", "tailor", "bridal gallery"],
+      "cover_style": "Crisp outfit-first showcase. Prefer a well-lit full or mid-shot of the model/presenter wearing or holding the featured saree, kurta, sherwani, or suit clearly so embroidery, drape, and colour pop. Minimal or clean small branding only.",
+      "priority_signals": [
+        "Presenter or model facing camera clearly displaying the outfit",
+        "Vibrant fabric texture and silhouette unobstructed",
+        "Clean showroom/studio background"
+      ],
+      "avoid": ["Back-turned shots", "Extreme close-ups that hide the garment silhouette", "Motion-blurred twirls"]
+    },
+    "family_apparel_retail": {
+      "match_keywords": ["clothing", "garment", "readymade", "fashion retail", "footwear", "sneakers", "trouser"],
+      "cover_style": "Engaging retail showroom hook. Prefer a bright, well-lit frame with a smiling presenter or customer holding/wearing the featured item; if a sharp frame has a clean top/bottom hook headline or store-name banner (like 'Special Offer', 'Family Store', or occasion callout) without blocking faces, prefer it.",
+      "priority_signals": [
+        "Smiling customer or presenter in bright store aisles",
+        "Featured garment/footwear clearly visible in hand or worn",
+        "Clean readable hook banner at top/bottom if present"
+      ],
+      "avoid": ["Empty racks without a focal point", "Dark corners", "Cut-off headlines"]
+    },
+    "jewellery_showroom": {
+      "match_keywords": ["jewel", "jewellery", "gold", "silver", "diamond"],
+      "cover_style": "High-trust bright showroom hook. Prefer crisp, well-lit frames showing either a smiling presenter/customer with the jewellery piece clearly visible OR a clean, bold, readable top headline/offer badge (e.g. Gold Rate, EMI, Lightweight Collection, Customer Smile) paired with an unobstructed smiling face and showroom display.",
+      "priority_signals": [
+        "Sparkling necklace/ring/bangle or tray clearly visible in bright lighting",
+        "Confident, smiling presenter or happy customer",
+        "Bold readable top headline/offer badge if part of the video's hook"
+      ],
+      "avoid": ["Blurry hand movements", "Overexposed glare hiding jewellery detail", "Mid-sentence awkward expressions"]
+    },
+    "salon_beauty_wellness": {
+      "match_keywords": ["salon", "hair", "beauty", "skin", "clinic", "nail", "makeup", "makeover"],
+      "cover_style": "Clean transformation & glow aesthetic. Prefer the finished 'after' hair color/styling, glowing skin, nail art, or bridal makeup reveal with the client or stylist facing camera in soft, flattering light — or a clean, modern salon interior / minimal text title card. Avoid messy mid-wash, foil, or towel-prep frames unless no reveal exists.",
+      "priority_signals": [
+        "Finished hair/skin/makeup/nail transformation reveal in sharp focus",
+        "Clean portrait of smiling client or stylist in bright modern salon",
+        "Minimal, refined text overlay or clean service title card"
+      ],
+      "avoid": ["Messy prep/foil/bowl frames", "Harsh shadows on face", "Cluttered loud banners"]
+    },
+    "automotive_dealership": {
+      "match_keywords": ["car", "motor", "automobile", "dealership", "vehicle"],
+      "cover_style": "High-clarity inventory hook. Prefer a sharp 3/4 front exterior shot of the car with the presenter standing cleanly beside it (never blocking the car's grille/body). If a frame includes clean, readable year/price/availability/spec callout text without hiding the car, score it highest.",
+      "priority_signals": [
+        "Full front or 3/4 exterior view of the vehicle in crisp daylight/showroom light",
+        "Presenter standing beside the car looking at camera",
+        "Readable spec/price/year badge if present"
+      ],
+      "avoid": ["Tiny distant car shots", "Presenter blocking the car", "Blurry walk-around pans"]
+    },
+    "food_bakery_hospitality": {
+      "match_keywords": ["cake", "bakery", "dryfruit", "restaurant", "chinese", "grill", "resort", "hospitality", "food", "sweets"],
+      "cover_style": "Appetizing or inviting hero reveal. Prefer vibrant, sharp close-ups of the hero cake, dish, dryfruit gift hamper, or scenic resort pool/cottage exterior in natural or warm lighting.",
+      "priority_signals": [
+        "Hero food/cake/gift box centered in vibrant lighting",
+        "Scenic resort property/pool/room wide shot with clean horizon",
+        "Warm smiling host or chef presenting the item"
+      ],
+      "avoid": ["Half-eaten/messy plates", "Dim indoor lighting", "Tilted horizons"]
+    },
+    "furniture_interiors": {
+      "match_keywords": ["furniture", "interior", "architecture", "modular"],
+      "cover_style": "Craftsmanship & space showcase. Prefer a sharp, level wide/medium shot of the hero sofa, bed, mandir, or finished interior room with balanced warm lighting and clean lines.",
+      "priority_signals": [
+        "Complete furniture piece or finished room clearly framed",
+        "Rich wood/fabric/finish detail in sharp focus",
+        "Level verticals and clean uncluttered floor/background"
+      ],
+      "avoid": ["Tilted camera angles", "Under-construction clutter unless before/after", "Dark shadows"]
+    },
+    "fitness_education_healthcare_services": {
+      "match_keywords": ["fitness", "school", "hospital", "media", "agency", "political", "public figure", "fragrance", "perfume"],
+      "cover_style": "Credible, high-trust focal shot. Prefer a confident, smiling coach, educator, doctor, speaker, or founder looking toward the camera, or a sharp hero product/bottle/campus shot with clean framing.",
+      "priority_signals": [
+        "Confident eye-contact portrait with warm/authoritative expression",
+        "Action shot in clean gym/classroom/clinic/stage setting",
+        "Sharp hero product (e.g. perfume bottle) with clean background"
+      ],
+      "avoid": ["Mid-blink speaking frames", "Empty hallways", "Unreadable tiny slide text"]
+    }
+  },
+  "brand_overrides": {
+    "almas_bridal_gallery": {
+      "archetype": "luxury_bridal_editorial",
+      "grid_notes": "Refined luxury bridal boutique grid: warm editorial shots, hanging bridal lehengas, storefront/logo arrival graphics, and candid boutique fittings. Never choose noisy discount-style frames."
+    },
+    "cotton_plus": {
+      "archetype": "family_apparel_retail",
+      "grid_notes": "Bright family garment store grid: smiling customers/staff in store aisles with clean top hook headline and Cotton Plus Family Store branding."
+    },
+    "kanchanmala_chembur": {
+      "archetype": "jewellery_showroom",
+      "grid_notes": "High-energy jewellery showroom grid: smiling presenter/customers in bright showroom with bold readable gold/red top hook banners (Gold Rate, EMI, Lightweight Jewellery, Customer Smile)."
+    },
+    "zivara_salon": {
+      "archetype": "salon_beauty_wellness",
+      "grid_notes": "Modern clean salon grid: hair transformation reveals, AI skin analysis demos, sleek salon interior, and refined minimal offer/greeting typography."
+    },
+    "roopali_saree": {
+      "archetype": "ethnic_fashion_showcase",
+      "grid_notes": "Clean ethnic fashion grid: crisp saree, lehenga, and designer blouse showcases on model or presenter with clean minimal overlay and vibrant fabric detail."
+    },
+    "zam_zam_motors": {
+      "archetype": "automotive_dealership",
+      "grid_notes": "Pre-owned car dealership grid: clean 3/4 exterior car shot with presenter beside the vehicle and clear year/price/availability badge."
+    }
+  }
+}

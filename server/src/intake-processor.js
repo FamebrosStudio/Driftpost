@@ -4,7 +4,7 @@ import path from 'node:path';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { transcribeVideo } from './video-analysis.js';
-import { generateCaptions, videoEvidenceSampleTimes } from './ai.js';
+import { chooseVideoCoverFrame, generateCaptions, videoEvidenceSampleTimes } from './ai.js';
 import { uploadMediaFile } from './media-io.js';
 import { getBrandById, resolveBrand } from './brand-memory/index.js';
 import { canUsePrivateBrandData } from './brand-access.js';
@@ -259,11 +259,25 @@ export async function processIntakeJob(supabase, job, options = {}) {
       return { ...target, captions: generated.captions || generated };
     }));
     const covers = {};
-    const defaultCoverFrame = frames[Math.floor(frames.length / 2)];
-    for (const platform of platformsNeedingGeneratedCovers(isCarousel, platforms)) {
+    const neededCoverPlatforms = platformsNeedingGeneratedCovers(isCarousel, platforms);
+    let preferredFrameIndex = Math.floor(frames.length / 2);
+    if (neededCoverPlatforms.length && frameImages.length > 1) {
+      try {
+        const primaryBrand = targetBrands.find((t) => t.brand?.id)?.brand || null;
+        const aiIndex = await chooseVideoCoverFrame(frameImages, {
+          brand: primaryBrand,
+          brandId: primaryBrand?.id || '',
+          brief: transcript,
+          transcript,
+        });
+        if (aiIndex !== null && aiIndex >= 0 && aiIndex < frames.length) preferredFrameIndex = aiIndex;
+      } catch {}
+    }
+    const defaultCoverFrame = frames[preferredFrameIndex];
+    for (const platform of neededCoverPlatforms) {
       if (!defaultCoverFrame) throw new Error(`Could not extract a cover frame for ${platform}.`);
       let coverError;
-      for (const frame of [...frames].sort((a, b) => Math.abs(frames.indexOf(a) - Math.floor(frames.length / 2)) - Math.abs(frames.indexOf(b) - Math.floor(frames.length / 2)))) {
+      for (const frame of [...frames].sort((a, b) => Math.abs(frames.indexOf(a) - preferredFrameIndex) - Math.abs(frames.indexOf(b) - preferredFrameIndex))) {
         try { covers[platform] = await makePlatformCover(frame.path, platform, directory); break; }
         catch (error) { coverError = error; }
       }
