@@ -260,28 +260,37 @@ export async function processIntakeJob(supabase, job, options = {}) {
     }));
     const covers = {};
     const neededCoverPlatforms = platformsNeedingGeneratedCovers(isCarousel, platforms);
-    let preferredFrameIndex = Math.floor(frames.length / 2);
-    if (neededCoverPlatforms.length && frameImages.length > 1) {
-      try {
-        const primaryBrand = targetBrands.find((t) => t.brand?.id)?.brand || null;
-        const aiIndex = await chooseVideoCoverFrame(frameImages, {
-          brand: primaryBrand,
-          brandId: primaryBrand?.id || '',
-          brief: transcript,
-          transcript,
-        });
-        if (aiIndex !== null && aiIndex >= 0 && aiIndex < frames.length) preferredFrameIndex = aiIndex;
-      } catch {}
-    }
-    const defaultCoverFrame = frames[preferredFrameIndex];
-    for (const platform of neededCoverPlatforms) {
-      if (!defaultCoverFrame) throw new Error(`Could not extract a cover frame for ${platform}.`);
-      let coverError;
-      for (const frame of [...frames].sort((a, b) => Math.abs(frames.indexOf(a) - preferredFrameIndex) - Math.abs(frames.indexOf(b) - preferredFrameIndex))) {
-        try { covers[platform] = await makePlatformCover(frame.path, platform, directory); break; }
-        catch (error) { coverError = error; }
+    const customCoverPath = neededCoverPlatforms.length && typeof io.downloadCover === 'function'
+      ? await io.downloadCover(job, directory)
+      : null;
+    if (customCoverPath) {
+      for (const platform of neededCoverPlatforms) {
+        covers[platform] = await makePlatformCover(customCoverPath, platform, directory);
       }
-      if (!covers[platform]) throw new Error(`Could not prepare a ${platform} cover from any extracted frame. ${String(coverError?.message || '').slice(0, 160)} Re-export the video as MP4 and upload again.`);
+    } else {
+      let preferredFrameIndex = Math.floor(frames.length / 2);
+      if (neededCoverPlatforms.length && frameImages.length > 1) {
+        try {
+          const primaryBrand = targetBrands.find((t) => t.brand?.id)?.brand || null;
+          const aiIndex = await chooseVideoCoverFrame(frameImages, {
+            brand: primaryBrand,
+            brandId: primaryBrand?.id || '',
+            brief: transcript,
+            transcript,
+          });
+          if (aiIndex !== null && aiIndex >= 0 && aiIndex < frames.length) preferredFrameIndex = aiIndex;
+        } catch {}
+      }
+      const defaultCoverFrame = frames[preferredFrameIndex];
+      for (const platform of neededCoverPlatforms) {
+        if (!defaultCoverFrame) throw new Error(`Could not extract a cover frame for ${platform}.`);
+        let coverError;
+        for (const frame of [...frames].sort((a, b) => Math.abs(frames.indexOf(a) - preferredFrameIndex) - Math.abs(frames.indexOf(b) - preferredFrameIndex))) {
+          try { covers[platform] = await makePlatformCover(frame.path, platform, directory); break; }
+          catch (error) { coverError = error; }
+        }
+        if (!covers[platform]) throw new Error(`Could not prepare a ${platform} cover from any extracted frame. ${String(coverError?.message || '').slice(0, 160)} Re-export the video as MP4 and upload again.`);
+      }
     }
 
     const sourcePrefix = options.sourcePrefix || 'telegram';

@@ -2191,13 +2191,15 @@ app.get('/api/intake/drive/jobs', requireUser, async (req, res) => {
   res.json({ jobs: data || [], ...(scanError ? { scan_error: scanError } : {}) });
 });
 
-app.post('/api/intake/direct', requireUser, upload.array('media', 10), async (req, res) => {
+app.post('/api/intake/direct', requireUser, upload.fields([{ name: 'media', maxCount: 10 }, { name: 'cover', maxCount: 1 }]), async (req, res) => {
+  const mediaFiles = Array.isArray(req.files?.media) ? req.files.media : [];
+  const coverFile = Array.isArray(req.files?.cover) ? req.files.cover[0] || null : null;
   if (!canUsePrivateBrandData(req.user)) {
-    for (const f of req.files || []) if (f?.path) fs.promises.rm(f.path, { force: true }).catch(() => {});
+    for (const f of [...mediaFiles, ...(coverFile ? [coverFile] : [])]) if (f?.path) fs.promises.rm(f.path, { force: true }).catch(() => {});
     return res.status(403).json({ error: 'Private team access required.' });
   }
   try {
-    const out = await enqueueDirectUpload(supabase, req.user.id, req.files || [], String(req.body?.description || ''));
+    const out = await enqueueDirectUpload(supabase, req.user.id, mediaFiles, String(req.body?.description || ''), { coverFile });
     res.json(out);
   } catch (e) {
     res.status(400).json({ error: e?.message || 'Could not queue your upload.' });

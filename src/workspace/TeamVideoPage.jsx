@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { api, apiRequestUrl } from '../lib.js';
 import { isAiAccount } from '../ai-access.js';
 import { FAMEBROS_INSTAGRAM_TAGGING_LIST, getAssignedInstagramTagsForBrand } from '../stage3/instagramCollaborators.js';
@@ -14,6 +14,14 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut }) {
   const [driveScanError, setDriveScanError] = useState('');
 
   const [mediaFiles, setMediaFiles] = useState([]);
+  const [coverMode, setCoverMode] = useState('auto'); // 'auto' | 'frame' | 'upload'
+  const [coverFile, setCoverFile] = useState(null);
+  const [coverLabel, setCoverLabel] = useState('');
+  const [filmstrip, setFilmstrip] = useState([]);
+  const [videoDuration, setVideoDuration] = useState(0);
+  const [videoTime, setVideoTime] = useState(0);
+  const [coverBusy, setCoverBusy] = useState(false);
+  const coverVideoRef = useRef(null);
   const [description, setDescription] = useState('');
   const [uploading, setUploading] = useState(false);
   const [uploadPercent, setUploadPercent] = useState(0);
@@ -25,6 +33,85 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut }) {
   const file = mediaFiles[0] || null;
   const isVideoSelection = Boolean(file?.type?.startsWith('video/'));
   const hasActiveJobs = driveJobs.some((job) => ['queued', 'processing', 'publishing'].includes(job?.status));
+
+  const videoPreviewUrl = useMemo(() => {
+    if (!isVideoSelection || !file) return '';
+    try { return URL.createObjectURL(file); } catch { return ''; }
+  }, [isVideoSelection, file]);
+
+  const coverPreviewUrl = useMemo(() => {
+    if (!coverFile) return '';
+    try { return URL.createObjectURL(coverFile); } catch { return ''; }
+  }, [coverFile]);
+
+  useEffect(() => () => { if (videoPreviewUrl) URL.revokeObjectURL(videoPreviewUrl); }, [videoPreviewUrl]);
+  useEffect(() => () => { if (coverPreviewUrl) URL.revokeObjectURL(coverPreviewUrl); }, [coverPreviewUrl]);
+
+  const formatTime = (sec = 0) => {
+    const v = Math.max(0, Math.floor(Number(sec) || 0));
+    return `${Math.floor(v / 60)}:${String(v % 60).padStart(2, '0')}`;
+  };
+
+  const resetCoverState = () => {
+    setCoverMode('auto');
+    setCoverFile(null);
+    setCoverLabel('');
+    setFilmstrip([]);
+    setVideoDuration(0);
+    setVideoTime(0);
+  };
+
+  const captureVideoFrameAt = async (videoEl, targetSec) => {
+    if (!videoEl || !videoEl.videoWidth || !videoEl.videoHeight) throw new Error('Video preview is still loading.');
+    const clamped = Math.max(0, Math.min(videoEl.duration || 0, targetSec));
+    if (Math.abs(videoEl.currentTime - clamped) > 0.03) {
+      await new Promise((resolve, reject) => {
+        const timer = window.setTimeout(() => { cleanup(); reject(new Error('Frame seek timed out.')); }, 8000);
+        const onSeeked = () => { cleanup(); resolve(); };
+        const onErr = () => { cleanup(); reject(new Error('Could not read video frame.')); };
+        const cleanup = () => {
+          window.clearTimeout(timer);
+          videoEl.removeEventListener('seeked', onSeeked);
+          videoEl.removeEventListener('error', onErr);
+        };
+        videoEl.addEventListener('seeked', onSeeked, { once: true });
+        videoEl.addEventListener('error', onErr, { once: true });
+        videoEl.currentTime = clamped;
+      });
+    }
+    const canvas = document.createElement('canvas');
+    canvas.width = videoEl.videoWidth;
+    canvas.height = videoEl.videoHeight;
+    const ctx = canvas.getContext('2d', { alpha: false });
+    if (!ctx) throw new Error('Could not capture frame.');
+    ctx.drawImage(videoEl, 0, 0, canvas.width, canvas.height);
+    const blob = await new Promise((resolve, reject) => canvas.toBlob(
+      (b) => (b ? resolve(b) : reject(new Error('Could not encode cover frame.'))),
+      'image/jpeg',
+      0.9,
+    ));
+    const coverImg = new File([blob], `manual-cover-${Math.round(clamped * 10)}ds.jpg`, { type: 'image/jpeg' });
+    return { file: coverImg, preview: URL.createObjectURL(blob), time: clamped };
+  };
+
+  const buildFilmstrip = async (videoEl) => {
+    if (!videoEl || !videoEl.duration || !Number.isFinite(videoEl.duration) || filmstrip.length) return;
+    const dur = videoEl.duration;
+    const fractions = [0.06, 0.22, 0.4, 0.58, 0.76, 0.92];
+    const items = [];
+    for (const frac of fractions) {
+      try {
+        const shot = await captureVideoFrameAt(videoEl, dur * frac);
+        items.push(shot);
+      } catch {}
+    }
+    if (items.length) setFilmstrip(items);
+    try { videoEl.currentTime = 0; } catch {}
+  };
+
+  useEffect(() => () => {
+    for (const item of filmstrip) if (item?.preview) URL.revokeObjectURL(item.preview);
+  }, [filmstrip]);
 
   useEffect(() => {
     let active = true;
@@ -76,6 +163,7 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut }) {
         return;
       }
       setMediaFiles([videos[0]]);
+      resetCoverState();
     } else if (images.length) {
       if (images.length > 10) {
         setError('Carousels support up to 10 images per post.');
@@ -87,6 +175,7 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut }) {
         return;
       }
       setMediaFiles(images);
+      resetCoverState();
     } else {
       setError('Choose a video (MP4, MOV, WebM) or images (JPG, PNG, WebP).');
       return;
@@ -107,6 +196,9 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut }) {
     try {
       const form = new FormData();
       for (const item of mediaFiles) form.append('media', item, item.name);
+      if (isVideoSelection && coverMode !== 'auto' && coverFile) {
+        form.append('cover', coverFile, coverFile.name || 'manual-cover.jpg');
+      }
       if (description.trim()) form.append('description', description.trim());
       const data = await new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
@@ -128,6 +220,7 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut }) {
       });
       setUploadPercent(100);
       setMediaFiles([]);
+      resetCoverState();
       setDescription('');
       setInboxOpen(true);
       setNotice(`Queued ${data.kind === 'carousel' ? `${data.count}-image carousel` : 'video'}! Driftpost is automatically routing, writing captions, applying tags & Story, and publishing.`);
@@ -217,7 +310,161 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut }) {
 
               {mediaFiles.length > 0 && (
                 <div className="team-media-clear">
-                  <button type="button" onClick={() => setMediaFiles([])}>Clear selected media</button>
+                  <button type="button" onClick={() => { setMediaFiles([]); resetCoverState(); }}>Clear selected media</button>
+                </div>
+              )}
+
+              {isVideoSelection && (
+                <div className="team-cover-picker">
+                  <div className="team-cover-head">
+                    <div>
+                      <strong>Thumbnail / Cover</strong>
+                      <small>Let AI RAG pick the best frame, scrub your video, or upload a custom cover.</small>
+                    </div>
+                    <div className="team-cover-tabs" role="tablist" aria-label="Thumbnail mode">
+                      <button
+                        type="button"
+                        role="tab"
+                        aria-selected={coverMode === 'auto'}
+                        className={coverMode === 'auto' ? 'active' : ''}
+                        onClick={() => { setCoverMode('auto'); setCoverFile(null); setCoverLabel(''); }}
+                      >
+                        Auto (AI RAG)
+                      </button>
+                      <button
+                        type="button"
+                        role="tab"
+                        aria-selected={coverMode === 'frame'}
+                        className={coverMode === 'frame' ? 'active' : ''}
+                        onClick={() => setCoverMode('frame')}
+                      >
+                        Pick frame
+                      </button>
+                      <button
+                        type="button"
+                        role="tab"
+                        aria-selected={coverMode === 'upload'}
+                        className={coverMode === 'upload' ? 'active' : ''}
+                        onClick={() => setCoverMode('upload')}
+                      >
+                        Upload image
+                      </button>
+                    </div>
+                  </div>
+
+                  {coverMode === 'frame' && videoPreviewUrl && (
+                    <div className="team-cover-frame-box">
+                      <div className="team-cover-video-stage">
+                        <video
+                          ref={coverVideoRef}
+                          src={videoPreviewUrl}
+                          muted
+                          playsInline
+                          preload="metadata"
+                          onLoadedMetadata={(e) => {
+                            const vid = e.currentTarget;
+                            setVideoDuration(Number.isFinite(vid.duration) ? vid.duration : 0);
+                            setVideoTime(0);
+                            void buildFilmstrip(vid);
+                          }}
+                          onTimeUpdate={(e) => setVideoTime(e.currentTarget.currentTime || 0)}
+                        />
+                      </div>
+                      <div className="team-cover-scrubber">
+                        <span>{formatTime(videoTime)}</span>
+                        <input
+                          type="range"
+                          min={0}
+                          max={videoDuration || 1}
+                          step={0.05}
+                          value={Math.min(videoTime, videoDuration || 1)}
+                          onChange={(e) => {
+                            const next = Number(e.currentTarget.value);
+                            setVideoTime(next);
+                            if (coverVideoRef.current) coverVideoRef.current.currentTime = next;
+                          }}
+                        />
+                        <span>{formatTime(videoDuration)}</span>
+                        <button
+                          type="button"
+                          className="team-cover-capture-btn"
+                          disabled={coverBusy || !videoDuration}
+                          onClick={async () => {
+                            setCoverBusy(true);
+                            setError('');
+                            try {
+                              const shot = await captureVideoFrameAt(coverVideoRef.current, videoTime);
+                              setCoverFile(shot.file);
+                              setCoverLabel(`Frame at ${formatTime(shot.time)}`);
+                            } catch (err) {
+                              setError(err?.message || 'Could not capture video frame.');
+                            } finally {
+                              setCoverBusy(false);
+                            }
+                          }}
+                        >
+                          {coverBusy ? 'Capturing…' : 'Use this frame'}
+                        </button>
+                      </div>
+                      {filmstrip.length > 0 && (
+                        <div className="team-cover-filmstrip" aria-label="Quick-pick video frames">
+                          {filmstrip.map((item, idx) => (
+                            <button
+                              key={idx}
+                              type="button"
+                              className={`team-cover-thumb ${coverLabel === `Frame at ${formatTime(item.time)}` ? 'selected' : ''}`}
+                              onClick={() => {
+                                setCoverFile(item.file);
+                                setCoverLabel(`Frame at ${formatTime(item.time)}`);
+                                if (coverVideoRef.current) coverVideoRef.current.currentTime = item.time;
+                                setVideoTime(item.time);
+                              }}
+                            >
+                              <img src={item.preview} alt={`Frame at ${formatTime(item.time)}`} />
+                              <span>{formatTime(item.time)}</span>
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {coverMode === 'upload' && (
+                    <label className="team-cover-upload-drop">
+                      <b>{coverFile ? coverFile.name : 'Choose or drop a custom thumbnail image'}</b>
+                      <small>JPG, PNG, or WebP · up to 10 MB · automatically fitted for Reels &amp; YouTube</small>
+                      <input
+                        type="file"
+                        accept="image/jpeg,image/png,image/webp"
+                        onChange={(e) => {
+                          const img = e.currentTarget.files?.[0];
+                          e.currentTarget.value = '';
+                          if (!img) return;
+                          if (!img.type.startsWith('image/')) return setError('Thumbnail must be a JPG, PNG, or WebP image.');
+                          if (img.size > 10 * 1024 * 1024) return setError('Thumbnail image exceeds 10 MB.');
+                          setError('');
+                          setCoverFile(img);
+                          setCoverLabel(img.name);
+                        }}
+                      />
+                    </label>
+                  )}
+
+                  {coverMode !== 'auto' && coverPreviewUrl && (
+                    <div className="team-cover-selected-bar">
+                      <img src={coverPreviewUrl} alt="Selected thumbnail preview" />
+                      <div>
+                        <b>Manual thumbnail ready</b>
+                        <span>{coverLabel || coverFile?.name}</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => { setCoverMode('auto'); setCoverFile(null); setCoverLabel(''); }}
+                      >
+                        Reset to Auto
+                      </button>
+                    </div>
+                  )}
                 </div>
               )}
 

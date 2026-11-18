@@ -5,3 +5,287 @@
 @media (max-width: 650px) {.team-options-grid{ grid-template-columns: 1fr; }.team-video-job{ align-items: flex-start; flex-direction: column; }.team-video-job button{ width: 100%; min-height: 42px; }.team-video-actions{ align-items: stretch; flex-direction: column; }.team-video-actions button{ width: 100%; min-height: 48px; }.ws-team-entry{ margin: 8px 0 0; } }
 @media (max-width: 650px) {.team-video-review-panel{ grid-template-columns: 1fr; }.team-video-review-panel video{ max-height: 360px; } }
 @media (max-width: 760px) {.ws-nav{ overflow-x: auto; }.ws-topbar{ gap: 12px; } }
+
+.team-cover-picker {
+  margin-top: 14px;
+  padding: 16px;
+  border-radius: 14px;
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  background: rgba(15, 18, 26, 0.72);
+  backdrop-filter: blur(14px);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.team-cover-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.team-cover-head strong {
+  display: block;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #f8fafc;
+}
+
+.team-cover-head small {
+  display: block;
+  margin-top: 2px;
+  font-size: 0.8rem;
+  color: rgba(203, 213, 225, 0.72);
+}
+
+.team-cover-tabs {
+  display: inline-flex;
+  padding: 3px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  gap: 3px;
+}
+
+.team-cover-tabs button {
+  border: 0;
+  background: transparent;
+  color: rgba(226, 232, 240, 0.74);
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 7px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.16s ease, color 0.16s ease, box-shadow 0.16s ease;
+}
+
+.team-cover-tabs button:hover {
+  color: #fff;
+}
+
+.team-cover-tabs button.active {
+  background: linear-gradient(135deg, #2563eb, #3b82f6);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+}
+
+.team-cover-frame-box {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.team-cover-video-stage {
+  width: 100%;
+  max-height: 300px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #07090e;
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  display: grid;
+  place-items: center;
+}
+
+.team-cover-video-stage video {
+  width: 100%;
+  max-height: 300px;
+  object-fit: contain;
+  display: block;
+}
+
+.team-cover-scrubber {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  align-items: center;
+  gap: 10px;
+}
+
+.team-cover-scrubber span {
+  font-size: 0.78rem;
+  font-variant-numeric: tabular-nums;
+  color: rgba(226, 232, 240, 0.76);
+}
+
+.team-cover-scrubber input[type="range"] {
+  width: 100%;
+  accent-color: #3b82f6;
+  cursor: pointer;
+}
+
+.team-cover-capture-btn {
+  border: 1px solid rgba(96, 165, 250, 0.45);
+  background: rgba(37, 99, 235, 0.18);
+  color: #dbeafe;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 7px 13px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.16s ease, border-color 0.16s ease;
+}
+
+.team-cover-capture-btn:hover:not(:disabled) {
+  background: rgba(37, 99, 235, 0.34);
+  border-color: rgba(147, 197, 253, 0.7);
+}
+
+.team-cover-capture-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.team-cover-filmstrip {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.team-cover-thumb {
+  position: relative;
+  padding: 0;
+  border: 2px solid rgba(148, 163, 184, 0.16);
+  border-radius: 9px;
+  overflow: hidden;
+  background: #090b10;
+  aspect-ratio: 9 / 14;
+  cursor: pointer;
+  transition: transform 0.14s ease, border-color 0.14s ease, box-shadow 0.14s ease;
+}
+
+.team-cover-thumb:hover {
+  transform: translateY(-2px);
+  border-color: rgba(96, 165, 250, 0.6);
+}
+
+.team-cover-thumb.selected {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.35);
+}
+
+.team-cover-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.team-cover-thumb span {
+  position: absolute;
+  right: 5px;
+  bottom: 5px;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: rgba(7, 9, 14, 0.78);
+  color: #f8fafc;
+  font-size: 0.68rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.team-cover-upload-drop {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 4px;
+  padding: 22px 16px;
+  border-radius: 12px;
+  border: 1.5px dashed rgba(96, 165, 250, 0.35);
+  background: rgba(15, 23, 42, 0.45);
+  cursor: pointer;
+  transition: border-color 0.16s ease, background 0.16s ease;
+}
+
+.team-cover-upload-drop:hover {
+  border-color: rgba(96, 165, 250, 0.7);
+  background: rgba(30, 41, 59, 0.55);
+}
+
+.team-cover-upload-drop b {
+  font-size: 0.88rem;
+  color: #f1f5f9;
+}
+
+.team-cover-upload-drop small {
+  font-size: 0.78rem;
+  color: rgba(203, 213, 225, 0.72);
+}
+
+.team-cover-upload-drop input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.team-cover-selected-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(37, 99, 235, 0.1);
+  border: 1px solid rgba(96, 165, 250, 0.3);
+}
+
+.team-cover-selected-bar img {
+  width: 44px;
+  height: 58px;
+  border-radius: 7px;
+  object-fit: cover;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  flex-shrink: 0;
+}
+
+.team-cover-selected-bar div {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.team-cover-selected-bar b {
+  font-size: 0.84rem;
+  color: #eff6ff;
+}
+
+.team-cover-selected-bar span {
+  font-size: 0.76rem;
+  color: rgba(191, 219, 254, 0.85);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.team-cover-selected-bar button {
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  background: rgba(15, 23, 42, 0.65);
+  color: #e2e8f0;
+  font-size: 0.76rem;
+  font-weight: 600;
+  padding: 6px 10px;
+  border-radius: 7px;
+  cursor: pointer;
+}
+
+.team-cover-selected-bar button:hover {
+  background: rgba(30, 41, 59, 0.9);
+  color: #fff;
+}
+
+@media (max-width: 640px) {
+  .team-cover-filmstrip {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .team-cover-scrubber {
+    grid-template-columns: auto 1fr auto;
+  }
+  .team-cover-capture-btn {
+    grid-column: 1 / -1;
+  }
+}

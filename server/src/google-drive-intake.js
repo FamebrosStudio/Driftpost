@@ -277,7 +277,14 @@ export async function enqueueFiles(supabase, connection, files) {
   }
   const readyGroups = [...groups.values()].filter((group) => group.files.every((file) => Date.now() - Date.parse(file.createdTime || file.modifiedTime || 0) >= 90_000));
   const batches = [
-    ...videoFiles.map((file) => ({ files: [file], parsed: parseDestination(file.name), kind: 'video', brief: file.brief || '', directStoragePaths: file.directStoragePaths || [] })),
+    ...videoFiles.map((file) => ({
+      files: [file],
+      parsed: parseDestination(file.name),
+      kind: 'video',
+      brief: file.brief || '',
+      directStoragePaths: file.directStoragePaths || [],
+      customCoverStoragePath: file.customCoverStoragePath || '',
+    })),
     ...readyFolders.map((folder) => ({
       files: [...folder.children].sort((a, b) => String(a.name).localeCompare(String(b.name), undefined, { numeric: true })),
       parsed: parseDestination(folder.name, { stripExtension: false }),
@@ -399,6 +406,7 @@ export async function enqueueFiles(supabase, connection, files) {
         ...(needsBrandInference ? { brand_resolution_required: true, requested_brand_names: requestedNames } : {}),
         ...(batch.brief ? { brief: batch.brief } : {}),
         ...(batch.directStoragePaths?.length ? { direct_storage_paths: batch.directStoragePaths } : {}),
+        ...(batch.customCoverStoragePath ? { custom_cover_storage_path: batch.customCoverStoragePath } : {}),
         ...(batch.kind === 'image' ? { media_kind: 'carousel', source_drive_files: batchFiles.map((item) => ({ id: item.id, name: item.name, mime_type: item.mimeType, size: Number(item.size) || 0, ...(item.storage_path ? { storage_path: item.storage_path } : {}) })) } : {}),
       },
       status: errorMessage && !needsBrandInference ? 'failed' : 'queued',
@@ -408,7 +416,7 @@ export async function enqueueFiles(supabase, connection, files) {
   }
 }
 
-export async function enqueueDirectUpload(supabase, userId, uploadedFiles, description = '') {
+export async function enqueueDirectUpload(supabase, userId, uploadedFiles, description = '', { coverFile = null } = {}) {
   const incoming = Array.isArray(uploadedFiles) ? uploadedFiles.filter(Boolean) : [];
   if (!incoming.length) throw new Error('Choose a video or up to 10 carousel images first.');
   const videos = incoming.filter((f) => String(f.mimetype || '').startsWith('video/') || isIntakeVideoFile({ name: f.originalname, mimeType: f.mimetype }));
@@ -423,8 +431,26 @@ export async function enqueueDirectUpload(supabase, userId, uploadedFiles, descr
   const storagePaths = [];
   const files = [];
   const settledTime = new Date(Date.now() - 120_000).toISOString();
+  let customCoverStoragePath = '';
 
   try {
+    if (coverFile) {
+      const coverOk = String(coverFile.mimetype || '').startsWith('image/') || isIntakeImageFile({ name: coverFile.originalname, mimeType: coverFile.mimetype });
+      if (!coverOk) throw new Error('Cover thumbnail must be a JPG, PNG, or WebP image.');
+      if (Number(coverFile.size) > 10 * 1024 * 1024) throw new Error('Cover thumbnail exceeds the 10 MB limit.');
+      const safeCoverName = String(coverFile.originalname || 'cover.jpg').replace(/[^\w.\- @()]/g, '_');
+      const coverPath = `direct-intake/${userId}/${batchId}/custom-cover-${safeCoverName}`;
+      const coverStream = fs.createReadStream(coverFile.path);
+      const { error: coverUploadError } = await supabase.storage.from(bucket).upload(coverPath, coverStream, {
+        contentType: coverFile.mimetype || 'image/jpeg',
+        duplex: 'half',
+        upsert: true,
+      });
+      if (coverUploadError) throw new Error(`Could not store cover thumbnail: ${coverUploadError.message}`);
+      storagePaths.push(coverPath);
+      customCoverStoragePath = coverPath;
+    }
+
     for (let i = 0; i < incoming.length; i++) {
       const item = incoming[i];
       const safeName = String(item.originalname || `upload-${i + 1}`).replace(/[^\w.\- @()]/g, '_');
@@ -468,15 +494,16 @@ export async function enqueueDirectUpload(supabase, userId, uploadedFiles, descr
         id: `direct:${batchId}`,
         brief,
         directStoragePaths: storagePaths,
+        ...(customCoverStoragePath ? { customCoverStoragePath } : {}),
       }]);
     }
     void processQueued(supabase);
-    return { ok: true, count: files.length, kind: isCarousel ? 'carousel' : 'video' };
+    return { ok: true, count: files.length, kind: isCarousel ? 'carousel' : 'video', hasCustomCover: Boolean(customCoverStoragePath) };
   } catch (err) {
     if (storagePaths.length) await supabase.storage.from(bucket).remove(storagePaths).catch(() => {});
     throw err;
   } finally {
-    for (const item of incoming) {
+    for (const item of [...incoming, ...(coverFile ? [coverFile] : [])]) {
       if (item?.path) await fs.promises.rm(item.path, { force: true }).catch(() => {});
     }
   }
@@ -631,6 +658,13 @@ async function runClaimedIntakeJob(supabase, job) {
       suggestBrands: (frames, transcript, excludedIds) => inferLikelyVideoBrands(frames, transcript, excludedIds),
       download: (current, destination) => downloadDriveVideo(supabase, current, destination),
       downloadMedia: (current, directory) => downloadDriveCarousel(supabase, current, directory),
+      downloadCover: async (current, directory) => {
+        const coverPath = current.result?.custom_cover_storage_path;
+        if (!coverPath) return null;
+        const dest = path.join(directory, 'custom-cover.jpg');
+        await downloadStorageToFile(supabase, coverPath, dest, 10 * 1024 * 1024);
+        return dest;
+      },
       progress: async (stage, detail) => {
         const percent = progressPercentFor(stage, detail);
         await supabase.from(TABLE).update({ result: { ...(job.result || {}), progress: { stage, detail, percent, updated_at: new Date().toISOString() } }, updated_at: new Date().toISOString() }).eq('id', job.id).eq('status', 'processing');
