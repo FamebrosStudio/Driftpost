@@ -78,7 +78,7 @@ test('pre-uploaded media downloads to disk incrementally', async (t) => {
   await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
   t.after(() => new Promise((resolve) => { server.close(resolve); server.closeAllConnections(); }));
   const destination = path.join(path.dirname(media.path), 'download.mp4');
-  await downloadMediaFile(`http://127.0.0.1:${server.address().port}/video`, destination);
+  await downloadMediaFile(`http://127.0.0.1:${server.address().port}/video`, destination, { allowLocalTestUrl: true });
   assert.equal((await fs.stat(destination)).size, media.size);
   const handle = await fs.open(destination, 'r');
   const sample = Buffer.alloc(16);

@@ -22,8 +22,34 @@ export async function mediaBlob(media) {
   throw new Error('Media file is unavailable');
 }
 
-export async function downloadMediaFile(url, destination, { maxBytes = 400 * 1024 * 1024, expectedSize } = {}) {
-  const response = await fetch(url, { signal: AbortSignal.timeout(15 * 60 * 1000) });
+function assertSafeDownloadUrl(rawUrl) {
+  let parsed;
+  try { parsed = new URL(String(rawUrl || '')); }
+  catch { throw new Error('Invalid media download URL.'); }
+  if (parsed.protocol !== 'https:') {
+    throw new Error('Only HTTPS media URLs are allowed.');
+  }
+  const host = parsed.hostname.toLowerCase();
+  if (
+    host === 'localhost'
+    || host === '0.0.0.0'
+    || host === '::1'
+    || host.endsWith('.local')
+    || host.endsWith('.internal')
+    || /^127\./.test(host)
+    || /^10\./.test(host)
+    || /^169\.254\./.test(host)
+    || /^192\.168\./.test(host)
+    || /^172\.(1[6-9]|2\d|3[0-1])\./.test(host)
+  ) {
+    throw new Error('Blocked internal/private media URL.');
+  }
+  return parsed.toString();
+}
+
+export async function downloadMediaFile(url, destination, { maxBytes = 400 * 1024 * 1024, expectedSize, allowLocalTestUrl = false } = {}) {
+  const safeUrl = allowLocalTestUrl ? String(url) : assertSafeDownloadUrl(url);
+  const response = await fetch(safeUrl, { redirect: 'error', signal: AbortSignal.timeout(15 * 60 * 1000) });
   if (!response.ok || !response.body) throw new Error('Media download failed from Supabase');
   const contentLength = Number(response.headers.get('content-length'));
   if (Number.isFinite(contentLength) && contentLength > maxBytes) {

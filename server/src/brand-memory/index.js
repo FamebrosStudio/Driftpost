@@ -1196,31 +1196,35 @@ export function listEditableCaptionBrands() {
 
 export function updateSavedCaptionData(brandId, patch = {}) {
   const cleanId = String(brandId || '').trim();
-  if (!cleanId) throw new Error('Brand ID is required.');
+  if (!/^[a-z0-9_-]{1,80}$/i.test(cleanId)) throw new Error('Invalid brand ID.');
   const existing = listEditableCaptionBrands().find((b) => b.id === cleanId);
   if (!existing) throw new Error('Brand not found.');
+  const safePatch = patch && typeof patch === 'object' ? patch : {};
+  const clampStr = (v, max) => String(v ?? '').slice(0, max).trim();
 
-  const nextName = String(patch.name ?? existing.name).trim() || existing.name;
-  const nextLocation = String(patch.location ?? existing.location).trim();
-  const nextAddress = String(patch.address ?? existing.address).trim();
-  const nextIg = String(patch.ig ?? existing.ig).trim();
-  const nextTone = String(patch.tone ?? existing.tone).trim();
-  const nextSample = String(patch.sampleCaption ?? existing.sampleCaption).trim();
-  const nextFooter = Array.isArray(patch.footer)
-    ? patch.footer.map((l) => String(l).trim()).filter(Boolean)
-    : String(patch.footer || '').split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
-  const nextPhones = Array.isArray(patch.phones)
-    ? patch.phones.map((p) => String(p).trim()).filter(Boolean)
-    : String(patch.phones || '').split(/[,/\n]+/).map((p) => p.trim()).filter(Boolean);
-  const nextHashtags = Array.isArray(patch.hashtags)
-    ? patch.hashtags.map((h) => String(h).trim()).filter(Boolean).map((h) => (h.startsWith('#') ? h : `#${h}`))
-    : String(patch.hashtags || '').split(/[\s,]+/).map((h) => h.trim()).filter(Boolean).map((h) => (h.startsWith('#') ? h : `#${h}`));
-  const nextKw = Array.isArray(patch.kw)
-    ? patch.kw.map((k) => String(k).trim()).filter(Boolean)
-    : String(patch.kw || '').replace(/^\[|\]$/g, '').split(/[,\n]+/).map((k) => k.trim()).filter(Boolean);
+  const nextName = clampStr(safePatch.name ?? existing.name, 120) || existing.name;
+  const nextLocation = clampStr(safePatch.location ?? existing.location, 120);
+  const nextAddress = clampStr(safePatch.address ?? existing.address, 1000);
+  const nextIg = clampStr(safePatch.ig ?? existing.ig, 80);
+  const nextTone = clampStr(safePatch.tone ?? existing.tone, 300);
+  const nextSample = clampStr(safePatch.sampleCaption ?? existing.sampleCaption, 8000);
+  const nextFooter = Array.isArray(safePatch.footer)
+    ? safePatch.footer.slice(0, 30).map((l) => clampStr(l, 300)).filter(Boolean)
+    : clampStr(safePatch.footer || '', 4000).split(/\r?\n/).map((l) => l.trim()).filter(Boolean).slice(0, 30);
+  const nextPhones = Array.isArray(safePatch.phones)
+    ? safePatch.phones.slice(0, 10).map((p) => clampStr(p, 40)).filter(Boolean)
+    : clampStr(safePatch.phones || '', 500).split(/[,/\n]+/).map((p) => p.trim()).filter(Boolean).slice(0, 10);
+  const nextHashtags = Array.isArray(safePatch.hashtags)
+    ? safePatch.hashtags.slice(0, 30).map((h) => clampStr(h, 60)).filter(Boolean).map((h) => (h.startsWith('#') ? h : `#${h}`))
+    : clampStr(safePatch.hashtags || '', 1000).split(/[\s,]+/).map((h) => h.trim()).filter(Boolean).slice(0, 30).map((h) => (h.startsWith('#') ? h : `#${h}`));
+  const nextKw = Array.isArray(safePatch.kw)
+    ? safePatch.kw.slice(0, 40).map((k) => clampStr(k, 100)).filter(Boolean)
+    : clampStr(safePatch.kw || '', 2000).replace(/^\[|\]$/g, '').split(/[,\n]+/).map((k) => k.trim()).filter(Boolean).slice(0, 40);
 
-  // 1. Update built-in deep profile if it exists on disk
-  const builtInDeepPath = path.join(DEEP_DIR, `${cleanId}.json`);
+  // 1. Update built-in deep profile if it exists on disk (with strict path containment)
+  const resolvedDeepDir = path.resolve(DEEP_DIR);
+  const builtInDeepPath = path.resolve(resolvedDeepDir, `${cleanId}.json`);
+  if (!builtInDeepPath.startsWith(resolvedDeepDir + path.sep)) throw new Error('Invalid brand path.');
   if (fs.existsSync(builtInDeepPath)) {
     try {
       const deep = JSON.parse(fs.readFileSync(builtInDeepPath, 'utf8'));

@@ -41,6 +41,15 @@ const missing = required.filter((n) => !process.env[n]);
 if (missing.length) throw new Error(`Missing env: ${missing.join(', ')}`);
 
 const app = express();
+app.disable('x-powered-by');
+app.use((_req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('Referrer-Policy', 'no-referrer');
+  res.setHeader('Cross-Origin-Resource-Policy', 'same-site');
+  res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+  next();
+});
 const port = Number(process.env.PORT || 10000);
 const BUCKET = process.env.MEDIA_BUCKET || 'driftpost-media';
 const MAX_UPLOAD_BYTES = 400 * 1024 * 1024;
@@ -1121,7 +1130,7 @@ app.post('/api/ai/unlock', requireUser, aiUnlockLimit, (req, res) => {
   res.json({ grant });
 });
 
-app.get('/api/ai/access', requireUser, requireAiAccess, (_req, res) => res.json({ unlocked: true }));
+app.get('/api/ai/access', strictBurstLimit, requireUser, requireAiAccess, (_req, res) => res.json({ unlocked: true }));
 
 app.get('/api/connections', requireUser, connectionsLimit, burstLimit, async (req, res) => {
   try {
