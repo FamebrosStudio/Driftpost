@@ -71,7 +71,7 @@ export async function uploadVideoResumable({ accessToken, file, metadata, onProg
   try {
     while (offset < file.size) {
       const len = Math.min(CHUNK, file.size - offset);
-      const buf = Buffer.allocUnsafe(len);
+      const buf = Buffer.alloc(len);
       const { bytesRead } = await h.read(buf, 0, len, offset);
       if (!bytesRead) throw new Error('Video file could not be read');
       const end = offset + bytesRead - 1;

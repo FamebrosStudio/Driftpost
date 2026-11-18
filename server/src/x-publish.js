@@ -87,7 +87,7 @@ async function uploadChunkedMedia(accessToken, file, onProgress) {
   try {
     while (offset < file.size) {
       const length = Math.min(CHUNK_SIZE, file.size - offset);
-      const buffer = Buffer.allocUnsafe(length);
+      const buffer = Buffer.alloc(length);
       const { bytesRead } = await handle.read(buffer, 0, length, offset);
       if (!bytesRead) throw new Error('Media file could not be read');
       const append = new FormData();

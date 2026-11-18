@@ -13,8 +13,11 @@ async function fixture(t, size = 48 * 1024 * 1024) {
   t.after(() => fs.rm(dir, { recursive: true, force: true }));
   const filePath = path.join(dir, 'video.mp4');
   const handle = await fs.open(filePath, 'w');
-  await handle.truncate(size);
-  await handle.close();
+  try {
+    await handle.truncate(size);
+  } finally {
+    await handle.close();
+  }
   return { path: filePath, mimetype: 'video/mp4', originalname: 'video.mp4', size };
 }
 
@@ -82,8 +85,11 @@ test('pre-uploaded media downloads to disk incrementally', async (t) => {
   assert.equal((await fs.stat(destination)).size, media.size);
   const handle = await fs.open(destination, 'r');
   const sample = Buffer.alloc(16);
-  await handle.read(sample, 0, sample.length, media.size - sample.length);
-  await handle.close();
+  try {
+    await handle.read(sample, 0, sample.length, media.size - sample.length);
+  } finally {
+    await handle.close();
+  }
   assert.deepEqual(sample, Buffer.alloc(16, 7));
 });
 

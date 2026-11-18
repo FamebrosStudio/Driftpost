@@ -78,7 +78,7 @@ export default function StageTwoPage({ session, onBack, onSignOut, onNavigate, o
   }, [mediaKey]);
   useEffect(() => {
     // Preserve the YouTube cover (written by Stage 3) across saves.
-    updateVault(mediaKey, (prev) => ({
+    void updateVault(mediaKey, (prev) => ({
       ...(prev || {}),
       thumb: prev?.thumb || null,
       coverMap: prev?.coverMap || {},
@@ -89,7 +89,7 @@ export default function StageTwoPage({ session, onBack, onSignOut, onNavigate, o
         musicOriginalRaw: f.musicOriginalRaw instanceof Blob ? f.musicOriginalRaw : null,
         musicTrack: f.musicTrack || null,
       })).filter((f) => f.blob instanceof Blob),
-    }));
+    })).catch(() => {});
   }, [mediaKey, files]);
 
   useEffect(() => { save(scopedKey('driftpost-stage2-brief', userId), brief); }, [brief, userId]);

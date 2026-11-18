@@ -22,6 +22,7 @@ export function apiRequestUrl(path) {
 // Keeps current behaviour identical when the API is unreachable.
 let brandsCache = null;
 let brandsCacheTime = 0;
+let brandsInFlight = null;
 const BRAND_CACHE_MS = 5 * 60 * 1000;
 
 export async function fetchBrands(token) {
@@ -29,17 +30,26 @@ export async function fetchBrands(token) {
     const now = Date.now();
     if (brandsCache && (now - brandsCacheTime) < BRAND_CACHE_MS) return brandsCache;
     if (!apiUrl || !token) return ACTIVE_BRANDS;
-    const res = await fetch(apiRequestUrl('/api/ai/brands'), {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    if (res.ok) {
-      const data = await res.json();
-      if (Array.isArray(data.brands) && data.brands.length) {
-        brandsCache = data.brands;
-        brandsCacheTime = now;
-        return brandsCache;
+    if (brandsInFlight) return brandsInFlight;
+    brandsInFlight = (async () => {
+      try {
+        const res = await fetch(apiRequestUrl('/api/ai/brands'), {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (Array.isArray(data.brands) && data.brands.length) {
+            brandsCache = data.brands;
+            brandsCacheTime = Date.now();
+            return brandsCache;
+          }
+        }
+      } catch {} finally {
+        brandsInFlight = null;
       }
-    }
+      return ACTIVE_BRANDS;
+    })();
+    return brandsInFlight;
   } catch {}
   return ACTIVE_BRANDS;
 }

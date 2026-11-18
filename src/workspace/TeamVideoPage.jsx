@@ -210,7 +210,11 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut }) {
     setDriveState((old) => ({ ...old, error: '' }));
     try {
       const { url } = await api('/api/intake/drive/connect', session.access_token, { method: 'POST' });
-      window.location.assign(url);
+      const parsed = new URL(String(url || ''));
+      if (parsed.protocol !== 'https:' || parsed.hostname !== 'accounts.google.com') {
+        throw new Error('Unexpected Google Drive authorization URL.');
+      }
+      window.location.assign(parsed.toString());
     } catch (e) {
       setDriveState((old) => ({ ...old, error: e.message || 'Could not start Google Drive connection.' }));
       setDriveBusy(false);

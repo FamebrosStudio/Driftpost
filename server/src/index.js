@@ -196,7 +196,14 @@ const upload = multer({
 app.set('trust proxy', 1);
 app.use(helmet({
   crossOriginResourcePolicy: false,
-  contentSecurityPolicy: false,
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'none'"],
+      frameAncestors: ["'none'"],
+      baseUri: ["'none'"],
+      formAction: ["'none'"],
+    },
+  },
   frameguard: { action: 'deny' },
   hsts: { maxAge: 31536000, includeSubDomains: true, preload: true },
 }));
@@ -886,9 +893,9 @@ app.get('/api/music/search', requireUser, musicLimit, async (req, res) => {
       },
       signal: AbortSignal.timeout(12000),
     });
-    const payload = await response.json().catch(() => ({}));
     if (!response.ok) {
-      const status = response.status === 401 ? 502 : response.status === 403 ? 403 : response.status === 429 ? 429 : 502;
+      await response.body?.cancel?.().catch(() => {});
+      const status = response.status === 403 ? 403 : response.status === 429 ? 429 : 502;
       const message = response.status === 401
         ? 'Epidemic Sound rejected the API key. Check the server secret.'
         : response.status === 403
@@ -898,6 +905,7 @@ app.get('/api/music/search', requireUser, musicLimit, async (req, res) => {
             : 'Epidemic Sound catalog search failed. Try again shortly.';
       return res.status(status).json({ error: message });
     }
+    const payload = await response.json().catch(() => ({}));
     res.set('Cache-Control', 'private, max-age=30').json({
       tracks: Array.isArray(payload.tracks) ? payload.tracks : [],
       pagination: payload.pagination || null,
@@ -1329,7 +1337,7 @@ app.get('/api/oauth/google-business/callback', callbackLimit, async (req, res) =
     try { await syncGoogleBusinessLocations(connection.id, state.userId); }
     catch (syncError) { back.searchParams.set('google_business_error', String(syncError.message || 'Locations need to be retried.').slice(0, 1200)); }
   } catch (e) { back.searchParams.set('oauth_error', String(e.message || 'Google Business Profile connection failed').slice(0, 400)); }
-  res.redirect(back.toString());
+  safeFrontendRedirect(res, back);
 });
 
 app.get('/api/automations/google-business', requireUser, connectionsLimit, burstLimit, async (req, res) => {
@@ -1995,23 +2003,30 @@ app.post('/api/ai/learn', requireUser, requireAiAccess, burstLimit, async (req, 
 // Feed It: private team-only brand onboarding (restricted to famebros.studio@gmail.com & kabirsayed.k@gmail.com)
 const FED_BRANDS_STORAGE_KEY = 'system/fed-brands-registry.json';
 let fedBrandsHydrated = false;
+let fedBrandsHydratePromise = null;
 
 async function hydrateFedBrandsFromCloud() {
   if (fedBrandsHydrated) return;
-  try {
-    const { data, error } = await supabase.storage.from(BUCKET).download(FED_BRANDS_STORAGE_KEY);
-    if (error || !data) {
+  if (fedBrandsHydratePromise) return fedBrandsHydratePromise;
+  fedBrandsHydratePromise = (async () => {
+    try {
+      const { data, error } = await supabase.storage.from(BUCKET).download(FED_BRANDS_STORAGE_KEY);
+      if (error || !data) {
+        fedBrandsHydrated = true;
+        return;
+      }
+      const text = await data.text();
+      const bundle = JSON.parse(text);
+      const { hydrateFedBrandsBundle } = await import('./brand-memory/index.js');
+      hydrateFedBrandsBundle(bundle);
       fedBrandsHydrated = true;
-      return;
+    } catch (e) {
+      console.warn('[feed-it] cloud hydrate skipped:', e?.message || e);
+    } finally {
+      fedBrandsHydratePromise = null;
     }
-    const text = await data.text();
-    const bundle = JSON.parse(text);
-    const { hydrateFedBrandsBundle } = await import('./brand-memory/index.js');
-    hydrateFedBrandsBundle(bundle);
-    fedBrandsHydrated = true;
-  } catch (e) {
-    console.warn('[feed-it] cloud hydrate skipped:', e?.message || e);
-  }
+  })();
+  return fedBrandsHydratePromise;
 }
 
 async function syncFedBrandsToCloud() {
@@ -2147,6 +2162,16 @@ app.post('/api/meta/deauthorize', callbackLimit, express.urlencoded({ extended: 
 // CORS, but redirects need exactly one home. The fallback keeps OAuth
 // callbacks alive (redirect, not crash) even if the env var is unset.
 const FRONTEND_HOME = String(process.env.FRONTEND_URL || 'https://driftpostpage.vercel.app').split(',')[0].trim() || 'https://driftpostpage.vercel.app';
+function safeFrontendRedirect(res, targetUrl) {
+  try {
+    const allowedOrigin = new URL(FRONTEND_HOME).origin;
+    const parsed = new URL(String(targetUrl || FRONTEND_HOME), FRONTEND_HOME);
+    if (parsed.origin === allowedOrigin && parsed.pathname.startsWith('/')) {
+      return res.redirect(parsed.toString());
+    }
+  } catch {}
+  return res.redirect(FRONTEND_HOME);
+}
 // Single-use OAuth states: verifyState checks signature + expiry; this map
 // additionally burns each nonce so a captured callback URL can't be replayed
 // to attach someone else's channel to the attacker's account.
@@ -2492,7 +2517,7 @@ app.get('/api/oauth/youtube/callback', callbackLimit, async (req, res) => {
       }, { onConflict: 'user_id' });
       if (saveError) throw saveError;
       back.searchParams.set('connected', 'google-drive-intake');
-      return res.redirect(back.toString());
+      return safeFrontendRedirect(res, back);
     }
     const ch = await getYouTubeChannel(tokens.access_token);
     const { error } = await supabase.from('platform_connections').upsert({
@@ -2505,7 +2530,7 @@ app.get('/api/oauth/youtube/callback', callbackLimit, async (req, res) => {
     if (error) throw error;
     back.searchParams.set('connected', `youtube (${ch.name})`);
   } catch (e) { back.searchParams.set('oauth_error', e.message); }
-  res.redirect(back.toString());
+  safeFrontendRedirect(res, back);
 });
 
 // --- OAuth: Meta (Facebook: regular Login / Instagram: Login for Business) ---
@@ -2533,7 +2558,7 @@ app.get('/api/oauth/meta/callback', callbackLimit, async (req, res) => {
     if (metaError || errorCode) {
       if (/cancel|4201|access_denied/i.test(`${metaError} ${errorCode}`)) {
         back.searchParams.set('oauth_error', 'Facebook login was cancelled or did not finish. No account was added. Try again; if it keeps looping, ask the administrator to check the Facebook Login configuration and approved permissions.');
-        return res.redirect(back.toString());
+        return safeFrontendRedirect(res, back);
       }
       throw new Error(metaError || `Meta login failed (code ${errorCode}).`);
     }
@@ -2585,7 +2610,7 @@ app.get('/api/oauth/meta/callback', callbackLimit, async (req, res) => {
     back.searchParams.set('connected', 'meta');
     back.searchParams.set('connected_details', `${pages.length} Page${pages.length === 1 ? '' : 's'}, ${igCount} Instagram account${igCount === 1 ? '' : 's'} found${pageLabel}${igLabel}`);
   } catch (e) { back.searchParams.set('oauth_error', metaConnectionErrorMessage(e)); }
-  res.redirect(back.toString());
+  safeFrontendRedirect(res, back);
 });
 
 // --- OAuth: X ---
@@ -2625,7 +2650,7 @@ app.get('/api/oauth/x/callback', callbackLimit, async (req, res) => {
     if (error) throw error;
     back.searchParams.set('connected', 'x');
   } catch (e) { back.searchParams.set('oauth_error', e.message); }
-  res.redirect(back.toString());
+  safeFrontendRedirect(res, back);
 });
 
 // --- Unified publish: youtube | facebook | instagram | x ---

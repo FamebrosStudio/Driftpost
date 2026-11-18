@@ -479,20 +479,20 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
   const onThumb = (t) => {
     coverEditsRef.current.thumb = true;
     setThumb(t);
-    updateVault(mediaKey, (prev) => ({
+    void updateVault(mediaKey, (prev) => ({
         ...(prev || {}),
         files: (prev?.files || []),
         thumb: t?.raw instanceof Blob ? { name: t.name, blob: t.raw } : null,
-      }));
+      })).catch(() => {});
   };
   const onPlatformCover = (platform, t) => {
     coverEditsRef.current[platform] = true;
     setCoverMap((old) => ({ ...old, [platform]: t }));
-    updateVault(mediaKey, (prev) => {
+    void updateVault(mediaKey, (prev) => {
       const stored = { ...(prev?.coverMap || {}) };
       stored[platform] = t?.raw instanceof Blob ? { name: t.name, blob: t.raw } : null;
       return { ...(prev || {}), files: prev?.files || [], coverMap: stored };
-    });
+    }).catch(() => {});
   };
   // Reviewing a card is the approval signal: the server keeps this caption as a
   // reference so the next generation for the same brand writes closer to it.
@@ -830,7 +830,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
           const completed = accountResults.filter(Boolean).length;
           const weightedProgress = accountProgress.reduce((sum, item) => sum + (Number(item?.progress) || 0), 0);
           commitPublishResult(out, pid, {
-            state: completed === plan.length ? 'publishing' : 'publishing',
+            state: 'publishing',
             progress: Math.max(3, Math.min(99, Math.round(weightedProgress / plan.length))),
             message: `${completed}/${plan.length} accounts posted · ${completed < plan.length ? 'continuing…' : 'finalizing…'}`,
           });
