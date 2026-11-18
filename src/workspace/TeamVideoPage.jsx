@@ -397,7 +397,7 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut }) {
                         className={coverMode === 'auto' ? 'active' : ''}
                         onClick={() => { setCoverMode('auto'); setCoverFile(null); setCoverLabel(''); }}
                       >
-                        Auto (AI RAG)
+                        Auto (AI)
                       </button>
                       <button
                         type="button"

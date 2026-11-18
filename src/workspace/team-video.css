@@ -578,3 +578,80 @@
   line-height: 1.58;
   color: #f8fafc;
 }
+
+#root .team-video-page .team-cover-tabs {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.045);
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  gap: 4px;
+}
+
+#root .team-video-page .team-cover-tabs button {
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  color: rgba(203, 213, 225, 0.78);
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 7px 14px;
+  border-radius: 8px;
+  min-height: 0;
+}
+
+#root .team-video-page .team-cover-tabs button:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+#root .team-video-page .team-cover-tabs button.active {
+  background: linear-gradient(135deg, #2563eb, #3b82f6);
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4);
+}
+
+#root .team-video-page .team-video-generate-btn {
+  border: 1px solid rgba(96, 165, 250, 0.45);
+  background: rgba(37, 99, 235, 0.16);
+  color: #dbeafe;
+  box-shadow: none;
+  padding: 11px 18px;
+  border-radius: 10px;
+}
+
+#root .team-video-page .team-video-generate-btn:hover:not(:disabled) {
+  background: rgba(37, 99, 235, 0.3);
+  border-color: rgba(147, 197, 253, 0.75);
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.25);
+}
+
+#root .team-video-page .team-captions-regen-btn {
+  border: 1px solid rgba(96, 165, 250, 0.45);
+  background: rgba(37, 99, 235, 0.22);
+  color: #eff6ff;
+  box-shadow: none;
+  padding: 6px 12px;
+  border-radius: 8px;
+}
+
+#root .team-video-page .team-captions-clear-btn,
+#root .team-video-page .team-caption-editor-bar button,
+#root .team-video-page .team-cover-selected-bar button {
+  border: 1px solid rgba(148, 163, 184, 0.24);
+  background: rgba(255, 255, 255, 0.05);
+  color: #e2e8f0;
+  box-shadow: none;
+  padding: 6px 11px;
+  border-radius: 8px;
+}
+
+#root .team-video-page .team-cover-capture-btn {
+  border: 1px solid rgba(96, 165, 250, 0.48);
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.28), rgba(59, 130, 246, 0.22));
+  color: #eff6ff;
+  box-shadow: none;
+  padding: 7px 14px;
+  border-radius: 8px;
+}
