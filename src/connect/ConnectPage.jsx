@@ -20,6 +20,8 @@ export default function ConnectPage({ session, onContinue, onHistory, onSignOut,
   const [msg, setMsg] = useState('');
   const [msgKind, setMsgKind] = useState('ok');
   const [accountSearch, setAccountSearch] = useState({});
+  const [openPlatforms, setOpenPlatforms] = useState({});
+  const [confirmDropId, setConfirmDropId] = useState('');
   const [config, setConfig] = useState(null);
   const say = (m, k = 'ok') => { setMsg(m); setMsgKind(k); };
 
@@ -74,16 +76,17 @@ export default function ConnectPage({ session, onContinue, onHistory, onSignOut,
   };
 
   const disconnect = async (c) => {
-    if (!window.confirm(`Disconnect ${c.account_name}? You can reconnect any time.`)) return;
     setBusy(c.id);
     try {
       await api(`/api/connections/${c.id}`, session.access_token, { method: 'DELETE' });
       setConnections((cs) => cs.filter((x) => x.id !== c.id));
+      setConfirmDropId('');
       say(`${c.account_name} disconnected.`);
     } catch (e) {
       say(e.message || 'Disconnect failed.', 'err');
+    } finally {
+      setBusy('');
     }
-    setBusy('');
   };
 
   const listFor = (pid) => {
@@ -156,7 +159,14 @@ export default function ConnectPage({ session, onContinue, onHistory, onSignOut,
                     </div>
                     <p className="cn-hint">{HINTS[p.id]}</p>
                     {accountCount > 0 && <input className="cn-search" type="search" value={accountSearch[p.id] || ''} onChange={(e) => setAccountSearch((s) => ({ ...s, [p.id]: e.target.value }))} placeholder={`Search ${p.name} accounts`} aria-label={`Search ${p.name} accounts`} />}
-                    <details className="dp-collapse" open={searchingAccounts}>
+                    <details
+                      className="dp-collapse"
+                      open={Boolean(openPlatforms[p.id] || searchingAccounts)}
+                      onToggle={(e) => {
+                        const isOpen = e.currentTarget.open;
+                        setOpenPlatforms((prev) => (prev[p.id] === isOpen ? prev : { ...prev, [p.id]: isOpen }));
+                      }}
+                    >
                       <summary><span>{list.length ? `${list.length} ${p.name} account${list.length === 1 ? '' : 's'}` : `No ${p.name} accounts`}</span></summary>
                       <div className="dp-collapse-body">
                         <div className="cn-list">
@@ -167,9 +177,26 @@ export default function ConnectPage({ session, onContinue, onHistory, onSignOut,
                                 <b title={c.account_name}>{c.account_name}</b>
                                 <small>{p.name}</small>
                               </span>
-                              <button type="button" className="cn-drop" disabled={!!busy} onClick={() => disconnect(c)}>
-                                {busy === c.id ? '…' : 'Disconnect'}
-                              </button>
+                              {confirmDropId === c.id ? (
+                                <span style={{ display: 'inline-flex', gap: 6, flexShrink: 0 }} onPointerDown={(e) => e.stopPropagation()}>
+                                  <button type="button" className="cn-drop" disabled={!!busy} onClick={(e) => { e.stopPropagation(); disconnect(c); }}>
+                                    {busy === c.id ? '…' : 'Confirm'}
+                                  </button>
+                                  <button type="button" className="cn-drop" disabled={!!busy} onClick={(e) => { e.stopPropagation(); setConfirmDropId(''); }}>
+                                    Cancel
+                                  </button>
+                                </span>
+                              ) : (
+                                <button
+                                  type="button"
+                                  className="cn-drop"
+                                  disabled={!!busy}
+                                  onPointerDown={(e) => e.stopPropagation()}
+                                  onClick={(e) => { e.stopPropagation(); setConfirmDropId(c.id); }}
+                                >
+                                  {busy === c.id ? '…' : 'Disconnect'}
+                                </button>
+                              )}
                             </div>
                           )) : (
                             <div className="cn-empty">{connections.some((c) => c.platform === p.id) ? 'No accounts match that search.' : `No ${p.name} account yet.`}</div>
