@@ -1,7 +1,7 @@
 import React from 'react';
 import BorderGlow from '../components/reactbits/BorderGlow.jsx';
 
-export default function ContinueButton({ disabled, saved, onClick }) {
+export default function ContinueButton({ disabled, saved, hint, onClick }) {
   return (
     <div className="s2-continue-bar">
       <BorderGlow className="btn-glow ws-btn-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.3} glowRadius={22}>
@@ -9,7 +9,7 @@ export default function ContinueButton({ disabled, saved, onClick }) {
           <span>{saved ? 'Saved ✓' : 'Continue'}</span>
         </button>
       </BorderGlow>
-      {disabled && <p className="s2-continue-hint">Add media or generate content to continue</p>}
+      {disabled && <p className="s2-continue-hint">{hint || 'Add media or generate content to continue'}</p>}
     </div>
   );
 }

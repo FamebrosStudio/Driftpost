@@ -1238,6 +1238,21 @@
   box-shadow: 0 10px 24px -6px rgba(59, 130, 246, 0.65) !important;
 }
 
+#root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3, .team-video-page, .approval-page, .cg) :is(
+  .ws-primary, .ws-nav-create, .s1-primary, .continue-btn, .s1-continue,
+  .s2-continue-btn, .s2-continue, .s2-generate, .s2-done,
+  .s3-review-all:not(.done), .s3-acts button.go, .s3-postall, .s3-publish, .s3-new,
+  .cn-connect:not(.ghost), .cn-next, .cg-acts button.go, .cg-acts button:first-child,
+  .team-video-actions button, .drive-intake-connect button, .team-review-actions .team-review-send
+):disabled {
+  border-color: var(--line) !important;
+  background: color-mix(in srgb, var(--panel2) 86%, var(--ink) 6%) !important;
+  color: var(--faint) !important;
+  box-shadow: none !important;
+  opacity: 0.55 !important;
+  cursor: not-allowed !important;
+}
+
 /* Segmented Controls, Filter Tabs & Pill Selectors */
 #root :is(.ws, .hist-shell, .connect, .stage1, .stage2, .stage3) :is(
   .plat-pill, .s2-pill, .s3-tab, .hist-tab, .s3-quick button

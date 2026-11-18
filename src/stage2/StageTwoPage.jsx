@@ -250,7 +250,19 @@ export default function StageTwoPage({ session, onBack, onSignOut, onNavigate, o
     const v = outputs[pid] || {};
     return Object.values(v).some((x) => String(x || '').trim());
   });
-  const canContinue = files.length > 0 || hasOutputs;
+  const hasVideo = files.some((f) => (f?.type || f?.raw?.type || '').startsWith('video/'));
+  const needsVideo = targetPlatforms.includes('youtube');
+  const needsMedia = targetPlatforms.includes('instagram');
+  const canContinue = needsVideo
+    ? hasVideo
+    : needsMedia
+      ? files.length > 0
+      : (files.length > 0 || hasOutputs);
+  const continueHint = needsVideo && !hasVideo
+    ? 'Add a video for YouTube to continue'
+    : needsMedia && !files.length
+      ? 'Add a photo or video for Instagram to continue'
+      : 'Add media or generate content to continue';
   const cont = () => {
     save('driftpost-stage2-done', true);
     setSaveTick(true);
@@ -355,7 +367,7 @@ export default function StageTwoPage({ session, onBack, onSignOut, onNavigate, o
           </section>
         )}
       </div>
-      <ContinueButton disabled={!canContinue} saved={saveTick} onClick={cont} />
+      <ContinueButton disabled={!canContinue} saved={saveTick} hint={continueHint} onClick={cont} />
     </div>
   );
 }
