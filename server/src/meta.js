@@ -294,7 +294,7 @@ async function instagramPostUrl(mediaId, pageToken) {
 async function waitForInstagramContainer({ id, pageToken, onStage, label = 'video' }) {
   const started = Date.now();
   const deadline = 10 * 60 * 1000;
-  let delay = 2000;
+  let delay = /photo|carousel/i.test(label) ? 900 : 1200;
   while (Date.now() - started < deadline) {
     await new Promise((resolve) => setTimeout(resolve, delay));
     const response = await fetch(`${GRAPH}/${id}?fields=status_code&access_token=${encodeURIComponent(pageToken)}`, {
@@ -307,9 +307,8 @@ async function waitForInstagramContainer({ id, pageToken, onStage, label = 'vide
     if (status.status_code === 'EXPIRED') throw new Error(`Instagram ${label} processing expired; try posting again`);
     const seconds = Math.round((Date.now() - started) / 1000);
     if (onStage) onStage(`Instagram: processing ${label}… ${seconds}s`);
-    // Check quickly at first to avoid an unnecessary eight-second pause for
-    // short clips, then back off to reduce Graph API polling for long renders.
-    delay = Math.min(8000, delay + 1500);
+    // Poll fast initially for quick clips/photos, then back off gently up to 6s.
+    delay = Math.min(6000, Math.round(delay * 1.35));
   }
   throw new Error(`Instagram is still processing this ${label} after 10 minutes. Check the Instagram account before retrying.`);
 }
@@ -560,10 +559,8 @@ export async function publishInstagramCarousel({ igUserId, pageToken, caption, c
   const cleanHandles = [...new Set((Array.isArray(collabs) ? collabs : [])
     .map((h) => String(h || '').trim().replace(/^@+/, ''))
     .filter((h) => h && h.toLowerCase() !== selfLower))].slice(0, 3);
-  const childIds = [];
   let appliedChildTags = [];
-  for (let index = 0; index < urls.length; index++) {
-    const url = urls[index];
+  const childIds = await Promise.all(urls.map(async (url, index) => {
     const baseItemParams = { image_url: url, is_carousel_item: true, access_token: pageToken };
     let itemContainer = null;
     if (index === 0 && cleanHandles.length) {
@@ -582,8 +579,8 @@ export async function publishInstagramCarousel({ igUserId, pageToken, caption, c
       itemContainer = plain.container;
     }
     await waitForInstagramContainer({ id: itemContainer.id, pageToken, label: 'carousel photo' });
-    childIds.push(itemContainer.id);
-  }
+    return itemContainer.id;
+  }));
   const baseParentParams = {
     media_type: 'CAROUSEL',
     children: childIds.join(','),

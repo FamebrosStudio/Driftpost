@@ -3126,12 +3126,11 @@ async function runPublish(job, conn, payload, body, userId) {
         facebookMediaList.push({ ...f, originalname: f.originalname, mimetype: f.mimetype });
       }
       if (allFiles.length && !preUploaded) {
-        // Upload every file once so carousel + mirrors share the same URLs.
-        // Single-photo/video keeps the old `media`/`publicUrl` behaviour.
-        for (const f of allFiles) {
-          const up = await uploadOneForMeta(f);
-          publicUrls.push(up.url);
-          mediaList.push({ ...f, originalname: f.originalname, mimetype: f.mimetype });
+        // Upload every file concurrently so carousel + mirrors share the same URLs faster.
+        const uploaded = await Promise.all(allFiles.map((f) => uploadOneForMeta(f)));
+        for (let i = 0; i < allFiles.length; i++) {
+          publicUrls.push(uploaded[i].url);
+          mediaList.push({ ...allFiles[i], originalname: allFiles[i].originalname, mimetype: allFiles[i].mimetype });
         }
          publicUrl = publicUrls[0] || null;
          media = mediaList[0] || null;
@@ -3233,6 +3232,17 @@ async function runPublish(job, conn, payload, body, userId) {
         const rawSelf = String(tokens.ig_username || tokens.username || conn.account_name || '').trim().replace(/^@+/, '');
         const selfUsername = /^[A-Za-z0-9._]{1,30}$/.test(rawSelf) ? rawSelf : '';
         const locationId = String(body.ig_location || '').trim() || null;
+        const storyMediaUrl = isCarousel ? (publicUrls[0] || publicUrl) : publicUrl;
+        const storyIsVideo = !isCarousel && !!(file?.mimetype || mediaList[0]?.mimetype || '').startsWith('video/');
+        const shouldPostStory = String(body.ig_post_story || '') === '1' && Boolean(storyMediaUrl);
+        const storyPromise = shouldPostStory
+          ? meta.publishInstagramStory({
+              igUserId: igId, pageToken,
+              mediaUrl: storyMediaUrl, isVideo: storyIsVideo,
+              onStage,
+            }).then(() => ({ ok: true })).catch((e) => ({ ok: false, error: e }))
+          : Promise.resolve(null);
+
         let out;
         if (isCarousel) {
           out = await meta.publishInstagramCarousel({
@@ -3266,20 +3276,12 @@ async function runPublish(job, conn, payload, body, userId) {
             job.warning = `Instagram post published with @mention tag(s) in caption (${out.mentionedFallback.map((h) => `@${h}`).join(', ')}).`;
           }
         }
-        // Optional auto story: same media re-published as a 24h IG story.
-        // For carousels, only the first image (publicUrls[0]) is posted to the story.
-        const storyMediaUrl = isCarousel ? (publicUrls[0] || publicUrl) : publicUrl;
-        const storyIsVideo = !isCarousel && !!(file?.mimetype || mediaList[0]?.mimetype || '').startsWith('video/');
-        if (String(body.ig_post_story || '') === '1' && storyMediaUrl) {
-          try {
-            await meta.publishInstagramStory({
-              igUserId: igId, pageToken,
-              mediaUrl: storyMediaUrl, isVideo: storyIsVideo,
-              onStage,
-            });
+        if (shouldPostStory) {
+          const storyResult = await storyPromise;
+          if (storyResult?.ok) {
             job.warning = [job.warning, 'Also posted as a story.'].filter(Boolean).join(' ');
-          } catch (e) {
-            job.warning = [job.warning, `Feed published, but story failed: ${e.message}`].filter(Boolean).join(' ');
+          } else if (storyResult?.error) {
+            job.warning = [job.warning, `Feed published, but story failed: ${storyResult.error.message}`].filter(Boolean).join(' ');
           }
         }
         // Optional mirror to the linked Facebook Page.
