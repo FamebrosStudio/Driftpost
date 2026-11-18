@@ -94,10 +94,28 @@ export function WorkspaceNav({ page, onNavigate, email, onSignOut }) {
   };
   const [mobileMoreOpen, setMobileMoreOpen] = useState(false);
   const [pcMoreOpen, setPcMoreOpen] = useState(false);
+  const [cmdOpen, setCmdOpen] = useState(false);
+  const [cmdQuery, setCmdQuery] = useState('');
+  const [cmdIndex, setCmdIndex] = useState(0);
   useEffect(() => {
     setMobileMoreOpen(false);
     setPcMoreOpen(false);
+    setCmdOpen(false);
   }, [page]);
+  useEffect(() => {
+    const onKeyDown = (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        setCmdOpen((open) => !open);
+        setCmdQuery('');
+        setCmdIndex(0);
+      } else if (e.key === 'Escape') {
+        setCmdOpen(false);
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, []);
   useEffect(() => {
     applyMoodSelection(mood);
   }, [mood]);
@@ -121,6 +139,35 @@ export function WorkspaceNav({ page, onNavigate, email, onSignOut }) {
   const mobilePrimaryItems = topNavItems.filter((item) => mobilePrimaryIds.includes(item.id));
   const mobileMoreItems = topNavItems.filter((item) => !mobilePrimaryIds.includes(item.id));
   const mobileMoreActive = mobileMoreItems.some((item) => item.active);
+  const cmdItems = useMemo(() => {
+    const q = cmdQuery.trim().toLowerCase();
+    const pageActions = topNavItems.map((item) => ({
+      key: `page:${item.id}`,
+      group: 'Navigate',
+      label: item.label,
+      icon: item.icon,
+      run: () => onNavigate(item.id),
+    }));
+    const themeActions = MOOD_THEMES.map((m) => ({
+      key: `mood:${m.id}`,
+      group: 'Theme',
+      label: `Theme: ${m.label}`,
+      icon: 'sparkles',
+      run: () => { setMood(m.id); applyMoodSelection(m.id); },
+    }));
+    const cursorActions = !isMobileDevice
+      ? CURSOR_STYLES.map((c) => ({
+          key: `cursor:${c.id}`,
+          group: 'Cursor',
+          label: `Cursor: ${c.label}`,
+          icon: 'sliders',
+          run: () => setCursorStyle(c.id),
+        }))
+      : [];
+    const all = [...pageActions, ...themeActions, ...cursorActions];
+    if (!q) return all.slice(0, 12);
+    return all.filter((item) => item.label.toLowerCase().includes(q) || item.group.toLowerCase().includes(q)).slice(0, 12);
+  }, [cmdQuery, topNavItems, isMobileDevice, onNavigate]);
   return <>
     <header className="ws-topbar">
       <button type="button" className="ws-wordmark" onClick={() => onNavigate('home')} aria-label="Driftpost overview">
@@ -128,6 +175,19 @@ export function WorkspaceNav({ page, onNavigate, email, onSignOut }) {
         <img className="logo-img logo-l" src="/logo-light.png" width="1908" height="512" decoding="async" alt="Driftpost" />
       </button>
       <div className="ws-user">
+        {!isMobileDevice && (
+          <button
+            type="button"
+            className="ws-cmd-trigger"
+            onClick={() => { setCmdOpen(true); setCmdQuery(''); setCmdIndex(0); }}
+            title="Quick Command Palette (Ctrl+K)"
+            aria-label="Open quick command palette"
+          >
+            <Icon name="sparkles" size={13} />
+            <span>Quick Jump</span>
+            <kbd>Ctrl K</kbd>
+          </button>
+        )}
         <button
           type="button"
           className="ws-topbar-icon-btn"
@@ -159,6 +219,59 @@ export function WorkspaceNav({ page, onNavigate, email, onSignOut }) {
         )}
       </div>
     </header>
+    {cmdOpen && (
+      <div className="ws-cmd-backdrop" onClick={() => setCmdOpen(false)} role="presentation">
+        <div
+          className="ws-cmd-modal"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Quick Command Palette"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="ws-cmd-input-row">
+            <Icon name="sparkles" size={16} />
+            <input
+              type="text"
+              autoFocus
+              value={cmdQuery}
+              onChange={(e) => { setCmdQuery(e.target.value); setCmdIndex(0); }}
+              onKeyDown={(e) => {
+                if (e.key === 'ArrowDown') {
+                  e.preventDefault();
+                  setCmdIndex((i) => (cmdItems.length ? (i + 1) % cmdItems.length : 0));
+                } else if (e.key === 'ArrowUp') {
+                  e.preventDefault();
+                  setCmdIndex((i) => (cmdItems.length ? (i - 1 + cmdItems.length) % cmdItems.length : 0));
+                } else if (e.key === 'Enter' && cmdItems[cmdIndex]) {
+                  e.preventDefault();
+                  cmdItems[cmdIndex].run();
+                  setCmdOpen(false);
+                }
+              }}
+              placeholder="Jump to page, switch theme, or change cursor..."
+            />
+            <kbd>ESC</kbd>
+          </div>
+          <div className="ws-cmd-list">
+            {!cmdItems.length ? (
+              <p className="ws-cmd-empty">No matching commands found.</p>
+            ) : cmdItems.map((item, idx) => (
+              <button
+                key={item.key}
+                type="button"
+                className={idx === cmdIndex ? 'ws-cmd-item active' : 'ws-cmd-item'}
+                onMouseEnter={() => setCmdIndex(idx)}
+                onClick={() => { item.run(); setCmdOpen(false); }}
+              >
+                <Icon name={item.icon} size={15} />
+                <span>{item.label}</span>
+                <small>{item.group}</small>
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+    )}
     {!isMobileDevice && (
       <div className="ws-pc-dock-wrap">
         {pcMoreOpen && (

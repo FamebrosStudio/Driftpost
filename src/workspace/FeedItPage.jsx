@@ -378,6 +378,20 @@ export default function FeedItPage({ session, onNavigate, onSignOut }) {
                       <button type="submit" className="ws-primary" disabled={capSaving}>
                         {capSaving ? 'Saving Caption Data…' : 'Save Caption Changes'}
                       </button>
+                      <button
+                        type="button"
+                        className="ws-secondary"
+                        onClick={async () => {
+                          try {
+                            await navigator.clipboard.writeText(capDraft.sampleCaption || '');
+                            setCapMsg('Copied sample caption to clipboard.');
+                          } catch {
+                            setCapErr('Could not copy automatically.');
+                          }
+                        }}
+                      >
+                        Copy Sample Caption
+                      </button>
                       <button type="button" className="ws-secondary" onClick={() => { setSelectedCaptionId(''); setCapDraft(null); setCapMsg(''); setCapErr(''); }}>
                         Close Editor
                       </button>
