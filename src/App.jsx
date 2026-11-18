@@ -95,12 +95,86 @@ const PUB_PAGES = [
 ];
 
 const PUBLIC_SEO = {
-  home: { title: 'Driftpost | Social Media Scheduler for Multiple Brands', description: 'Schedule and publish social media posts across Instagram, Facebook, YouTube and X. Manage multiple brands and accounts in one workspace.' },
-  about: { title: 'Multi-Brand Social Media Management for Agencies | Driftpost', description: 'See how Driftpost helps agencies, studios and creators organize client brands, social accounts, content and publishing in one workspace.' },
-  how: { title: 'How to Schedule and Publish Social Media Posts | Driftpost', description: 'Learn how to connect social accounts, organize brands, prepare platform-specific content and schedule posts with Driftpost.' },
-  platforms: { title: 'Publish to Instagram, Facebook, YouTube and X | Driftpost', description: 'Explore Driftpost publishing options for Instagram, Facebook Pages, YouTube channels and X accounts, including platform-specific post settings.' },
-  faq: { title: 'Social Media Scheduler FAQs | Driftpost', description: 'Answers about multi-platform publishing, scheduling, account connections, permissions, privacy and using Driftpost for multiple brands.' },
-  contact: { title: 'Contact Driftpost Support', description: 'Contact the Driftpost team for account connection help, brand onboarding, publishing issues and product questions.' },
+  home: {
+    title: 'Driftpost | Multi-Platform Social Media Scheduler & Agency Workspace',
+    description: 'Schedule and publish social media posts, Reels, Shorts, and carousels across Instagram, Facebook, YouTube and X. Manage multiple brands and accounts in one workspace.',
+    keywords: 'Driftpost, social media scheduler, multi-platform publishing, Instagram Reels scheduler, YouTube Shorts scheduler, Facebook Page auto poster, X scheduler, multi-brand social media tool, AI caption generator',
+  },
+  about: {
+    title: 'About Driftpost | Multi-Brand Social Media Management for Agencies',
+    description: 'See how Driftpost helps agencies, studios and creators organize client brands, social accounts, AI captions, approvals and publishing in one workspace.',
+    keywords: 'agency social media management, multi-brand social media workspace, Famebros Studio, Driftpost about, client brand social scheduler',
+  },
+  how: {
+    title: 'How to Schedule and Publish Across 4 Platforms | Driftpost',
+    description: 'Learn how to connect Instagram, Facebook, YouTube and X accounts, organize brands, generate tailored AI captions and schedule posts with Driftpost.',
+    keywords: 'how to schedule social media posts, cross-platform social media workflow, connect Instagram Facebook YouTube X, bulk social media posting',
+  },
+  platforms: {
+    title: 'Instagram, Facebook, YouTube & X Publishing Features | Driftpost',
+    description: 'Explore Driftpost publishing tools for Instagram Reels & carousels, Facebook Pages, YouTube videos & Shorts, and X posts with polls and media.',
+    keywords: 'Instagram Reels API publisher, YouTube Shorts uploader, Facebook Page scheduler, X Twitter post scheduler, comment to DM automation',
+  },
+  faq: {
+    title: 'Social Media Scheduler & Agency Automation FAQs | Driftpost',
+    description: 'Answers about multi-platform publishing, scheduling, account connections, OAuth security, AI captions, and using Driftpost for multiple brands.',
+    keywords: 'Driftpost FAQ, social media scheduler questions, multi-brand Instagram scheduler FAQ, YouTube Facebook X automation help',
+  },
+  contact: {
+    title: 'Contact Driftpost Support | Famebros Studio',
+    description: 'Contact the Driftpost team for account connection help, brand onboarding, publishing support and agency partnership inquiries.',
+    keywords: 'contact Driftpost, Famebros Studio support, social media scheduler support',
+  },
+  security: {
+    title: 'Security & Trust Center | Encrypted OAuth Tokens | Driftpost',
+    description: 'Learn how Driftpost protects social OAuth tokens with AES-256-GCM encryption, row-level database security, and strict access controls.',
+    keywords: 'Driftpost security, encrypted OAuth tokens, secure social media scheduler, Supabase RLS security',
+  },
+  privacy: {
+    title: 'Privacy Policy | Driftpost Social Media Scheduler',
+    description: 'Read how Driftpost handles account data, OAuth tokens, social publishing permissions, and user privacy.',
+    keywords: 'Driftpost privacy policy, social media tool data privacy',
+  },
+  terms: {
+    title: 'Terms of Service | Driftpost',
+    description: 'Terms of Service governing access and use of the Driftpost multi-platform social media scheduling workspace.',
+    keywords: 'Driftpost terms of service, social media scheduler terms',
+  },
+  cookies: {
+    title: 'Cookie Policy | Driftpost',
+    description: 'Details on essential authentication tokens, theme preferences, and session storage used by Driftpost.',
+    keywords: 'Driftpost cookie policy',
+  },
+  'acceptable-use': {
+    title: 'Acceptable Use Policy | Driftpost',
+    description: 'Guidelines for responsible, compliant social media scheduling and publishing on Driftpost.',
+    keywords: 'Driftpost acceptable use policy',
+  },
+  'ai-disclaimer': {
+    title: 'AI Content & Caption Generation Disclaimer | Driftpost',
+    description: 'How Driftpost AI caption generation works with brand memory and human review before publishing.',
+    keywords: 'Driftpost AI disclaimer, AI social media caption generator policy',
+  },
+  'platforms-disclaimer': {
+    title: 'Platform Integrations Disclaimer | YouTube, Meta & X | Driftpost',
+    description: 'Information about official API integrations with YouTube, Instagram, Facebook and X on Driftpost.',
+    keywords: 'Driftpost platform disclaimer, YouTube Meta X API integration',
+  },
+  copyright: {
+    title: 'Copyright & IP Policy | Driftpost',
+    description: 'Copyright, DMCA, and intellectual property guidelines for Driftpost users.',
+    keywords: 'Driftpost copyright policy',
+  },
+  refunds: {
+    title: 'Billing & Refund Policy | Driftpost',
+    description: 'Billing, beta access, cancellation, and refund terms for Driftpost.',
+    keywords: 'Driftpost refund policy',
+  },
+  'data-deletion': {
+    title: 'Account & Data Deletion Instructions | Driftpost',
+    description: 'How to disconnect social accounts or permanently delete your Driftpost account and stored data.',
+    keywords: 'Driftpost data deletion, delete social media scheduler data',
+  },
 };
 
 const pageFromUrl = () => {
@@ -325,6 +399,31 @@ function DocPage({ page }) {
 
 function Landing({ onEnter, session, pubPage, setPubPage }) {
   const rootRef = useRef(null);
+  useEffect(() => {
+    const seo = PUBLIC_SEO[pubPage] || PUBLIC_SEO.home;
+    const canonicalUrl = pubPage === 'home'
+      ? 'https://driftpostpage.vercel.app/'
+      : `https://driftpostpage.vercel.app/${pubPage}`;
+    document.title = seo.title;
+    const setMeta = (sel, attr, val) => {
+      let el = document.head.querySelector(sel);
+      if (!el && sel.startsWith('meta[')) {
+        el = document.createElement('meta');
+        const m = sel.match(/meta\[(name|property)="([^"]+)"\]/);
+        if (m) el.setAttribute(m[1], m[2]);
+        document.head.appendChild(el);
+      }
+      if (el && val) el.setAttribute(attr, val);
+    };
+    setMeta('meta[name="description"]', 'content', seo.description);
+    if (seo.keywords) setMeta('meta[name="keywords"]', 'content', seo.keywords);
+    setMeta('meta[property="og:title"]', 'content', seo.title);
+    setMeta('meta[property="og:description"]', 'content', seo.description);
+    setMeta('meta[property="og:url"]', 'content', canonicalUrl);
+    setMeta('meta[name="twitter:title"]', 'content', seo.title);
+    setMeta('meta[name="twitter:description"]', 'content', seo.description);
+    setMeta('link[rel="canonical"]', 'href', canonicalUrl);
+  }, [pubPage]);
   // Animations are part of the look — but repainting invisible pixels is pure
   // waste. Pause rain + marquee the moment they leave the viewport; they
   // resume pixel-identical the instant they return.
