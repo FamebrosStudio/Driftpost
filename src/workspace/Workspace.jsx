@@ -560,6 +560,9 @@ export function AnalyticsPage({ session, onNavigate, onSignOut }) {
 export function SettingsPage({ session, onNavigate, onSignOut }) {
   const email = session?.user?.email || '';
   const isTeam = isAiAccount(email);
+  const { isMobile } = useDevice();
+  const showCursorSettings = !isMobile
+    && (typeof window === 'undefined' || typeof window.matchMedia !== 'function' || window.matchMedia('(pointer: fine)').matches);
   const [tab, setTab] = useState('appearance');
   const [mood, setMood] = useState(() => {
     try {
@@ -599,12 +602,14 @@ export function SettingsPage({ session, onNavigate, onSignOut }) {
       onSignOut={onSignOut}
       eyebrow="Preferences"
       title="Settings"
-      intro="Customize your workspace appearance, cursor, feedback, and account."
+      intro={showCursorSettings
+        ? 'Customize your workspace appearance, cursor, feedback, and account.'
+        : 'Customize your workspace appearance, feedback, and account.'}
     >
       <div className="ws-settings-page">
         <div className="ws-settings-tabs" role="tablist" aria-label="Settings categories">
           {[
-            { id: 'appearance', label: 'Appearance & Cursor', icon: 'sparkles' },
+            { id: 'appearance', label: showCursorSettings ? 'Appearance & Cursor' : 'Appearance', icon: 'sparkles' },
             { id: 'experience', label: 'Sound & Motion', icon: 'volumeOn' },
             { id: 'account', label: 'Account', icon: 'users' },
           ].map((item) => (
@@ -656,33 +661,35 @@ export function SettingsPage({ session, onNavigate, onSignOut }) {
               </div>
             </section>
 
-            <section className="ws-panel ws-settings-section">
-              <div className="ws-settings-section-head">
-                <div>
-                  <span className="ws-eyebrow">Pointer Studio</span>
-                  <h2>Cursor Varieties</h2>
+            {showCursorSettings && (
+              <section className="ws-panel ws-settings-section">
+                <div className="ws-settings-section-head">
+                  <div>
+                    <span className="ws-eyebrow">Pointer Studio</span>
+                    <h2>Cursor Varieties</h2>
+                  </div>
+                  <span className="ws-settings-pill">{CURSOR_STYLES.find((c) => c.id === cursorStyle)?.label || 'Precision Vector'}</span>
                 </div>
-                <span className="ws-settings-pill">{CURSOR_STYLES.find((c) => c.id === cursorStyle)?.label || 'Precision Vector'}</span>
-              </div>
-              <div className="ws-cursor-grid" role="radiogroup" aria-label="Cursor style">
-                {CURSOR_STYLES.map((item) => (
-                  <button
-                    key={item.id}
-                    type="button"
-                    role="radio"
-                    aria-checked={cursorStyle === item.id}
-                    className={cursorStyle === item.id ? 'ws-cursor-card active' : 'ws-cursor-card'}
-                    onClick={() => selectCursor(item.id)}
-                  >
-                    <span className="ws-cursor-preview" aria-hidden="true" dangerouslySetInnerHTML={{ __html: item.svg.replaceAll('__ACCENT__', 'var(--go, #7dd3fc)') }} />
-                    <span className="ws-mood-card-copy">
-                      <b>{item.label}</b>
-                      <small>{item.note}</small>
-                    </span>
-                  </button>
-                ))}
-              </div>
-            </section>
+                <div className="ws-cursor-grid" role="radiogroup" aria-label="Cursor style">
+                  {CURSOR_STYLES.map((item) => (
+                    <button
+                      key={item.id}
+                      type="button"
+                      role="radio"
+                      aria-checked={cursorStyle === item.id}
+                      className={cursorStyle === item.id ? 'ws-cursor-card active' : 'ws-cursor-card'}
+                      onClick={() => selectCursor(item.id)}
+                    >
+                      <span className="ws-cursor-preview" aria-hidden="true" dangerouslySetInnerHTML={{ __html: item.svg.replaceAll('__ACCENT__', 'var(--go, #7dd3fc)') }} />
+                      <span className="ws-mood-card-copy">
+                        <b>{item.label}</b>
+                        <small>{item.note}</small>
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </section>
+            )}
           </>
         )}
 
