@@ -239,13 +239,14 @@ function nameScore(left, right) {
 
 function socialIdentities(brand, deep, platform) {
   const social = deep?.social_media || {};
-  const platformPattern = platform === 'x' ? /(^|_)(x|twitter)(_|$)/i : new RegExp(platform, 'i');
+  const platLower = String(platform || '').toLowerCase();
+  const matchesPlatform = (key) => (platform === 'x' ? /(^|_)(x|twitter)(_|$)/i.test(key) : key.toLowerCase().includes(platLower));
   const blocked = /agency|manager|famebros/i;
   const values = [];
   const visit = (node, path = []) => {
     if (typeof node === 'string') {
       const key = path.join('_');
-      if (platformPattern.test(key) && !blocked.test(key) && /(handle|username|profile.?name|page.?name|channel.?name|account.?name|url)$/i.test(key)) {
+      if (matchesPlatform(key) && !blocked.test(key) && /(handle|username|profile.?name|page.?name|channel.?name|account.?name|url)$/i.test(key)) {
         const value = node.trim();
         if (value && !/^https?:\/\//i.test(value)) values.push(value);
         else if (/^https?:\/\//i.test(value)) {

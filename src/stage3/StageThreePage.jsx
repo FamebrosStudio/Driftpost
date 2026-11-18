@@ -1440,7 +1440,7 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
                 </button>
               </div>
               {schedMsg && <p className="s3-bar-msg">{schedMsg}</p>}
-              {!!approvalLinks.length && <div className="s3-review-links"><b>Share review link{approvalLinks.length === 1 ? '' : 's'}:</b>{approvalLinks.map((link, i) => <a key={link} href={link} target="_blank" rel="noreferrer">{approvalLinks.length === 1 ? link : `Review post ${i + 1}`}</a>)}</div>}
+              {!!approvalLinks.length && <div className="s3-review-links"><b>Share review link{approvalLinks.length === 1 ? '' : 's'}:</b>{approvalLinks.filter((link) => /^https?:\/\//i.test(String(link || ''))).map((link, i) => <a key={link} href={link} target="_blank" rel="noreferrer">{approvalLinks.length === 1 ? link : `Review post ${i + 1}`}</a>)}</div>}
               {pubMsg && <p className="s3-bar-msg">{pubMsg}</p>}
               {batchQueue && <p className="s3-bar-msg" role="status">{batchQueue.accepted} of {batchQueue.total} account posts accepted into the background queue.</p>}
               {batchQueue && batchQueue.settled >= batchQueue.total && batchQueue.accepted > 0 && (

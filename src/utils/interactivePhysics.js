@@ -183,11 +183,17 @@ function triggerCursorMorphAnimation(style, origin) {
     host.appendChild(spark);
   }
 
+  const safeAccent = /^#[0-9a-fA-F]{3,8}$|^rgba?\([0-9.,\s%]+\)$/.test(accent) ? accent : '#3b82f6';
   const badge = document.createElement('div');
   badge.className = 'dp-cursor-toast';
   const iconWrap = document.createElement('span');
   iconWrap.className = 'dp-cursor-toast-icon';
-  iconWrap.innerHTML = style.svg.replace(/__ACCENT__/g, accent);
+  try {
+    const doc = new DOMParser().parseFromString(style.svg.replace(/__ACCENT__/g, safeAccent), 'image/svg+xml');
+    if (doc?.documentElement && doc.documentElement.tagName.toLowerCase() === 'svg') {
+      iconWrap.appendChild(document.importNode(doc.documentElement, true));
+    }
+  } catch {}
   const label = document.createElement('b');
   label.textContent = `Cursor: ${style.label}`;
   badge.append(iconWrap, label);

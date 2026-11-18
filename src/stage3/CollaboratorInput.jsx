@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { matchesSearchText } from '../lib.js';
-import { searchInstagramCollaborators } from '../lib.js';
+import { matchesSearchText, searchInstagramCollaborators } from '../lib.js';
 
 const compact = (n) => {
   const value = Number(n || 0);

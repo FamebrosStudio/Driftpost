@@ -733,6 +733,8 @@ const REVIEW_RE = /(review|feedback|testimonial|rating|customer\s+said|client\s+
 const INFO_RE = /(tips?|guide|how\s+to|benefits?|why\s+|explained|awareness|myths?|facts?|did\s+you\s+know)/i;
 const SHOW_RE = /(transformation|makeover|reveal|before\s*(and|\/|-) *after|new\s+look|result|showcase|walkthrough|tour|photoshoot)/i;
 
+const OFFER_GLOBAL_RE = /\b(offer|discount|sale|flat\s*\d+%|\d+%\s*off|buy\s*\d|free|bogo|deal|limited|festive|diwali|eid|navratri|wedding|bridal\s*package)\b/gi;
+
 export function parseBrief(brief, brand) {
   const b = String(brief || '');
   const words = b.toLowerCase().split(/[^a-z]+/).filter((w) => w.length > 2);
@@ -740,7 +742,7 @@ export function parseBrief(brief, brand) {
   let motive = 'general post';
   let type = 'standard: warm hook + detail + concrete CTA';
   if (OFFER_RE.test(b)) {
-    const all = b.match(new RegExp(OFFER_RE.source, 'gi')) || [];
+    const all = b.match(OFFER_GLOBAL_RE) || [];
     const best = all.find((x) => /\d/.test(x)) || all[0];
     motive = `OFFER — ${best.trim()}`;
     type = 'HYPE/OFFER: bold excited hook, exact terms, urgency, tag-a-friend CTA';

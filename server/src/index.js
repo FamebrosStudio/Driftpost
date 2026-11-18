@@ -2131,7 +2131,7 @@ app.patch('/api/ai/feed-it/captions/:brandId', requireUser, burstLimit, async (r
 // Meta deauthorize callback: fired when a user removes Drift Post from their
 // Facebook settings. Verifies the signed_request, purges stored Meta tokens
 // we can attribute, and returns the confirmation Meta's review expects.
-app.post('/api/meta/deauthorize', callbackLimit, express.urlencoded({ extended: false }), async (req, res) => {
+function requireMetaSignedRequest(req, res, next) {
   try {
     const secret = process.env.META_APP_SECRET || '';
     const [sig, payload] = String(req.body?.signed_request || '').split('.');
@@ -2141,21 +2141,25 @@ app.post('/api/meta/deauthorize', callbackLimit, express.urlencoded({ extended: 
     const a = Buffer.from(sig);
     const b = Buffer.from(expected);
     if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) throw new Error('bad signature');
-    const data = JSON.parse(Buffer.from(payload.replace(/-/g, '+').replace(/_/g, '/'), 'base64').toString('utf8'));
-    const fbUserId = String(data.user_id || '');
-    // We store Page/IG ids, not the app-scoped user id, so attribute by
-    // attempting token invalidation per Meta connection is not possible here;
-    // purge nothing blindly — user-bound rows are removed via Disconnect or
-    // the deletion email flow. Log for audit and confirm receipt to Meta.
-    console.log(`Meta deauthorize: app user ${fbUserId} revoked access`);
-    const code = crypto.randomUUID().slice(0, 8);
-    res.json({
-      url: `${FRONTEND_HOME}/#/data-deletion?code=${code}`,
-      confirmation_code: code,
-    });
+    req.metaSignedPayload = JSON.parse(Buffer.from(payload.replace(/-/g, '+').replace(/_/g, '/'), 'base64').toString('utf8'));
+    return next();
   } catch {
-    res.status(400).json({ error: 'Invalid signed request' });
+    return res.status(400).json({ error: 'Invalid signed request' });
   }
+}
+
+app.post('/api/meta/deauthorize', callbackLimit, express.urlencoded({ extended: false }), requireMetaSignedRequest, async (req, res) => {
+  const fbUserId = String(req.metaSignedPayload?.user_id || '');
+  // We store Page/IG ids, not the app-scoped user id, so attribute by
+  // attempting token invalidation per Meta connection is not possible here;
+  // purge nothing blindly — user-bound rows are removed via Disconnect or
+  // the deletion email flow. Log for audit and confirm receipt to Meta.
+  console.log(`Meta deauthorize: app user ${fbUserId} revoked access`);
+  const code = crypto.randomUUID().slice(0, 8);
+  res.json({
+    url: `${FRONTEND_HOME}/#/data-deletion?code=${code}`,
+    confirmation_code: code,
+  });
 });
 
 // First configured origin only — FRONTEND_URL may hold a comma list for
@@ -3563,9 +3567,15 @@ app.get('/api/schedules', requireUser, jobsLimit, async (req, res) => {
 // Shareable review links use the schedule UUID as a bearer token. Return only
 // the content needed to make an approval decision; never expose the owner or
 // their platform credentials to the reviewer.
-app.get('/api/approvals/:id', strictBurstLimit, async (req, res) => {
+function requireApprovalToken(req, res, next) {
   res.set({ 'Cache-Control': 'no-store', 'Referrer-Policy': 'no-referrer' });
-  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(req.params.id)) return res.status(404).json({ error: 'Review link not found' });
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(req.params.id)) {
+    return res.status(404).json({ error: 'Review link not found' });
+  }
+  return next();
+}
+
+app.get('/api/approvals/:id', strictBurstLimit, requireApprovalToken, async (req, res) => {
   const { data: row, error } = await supabase.from('scheduled_posts').select('id, platform, scheduled_at, status, body, media')
     .eq('id', req.params.id).maybeSingle();
   if (error || !row || row.body?.approval_status !== 'pending' || row.status !== 'scheduled') return res.status(404).json({ error: 'This review link is unavailable or already handled.' });
@@ -3579,9 +3589,7 @@ app.get('/api/approvals/:id', strictBurstLimit, async (req, res) => {
   res.json({ review: { id: row.id, platform: row.platform, scheduled_at: row.scheduled_at, text, media } });
 });
 
-app.post('/api/approvals/:id', strictBurstLimit, async (req, res) => {
-  res.set({ 'Cache-Control': 'no-store', 'Referrer-Policy': 'no-referrer' });
-  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(req.params.id)) return res.status(404).json({ error: 'Review link not found' });
+app.post('/api/approvals/:id', strictBurstLimit, requireApprovalToken, async (req, res) => {
   const decision = req.body?.decision;
   const comment = typeof req.body?.comment === 'string' ? req.body.comment.trim().slice(0, 500) : '';
   if (!['approved', 'rejected'].includes(decision)) return res.status(400).json({ error: 'Choose approve or request changes.' });
@@ -3610,7 +3618,9 @@ app.post('/api/schedule', requireUser, strictBurstLimit, scheduleRequestLimit, m
     for (const f of [...files, ...instagramFiles, ...facebookFiles, ...(thumbFile ? [thumbFile] : []), ...Object.values(coverFiles).filter(Boolean)]) await fs.unlink(f.path).catch(() => {});
   };
   try {
-    Object.assign(req.body, scheduleIdentity(req.body));
+    const identity = scheduleIdentity(req.body);
+    req.body.platform = identity.platform;
+    req.body.connection_id = identity.connection_id;
   } catch (error) {
     await cleanupTmp();
     return res.status(400).json({ error: error.message });
