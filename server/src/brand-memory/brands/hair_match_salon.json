@@ -20,7 +20,7 @@
     "phone_e164": "+919152909293",
     "whatsapp_number": null,
     "whatsapp_note": "The supplied number is confirmed for booking calls. WhatsApp availability has not been established.",
-    "full_address": "Shop No. 26, Yuvraj Building, Near Blossom School, Dhokali, Kolshet Road, Thane",
+    "full_address": "Shop No. 26, Yuvraj Building, Near Blossom School, Dhokali, Kolshet Road, Thane West, Maharashtra 400607",
     "shop_number": "26",
     "building": "Yuvraj Building",
     "landmark": "Near Blossom School",
@@ -30,7 +30,8 @@
     "email": null,
     "website": null,
     "booking_url": null,
-    "google_maps_url": null
+    "google_maps_url": null,
+    "address": "Shop No. 26, Yuvraj Building, Near Blossom School, Dhokali, Kolshet Road, Thane West, Maharashtra 400607"
   },
   "social_media": {
     "instagram_handle": "@hairmatch.salon",
@@ -356,4 +357,3 @@
     }
   ]
 }
-

@@ -91,8 +91,8 @@
       "custom_location_from_post_brief"
     ],
     "phone": "+91 99300 41786",
-    "full_address": "JJ Hospital Building, 414 - 418, Carmellos, Nagpada, Mumbai Central, Mumbai, Maharashtra",
-    "address": "JJ Hospital Building, 414 - 418, Carmellos, Nagpada, Mumbai Central, Mumbai, Maharashtra"
+    "full_address": "JJ Hospital Building, 414 - 418, Carmellos, Nagpada, Mumbai Central, Mumbai, Maharashtra 400008",
+    "address": "JJ Hospital Building, 414 - 418, Carmellos, Nagpada, Mumbai Central, Mumbai, Maharashtra 400008"
   },
   "social_media": {
     "instagram_handle": "@paak.pehnawa.mens",
@@ -705,6 +705,13 @@
       "Use only one contact block.",
       "Place agency credit before hashtags.",
       "Do not repeat the website in both caption body and footer unless conversion is the main goal."
+    ],
+    "status": "confirmed",
+    "lines": [
+      "📍 JJ Hospital Building, 414 - 418, Carmellos, Nagpada, Mumbai Central, Mumbai, Maharashtra 400008",
+      "🌐 Shop: https://www.paakpehnawa.shop/",
+      "📞 Enquiries: +91 99300 41786",
+      "💫 Managed by: @famebrosstudio"
     ]
   },
   "suggested_hashtag_bank": {

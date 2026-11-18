@@ -38,8 +38,8 @@
     "ordering_url": null,
     "google_maps_url": null,
     "phone": "+91 91377 85394",
-    "full_address": "Wadala, Mumbai, Maharashtra",
-    "address": "Wadala, Mumbai, Maharashtra"
+    "full_address": "Old National Market, Masjid Compound, Kidwai Nagar (R.A. Kidwai Road), Wadala West, Mumbai, Maharashtra 400031",
+    "address": "Old National Market, Masjid Compound, Kidwai Nagar (R.A. Kidwai Road), Wadala West, Mumbai, Maharashtra 400031"
   },
   "social_media": {
     "instagram_handle": "@ak.factor_byarsh",
@@ -270,7 +270,7 @@
   },
   "fixed_footer": {
     "lines": [
-      "📍 Old Nation Market, Wadala, Mumbai",
+      "📍 Old National Market, Masjid Compound, Kidwai Nagar (R.A. Kidwai Road), Wadala West, Mumbai, Maharashtra 400031",
       "📞 +91 91377 85394",
       "🎥 Managed by: @famebrosstudio ✨"
     ],
@@ -282,7 +282,8 @@
       "Do not add a shop number or postal code.",
       "Do not label the number as WhatsApp without confirmation.",
       "For formal maps or documents, first resolve the Old Nation Market versus New National Market wording."
-    ]
+    ],
+    "status": "confirmed"
   },
   "suggested_hashtag_bank": {
     "brand": [

@@ -33,7 +33,7 @@
     "whatsapp": null,
     "email": null,
     "website": null,
-    "address": "Clare Road, Byculla, Mumbai 400008",
+    "address": "Clare Road, Byculla, Mumbai, Maharashtra 400008",
     "city": "Mumbai",
     "google_maps_url": null,
     "contact_status": "Only Mumbai is established.",
@@ -41,7 +41,7 @@
     "phone_display": "+91 98333 54400",
     "phone_e164": "+919833354400",
     "full_address_preferred": "Byculla House, Mirza Galib Road (Clare Road), Byculla, Mumbai",
-    "full_address": "Clare Road, Byculla, Mumbai 400008"
+    "full_address": "Clare Road, Byculla, Mumbai, Maharashtra 400008"
   },
   "social_media": {
     "instagram_handle": "@uvafashions_mumbai",
@@ -221,12 +221,17 @@
       "📍 Mumbai",
       "💫 Managed by: @famebrosstudio"
     ],
-    "status": "City-level footer only. No locality or contact is established.",
+    "status": "confirmed",
     "usage": "Use Mumbai only after confirming the post is for this exact brand.",
     "exceptions": [
       "Story overlays",
       "Comments",
       "Unpublished concepts"
+    ],
+    "lines": [
+      "📍 Clare Road, Byculla, Mumbai, Maharashtra 400008",
+      "📞 +91 98333 54400",
+      "💫 Managed by: @famebrosstudio"
     ]
   },
   "suggested_hashtag_bank": [

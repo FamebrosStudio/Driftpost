@@ -277,7 +277,7 @@
   },
   "fixed_footer": {
     "lines": [
-      "📍 Ali Salon, Mulund West, Mumbai",
+      "📍 Shop No. 2 & 4, Satya Laxmi Niwas, M.G. Road, Near Panch Rasta, Mulund West, Mumbai 400080",
       "📞 Reserve your appointment: +91 99302 76884",
       "🎥 Managed by: @famebrosstudio ✨"
     ],
@@ -289,7 +289,8 @@
       "Do not label the number as WhatsApp without confirmation.",
       "Do not use The Creamy Layer's address as Ali Salon's address.",
       "Do not copy contact details from another salon."
-    ]
+    ],
+    "status": "confirmed"
   },
   "suggested_hashtag_bank": {
     "brand": [

@@ -22,7 +22,7 @@
     "phone_e164": "+919821006703",
     "whatsapp_number": null,
     "whatsapp_note": "The supplied number is confirmed as a salon contact number. WhatsApp availability has not been established.",
-    "full_address": "Shop No. 15, Tulsi Park, Amrut Park Road, Wayle Nagar, Near Starbucks, Khadakpada Circle, Kalyan",
+    "full_address": "Shop No. 15, Tulsi Park, Amrut Park Road, Wayle Nagar, Near Starbucks, Khadakpada Circle, Kalyan West, Maharashtra 421301",
     "shop_number": "15",
     "building_or_complex": "Tulsi Park",
     "road": "Amrut Park Road",
@@ -33,7 +33,8 @@
     "email": null,
     "website": null,
     "booking_url": null,
-    "google_maps_url": null
+    "google_maps_url": null,
+    "address": "Shop No. 15, Tulsi Park, Amrut Park Road, Wayle Nagar, Near Starbucks, Khadakpada Circle, Kalyan West, Maharashtra 421301"
   },
   "social_media": {
     "instagram_handle": "@velvetlounge.unisexsalon",

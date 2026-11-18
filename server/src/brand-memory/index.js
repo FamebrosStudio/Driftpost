@@ -128,7 +128,7 @@ export function fullPack(brand, { groupWide = false } = {}) {
     (cd.cta_options || brand.cta || []).length ? `CTA pick one (reword, don't copy): ${(cd.cta_options || brand.cta).join(' / ')}` : null,
     full.mandatory_copy?.length ? `Must include word-for-word: ${full.mandatory_copy.join('; ')}` : null,
     full.contacts?.phone?.length ? `Phone: ${full.contacts.phone.join(' / ')}` : null,
-    full.contacts?.address ? `Address: ${full.contacts.address}` : null,
+    full.contacts?.address ? `Address (always use full address verbatim, never shorten): ${full.contacts.address}` : null,
     full.contacts?.website ? `Website: ${full.contacts.website}` : null,
     full.contacts?.email ? `Email: ${full.contacts.email}` : null,
     full.footer_lines?.length ? `Footer (append exactly):\n${full.footer_lines.join('\n')}` : 'Footer: 💫 Managed by: @famebrosstudio',
@@ -567,7 +567,7 @@ export function deepPack(deep, brand, { groupWide = false } = {}) {
     ...T(0, deepFooter(deep, { groupWide }).length ? `Footer (append exactly):\n${deepFooter(deep, { groupWide }).join('\n')}` : null),
     ...T(0, cap(fmt(deep.business, true), 700)),
     ...T(0, deepPhone(deep) ? `Phone: ${deepPhone(deep)}` : null),
-    ...T(0, deepAddress(deep) ? `Address: ${deepAddress(deep)}` : null),
+    ...T(0, deepAddress(deep) ? `Address (always use full address verbatim, never shorten): ${deepAddress(deep)}` : null),
     ...T(0, deepWebsite(deep) ? `Website: ${deepWebsite(deep)}` : null),
 
     ...T(1, unconfirmed ? `TRUST: ${deep.knowledge_scope} Treat unconfirmed items as unknown, never as fact.` : null),
