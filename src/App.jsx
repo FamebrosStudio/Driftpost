@@ -571,7 +571,7 @@ function Landing({ onEnter, session, pubPage, setPubPage }) {
         <div className="land-fine">
           <a
             className="land-osien-pill"
-            href="https://github.com/kabirprokk/OSIEN"
+            href="https://osien.is-a.dev"
             target="_blank"
             rel="noreferrer"
           >
