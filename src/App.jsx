@@ -823,14 +823,21 @@ export default function App() {
   };
 
   useEffect(() => {
-    // Landing page is always public and indexable.
-    // Console/auth are private (noindex for logged-in users).
     const isLanding = entry === 'landing' && !approvalId && !unknownRoute;
-    const seo = PUBLIC_SEO[pubPage] || {
-      title: `${PUB_PAGES.find((p) => p.id === pubPage)?.label || 'Driftpost'} | Driftpost`,
-      description: 'Driftpost is a social media publishing workspace for managing multiple brands and connected platform accounts.',
-    };
-    const pageUrl = `${window.location.origin}${pubPage === 'home' ? '/' : `/${pubPage}`}`;
+    const isIndexable = !approvalId && !unknownRoute;
+    const seo = isLanding
+      ? (PUBLIC_SEO[pubPage] || {
+          title: `${PUB_PAGES.find((p) => p.id === pubPage)?.label || 'Driftpost'} | Driftpost`,
+          description: 'Driftpost is a social media publishing workspace for managing multiple brands and connected platform accounts.',
+        })
+      : {
+          title: session
+            ? 'Console | Driftpost — Social Media Automation Workspace'
+            : (mode === 'signup' ? 'Create account | Driftpost' : 'Sign in | Driftpost'),
+          description: 'Manage connected social accounts, generate brand-aware AI captions, and schedule posts across Instagram, Facebook, YouTube, and X in Driftpost.',
+        };
+    const currentPath = window.location.pathname || '/';
+    const pageUrl = `${window.location.origin}${isLanding ? (pubPage === 'home' ? '/' : `/${pubPage}`) : currentPath}`;
     document.title = unknownRoute
       ? 'Page not found | Driftpost'
       : !online
@@ -841,11 +848,11 @@ export default function App() {
             ? 'Driftpost is getting ready | Driftpost'
             : approvalId
               ? 'Review post | Driftpost'
-              : (session ? 'Console | Driftpost' : 'Sign in | Driftpost');
-    document.querySelector('meta[name="robots"]')?.setAttribute('content', isLanding ? 'index, follow, max-image-preview:large' : 'noindex, nofollow');
+              : seo.title;
+    document.querySelector('meta[name="robots"]')?.setAttribute('content', isIndexable ? 'index, follow, max-image-preview:large' : 'noindex, nofollow');
     document.querySelector('meta[name="description"]')?.setAttribute('content', seo.description);
     const canonical = document.querySelector('link[rel="canonical"]');
-    if (canonical && isLanding) canonical.setAttribute('href', pageUrl);
+    if (canonical && isIndexable) canonical.setAttribute('href', pageUrl);
     const socialMeta = {
       'meta[property="og:title"]': seo.title,
       'meta[property="og:description"]': seo.description,
@@ -854,7 +861,7 @@ export default function App() {
       'meta[name="twitter:description"]': seo.description,
     };
     for (const [selector, value] of Object.entries(socialMeta)) document.querySelector(selector)?.setAttribute('content', value);
-  }, [session, entry, pubPage, approvalId, unknownRoute, online, serverReady]);
+  }, [session, entry, mode, pubPage, approvalId, unknownRoute, online, serverReady]);
 
   useEffect(() => { window.scrollTo(0, 0); }, [pubPage]);
 
