@@ -744,9 +744,17 @@ export default function App() {
       description: 'Driftpost is a social media publishing workspace for managing multiple brands and connected platform accounts.',
     };
     const pageUrl = `${window.location.origin}${pubPage === 'home' ? '/' : `/${pubPage}`}`;
-    document.title = unknownRoute ? 'Page not found | Driftpost' : !online ? 'Connection paused | Driftpost' : !serverReady ? 'Driftpost is getting ready | Driftpost' : approvalId ? 'Review post | Driftpost' : isLanding
-      ? seo.title
-      : (session ? 'Console | Driftpost' : 'Sign in | Driftpost');
+    document.title = unknownRoute
+      ? 'Page not found | Driftpost'
+      : !online
+        ? 'Connection paused | Driftpost'
+        : isLanding
+          ? seo.title
+          : !serverReady
+            ? 'Driftpost is getting ready | Driftpost'
+            : approvalId
+              ? 'Review post | Driftpost'
+              : (session ? 'Console | Driftpost' : 'Sign in | Driftpost');
     document.querySelector('meta[name="robots"]')?.setAttribute('content', isLanding ? 'index, follow, max-image-preview:large' : 'noindex, nofollow');
     document.querySelector('meta[name="description"]')?.setAttribute('content', seo.description);
     const canonical = document.querySelector('link[rel="canonical"]');
@@ -774,8 +782,17 @@ export default function App() {
   if (unknownRoute) return keepConnectivity(<NotFoundPage onHome={() => { setUnknownRoute(false); setPubPage('home'); setEntry('landing'); }} onEnter={session ? () => { setUnknownRoute(false); setEntry('console'); } : null} />);
 
   // Everyone lands on the landing page first; console is reached
-  // by clicking "Enter console" from there.
-  if (entry === 'landing' && !signedInConsoleHome) return keepConnectivity(<Landing session={session} pubPage={pubPage} setPubPage={setPubPage} onEnter={() => session ? setEntry('console') : setEntry('auth')} />);
+  // by clicking "Enter console" from there. Public marketing/doc pages
+  // never block on API server warm-up so visitors and search crawlers
+  // see the real page immediately.
+  if (entry === 'landing' && !signedInConsoleHome) {
+    return (
+      <>
+        <Landing session={session} pubPage={pubPage} setPubPage={setPubPage} onEnter={() => session ? setEntry('console') : setEntry('auth')} />
+        {!online && <OfflinePage onRetry={retry} checking={checking} />}
+      </>
+    );
+  }
   if (entry === 'auth') return keepConnectivity(<Auth mode={mode} setMode={setMode} onBack={() => setEntry('landing')} />);
   if (!session) return keepConnectivity(<Auth mode={mode} setMode={setMode} onBack={() => setEntry('landing')} />);
   // console
