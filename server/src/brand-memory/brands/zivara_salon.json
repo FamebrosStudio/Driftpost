@@ -33,7 +33,10 @@
     "positioning": null
   },
   "contact": {
-    "phone": ["8655715221", "9920581281"],
+    "phone": [
+      "8655715221",
+      "9920581281"
+    ],
     "whatsapp": null,
     "email": null,
     "website": null,
@@ -42,7 +45,7 @@
   },
   "social_media": {
     "instagram_url": null,
-    "instagram_handle": null,
+    "instagram_handle": "@salon.zivara",
     "facebook_url": null,
     "youtube_url": null,
     "note": "Meta portfolio evidence confirms an account named Zivara Salon | Thane, but no public page URL was retrieved."

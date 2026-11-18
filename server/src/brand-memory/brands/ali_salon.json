@@ -9,7 +9,7 @@
     "category": "Unisex hair salon",
     "industry": "Hair styling and grooming",
     "location_area": "Mulund West",
-    "city": "Mumbai",
+    "city": "Mulund West, Mumbai",
     "state": "Maharashtra",
     "country": "India",
     "public_face": "Hussain Shaikh",
@@ -32,7 +32,9 @@
     "email": null,
     "website": null,
     "booking_url": null,
-    "google_maps_url": null
+    "google_maps_url": null,
+    "full_address": "Shop No. 2 & 4, Satya Laxmi Niwas, M.G. Road, Near Panch Rasta, Mulund West, Mumbai 400080",
+    "address": "Shop No. 2 & 4, Satya Laxmi Niwas, M.G. Road, Near Panch Rasta, Mulund West, Mumbai 400080"
   },
   "social_media": {
     "instagram_handle": "@ali.and.hussain.salon",

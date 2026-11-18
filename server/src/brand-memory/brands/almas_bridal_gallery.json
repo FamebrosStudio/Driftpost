@@ -102,7 +102,14 @@
     ],
     "length": "Short and premium."
   },
-  "fixed_footer": null,
+  "fixed_footer": {
+    "status": "confirmed",
+    "lines": [
+      "📍 Vakola, Santacruz East, Mumbai 400055",
+      "📞 +91 90046 56157",
+      "💫 Managed by: @famebrosstudio"
+    ]
+  },
   "suggested_hashtag_bank": [
     "#AlmasBridalGallery",
     "#AlmasOfficial",

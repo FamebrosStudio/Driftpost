@@ -740,7 +740,15 @@ export async function generateCaptions(summary, opts = {}) {
     // a testimonial or another format that doesn't repeat the product words.
     // Let approved category/location facts ground its SEO and hashtag metadata.
     const seoTopic = explicitBrandSelection
-      ? [brief, brand.name, brand.cat, brand.loc, deep?.business?.category, deep?.business?.branch, deep?.business?.city].filter(Boolean).join(' ')
+      ? [
+          brief,
+          brand.name,
+          brand.cat,
+          brand.loc,
+          deep?.business?.category,
+          deep?.business?.branch,
+          typeof deep?.business?.city === 'string' ? deep.business.city : deep?.business?.location?.city,
+        ].filter((v) => typeof v === 'string' && v.trim()).join(' ')
       : brief;
     // Shade/service words from THIS brief lead the bracket: "honey brown" +
     // "hair" = "honey brown hair". Whole words only, never cut fragments.

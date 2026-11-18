@@ -12,7 +12,7 @@
     "retail_status": null,
     "customer_focus": "Men's clothing buyers, retailers and resellers",
     "location_area": "Wadala",
-    "city": "Mumbai",
+    "city": "Wadala, Mumbai",
     "state": "Maharashtra",
     "country": "India",
     "owner_or_public_face": "Arsh",
@@ -36,7 +36,10 @@
     "website": null,
     "catalogue_url": null,
     "ordering_url": null,
-    "google_maps_url": null
+    "google_maps_url": null,
+    "phone": "+91 91377 85394",
+    "full_address": "Wadala, Mumbai, Maharashtra",
+    "address": "Wadala, Mumbai, Maharashtra"
   },
   "social_media": {
     "instagram_handle": "@ak.factor_byarsh",

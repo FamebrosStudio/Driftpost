@@ -15,7 +15,7 @@
     "category": "Fashion retail, including kids’ fashion and western wear per the user-provided 2026-11-14 dataset",
     "industry": "Apparel and fashion",
     "business_model": null,
-    "city": "Mumbai",
+    "city": "Byculla, Mumbai",
     "state": "Maharashtra",
     "country": "India",
     "currency": "INR",
@@ -29,18 +29,19 @@
     "location_area": "Byculla, Mumbai"
   },
   "contact": {
-    "phone": null,
+    "phone": "+91 98333 54400",
     "whatsapp": null,
     "email": null,
     "website": null,
-    "address": null,
+    "address": "Clare Road, Byculla, Mumbai 400008",
     "city": "Mumbai",
     "google_maps_url": null,
     "contact_status": "Only Mumbai is established.",
     "contact_rule": "Use Mumbai at city level only. Do not invent a locality or contact.",
     "phone_display": "+91 98333 54400",
     "phone_e164": "+919833354400",
-    "full_address_preferred": "Byculla House, Mirza Galib Road (Clare Road), Byculla, Mumbai"
+    "full_address_preferred": "Byculla House, Mirza Galib Road (Clare Road), Byculla, Mumbai",
+    "full_address": "Clare Road, Byculla, Mumbai 400008"
   },
   "social_media": {
     "instagram_handle": "@uvafashions_mumbai",

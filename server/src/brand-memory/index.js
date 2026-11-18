@@ -315,15 +315,34 @@ export function deepFooter(deep, { groupWide = false } = {}) {
 }
 
 export function deepPhone(deep) {
-  return deep?.contact?.phone_display || deep?.contact?.primary_phone_display || deep?.contact?.customer_care_display || '';
+  const raw = deep?.contact?.phone_display
+    || deep?.contact?.primary_phone_display
+    || deep?.contact?.customer_care_display
+    || deep?.contact?.phone
+    || deep?.contact?.phones
+    || deep?.contact?.booking_phone
+    || deep?.contact?.whatsapp
+    || '';
+  if (Array.isArray(raw)) return raw.map((v) => String(v || '').trim()).filter(Boolean).join(' / ');
+  return typeof raw === 'string' ? raw.trim() : '';
 }
 
 export function deepAddress(deep) {
   const address = deep?.contact?.full_address
     || deep?.contact?.full_address_preferred
     || deep?.contact?.address_full
-    || deep?.contact?.address;
-  return Array.isArray(address) ? address.join('\n') : (address || '');
+    || deep?.contact?.address
+    || deep?.business?.location?.full_address
+    || deep?.business?.location?.address
+    || deep?.business?.location?.exact_address
+    || deep?.business?.location?.stores_from_user_caption
+    || deep?.business?.address;
+  return Array.isArray(address) ? address.filter(Boolean).join('\n') : (typeof address === 'string' ? address.trim() : '');
+}
+
+export function deepWebsite(deep) {
+  const site = deep?.contact?.website || deep?.business?.website || '';
+  return typeof site === 'string' ? site.trim() : '';
 }
 // --- shared house style ----------------------------------------------------
 // The floor that applies to every brand, so output quality does not depend on
@@ -549,6 +568,7 @@ export function deepPack(deep, brand, { groupWide = false } = {}) {
     ...T(0, cap(fmt(deep.business, true), 700)),
     ...T(0, deepPhone(deep) ? `Phone: ${deepPhone(deep)}` : null),
     ...T(0, deepAddress(deep) ? `Address: ${deepAddress(deep)}` : null),
+    ...T(0, deepWebsite(deep) ? `Website: ${deepWebsite(deep)}` : null),
 
     ...T(1, unconfirmed ? `TRUST: ${deep.knowledge_scope} Treat unconfirmed items as unknown, never as fact.` : null),
     ...T(1, typeof deep.sources?.source_rule === 'string' ? `SOURCING: ${deep.sources.source_rule}` : null),

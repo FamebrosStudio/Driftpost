@@ -11,7 +11,7 @@
   ],
   "knowledge_scope": "The user confirms @pixigrowmedia as the official Pixigrow Media account. Public campaign credits indicate media/campaign work, and a same-name LinkedIn profile lists Rajkot. Exact legal entity/account relationship, address, contact and full service catalogue remain unverified.",
   "business": {
-    "category": "Media and campaign content; exact services unconfirmed",
+    "category": "Digital marketing, influencer marketing and branding agency",
     "industry": "Media, digital content and campaign marketing",
     "business_model": null,
     "location": "Rajkot association (public profile); exact business address unverified",
@@ -22,17 +22,19 @@
     "onboarding_or_billing_note": "The first day of an unspecified month appeared in the user-provided brand list. This is not a founding date.",
     "dataset_date": "2026-09-26",
     "identity_confidence": "Official account confirmed by user; service and legal identity details remain incomplete.",
-    "commercial_accuracy_rule": "Do not invent exact services, clients, campaign results, audience, contact, address, prices or performance metrics."
+    "commercial_accuracy_rule": "Do not invent exact services, clients, campaign results, audience, contact, address, prices or performance metrics.",
+    "city": "Rajkot"
   },
   "contact": {
     "phone": null,
     "whatsapp": null,
     "email": null,
     "website": null,
-    "address": null,
+    "address": "Shop-704, Merrygold Square, Near Madhapar Circle BRTS, Madhapar, Rajkot, Gujarat 360006",
     "google_maps_url": null,
     "contact_status": "No confirmed contact details.",
-    "contact_rule": "Do not use contact details from a similar Pixi, Pixigrow or agriculture product."
+    "contact_rule": "Do not use contact details from a similar Pixi, Pixigrow or agriculture product.",
+    "full_address": "Shop-704, Merrygold Square, Near Madhapar Circle BRTS, Madhapar, Rajkot, Gujarat 360006"
   },
   "social_media": {
     "instagram_handle": "@pixigrowmedia",
@@ -228,12 +230,16 @@
     "standard_lines": [
       "💫 Managed by: @famebrosstudio"
     ],
-    "status": "Agency credit only. No brand contact is established.",
+    "status": "confirmed",
     "usage": "Use only on an approved Famebros draft.",
     "exceptions": [
       "Story overlays",
       "Comments",
       "If agency credit is not required"
+    ],
+    "lines": [
+      "📍 Shop-704, Merrygold Square, Madhapar, Rajkot 360006",
+      "💫 Managed by: @famebrosstudio"
     ]
   },
   "suggested_hashtag_bank": [

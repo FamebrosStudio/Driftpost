@@ -666,7 +666,7 @@
         "phone": [
           "+91 91377 85394"
         ],
-        "address": null,
+        "address": "Wadala, Mumbai, Maharashtra",
         "email": null,
         "website": null
       },
@@ -844,7 +844,7 @@
         "Coco’s Inn"
       ],
       "category": "Resort",
-      "location": "Near Kashid, Alibaug",
+      "location": "Kashid, Alibaug",
       "content_genres": [],
       "caption_direction": {
         "status": "editorial_default_based_on_source_genres",
@@ -882,10 +882,13 @@
       ],
       "mandatory_copy": [],
       "contacts": {
-        "phone": [],
-        "address": null,
+        "phone": [
+          "+91 80977 76917",
+          "+91 91675 62668"
+        ],
+        "address": "H No. 269, At Village Barshiv, Post - Borli, Revdanda - Murud Road, Kashid, Alibaug, Raigad, Maharashtra 402401",
         "email": null,
-        "website": null
+        "website": "https://cocosinn.com"
       },
       "footer_lines": [
         "📍 Near Kashid, Alibaug",
@@ -1111,7 +1114,7 @@
         "Shree Mahalaxmi Jewellers Kurla"
       ],
       "category": "Jewellery",
-      "location": "Kurla, Mumbai",
+      "location": "Kurla East, Mumbai",
       "content_genres": [
         "informational",
         "offers"
@@ -1147,8 +1150,10 @@
       "approved_facts": [],
       "mandatory_copy": [],
       "contacts": {
-        "phone": [],
-        "address": null,
+        "phone": [
+          "+91 80974 96670"
+        ],
+        "address": "Shop No. 15, Building No. 8, C-Wing, Sharad Co-Operative Housing Society, S.G. Barve Marg, Nehru Nagar, Kurla East, Mumbai, Maharashtra 400024",
         "email": null,
         "website": null
       },
@@ -1301,7 +1306,7 @@
         "Mahalaxmi Jewellers Ghatla"
       ],
       "category": "Jewellery",
-      "location": "Ghatla, Mumbai",
+      "location": "Ghatla, Chembur, Mumbai",
       "content_genres": [
         "informational",
         "offers"
@@ -1337,8 +1342,11 @@
       "approved_facts": [],
       "mandatory_copy": [],
       "contacts": {
-        "phone": [],
-        "address": null,
+        "phone": [
+          "+91 96190 96762",
+          "+91 80974 96670"
+        ],
+        "address": "Shop No. 1, Khardev Nagar Road, Ghatla, Chembur, Mumbai 400071",
         "email": null,
         "website": null
       },
@@ -1496,7 +1504,7 @@
       "name": "Ali Salon",
       "aliases": [],
       "category": "Salon",
-      "location": "Mulund, Mumbai",
+      "location": "Mulund West, Mumbai",
       "content_genres": [
         "funny",
         "hair_transformation"
@@ -1534,7 +1542,7 @@
       "mandatory_copy": [],
       "contacts": {
         "phone": [],
-        "address": null,
+        "address": "Shop No. 2 & 4, Satya Laxmi Niwas, M.G. Road, Near Panch Rasta, Mulund West, Mumbai 400080",
         "email": null,
         "website": null
       },
@@ -1954,7 +1962,7 @@
         "Charan Singh Sapra Ji"
       ],
       "category": "Public figure and political communication",
-      "location": null,
+      "location": "Mulund West, Mumbai",
       "content_genres": [
         "politics"
       ],
@@ -1998,10 +2006,12 @@
       "approved_facts": [],
       "mandatory_copy": [],
       "contacts": {
-        "phone": [],
-        "address": null,
-        "email": null,
-        "website": null
+        "phone": [
+          "+91 98922 44223"
+        ],
+        "address": "B-2201 / B-2202, Runwal Heights, LBS Marg, Opp. Nirmal Lifestyle Mall, Mulund West, Mumbai 400080",
+        "email": "charansapra@hotmail.com",
+        "website": "https://www.inc.in"
       },
       "footer_lines": [
         "💫 Managed by: @famebrosstudio"
@@ -2449,8 +2459,10 @@
       ],
       "mandatory_copy": [],
       "contacts": {
-        "phone": [],
-        "address": null,
+        "phone": [
+          "+91 79775 97016"
+        ],
+        "address": "504, Nahar Business Center, Chandivali, Powai, Mumbai, Maharashtra 400072",
         "email": null,
         "website": null
       },
@@ -2721,7 +2733,7 @@
         "Carrara Trouser Manufacturer Ahmedabad"
       ],
       "category": "Trouser manufacturing",
-      "location": "Ahmedabad",
+      "location": "Sarangpur, Ahmedabad",
       "content_genres": [
         "transformation",
         "model_shoot"
@@ -2763,7 +2775,7 @@
       "mandatory_copy": [],
       "contacts": {
         "phone": [],
-        "address": null,
+        "address": "Shop No. K-207, 2nd Floor, Shree Ghantakarna Mahavir Commercial Market, Near Cloth Market / Raipur Gate, Sarangpur, Ahmedabad, Gujarat 380002",
         "email": null,
         "website": null
       },
@@ -3065,10 +3077,13 @@
       ],
       "mandatory_copy": [],
       "contacts": {
-        "phone": [],
-        "address": null,
-        "email": null,
-        "website": null
+        "phone": [
+          "+91 94087 52059",
+          "+91 75675 97755"
+        ],
+        "address": "Shop No. 9 & 10, Silver Classic Building, Opposite Ganga Hall, Amin Marg, Rajkot, Gujarat 360001",
+        "email": "info@hazeldryfruits.com",
+        "website": "https://hazeldryfruits.com"
       },
       "footer_lines": [
         "📍 Rajkot",
@@ -3378,7 +3393,7 @@
       "name": "Avnikk Collection",
       "aliases": [],
       "category": "Men clothing",
-      "location": null,
+      "location": "Bhiwandi",
       "content_genres": [
         "model_showcase"
       ],
@@ -3413,10 +3428,12 @@
       "approved_facts": [],
       "mandatory_copy": [],
       "contacts": {
-        "phone": [],
-        "address": null,
-        "email": null,
-        "website": null
+        "phone": [
+          "+91 76203 26479"
+        ],
+        "address": "Shree Ashapura Textiles, Anand Building, 2nd Floor, Ajanta Compound, Near Kohinoor Dyeing, Behind Supreme Hotel, Dhamankar Naka, Bhiwandi, Maharashtra 421302",
+        "email": "avnikk001@gmail.com",
+        "website": "https://avnikk.com"
       },
       "footer_lines": [
         "💫 Managed by: @famebrosstudio"
@@ -3472,7 +3489,7 @@
         "Laxya lel Fitness"
       ],
       "category": "Personalised fitness coaching studio",
-      "location": "Mumbai",
+      "location": "Mulund West, Mumbai",
       "content_genres": [
         "fitness"
       ],
@@ -3518,10 +3535,12 @@
       ],
       "mandatory_copy": [],
       "contacts": {
-        "phone": [],
-        "address": null,
-        "email": null,
-        "website": null
+        "phone": [
+          "+91 96256 91857"
+        ],
+        "address": "325, G-Wing, Marathon Monte Plaza, Madan Mohan Malviya Rd, Asha Nagar, Mulund West, Mumbai, Maharashtra 400080",
+        "email": "info@lelfitness.com",
+        "website": "https://www.lelfitness.com"
       },
       "footer_lines": [
         "📍 Mumbai",
@@ -3774,7 +3793,7 @@
         "Paak Pehnawa"
       ],
       "category": "Men clothing",
-      "location": null,
+      "location": "Mumbai Central, Mumbai",
       "content_genres": [
         "clothing",
         "informational",
@@ -3822,10 +3841,12 @@
       "approved_facts": [],
       "mandatory_copy": [],
       "contacts": {
-        "phone": [],
-        "address": null,
+        "phone": [
+          "+91 99300 41786"
+        ],
+        "address": "JJ Hospital Building, 414 - 418, Carmellos, Nagpada, Mumbai Central, Mumbai, Maharashtra",
         "email": null,
-        "website": null
+        "website": "https://paakpehnawa.shop/"
       },
       "footer_lines": [
         "💫 Managed by: @famebrosstudio"
@@ -3925,8 +3946,8 @@
       "brand_id": "pixi_grow",
       "name": "Pixigrow Media",
       "aliases": [],
-      "category": "Media and campaign content, exact service scope unconfirmed",
-      "location": "Rajkot, Gujarat (exact address unverified)",
+      "category": "Digital marketing, influencer marketing and branding agency",
+      "location": "Rajkot",
       "content_genres": [],
       "caption_direction": {
         "status": "editorial_default_based_on_source_genres",
@@ -3953,11 +3974,12 @@
       "mandatory_copy": [],
       "contacts": {
         "phone": [],
-        "address": null,
+        "address": "Shop-704, Merrygold Square, Near Madhapar Circle BRTS, Madhapar, Rajkot, Gujarat 360006",
         "email": null,
         "website": null
       },
       "footer_lines": [
+        "📍 Shop-704, Merrygold Square, Madhapar, Rajkot 360006",
         "💫 Managed by: @famebrosstudio"
       ],
       "instagram": {
@@ -4000,7 +4022,7 @@
       "name": "Sarang Hospital",
       "aliases": [],
       "category": "Hospital",
-      "location": null,
+      "location": "Rajkot",
       "content_genres": [],
       "caption_direction": {
         "status": "editorial_default_based_on_source_genres",
@@ -4032,7 +4054,7 @@
       "mandatory_copy": [],
       "contacts": {
         "phone": [],
-        "address": null,
+        "address": "Paradise Hall Road, Raiya Road, Near Bapa Sitaram Chowk, Rajkot, Gujarat 360005",
         "email": null,
         "website": null
       },
@@ -4092,7 +4114,7 @@
         "GS Shetty School"
       ],
       "category": "School",
-      "location": "Bhandup, Mumbai",
+      "location": "Bhandup West, Mumbai",
       "content_genres": [
         "informational"
       ],
@@ -4134,9 +4156,10 @@
       "mandatory_copy": [],
       "contacts": {
         "phone": [
-          "9619933715 / 9136668409"
+          "+91 96199 33715",
+          "+91 91366 68409"
         ],
-        "address": null,
+        "address": "Sangeetkar Sudhir Phadke Marg, Bhandup Village Road, Bhandup West, Mumbai 400078",
         "email": "gsshettyinternationalschool@gmail.com",
         "website": "https://gsinternationalschool.com/"
       },
@@ -4199,7 +4222,7 @@
         "@sevencubes.footwear"
       ],
       "category": "Footwear",
-      "location": null,
+      "location": "Vile Parle West, Mumbai",
       "content_genres": [
         "informational",
         "edits"
@@ -4235,12 +4258,17 @@
       "approved_facts": [],
       "mandatory_copy": [],
       "contacts": {
-        "phone": [],
-        "address": null,
+        "phone": [
+          "+91 84510 95669",
+          "+91 91374 15698"
+        ],
+        "address": "Shop No. L-13 & L-14, Basement, Prime Mall, Irla, Vile Parle West, Mumbai, Maharashtra 400056",
         "email": null,
         "website": null
       },
       "footer_lines": [
+        "📍 Shop L-13 & L-14, Prime Mall, Irla, Vile Parle West, Mumbai 400056",
+        "📞 +91 84510 95669 / +91 91374 15698",
         "💫 Managed by: @famebrosstudio"
       ],
       "instagram": {
@@ -4296,7 +4324,7 @@
       "name": "Sarama Furniture",
       "aliases": [],
       "category": "Furniture",
-      "location": null,
+      "location": "Midnapore / Kharagpur, West Bengal",
       "content_genres": [
         "informational"
       ],
@@ -4331,10 +4359,12 @@
       "approved_facts": [],
       "mandatory_copy": [],
       "contacts": {
-        "phone": [],
-        "address": null,
+        "phone": [
+          "+91 80716 40769"
+        ],
+        "address": "Vill - Khasjungle, P.O. Abash, P.S. Midnapore Sadar, Paschim Medinipur, West Bengal 721102",
         "email": null,
-        "website": null
+        "website": "https://saramasteelfurniture.com/"
       },
       "footer_lines": [
         "💫 Managed by: @famebrosstudio"
@@ -4461,7 +4491,7 @@
       "name": "Anand Furniture",
       "aliases": [],
       "category": "Furniture",
-      "location": null,
+      "location": "Ghatkopar West, Mumbai",
       "content_genres": [],
       "caption_direction": {
         "status": "editorial_default_based_on_source_genres",
@@ -4494,11 +4524,12 @@
       "mandatory_copy": [],
       "contacts": {
         "phone": [],
-        "address": null,
+        "address": "Ghatkopar West, Mumbai, Maharashtra",
         "email": null,
         "website": null
       },
       "footer_lines": [
+        "📍 Ghatkopar West, Mumbai, Maharashtra",
         "💫 Managed by: @famebrosstudio"
       ],
       "instagram": {
@@ -4552,7 +4583,7 @@
         "UVA Fashions"
       ],
       "category": "Fashion; exact product audience unconfirmed",
-      "location": "Mumbai",
+      "location": "Byculla, Mumbai",
       "content_genres": [],
       "caption_direction": {
         "status": "editorial_default_based_on_source_genres",
@@ -4581,8 +4612,10 @@
       "approved_facts": [],
       "mandatory_copy": [],
       "contacts": {
-        "phone": [],
-        "address": null,
+        "phone": [
+          "+91 98333 54400"
+        ],
+        "address": "Clare Road, Byculla, Mumbai 400008",
         "email": null,
         "website": null
       },
@@ -4785,12 +4818,16 @@
       ],
       "mandatory_copy": [],
       "contacts": {
-        "phone": [],
+        "phone": [
+          "+91 90046 56157"
+        ],
         "address": "Shop No. 2, Vaviya Mansion 33/257, Anand Nagar, Om Co-op HSG SOC Ltd, Nehru Road, Vakola, Santacruz East, Mumbai 400055",
         "email": null,
         "website": "https://almasofficial.in/"
       },
       "footer_lines": [
+        "📍 Vakola, Santacruz East, Mumbai 400055",
+        "📞 +91 90046 56157",
         "💫 Managed by: @famebrosstudio"
       ],
       "instagram": {
@@ -4834,7 +4871,7 @@
         "@parrfums.vault"
       ],
       "category": "Fragrance brand (claims remain caption-specific)",
-      "location": null,
+      "location": "Mumbai",
       "content_genres": [
         "To be confirmed after client identity and offering are documented"
       ],
@@ -4882,7 +4919,7 @@
         ],
         "address": null,
         "email": null,
-        "website": null,
+        "website": "https://parrfumsvault.in",
         "whatsapp": "+91 85919 35352"
       },
       "footer_lines": [
@@ -5341,8 +5378,8 @@
       ],
       "instagram": {
         "url": null,
-        "handle": null,
-        "status": "not_resolved",
+        "handle": "@salon.zivara",
+        "status": "public_profile_matched",
         "evidence": [],
         "note": "Meta portfolio evidence confirms an account named Zivara Salon | Thane, but no public page URL was retrieved."
       },

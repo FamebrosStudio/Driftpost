@@ -36,7 +36,8 @@
     ],
     "onboarding_or_billing_note": "19 September appeared in the user-provided working record. It is not a founding date.",
     "dataset_date": "2026-09-26",
-    "commercial_accuracy_rule": "Use the current product page for price, material, dimensions, warranty, assembly, delivery and stock. Never generalize one product's terms to the full catalogue."
+    "commercial_accuracy_rule": "Use the current product page for price, material, dimensions, warranty, assembly, delivery and stock. Never generalize one product's terms to the full catalogue.",
+    "city": "Midnapore / Kharagpur, West Bengal"
   },
   "contact": {
     "current_social_phone_display": "+91 96352 25262",
@@ -62,7 +63,11 @@
     "email": null,
     "whatsapp": null,
     "google_maps_url": null,
-    "contact_rule": "Use +91 96352 25262 for general social CTA only after current brand approval. Confirm the selected branch address and phone for local campaigns."
+    "contact_rule": "Use +91 96352 25262 for general social CTA only after current brand approval. Confirm the selected branch address and phone for local campaigns.",
+    "phone_display": "+91 80716 40769",
+    "phone": "+91 80716 40769",
+    "full_address": "Vill - Khasjungle, P.O. Abash, P.S. Midnapore Sadar, Paschim Medinipur, West Bengal 721102",
+    "address": "Vill - Khasjungle, P.O. Abash, P.S. Midnapore Sadar, Paschim Medinipur, West Bengal 721102"
   },
   "social_media": {
     "instagram_handle": null,

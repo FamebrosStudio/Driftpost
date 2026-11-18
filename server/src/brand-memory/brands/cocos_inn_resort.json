@@ -25,7 +25,8 @@
     "owner_name": null,
     "founding_year": null,
     "check_in_time": null,
-    "check_out_time": null
+    "check_out_time": null,
+    "city": "Kashid, Alibaug"
   },
   "contact": {
     "primary_phone_display": "+91 91675 62668",
@@ -40,9 +41,13 @@
     "address_usage": "Use the official address for complete contact blocks. The user-supplied wording may be used for shorter local captions.",
     "postal_code": "402202",
     "email": "admin@cocosinn.com",
-    "website": "https://www.cocosinn.com/",
+    "website": "https://cocosinn.com",
     "booking_url": "https://www.cocosinn.com/",
-    "google_maps_url": null
+    "google_maps_url": null,
+    "phone_display": "+91 80977 76917 / +91 91675 62668",
+    "phone": "+91 80977 76917 / +91 91675 62668",
+    "full_address": "H No. 269, At Village Barshiv, Post - Borli, Revdanda - Murud Road, Kashid, Alibaug, Raigad, Maharashtra 402401",
+    "address": "H No. 269, At Village Barshiv, Post - Borli, Revdanda - Murud Road, Kashid, Alibaug, Raigad, Maharashtra 402401"
   },
   "social_media": {
     "instagram_handle": "@cocos.inn.resort",

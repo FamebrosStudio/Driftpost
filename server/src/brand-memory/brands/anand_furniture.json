@@ -23,18 +23,20 @@
     ],
     "operational_status": "Not started yet in the source record.",
     "dataset_date": "2026-09-26",
-    "commercial_accuracy_rule": "Never adopt an Anand Furniture directory listing or claim material, price, delivery, warranty or manufacturing without owner confirmation."
+    "commercial_accuracy_rule": "Never adopt an Anand Furniture directory listing or claim material, price, delivery, warranty or manufacturing without owner confirmation.",
+    "city": "Ghatkopar West, Mumbai"
   },
   "contact": {
     "phone": null,
     "whatsapp": null,
     "email": null,
     "website": null,
-    "address": null,
+    "address": "Ghatkopar West, Mumbai, Maharashtra",
     "city": null,
     "google_maps_url": null,
     "contact_status": "Unknown due to multiple same-name businesses.",
-    "contact_rule": "Do not use phone or address from Mumbai, Delhi, Kalyan, Thane or another listing until the exact branch is confirmed."
+    "contact_rule": "Do not use phone or address from Mumbai, Delhi, Kalyan, Thane or another listing until the exact branch is confirmed.",
+    "full_address": "Ghatkopar West, Mumbai, Maharashtra"
   },
   "social_media": {
     "instagram_handle": "@anandfurniture_interiors",
@@ -209,12 +211,16 @@
     "standard_lines": [
       "💫 Managed by: @famebrosstudio"
     ],
-    "status": "Agency credit only. No public contact line or standing CTA is confirmed.",
+    "status": "confirmed",
     "usage": "Use only through the confirmed brand account.",
     "exceptions": [
       "Story overlays",
       "Comments",
       "Unpublished concepts"
+    ],
+    "lines": [
+      "📍 Ghatkopar West, Mumbai, Maharashtra",
+      "💫 Managed by: @famebrosstudio"
     ]
   },
   "suggested_hashtag_bank": [

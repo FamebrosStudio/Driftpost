@@ -25,18 +25,21 @@
     ],
     "onboarding_or_billing_note": "17 September appeared in the user-provided working record. It is not a founding date.",
     "dataset_date": "2026-09-26",
-    "commercial_accuracy_rule": "Never invent material, construction, size, fit, price, stock, authenticity, warranty, shipping or returns."
+    "commercial_accuracy_rule": "Never invent material, construction, size, fit, price, stock, authenticity, warranty, shipping or returns.",
+    "city": "Vile Parle West, Mumbai"
   },
   "contact": {
-    "phone": null,
+    "phone": "+91 84510 95669 / +91 91374 15698",
     "whatsapp": null,
     "email": null,
     "website": null,
-    "address": null,
+    "address": "Shop No. L-13 & L-14, Basement, Prime Mall, Irla, Vile Parle West, Mumbai, Maharashtra 400056",
     "location": null,
     "google_maps_url": null,
     "contact_status": "No confirmed contact details.",
-    "contact_rule": "Do not use details from a similarly named footwear seller."
+    "contact_rule": "Do not use details from a similarly named footwear seller.",
+    "phone_display": "+91 84510 95669 / +91 91374 15698",
+    "full_address": "Shop No. L-13 & L-14, Basement, Prime Mall, Irla, Vile Parle West, Mumbai, Maharashtra 400056"
   },
   "social_media": {
     "instagram_handle": "@sevencubes.footwear",
@@ -224,12 +227,17 @@
     "standard_lines": [
       "💫 Managed by: @famebrosstudio"
     ],
-    "status": "Agency credit only. No public contact line or standing CTA is confirmed.",
+    "status": "confirmed",
     "usage": "Use only when the publication is going through the confirmed brand account.",
     "exceptions": [
       "Story overlays",
       "Comments",
       "Unpublished concepts"
+    ],
+    "lines": [
+      "📍 Shop L-13 & L-14, Prime Mall, Irla, Vile Parle West, Mumbai 400056",
+      "📞 +91 84510 95669 / +91 91374 15698",
+      "💫 Managed by: @famebrosstudio"
     ]
   },
   "suggested_hashtag_bank": [

@@ -10,7 +10,7 @@
     "category": "Jewellery store",
     "industry": "Gold and jewellery retail",
     "branch": "Ghatla, Chembur",
-    "city": "Mumbai",
+    "city": "Ghatla, Chembur, Mumbai",
     "state": "Maharashtra",
     "country": "India",
     "published_product_positioning": [
@@ -37,7 +37,7 @@
       "+918097496670"
     ],
     "whatsapp_status": "Indexed group promotional content labels +91 80974 96670 for calls or WhatsApp. Reconfirm before branch-specific service instructions.",
-    "full_address": "Shop 1, Khardev Nagar Road, Ghatla, Chembur, Mumbai 400071",
+    "full_address": "Shop No. 1, Khardev Nagar Road, Ghatla, Chembur, Mumbai 400071",
     "shop_number": "1",
     "road": "Khardev Nagar Road",
     "locality": "Ghatla",
@@ -48,7 +48,10 @@
     "website": null,
     "catalogue_url": null,
     "ordering_url": null,
-    "google_maps_url": null
+    "google_maps_url": null,
+    "phone_display": "+91 96190 96762 / +91 80974 96670",
+    "phone": "+91 96190 96762 / +91 80974 96670",
+    "address": "Shop No. 1, Khardev Nagar Road, Ghatla, Chembur, Mumbai 400071"
   },
   "social_media": {
     "instagram_handle": "@mahalaxmi.jewellers.ghatla",

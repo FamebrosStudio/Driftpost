@@ -42,18 +42,20 @@
     "commercial_accuracy_rule": "Never invent fabric, weave, embroidery technique, handwork, fit, sizes, price, stock, discount, shipping, exchange or delivery time."
   },
   "contact": {
-    "website": "https://avnikk.com/",
+    "website": "https://avnikk.com",
     "website_status": "Official website confirmed live 2026-09-25. Current product details should still be rechecked at content time.",
     "phone": "+917620326479",
     "phone_status": "Official customer-support number from avnikk.com footer (call/WhatsApp), confirmed 2026-09-25.",
     "email": "avnikk001@gmail.com",
     "email_status": "Official support email from avnikk.com footer, confirmed 2026-09-25.",
-    "address": "Shree Ashapura Textiles, Anand Building, 2nd Floor, Ajanta Compound, Near Kohinoor Dyeing, Behind Supreme Hotel, Dhamankar Naka, Bhiwandi 421302, Maharashtra, India",
+    "address": "Shree Ashapura Textiles, Anand Building, 2nd Floor, Ajanta Compound, Near Kohinoor Dyeing, Behind Supreme Hotel, Dhamankar Naka, Bhiwandi, Maharashtra 421302",
     "address_status": "Official REACH US address from avnikk.com footer, confirmed 2026-09-25.",
     "whatsapp": "+917620326479",
     "whatsapp_status": "avnikk.com lists this number as call/whatsapp for customer support.",
     "google_maps_url": null,
-    "contact_rule": "Use the website, official phone/email, or Instagram DM as the CTA. Do not invent any additional store location or number."
+    "contact_rule": "Use the website, official phone/email, or Instagram DM as the CTA. Do not invent any additional store location or number.",
+    "phone_display": "+91 76203 26479",
+    "full_address": "Shree Ashapura Textiles, Anand Building, 2nd Floor, Ajanta Compound, Near Kohinoor Dyeing, Behind Supreme Hotel, Dhamankar Naka, Bhiwandi, Maharashtra 421302"
   },
   "social_media": {
     "instagram_handle": "@avnikk_collection",

@@ -10,7 +10,7 @@
     "category": "Jewellery store",
     "industry": "Gold, silver and gemstone jewellery retail",
     "branch": "Kurla East",
-    "city": "Mumbai",
+    "city": "Kurla East, Mumbai",
     "state": "Maharashtra",
     "country": "India",
     "published_product_positioning": [
@@ -34,7 +34,7 @@
     "secondary_phone_e164": "+918097496670",
     "whatsapp_numbers": [],
     "whatsapp_note": "Both numbers are confirmed business contact numbers. Label either as WhatsApp only when the current branch confirms it.",
-    "full_address": "Shop 15, Building 8, C-Wing, Sharad Co-Op Housing Society, Kapus Kamgar Nagar, Near Tilak Nagar Station, Kurla East, Mumbai 400024",
+    "full_address": "Shop No. 15, Building No. 8, C-Wing, Sharad Co-Operative Housing Society, S.G. Barve Marg, Nehru Nagar, Kurla East, Mumbai, Maharashtra 400024",
     "shop_number": "15",
     "building": "Building 8",
     "wing": "C-Wing",
@@ -48,7 +48,10 @@
     "website": null,
     "catalogue_url": null,
     "ordering_url": null,
-    "google_maps_url": null
+    "google_maps_url": null,
+    "phone_display": "+91 80974 96670",
+    "phone": "+91 80974 96670",
+    "address": "Shop No. 15, Building No. 8, C-Wing, Sharad Co-Operative Housing Society, S.G. Barve Marg, Nehru Nagar, Kurla East, Mumbai, Maharashtra 400024"
   },
   "social_media": {
     "instagram_handle": "@mahalaxmi.jewellers.kurla",

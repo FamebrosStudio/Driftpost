@@ -16,7 +16,7 @@
     "school_type": "Co-educational day school",
     "grades_publicly_stated": "Nursery to Grade X",
     "affiliation": "ICSE curriculum and CISCE affiliation as stated by the official website.",
-    "city": "Mumbai",
+    "city": "Bhandup West, Mumbai",
     "locality": "Bhandup West",
     "state": "Maharashtra",
     "country": "India",
@@ -50,7 +50,12 @@
     "address_short": "Bhandup Village Road, Bhandup West, Mumbai 400078",
     "google_maps_url": null,
     "contact_status": "Supported by the official website and school brochure.",
-    "contact_rule": "Use the two official admissions numbers. Confirm current form dates, grades and seat status before every admissions campaign."
+    "contact_rule": "Use the two official admissions numbers. Confirm current form dates, grades and seat status before every admissions campaign.",
+    "phone_display": "+91 96199 33715 / +91 91366 68409",
+    "phone": "+91 96199 33715 / +91 91366 68409",
+    "full_address": "Sangeetkar Sudhir Phadke Marg, Bhandup Village Road, Bhandup West, Mumbai 400078",
+    "address": "Sangeetkar Sudhir Phadke Marg, Bhandup Village Road, Bhandup West, Mumbai 400078",
+    "email": "gsshettyinternationalschool@gmail.com"
   },
   "social_media": {
     "instagram_handle": "@gsshettyschool",

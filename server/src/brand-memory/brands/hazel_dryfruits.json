@@ -61,13 +61,17 @@
     "address_full": "Silver Classic, Ground Floor, Amin Marg, opposite Ganga Hall, near Khodal Bharat Petrol Pump, Rajkot, Gujarat 360001, India",
     "address_status": "Silver Classic, Amin Marg and opposite Ganga Hall are supported by the official profile and current public campaign content. Ground Floor, nearby landmark wording and PIN are matched through public listings and should be confirmed before permanent signage.",
     "address_short": "Silver Classic, Amin Marg, opposite Ganga Hall, Rajkot",
-    "email": null,
+    "email": "info@hazeldryfruits.com",
     "email_status": "No official email established.",
-    "website": null,
+    "website": "https://hazeldryfruits.com",
     "website_status": "No official website established.",
     "google_maps_url": null,
     "google_maps_status": "No official map link established.",
-    "contact_rule": "Use +91 75675 97755 as the official order number. Do not replace it with numbers from a similarly named Hazel Enterprise directory listing."
+    "contact_rule": "Use +91 75675 97755 as the official order number. Do not replace it with numbers from a similarly named Hazel Enterprise directory listing.",
+    "phone_display": "+91 94087 52059 / +91 75675 97755",
+    "phone": "+91 94087 52059 / +91 75675 97755",
+    "full_address": "Shop No. 9 & 10, Silver Classic Building, Opposite Ganga Hall, Amin Marg, Rajkot, Gujarat 360001",
+    "address": "Shop No. 9 & 10, Silver Classic Building, Opposite Ganga Hall, Amin Marg, Rajkot, Gujarat 360001"
   },
   "social_media": {
     "instagram_handle": "@hazeldryfruits",

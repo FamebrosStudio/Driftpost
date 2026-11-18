@@ -19,7 +19,7 @@
       "Habit and activity accountability",
       "Nutrition guidance within professional scope"
     ],
-    "city": "Mumbai",
+    "city": "Mulund West, Mumbai",
     "locality": "Mulund West",
     "address_full": "325, G-Wing, Marathon Monte Plaza, Madan Mohan Malviya Rd, Asha Nagar, Mulund West, Mumbai, Maharashtra 400080, India",
     "address_status": "Official address from lelfitness.com footer/contact, confirmed 2026-09-25.",
@@ -45,15 +45,17 @@
     "phone_status": "Official phone from lelfitness.com footer (tel:+91-9625691857) and @lelfitness.comm bio, confirmed 2026-09-25.",
     "email": "info@lelfitness.com",
     "email_status": "Official email from lelfitness.com footer, confirmed 2026-09-25.",
-    "website": "https://www.lelfitness.com/",
+    "website": "https://www.lelfitness.com",
     "website_status": "Official website confirmed live 2026-09-25.",
-    "address": "325, G-Wing, Marathon Monte Plaza, Madan Mohan Malviya Rd, Asha Nagar, Mulund West, Mumbai, Maharashtra 400080, India",
+    "address": "325, G-Wing, Marathon Monte Plaza, Madan Mohan Malviya Rd, Asha Nagar, Mulund West, Mumbai, Maharashtra 400080",
     "locality": "Mulund West",
     "google_maps_url": "https://www.google.com/maps/search/?api=1&query=LEL+Fitness+325+G-Wing+Marathon+Monte+Plaza+Mulund+West+Mumbai+400080",
     "google_maps_status": "Search link derived from the official address; replace with the brand's exact Maps pin when supplied.",
     "whatsapp": "+919625691857",
     "whatsapp_status": "lelfitness.com uses api.whatsapp.com/send/?phone=919625691857 for trial/enrol CTAs.",
-    "contact_rule": "Use the official phone, WhatsApp, website or Instagram DM. Do not create any additional contact details."
+    "contact_rule": "Use the official phone, WhatsApp, website or Instagram DM. Do not create any additional contact details.",
+    "phone_display": "+91 96256 91857",
+    "full_address": "325, G-Wing, Marathon Monte Plaza, Madan Mohan Malviya Rd, Asha Nagar, Mulund West, Mumbai, Maharashtra 400080"
   },
   "social_media": {
     "instagram_handle": "@lelfitness.comm",

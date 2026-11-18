@@ -63,7 +63,8 @@
     ],
     "dataset_date": "2026-09-24",
     "currency": "INR",
-    "current_status_note": "Catalogue, inventory, size, price and discount details can change. Refresh the official product page before publishing transactional copy."
+    "current_status_note": "Catalogue, inventory, size, price and discount details can change. Refresh the official product page before publishing transactional copy.",
+    "city": "Mumbai Central, Mumbai"
   },
   "contact": {
     "phone_display": "+91 99300 41786",
@@ -73,7 +74,7 @@
     "whatsapp_status": "Not separately confirmed. Do not label the phone number as WhatsApp unless the current brief or official page confirms it.",
     "email": "paakpehnawa01@gmail.com",
     "email_status": "Confirmed on the official website and shipping and cancellation pages as of 2026-09-24.",
-    "website": "https://www.paakpehnawa.shop/",
+    "website": "https://paakpehnawa.shop/",
     "historical_public_retail_address": "Carmellos House, 414-418, Sir J.J. Road, opposite J.J. Hospital, Mohammed Ali Road, Mumbai 400008, Maharashtra, India",
     "historical_public_retail_address_status": "Published in a September 2024 promotional article that named @paak.pehnawa.mens and the same +91 99300 41786 contact. Revalidate before using because storefront details may change.",
     "other_public_branch_reference": "Jogeshwari West, Mumbai",
@@ -88,7 +89,10 @@
       "jogeshwari_store_after_revalidation",
       "kanpur_only_after_user_confirmation",
       "custom_location_from_post_brief"
-    ]
+    ],
+    "phone": "+91 99300 41786",
+    "full_address": "JJ Hospital Building, 414 - 418, Carmellos, Nagpada, Mumbai Central, Mumbai, Maharashtra",
+    "address": "JJ Hospital Building, 414 - 418, Carmellos, Nagpada, Mumbai Central, Mumbai, Maharashtra"
   },
   "social_media": {
     "instagram_handle": "@paak.pehnawa.mens",

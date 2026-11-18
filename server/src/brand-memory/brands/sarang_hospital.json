@@ -40,7 +40,9 @@
     "address_short": "Paradise Hall Road, Raiya Road, near Bapa Sitaram Chowk, Rajkot",
     "address_status": "Matched between official Instagram indexing and public corporate-directory records.",
     "google_maps_url": null,
-    "contact_rule": "Use the confirmed address. Do not add a phone, email, appointment link or 24-hour claim until supplied by the hospital."
+    "contact_rule": "Use the confirmed address. Do not add a phone, email, appointment link or 24-hour claim until supplied by the hospital.",
+    "full_address": "Paradise Hall Road, Raiya Road, Near Bapa Sitaram Chowk, Rajkot, Gujarat 360005",
+    "address": "Paradise Hall Road, Raiya Road, Near Bapa Sitaram Chowk, Rajkot, Gujarat 360005"
   },
   "social_media": {
     "instagram_handle": "@saranghospital",

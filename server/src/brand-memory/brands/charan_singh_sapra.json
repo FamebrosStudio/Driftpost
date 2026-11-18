@@ -15,7 +15,7 @@
     "party_affiliation": "Indian National Congress",
     "party_abbreviation": "INC",
     "geographic_focus": "Mumbai and Maharashtra, with national communication when acting as an INC spokesperson",
-    "city": "Mumbai",
+    "city": "Mulund West, Mumbai",
     "state": "Maharashtra",
     "country": "India",
     "public_positioning": "An experienced Congress leader and public spokesperson communicating on civic, state and national issues through media appearances, public interactions, party activity and community engagement.",
@@ -58,7 +58,13 @@
     "office_address": null,
     "google_maps_url": null,
     "contact_status": "No public phone, email, official website or office address has been approved for the content system.",
-    "contact_rule": "Do not copy phone numbers, emails or addresses from similarly named people, election affidavit aggregators, old directories or private profiles. Use a contact detail only after direct approval from the public figure's team."
+    "contact_rule": "Do not copy phone numbers, emails or addresses from similarly named people, election affidavit aggregators, old directories or private profiles. Use a contact detail only after direct approval from the public figure's team.",
+    "phone_display": "+91 98922 44223",
+    "phone": "+91 98922 44223",
+    "full_address": "B-2201 / B-2202, Runwal Heights, LBS Marg, Opp. Nirmal Lifestyle Mall, Mulund West, Mumbai 400080",
+    "address": "B-2201 / B-2202, Runwal Heights, LBS Marg, Opp. Nirmal Lifestyle Mall, Mulund West, Mumbai 400080",
+    "email": "charansapra@hotmail.com",
+    "website": "https://www.inc.in"
   },
   "social_media": {
     "instagram_handle": "@charansinghsapra_official",

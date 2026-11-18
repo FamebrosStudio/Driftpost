@@ -262,7 +262,7 @@
         "Coco’s Inn"
       ],
       "cat": "Resort",
-      "loc": "Near Kashid, Alibaug",
+      "loc": "Kashid, Alibaug",
       "genres": [],
       "tone": "Warm, relaxed, intimate and nature focused",
       "lang": "English or soft Hinglish",
@@ -355,7 +355,7 @@
         "Shree Mahalaxmi Jewellers Kurla"
       ],
       "cat": "Jewellery",
-      "loc": "Kurla, Mumbai",
+      "loc": "Kurla East, Mumbai",
       "genres": [
         "informational",
         "offers"
@@ -433,7 +433,7 @@
         "Mahalaxmi Jewellers Ghatla"
       ],
       "cat": "Jewellery",
-      "loc": "Ghatla, Mumbai",
+      "loc": "Ghatla, Chembur, Mumbai",
       "genres": [
         "informational",
         "offers"
@@ -512,7 +512,7 @@
       "name": "Ali Salon",
       "aliases": [],
       "cat": "Salon",
-      "loc": "Mulund, Mumbai",
+      "loc": "Mulund West, Mumbai",
       "genres": [
         "funny",
         "hair_transformation"
@@ -692,7 +692,7 @@
         "Charan Singh Sapra Ji"
       ],
       "cat": "Public figure and political communication",
-      "loc": "",
+      "loc": "Mulund West, Mumbai",
       "genres": [
         "politics"
       ],
@@ -968,7 +968,7 @@
         "Carrara Trouser Manufacturer Ahmedabad"
       ],
       "cat": "Trouser manufacturing",
-      "loc": "Ahmedabad",
+      "loc": "Sarangpur, Ahmedabad",
       "genres": [
         "transformation",
         "model_shoot"
@@ -1230,7 +1230,7 @@
       "name": "Avnikk Collection",
       "aliases": [],
       "cat": "Men clothing",
-      "loc": "",
+      "loc": "Bhiwandi",
       "genres": [
         "model_showcase"
       ],
@@ -1268,7 +1268,7 @@
         "Laxya lel Fitness"
       ],
       "cat": "Personalised fitness coaching studio",
-      "loc": "Mumbai",
+      "loc": "Mulund West, Mumbai",
       "genres": [
         "fitness"
       ],
@@ -1391,7 +1391,7 @@
         "Paak Pehnawa"
       ],
       "cat": "Men clothing",
-      "loc": "",
+      "loc": "Mumbai Central, Mumbai",
       "genres": [
         "clothing",
         "informational",
@@ -1442,8 +1442,8 @@
       "id": "pixi_grow",
       "name": "Pixigrow Media",
       "aliases": [],
-      "cat": "Media and campaign content, exact service scope unconfirmed",
-      "loc": "Rajkot, Gujarat (exact address unverified)",
+      "cat": "Digital marketing, influencer marketing and branding agency",
+      "loc": "Rajkot",
       "genres": [],
       "tone": "Neutral until brand identity is supplied",
       "lang": "Match the supplied brief",
@@ -1471,7 +1471,7 @@
       "name": "Sarang Hospital",
       "aliases": [],
       "cat": "Hospital",
-      "loc": "",
+      "loc": "Rajkot",
       "genres": [],
       "tone": "Professional, calm, compassionate and factual",
       "lang": "Plain language matching the brief",
@@ -1507,7 +1507,7 @@
         "GS Shetty School"
       ],
       "cat": "School",
-      "loc": "Bhandup, Mumbai",
+      "loc": "Bhandup West, Mumbai",
       "genres": [
         "informational"
       ],
@@ -1549,7 +1549,7 @@
         "@sevencubes.footwear"
       ],
       "cat": "Footwear",
-      "loc": "",
+      "loc": "Vile Parle West, Mumbai",
       "genres": [
         "informational",
         "edits"
@@ -1586,7 +1586,7 @@
       "name": "Sarama Furniture",
       "aliases": [],
       "cat": "Furniture",
-      "loc": "",
+      "loc": "Midnapore / Kharagpur, West Bengal",
       "genres": [
         "informational"
       ],
@@ -1653,7 +1653,7 @@
       "name": "Anand Furniture",
       "aliases": [],
       "cat": "Furniture",
-      "loc": "",
+      "loc": "Ghatkopar West, Mumbai",
       "genres": [],
       "tone": "Helpful and product focused as a proposed starting voice",
       "lang": "Hinglish or English",
@@ -1688,7 +1688,7 @@
         "UVA Fashions"
       ],
       "cat": "Fashion; exact product audience unconfirmed",
-      "loc": "Mumbai",
+      "loc": "Byculla, Mumbai",
       "genres": [],
       "tone": "Neutral fashion voice until product range is confirmed",
       "lang": "Match the supplied brief",
@@ -1812,7 +1812,7 @@
         "@parrfums.vault"
       ],
       "cat": "Fragrance brand",
-      "loc": "",
+      "loc": "Mumbai",
       "genres": [
         "To be confirmed after client identity and offering are documented"
       ],
@@ -2011,7 +2011,7 @@
       ],
       "mandatory": [],
       "ex": "Your beauty routine just got more rewarding! ✨\n\nSpend ₹1,200 on your first service at Zivara Salon & Wellness and enjoy a 1-Year Membership with 20% OFF on all services! A little pampering, a lot of savings. 💆♀️\n\nHurry! This is a limited-time offer. Book your appointment today!\n\n📍 Thane Branch\nShop G5, Highland Sky Arcade, LBS Marg, Naupada, Thane West, Maharashtra 400602\n\n📞 8655715221\n\n📍 Lower Parel Branch\nGround Floor, D.S. Marg, Gandhi Nagar, Near Phoenix Mall, Next to Sai Service NEXA, Lower Parel, Worli, Mumbai, Maharashtra 400018.\n\n📞 9920581281\n\nManaged by : @famebrosstudio\n\n#ZivaraSalon #SalonMembership #BeautyOffers\n\n[Zivara Salon and Wellness, salon offers in Thane, salon in Lower Parel, 20 percent off salon services, one year salon membership, beauty and wellness, salon packages Mumbai]",
-      "ig": null,
+      "ig": "@salon.zivara",
       "ready": "ready_with_post_brief",
       "web": null,
       "email": null
