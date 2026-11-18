@@ -160,9 +160,10 @@ export function applyCursorStyle(styleId = getCursorStyle()) {
 function triggerCursorMorphAnimation(style, origin) {
   if (typeof document === 'undefined' || typeof window === 'undefined') return;
   if (document.documentElement.dataset.motion === 'reduced' || document.documentElement.dataset.reducedMotion === 'true') return;
-  const x = Number.isFinite(origin?.clientX) ? origin.clientX : window.innerWidth / 2;
-  const y = Number.isFinite(origin?.clientY) ? origin.clientY : window.innerHeight / 2;
-  const accent = getComputedStyle(document.documentElement).getPropertyValue('--go').trim() || '#3b82f6';
+  const x = Number.isFinite(origin?.clientX) && origin.clientX > 0 ? origin.clientX : window.innerWidth / 2;
+  const y = Number.isFinite(origin?.clientY) && origin.clientY > 0 ? origin.clientY : window.innerHeight / 2;
+  const scope = document.querySelector('.ws') || document.documentElement;
+  const accent = getComputedStyle(scope).getPropertyValue('--go').trim() || '#3b82f6';
   const host = document.createElement('div');
   host.className = 'dp-cursor-morph';
   host.style.left = `${x}px`;
@@ -175,10 +176,10 @@ function triggerCursorMorphAnimation(style, origin) {
   ring2.className = 'dp-cursor-orbit dp-cursor-orbit-b';
   host.append(ring1, ring2);
 
-  for (let i = 0; i < 8; i += 1) {
+  for (let i = 0; i < 12; i += 1) {
     const spark = document.createElement('span');
     spark.className = 'dp-cursor-spark';
-    spark.style.setProperty('--dp-spark-angle', `${i * 45}deg`);
+    spark.style.setProperty('--dp-spark-angle', `${i * 30}deg`);
     host.appendChild(spark);
   }
 
@@ -188,12 +189,12 @@ function triggerCursorMorphAnimation(style, origin) {
   iconWrap.className = 'dp-cursor-toast-icon';
   iconWrap.innerHTML = style.svg.replace(/__ACCENT__/g, accent);
   const label = document.createElement('b');
-  label.textContent = style.label;
+  label.textContent = `Cursor: ${style.label}`;
   badge.append(iconWrap, label);
   host.appendChild(badge);
 
   document.body.appendChild(host);
-  window.setTimeout(() => host.remove(), 900);
+  window.setTimeout(() => host.remove(), 1150);
 }
 
 export function setCursorStyle(styleId, origin = null) {

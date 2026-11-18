@@ -65,19 +65,43 @@ const MOOD_THEMES = [
   { id: 'slow', label: 'Slow', note: 'Lo-Fi Matcha', bg: '#0c110f', panel: '#131b18', color: '#34d399' },
 ];
 
+function getActiveAccentColor() {
+  try {
+    const scope = document.querySelector('.ws') || document.documentElement;
+    return getComputedStyle(scope).getPropertyValue('--go').trim() || '#3b82f6';
+  } catch {
+    return '#3b82f6';
+  }
+}
+
 function spawnThemeShockwave(origin) {
   if (typeof document === 'undefined' || typeof window === 'undefined') return;
   if (document.documentElement.dataset.motion === 'reduced' || document.documentElement.dataset.reducedMotion === 'true') return;
-  const x = Number.isFinite(origin?.clientX) ? origin.clientX : window.innerWidth / 2;
-  const y = Number.isFinite(origin?.clientY) ? origin.clientY : window.innerHeight / 2;
+  const x = Number.isFinite(origin?.clientX) && origin.clientX > 0 ? origin.clientX : window.innerWidth / 2;
+  const y = Number.isFinite(origin?.clientY) && origin.clientY > 0 ? origin.clientY : window.innerHeight / 2;
   const maxR = Math.hypot(Math.max(x, window.innerWidth - x), Math.max(y, window.innerHeight - y));
+  const accent = getActiveAccentColor();
+
+  const portal = document.createElement('span');
+  portal.className = 'dp-theme-portal';
+  portal.style.left = `${x}px`;
+  portal.style.top = `${y}px`;
+  portal.style.setProperty('--dp-shock-size', `${Math.ceil(maxR * 2.15)}px`);
+  portal.style.setProperty('--dp-portal-accent', accent);
+  document.body.appendChild(portal);
+
   const ring = document.createElement('span');
   ring.className = 'dp-theme-shockwave';
   ring.style.left = `${x}px`;
   ring.style.top = `${y}px`;
-  ring.style.setProperty('--dp-shock-size', `${Math.ceil(maxR * 2.1)}px`);
+  ring.style.setProperty('--dp-shock-size', `${Math.ceil(maxR * 2.2)}px`);
+  ring.style.setProperty('--dp-portal-accent', accent);
   document.body.appendChild(ring);
-  window.setTimeout(() => ring.remove(), 750);
+
+  window.setTimeout(() => {
+    portal.remove();
+    ring.remove();
+  }, 850);
 }
 
 function applyMoodSelection(moodId, origin = null, onCommit = null) {
@@ -98,8 +122,8 @@ function applyMoodSelection(moodId, origin = null, onCommit = null) {
     return;
   }
 
-  const x = Number.isFinite(origin?.clientX) ? origin.clientX : window.innerWidth / 2;
-  const y = Number.isFinite(origin?.clientY) ? origin.clientY : window.innerHeight / 2;
+  const x = Number.isFinite(origin?.clientX) && origin.clientX > 0 ? origin.clientX : window.innerWidth / 2;
+  const y = Number.isFinite(origin?.clientY) && origin.clientY > 0 ? origin.clientY : window.innerHeight / 2;
   const endRadius = Math.hypot(Math.max(x, window.innerWidth - x), Math.max(y, window.innerHeight - y));
 
   if (typeof document.startViewTransition === 'function') {
@@ -116,13 +140,15 @@ function applyMoodSelection(moodId, origin = null, onCommit = null) {
           ],
         },
         {
-          duration: 540,
+          duration: 620,
           easing: 'cubic-bezier(0.22, 1, 0.36, 1)',
           pseudoElement: '::view-transition-new(root)',
         },
       );
       spawnThemeShockwave({ clientX: x, clientY: y });
-    }).catch(() => {});
+    }).catch(() => {
+      spawnThemeShockwave({ clientX: x, clientY: y });
+    });
     transition.finished.finally(() => {
       document.documentElement.classList.remove('dp-theme-vt-active');
     });
