@@ -157,9 +157,50 @@ export function applyCursorStyle(styleId = getCursorStyle()) {
   return chosen.id;
 }
 
-export function setCursorStyle(styleId) {
+function triggerCursorMorphAnimation(style, origin) {
+  if (typeof document === 'undefined' || typeof window === 'undefined') return;
+  if (document.documentElement.dataset.motion === 'reduced' || document.documentElement.dataset.reducedMotion === 'true') return;
+  const x = Number.isFinite(origin?.clientX) ? origin.clientX : window.innerWidth / 2;
+  const y = Number.isFinite(origin?.clientY) ? origin.clientY : window.innerHeight / 2;
+  const accent = getComputedStyle(document.documentElement).getPropertyValue('--go').trim() || '#3b82f6';
+  const host = document.createElement('div');
+  host.className = 'dp-cursor-morph';
+  host.style.left = `${x}px`;
+  host.style.top = `${y}px`;
+  host.style.setProperty('--dp-morph-accent', accent);
+
+  const ring1 = document.createElement('span');
+  ring1.className = 'dp-cursor-orbit dp-cursor-orbit-a';
+  const ring2 = document.createElement('span');
+  ring2.className = 'dp-cursor-orbit dp-cursor-orbit-b';
+  host.append(ring1, ring2);
+
+  for (let i = 0; i < 8; i += 1) {
+    const spark = document.createElement('span');
+    spark.className = 'dp-cursor-spark';
+    spark.style.setProperty('--dp-spark-angle', `${i * 45}deg`);
+    host.appendChild(spark);
+  }
+
+  const badge = document.createElement('div');
+  badge.className = 'dp-cursor-toast';
+  const iconWrap = document.createElement('span');
+  iconWrap.className = 'dp-cursor-toast-icon';
+  iconWrap.innerHTML = style.svg.replace(/__ACCENT__/g, accent);
+  const label = document.createElement('b');
+  label.textContent = style.label;
+  badge.append(iconWrap, label);
+  host.appendChild(badge);
+
+  document.body.appendChild(host);
+  window.setTimeout(() => host.remove(), 900);
+}
+
+export function setCursorStyle(styleId, origin = null) {
   const id = applyCursorStyle(styleId);
   try { localStorage.setItem(CURSOR_STORAGE_KEY, id); } catch {}
+  const chosen = CURSOR_STYLES.find((s) => s.id === id) || CURSOR_STYLES[0];
+  triggerCursorMorphAnimation(chosen, origin);
   return id;
 }
 

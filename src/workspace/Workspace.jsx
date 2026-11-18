@@ -65,14 +65,72 @@ const MOOD_THEMES = [
   { id: 'slow', label: 'Slow', note: 'Lo-Fi Matcha', bg: '#0c110f', panel: '#131b18', color: '#34d399' },
 ];
 
-function applyMoodSelection(moodId) {
+function spawnThemeShockwave(origin) {
+  if (typeof document === 'undefined' || typeof window === 'undefined') return;
+  if (document.documentElement.dataset.motion === 'reduced' || document.documentElement.dataset.reducedMotion === 'true') return;
+  const x = Number.isFinite(origin?.clientX) ? origin.clientX : window.innerWidth / 2;
+  const y = Number.isFinite(origin?.clientY) ? origin.clientY : window.innerHeight / 2;
+  const maxR = Math.hypot(Math.max(x, window.innerWidth - x), Math.max(y, window.innerHeight - y));
+  const ring = document.createElement('span');
+  ring.className = 'dp-theme-shockwave';
+  ring.style.left = `${x}px`;
+  ring.style.top = `${y}px`;
+  ring.style.setProperty('--dp-shock-size', `${Math.ceil(maxR * 2.1)}px`);
+  document.body.appendChild(ring);
+  window.setTimeout(() => ring.remove(), 750);
+}
+
+function applyMoodSelection(moodId, origin = null, onCommit = null) {
   const theme = moodId === 'light' ? 'light' : 'dark';
-  document.documentElement.dataset.theme = theme;
-  document.documentElement.dataset.mood = moodId;
-  try {
-    localStorage.setItem('driftpost-console-theme', theme);
-    localStorage.setItem('driftpost-console-mood', moodId);
-  } catch {}
+  const commitDom = () => {
+    document.documentElement.dataset.theme = theme;
+    document.documentElement.dataset.mood = moodId;
+    try {
+      localStorage.setItem('driftpost-console-theme', theme);
+      localStorage.setItem('driftpost-console-mood', moodId);
+    } catch {}
+    if (typeof onCommit === 'function') onCommit();
+  };
+
+  const reduced = document.documentElement.dataset.motion === 'reduced' || document.documentElement.dataset.reducedMotion === 'true';
+  if (reduced || !origin) {
+    commitDom();
+    return;
+  }
+
+  const x = Number.isFinite(origin?.clientX) ? origin.clientX : window.innerWidth / 2;
+  const y = Number.isFinite(origin?.clientY) ? origin.clientY : window.innerHeight / 2;
+  const endRadius = Math.hypot(Math.max(x, window.innerWidth - x), Math.max(y, window.innerHeight - y));
+
+  if (typeof document.startViewTransition === 'function') {
+    document.documentElement.classList.add('dp-theme-vt-active');
+    const transition = document.startViewTransition(() => {
+      commitDom();
+    });
+    transition.ready.then(() => {
+      document.documentElement.animate(
+        {
+          clipPath: [
+            `circle(0px at ${x}px ${y}px)`,
+            `circle(${Math.ceil(endRadius)}px at ${x}px ${y}px)`,
+          ],
+        },
+        {
+          duration: 540,
+          easing: 'cubic-bezier(0.22, 1, 0.36, 1)',
+          pseudoElement: '::view-transition-new(root)',
+        },
+      );
+      spawnThemeShockwave({ clientX: x, clientY: y });
+    }).catch(() => {});
+    transition.finished.finally(() => {
+      document.documentElement.classList.remove('dp-theme-vt-active');
+    });
+    return;
+  }
+
+  commitDom();
+  spawnThemeShockwave({ clientX: x, clientY: y });
 }
 
 export function WorkspaceNav({ page, onNavigate, email, onSignOut }) {
@@ -160,7 +218,7 @@ export function WorkspaceNav({ page, onNavigate, email, onSignOut }) {
       group: 'Theme',
       label: `Theme: ${m.label}`,
       icon: 'palette',
-      run: () => { setMood(m.id); applyMoodSelection(m.id); },
+      run: () => applyMoodSelection(m.id, { clientX: window.innerWidth / 2, clientY: window.innerHeight / 2 }, () => setMood(m.id)),
     }));
     const cursorActions = !isMobileDevice
       ? CURSOR_STYLES.map((c) => ({
@@ -700,13 +758,14 @@ export function SettingsPage({ session, onNavigate, onSignOut }) {
     catch { return false; }
   });
 
-  const selectMood = (id) => {
-    setMood(id);
-    applyMoodSelection(id);
+  const selectMood = (id, event = null) => {
+    const origin = event ? { clientX: event.clientX, clientY: event.clientY } : { clientX: window.innerWidth / 2, clientY: window.innerHeight / 2 };
+    applyMoodSelection(id, origin, () => setMood(id));
   };
 
-  const selectCursor = (id) => {
-    setCursorStyleState(setCursorStyle(id));
+  const selectCursor = (id, event = null) => {
+    const origin = event ? { clientX: event.clientX, clientY: event.clientY } : null;
+    setCursorStyleState(setCursorStyle(id, origin));
   };
 
   useEffect(() => {
@@ -765,7 +824,7 @@ export function SettingsPage({ session, onNavigate, onSignOut }) {
                     role="radio"
                     aria-checked={mood === item.id}
                     className={mood === item.id ? 'ws-mood-card active' : 'ws-mood-card'}
-                    onClick={() => selectMood(item.id)}
+                    onClick={(e) => selectMood(item.id, e)}
                   >
                     <span className="ws-mood-swatches" aria-hidden="true">
                       <i style={{ background: item.bg }} />
@@ -798,7 +857,7 @@ export function SettingsPage({ session, onNavigate, onSignOut }) {
                       role="radio"
                       aria-checked={cursorStyle === item.id}
                       className={cursorStyle === item.id ? 'ws-cursor-card active' : 'ws-cursor-card'}
-                      onClick={() => selectCursor(item.id)}
+                      onClick={(e) => selectCursor(item.id, e)}
                     >
                       <span className="ws-cursor-preview" aria-hidden="true" dangerouslySetInnerHTML={{ __html: item.svg.replaceAll('__ACCENT__', 'var(--go, #7dd3fc)') }} />
                       <span className="ws-mood-card-copy">
