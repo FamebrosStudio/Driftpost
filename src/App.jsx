@@ -96,9 +96,9 @@ const PUB_PAGES = [
 
 const PUBLIC_SEO = {
   home: {
-    title: 'Driftpost | Multi-Platform Social Media Scheduler & Agency Workspace',
-    description: 'Schedule and publish social media posts, Reels, Shorts, and carousels across Instagram, Facebook, YouTube and X. Manage multiple brands and accounts in one workspace.',
-    keywords: 'Driftpost, social media scheduler, multi-platform publishing, Instagram Reels scheduler, YouTube Shorts scheduler, Facebook Page auto poster, X scheduler, multi-brand social media tool, AI caption generator',
+    title: 'Driftpost | Social Media Automation & Multi-Platform Scheduler',
+    description: 'Automate and schedule social media posts, Reels, Shorts, and carousels across Instagram, Facebook, YouTube and X. Manage multiple brands and accounts in one workspace.',
+    keywords: 'social media automation, Driftpost, social media scheduler, multi-platform publishing, Instagram Reels automation, YouTube Shorts scheduler, Facebook Page auto poster, X scheduler, multi-brand social media tool, AI caption generator',
   },
   about: {
     title: 'About Driftpost | Multi-Brand Social Media Management for Agencies',
