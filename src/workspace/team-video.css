@@ -289,3 +289,201 @@
     grid-column: 1 / -1;
   }
 }
+
+.team-video-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.team-video-generate-btn {
+  border: 1px solid rgba(96, 165, 250, 0.42);
+  background: rgba(37, 99, 235, 0.14);
+  color: #dbeafe;
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 11px 18px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.16s ease, border-color 0.16s ease, transform 0.14s ease, box-shadow 0.16s ease;
+}
+
+.team-video-generate-btn:hover:not(:disabled) {
+  background: rgba(37, 99, 235, 0.28);
+  border-color: rgba(147, 197, 253, 0.72);
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.22);
+  transform: translateY(-1px);
+}
+
+.team-video-generate-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.team-captions-panel {
+  margin-top: 16px;
+  padding: 16px;
+  border-radius: 14px;
+  border: 1px solid rgba(96, 165, 250, 0.24);
+  background: rgba(12, 16, 26, 0.8);
+  backdrop-filter: blur(14px);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.team-captions-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.team-captions-head strong {
+  display: block;
+  font-size: 0.95rem;
+  color: #f8fafc;
+}
+
+.team-captions-head small {
+  display: block;
+  margin-top: 2px;
+  font-size: 0.8rem;
+  color: rgba(203, 213, 225, 0.74);
+}
+
+.team-captions-head-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.team-captions-regen-btn,
+.team-captions-clear-btn {
+  border-radius: 8px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: background 0.16s ease, border-color 0.16s ease;
+}
+
+.team-captions-regen-btn {
+  border: 1px solid rgba(96, 165, 250, 0.45);
+  background: rgba(37, 99, 235, 0.22);
+  color: #eff6ff;
+}
+
+.team-captions-regen-btn:hover:not(:disabled) {
+  background: rgba(37, 99, 235, 0.38);
+}
+
+.team-captions-regen-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.team-captions-clear-btn {
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(226, 232, 240, 0.8);
+}
+
+.team-captions-clear-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.09);
+  color: #fff;
+}
+
+.team-captions-tabs {
+  display: inline-flex;
+  align-self: flex-start;
+  padding: 3px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  gap: 3px;
+  flex-wrap: wrap;
+}
+
+.team-captions-tabs button {
+  border: 0;
+  background: transparent;
+  color: rgba(226, 232, 240, 0.72);
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 7px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.16s ease, color 0.16s ease;
+}
+
+.team-captions-tabs button:hover {
+  color: #fff;
+}
+
+.team-captions-tabs button.active {
+  background: linear-gradient(135deg, #2563eb, #3b82f6);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.32);
+}
+
+.team-caption-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.team-caption-editor-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.team-caption-editor-bar span {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: rgba(203, 213, 225, 0.85);
+}
+
+.team-caption-editor-bar button {
+  border: 1px solid rgba(148, 163, 184, 0.24);
+  background: rgba(255, 255, 255, 0.05);
+  color: #e2e8f0;
+  font-size: 0.76rem;
+  font-weight: 600;
+  padding: 5px 11px;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.team-caption-editor-bar button:hover {
+  background: rgba(37, 99, 235, 0.24);
+  border-color: rgba(96, 165, 250, 0.5);
+  color: #fff;
+}
+
+.team-caption-editor textarea,
+.team-caption-editor input {
+  width: 100%;
+  box-sizing: border-box;
+  border-radius: 10px;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  background: rgba(7, 10, 17, 0.78);
+  color: #f8fafc;
+  font: inherit;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  padding: 10px 12px;
+  resize: vertical;
+}
+
+.team-caption-editor textarea:focus,
+.team-caption-editor input:focus {
+  outline: none;
+  border-color: rgba(96, 165, 250, 0.65);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}

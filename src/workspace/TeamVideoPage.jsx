@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { api, apiRequestUrl } from '../lib.js';
 import { isAiAccount } from '../ai-access.js';
+import { requestCaptions as runAiCaptions, mapResponse as mapAiCaptions } from '../stage2/ai.js';
 import { FAMEBROS_INSTAGRAM_TAGGING_LIST, getAssignedInstagramTagsForBrand } from '../stage3/instagramCollaborators.js';
 import { WorkspaceNav } from './Workspace.jsx';
 import BorderGlow from '../components/reactbits/BorderGlow.jsx';
@@ -25,6 +26,12 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut }) {
   const [description, setDescription] = useState('');
   const [uploading, setUploading] = useState(false);
   const [uploadPercent, setUploadPercent] = useState(0);
+  const [generatingCaptions, setGeneratingCaptions] = useState(false);
+  const [captionStage, setCaptionStage] = useState('');
+  const [generatedCaptions, setGeneratedCaptions] = useState(null);
+  const [captionPlatform, setCaptionPlatform] = useState('instagram');
+  const [copiedKey, setCopiedKey] = useState('');
+  const [captionUsedDesc, setCaptionUsedDesc] = useState(false);
   const [stoppingJobId, setStoppingJobId] = useState('');
   const [inboxOpen, setInboxOpen] = useState(false);
   const [error, setError] = useState('');
@@ -59,6 +66,50 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut }) {
     setFilmstrip([]);
     setVideoDuration(0);
     setVideoTime(0);
+    setGeneratedCaptions(null);
+    setCopiedKey('');
+  };
+
+  const handleGenerateCaptions = async () => {
+    setError('');
+    setNotice('');
+    if (!isAiAccount(session.user?.email)) return setError('This private team workflow is not available for this account.');
+    if (!mediaFiles.length) return setError('Choose a video or carousel images first.');
+    const trimmedDesc = description.trim();
+    setGeneratingCaptions(true);
+    setCaptionStage(isVideoSelection ? 'Analyzing video frames & audio…' : 'Analyzing media…');
+    try {
+      const entries = mediaFiles.map((item) => ({ raw: item, name: item.name, type: item.type }));
+      const data = await runAiCaptions(session.access_token, {
+        files: entries,
+        brief: trimmedDesc,
+        analysis: 'analyze',
+        teamVideo: true,
+        frameCount: 6,
+      });
+      setCaptionStage('Writing platform captions…');
+      const mapped = mapAiCaptions(data);
+      setGeneratedCaptions(mapped);
+      setCaptionUsedDesc(Boolean(trimmedDesc));
+      setCopiedKey('');
+    } catch (e) {
+      setError(e?.message || 'Could not generate captions from this media.');
+    } finally {
+      setGeneratingCaptions(false);
+      setCaptionStage('');
+    }
+  };
+
+  const copyText = async (key, value) => {
+    const text = String(value || '');
+    if (!text.trim()) return;
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopiedKey(key);
+      window.setTimeout(() => setCopiedKey((cur) => (cur === key ? '' : cur)), 1800);
+    } catch {
+      setError('Could not copy to clipboard.');
+    }
   };
 
   const captureVideoFrameAt = async (videoEl, targetSec) => {
@@ -495,10 +546,177 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut }) {
               {notice && <div className="feed-it-success" role="status">{notice}</div>}
 
               <div className="team-video-actions">
-                <button type="submit" disabled={uploading || !mediaFiles.length || !isAiAccount(session.user?.email)}>
+                <button type="submit" disabled={uploading || generatingCaptions || !mediaFiles.length || !isAiAccount(session.user?.email)}>
                   {uploading ? `Uploading (${uploadPercent}%)…` : 'Send to automated pipeline'}
                 </button>
+                <button
+                  type="button"
+                  className="team-video-generate-btn"
+                  disabled={uploading || generatingCaptions || !mediaFiles.length || !isAiAccount(session.user?.email)}
+                  onClick={handleGenerateCaptions}
+                >
+                  {generatingCaptions ? (captionStage || 'Generating captions…') : 'Generate captions'}
+                </button>
               </div>
+
+              {generatedCaptions && (
+                <div className="team-captions-panel" aria-live="polite">
+                  <div className="team-captions-head">
+                    <div>
+                      <strong>Generated captions</strong>
+                      <small>
+                        {captionUsedDesc
+                          ? 'Analyzed media + your description instructions. Edit or copy any platform below.'
+                          : 'Generated directly from your analyzed media. Edit or copy any platform below.'}
+                      </small>
+                    </div>
+                    <div className="team-captions-head-actions">
+                      <button
+                        type="button"
+                        className="team-captions-regen-btn"
+                        disabled={generatingCaptions || uploading}
+                        onClick={handleGenerateCaptions}
+                      >
+                        {generatingCaptions ? 'Regenerating…' : 'Regenerate'}
+                      </button>
+                      <button
+                        type="button"
+                        className="team-captions-clear-btn"
+                        disabled={generatingCaptions}
+                        onClick={() => { setGeneratedCaptions(null); setCopiedKey(''); }}
+                      >
+                        Clear
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="team-captions-tabs" role="tablist" aria-label="Caption platform">
+                    {[
+                      ['instagram', 'Instagram'],
+                      ['youtube', 'YouTube'],
+                      ['facebook', 'Facebook'],
+                      ['x', 'X'],
+                    ].map(([key, label]) => (
+                      <button
+                        key={key}
+                        type="button"
+                        role="tab"
+                        aria-selected={captionPlatform === key}
+                        className={captionPlatform === key ? 'active' : ''}
+                        onClick={() => setCaptionPlatform(key)}
+                      >
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+
+                  {captionPlatform === 'instagram' && (
+                    <div className="team-caption-editor">
+                      <div className="team-caption-editor-bar">
+                        <span>Instagram caption</span>
+                        <button type="button" onClick={() => copyText('ig', generatedCaptions.instagram?.caption)}>
+                          {copiedKey === 'ig' ? 'Copied!' : 'Copy'}
+                        </button>
+                      </div>
+                      <textarea
+                        rows={7}
+                        value={generatedCaptions.instagram?.caption || ''}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setGeneratedCaptions((old) => ({ ...old, instagram: { ...(old?.instagram || {}), caption: val } }));
+                        }}
+                      />
+                    </div>
+                  )}
+
+                  {captionPlatform === 'youtube' && (
+                    <div className="team-caption-editor">
+                      <div className="team-caption-editor-bar">
+                        <span>YouTube title</span>
+                        <button type="button" onClick={() => copyText('yt-title', generatedCaptions.youtube?.title)}>
+                          {copiedKey === 'yt-title' ? 'Copied!' : 'Copy title'}
+                        </button>
+                      </div>
+                      <input
+                        type="text"
+                        maxLength={100}
+                        value={generatedCaptions.youtube?.title || ''}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setGeneratedCaptions((old) => ({ ...old, youtube: { ...(old?.youtube || {}), title: val } }));
+                        }}
+                      />
+                      <div className="team-caption-editor-bar">
+                        <span>YouTube description</span>
+                        <button type="button" onClick={() => copyText('yt-desc', generatedCaptions.youtube?.description)}>
+                          {copiedKey === 'yt-desc' ? 'Copied!' : 'Copy description'}
+                        </button>
+                      </div>
+                      <textarea
+                        rows={6}
+                        value={generatedCaptions.youtube?.description || ''}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setGeneratedCaptions((old) => ({ ...old, youtube: { ...(old?.youtube || {}), description: val } }));
+                        }}
+                      />
+                      <div className="team-caption-editor-bar">
+                        <span>YouTube tags</span>
+                        <button type="button" onClick={() => copyText('yt-tags', generatedCaptions.youtube?.tags)}>
+                          {copiedKey === 'yt-tags' ? 'Copied!' : 'Copy tags'}
+                        </button>
+                      </div>
+                      <input
+                        type="text"
+                        value={generatedCaptions.youtube?.tags || ''}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setGeneratedCaptions((old) => ({ ...old, youtube: { ...(old?.youtube || {}), tags: val } }));
+                        }}
+                      />
+                    </div>
+                  )}
+
+                  {captionPlatform === 'facebook' && (
+                    <div className="team-caption-editor">
+                      <div className="team-caption-editor-bar">
+                        <span>Facebook post</span>
+                        <button type="button" onClick={() => copyText('fb', generatedCaptions.facebook?.message)}>
+                          {copiedKey === 'fb' ? 'Copied!' : 'Copy'}
+                        </button>
+                      </div>
+                      <textarea
+                        rows={6}
+                        value={generatedCaptions.facebook?.message || ''}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setGeneratedCaptions((old) => ({ ...old, facebook: { ...(old?.facebook || {}), message: val } }));
+                        }}
+                      />
+                    </div>
+                  )}
+
+                  {captionPlatform === 'x' && (
+                    <div className="team-caption-editor">
+                      <div className="team-caption-editor-bar">
+                        <span>X post ({Array.from(generatedCaptions.x?.text || '').length}/280)</span>
+                        <button type="button" onClick={() => copyText('x', generatedCaptions.x?.text)}>
+                          {copiedKey === 'x' ? 'Copied!' : 'Copy'}
+                        </button>
+                      </div>
+                      <textarea
+                        rows={4}
+                        maxLength={280}
+                        value={generatedCaptions.x?.text || ''}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setGeneratedCaptions((old) => ({ ...old, x: { ...(old?.x || {}), text: val } }));
+                        }}
+                      />
+                    </div>
+                  )}
+                </div>
+              )}
             </section>
           </BorderGlow>
         </form>
