@@ -33,7 +33,7 @@ import { enabledInstagramCollaborators, instagramCaptionRequiredError, nonEmptyC
 import { createTemporaryMediaUrl, isOwnedMediaPath, isValidPreuploadedMedia } from './media-links.js';
 import { canUsePrivateBrandData } from './brand-access.js';
 import { isAllowedOrigin, normalizeHttpOrigin } from './cors-policy.js';
-import { enqueueDirectUpload, getDriveReviewFile, getDriveScanError, startGoogleDriveIntake, streamDriveReviewFile, triggerDriveScan } from './google-drive-intake.js';
+import { enqueueDirectUpload, getDriveReviewFile, getDriveScanError, resolveIntakePreviewTarget, startGoogleDriveIntake, streamDriveReviewFile, triggerDriveScan } from './google-drive-intake.js';
 import { authorizeMcpDevice, createMcpDeviceAuthorization, findMcpAccessToken, pollMcpDeviceAuthorization } from './mcp-auth.js';
 
 const required = ['FRONTEND_URL', 'SUPABASE_URL', 'SUPABASE_SECRET_KEY', 'TOKEN_ENCRYPTION_KEY', 'STATE_SIGNING_SECRET'];
@@ -2203,6 +2203,66 @@ app.post('/api/intake/direct', requireUser, upload.fields([{ name: 'media', maxC
     res.json(out);
   } catch (e) {
     res.status(400).json({ error: e?.message || 'Could not queue your upload.' });
+  }
+});
+
+app.post('/api/intake/preview-captions', requireUser, upload.fields([{ name: 'images', maxCount: 10 }, { name: 'video', maxCount: 1 }]), async (req, res) => {
+  const imageFiles = Array.isArray(req.files?.images) ? req.files.images : [];
+  const videoFile = Array.isArray(req.files?.video) ? req.files.video[0] || null : null;
+  const cleanup = async () => {
+    for (const f of [...imageFiles, ...(videoFile ? [videoFile] : [])]) {
+      if (f?.path) await fs.promises.rm(f.path, { force: true }).catch(() => {});
+    }
+  };
+  if (!canUsePrivateBrandData(req.user)) {
+    await cleanup();
+    return res.status(403).json({ error: 'Private team access required.' });
+  }
+  try {
+    const fileName = String(req.body?.fileName || videoFile?.originalname || imageFiles[0]?.originalname || '').trim();
+    const description = String(req.body?.description || '').trim();
+    const isVideo = Boolean(videoFile) || req.body?.isVideo === '1';
+    const frameImages = await Promise.all(imageFiles.slice(0, 8).map(async (file) => ({
+      name: file.originalname,
+      mimetype: file.mimetype,
+      base64: (await fs.readFile(file.path)).toString('base64'),
+      detail: isVideo ? 'low' : 'high',
+    })));
+    let transcript = '';
+    if (videoFile) {
+      try {
+        const spoken = await transcribeVideo(videoFile.path);
+        transcript = spoken?.text || '';
+      } catch (err) {
+        console.warn('[intake-preview] video transcription skipped:', String(err?.message || err).slice(0, 200));
+      }
+    }
+    const target = await resolveIntakePreviewTarget(supabase, req.user.id, {
+      fileName,
+      frames: frameImages,
+      transcript,
+    });
+    const out = await generateCaptions(description, {
+      brand: target.brand?.name || '',
+      brandId: target.brand?.id || '',
+      allowPrivateBrandData: Boolean(target.brand?.id),
+      transcript,
+      platforms: target.platforms,
+      video_frame_analysis: isVideo,
+      images: frameImages,
+    });
+    res.json({
+      brand: target.brand,
+      platforms: target.platforms,
+      destinations: target.destinations,
+      instagramTags: target.instagramTags,
+      transcript,
+      captions: out.captions || out,
+    });
+  } catch (e) {
+    res.status(500).json({ error: e?.message || 'Could not analyze media and generate captions.' });
+  } finally {
+    await cleanup();
   }
 });
 

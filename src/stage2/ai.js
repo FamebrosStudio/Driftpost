@@ -1,6 +1,6 @@
 import { api } from '../lib.js';
 
-async function compactImage(file) {
+export async function compactImage(file) {
   if (!file?.type?.startsWith('image/')) return null;
   let bitmap = null;
   try {
@@ -36,7 +36,7 @@ async function compactImage(file) {
 
 // Extract a few evenly spaced stills in-browser; videos stay on the user's
 // device apart from the small JPEG samples and audio sent for analysis.
-async function sampleVideo(file, count = 3) {
+export async function sampleVideo(file, count = 3) {
   if (!file?.type?.startsWith('video/')) return [];
   const url = URL.createObjectURL(file);
   const video = document.createElement('video');

@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { api, apiRequestUrl } from '../lib.js';
 import { isAiAccount } from '../ai-access.js';
-import { requestCaptions as runAiCaptions, mapResponse as mapAiCaptions } from '../stage2/ai.js';
+import { compactImage, mapResponse as mapAiCaptions, sampleVideo } from '../stage2/ai.js';
 import { FAMEBROS_INSTAGRAM_TAGGING_LIST, getAssignedInstagramTagsForBrand } from '../stage3/instagramCollaborators.js';
 import { WorkspaceNav } from './Workspace.jsx';
 import BorderGlow from '../components/reactbits/BorderGlow.jsx';
@@ -29,9 +29,9 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut }) {
   const [generatingCaptions, setGeneratingCaptions] = useState(false);
   const [captionStage, setCaptionStage] = useState('');
   const [generatedCaptions, setGeneratedCaptions] = useState(null);
+  const [captionMeta, setCaptionMeta] = useState({ brand: null, platforms: [], instagramTags: [], usedDesc: false });
   const [captionPlatform, setCaptionPlatform] = useState('instagram');
   const [copiedKey, setCopiedKey] = useState('');
-  const [captionUsedDesc, setCaptionUsedDesc] = useState(false);
   const [stoppingJobId, setStoppingJobId] = useState('');
   const [inboxOpen, setInboxOpen] = useState(false);
   const [error, setError] = useState('');
@@ -67,6 +67,7 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut }) {
     setVideoDuration(0);
     setVideoTime(0);
     setGeneratedCaptions(null);
+    setCaptionMeta({ brand: null, platforms: [], instagramTags: [], usedDesc: false });
     setCopiedKey('');
   };
 
@@ -77,20 +78,36 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut }) {
     if (!mediaFiles.length) return setError('Choose a video or carousel images first.');
     const trimmedDesc = description.trim();
     setGeneratingCaptions(true);
-    setCaptionStage(isVideoSelection ? 'Analyzing video frames & audio…' : 'Analyzing media…');
+    setCaptionStage(isVideoSelection ? 'Analyzing video, audio & brand…' : 'Analyzing media & brand…');
     try {
-      const entries = mediaFiles.map((item) => ({ raw: item, name: item.name, type: item.type }));
-      const data = await runAiCaptions(session.access_token, {
-        files: entries,
-        brief: trimmedDesc,
-        analysis: 'analyze',
-        teamVideo: true,
-        frameCount: 6,
+      const photos = mediaFiles.filter((item) => item.type?.startsWith('image/')).slice(0, 6);
+      const video = mediaFiles.find((item) => item.type?.startsWith('video/')) || null;
+      const frames = video ? await sampleVideo(video, 6) : [];
+      const selectedImages = video ? frames : photos;
+      const compacted = await Promise.all(selectedImages.map((item) => compactImage(item)));
+      const form = new FormData();
+      compacted.filter(Boolean).forEach((img) => form.append('images', img, img.name));
+      if (video) form.append('video', video, video.name || 'video.mp4');
+      form.append('fileName', (video || photos[0])?.name || '');
+      form.append('isVideo', video ? '1' : '0');
+      form.append('description', trimmedDesc);
+      setCaptionStage('Routing brand & writing captions…');
+      const data = await api('/api/intake/preview-captions', session.access_token, {
+        method: 'POST',
+        body: form,
       });
-      setCaptionStage('Writing platform captions…');
       const mapped = mapAiCaptions(data);
+      const resolvedPlatforms = Array.isArray(data?.platforms) && data.platforms.length
+        ? data.platforms
+        : ['instagram', 'youtube', 'facebook', 'x'];
       setGeneratedCaptions(mapped);
-      setCaptionUsedDesc(Boolean(trimmedDesc));
+      setCaptionMeta({
+        brand: data?.brand || null,
+        platforms: resolvedPlatforms,
+        instagramTags: Array.isArray(data?.instagramTags) ? data.instagramTags : [],
+        usedDesc: Boolean(trimmedDesc),
+      });
+      setCaptionPlatform(resolvedPlatforms.includes(captionPlatform) ? captionPlatform : resolvedPlatforms[0]);
       setCopiedKey('');
     } catch (e) {
       setError(e?.message || 'Could not generate captions from this media.');
@@ -562,13 +579,24 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut }) {
               {generatedCaptions && (
                 <div className="team-captions-panel" aria-live="polite">
                   <div className="team-captions-head">
-                    <div>
+                    <div className="team-captions-title-wrap">
                       <strong>Generated captions</strong>
-                      <small>
-                        {captionUsedDesc
-                          ? 'Analyzed media + your description instructions. Edit or copy any platform below.'
-                          : 'Generated directly from your analyzed media. Edit or copy any platform below.'}
-                      </small>
+                      <div className="team-captions-badges">
+                        <span className="team-cap-badge brand">
+                          {captionMeta.brand?.name || 'Auto-detected from media'}
+                        </span>
+                        {captionMeta.platforms.map((p) => (
+                          <span key={p} className="team-cap-badge platform">
+                            {p === 'x' ? 'X' : p.charAt(0).toUpperCase() + p.slice(1)}
+                          </span>
+                        ))}
+                        {captionMeta.instagramTags.map((tag) => (
+                          <span key={tag} className="team-cap-badge tag">@{String(tag).replace(/^@+/, '')}</span>
+                        ))}
+                        <span className="team-cap-badge mode">
+                          {captionMeta.usedDesc ? 'Media + description' : 'Media only'}
+                        </span>
+                      </div>
                     </div>
                     <div className="team-captions-head-actions">
                       <button
@@ -583,7 +611,11 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut }) {
                         type="button"
                         className="team-captions-clear-btn"
                         disabled={generatingCaptions}
-                        onClick={() => { setGeneratedCaptions(null); setCopiedKey(''); }}
+                        onClick={() => {
+                          setGeneratedCaptions(null);
+                          setCaptionMeta({ brand: null, platforms: [], instagramTags: [], usedDesc: false });
+                          setCopiedKey('');
+                        }}
                       >
                         Clear
                       </button>
@@ -596,18 +628,20 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut }) {
                       ['youtube', 'YouTube'],
                       ['facebook', 'Facebook'],
                       ['x', 'X'],
-                    ].map(([key, label]) => (
-                      <button
-                        key={key}
-                        type="button"
-                        role="tab"
-                        aria-selected={captionPlatform === key}
-                        className={captionPlatform === key ? 'active' : ''}
-                        onClick={() => setCaptionPlatform(key)}
-                      >
-                        {label}
-                      </button>
-                    ))}
+                    ]
+                      .filter(([key]) => !captionMeta.platforms.length || captionMeta.platforms.includes(key))
+                      .map(([key, label]) => (
+                        <button
+                          key={key}
+                          type="button"
+                          role="tab"
+                          aria-selected={captionPlatform === key}
+                          className={captionPlatform === key ? 'active' : ''}
+                          onClick={() => setCaptionPlatform(key)}
+                        >
+                          {label}
+                        </button>
+                      ))}
                   </div>
 
                   {captionPlatform === 'instagram' && (

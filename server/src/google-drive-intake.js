@@ -796,6 +796,57 @@ async function scanFolders(supabase, onlyUserId = '') {
   }
 }
 
+export async function resolveIntakePreviewTarget(supabase, userId, { fileName = '', frames = [], transcript = '' } = {}) {
+  const { data: ownedConnections } = await supabase.from('platform_connections')
+    .select('id, user_id, platform, platform_account_id, account_name')
+    .eq('user_id', userId);
+  const connections = Array.isArray(ownedConnections) ? ownedConnections : [];
+  const parsed = parseDestination(fileName || 'video.mp4');
+  const firstAccount = parsed.accountNames[0] || parsed.accountName || '';
+  let brand = null;
+  let destinations = [];
+
+  if (firstAccount) {
+    const hit = resolveDriveBrand(firstAccount);
+    brand = hit?.brand || null;
+    const mapped = mapBrandDestinations(brand, connections, parsed.platforms);
+    destinations = mapped.destinations || [];
+  }
+
+  if ((!brand || !destinations.length) && frames.length) {
+    try {
+      const candidates = await inferLikelyVideoBrands(frames, transcript);
+      const top = Array.isArray(candidates) ? candidates[0] : null;
+      if (top?.id) {
+        const { getBrandById } = await import('./brand-memory/index.js');
+        const inferredBrand = getBrandById(top.id);
+        if (inferredBrand) {
+          const mapped = mapBrandDestinations(inferredBrand, connections, parsed.platforms);
+          if (mapped.destinations?.length || !brand) {
+            brand = inferredBrand;
+            destinations = mapped.destinations || [];
+          }
+        }
+      }
+    } catch {}
+  }
+
+  const resolvedPlatforms = [...new Set(destinations.map((d) => d.platform))];
+  const platforms = resolvedPlatforms.length
+    ? resolvedPlatforms
+    : (parsed.platforms?.length ? parsed.platforms : ['instagram', 'facebook', 'youtube', 'x']);
+  const instagramTags = brand
+    ? getAssignedInstagramTags({ brandId: brand.id, brandName: brand.name, accountName: firstAccount, accounts: destinations })
+    : [];
+
+  return {
+    brand: brand ? { id: brand.id, name: brand.name, ig: brand.ig || null, cat: brand.cat || '', loc: brand.loc || '' } : null,
+    platforms,
+    destinations: destinations.map((d) => ({ id: d.id, platform: d.platform, account_name: d.account_name })),
+    instagramTags,
+  };
+}
+
 export async function triggerDriveScan(supabase, userId = '') {
   if (!process.env.DRIFTPOST_DRIVE_FOLDER_ID && !userId) return;
   await scanFolders(supabase, userId);
