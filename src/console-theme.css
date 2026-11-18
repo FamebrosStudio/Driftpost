@@ -5675,3 +5675,16 @@ html {
   font-weight: 600;
   box-shadow: 0 10px 26px -8px color-mix(in srgb, var(--go) 55%, transparent);
 }
+
+/* Ensure card grids and stacked panels never stick together */
+#root .ws-stat-grid,
+#root .cn-grid,
+#root .feed-it-grid {
+  gap: 18px !important;
+}
+
+#root .ws-main > .border-glow-card + .border-glow-card,
+#root .ws-main > section + section,
+#root .ws-main > form + .border-glow-card {
+  margin-top: 20px;
+}

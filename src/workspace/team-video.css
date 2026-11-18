@@ -655,3 +655,21 @@
   padding: 7px 14px;
   border-radius: 8px;
 }
+
+#root .team-video-page .team-video-main,
+#root .team-review-main {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+#root .team-video-page .team-video-form {
+  margin: 0;
+}
+
+#root .team-video-page .drive-intake-jobs,
+#root .team-review-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}

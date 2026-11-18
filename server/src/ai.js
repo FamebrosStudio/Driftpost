@@ -97,7 +97,7 @@ PLATFORM: YOUTUBE only (search) — title <=100 chars and accurately describe th
   instagram: `
 PLATFORM: INSTAGRAM only (discovery) — write a specific hook, one useful supported detail and a suitable CTA if one fits. Keep the body concise. Never open with a phone number or address. For a saved brand, return up to 10 distinct short SEO phrases in instagram.keywords, selected for the post and grounded in the brief or that brand's verified profile. For an unbranded creator post, return only phrases supported by the brief. The server appends the selected brand footer, up to 3 topic-relevant hashtags, and topic-supported SEO phrases.`,
   facebook: `
-PLATFORM: FACEBOOK only (social/conversational, NO bracket) — write a distinct, natural post. The server appends the selected brand footer and up to 2 hashtags. Never include the SEO phrase bracket.`,
+PLATFORM: FACEBOOK only (social/conversational) — write a distinct, natural post. The server appends the selected brand footer, up to 2 hashtags, and topic-supported SEO keywords.`,
   x: `
 PLATFORM: X only (punchy, <=280 chars) — one sharp line + different CTA, max 2 hashtags, no footer, no bracket, no emoji spam.`,
 };
@@ -851,8 +851,8 @@ export async function generateCaptions(summary, opts = {}) {
     if (visibleBodyLen(fbBody, brand?.name) < 20) fbBody = fallbackBody;
     if (visibleBodyLen(ytBody, brand?.name) < 24) ytBody = fallbackBody;
     igCap = fitCaption(igBody, `${footer}${hashLine ? `\n\n${hashLine}` : ''}${kwLine ? `\n\n${kwLine}` : ''}`, 2200, 'Instagram');
-    // Facebook: body + footer + max 2 hashtags, never the bracket
-    fbMsg = fitCaption(fbBody, `${footer}${fbTags ? `\n\n${fbTags}` : ''}`, 2000, 'Facebook');
+    // Facebook: body + footer + max 2 hashtags + topic-supported SEO keywords
+    fbMsg = fitCaption(fbBody, `${footer}${fbTags ? `\n\n${fbTags}` : ''}${kwLine ? `\n\n${kwLine}` : ''}`, 2000, 'Facebook');
     // YouTube: body + footer
     ytDesc = fitCaption(ytBody, footer, 2000, 'YouTube');
     if (!ytTags.length && kwBank.length) {
