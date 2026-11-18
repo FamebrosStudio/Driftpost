@@ -231,10 +231,13 @@ export function installInteractivePhysics() {
     if (targetEl?.closest?.(TEXT_INPUT_SELECTOR) || targetEl?.closest?.(NATIVE_DRAG_IGNORE)) return;
     const target = targetEl?.closest?.(HOLD_SELECTOR);
     if (!target || target.disabled) return;
-    heldEl = target;
+    const glowWrapper = target.parentElement?.classList?.contains('border-glow-inner')
+      ? target.closest('.border-glow-card')
+      : null;
+    heldEl = glowWrapper || target;
     startX = e.clientX;
     startY = e.clientY;
-    target.classList.add('dp-holding');
+    heldEl.classList.add('dp-holding');
   }, { passive: true });
 
   window.addEventListener('pointerup', releaseHeld, { passive: true });
