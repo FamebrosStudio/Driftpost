@@ -5433,3 +5433,245 @@ html {
   border-color: var(--go);
   background: color-mix(in srgb, var(--go, #8b5cf6) 22%, var(--panel));
 }
+
+/* ==========================================================================
+   DEDICATED APPLE-GRADE AUTH PAGE (/login & /signup)
+   ========================================================================== */
+#root .auth-wrap.auth-wrap-apple {
+  position: relative;
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 28px 16px;
+  background: var(--bg) !important;
+  color: var(--ink) !important;
+  overflow: hidden;
+}
+
+#root .auth-ambient-glow {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 65% 48% at 50% 15%, color-mix(in srgb, var(--go) 18%, transparent), transparent 64%),
+    radial-gradient(ellipse 50% 40% at 85% 85%, color-mix(in srgb, var(--go) 10%, transparent), transparent 58%);
+}
+
+#root .auth-card.auth-card-apple {
+  position: relative;
+  z-index: 1;
+  width: min(430px, 100%);
+  margin: 0 auto;
+  padding: 26px 26px 28px;
+  border-radius: 24px !important;
+  border: 1px solid var(--line-hard) !important;
+  background: color-mix(in srgb, var(--panel) 84%, transparent) !important;
+  backdrop-filter: blur(26px) saturate(155%);
+  -webkit-backdrop-filter: blur(26px) saturate(155%);
+  box-shadow: 0 28px 70px rgba(0, 0, 0, 0.42);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  animation: dpCardArrive 380ms cubic-bezier(0.22, 1.24, 0.36, 1) both;
+}
+
+#root .auth-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+#root .auth-card-top .brand img.logo-img {
+  height: 28px;
+  width: auto;
+}
+
+#root .auth-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--panel2) 72%, transparent);
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+#root .auth-back-btn:hover {
+  color: var(--ink);
+  border-color: var(--line-hard);
+}
+
+#root .auth-mode-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 13px;
+  background: color-mix(in srgb, var(--bg) 72%, transparent);
+  border: 1px solid var(--line);
+}
+
+#root .auth-mode-tab {
+  padding: 8px 12px;
+  border-radius: 9px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+#root .auth-mode-tab.active {
+  background: color-mix(in srgb, var(--go) 16%, var(--panel2));
+  border-color: color-mix(in srgb, var(--go) 38%, transparent);
+  color: var(--ink);
+}
+
+#root .auth-head {
+  text-align: center;
+}
+
+#root .auth-head h1 {
+  margin: 0 0 6px;
+  font-size: 26px;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+}
+
+#root .auth-head p {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+#root .auth-google-btn {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: 13px;
+  border: 1px solid var(--line-hard);
+  background: color-mix(in srgb, var(--panel2) 85%, transparent);
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+#root .auth-google-btn:hover {
+  border-color: color-mix(in srgb, var(--go) 48%, var(--line-hard));
+}
+
+#root .auth-google-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+#root .auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--faint);
+  font-size: 11.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+#root .auth-divider::before,
+#root .auth-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+}
+
+#root .auth-form-apple {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+#root .auth-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+#root .auth-field > span {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+#root .auth-field > input {
+  width: 100%;
+  min-height: 42px;
+  padding: 0 13px;
+  border-radius: 12px;
+  border: 1px solid var(--line-hard);
+  background: var(--input, var(--bg));
+  color: var(--ink);
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+#root .auth-terms {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+#root .auth-terms input {
+  margin-top: 3px;
+  accent-color: var(--go);
+}
+
+#root .auth-terms a {
+  color: var(--go);
+}
+
+#root .auth-alert {
+  padding: 10px 12px;
+  border-radius: 11px;
+  font-size: 12.5px;
+  line-height: 1.45;
+}
+
+#root .auth-alert.err {
+  background: color-mix(in srgb, var(--danger, #f87171) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--danger, #f87171) 36%, transparent);
+  color: var(--danger, #fca5a5);
+}
+
+#root .auth-alert.ok {
+  background: color-mix(in srgb, var(--ok, #34d399) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--ok, #34d399) 36%, transparent);
+  color: var(--ok, #6ee7b7);
+}
+
+#root .auth-submit-btn {
+  width: 100%;
+  min-height: 44px;
+  margin-top: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 13px;
+  border: 1px solid color-mix(in srgb, var(--go) 48%, transparent);
+  background: var(--go);
+  color: var(--go-ink);
+  font-size: 14.5px;
+  font-weight: 600;
+  box-shadow: 0 10px 26px -8px color-mix(in srgb, var(--go) 55%, transparent);
+}

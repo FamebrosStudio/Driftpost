@@ -630,27 +630,76 @@ function Auth({ mode, setMode, onBack, markFresh, returnTo }) {
   };
 
   return (
-    <div className="auth-wrap">
-      <div className="auth-card">
-        <div className="brand"><img className="logo-img logo-d" src="/logo-dark.png" width="1984" height="512" decoding="async" alt="Driftpost" /><img className="logo-img logo-l" src="/logo-light.png" width="1908" height="512" decoding="async" alt="Driftpost" /></div>
-        <h1>{mode === 'login' ? 'Welcome back.' : 'Start posting.'}</h1>
-        <p>One calm composer for YouTube, Instagram, Facebook and X. No noise.</p>
-        <form className="login-form" onSubmit={submit}>
-          <button className="user-profile" type="button" disabled={busy} onClick={google}><span className="user-profile-inner"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.7 9.5 24 9.5Z"/><path d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.88c-.58 2.96-2.25 5.47-4.73 7.16l7.63 5.92c4.45-4.1 7.2-10.14 7.2-17.55Z"/><path d="M10.55 28.59a14.49 14.49 0 0 1 0-9.18l-7.98-6.19a23.94 23.94 0 0 0 0 21.56l7.98-6.19Z"/><path d="M24 48c6.47 0 11.91-2.13 15.88-5.8l-7.63-5.92c-2.12 1.43-4.83 2.28-8.25 2.28-6.3 0-11.57-4.22-13.46-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48Z"/></svg>{mode === 'login' ? 'Continue with Google' : 'Sign up with Google'}</span></button>
-          <div className="input-span"><span className="label">Email address</span><input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" /></div>
-          <div className="input-span"><span className="label">Password</span><input type="password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="At least 6 characters" /></div>
+    <div className="auth-wrap auth-wrap-apple">
+      <div className="auth-ambient-glow" aria-hidden="true" />
+      <div className="auth-card auth-card-apple">
+        <div className="auth-card-top">
+          <button type="button" className="auth-back-btn" onClick={onBack}>
+            <DriftIcon name="arrowLeft" size={14} />
+            <span>Home</span>
+          </button>
+          <div className="brand">
+            <img className="logo-img logo-d" src="/logo-dark-620.png" width="1984" height="512" decoding="async" alt="Driftpost" />
+            <img className="logo-img logo-l" src="/logo-light.png" width="1908" height="512" decoding="async" alt="Driftpost" />
+          </div>
+          <span style={{ width: 54 }} aria-hidden="true" />
+        </div>
+
+        <div className="auth-mode-tabs" role="tablist" aria-label="Authentication mode">
+          <button
+            type="button"
+            role="tab"
+            aria-selected={mode === 'login'}
+            className={mode === 'login' ? 'auth-mode-tab active' : 'auth-mode-tab'}
+            onClick={() => { setMode('login'); setError(''); setInfo(''); }}
+          >
+            Sign in
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={mode === 'signup'}
+            className={mode === 'signup' ? 'auth-mode-tab active' : 'auth-mode-tab'}
+            onClick={() => { setMode('signup'); setError(''); setInfo(''); }}
+          >
+            Create account
+          </button>
+        </div>
+
+        <div className="auth-head">
+          <h1>{mode === 'login' ? 'Welcome back.' : 'Start posting.'}</h1>
+          <p>One calm workspace for YouTube, Instagram, Facebook and X.</p>
+        </div>
+
+        <button className="auth-google-btn" type="button" disabled={busy} onClick={google}>
+          <svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.61 20.08H42V20H24v8h11.3c-1.65 4.66-6.08 8-11.3 8-6.63 0-12-5.37-12-12s5.37-12 12-12c3.06 0 5.84 1.15 7.96 3.04l5.66-5.66C34.05 6.05 29.27 4 24 4 12.95 4 4 12.95 4 24s8.95 20 20 20 20-8.95 20-20c0-1.34-.14-2.65-.39-3.92Z"/><path fill="#FF3D00" d="M6.31 14.69l6.57 4.82C14.66 15.11 18.96 12 24 12c3.06 0 5.84 1.15 7.96 3.04l5.66-5.66C34.05 6.05 29.27 4 24 4 16.32 4 9.66 8.34 6.31 14.69Z"/><path fill="#4CAF50" d="M24 44c5.17 0 9.86-1.98 13.41-5.2l-6.19-5.24A11.94 11.94 0 0 1 24 36c-5.2 0-9.62-3.32-11.28-7.95l-6.52 5.02C9.5 39.56 16.23 44 24 44Z"/><path fill="#1976D2" d="M43.61 20.08H42V20H24v8h11.3a12.02 12.02 0 0 1-4.09 5.56l6.19 5.24C36.97 39.2 44 34 44 24c0-1.34-.14-2.65-.39-3.92Z"/></svg>
+          <span>{mode === 'login' ? 'Continue with Google' : 'Sign up with Google'}</span>
+        </button>
+
+        <div className="auth-divider"><span>or continue with email</span></div>
+
+        <form className="auth-form-apple" onSubmit={submit}>
+          <label className="auth-field">
+            <span>Email address</span>
+            <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" />
+          </label>
+          <label className="auth-field">
+            <span>Password</span>
+            <input type="password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="At least 6 characters" />
+          </label>
           {mode === 'signup' && (
-            <label className="ck" style={{ alignItems: 'start' }}><input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} /><svg viewBox="0 0 64 64"><path className="path" d="M8 33 L26 51 L56 13" /></svg><span style={{ fontWeight: 400 }}>I agree to the <a href="/terms" target="_blank" rel="noreferrer">Terms of Service</a> and <a href="/privacy" target="_blank" rel="noreferrer">Privacy Policy</a></span></label>
+            <label className="auth-terms">
+              <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} />
+              <span>I agree to the <a href="/terms" target="_blank" rel="noreferrer">Terms of Service</a> and <a href="/privacy" target="_blank" rel="noreferrer">Privacy Policy</a></span>
+            </label>
           )}
-          {error && <div className="alert err">{error}</div>}
-          {info && <div className="banner">{info}</div>}
-          <button className="user-profile" disabled={busy}><span className="user-profile-inner"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10Zm0 2c-4.42 0-8 2.24-8 5v2h16v-2c0-2.76-3.58-5-8-5Z"/></svg>{busy ? 'Please wait…' : mode === 'login' ? 'Sign in' : 'Create account'}</span></button>
+          {error && <div className="auth-alert err">{error}</div>}
+          {info && <div className="auth-alert ok">{info}</div>}
+          <button type="submit" className="auth-submit-btn" disabled={busy}>
+            <span>{busy ? 'Please wait…' : mode === 'login' ? 'Sign in' : 'Create account'}</span>
+            <DriftIcon name="arrowRight" size={15} />
+          </button>
         </form>
-        <p className="note" style={{ textAlign: 'center' }}>
-          {mode === 'login' ? 'New here?' : 'Have an account?'}{' '}
-          <button className="link" onClick={() => { setMode(mode === 'login' ? 'signup' : 'login'); setError(''); setInfo(''); }}>{mode === 'login' ? 'Create account' : 'Sign in'}</button>
-          {' · '}<button className="link" onClick={onBack}>← Back</button>
-        </p>
       </div>
     </div>
   );
@@ -704,22 +753,45 @@ export default function App() {
   const { session } = useSession();
   const readApprovalId = () => window.location.pathname.match(/^\/approve\/([0-9a-f-]{36})\/?$/i)?.[1] || '';
   const [approvalId, setApprovalId] = useState(() => typeof window !== 'undefined' ? readApprovalId() : '');
-  const [mode, setMode] = useState('login');
-  const isConsolePath = () => /^\/console(?:\/|$)/.test(window.location.pathname);
-  const [entry, setEntry] = useState(() => typeof window !== 'undefined' && isConsolePath() ? 'console' : 'landing');
+  const [mode, setMode] = useState(() => (typeof window !== 'undefined' && /^\/signup(?:\/|$)/i.test(window.location.pathname) ? 'signup' : 'login'));
+  const isConsolePath = (p = window.location.pathname) => /^\/console(?:\/|$)/.test(p);
+  const isAuthPath = (p = window.location.pathname) => /^\/(login|signup)(?:\/|$)/i.test(p);
+  const isKnownPath = (rawPath) => Boolean(
+    !rawPath
+    || PUB_PAGES.some((page) => page.id === rawPath)
+    || /^(login|signup)$/i.test(rawPath)
+    || /^approve\/[0-9a-f-]{36}$/i.test(rawPath)
+    || /^console(?:\/|$)/i.test(rawPath)
+  );
+  const [entry, setEntry] = useState(() => {
+    if (typeof window === 'undefined') return 'landing';
+    if (isConsolePath()) return 'console';
+    if (isAuthPath()) return 'auth';
+    return 'landing';
+  });
   const [pubPage, setPubPageState] = useState(() => (typeof window !== 'undefined' ? hashPage() : 'home'));
   const [unknownRoute, setUnknownRoute] = useState(() => {
     if (typeof window === 'undefined') return false;
     const path = window.location.pathname.replace(/^\/+|\/+$/g, '');
-    return Boolean(path && !PUB_PAGES.some((page) => page.id === path) && !/^approve\/[0-9a-f-]{36}$/i.test(path) && !/^console(?:\/|$)/.test(path));
+    return !isKnownPath(path);
   });
   const { online, checking, retry } = useConnectivity();
   const signedInConsoleHome = Boolean(session && window.location.pathname === '/');
   const host = typeof window === 'undefined' ? '' : window.location.hostname;
   const monitorServer = Boolean(import.meta.env.PROD && host && !['localhost', '127.0.0.1', '::1'].includes(host));
   const serverReady = useServerReadiness(monitorServer, apiRequestUrl('/health'));
+  const navigateTo = (nextEntry, nextMode = mode) => {
+    setEntry(nextEntry);
+    setUnknownRoute(false);
+    try {
+      if (nextEntry === 'auth') window.history.pushState({}, '', nextMode === 'signup' ? '/signup' : '/login');
+      else if (nextEntry === 'console') window.history.pushState({}, '', '/console');
+      else window.history.pushState({}, '', pubPage === 'home' ? '/' : `/${pubPage}`);
+    } catch {}
+  };
   const setPubPage = (id) => {
     setPubPageState(id);
+    setEntry('landing');
     setUnknownRoute(false);
     try { window.history.pushState({}, '', id === 'home' ? '/' : `/${id}`); } catch {}
   };
@@ -728,8 +800,14 @@ export default function App() {
       const path = window.location.pathname.replace(/^\/+|\/+$/g, '');
       setApprovalId(readApprovalId());
       setPubPageState(pageFromUrl());
-      setUnknownRoute(Boolean(path && !PUB_PAGES.some((page) => page.id === path) && !/^approve\/[0-9a-f-]{36}$/i.test(path) && !/^console(?:\/|$)/.test(path)));
-      if (/^\/console(?:\/|$)/.test(window.location.pathname)) setEntry('console');
+      setUnknownRoute(!isKnownPath(path));
+      if (isConsolePath()) setEntry('console');
+      else if (isAuthPath()) {
+        setMode(/^\/signup/i.test(window.location.pathname) ? 'signup' : 'login');
+        setEntry('auth');
+      } else {
+        setEntry('landing');
+      }
     };
     window.addEventListener('popstate', onUrl);
     window.addEventListener('hashchange', onUrl);
@@ -797,13 +875,12 @@ export default function App() {
   if (entry === 'landing' && !signedInConsoleHome) {
     return (
       <>
-        <Landing session={session} pubPage={pubPage} setPubPage={setPubPage} onEnter={() => session ? setEntry('console') : setEntry('auth')} />
+        <Landing session={session} pubPage={pubPage} setPubPage={setPubPage} onEnter={() => session ? navigateTo('console') : navigateTo('auth', 'login')} />
         {!online && <OfflinePage onRetry={retry} checking={checking} />}
       </>
     );
   }
-  if (entry === 'auth') return keepConnectivity(<Auth mode={mode} setMode={setMode} onBack={() => setEntry('landing')} />);
-  if (!session) return keepConnectivity(<Auth mode={mode} setMode={setMode} onBack={() => setEntry('landing')} />);
+  if (entry === 'auth' || !session) return keepConnectivity(<Auth mode={mode} setMode={(next) => { setMode(next); navigateTo('auth', next); }} onBack={() => navigateTo('landing')} />);
   // console
   return keepConnectivity(
     <Suspense fallback={<PageLoading label="Opening your workspace…" />}>
