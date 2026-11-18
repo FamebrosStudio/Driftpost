@@ -21,6 +21,7 @@ export default function ConnectPage({ session, onContinue, onHistory, onSignOut,
   const [msgKind, setMsgKind] = useState('ok');
   const [accountSearch, setAccountSearch] = useState({});
   const [openPlatforms, setOpenPlatforms] = useState({});
+  const [brandsOpen, setBrandsOpen] = useState(false);
   const [confirmDropId, setConfirmDropId] = useState('');
   const [config, setConfig] = useState(null);
   const say = (m, k = 'ok') => { setMsg(m); setMsgKind(k); };
@@ -148,6 +149,7 @@ export default function ConnectPage({ session, onContinue, onHistory, onSignOut,
                 const list = listFor(p.id);
                 const accountCount = connections.filter((c) => c.platform === p.id).length;
                 const searchingAccounts = !!String(accountSearch[p.id] || '').trim();
+                const isOpen = Boolean(openPlatforms[p.id] || searchingAccounts);
                 return (
                   <BorderGlow key={p.id} className="bg-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.12} glowRadius={22}><div className={list.length ? 'cn-card linked' : 'cn-card'}>
                     <div className="cn-card-head">
@@ -159,51 +161,57 @@ export default function ConnectPage({ session, onContinue, onHistory, onSignOut,
                     </div>
                     <p className="cn-hint">{HINTS[p.id]}</p>
                     {accountCount > 0 && <input className="cn-search" type="search" value={accountSearch[p.id] || ''} onChange={(e) => setAccountSearch((s) => ({ ...s, [p.id]: e.target.value }))} placeholder={`Search ${p.name} accounts`} aria-label={`Search ${p.name} accounts`} />}
-                    <details
-                      className="dp-collapse"
-                      open={Boolean(openPlatforms[p.id] || searchingAccounts)}
-                      onToggle={(e) => {
-                        const isOpen = e.currentTarget.open;
-                        setOpenPlatforms((prev) => (prev[p.id] === isOpen ? prev : { ...prev, [p.id]: isOpen }));
-                      }}
-                    >
-                      <summary><span>{list.length ? `${list.length} ${p.name} account${list.length === 1 ? '' : 's'}` : `No ${p.name} accounts`}</span></summary>
-                      <div className="dp-collapse-body">
-                        <div className="cn-list">
-                          {list.length ? list.map((c) => (
-                            <div key={c.id} className="cn-acct">
-                              <span className="cn-av">{(c.account_name || '?')[0].toUpperCase()}</span>
-                              <span style={{ minWidth: 0 }}>
-                                <b title={c.account_name}>{c.account_name}</b>
-                                <small>{p.name}</small>
-                              </span>
-                              {confirmDropId === c.id ? (
-                                <span style={{ display: 'inline-flex', gap: 6, flexShrink: 0 }} onPointerDown={(e) => e.stopPropagation()}>
-                                  <button type="button" className="cn-drop" disabled={!!busy} onClick={(e) => { e.stopPropagation(); disconnect(c); }}>
-                                    {busy === c.id ? '…' : 'Confirm'}
-                                  </button>
-                                  <button type="button" className="cn-drop" disabled={!!busy} onClick={(e) => { e.stopPropagation(); setConfirmDropId(''); }}>
-                                    Cancel
-                                  </button>
+                    <div className={`dp-collapse ${isOpen ? 'is-open' : ''}`}>
+                      <button
+                        type="button"
+                        className="dp-collapse-trigger"
+                        aria-expanded={isOpen}
+                        onClick={() => {
+                          if (searchingAccounts && isOpen) {
+                            setAccountSearch((s) => ({ ...s, [p.id]: '' }));
+                          }
+                          setOpenPlatforms((prev) => ({ ...prev, [p.id]: !isOpen }));
+                        }}
+                      >
+                        <span>{list.length ? `${list.length} ${p.name} account${list.length === 1 ? '' : 's'}` : `No ${p.name} accounts`}</span>
+                      </button>
+                      {isOpen && (
+                        <div className="dp-collapse-body">
+                          <div className="cn-list">
+                            {list.length ? list.map((c) => (
+                              <div key={c.id} className="cn-acct">
+                                <span className="cn-av">{(c.account_name || '?')[0].toUpperCase()}</span>
+                                <span style={{ minWidth: 0, flex: 1 }}>
+                                  <b title={c.account_name}>{c.account_name}</b>
+                                  <small>{p.name}</small>
                                 </span>
-                              ) : (
-                                <button
-                                  type="button"
-                                  className="cn-drop"
-                                  disabled={!!busy}
-                                  onPointerDown={(e) => e.stopPropagation()}
-                                  onClick={(e) => { e.stopPropagation(); setConfirmDropId(c.id); }}
-                                >
-                                  {busy === c.id ? '…' : 'Disconnect'}
-                                </button>
-                              )}
-                            </div>
-                          )) : (
-                            <div className="cn-empty">{connections.some((c) => c.platform === p.id) ? 'No accounts match that search.' : `No ${p.name} account yet.`}</div>
-                          )}
+                                {confirmDropId === c.id ? (
+                                  <span className="cn-drop-actions">
+                                    <button type="button" className="cn-drop danger" disabled={!!busy} onClick={() => disconnect(c)}>
+                                      {busy === c.id ? '…' : 'Confirm'}
+                                    </button>
+                                    <button type="button" className="cn-drop" disabled={!!busy} onClick={() => setConfirmDropId('')}>
+                                      Cancel
+                                    </button>
+                                  </span>
+                                ) : (
+                                  <button
+                                    type="button"
+                                    className="cn-drop"
+                                    disabled={!!busy}
+                                    onClick={() => setConfirmDropId(c.id)}
+                                  >
+                                    {busy === c.id ? '…' : 'Disconnect'}
+                                  </button>
+                                )}
+                              </div>
+                            )) : (
+                              <div className="cn-empty">{connections.some((c) => c.platform === p.id) ? 'No accounts match that search.' : `No ${p.name} account yet.`}</div>
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    </details>
+                      )}
+                    </div>
                     <button
                       type="button"
                       className={list.length ? 'cn-connect ghost' : 'cn-connect'}
@@ -218,24 +226,28 @@ export default function ConnectPage({ session, onContinue, onHistory, onSignOut,
             </div>
 
             {brands.length > 0 && (
-              <details className="dp-collapse cn-brands-collapse">
-                <summary><span>Brands we found ({brands.length})</span></summary>
-                <div className="dp-collapse-body">
-                  <div className="cn-brands">
-                    <p className="sub">We matched your connected accounts into {brands.length} brand{brands.length === 1 ? '' : 's'} — you can change this next.</p>
-                    {brands.slice(0, 12).map((b) => (
-                      <div key={b.key} className="cn-brand-row">
-                        <b title={b.label}>{b.label}</b>
-                        <span className="cn-dots">
-                          {Object.keys(b.map).map((pid) => <BrandDot key={pid} pid={pid} />)}
-                        </span>
-                        <small style={{ color: 'var(--faint)' }}>{Object.keys(b.map).length} acct</small>
-                      </div>
-                    ))}
-                    {brands.length > 12 && <p className="cn-hint" style={{ marginTop: 10 }}>+ {brands.length - 12} more brands</p>}
+              <div className={`dp-collapse cn-brands-collapse ${brandsOpen ? 'is-open' : ''}`}>
+                <button type="button" className="dp-collapse-trigger" aria-expanded={brandsOpen} onClick={() => setBrandsOpen((v) => !v)}>
+                  <span>Brands we found ({brands.length})</span>
+                </button>
+                {brandsOpen && (
+                  <div className="dp-collapse-body">
+                    <div className="cn-brands">
+                      <p className="sub">We matched your connected accounts into {brands.length} brand{brands.length === 1 ? '' : 's'} — you can change this next.</p>
+                      {brands.slice(0, 12).map((b) => (
+                        <div key={b.key} className="cn-brand-row">
+                          <b title={b.label}>{b.label}</b>
+                          <span className="cn-dots">
+                            {Object.keys(b.map).map((pid) => <BrandDot key={pid} pid={pid} />)}
+                          </span>
+                          <small style={{ color: 'var(--faint)' }}>{Object.keys(b.map).length} acct</small>
+                        </div>
+                      ))}
+                      {brands.length > 12 && <p className="cn-hint" style={{ marginTop: 10 }}>+ {brands.length - 12} more brands</p>}
+                    </div>
                   </div>
-                </div>
-              </details>
+                )}
+              </div>
             )}
           </>
         )}

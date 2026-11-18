@@ -1583,13 +1583,26 @@ app.post('/api/analytics/content', requireUser, connectionsLimit, burstLimit, as
 
 app.delete('/api/connections/:id', requireUser, connectionsLimit, async (req, res) => {
   try {
-    const { data, error } = await supabase.from('platform_connections').delete()
-      .eq('id', req.params.id).eq('user_id', req.user.id).select('id').maybeSingle();
-    if (error) return res.status(500).json({ error: 'Unable to disconnect' });
-    if (!data) return res.status(404).json({ error: 'Not found' });
+    const connId = req.params.id;
+    let { data, error } = await supabase.from('platform_connections').delete()
+      .eq('id', connId).eq('user_id', req.user.id).select('id').maybeSingle();
+    if (error && error.code === '23503') {
+      await Promise.allSettled([
+        supabase.from('instagram_automations').delete().eq('connection_id', connId).eq('user_id', req.user.id),
+        supabase.from('instagram_automation_events').delete().eq('connection_id', connId).eq('user_id', req.user.id),
+      ]);
+      ({ data, error } = await supabase.from('platform_connections').delete()
+        .eq('id', connId).eq('user_id', req.user.id).select('id').maybeSingle());
+    }
+    if (error) {
+      console.warn('[connections] delete failed:', error.code, error.message);
+      return res.status(500).json({ error: 'Unable to disconnect this account right now.' });
+    }
+    if (!data) return res.status(404).json({ error: 'Account not found or already disconnected.' });
     res.json({ disconnected: data });
-  } catch {
-    res.status(500).json({ error: 'Unable to disconnect' });
+  } catch (e) {
+    console.warn('[connections] delete threw:', String(e?.message || e));
+    res.status(500).json({ error: 'Unable to disconnect this account right now.' });
   }
 });
 

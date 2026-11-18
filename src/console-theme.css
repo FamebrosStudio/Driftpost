@@ -2480,13 +2480,19 @@ html[data-device="mobile"] #root :is(.ws, .hist-shell, .connect, .stage1, .stage
   min-width: 0;
 }
 
-#root .dp-collapse > summary {
+#root .dp-collapse > summary,
+#root .dp-collapse > .dp-collapse-trigger {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 10px;
+  width: 100%;
   min-height: 44px;
   padding: 10px 14px;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  text-align: left;
   cursor: pointer;
   list-style: none;
   color: var(--ink);
@@ -2499,25 +2505,29 @@ html[data-device="mobile"] #root :is(.ws, .hist-shell, .connect, .stage1, .stage
   display: none;
 }
 
-#root .dp-collapse > summary > span:first-child {
+#root .dp-collapse > summary > span:first-child,
+#root .dp-collapse > .dp-collapse-trigger > span:first-child {
   display: inline-flex;
   align-items: center;
   gap: 8px;
   min-width: 0;
 }
 
-#root .dp-collapse > summary > span:first-child::before {
+#root .dp-collapse > summary > span:first-child::before,
+#root .dp-collapse > .dp-collapse-trigger > span:first-child::before {
   content: "▸";
   color: var(--go);
   font-size: 12px;
   transition: transform 150ms ease;
 }
 
-#root .dp-collapse[open] > summary > span:first-child::before {
+#root .dp-collapse[open] > summary > span:first-child::before,
+#root .dp-collapse.is-open > .dp-collapse-trigger > span:first-child::before {
   transform: rotate(90deg);
 }
 
-#root .dp-collapse[open] > summary {
+#root .dp-collapse[open] > summary,
+#root .dp-collapse.is-open > .dp-collapse-trigger {
   border-bottom: 1px solid var(--line);
 }
 
@@ -5687,4 +5697,23 @@ html {
 #root .ws-main > section + section,
 #root .ws-main > form + .border-glow-card {
   margin-top: 20px;
+}
+
+#root .cn-drop-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+#root .cn-drop.danger {
+  border-color: rgba(239, 68, 68, 0.55);
+  background: rgba(239, 68, 68, 0.16);
+  color: #fecaca;
+}
+
+#root .cn-drop.danger:hover:not(:disabled) {
+  background: rgba(239, 68, 68, 0.3);
+  color: #ffffff;
 }
