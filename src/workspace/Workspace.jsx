@@ -109,6 +109,13 @@ export function WorkspaceNav({ page, onNavigate, email, onSignOut }) {
         setCmdOpen((open) => !open);
         setCmdQuery('');
         setCmdIndex(0);
+      } else if (e.altKey && !e.ctrlKey && !e.metaKey && ['1', '2', '3', '4', '5', '6'].includes(e.key)) {
+        const quickRoutes = ['home', 'create', 'calendar', 'analytics', 'history', 'accounts'];
+        const target = quickRoutes[Number(e.key) - 1];
+        if (target) {
+          e.preventDefault();
+          onNavigate(target);
+        }
       } else if (e.key === 'Escape') {
         setCmdOpen(false);
       }

@@ -82,6 +82,16 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
   const [schedBusy, setSchedBusy] = useState(false);
   const [encoding, setEncoding] = useState(false);
   useEffect(() => {
+    const onKey = (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter' && allReviewed && !Object.values(busy).some(Boolean)) {
+        e.preventDefault();
+        void publishAll();
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  });
+  useEffect(() => {
     const isUploadingOrPublishing = encoding || Object.values(busy).some(Boolean);
     if (!isUploadingOrPublishing) return;
     const onBeforeUnload = (e) => {
@@ -1397,6 +1407,17 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
               <div className="s3-pub-row">
                 <div className="s3-pub-track"><i style={{ width: `${effective.length ? (reviewedCount / effective.length) * 100 : 0}%` }} /></div>
                 <span className="s3-pub-count">{reviewedCount}/{effective.length} reviewed</span>
+                {!allReviewed && effective.length > 0 && (
+                  <button
+                    type="button"
+                    className="ws-secondary"
+                    style={{ padding: '4px 11px', fontSize: 11, minHeight: 28, borderRadius: 999 }}
+                    onClick={reviewAllPlatforms}
+                    disabled={Object.values(busy).some(Boolean)}
+                  >
+                    Review all
+                  </button>
+                )}
               </div>
               <div className="s3-pub-actions">
                 <button

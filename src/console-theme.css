@@ -5310,3 +5310,58 @@ html[data-reduced-motion="true"] #root * {
   color: var(--muted);
   font-size: 13px;
 }
+
+/* ==========================================================================
+   FLUID SCROLL, LIST VIRTUALIZATION & POLISH MICRO-ANIMATIONS
+   ========================================================================== */
+html {
+  scroll-behavior: smooth;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--muted, #94a3b8) 28%, transparent);
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in srgb, var(--go, #3b82f6) 55%, transparent);
+}
+
+/* Instant scrolling on long lists via content-visibility */
+#root :is(.hist-row, .ws-upcoming-row, .feed-it-item) {
+  content-visibility: auto;
+  contain-intrinsic-size: 68px;
+}
+
+/* Smooth panel, day-drawer, and alert entrances */
+@keyframes dpPanelSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+#root :is(.ws-day-panel, .ws-settings-section, .cn-msg, .feed-it-success, .s3-work, .s2-sec) {
+  animation: dpPanelSlideIn 320ms cubic-bezier(0.22, 1.2, 0.36, 1) both;
+}
+
+#root :is(.ws-upcoming-row, .cn-acct, .hist-row) {
+  transition: background-color 180ms ease, border-color 180ms ease;
+}
+
+#root :is(.ws-upcoming-row, .cn-acct):hover {
+  background: color-mix(in srgb, var(--go, #3b82f6) 6%, transparent);
+}
