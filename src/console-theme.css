@@ -5189,32 +5189,36 @@ html[data-reduced-motion="true"] #root * {
 #root .ws-cmd-trigger {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  height: 34px;
-  padding: 0 11px;
-  border-radius: 11px;
-  border: 1px solid var(--line-hard);
-  background: color-mix(in srgb, var(--panel2) 72%, transparent);
-  color: var(--muted);
-  font-size: 12px;
-  font-weight: 500;
+  gap: 7px;
+  height: 30px !important;
+  min-height: 30px !important;
+  padding: 0 10px !important;
+  border-radius: 999px !important;
+  border: 1px solid var(--line) !important;
+  background: color-mix(in srgb, var(--ink) 6%, transparent) !important;
+  color: var(--muted) !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  box-shadow: none !important;
 }
 
 #root .ws-cmd-trigger:hover {
-  color: var(--ink);
-  border-color: color-mix(in srgb, var(--go) 48%, var(--line-hard));
+  color: var(--ink) !important;
+  background: color-mix(in srgb, var(--go) 12%, transparent) !important;
+  border-color: color-mix(in srgb, var(--go) 38%, var(--line)) !important;
 }
 
 #root .ws-cmd-trigger kbd,
 #root .ws-cmd-input-row kbd {
   padding: 2px 6px;
-  border-radius: 6px;
-  border: 1px solid var(--line-hard);
-  background: color-mix(in srgb, var(--bg) 75%, transparent);
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--bg) 65%, transparent);
   color: var(--faint);
   font-family: inherit;
   font-size: 10px;
   font-weight: 600;
+  line-height: 1.1;
 }
 
 #root .ws-cmd-backdrop {

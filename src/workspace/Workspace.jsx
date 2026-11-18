@@ -13,7 +13,7 @@ import './workspace.css';
 
 const NAV = [
   ['home', 'Overview', 'home'], ['create', 'Create post', 'plus'], ['calendar', 'Calendar', 'calendar'],
-  ['analytics', 'Analytics', 'chart'], ['automations', 'Automations', 'gear'], ['history', 'Publishing history', 'clock'], ['accounts', 'Connected accounts', 'users'],
+  ['analytics', 'Analytics', 'chart'], ['automations', 'Automations', 'bolt'], ['history', 'Publishing history', 'clock'], ['accounts', 'Connected accounts', 'users'],
 ];
 const platformName = (id) => PLATFORMS.find((p) => p.id === id)?.name || id;
 // Normalize display names and @handles so "@brandstudio" and "Brand Studio"
@@ -152,7 +152,7 @@ export function WorkspaceNav({ page, onNavigate, email, onSignOut }) {
       key: `mood:${m.id}`,
       group: 'Theme',
       label: `Theme: ${m.label}`,
-      icon: 'sparkles',
+      icon: 'palette',
       run: () => { setMood(m.id); applyMoodSelection(m.id); },
     }));
     const cursorActions = !isMobileDevice
@@ -160,7 +160,7 @@ export function WorkspaceNav({ page, onNavigate, email, onSignOut }) {
           key: `cursor:${c.id}`,
           group: 'Cursor',
           label: `Cursor: ${c.label}`,
-          icon: 'sliders',
+          icon: 'cursor',
           run: () => setCursorStyle(c.id),
         }))
       : [];
@@ -180,11 +180,11 @@ export function WorkspaceNav({ page, onNavigate, email, onSignOut }) {
             type="button"
             className="ws-cmd-trigger"
             onClick={() => { setCmdOpen(true); setCmdQuery(''); setCmdIndex(0); }}
-            title="Quick Command Palette (Ctrl+K)"
-            aria-label="Open quick command palette"
+            title="Quick Jump (Ctrl+K)"
+            aria-label="Open quick jump palette"
           >
-            <Icon name="sparkles" size={13} />
-            <span>Quick Jump</span>
+            <Icon name="search" size={13} />
+            <span>Search</span>
             <kbd>Ctrl K</kbd>
           </button>
         )}
