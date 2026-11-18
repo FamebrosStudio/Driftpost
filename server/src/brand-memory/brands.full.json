@@ -5269,11 +5269,13 @@
         "caption_source_update": "User-supplied caption update 2026-11-14; transient claims are caption-specific."
       },
       "keyword_bank": [
-        "salon Naupada Thane",
-        "hair spa Thane",
-        "salon near LBS Marg",
-        "wedding salon bookings Thane",
-        "Zivara Salon Thane"
+        "Zivara Salon and Wellness",
+        "salon offers in Thane",
+        "salon in Lower Parel",
+        "20 percent off salon services",
+        "one year salon membership",
+        "beauty and wellness",
+        "salon packages Mumbai"
       ],
       "approved_facts": [
         {
@@ -5295,14 +5297,22 @@
       ],
       "mandatory_copy": [],
       "contacts": {
-        "phone": [],
-        "address": "Shop G-5, Highland Sky Arcade, Damani Road, LBS Marg, Naupada, Thane",
+        "phone": [
+          "8655715221",
+          "9920581281"
+        ],
+        "address": "Thane Branch: Shop G5, Highland Sky Arcade, LBS Marg, Naupada, Thane West, Maharashtra 400602 | Lower Parel Branch: Ground Floor, D.S. Marg, Gandhi Nagar, Near Phoenix Mall, Next to Sai Service NEXA, Lower Parel, Worli, Mumbai, Maharashtra 400018.",
         "email": null,
         "website": null
       },
       "footer_lines": [
-        "Zivara Salon & Wellness | Shop G-5, Highland Sky Arcade, Damani Road, LBS Marg, Naupada, Thane",
-        "💫 Managed by: @famebrosstudio"
+        "📍 Thane Branch",
+        "Shop G5, Highland Sky Arcade, LBS Marg, Naupada, Thane West, Maharashtra 400602",
+        "📞 8655715221",
+        "📍 Lower Parel Branch",
+        "Ground Floor, D.S. Marg, Gandhi Nagar, Near Phoenix Mall, Next to Sai Service NEXA, Lower Parel, Worli, Mumbai, Maharashtra 400018.",
+        "📞 9920581281",
+        "Managed by : @famebrosstudio"
       ],
       "instagram": {
         "url": null,
@@ -5312,9 +5322,9 @@
         "note": "Meta portfolio evidence confirms an account named Zivara Salon | Thane, but no public page URL was retrieved."
       },
       "example": {
-        "status": "source_dataset_example",
-        "body": "Make a little space for self-care. Explore hair and grooming services at Zivara Salon & Wellness, Naupada, Thane. Message the team to confirm services and appointment availability.",
-        "full_caption": "Make a little space for self-care. Explore hair and grooming services at Zivara Salon & Wellness, Naupada, Thane. Message the team to confirm services and appointment availability."
+        "status": "user_supplied_example",
+        "body": "Your beauty routine just got more rewarding! ✨\n\nSpend ₹1,200 on your first service at Zivara Salon & Wellness and enjoy a 1-Year Membership with 20% OFF on all services! A little pampering, a lot of savings. 💆♀️\n\nHurry! This is a limited-time offer. Book your appointment today!\n\n📍 Thane Branch\nShop G5, Highland Sky Arcade, LBS Marg, Naupada, Thane West, Maharashtra 400602\n\n📞 8655715221\n\n📍 Lower Parel Branch\nGround Floor, D.S. Marg, Gandhi Nagar, Near Phoenix Mall, Next to Sai Service NEXA, Lower Parel, Worli, Mumbai, Maharashtra 400018.\n\n📞 9920581281\n\nManaged by : @famebrosstudio\n\n#ZivaraSalon #SalonMembership #BeautyOffers\n\n[Zivara Salon and Wellness, salon offers in Thane, salon in Lower Parel, 20 percent off salon services, one year salon membership, beauty and wellness, salon packages Mumbai]",
+        "full_caption": "Your beauty routine just got more rewarding! ✨\n\nSpend ₹1,200 on your first service at Zivara Salon & Wellness and enjoy a 1-Year Membership with 20% OFF on all services! A little pampering, a lot of savings. 💆♀️\n\nHurry! This is a limited-time offer. Book your appointment today!\n\n📍 Thane Branch\nShop G5, Highland Sky Arcade, LBS Marg, Naupada, Thane West, Maharashtra 400602\n\n📞 8655715221\n\n📍 Lower Parel Branch\nGround Floor, D.S. Marg, Gandhi Nagar, Near Phoenix Mall, Next to Sai Service NEXA, Lower Parel, Worli, Mumbai, Maharashtra 400018.\n\n📞 9920581281\n\nManaged by : @famebrosstudio\n\n#ZivaraSalon #SalonMembership #BeautyOffers\n\n[Zivara Salon and Wellness, salon offers in Thane, salon in Lower Parel, 20 percent off salon services, one year salon membership, beauty and wellness, salon packages Mumbai]"
       },
       "missing_details": [
         "Official Instagram URL",

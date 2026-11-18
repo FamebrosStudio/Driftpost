@@ -1142,3 +1142,149 @@ export function hydrateFedBrandsBundle(bundle) {
   deepCache = null;
   return incoming.length;
 }
+
+export function listEditableCaptionBrands() {
+  const all = loadBrands();
+  const byId = new Map();
+  for (const b of all) {
+    if (!b?.id) continue;
+    byId.set(b.id, b);
+  }
+  return [...byId.values()]
+    .map((entry) => {
+      const deep = getDeepForCompact(entry);
+      const rawHashtags = Array.isArray(deep?.suggested_hashtag_bank)
+        ? deep.suggested_hashtag_bank
+        : Array.isArray(deep?.suggested_hashtag_bank?.brand)
+          ? deep.suggested_hashtag_bank.brand
+          : [];
+      const phones = Array.isArray(deep?.contact?.phones)
+        ? deep.contact.phones
+        : Array.isArray(deep?.contact?.phone)
+          ? deep.contact.phone
+          : deep?.contact?.phone
+            ? [deep.contact.phone]
+            : [];
+      const footer = Array.isArray(deep?.fixed_footer?.lines) && deep.fixed_footer.lines.length
+        ? deep.fixed_footer.lines
+        : Array.isArray(entry.footer)
+          ? entry.footer
+          : [];
+      const kw = Array.isArray(deep?.seo_keyword_bank) && deep.seo_keyword_bank.length
+        ? deep.seo_keyword_bank
+        : Array.isArray(entry.kw)
+          ? entry.kw
+          : [];
+      return {
+        id: entry.id,
+        name: entry.name || deep?.brand_name || entry.id,
+        category: entry.cat || deep?.business?.genre || deep?.business?.category || '',
+        location: entry.loc || deep?.business?.location?.area || deep?.business?.location_area || '',
+        address: deep?.contact?.full_address || deep?.contact?.address || deep?.business?.location?.address || '',
+        phones: phones.filter(Boolean).map(String),
+        ig: entry.ig || deep?.social_media?.instagram_handle || '',
+        tone: entry.tone || (Array.isArray(deep?.writing_direction?.tone) ? deep.writing_direction.tone.join(', ') : ''),
+        footer: footer.map(String),
+        hashtags: rawHashtags.map(String),
+        kw: kw.map(String),
+        sampleCaption: String(deep?.sample_caption || entry.ex || ''),
+        isFed: Boolean(entry.fed || entry.ready === 'fed'),
+      };
+    })
+    .sort((a, b) => String(a.name).localeCompare(String(b.name)));
+}
+
+export function updateSavedCaptionData(brandId, patch = {}) {
+  const cleanId = String(brandId || '').trim();
+  if (!cleanId) throw new Error('Brand ID is required.');
+  const existing = listEditableCaptionBrands().find((b) => b.id === cleanId);
+  if (!existing) throw new Error('Brand not found.');
+
+  const nextName = String(patch.name ?? existing.name).trim() || existing.name;
+  const nextLocation = String(patch.location ?? existing.location).trim();
+  const nextAddress = String(patch.address ?? existing.address).trim();
+  const nextIg = String(patch.ig ?? existing.ig).trim();
+  const nextTone = String(patch.tone ?? existing.tone).trim();
+  const nextSample = String(patch.sampleCaption ?? existing.sampleCaption).trim();
+  const nextFooter = Array.isArray(patch.footer)
+    ? patch.footer.map((l) => String(l).trim()).filter(Boolean)
+    : String(patch.footer || '').split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
+  const nextPhones = Array.isArray(patch.phones)
+    ? patch.phones.map((p) => String(p).trim()).filter(Boolean)
+    : String(patch.phones || '').split(/[,/\n]+/).map((p) => p.trim()).filter(Boolean);
+  const nextHashtags = Array.isArray(patch.hashtags)
+    ? patch.hashtags.map((h) => String(h).trim()).filter(Boolean).map((h) => (h.startsWith('#') ? h : `#${h}`))
+    : String(patch.hashtags || '').split(/[\s,]+/).map((h) => h.trim()).filter(Boolean).map((h) => (h.startsWith('#') ? h : `#${h}`));
+  const nextKw = Array.isArray(patch.kw)
+    ? patch.kw.map((k) => String(k).trim()).filter(Boolean)
+    : String(patch.kw || '').replace(/^\[|\]$/g, '').split(/[,\n]+/).map((k) => k.trim()).filter(Boolean);
+
+  // 1. Update built-in deep profile if it exists on disk
+  const builtInDeepPath = path.join(DEEP_DIR, `${cleanId}.json`);
+  if (fs.existsSync(builtInDeepPath)) {
+    try {
+      const deep = JSON.parse(fs.readFileSync(builtInDeepPath, 'utf8'));
+      deep.brand_name = nextName;
+      deep.contact = { ...(deep.contact || {}), phone: nextPhones, address: nextAddress || deep.contact?.address || null, full_address: nextAddress || deep.contact?.full_address || null };
+      deep.social_media = { ...(deep.social_media || {}), instagram_handle: nextIg || null };
+      deep.fixed_footer = { ...(deep.fixed_footer || {}), lines: nextFooter };
+      deep.suggested_hashtag_bank = nextHashtags;
+      deep.seo_keyword_bank = nextKw;
+      deep.sample_caption = nextSample;
+      if (nextTone) deep.writing_direction = { ...(deep.writing_direction || {}), tone: nextTone.split(',').map((t) => t.trim()).filter(Boolean) };
+      fs.writeFileSync(builtInDeepPath, `${JSON.stringify(deep, null, 2)}\n`, 'utf8');
+    } catch {}
+  }
+
+  // 2. Also persist an override in custom.brands.json + auto-<id>.json so cloud sync preserves edits
+  const nowIso = new Date().toISOString();
+  const custom = loadCustom();
+  const compactEntry = {
+    id: cleanId,
+    name: nextName,
+    aliases: [nextName],
+    cat: existing.category || 'Brand',
+    loc: nextLocation,
+    genres: [existing.category || 'Brand'],
+    tone: nextTone,
+    lang: '',
+    cta: [],
+    avoid: [],
+    kw: nextKw,
+    footer: nextFooter,
+    mandatory: [],
+    ex: nextSample,
+    ig: nextIg || null,
+    ready: 'fed',
+    fed: true,
+    updatedAt: nowIso,
+  };
+  const idx = custom.findIndex((c) => c.id === cleanId);
+  if (idx >= 0) custom[idx] = { ...custom[idx], ...compactEntry };
+  else custom.push(compactEntry);
+  saveCustom(custom);
+
+  fs.mkdirSync(DEEP_DIR, { recursive: true });
+  const autoPath = path.join(DEEP_DIR, `auto-${cleanId}.json`);
+  let autoDeep = {};
+  try { autoDeep = JSON.parse(fs.readFileSync(autoPath, 'utf8')); } catch {}
+  autoDeep = {
+    ...autoDeep,
+    schema_version: '1.0',
+    brand_id: cleanId,
+    brand_name: nextName,
+    business: { ...(autoDeep.business || {}), category: existing.category || '', location_area: nextLocation, full_address: nextAddress },
+    contact: { ...(autoDeep.contact || {}), phones: nextPhones, full_address: nextAddress },
+    social_media: { ...(autoDeep.social_media || {}), instagram_handle: nextIg || null },
+    fixed_footer: { lines: nextFooter },
+    suggested_hashtag_bank: { brand: nextHashtags },
+    seo_keyword_bank: nextKw,
+    sample_caption: nextSample,
+    updated_at: nowIso,
+  };
+  fs.writeFileSync(autoPath, `${JSON.stringify(autoDeep, null, 2)}\n`, 'utf8');
+
+  cache = null;
+  deepCache = null;
+  return listEditableCaptionBrands().find((b) => b.id === cleanId);
+}

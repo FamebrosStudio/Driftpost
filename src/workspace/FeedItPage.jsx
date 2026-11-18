@@ -44,6 +44,15 @@ export default function FeedItPage({ session, onNavigate, onSignOut }) {
   const [loadingList, setLoadingList] = useState(true);
   const [search, setSearch] = useState('');
 
+  // Direct Saved Caption Data Editor state
+  const [captionBrands, setCaptionBrands] = useState([]);
+  const [captionSearch, setCaptionSearch] = useState('');
+  const [selectedCaptionId, setSelectedCaptionId] = useState('');
+  const [capDraft, setCapDraft] = useState(null);
+  const [capSaving, setCapSaving] = useState(false);
+  const [capMsg, setCapMsg] = useState('');
+  const [capErr, setCapErr] = useState('');
+
   const promptText = useMemo(() => buildResearchPrompt(researchTarget), [researchTarget]);
 
   const loadBrands = () => {
@@ -52,8 +61,15 @@ export default function FeedItPage({ session, onNavigate, onSignOut }) {
       return;
     }
     setLoadingList(true);
-    api('/api/ai/feed-it', session.access_token)
-      .then((data) => setBrands(Array.isArray(data?.brands) ? data.brands : []))
+    Promise.all([
+      api('/api/ai/feed-it', session.access_token),
+      api('/api/ai/feed-it/captions', session.access_token).catch(() => ({ brands: [] })),
+    ])
+      .then(([fedData, capData]) => {
+        setBrands(Array.isArray(fedData?.brands) ? fedData.brands : []);
+        const caps = Array.isArray(capData?.brands) ? capData.brands : [];
+        setCaptionBrands(caps);
+      })
       .catch((e) => setError(e?.message || 'Could not load saved brands.'))
       .finally(() => setLoadingList(false));
   };
@@ -123,6 +139,55 @@ export default function FeedItPage({ session, onNavigate, onSignOut }) {
       [b.name, b.category, b.location, b.ig, ...(b.phones || [])].some((v) => String(v || '').toLowerCase().includes(q)),
     );
   }, [brands, search]);
+
+  const filteredCaptionBrands = useMemo(() => {
+    const q = captionSearch.trim().toLowerCase();
+    if (!q) return captionBrands;
+    return captionBrands.filter((b) =>
+      [b.name, b.id, b.category, b.location, b.ig].some((v) => String(v || '').toLowerCase().includes(q)),
+    );
+  }, [captionBrands, captionSearch]);
+
+  const selectCaptionBrand = (item) => {
+    if (!item) return;
+    setSelectedCaptionId(item.id);
+    setCapMsg('');
+    setCapErr('');
+    setCapDraft({
+      name: item.name || '',
+      ig: item.ig || '',
+      tone: item.tone || '',
+      phones: (item.phones || []).join(', '),
+      address: item.address || '',
+      footer: (item.footer || []).join('\n'),
+      hashtags: (item.hashtags || []).join(' '),
+      kw: (item.kw || []).join(', '),
+      sampleCaption: item.sampleCaption || '',
+    });
+  };
+
+  const handleSaveCaptionData = async (e) => {
+    e.preventDefault();
+    if (!selectedCaptionId || !capDraft || capSaving) return;
+    setCapSaving(true);
+    setCapErr('');
+    setCapMsg('');
+    try {
+      const res = await api(`/api/ai/feed-it/captions/${encodeURIComponent(selectedCaptionId)}`, session.access_token, {
+        method: 'PATCH',
+        body: JSON.stringify(capDraft),
+      });
+      if (res?.brand) {
+        setCaptionBrands((prev) => prev.map((b) => (b.id === res.brand.id ? res.brand : b)));
+        selectCaptionBrand(res.brand);
+        setCapMsg(`Saved caption changes for "${res.brand.name}"${res.brand.persisted === 'cloud' ? ' (cloud-synced)' : ''}.`);
+      }
+    } catch (err) {
+      setCapErr(err?.message || 'Could not update saved caption data.');
+    } finally {
+      setCapSaving(false);
+    }
+  };
 
   return (
     <div className="ws feed-it-page">
@@ -230,6 +295,96 @@ export default function FeedItPage({ session, onNavigate, onSignOut }) {
                   )}
                 </div>
               </form>
+            </section>
+
+            <section className="ws-panel feed-it-card feed-it-list-card">
+              <div className="feed-it-step-head">
+                <span className="feed-it-step-badge">EDIT CAPTIONS</span>
+                <div>
+                  <h2>Edit Saved Caption Data ({captionBrands.length})</h2>
+                  <p>Pick any saved brand to directly update its sample caption, branch footer, phone numbers, hashtags, or SEO keywords.</p>
+                </div>
+              </div>
+
+              <div className="feed-it-form">
+                <input
+                  type="search"
+                  className="feed-it-search"
+                  value={captionSearch}
+                  onChange={(e) => setCaptionSearch(e.target.value)}
+                  placeholder="Search any saved brand (e.g. Zivara Salon, Velvet Salon, SK Furniture)..."
+                />
+                <div className="feed-it-list" style={{ maxHeight: '220px', overflowY: 'auto' }}>
+                  {filteredCaptionBrands.map((item) => (
+                    <div key={item.id} className={selectedCaptionId === item.id ? 'feed-it-item active' : 'feed-it-item'}>
+                      <div className="feed-it-item-info">
+                        <strong>{item.name}</strong>
+                        <small>{[item.category, item.location, item.ig].filter(Boolean).join(' · ') || item.id}</small>
+                      </div>
+                      <div className="feed-it-item-actions">
+                        <button type="button" className="ws-secondary" onClick={() => selectCaptionBrand(item)}>
+                          {selectedCaptionId === item.id ? 'Editing' : 'Edit Caption'}
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {capDraft && (
+                  <form onSubmit={handleSaveCaptionData} className="feed-it-form" style={{ marginTop: '14px', paddingTop: '14px', borderTop: '1px solid var(--line)' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: '10px' }}>
+                      <label className="feed-it-field">
+                        <span>Brand Name</span>
+                        <input type="text" value={capDraft.name} onChange={(e) => setCapDraft({ ...capDraft, name: e.target.value })} />
+                      </label>
+                      <label className="feed-it-field">
+                        <span>Instagram Handle</span>
+                        <input type="text" value={capDraft.ig} onChange={(e) => setCapDraft({ ...capDraft, ig: e.target.value })} placeholder="@handle" />
+                      </label>
+                      <label className="feed-it-field">
+                        <span>Phones (comma-separated)</span>
+                        <input type="text" value={capDraft.phones} onChange={(e) => setCapDraft({ ...capDraft, phones: e.target.value })} placeholder="8655715221, 9920581281" />
+                      </label>
+                      <label className="feed-it-field">
+                        <span>Tone</span>
+                        <input type="text" value={capDraft.tone} onChange={(e) => setCapDraft({ ...capDraft, tone: e.target.value })} />
+                      </label>
+                    </div>
+
+                    <label className="feed-it-field">
+                      <span>Sample / Template Caption</span>
+                      <textarea rows={7} value={capDraft.sampleCaption} onChange={(e) => setCapDraft({ ...capDraft, sampleCaption: e.target.value })} />
+                    </label>
+
+                    <label className="feed-it-field">
+                      <span>Approved Footer (one line per line)</span>
+                      <textarea rows={5} value={capDraft.footer} onChange={(e) => setCapDraft({ ...capDraft, footer: e.target.value })} />
+                    </label>
+
+                    <label className="feed-it-field">
+                      <span>Hashtags</span>
+                      <input type="text" value={capDraft.hashtags} onChange={(e) => setCapDraft({ ...capDraft, hashtags: e.target.value })} placeholder="#ZivaraSalon #SalonMembership #BeautyOffers" />
+                    </label>
+
+                    <label className="feed-it-field">
+                      <span>SEO Keywords (comma-separated)</span>
+                      <input type="text" value={capDraft.kw} onChange={(e) => setCapDraft({ ...capDraft, kw: e.target.value })} />
+                    </label>
+
+                    {capErr && <div className="feed-it-alert" role="alert">{capErr}</div>}
+                    {capMsg && <div className="feed-it-success" role="status"><strong>{capMsg}</strong></div>}
+
+                    <div className="feed-it-actions">
+                      <button type="submit" className="ws-primary" disabled={capSaving}>
+                        {capSaving ? 'Saving Caption Data…' : 'Save Caption Changes'}
+                      </button>
+                      <button type="button" className="ws-secondary" onClick={() => { setSelectedCaptionId(''); setCapDraft(null); setCapMsg(''); setCapErr(''); }}>
+                        Close Editor
+                      </button>
+                    </div>
+                  </form>
+                )}
+              </div>
             </section>
 
             <section className="ws-panel feed-it-card feed-it-list-card">

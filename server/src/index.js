@@ -2055,6 +2055,36 @@ app.delete('/api/ai/feed-it/:brandId', requireUser, burstLimit, async (req, res)
   }
 });
 
+app.get('/api/ai/feed-it/captions', requireUser, burstLimit, async (req, res) => {
+  if (!canUsePrivateBrandData(req.user)) {
+    return res.status(403).json({ error: 'Feed It is only available to authorized team accounts.' });
+  }
+  try {
+    await hydrateFedBrandsFromCloud();
+    const { listEditableCaptionBrands } = await import('./brand-memory/index.js');
+    res.json({ brands: listEditableCaptionBrands() });
+  } catch (e) {
+    console.error('[feed-it] caption list failed:', e);
+    res.status(500).json({ error: 'Could not load saved caption data.' });
+  }
+});
+
+app.patch('/api/ai/feed-it/captions/:brandId', requireUser, burstLimit, async (req, res) => {
+  if (!canUsePrivateBrandData(req.user)) {
+    return res.status(403).json({ error: 'Feed It is only available to authorized team accounts.' });
+  }
+  try {
+    await hydrateFedBrandsFromCloud();
+    const { updateSavedCaptionData } = await import('./brand-memory/index.js');
+    const brand = updateSavedCaptionData(String(req.params.brandId || ''), req.body || {});
+    const cloudSaved = await syncFedBrandsToCloud();
+    res.json({ ok: true, brand: { ...brand, persisted: cloudSaved ? 'cloud' : 'local' } });
+  } catch (e) {
+    console.error('[feed-it] caption update failed:', e);
+    res.status(400).json({ error: e?.message || 'Could not update saved caption data.' });
+  }
+});
+
 // Meta deauthorize callback: fired when a user removes Drift Post from their
 // Facebook settings. Verifies the signed_request, purges stored Meta tokens
 // we can attribute, and returns the confirmation Meta's review expects.

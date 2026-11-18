@@ -22,9 +22,9 @@
       "Beauty and wellness services discussed in reviews"
     ],
     "location": {
-      "city": "Thane",
-      "area": "Naupada",
-      "address": "Shop G-5, Highland Sky Arcade, Damani Road, LBS Marg, Naupada, Thane"
+      "city": "Thane & Mumbai",
+      "area": "Naupada, Thane West & Lower Parel, Worli, Mumbai",
+      "address": "Thane Branch: Shop G5, Highland Sky Arcade, LBS Marg, Naupada, Thane West, Maharashtra 400602 | Lower Parel Branch: Ground Floor, D.S. Marg, Gandhi Nagar, Near Phoenix Mall, Next to Sai Service NEXA, Lower Parel, Worli, Mumbai, Maharashtra 400018."
     },
     "audience": [
       "Local salon and grooming customers",
@@ -33,12 +33,12 @@
     "positioning": null
   },
   "contact": {
-    "phone": null,
+    "phone": ["8655715221", "9920581281"],
     "whatsapp": null,
     "email": null,
     "website": null,
-    "address": "Shop G-5, Highland Sky Arcade, Damani Road, LBS Marg, Naupada, Thane",
-    "full_address": "Shop G-5, Highland Sky Arcade, Damani Road, LBS Marg, Naupada, Thane"
+    "address": "Thane Branch: Shop G5, Highland Sky Arcade, LBS Marg, Naupada, Thane West, Maharashtra 400602 | Lower Parel Branch: Ground Floor, D.S. Marg, Gandhi Nagar, Near Phoenix Mall, Next to Sai Service NEXA, Lower Parel, Worli, Mumbai, Maharashtra 400018.",
+    "full_address": "Thane Branch: Shop G5, Highland Sky Arcade, LBS Marg, Naupada, Thane West, Maharashtra 400602 | Lower Parel Branch: Ground Floor, D.S. Marg, Gandhi Nagar, Near Phoenix Mall, Next to Sai Service NEXA, Lower Parel, Worli, Mumbai, Maharashtra 400018."
   },
   "social_media": {
     "instagram_url": null,
@@ -100,25 +100,32 @@
   },
   "fixed_footer": {
     "lines": [
-      "Zivara Salon & Wellness | Shop G-5, Highland Sky Arcade, Damani Road, LBS Marg, Naupada, Thane",
-      "💫 Managed by: @famebrosstudio"
+      "📍 Thane Branch",
+      "Shop G5, Highland Sky Arcade, LBS Marg, Naupada, Thane West, Maharashtra 400602",
+      "📞 8655715221",
+      "📍 Lower Parel Branch",
+      "Ground Floor, D.S. Marg, Gandhi Nagar, Near Phoenix Mall, Next to Sai Service NEXA, Lower Parel, Worli, Mumbai, Maharashtra 400018.",
+      "📞 9920581281",
+      "Managed by : @famebrosstudio"
     ]
   },
   "suggested_hashtag_bank": [
     "#ZivaraSalon",
+    "#SalonMembership",
+    "#BeautyOffers",
     "#ThaneSalon",
-    "#Naupada",
+    "#LowerParelSalon",
     "#SalonAndWellness",
-    "#HairSpa",
-    "#BeautyAppointments",
-    "#WeddingSeason"
+    "#MumbaiSalon"
   ],
   "seo_keyword_bank": [
-    "salon Naupada Thane",
-    "hair spa Thane",
-    "salon near LBS Marg",
-    "wedding salon bookings Thane",
-    "Zivara Salon Thane"
+    "Zivara Salon and Wellness",
+    "salon offers in Thane",
+    "salon in Lower Parel",
+    "20 percent off salon services",
+    "one year salon membership",
+    "beauty and wellness",
+    "salon packages Mumbai"
   ],
   "cta_bank": [
     "Visit us in Naupada, Thane.",
@@ -163,7 +170,7 @@
     "Appointment reminders",
     "Short-form reel scripts"
   ],
-  "sample_caption": "Make a little space for self-care. Explore hair and grooming services at Zivara Salon & Wellness, Naupada, Thane. Message the team to confirm services and appointment availability.",
+  "sample_caption": "Your beauty routine just got more rewarding! ✨\n\nSpend ₹1,200 on your first service at Zivara Salon & Wellness and enjoy a 1-Year Membership with 20% OFF on all services! A little pampering, a lot of savings. 💆♀️\n\nHurry! This is a limited-time offer. Book your appointment today!\n\n📍 Thane Branch\nShop G5, Highland Sky Arcade, LBS Marg, Naupada, Thane West, Maharashtra 400602\n\n📞 8655715221\n\n📍 Lower Parel Branch\nGround Floor, D.S. Marg, Gandhi Nagar, Near Phoenix Mall, Next to Sai Service NEXA, Lower Parel, Worli, Mumbai, Maharashtra 400018.\n\n📞 9920581281\n\nManaged by : @famebrosstudio\n\n#ZivaraSalon #SalonMembership #BeautyOffers\n\n[Zivara Salon and Wellness, salon offers in Thane, salon in Lower Parel, 20 percent off salon services, one year salon membership, beauty and wellness, salon packages Mumbai]",
   "accuracy_rules": [
     "Confirm current opening status, phone and booking channel before publishing.",
     "Do not promise outcomes or make medical claims.",
