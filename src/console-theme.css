@@ -3290,7 +3290,7 @@ html[data-mood="osien"] #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3, .
 }
 
 #root :is(
-  .ws-stat, .ws-create-mode-card, .cn-card, .hist-row, .setup-card, .ws-mood-card, .feed-it-item
+  .ws-stat, .ws-create-mode-card, .ws-mood-card
 ):active {
   transform: scale(0.978) !important;
   transition-duration: 110ms !important;

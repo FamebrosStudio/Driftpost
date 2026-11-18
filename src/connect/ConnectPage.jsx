@@ -162,8 +162,9 @@ export default function ConnectPage({ session, onContinue, onHistory, onSignOut,
                     <p className="cn-hint">{HINTS[p.id]}</p>
                     {accountCount > 0 && <input className="cn-search" type="search" value={accountSearch[p.id] || ''} onChange={(e) => setAccountSearch((s) => ({ ...s, [p.id]: e.target.value }))} placeholder={`Search ${p.name} accounts`} aria-label={`Search ${p.name} accounts`} />}
                     <div className={`dp-collapse ${isOpen ? 'is-open' : ''}`}>
-                      <button
-                        type="button"
+                      <div
+                        role="button"
+                        tabIndex={0}
                         className="dp-collapse-trigger"
                         aria-expanded={isOpen}
                         onClick={() => {
@@ -172,9 +173,18 @@ export default function ConnectPage({ session, onContinue, onHistory, onSignOut,
                           }
                           setOpenPlatforms((prev) => ({ ...prev, [p.id]: !isOpen }));
                         }}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            if (searchingAccounts && isOpen) {
+                              setAccountSearch((s) => ({ ...s, [p.id]: '' }));
+                            }
+                            setOpenPlatforms((prev) => ({ ...prev, [p.id]: !isOpen }));
+                          }
+                        }}
                       >
                         <span>{list.length ? `${list.length} ${p.name} account${list.length === 1 ? '' : 's'}` : `No ${p.name} accounts`}</span>
-                      </button>
+                      </div>
                       {isOpen && (
                         <div className="dp-collapse-body">
                           <div className="cn-list">
@@ -185,25 +195,14 @@ export default function ConnectPage({ session, onContinue, onHistory, onSignOut,
                                   <b title={c.account_name}>{c.account_name}</b>
                                   <small>{p.name}</small>
                                 </span>
-                                {confirmDropId === c.id ? (
-                                  <span className="cn-drop-actions">
-                                    <button type="button" className="cn-drop danger" disabled={!!busy} onClick={() => disconnect(c)}>
-                                      {busy === c.id ? 'Disconnecting…' : 'Yes, disconnect'}
-                                    </button>
-                                    <button type="button" className="cn-drop" disabled={!!busy} onClick={() => setConfirmDropId('')}>
-                                      Cancel
-                                    </button>
-                                  </span>
-                                ) : (
-                                  <button
-                                    type="button"
-                                    className="cn-drop"
-                                    disabled={!!busy}
-                                    onClick={() => setConfirmDropId(c.id)}
-                                  >
-                                    {busy === c.id ? '…' : 'Disconnect'}
-                                  </button>
-                                )}
+                                <button
+                                  type="button"
+                                  className="cn-drop"
+                                  disabled={!!busy}
+                                  onClick={(e) => { e.stopPropagation(); disconnect(c); }}
+                                >
+                                  {busy === c.id ? 'Disconnecting…' : 'Disconnect'}
+                                </button>
                               </div>
                             )) : (
                               <div className="cn-empty">{connections.some((c) => c.platform === p.id) ? 'No accounts match that search.' : `No ${p.name} account yet.`}</div>
@@ -227,9 +226,21 @@ export default function ConnectPage({ session, onContinue, onHistory, onSignOut,
 
             {brands.length > 0 && (
               <div className={`dp-collapse cn-brands-collapse ${brandsOpen ? 'is-open' : ''}`}>
-                <button type="button" className="dp-collapse-trigger" aria-expanded={brandsOpen} onClick={() => setBrandsOpen((v) => !v)}>
+                <div
+                  role="button"
+                  tabIndex={0}
+                  className="dp-collapse-trigger"
+                  aria-expanded={brandsOpen}
+                  onClick={() => setBrandsOpen((v) => !v)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      setBrandsOpen((v) => !v);
+                    }
+                  }}
+                >
                   <span>Brands we found ({brands.length})</span>
-                </button>
+                </div>
                 {brandsOpen && (
                   <div className="dp-collapse-body">
                     <div className="cn-brands">

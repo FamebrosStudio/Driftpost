@@ -1,7 +1,7 @@
 // Driftpost hold-and-nudge elastic physics + hardware-composited SVG cursor system.
 const HOLD_SELECTOR = [
-  '.ws-stat', '.ws-welcome', '.ws-create-mode-card', '.cn-card', '.hist-row',
-  '.setup-card', '.ws-mood-card', '.ws-cursor-card', '.feed-it-item', '.ws-panel',
+  '.ws-stat', '.ws-welcome', '.ws-create-mode-card',
+  '.ws-mood-card', '.ws-cursor-card',
   '.ws-primary', '.ws-secondary', '.ws-topnav-pill', '.ws-topbar-icon-btn',
   '.ws-wordmark', '.ws-user', '.continue-btn', '.s2-continue-btn', '.cn-next',
   '.s3-postall', '.s3-schedall', '.ws-route-stop',
