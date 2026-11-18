@@ -508,7 +508,13 @@ export async function generateCaptions(summary, opts = {}) {
   if (!provider.hasKey) throw new Error(providerNotConfiguredMessage(provider));
   const brief = String(summary || '').trim().slice(0, 1200);
   const transcript = String(opts.transcript || '').trim().slice(0, 5000);
-  if (brief.length < 3) throw new Error('Write a short summary first (a few words about the post)');
+  const maxVisualSamples = opts.video_frame_analysis === true || String(opts.video_frame_analysis || '') === '1' ? 8 : 4;
+  const images = (Array.isArray(opts.images) ? opts.images : []).filter((im) =>
+    im && ['image/jpeg', 'image/png'].includes(im.mimetype) && typeof im.base64 === 'string' && im.base64.length <= 3_000_000
+  ).slice(0, maxVisualSamples);
+  if (brief.length < 3 && !images.length && transcript.length < 3) {
+    throw new Error('Write a short summary first (a few words about the post)');
+  }
   // Direct callers must opt in explicitly after the API has authenticated an
   // approved account. A prompt or client-supplied label is never authority.
   const mayUsePrivateBrandData = opts.allowPrivateBrandData === true;
@@ -516,10 +522,6 @@ export async function generateCaptions(summary, opts = {}) {
   const creatorContext = !mayUsePrivateBrandData ? String(opts.creatorContext || '').trim().slice(0, 160) : '';
   const assetHint = String(opts.assetHint || '').slice(0, 200);
   const goal = String(opts.goal || '').slice(0, 40);
-  const maxVisualSamples = opts.video_frame_analysis === true || String(opts.video_frame_analysis || '') === '1' ? 8 : 4;
-  const images = (Array.isArray(opts.images) ? opts.images : []).filter((im) =>
-    im && ['image/jpeg', 'image/png'].includes(im.mimetype) && typeof im.base64 === 'string' && im.base64.length <= 3_000_000
-  ).slice(0, maxVisualSamples);
   const trends = !images.length && (opts.trends === true || String(opts.trends || '') === '1');
   // User-chosen style controls (whitelisted — anything else falls back to auto).
   const tone = ['excited', 'warm', 'professional', 'funny', 'luxury', 'emotional', 'creative', 'minimal'].includes(String(opts.tone || '')) ? opts.tone : 'auto';

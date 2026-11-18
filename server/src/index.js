@@ -2231,7 +2231,7 @@ app.post('/api/intake/preview-captions', requireUser, upload.fields([{ name: 'im
     let transcript = '';
     if (videoFile) {
       try {
-        const spoken = await transcribeVideo(videoFile.path);
+        const spoken = await transcribeVideo(videoFile.path, videoFile.originalname, videoFile.mimetype);
         transcript = spoken?.text || '';
       } catch (err) {
         console.warn('[intake-preview] video transcription skipped:', String(err?.message || err).slice(0, 200));
@@ -2260,7 +2260,8 @@ app.post('/api/intake/preview-captions', requireUser, upload.fields([{ name: 'im
       captions: out.captions || out,
     });
   } catch (e) {
-    res.status(500).json({ error: e?.message || 'Could not analyze media and generate captions.' });
+    console.warn('[intake-preview] failed:', String(e?.message || e).slice(0, 300));
+    res.status(e?.status || 400).json({ error: e?.message || 'Could not analyze media and generate captions.' });
   } finally {
     await cleanup();
   }
