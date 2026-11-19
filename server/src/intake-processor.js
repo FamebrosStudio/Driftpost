@@ -266,8 +266,8 @@ export async function processIntakeJob(supabase, job, options = {}) {
     }));
     const covers = {};
     const neededCoverPlatforms = platformsNeedingGeneratedCovers(isCarousel, platforms);
-    const customCoverPath = neededCoverPlatforms.length && typeof io.downloadCover === 'function'
-      ? await io.downloadCover(job, directory)
+    const customCoverPath = neededCoverPlatforms.length && typeof options.downloadCover === 'function'
+      ? await options.downloadCover(job, directory)
       : null;
     if (customCoverPath) {
       for (const platform of neededCoverPlatforms) {
@@ -277,7 +277,7 @@ export async function processIntakeJob(supabase, job, options = {}) {
       let preferredFrameIndex = Math.floor(frames.length / 2);
       if (neededCoverPlatforms.length && frameImages.length > 1) {
         try {
-          const primaryBrand = targetBrands.find((t) => t.brand?.id)?.brand || null;
+          const primaryBrand = targetGroups.find((t) => t.brand?.id)?.brand || null;
           const aiIndex = await chooseVideoCoverFrame(frameImages, {
             brand: primaryBrand,
             brandId: primaryBrand?.id || '',
