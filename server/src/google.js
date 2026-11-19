@@ -51,16 +51,20 @@ async function businessRequest(url, accessToken, init = {}) {
   return data;
 }
 
-export function businessProfileErrorMessage(error) {
+export function businessProfileErrorMessage(error, context = 'locations') {
   const message = String(error?.message || error || 'Unknown Google Business Profile error').slice(0, 1200);
+  const actionLabel = context === 'reviews' ? 'review replies' : 'location discovery';
   if (/quota exceeded|rate limit|requests per minute/i.test(message)) {
-    return `Google temporarily rate-limited location discovery. Your Google account is connected; wait a few minutes and retry. Google says: ${message}`;
+    return `Google temporarily rate-limited ${actionLabel}. Wait a few minutes and retry. Google says: ${message}`;
   }
   if (/has not been used in project|api .*disabled|accessNotConfigured|service_disabled/i.test(message)) {
     return `A required Google Business Profile API is disabled for the OAuth project. Enable the API named in Google's message, wait for it to propagate, then retry. Google says: ${message}`;
   }
   if (/permission denied|insufficient authentication scopes|not authorized/i.test(message)) {
-    return `This Google account does not have sufficient Business Profile access for location discovery. Check its manager/owner access and Google API approval. Google says: ${message}`;
+    return `This Google account does not have sufficient Business Profile access for ${actionLabel}. Check its manager/owner access and Google API approval. Google says: ${message}`;
+  }
+  if (context === 'reviews') {
+    return `Could not load or reply to Google reviews. Check Business Profile API approval and enabled APIs (including Google My Business API), then retry. Google says: ${message}`;
   }
   return `Google account connected, but locations could not be loaded. Check Business Profile API approval and enabled APIs, then retry. Google says: ${message}`;
 }
@@ -95,9 +99,17 @@ export async function listBusinessProfileLocations(accessToken) {
 }
 
 export async function listBusinessReviews(accessToken, accountId, locationId) {
-  const params = new URLSearchParams({ pageSize: '50', orderBy: 'updateTime desc' });
-  const data = await businessRequest(`https://mybusiness.googleapis.com/v4/accounts/${encodeURIComponent(accountId)}/locations/${encodeURIComponent(locationId)}/reviews?${params}`, accessToken);
-  return data.reviews || [];
+  const reviews = [];
+  let pageToken = '';
+  for (let page = 0; page < 5; page++) {
+    const params = new URLSearchParams({ pageSize: '50', orderBy: 'updateTime desc' });
+    if (pageToken) params.set('pageToken', pageToken);
+    const data = await businessRequest(`https://mybusiness.googleapis.com/v4/accounts/${encodeURIComponent(accountId)}/locations/${encodeURIComponent(locationId)}/reviews?${params}`, accessToken);
+    if (Array.isArray(data.reviews)) reviews.push(...data.reviews);
+    pageToken = data.nextPageToken || '';
+    if (!pageToken) break;
+  }
+  return reviews;
 }
 
 export async function replyBusinessReview(accessToken, accountId, locationId, reviewId, comment) {

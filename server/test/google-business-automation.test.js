@@ -7,6 +7,7 @@ test('Google Business Profile location discovery errors explain quota, API and a
   assert.match(businessProfileErrorMessage(new Error('API has not been used in project or it is disabled')), /API is disabled/i);
   assert.match(businessProfileErrorMessage(new Error('Permission denied for account')), /sufficient Business Profile access/i);
   assert.match(businessProfileErrorMessage(new Error('unexpected error')), /Google account connected, but locations could not be loaded/i);
+  assert.match(businessProfileErrorMessage(new Error('unexpected error'), 'reviews'), /Could not load or reply to Google reviews/i);
 });
 
 test('Google review star enum values normalize safely', () => {

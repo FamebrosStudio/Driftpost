@@ -8,11 +8,15 @@ import './workspace.css';
 const EMPTY = { comment_enabled: false, public_reply_enabled: false, comment_keyword: '', public_reply: '', private_reply: '', dm_keyword: '', dm_reply: '', default_reply: '' };
 
 export default function AutomationsPage({ session, onNavigate, onSignOut }) {
-  const [platform, setPlatform] = useState('instagram');
+  const [platform, setPlatform] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('connected') === 'google-business' || params.has('google_business_error') ? 'google-business' : 'instagram';
+  });
   const platformName = platform === 'facebook' ? 'Facebook' : platform === 'google-business' ? 'Google Business Profile' : 'Instagram';
   const [accounts, setAccounts] = useState([]);
   const [googleConnections, setGoogleConnections] = useState([]);
   const [refreshingConnection, setRefreshingConnection] = useState('');
+  const [checkingReviews, setCheckingReviews] = useState(false);
   const [selected, setSelected] = useState('');
   const [accountSearch, setAccountSearch] = useState('');
   const [enabled, setEnabled] = useState(false);
@@ -59,8 +63,12 @@ export default function AutomationsPage({ session, onNavigate, onSignOut }) {
       loadedRules.public_reply_enabled = !!String(savedRules.public_reply || '').trim();
     }
     setRules(loadedRules);
-    setMessage(''); setError('');
   }, [accounts, selected]);
+
+  useEffect(() => {
+    setMessage('');
+    setError('');
+  }, [selected]);
 
   const set = (key, value) => setRules((current) => ({ ...current, [key]: value }));
   const sortedAccounts = [...accounts].sort((a, b) => String(a.name || '').localeCompare(String(b.name || ''), undefined, { sensitivity: 'base', numeric: true }));
@@ -78,9 +86,30 @@ export default function AutomationsPage({ session, onNavigate, onSignOut }) {
         method: 'PUT', body: JSON.stringify(payload),
       });
       setAccounts((current) => current.map((item) => item.id === selected ? { ...item, enabled: data.enabled, rules: data.rules } : item));
-      setMessage(data.enabled ? 'Automation saved and enabled.' : 'Automation saved and paused.');
+      if (platform === 'google-business' && data.review_sync) {
+        if (data.review_sync.error) {
+          setMessage('Automation saved and enabled.');
+          setError(data.review_sync.error);
+        } else {
+          const { checked = 0, replied = 0 } = data.review_sync;
+          setMessage(`Automation saved and enabled. Checked ${checked} review${checked === 1 ? '' : 's'}, sent ${replied} repl${replied === 1 ? 'y' : 'ies'}.`);
+        }
+      } else {
+        setMessage(data.enabled ? 'Automation saved and enabled.' : 'Automation saved and paused.');
+      }
     } catch (e) { setError(e.message || 'Could not save your automation.'); }
     finally { setSaving(false); }
+  };
+
+  const checkReviewsNow = async () => {
+    if (!selected || checkingReviews || saving) return;
+    setCheckingReviews(true); setError(''); setMessage('');
+    try {
+      const data = await api(`/api/automations/google-business/${encodeURIComponent(selected)}/check`, session.access_token, { method: 'POST' });
+      const { checked = 0, replied = 0 } = data;
+      setMessage(`Checked ${checked} review${checked === 1 ? '' : 's'}, sent ${replied} repl${replied === 1 ? 'y' : 'ies'}.`);
+    } catch (e) { setError(e.message || 'Could not check Google reviews.'); }
+    finally { setCheckingReviews(false); }
   };
 
   const refreshLocations = async (connectionId) => {
@@ -110,7 +139,7 @@ export default function AutomationsPage({ session, onNavigate, onSignOut }) {
       {error && <p className="approval-error" role="alert">{error}</p>}{message && <p className="automation-saved" role="status">{message}</p>}
       {loading ? <div className="ws-inline-state">Loading {platformName} accounts…</div> : !accounts.length ? <BorderGlow className="bg-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.12} glowRadius={22}><section className="ws-panel ws-empty"><b>{platform === 'google-business' ? 'No business locations connected yet' : `Connect ${platform === 'facebook' ? 'a Facebook Page' : 'an Instagram professional account'}`}</b><small>{platform === 'google-business' ? 'Connect a Google account above; all Business Profile locations it manages will appear here.' : `Auto replies are available for connected ${platformName} accounts.`}</small>{platform !== 'google-business' && <button onClick={() => onNavigate('accounts')}>Open connected accounts</button>}</section></BorderGlow> : <>
         <BorderGlow className="bg-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.12} glowRadius={22}><section className="ws-panel automation-account"><label><span>{platform === 'google-business' ? 'Business location' : `${platformName} account`}</span><input type="search" value={accountSearch} onChange={(e) => setAccountSearch(e.target.value)} placeholder={`Search ${platformName} accounts`} aria-label={`Search ${platformName} accounts`} /><select value={selected} disabled={saving} onChange={(e) => setSelected(e.target.value)}>{selectedOutsideSearch && <optgroup label="Current selection"><option value={selected}>{selectedAccount.name} · replies {selectedAccount.enabled ? 'ON' : 'PAUSED'}</option></optgroup>}{matchingAccounts.map((item) => <option key={item.id} value={item.id}>{item.name}{item.address ? ` · ${item.address}` : ''} · replies {item.enabled ? 'ON' : 'PAUSED'}</option>)}</select></label>{platform !== 'google-business' && <label className="automation-toggle"><input type="checkbox" checked={enabled} onChange={(e) => setEnabled(e.target.checked)} /><span><b>Automation is {enabled ? 'on' : 'paused'}</b><small>Pause instantly without deleting your reply rules.</small></span></label>}</section></BorderGlow>
-        {platform === 'google-business' ? <div className="automation-grid"><BorderGlow className="bg-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.12} glowRadius={22}><section className="ws-panel"><div className="automation-title"><span className="ws-icon"><BrandIcon id="google" size={18} /></span><div><h2>Review auto-reply</h2><p>Only new reviews without an existing owner reply are eligible. Replies are checked every five minutes.</p></div></div><label className="automation-toggle"><input type="checkbox" checked={enabled} onChange={(e) => setEnabled(e.target.checked)} /><span><b>Automation is {enabled ? 'on' : 'paused'}</b><small>Disable immediately to stop processing future reviews.</small></span></label>{field('Reply template', 'reply_text', 'Thank you for taking the time to leave us a review!', 'Use a fixed, human-reviewed response. Replies are public and sent as your business.', true)}<label className="automation-field"><span>Minimum star rating</span><select value={rules.minimum_rating || 1} onChange={(e) => set('minimum_rating', Number(e.target.value))}>{[1,2,3,4,5].map((rating) => <option key={rating} value={rating}>{rating}+ stars</option>)}</select><small>Lower ratings are left for personal follow-up.</small></label><p className="ws-footnote">Template-only mode is intentional: generated replies can publish publicly. Each review event is deduplicated before replying; existing owner replies are never overwritten.</p></section></BorderGlow></div> : <div className="automation-grid">
+        {platform === 'google-business' ? <div className="automation-grid"><BorderGlow className="bg-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.12} glowRadius={22}><section className="ws-panel"><div className="automation-title"><span className="ws-icon"><BrandIcon id="google" size={18} /></span><div><h2>Review auto-reply</h2><p>Only new reviews without an existing owner reply are eligible. Replies run immediately when saved and every five minutes.</p></div></div><label className="automation-toggle"><input type="checkbox" checked={enabled} onChange={(e) => setEnabled(e.target.checked)} /><span><b>Automation is {enabled ? 'on' : 'paused'}</b><small>Disable immediately to stop processing future reviews.</small></span></label>{field('Reply template', 'reply_text', 'Thank you for taking the time to leave us a review!', 'Use a fixed, human-reviewed response. Replies are public and sent as your business.', true)}<label className="automation-field"><span>Minimum star rating</span><select value={rules.minimum_rating || 1} onChange={(e) => set('minimum_rating', Number(e.target.value))}>{[1,2,3,4,5].map((rating) => <option key={rating} value={rating}>{rating}+ stars</option>)}</select><small>Lower ratings are left for personal follow-up.</small></label><div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginTop: '8px' }}><button type="button" className="ws-secondary" disabled={!selected || checkingReviews || saving || !selectedAccount?.enabled} onClick={checkReviewsNow}>{checkingReviews ? 'Checking reviews…' : 'Check & reply now'}</button></div><p className="ws-footnote">Template-only mode is intentional: generated replies can publish publicly. Each review event is deduplicated before replying; existing owner replies are never overwritten.</p></section></BorderGlow></div> : <div className="automation-grid">
           <BorderGlow className="bg-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.12} glowRadius={22}><section className="ws-panel"><div className="automation-title"><span className="ws-icon"><BrandIcon id={platform} size={18} /></span><div><h2>Replies to comments</h2><p>Choose whether matching comments get a public reply, a private DM, or both. Each action has its own switch.</p></div></div>
             <label className="automation-toggle"><input type="checkbox" checked={rules.public_reply_enabled} onChange={(e) => set('public_reply_enabled', e.target.checked)} /><span><b>Auto-reply publicly to comments</b><small>Post a reply under each matching comment. Turn this off to stop public replies.</small></span></label>
             {field('Comment keyword filter (optional)', 'comment_keyword', 'e.g. PRICE', 'Leave blank to match every new comment. This filter applies to both auto-DM and public replies.')}

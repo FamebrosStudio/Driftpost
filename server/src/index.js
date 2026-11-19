@@ -1359,8 +1359,88 @@ app.post('/api/automations/google-business/connections/:connectionId/refresh', r
   }
 });
 
+async function withGoogleBusinessAccessToken(account, fn) {
+  let tokens = decryptJson(account.encrypted_tokens);
+  const expiry = Date.parse(account.token_expires_at || '');
+  const needsProactiveRefresh = (!tokens.access_token || (Number.isFinite(expiry) && expiry <= Date.now() + 60_000)) && tokens.refresh_token;
+  const refreshAndPersist = async () => {
+    if (!tokens.refresh_token) throw new Error('Google Business Profile refresh token is missing. Reconnect your Google account.');
+    const refreshed = await refreshBusinessProfileToken(tokens.refresh_token);
+    tokens = {
+      ...tokens,
+      access_token: refreshed.access_token,
+      refresh_token: refreshed.refresh_token || tokens.refresh_token,
+    };
+    const token_expires_at = refreshed.expires_in ? new Date(Date.now() + refreshed.expires_in * 1000).toISOString() : null;
+    account.encrypted_tokens = encryptJson(tokens);
+    account.token_expires_at = token_expires_at;
+    await supabase.from('google_business_connections')
+      .update({ encrypted_tokens: account.encrypted_tokens, token_expires_at })
+      .eq('id', account.id);
+    return tokens.access_token;
+  };
+
+  let accessToken = needsProactiveRefresh ? await refreshAndPersist() : tokens.access_token;
+  if (!accessToken) accessToken = await refreshAndPersist();
+  try {
+    return await fn(accessToken);
+  } catch (apiError) {
+    if (apiError?.status === 401 && tokens.refresh_token) {
+      accessToken = await refreshAndPersist();
+      return await fn(accessToken);
+    }
+    throw apiError;
+  }
+}
+
+async function processGoogleBusinessLocationReviews(location) {
+  const account = Array.isArray(location.google_business_connections)
+    ? location.google_business_connections[0]
+    : location.google_business_connections;
+  if (!account?.encrypted_tokens || !location.account_id || !location.location_id) {
+    throw new Error('Google Business Profile connection is missing credentials or location IDs.');
+  }
+
+  const rules = location.rules || {};
+  const reply = String(rules.reply_text || '').trim();
+  if (!reply) return { checked: 0, replied: 0, skipped: 0 };
+
+  const reviews = await withGoogleBusinessAccessToken(account, (accessToken) =>
+    listBusinessReviews(accessToken, location.account_id, location.location_id),
+  );
+
+  let replied = 0;
+  let skipped = 0;
+  for (const review of reviews) {
+    if (!shouldAutoReplyToBusinessReview(review, rules)) {
+      skipped++;
+      continue;
+    }
+    const eventId = crypto.createHash('sha256').update(`${location.id}:${review.name}:${review.updateTime || review.createTime || ''}`).digest('hex');
+    const { error: claimError } = await supabase.from('google_business_review_events').insert({ event_id: eventId, user_id: location.user_id, location_row_id: location.id });
+    if (claimError?.code === '23505') {
+      skipped++;
+      continue;
+    }
+    if (claimError) throw claimError;
+    try {
+      const reviewId = review.reviewId || String(review.name).split('/').pop();
+      await withGoogleBusinessAccessToken(account, (accessToken) =>
+        replyBusinessReview(accessToken, location.account_id, location.location_id, reviewId, reply),
+      );
+      replied++;
+    } catch (replyError) {
+      await supabase.from('google_business_review_events').delete().eq('event_id', eventId);
+      throw replyError;
+    }
+  }
+  return { checked: reviews.length, replied, skipped };
+}
+
 app.put('/api/automations/google-business/:locationId', requireUser, strictBurstLimit, async (req, res) => {
-  const { data: location, error: lookupError } = await supabase.from('google_business_locations').select('id').eq('id', req.params.locationId).eq('user_id', req.user.id).maybeSingle();
+  const { data: location, error: lookupError } = await supabase.from('google_business_locations')
+    .select('id, user_id, account_id, location_id, google_business_connections(id, encrypted_tokens, token_expires_at)')
+    .eq('id', req.params.locationId).eq('user_id', req.user.id).maybeSingle();
   if (lookupError || !location) return res.status(404).json({ error: 'Business Profile location not found.' });
   const input = req.body || {};
   const rules = { mode: input.mode === 'ai' ? 'ai' : 'template', reply_text: String(input.reply_text || '').trim().slice(0, 4000), minimum_rating: Math.max(1, Math.min(5, Number(input.minimum_rating) || 1)), only_without_reply: true };
@@ -1369,7 +1449,31 @@ app.put('/api/automations/google-business/:locationId', requireUser, strictBurst
   if (enabled && rules.mode === 'ai') return res.status(400).json({ error: 'AI review replies are not enabled yet. Choose a reviewed template instead.' });
   const { error } = await supabase.from('google_business_locations').update({ enabled, rules, updated_at: new Date().toISOString() }).eq('id', location.id).eq('user_id', req.user.id);
   if (error) return res.status(500).json({ error: 'Could not save the review automation.' });
-  res.json({ ok: true, enabled, rules });
+
+  let review_sync = null;
+  if (enabled) {
+    try {
+      review_sync = await processGoogleBusinessLocationReviews({ ...location, enabled, rules });
+    } catch (syncError) {
+      review_sync = { checked: 0, replied: 0, skipped: 0, error: businessProfileErrorMessage(syncError, 'reviews') };
+    }
+  }
+  res.json({ ok: true, enabled, rules, review_sync });
+});
+
+app.post('/api/automations/google-business/:locationId/check', requireUser, strictBurstLimit, async (req, res) => {
+  const { data: location, error: lookupError } = await supabase.from('google_business_locations')
+    .select('id, user_id, account_id, location_id, enabled, rules, google_business_connections(id, encrypted_tokens, token_expires_at)')
+    .eq('id', req.params.locationId).eq('user_id', req.user.id).maybeSingle();
+  if (lookupError || !location) return res.status(404).json({ error: 'Business Profile location not found.' });
+  if (!location.enabled) return res.status(400).json({ error: 'Enable and save the review automation before checking reviews.' });
+  if (!String(location.rules?.reply_text || '').trim()) return res.status(400).json({ error: 'Add and save a reply template before checking reviews.' });
+  try {
+    const result = await processGoogleBusinessLocationReviews(location);
+    res.json({ ok: true, ...result });
+  } catch (error) {
+    res.status(502).json({ error: businessProfileErrorMessage(error, 'reviews') });
+  }
 });
 
 let googleBusinessPollRunning = false;
@@ -1378,43 +1482,12 @@ async function pollGoogleBusinessReviews() {
   googleBusinessPollRunning = true;
   try {
     const { data: locations, error } = await supabase.from('google_business_locations')
-      .select('id, user_id, account_id, location_id, enabled, rules, google_business_connections(id, encrypted_tokens)')
+      .select('id, user_id, account_id, location_id, enabled, rules, google_business_connections(id, encrypted_tokens, token_expires_at)')
       .eq('enabled', true).limit(500);
     if (error) throw error;
     for (const location of locations || []) {
-      const account = location.google_business_connections;
-      if (!account?.encrypted_tokens) continue;
       try {
-        let tokens = decryptJson(account.encrypted_tokens);
-        let accessToken = tokens.access_token;
-        if (!accessToken || !location.account_id || !location.location_id) continue;
-        let reviews;
-        try { reviews = await listBusinessReviews(accessToken, location.account_id, location.location_id); }
-        catch (apiError) {
-          if (!tokens.refresh_token) throw apiError;
-          const refreshed = await refreshBusinessProfileToken(tokens.refresh_token);
-          tokens = { ...tokens, access_token: refreshed.access_token };
-          accessToken = refreshed.access_token;
-          await supabase.from('google_business_connections').update({ encrypted_tokens: encryptJson(tokens), token_expires_at: refreshed.expires_in ? new Date(Date.now() + refreshed.expires_in * 1000).toISOString() : null }).eq('id', account.id);
-          reviews = await listBusinessReviews(accessToken, location.account_id, location.location_id);
-        }
-        const rules = location.rules || {};
-        for (const review of reviews) {
-          if (!shouldAutoReplyToBusinessReview(review, rules)) continue;
-          const reply = String(rules.reply_text || '').trim();
-          if (!reply) continue;
-          const eventId = crypto.createHash('sha256').update(`${location.id}:${review.name}:${review.updateTime || review.createTime || ''}`).digest('hex');
-          const { error: claimError } = await supabase.from('google_business_review_events').insert({ event_id: eventId, user_id: location.user_id, location_row_id: location.id });
-          if (claimError?.code === '23505') continue;
-          if (claimError) throw claimError;
-          try {
-            const reviewId = String(review.name).split('/').pop();
-            await replyBusinessReview(accessToken, location.account_id, location.location_id, reviewId, reply);
-          } catch (replyError) {
-            await supabase.from('google_business_review_events').delete().eq('event_id', eventId);
-            throw replyError;
-          }
-        }
+        await processGoogleBusinessLocationReviews(location);
       } catch (locationError) {
         console.warn('[google business automation] location poll failed', { location: location.id, error: String(locationError.message || locationError).slice(0, 300) });
       }
@@ -1422,6 +1495,7 @@ async function pollGoogleBusinessReviews() {
   } catch (error) { console.error('[google business automation] poll failed', String(error.message || error).slice(0, 300)); }
   finally { googleBusinessPollRunning = false; }
 }
+setTimeout(() => { void pollGoogleBusinessReviews(); }, 15 * 1000).unref();
 setInterval(() => { void pollGoogleBusinessReviews(); }, 5 * 60 * 1000).unref();
 
 // Read account-level metrics from the official platform APIs using the
