@@ -16,11 +16,79 @@ const PLATFORMS = new Set(['youtube', 'instagram', 'facebook', 'x']);
 const clean = (value) => String(value || '').trim();
 const normalize = (value) => clean(value).toLowerCase().replace(/^@/, '').replace(/[^\p{L}\p{N}]+/gu, '');
 
-async function sampleFrames(videoPath, directory) {
+export function parseFfprobeDuration(value) {
+  if (typeof value === 'number') return Number.isFinite(value) && value > 0 ? value : 0;
+  const text = String(value || '').trim();
+  if (!text || /^n\/a$/i.test(text)) return 0;
+  const numeric = Number(text);
+  if (Number.isFinite(numeric) && numeric > 0) return numeric;
+  const hms = text.match(/^(\d+):(\d{1,2}):(\d{1,2}(?:\.\d+)?)$/);
+  if (!hms) return 0;
+  const seconds = Number(hms[1]) * 3600 + Number(hms[2]) * 60 + Number(hms[3]);
+  return Number.isFinite(seconds) && seconds > 0 ? seconds : 0;
+}
+
+function parseFrameRate(rate) {
+  const match = String(rate || '').trim().match(/^(\d+(?:\.\d+)?)\/(\d+(?:\.\d+)?)$/);
+  if (match) {
+    const num = Number(match[1]);
+    const den = Number(match[2]);
+    if (den > 0 && Number.isFinite(num / den) && num / den > 0) return num / den;
+  }
+  const numeric = Number(rate);
+  return Number.isFinite(numeric) && numeric > 0 ? numeric : 0;
+}
+
+async function probeVideoDuration(videoPath) {
   const { stdout } = await execFileAsync('ffprobe', [
-    '-v', 'error', '-show_entries', 'format=duration', '-of', 'default=noprint_wrappers=1:nokey=1', videoPath,
-  ], { timeout: 60_000, maxBuffer: 1024 * 1024 });
-  const duration = Number(stdout.trim());
+    '-v', 'error', '-show_entries', 'format=duration:stream=duration:stream_tags=DURATION', '-of', 'json', videoPath,
+  ], { timeout: 60_000, maxBuffer: 1024 * 1024 }).catch(() => ({ stdout: '{}' }));
+
+  let parsed = {};
+  try { parsed = JSON.parse(stdout || '{}'); } catch {}
+
+  const formatDuration = parseFfprobeDuration(parsed.format?.duration);
+  if (formatDuration > 0) return formatDuration;
+
+  for (const stream of parsed.streams || []) {
+    const streamDuration = parseFfprobeDuration(stream?.duration);
+    if (streamDuration > 0) return streamDuration;
+    for (const [key, val] of Object.entries(stream?.tags || {})) {
+      if (/^duration/i.test(key)) {
+        const tagDuration = parseFfprobeDuration(val);
+        if (tagDuration > 0) return tagDuration;
+      }
+    }
+  }
+
+  const { stdout: packetOut } = await execFileAsync('ffprobe', [
+    '-v', 'error', '-select_streams', 'v:0', '-count_packets',
+    '-show_entries', 'stream=nb_read_packets,r_frame_rate,avg_frame_rate', '-of', 'json', videoPath,
+  ], { timeout: 90_000, maxBuffer: 1024 * 1024 }).catch(() => ({ stdout: '{}' }));
+
+  let packetParsed = {};
+  try { packetParsed = JSON.parse(packetOut || '{}'); } catch {}
+  const videoStream = packetParsed.streams?.[0];
+  const packets = Number(videoStream?.nb_read_packets);
+  const fps = parseFrameRate(videoStream?.avg_frame_rate) || parseFrameRate(videoStream?.r_frame_rate);
+  if (Number.isFinite(packets) && packets > 0 && fps > 0) {
+    return packets / fps;
+  }
+
+  const nullRun = await execFileAsync('ffmpeg', [
+    '-hide_banner', '-i', videoPath, '-f', 'null', '-',
+  ], { timeout: 90_000, maxBuffer: 2 * 1024 * 1024 }).catch((err) => ({ stderr: err?.stderr || '' }));
+  const matches = [...String(nullRun.stderr || '').matchAll(/time=(\d+:\d{2}:\d{2}(?:\.\d+)?)/g)];
+  if (matches.length) {
+    const decodedDuration = parseFfprobeDuration(matches[matches.length - 1][1]);
+    if (decodedDuration > 0) return decodedDuration;
+  }
+
+  return 0;
+}
+
+async function sampleFrames(videoPath, directory) {
+  const duration = await probeVideoDuration(videoPath);
   if (!Number.isFinite(duration) || duration <= 0) throw new Error('The video duration could not be read. Send an MP4, MOV, or WebM video.');
   const frames = [];
   const sampleTimes = videoEvidenceSampleTimes(duration, 5);
@@ -29,7 +97,7 @@ async function sampleFrames(videoPath, directory) {
     await execFileAsync('ffmpeg', [
       '-hide_banner', '-loglevel', 'error', '-y', '-ss', String(seconds), '-i', videoPath,
       '-frames:v', '1', '-vf', 'scale=1024:1024:force_original_aspect_ratio=decrease', '-q:v', '4', output,
-    ], { timeout: 90_000, maxBuffer: 2 * 1024 * 1024 });
+    ], { timeout: 90_000, maxBuffer: 2 * 1024 * 1024 }).catch(() => {});
     const stat = await fs.stat(output).catch(() => null);
     if (stat?.size) frames.push({ path: output, name: `frame-${index}.jpg`, mimetype: 'image/jpeg', base64: (await fs.readFile(output)).toString('base64'), detail: 'low' });
   }
