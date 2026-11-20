@@ -9,6 +9,7 @@ import { decryptJson, encryptJson } from './crypto.js';
 import { processIntakeJob } from './intake-processor.js';
 import { inferLikelyVideoBrands } from './ai.js';
 import { getAssignedInstagramTags, mapBrandDestinations, matchDriveAccounts, resolveDriveBrand } from './brand-routing.js';
+import { classifyRecoverableError } from './self-heal.js';
 
 const execFileAsync = promisify(execFile);
 const TABLE = 'google_drive_video_jobs';
@@ -666,6 +667,7 @@ function progressPercentFor(stage, detail = '') {
 async function runClaimedIntakeJob(supabase, job) {
   const heartbeat = setInterval(() => { void supabase.from(TABLE).update({ updated_at: new Date().toISOString() }).eq('id', job.id).eq('status', 'processing'); }, 60_000);
   heartbeat.unref();
+  let requeuedForRetry = false;
   try {
     await processIntakeJob(supabase, job, {
       table: TABLE,
@@ -693,11 +695,34 @@ async function runClaimedIntakeJob(supabase, job) {
     });
   } catch (error) {
     const message = String(error?.message || 'Could not prepare the automatic post.').slice(0, 800);
-    await supabase.from(TABLE).update({ status: 'failed', error: message, updated_at: new Date().toISOString() }).eq('id', job.id).neq('status', 'stopped');
-    console.error('[drive-intake] job failed:', job.id, message);
+    const retries = Number(job.result?.auto_retries || 0);
+    const recovery = classifyRecoverableError(error);
+    if (recovery.recoverable && retries < 2) {
+      requeuedForRetry = true;
+      const nextRetry = retries + 1;
+      await supabase.from(TABLE).update({
+        status: 'queued',
+        error: null,
+        result: {
+          ...(job.result || {}),
+          auto_retries: nextRetry,
+          progress: {
+            stage: 'retrying',
+            detail: `${recovery.reason} — retrying automatically (attempt ${nextRetry}/2)…`,
+            percent: Number(job.result?.progress?.percent || 15),
+            updated_at: new Date().toISOString(),
+          },
+        },
+        updated_at: new Date().toISOString(),
+      }).eq('id', job.id).neq('status', 'stopped');
+      console.warn('[drive-intake] auto-retrying job:', job.id, `attempt ${nextRetry}/2`, recovery.reason);
+    } else {
+      await supabase.from(TABLE).update({ status: 'failed', error: message, updated_at: new Date().toISOString() }).eq('id', job.id).neq('status', 'stopped');
+      console.error('[drive-intake] job failed:', job.id, message);
+    }
   } finally {
     clearInterval(heartbeat);
-    if (Array.isArray(job.result?.direct_storage_paths) && job.result.direct_storage_paths.length) {
+    if (!requeuedForRetry && Array.isArray(job.result?.direct_storage_paths) && job.result.direct_storage_paths.length) {
       await supabase.storage.from(process.env.MEDIA_BUCKET || 'driftpost-media').remove(job.result.direct_storage_paths).catch(() => {});
     }
     intakeActive = Math.max(0, intakeActive - 1);

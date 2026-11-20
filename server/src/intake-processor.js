@@ -9,6 +9,7 @@ import { uploadMediaFile } from './media-io.js';
 import { getBrandById, resolveBrand } from './brand-memory/index.js';
 import { canUsePrivateBrandData } from './brand-access.js';
 import { getAssignedInstagramTags } from './brand-routing.js';
+import { healVideoContainer } from './self-heal.js';
 
 const execFileAsync = promisify(execFile);
 const MAX_VIDEO_BYTES = 400 * 1024 * 1024;
@@ -87,9 +88,7 @@ async function probeVideoDuration(videoPath) {
   return 0;
 }
 
-async function sampleFrames(videoPath, directory) {
-  const duration = await probeVideoDuration(videoPath);
-  if (!Number.isFinite(duration) || duration <= 0) throw new Error('The video duration could not be read. Send an MP4, MOV, or WebM video.');
+async function extractSampleFrames(videoPath, directory, duration) {
   const frames = [];
   const sampleTimes = videoEvidenceSampleTimes(duration, 5);
   for (const [index, seconds] of sampleTimes.entries()) {
@@ -101,6 +100,24 @@ async function sampleFrames(videoPath, directory) {
     const stat = await fs.stat(output).catch(() => null);
     if (stat?.size) frames.push({ path: output, name: `frame-${index}.jpg`, mimetype: 'image/jpeg', base64: (await fs.readFile(output)).toString('base64'), detail: 'low' });
   }
+  return frames;
+}
+
+async function sampleFrames(videoPath, directory) {
+  let targetPath = videoPath;
+  let duration = await probeVideoDuration(targetPath);
+  let frames = Number.isFinite(duration) && duration > 0 ? await extractSampleFrames(targetPath, directory, duration) : [];
+
+  if (!Number.isFinite(duration) || duration <= 0 || frames.length < 2) {
+    const healedPath = await healVideoContainer(videoPath, directory);
+    if (healedPath) {
+      targetPath = healedPath;
+      duration = await probeVideoDuration(targetPath);
+      frames = Number.isFinite(duration) && duration > 0 ? await extractSampleFrames(targetPath, directory, duration) : [];
+    }
+  }
+
+  if (!Number.isFinite(duration) || duration <= 0) throw new Error('The video duration could not be read. Send an MP4, MOV, or WebM video.');
   if (frames.length < 2) throw new Error('Could not extract enough readable frames from this video.');
   return { frames, duration };
 }
