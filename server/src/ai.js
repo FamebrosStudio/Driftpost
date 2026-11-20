@@ -843,7 +843,7 @@ export async function generateCaptions(summary, opts = {}) {
     let ytBody = cleanPlatformBody(ytDesc);
     const fallbackBody = [igBody, fbBody, ytBody].find((candidate) => visibleBodyLen(candidate, brand?.name) >= 28)
       || youtubeFallbackDescription({
-        title: ytTitle,
+        title: youtubeTitle,
         brandName: brand?.name,
         brief: seoTopic || brief,
       });
@@ -895,7 +895,7 @@ export async function generateCaptions(summary, opts = {}) {
     .trim();
   xText = compactCaptionOpening(normalizeCaptionParagraphs(xText));
   if (visibleBodyLen(xText, brand?.name) < 12) {
-    const xFallback = String(igCap || fbMsg || ytDesc || ytTitle || brief || '')
+    const xFallback = String(igCap || fbMsg || ytDesc || youtubeTitle || brief || '')
       .split('\n')
       .map((line) => line.trim())
       .find((line) => line.length >= 12 && !/^[#@📍📞🎥]/.test(line) && !/managed by/i.test(line));

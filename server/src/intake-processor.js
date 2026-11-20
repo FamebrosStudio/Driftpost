@@ -152,7 +152,7 @@ export async function processIntakeJob(supabase, job, options = {}) {
   const ownerId = job.owner_user_id;
   const table = options.table || 'google_drive_video_jobs';
   const intakeKey = options.intakeKey || 'google_drive_intake_job_id';
-  const notify = options.notify || ((message) => reply(job.chat_id, message, job.message_id));
+  const notify = options.notify || (async () => {});
   const progress = async (stage, detail = '') => { if (options.progress) await options.progress(stage, detail); };
   const isCarousel = job.result?.media_kind === 'carousel';
   const needsBrandInference = job.result?.brand_resolution_required === true;

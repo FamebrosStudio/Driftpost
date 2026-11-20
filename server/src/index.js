@@ -27,7 +27,7 @@ import { uploadMediaFile, downloadMediaFile } from './media-io.js';
 import { scheduleIdentity } from './schedule-fields.js';
 import { deleteResultsStatus } from './delete-results.js';
 import { runAutomationAction } from './automation-events.js';
-import { automationComment, automationWebhookSubscriptions, commentAutomationDecision, commentReplyEdge, commentReplyModes, incomingMessageReply, incomingMessageReplyText, validateAutomationRules } from './meta-automation-payloads.js';
+import { automationComment, automationWebhookSubscriptions, commentAutomationDecision, commentReplyEdge, commentReplyModes, incomingMessageReply, incomingMessageReplyText, matchesAutomationKeyword, validateAutomationRules } from './meta-automation-payloads.js';
 import { eraseUserMedia } from './storage-cleanup.js';
 import { enabledInstagramCollaborators, instagramCaptionRequiredError, nonEmptyCaption } from './caption-guards.js';
 import { createTemporaryMediaUrl, isOwnedMediaPath, isValidPreuploadedMedia } from './media-links.js';
@@ -2312,7 +2312,7 @@ app.post('/api/intake/direct', requireUser, upload.fields([{ name: 'media', maxC
   const mediaFiles = Array.isArray(req.files?.media) ? req.files.media : [];
   const coverFile = Array.isArray(req.files?.cover) ? req.files.cover[0] || null : null;
   if (!canUsePrivateBrandData(req.user)) {
-    for (const f of [...mediaFiles, ...(coverFile ? [coverFile] : [])]) if (f?.path) fs.promises.rm(f.path, { force: true }).catch(() => {});
+    for (const f of [...mediaFiles, ...(coverFile ? [coverFile] : [])]) if (f?.path) fs.rm(f.path, { force: true }).catch(() => {});
     return res.status(403).json({ error: 'Private team access required.' });
   }
   try {
@@ -2352,7 +2352,7 @@ app.post('/api/intake/preview-captions', requireUser, upload.fields([{ name: 'im
   const videoFile = Array.isArray(req.files?.video) ? req.files.video[0] || null : null;
   const cleanup = async () => {
     for (const f of [...imageFiles, ...(videoFile ? [videoFile] : [])]) {
-      if (f?.path) await fs.promises.rm(f.path, { force: true }).catch(() => {});
+      if (f?.path) await fs.rm(f.path, { force: true }).catch(() => {});
     }
   };
   if (!canUsePrivateBrandData(req.user)) {
