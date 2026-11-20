@@ -13,6 +13,7 @@ import OutputContainer from './OutputContainer.jsx';
 import ContinueButton from './ContinueButton.jsx';
 import PageLoading from '../PageLoading.jsx';
 import './stage2.css';
+import './stage2-motion.css';
 import { WorkspaceNav } from '../workspace/Workspace.jsx';
 import { canGenerateCaptions } from '../ai-access.js';
 import { loadCaptionDraft, readStageSelection, saveCaptionDraft } from './captionDraftScope.js';
