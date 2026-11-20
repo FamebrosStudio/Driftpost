@@ -122,11 +122,83 @@ export function businessReviewRating(value) {
   return ({ ONE: 1, TWO: 2, THREE: 3, FOUR: 4, FIVE: 5 })[String(value || '').toUpperCase()] || 0;
 }
 
-export function shouldAutoReplyToBusinessReview(review, rules = {}) {
-  if (!review?.name || review.reviewReply?.comment || review.reviewReply?.updateTime) return false;
+export const DEFAULT_REVIEW_REPLIES = Object.freeze({
+  1: Object.freeze([
+    'We are sorry you had a bad experience. We will try to do better.',
+    'Sorry to hear this. Your feedback is important to us.',
+    'We are sorry we could not make you happy. We hope to do better next time.',
+    'Thank you for telling us. We will work on making things better.',
+    'We are sorry you feel this way. We would like to know what went wrong.',
+    'Sorry for the trouble. We hope you give us another chance.',
+    'We feel bad that you did not have a good experience. We will try our best to improve.',
+    'We are sorry to hear this. Please contact us so we can understand the problem.',
+  ]),
+  2: Object.freeze([
+    'Thank you for your review. We will try to make your next visit better.',
+    'Sorry we could not meet your hopes. We will work on improving.',
+    'Thank you for sharing your thoughts. We will try to do better.',
+    'We are sorry you were not fully happy. Your feedback helps us improve.',
+    'Thank you for being honest. We hope to give you a better experience next time.',
+    'We are sorry things did not go well. We will keep working to improve.',
+    'Thank you for your feedback. We hope to make you happier next time.',
+    'We are sorry for any trouble. Thank you for helping us get better.',
+  ]),
+  3: Object.freeze([
+    'Thank you for your review! We hope to make your next visit even better.',
+    'Thanks for your feedback. We are always trying to improve.',
+    'Thank you for visiting us! We hope to see you again soon.',
+    'We are happy you shared your thoughts. We will keep working to do better.',
+    'Thanks for your rating! We hope to earn five stars next time.',
+    'Thank you for choosing us. We hope your next experience is even better.',
+    'Your review means a lot to us. Thank you for helping us improve.',
+    'Thanks for sharing your experience! We hope to see you again.',
+  ]),
+  4: Object.freeze([
+    'Thank you so much! We are happy you liked our service.',
+    'Thanks for your lovely review! Hope to see you again soon.',
+    'We are happy you had a good experience. Thank you!',
+    'Thank you for your support! It means a lot to us.',
+    'So happy to see your rating! Thanks for choosing us.',
+    'Thank you! We are glad you enjoyed your visit.',
+    'Your kind review made us smile! Hope to see you again.',
+    'Thanks for the four stars! We hope to make your next visit even better.',
+  ]),
+  5: Object.freeze([
+    'Thank you so much for the five stars! We are so happy!',
+    'Wow! Thank you for your lovely review. Hope to see you again!',
+    'Your five stars made our day! Thank you for your love and support.',
+    'Thank you! We are so glad you had a great time with us.',
+    'We love happy customers! Thanks for your amazing review.',
+    'Big thanks for the five stars! We hope to see you again soon.',
+    'Thank you for choosing us! Your support means a lot.',
+    'We are so happy you liked us! Thank you for your five-star rating.',
+  ]),
+});
+
+export function pickBusinessReviewReply(review, rules = {}) {
+  if (!review?.name || review.reviewReply?.comment || review.reviewReply?.updateTime) return '';
   const rating = businessReviewRating(review.starRating);
   const minimum = Math.max(1, Math.min(5, Number(rules.minimum_rating) || 1));
-  return rating >= minimum && !!String(rules.reply_text || '').trim();
+  if (rating < minimum || rating < 1 || rating > 5) return '';
+
+  const useDefaults = rules.mode === 'default'
+    || rules.use_default_replies === true
+    || (rules.reply_text === undefined && rules.mode !== 'template');
+  if (!useDefaults) {
+    return String(rules.reply_text || '').trim();
+  }
+
+  const pool = DEFAULT_REVIEW_REPLIES[rating];
+  if (!pool?.length) return '';
+  let hash = 0;
+  for (const ch of String(review.name)) {
+    hash = (hash * 31 + ch.charCodeAt(0)) >>> 0;
+  }
+  return pool[hash % pool.length];
+}
+
+export function shouldAutoReplyToBusinessReview(review, rules = {}) {
+  return !!pickBusinessReviewReply(review, rules);
 }
 
 export async function refreshBusinessProfileToken(refreshToken) {

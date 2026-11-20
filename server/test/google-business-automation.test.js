@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { businessProfileErrorMessage, businessReviewRating, shouldAutoReplyToBusinessReview } from '../src/google.js';
+import { businessProfileErrorMessage, businessReviewRating, DEFAULT_REVIEW_REPLIES, pickBusinessReviewReply, shouldAutoReplyToBusinessReview } from '../src/google.js';
 
 test('Google Business Profile location discovery errors explain quota, API and access failures', () => {
   assert.match(businessProfileErrorMessage(new Error('Quota exceeded for Requests per minute')), /temporarily rate-limited/i);
@@ -24,4 +24,15 @@ test('review auto-reply respects rating threshold, existing owner replies and bl
   assert.equal(shouldAutoReplyToBusinessReview({ name: 'reviews/r3', starRating: 'FIVE', reviewReply: { comment: 'Already replied' } }, rules), false);
   assert.equal(shouldAutoReplyToBusinessReview({ name: 'reviews/r4', starRating: 'FIVE' }, { ...rules, reply_text: '  ' }), false);
   assert.equal(shouldAutoReplyToBusinessReview({ starRating: 'FIVE' }, rules), false);
+});
+
+test('default star-based replies cover 1-5 stars automatically without custom text', () => {
+  for (const [star, enumName] of [[1, 'ONE'], [2, 'TWO'], [3, 'THREE'], [4, 'FOUR'], [5, 'FIVE']]) {
+    assert.equal(DEFAULT_REVIEW_REPLIES[star].length, 8);
+    const reply = pickBusinessReviewReply({ name: `accounts/a/locations/l/reviews/rev-${star}`, starRating: enumName }, { mode: 'default', minimum_rating: 1 });
+    assert.equal(DEFAULT_REVIEW_REPLIES[star].includes(reply), true);
+    assert.equal(shouldAutoReplyToBusinessReview({ name: `accounts/a/locations/l/reviews/rev-${star}`, starRating: enumName }, { mode: 'default' }), true);
+  }
+  assert.equal(pickBusinessReviewReply({ name: 'reviews/r-low', starRating: 'TWO' }, { mode: 'default', minimum_rating: 4 }), '');
+  assert.equal(pickBusinessReviewReply({ name: 'reviews/r-done', starRating: 'FIVE', reviewReply: { comment: 'Thanks' } }, { mode: 'default' }), '');
 });

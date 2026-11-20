@@ -14,7 +14,7 @@ import { pipeline } from 'node:stream/promises';
 import { createWriteStream } from 'node:fs';
 import { createClient } from '@supabase/supabase-js';
 import { decryptJson, encryptJson, signState, verifyState } from './crypto.js';
-import { businessProfileAuthorizationUrl, businessProfileErrorMessage, driveIntakeAuthorizationUrl, exchangeBusinessProfileCode, exchangeGoogleCode, getGoogleIdentity, getYouTubeChannel, listBusinessProfileLocations, listBusinessReviews, refreshBusinessProfileToken, replyBusinessReview, shouldAutoReplyToBusinessReview, youtubeAuthorizationUrl } from './google.js';
+import { businessProfileAuthorizationUrl, businessProfileErrorMessage, driveIntakeAuthorizationUrl, exchangeBusinessProfileCode, exchangeGoogleCode, getGoogleIdentity, getYouTubeChannel, listBusinessProfileLocations, listBusinessReviews, pickBusinessReviewReply, refreshBusinessProfileToken, replyBusinessReview, shouldAutoReplyToBusinessReview, youtubeAuthorizationUrl } from './google.js';
 import { learnedVoice, markLatestUsed, markUsed, recordGeneration } from './captionMemory.js';
 import { consentState, forgetUser, hasPersonalisationConsent, recordConsent, POLICY_VERSION, PURPOSES } from './consent.js';
 import { setVideoThumbnail, uploadVideoResumable, validAccessToken } from './youtube-upload.js';
@@ -1402,8 +1402,9 @@ async function processGoogleBusinessLocationReviews(location) {
   }
 
   const rules = location.rules || {};
-  const reply = String(rules.reply_text || '').trim();
-  if (!reply) return { checked: 0, replied: 0, skipped: 0 };
+  if (rules.mode === 'template' && !rules.use_default_replies && !String(rules.reply_text || '').trim()) {
+    return { checked: 0, replied: 0, skipped: 0 };
+  }
 
   const reviews = await withGoogleBusinessAccessToken(account, (accessToken) =>
     listBusinessReviews(accessToken, location.account_id, location.location_id),
@@ -1412,7 +1413,8 @@ async function processGoogleBusinessLocationReviews(location) {
   let replied = 0;
   let skipped = 0;
   for (const review of reviews) {
-    if (!shouldAutoReplyToBusinessReview(review, rules)) {
+    const reply = pickBusinessReviewReply(review, rules);
+    if (!reply || !shouldAutoReplyToBusinessReview(review, rules)) {
       skipped++;
       continue;
     }
@@ -1443,10 +1445,17 @@ app.put('/api/automations/google-business/:locationId', requireUser, strictBurst
     .eq('id', req.params.locationId).eq('user_id', req.user.id).maybeSingle();
   if (lookupError || !location) return res.status(404).json({ error: 'Business Profile location not found.' });
   const input = req.body || {};
-  const rules = { mode: input.mode === 'ai' ? 'ai' : 'template', reply_text: String(input.reply_text || '').trim().slice(0, 4000), minimum_rating: Math.max(1, Math.min(5, Number(input.minimum_rating) || 1)), only_without_reply: true };
+  const mode = input.mode === 'ai' ? 'ai' : input.mode === 'template' ? 'template' : 'default';
+  const rules = {
+    mode,
+    use_default_replies: mode === 'default',
+    reply_text: String(input.reply_text || '').trim().slice(0, 4000),
+    minimum_rating: Math.max(1, Math.min(5, Number(input.minimum_rating) || 1)),
+    only_without_reply: true,
+  };
   const enabled = input.enabled === true;
-  if (enabled && rules.mode === 'template' && !rules.reply_text) return res.status(400).json({ error: 'Add a reply template before enabling automatic replies.' });
-  if (enabled && rules.mode === 'ai') return res.status(400).json({ error: 'AI review replies are not enabled yet. Choose a reviewed template instead.' });
+  if (enabled && rules.mode === 'template' && !rules.reply_text) return res.status(400).json({ error: 'Add a custom reply template or use default star-based replies.' });
+  if (enabled && rules.mode === 'ai') return res.status(400).json({ error: 'AI review replies are not enabled yet. Use default star-based replies instead.' });
   const { error } = await supabase.from('google_business_locations').update({ enabled, rules, updated_at: new Date().toISOString() }).eq('id', location.id).eq('user_id', req.user.id);
   if (error) return res.status(500).json({ error: 'Could not save the review automation.' });
 
@@ -1467,7 +1476,9 @@ app.post('/api/automations/google-business/:locationId/check', requireUser, stri
     .eq('id', req.params.locationId).eq('user_id', req.user.id).maybeSingle();
   if (lookupError || !location) return res.status(404).json({ error: 'Business Profile location not found.' });
   if (!location.enabled) return res.status(400).json({ error: 'Enable and save the review automation before checking reviews.' });
-  if (!String(location.rules?.reply_text || '').trim()) return res.status(400).json({ error: 'Add and save a reply template before checking reviews.' });
+  if (location.rules?.mode === 'template' && !location.rules?.use_default_replies && !String(location.rules?.reply_text || '').trim()) {
+    return res.status(400).json({ error: 'Add and save a reply template before checking reviews.' });
+  }
   try {
     const result = await processGoogleBusinessLocationReviews(location);
     res.json({ ok: true, ...result });
