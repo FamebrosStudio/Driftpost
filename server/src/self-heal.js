@@ -39,7 +39,10 @@ export async function healVideoContainer(videoPath, directory) {
     ], { timeout: 90_000, maxBuffer: 2 * 1024 * 1024 });
     const stat = await fs.stat(remuxPath).catch(() => null);
     if (stat?.size > 0) return remuxPath;
-  } catch {}
+  } catch (remuxErr) {
+    await fs.rm(remuxPath, { force: true }).catch(() => null);
+    if (!remuxErr) return null;
+  }
 
   const transcodePath = path.join(directory, 'healed-transcode.mp4');
   try {
@@ -50,7 +53,10 @@ export async function healVideoContainer(videoPath, directory) {
     ], { timeout: 120_000, maxBuffer: 2 * 1024 * 1024 });
     const stat = await fs.stat(transcodePath).catch(() => null);
     if (stat?.size > 0) return transcodePath;
-  } catch {}
+  } catch (transcodeErr) {
+    await fs.rm(transcodePath, { force: true }).catch(() => null);
+    if (transcodeErr) return null;
+  }
 
   return null;
 }
