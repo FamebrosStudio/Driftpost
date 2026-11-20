@@ -265,6 +265,15 @@ function loadDeepAll() {
       const d = JSON.parse(fs.readFileSync(path.join(DEEP_DIR, f), 'utf8'));
       const id = d.brand_id || f.replace(/^auto-/, '').replace(/\.json$/, '');
       const prev = deepCache[id];
+      const cleanAutoSample = d.sample_caption === '[object Object]' ? undefined : d.sample_caption;
+      const prevFooterLines = prev ? deepFooter(prev) : [];
+      const autoLines = d.fixed_footer?.lines || [];
+      const isAccidentalTwoLineStub = !d.fixed_footer?.user_edited
+        && prevFooterLines.length > 2
+        && autoLines.length === 2
+        && /^📍\s+\S+/.test(String(autoLines[0] || '').trim())
+        && String(autoLines[0] || '').trim().length < 28
+        && /managed by/i.test(String(autoLines[1] || ''));
       const mergedDeep = prev && f.startsWith('auto-')
         ? {
             ...prev,
@@ -275,12 +284,15 @@ function loadDeepAll() {
             business: { ...(prev.business || {}), ...(d.business || {}) },
             contact: { ...(prev.contact || {}), ...(d.contact || {}) },
             social_media: { ...(prev.social_media || {}), ...(d.social_media || {}) },
-            fixed_footer: d.fixed_footer?.lines?.length ? d.fixed_footer : prev.fixed_footer,
+            fixed_footer: autoLines.length && !isAccidentalTwoLineStub ? { ...(prev.fixed_footer || {}), ...d.fixed_footer } : prev.fixed_footer,
             seo_keyword_bank: Array.isArray(d.seo_keyword_bank) && d.seo_keyword_bank.length ? d.seo_keyword_bank : prev.seo_keyword_bank,
             suggested_hashtag_bank: d.suggested_hashtag_bank || prev.suggested_hashtag_bank,
-            sample_caption: d.sample_caption ?? prev.sample_caption,
+            sample_caption: cleanAutoSample ?? prev.sample_caption,
           }
-        : d;
+        : {
+            ...d,
+            ...(cleanAutoSample === undefined && d.sample_caption === '[object Object]' ? { sample_caption: null } : {}),
+          };
       deepCache[id] = mergedDeep;
       if (mergedDeep.brand_name) deepCache[`name:${slugify(mergedDeep.brand_name)}`] = mergedDeep;
       for (const alias of mergedDeep.aliases || []) {
@@ -578,14 +590,16 @@ export function deepPack(deep, brand, { groupWide = false } = {}) {
   // collect every array except meta keys; campaign-only tags stay out of the
   // default bank and are surfaced as a conditional note instead.
   const SKIP_TAG_KEYS = new Set(['rule', 'conditional', 'campaign_only_when_active']);
-  const tags = deep.suggested_hashtag_bank
-    ? Object.entries(deep.suggested_hashtag_bank)
-        .filter(([k, v]) => !SKIP_TAG_KEYS.has(k) && Array.isArray(v))
-        .flatMap(([, v]) => v)
-        .filter((s) => typeof s === 'string' && s.trim())
-        .filter((v, i, a) => a.indexOf(v) === i)
-        .slice(0, 8)
-    : [];
+  const tags = Array.isArray(deep.suggested_hashtag_bank)
+    ? deep.suggested_hashtag_bank.filter((s) => typeof s === 'string' && s.trim()).slice(0, 8)
+    : deep.suggested_hashtag_bank && typeof deep.suggested_hashtag_bank === 'object'
+      ? Object.entries(deep.suggested_hashtag_bank)
+          .filter(([k, v]) => !SKIP_TAG_KEYS.has(k) && Array.isArray(v))
+          .flatMap(([, v]) => v)
+          .filter((s) => typeof s === 'string' && s.trim())
+          .filter((v, i, a) => a.indexOf(v) === i)
+          .slice(0, 8)
+      : [];
   const campaignTags = Array.isArray(deep.suggested_hashtag_bank?.campaign_only_when_active)
     ? deep.suggested_hashtag_bank.campaign_only_when_active.filter((s) => typeof s === 'string' && s.trim())
     : [];
@@ -612,7 +626,9 @@ export function deepPack(deep, brand, { groupWide = false } = {}) {
   const ppi = ppiRows.filter(([k]) => !isIntake(k)).slice(0, 12).map(([, s]) => s);
   const ppiIntake = ppiRows.filter(([k]) => isIntake(k)).slice(0, 6).map(([, s]) => s);
   const samples = [
-    deep.sample_caption?.text ? fmt(deep.sample_caption, true) : null,
+    typeof deep.sample_caption === 'string' && deep.sample_caption.trim() && deep.sample_caption.trim() !== '[object Object]'
+      ? deep.sample_caption.trim()
+      : (deep.sample_caption?.text || deep.sample_caption?.body ? fmt(deep.sample_caption, true) : null),
     deep.sample_captions ? fmt(deep.sample_captions, true) : null,
   ].filter(Boolean);
   const latestUpdate = deep.latest_user_dataset_update;
@@ -1263,6 +1279,45 @@ export function hydrateFedBrandsBundle(bundle) {
   return incoming.length;
 }
 
+function extractEditableSampleCaption(deep, full, entry) {
+  const sc = deep?.sample_caption;
+  if (typeof sc === 'string' && sc.trim() && sc.trim() !== '[object Object]') return sc.trim();
+  if (sc && typeof sc === 'object') {
+    const text = sc.full_caption || sc.caption_body || sc.text || sc.body || sc.caption || fmt(sc, true);
+    if (typeof text === 'string' && text.trim()) return text.trim();
+  }
+  if (deep?.sample_captions) {
+    const text = typeof deep.sample_captions === 'string' ? deep.sample_captions : fmt(deep.sample_captions, true);
+    if (typeof text === 'string' && text.trim()) return text.trim();
+  }
+  if (typeof full?.example?.body === 'string' && full.example.body.trim()) return full.example.body.trim();
+  if (typeof entry?.ex === 'string' && entry.ex.trim() && entry.ex.trim() !== '[object Object]') return entry.ex.trim();
+  return '';
+}
+
+function extractEditableHashtags(deep, entry) {
+  const bank = deep?.suggested_hashtag_bank;
+  if (Array.isArray(bank)) return bank.filter((s) => typeof s === 'string' && s.trim());
+  if (bank && typeof bank === 'object') {
+    const skip = new Set(['rule', 'conditional', 'campaign_only_when_active']);
+    const list = Object.entries(bank)
+      .filter(([k, v]) => !skip.has(k) && Array.isArray(v))
+      .flatMap(([, v]) => v)
+      .filter((s) => typeof s === 'string' && s.trim());
+    if (list.length) return [...new Set(list)];
+  }
+  return Array.isArray(entry?.hashtags) ? entry.hashtags.filter(Boolean) : [];
+}
+
+function extractEditablePhones(deep, full) {
+  if (Array.isArray(deep?.contact?.phones) && deep.contact.phones.length) return deep.contact.phones.filter(Boolean).map(String);
+  if (Array.isArray(deep?.contact?.phone) && deep.contact.phone.length) return deep.contact.phone.filter(Boolean).map(String);
+  const display = deepPhone(deep);
+  if (display) return display.split(/[/,\n]+/).map((s) => s.trim()).filter(Boolean);
+  if (Array.isArray(full?.contacts?.phone) && full.contacts.phone.length) return full.contacts.phone.filter(Boolean).map(String);
+  return [];
+}
+
 export function listEditableCaptionBrands() {
   const all = loadBrands();
   const byId = new Map();
@@ -1273,41 +1328,38 @@ export function listEditableCaptionBrands() {
   return [...byId.values()]
     .map((entry) => {
       const deep = getDeepForCompact(entry);
-      const rawHashtags = Array.isArray(deep?.suggested_hashtag_bank)
-        ? deep.suggested_hashtag_bank
-        : Array.isArray(deep?.suggested_hashtag_bank?.brand)
-          ? deep.suggested_hashtag_bank.brand
-          : [];
-      const phones = Array.isArray(deep?.contact?.phones)
-        ? deep.contact.phones
-        : Array.isArray(deep?.contact?.phone)
-          ? deep.contact.phone
-          : deep?.contact?.phone
-            ? [deep.contact.phone]
+      const full = getFullBrand(entry.id);
+      const rawHashtags = extractEditableHashtags(deep, entry);
+      const phones = extractEditablePhones(deep, full);
+      const resolvedDeepFooter = deep ? deepFooter(deep) : [];
+      const footer = resolvedDeepFooter.length
+        ? resolvedDeepFooter
+        : Array.isArray(full?.footer_lines) && full.footer_lines.length
+          ? full.footer_lines
+          : Array.isArray(entry.footer)
+            ? entry.footer
             : [];
-      const footer = Array.isArray(deep?.fixed_footer?.lines) && deep.fixed_footer.lines.length
-        ? deep.fixed_footer.lines
-        : Array.isArray(entry.footer)
-          ? entry.footer
-          : [];
       const kw = Array.isArray(deep?.seo_keyword_bank) && deep.seo_keyword_bank.length
         ? deep.seo_keyword_bank
-        : Array.isArray(entry.kw)
-          ? entry.kw
-          : [];
+        : Array.isArray(full?.keyword_bank) && full.keyword_bank.length
+          ? full.keyword_bank
+          : Array.isArray(entry.kw)
+            ? entry.kw
+            : [];
+      const address = deepAddress(deep) || full?.contacts?.address || '';
       return {
         id: entry.id,
         name: entry.name || deep?.brand_name || entry.id,
-        category: entry.cat || deep?.business?.genre || deep?.business?.category || '',
-        location: entry.loc || deep?.business?.location?.area || deep?.business?.location_area || '',
-        address: deep?.contact?.full_address || deep?.contact?.address || deep?.business?.location?.address || '',
-        phones: phones.filter(Boolean).map(String),
-        ig: entry.ig || deep?.social_media?.instagram_handle || '',
-        tone: entry.tone || (Array.isArray(deep?.writing_direction?.tone) ? deep.writing_direction.tone.join(', ') : ''),
+        category: entry.cat || deep?.business?.genre || deep?.business?.category || full?.category || '',
+        location: entry.loc || deep?.business?.location?.area || deep?.business?.location_area || full?.location || '',
+        address,
+        phones,
+        ig: entry.ig || deep?.social_media?.instagram_handle || full?.instagram?.handle || '',
+        tone: entry.tone || (Array.isArray(deep?.writing_direction?.tone) ? deep.writing_direction.tone.join(', ') : (full?.caption_direction?.tone || '')),
         footer: footer.map(String),
         hashtags: rawHashtags.map(String),
         kw: kw.map(String),
-        sampleCaption: String(deep?.sample_caption || entry.ex || ''),
+        sampleCaption: extractEditableSampleCaption(deep, full, entry),
         isFed: Boolean(entry.fed || entry.ready === 'fed'),
       };
     })
@@ -1327,7 +1379,8 @@ export function updateSavedCaptionData(brandId, patch = {}) {
   const nextAddress = clampStr(safePatch.address ?? existing.address, 1000);
   const nextIg = clampStr(safePatch.ig ?? existing.ig, 80);
   const nextTone = clampStr(safePatch.tone ?? existing.tone, 300);
-  const nextSample = clampStr(safePatch.sampleCaption ?? existing.sampleCaption, 8000);
+  const rawNextSample = clampStr(safePatch.sampleCaption ?? existing.sampleCaption, 8000);
+  const nextSample = rawNextSample === '[object Object]' ? existing.sampleCaption : rawNextSample;
   const nextFooter = Array.isArray(safePatch.footer)
     ? safePatch.footer.slice(0, 30).map((l) => clampStr(l, 300)).filter(Boolean)
     : clampStr(safePatch.footer || '', 4000).split(/\r?\n/).map((l) => l.trim()).filter(Boolean).slice(0, 30);
@@ -1340,6 +1393,7 @@ export function updateSavedCaptionData(brandId, patch = {}) {
   const nextKw = Array.isArray(safePatch.kw)
     ? safePatch.kw.slice(0, 40).map((k) => clampStr(k, 100)).filter(Boolean)
     : clampStr(safePatch.kw || '', 2000).replace(/^\[|\]$/g, '').split(/[,\n]+/).map((k) => k.trim()).filter(Boolean).slice(0, 40);
+  const phoneDisplay = nextPhones.length ? nextPhones.join(' / ') : null;
 
   // 1. Update built-in deep profile if it exists on disk (with strict path containment)
   const resolvedDeepDir = path.resolve(DEEP_DIR);
@@ -1349,12 +1403,26 @@ export function updateSavedCaptionData(brandId, patch = {}) {
     try {
       const deep = JSON.parse(fs.readFileSync(builtInDeepPath, 'utf8'));
       deep.brand_name = nextName;
-      deep.contact = { ...(deep.contact || {}), phone: nextPhones, address: nextAddress || deep.contact?.address || null, full_address: nextAddress || deep.contact?.full_address || null };
+      deep.contact = {
+        ...(deep.contact || {}),
+        phone_display: phoneDisplay,
+        primary_phone_display: nextPhones[0] || null,
+        phone: nextPhones,
+        phones: nextPhones,
+        address: nextAddress || deep.contact?.address || null,
+        full_address: nextAddress || deep.contact?.full_address || null,
+      };
       deep.social_media = { ...(deep.social_media || {}), instagram_handle: nextIg || null };
-      deep.fixed_footer = { ...(deep.fixed_footer || {}), lines: nextFooter };
-      deep.suggested_hashtag_bank = nextHashtags;
+      deep.fixed_footer = {
+        ...(deep.fixed_footer || {}),
+        lines: nextFooter,
+        full_lines: nextFooter,
+        user_edited: true,
+        status: 'confirmed',
+      };
+      deep.suggested_hashtag_bank = { brand: nextHashtags };
       deep.seo_keyword_bank = nextKw;
-      deep.sample_caption = nextSample;
+      deep.sample_caption = nextSample ? { text: nextSample } : null;
       if (nextTone) deep.writing_direction = { ...(deep.writing_direction || {}), tone: nextTone.split(',').map((t) => t.trim()).filter(Boolean) };
       fs.writeFileSync(builtInDeepPath, `${JSON.stringify(deep, null, 2)}\n`, 'utf8');
     } catch {}
@@ -1398,12 +1466,21 @@ export function updateSavedCaptionData(brandId, patch = {}) {
     brand_id: cleanId,
     brand_name: nextName,
     business: { ...(autoDeep.business || {}), category: existing.category || '', location_area: nextLocation, full_address: nextAddress },
-    contact: { ...(autoDeep.contact || {}), phones: nextPhones, full_address: nextAddress },
+    contact: {
+      ...(autoDeep.contact || {}),
+      phone_display: phoneDisplay,
+      primary_phone_display: nextPhones[0] || null,
+      phone: nextPhones,
+      phones: nextPhones,
+      address: nextAddress,
+      full_address: nextAddress,
+    },
     social_media: { ...(autoDeep.social_media || {}), instagram_handle: nextIg || null },
-    fixed_footer: { lines: nextFooter },
+    fixed_footer: { lines: nextFooter, full_lines: nextFooter, user_edited: true, status: 'confirmed' },
     suggested_hashtag_bank: { brand: nextHashtags },
     seo_keyword_bank: nextKw,
-    sample_caption: nextSample,
+    sample_caption: nextSample ? { text: nextSample } : null,
+    ...(nextTone ? { writing_direction: { ...(autoDeep.writing_direction || {}), tone: nextTone.split(',').map((t) => t.trim()).filter(Boolean) } } : {}),
     updated_at: nowIso,
   };
   fs.writeFileSync(autoPath, `${JSON.stringify(autoDeep, null, 2)}\n`, 'utf8');

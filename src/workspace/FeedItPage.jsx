@@ -349,6 +349,10 @@ export default function FeedItPage({ session, onNavigate, onSignOut }) {
                         <span>Tone</span>
                         <input type="text" value={capDraft.tone} onChange={(e) => setCapDraft({ ...capDraft, tone: e.target.value })} />
                       </label>
+                      <label className="feed-it-field" style={{ gridColumn: '1 / -1' }}>
+                        <span>Address / Showroom Location</span>
+                        <input type="text" value={capDraft.address || ''} onChange={(e) => setCapDraft({ ...capDraft, address: e.target.value })} placeholder="Full showroom or branch address" />
+                      </label>
                     </div>
 
                     <label className="feed-it-field">

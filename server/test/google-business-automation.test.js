@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { businessProfileErrorMessage, businessReviewRating, DEFAULT_REVIEW_REPLIES, pickBusinessReviewReply, shouldAutoReplyToBusinessReview } from '../src/google.js';
+import { businessProfileErrorMessage, businessReviewRating, DEFAULT_REVIEW_REPLIES, HAIR_MATCH_SALON_REPLY, pickBusinessReviewReply, sanitizeStarReplies, shouldAutoReplyToBusinessReview } from '../src/google.js';
 
 test('Google Business Profile location discovery errors explain quota, API and access failures', () => {
   assert.match(businessProfileErrorMessage(new Error('Quota exceeded for Requests per minute')), /temporarily rate-limited/i);
@@ -35,4 +35,7 @@ test('default star-based replies cover 1-5 stars automatically without custom te
   }
   assert.equal(pickBusinessReviewReply({ name: 'reviews/r-low', starRating: 'TWO' }, { mode: 'default', minimum_rating: 4 }), '');
   assert.equal(pickBusinessReviewReply({ name: 'reviews/r-done', starRating: 'FIVE', reviewReply: { comment: 'Thanks' } }, { mode: 'default' }), '');
+  assert.equal(pickBusinessReviewReply({ name: 'reviews/hm-1', starRating: 'ONE' }, { mode: 'default' }, 'Hair Match Salon'), HAIR_MATCH_SALON_REPLY);
+  const custom = sanitizeStarReplies({ 1: ['Custom 1-star apology'] });
+  assert.equal(pickBusinessReviewReply({ name: 'reviews/c-1', starRating: 'ONE' }, { mode: 'default', star_replies: custom }), 'Custom 1-star apology');
 });

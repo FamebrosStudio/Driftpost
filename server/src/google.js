@@ -175,7 +175,28 @@ export const DEFAULT_REVIEW_REPLIES = Object.freeze({
   ]),
 });
 
-export function pickBusinessReviewReply(review, rules = {}) {
+export const HAIR_MATCH_SALON_REPLY = 'We\u2019re sorry our service didn\u2019t meet your expectations. We\u2019ll review your concerns with our team and work towards providing you with a better experience at Hair Match Salon.';
+
+export function sanitizeStarReplies(starReplies) {
+  if (!starReplies || typeof starReplies !== 'object') return null;
+  const out = {};
+  let hasAny = false;
+  for (const star of [1, 2, 3, 4, 5]) {
+    const raw = starReplies[star] ?? starReplies[String(star)];
+    const lines = Array.isArray(raw)
+      ? raw.map((s) => String(s || '').trim().slice(0, 1000)).filter(Boolean).slice(0, 20)
+      : typeof raw === 'string'
+        ? raw.split(/\r?\n/).map((s) => s.trim().slice(0, 1000)).filter(Boolean).slice(0, 20)
+        : [];
+    if (lines.length) {
+      out[star] = lines;
+      hasAny = true;
+    }
+  }
+  return hasAny ? out : null;
+}
+
+export function pickBusinessReviewReply(review, rules = {}, locationName = '') {
   if (!review?.name || review.reviewReply?.comment || review.reviewReply?.updateTime) return '';
   const rating = businessReviewRating(review.starRating);
   const minimum = Math.max(1, Math.min(5, Number(rules.minimum_rating) || 1));
@@ -188,6 +209,19 @@ export function pickBusinessReviewReply(review, rules = {}) {
     return String(rules.reply_text || '').trim();
   }
 
+  const customStarPool = sanitizeStarReplies(rules.star_replies)?.[rating];
+  if (customStarPool?.length) {
+    let hash = 0;
+    for (const ch of String(review.name)) {
+      hash = (hash * 31 + ch.charCodeAt(0)) >>> 0;
+    }
+    return customStarPool[hash % customStarPool.length];
+  }
+
+  if (/hair\s*match/i.test(String(locationName || '')) && rating <= 2) {
+    return HAIR_MATCH_SALON_REPLY;
+  }
+
   const pool = DEFAULT_REVIEW_REPLIES[rating];
   if (!pool?.length) return '';
   let hash = 0;
@@ -197,8 +231,8 @@ export function pickBusinessReviewReply(review, rules = {}) {
   return pool[hash % pool.length];
 }
 
-export function shouldAutoReplyToBusinessReview(review, rules = {}) {
-  return !!pickBusinessReviewReply(review, rules);
+export function shouldAutoReplyToBusinessReview(review, rules = {}, locationName = '') {
+  return !!pickBusinessReviewReply(review, rules, locationName);
 }
 
 export async function refreshBusinessProfileToken(refreshToken) {

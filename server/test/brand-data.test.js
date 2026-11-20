@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { loadBrands, fullPack, deepPack, getFullBrand, deepFooter, getDeepForCompact, getDeepBrand, ensureAutoBrand, canonicalBrandKey, isSameBrand, resolveBrand } from '../src/brand-memory/index.js';
+import { loadBrands, fullPack, deepPack, getFullBrand, deepFooter, getDeepForCompact, getDeepBrand, ensureAutoBrand, canonicalBrandKey, isSameBrand, resolveBrand, listEditableCaptionBrands } from '../src/brand-memory/index.js';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const memoryDir = path.join(here, '..', 'src', 'brand-memory');
@@ -240,4 +240,16 @@ test('Devi & co and Devi & Company resolve to the same canonical brand without c
   assert.equal(isSameBrand({ id: 'devi_co', name: 'Devi & co' }, { id: 'devi_company', name: 'Devi & Company' }), true);
   assert.equal(resolveBrand('Devi & co')?.brand?.id, 'devi_company');
   assert.equal(resolveBrand('Devi & Company')?.brand?.id, 'devi_company');
+});
+
+test('listEditableCaptionBrands loads clean sample captions, phones, and full footers without [object Object]', () => {
+  const list = listEditableCaptionBrands();
+  assert.equal(list.length, 47);
+  for (const item of list) {
+    assert.equal(String(item.sampleCaption || '').includes('[object Object]'), false, `${item.id} sampleCaption must not be [object Object]`);
+    assert.ok(Array.isArray(item.footer) && item.footer.length > 0, `${item.id} must have editable footer lines`);
+  }
+  const devi = list.find((b) => b.id === 'devi_company');
+  assert.ok(devi.footer.length >= 5, 'Devi & Company editable footer must retain all branch lines');
+  assert.ok(devi.phones.length >= 1, 'Devi & Company editable phones must be populated');
 });

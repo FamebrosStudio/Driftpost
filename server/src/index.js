@@ -14,7 +14,7 @@ import { pipeline } from 'node:stream/promises';
 import { createWriteStream } from 'node:fs';
 import { createClient } from '@supabase/supabase-js';
 import { decryptJson, encryptJson, signState, verifyState } from './crypto.js';
-import { businessProfileAuthorizationUrl, businessProfileErrorMessage, driveIntakeAuthorizationUrl, exchangeBusinessProfileCode, exchangeGoogleCode, getGoogleIdentity, getYouTubeChannel, listBusinessProfileLocations, listBusinessReviews, pickBusinessReviewReply, refreshBusinessProfileToken, replyBusinessReview, shouldAutoReplyToBusinessReview, youtubeAuthorizationUrl } from './google.js';
+import { businessProfileAuthorizationUrl, businessProfileErrorMessage, businessReviewRating, DEFAULT_REVIEW_REPLIES, driveIntakeAuthorizationUrl, exchangeBusinessProfileCode, exchangeGoogleCode, getGoogleIdentity, getYouTubeChannel, HAIR_MATCH_SALON_REPLY, listBusinessProfileLocations, listBusinessReviews, pickBusinessReviewReply, refreshBusinessProfileToken, replyBusinessReview, sanitizeStarReplies, shouldAutoReplyToBusinessReview, youtubeAuthorizationUrl } from './google.js';
 import { learnedVoice, markLatestUsed, markUsed, recordGeneration } from './captionMemory.js';
 import { consentState, forgetUser, hasPersonalisationConsent, recordConsent, POLICY_VERSION, PURPOSES } from './consent.js';
 import { setVideoThumbnail, uploadVideoResumable, validAccessToken } from './youtube-upload.js';
@@ -1346,7 +1346,7 @@ app.get('/api/automations/google-business', requireUser, connectionsLimit, burst
     supabase.from('google_business_connections').select('id, google_email, locations_count, locations_synced_at, location_sync_error').eq('user_id', req.user.id).order('google_email'),
   ]);
   if (locationError || connectionError) return res.status(500).json({ error: 'Google Business Profile storage is not ready. Apply migrations 016 and 017.' });
-  res.json({ connections: connections || [], locations: locations || [] });
+  res.json({ connections: connections || [], locations: locations || [], default_replies: DEFAULT_REVIEW_REPLIES, hair_match_reply: HAIR_MATCH_SALON_REPLY });
 });
 
 app.post('/api/automations/google-business/connections/:connectionId/refresh', requireUser, strictBurstLimit, async (req, res) => {
@@ -1412,9 +1412,33 @@ async function processGoogleBusinessLocationReviews(location) {
 
   let replied = 0;
   let skipped = 0;
+  const isHairMatch = /hair\s*match/i.test(String(location.location_name || ''));
+  const allDefaultStrings = new Set(Object.values(DEFAULT_REVIEW_REPLIES).flat());
   for (const review of reviews) {
-    const reply = pickBusinessReviewReply(review, rules);
-    if (!reply || !shouldAutoReplyToBusinessReview(review, rules)) {
+    const existingReply = String(review?.reviewReply?.comment || '').trim();
+    if (isHairMatch && existingReply && existingReply !== HAIR_MATCH_SALON_REPLY && (businessReviewRating(review?.starRating) <= 2 || allDefaultStrings.has(existingReply) || existingReply === 'Thank you for taking the time to leave us a review!')) {
+      const replaceEventId = crypto.createHash('sha256').update(`hair-match-replace:${location.id}:${review.name}`).digest('hex');
+      const { error: replaceClaimErr } = await supabase.from('google_business_review_events').insert({ event_id: replaceEventId, user_id: location.user_id, location_row_id: location.id });
+      if (!replaceClaimErr) {
+        try {
+          const reviewId = review.reviewId || String(review.name).split('/').pop();
+          await withGoogleBusinessAccessToken(account, (accessToken) =>
+            replyBusinessReview(accessToken, location.account_id, location.location_id, reviewId, HAIR_MATCH_SALON_REPLY),
+          );
+          replied++;
+          continue;
+        } catch (replaceErr) {
+          await supabase.from('google_business_review_events').delete().eq('event_id', replaceEventId);
+          throw replaceErr;
+        }
+      }
+    }
+    if (location.enabled === false) {
+      skipped++;
+      continue;
+    }
+    const reply = pickBusinessReviewReply(review, rules, location.location_name);
+    if (!reply || !shouldAutoReplyToBusinessReview(review, rules, location.location_name)) {
       skipped++;
       continue;
     }
@@ -1441,17 +1465,19 @@ async function processGoogleBusinessLocationReviews(location) {
 
 app.put('/api/automations/google-business/:locationId', requireUser, strictBurstLimit, async (req, res) => {
   const { data: location, error: lookupError } = await supabase.from('google_business_locations')
-    .select('id, user_id, account_id, location_id, google_business_connections(id, encrypted_tokens, token_expires_at)')
+    .select('id, user_id, account_id, location_id, location_name, google_business_connections(id, encrypted_tokens, token_expires_at)')
     .eq('id', req.params.locationId).eq('user_id', req.user.id).maybeSingle();
   if (lookupError || !location) return res.status(404).json({ error: 'Business Profile location not found.' });
   const input = req.body || {};
   const mode = input.mode === 'ai' ? 'ai' : input.mode === 'template' ? 'template' : 'default';
+  const star_replies = sanitizeStarReplies(input.star_replies);
   const rules = {
     mode,
     use_default_replies: mode === 'default',
     reply_text: String(input.reply_text || '').trim().slice(0, 4000),
     minimum_rating: Math.max(1, Math.min(5, Number(input.minimum_rating) || 1)),
     only_without_reply: true,
+    ...(star_replies ? { star_replies } : {}),
   };
   const enabled = input.enabled === true;
   if (enabled && rules.mode === 'template' && !rules.reply_text) return res.status(400).json({ error: 'Add a custom reply template or use default star-based replies.' });
@@ -1472,7 +1498,7 @@ app.put('/api/automations/google-business/:locationId', requireUser, strictBurst
 
 app.post('/api/automations/google-business/:locationId/check', requireUser, strictBurstLimit, async (req, res) => {
   const { data: location, error: lookupError } = await supabase.from('google_business_locations')
-    .select('id, user_id, account_id, location_id, enabled, rules, google_business_connections(id, encrypted_tokens, token_expires_at)')
+    .select('id, user_id, account_id, location_id, location_name, enabled, rules, google_business_connections(id, encrypted_tokens, token_expires_at)')
     .eq('id', req.params.locationId).eq('user_id', req.user.id).maybeSingle();
   if (lookupError || !location) return res.status(404).json({ error: 'Business Profile location not found.' });
   if (!location.enabled) return res.status(400).json({ error: 'Enable and save the review automation before checking reviews.' });
@@ -1487,14 +1513,63 @@ app.post('/api/automations/google-business/:locationId/check', requireUser, stri
   }
 });
 
+app.get('/api/automations/google-business/:locationId/reviews', requireUser, burstLimit, async (req, res) => {
+  const { data: location, error: lookupError } = await supabase.from('google_business_locations')
+    .select('id, user_id, account_id, location_id, location_name, google_business_connections(id, encrypted_tokens, token_expires_at)')
+    .eq('id', req.params.locationId).eq('user_id', req.user.id).maybeSingle();
+  if (lookupError || !location) return res.status(404).json({ error: 'Business Profile location not found.' });
+  const account = Array.isArray(location.google_business_connections) ? location.google_business_connections[0] : location.google_business_connections;
+  if (!account?.encrypted_tokens) return res.status(400).json({ error: 'Google Business Profile connection is missing credentials.' });
+  try {
+    const rawReviews = await withGoogleBusinessAccessToken(account, (accessToken) =>
+      listBusinessReviews(accessToken, location.account_id, location.location_id),
+    );
+    const reviews = rawReviews.slice(0, 50).map((r) => ({
+      reviewId: r.reviewId || String(r.name || '').split('/').pop(),
+      name: r.name || '',
+      reviewerName: r.reviewer?.displayName || 'Google Reviewer',
+      starRating: businessReviewRating(r.starRating),
+      comment: String(r.comment || ''),
+      createTime: r.createTime || null,
+      updateTime: r.updateTime || null,
+      replyComment: String(r.reviewReply?.comment || ''),
+      replyUpdateTime: r.reviewReply?.updateTime || null,
+    }));
+    res.json({ ok: true, reviews });
+  } catch (error) {
+    res.status(502).json({ error: businessProfileErrorMessage(error, 'reviews') });
+  }
+});
+
+app.put('/api/automations/google-business/:locationId/reviews/:reviewId/reply', requireUser, strictBurstLimit, async (req, res) => {
+  const { data: location, error: lookupError } = await supabase.from('google_business_locations')
+    .select('id, user_id, account_id, location_id, location_name, google_business_connections(id, encrypted_tokens, token_expires_at)')
+    .eq('id', req.params.locationId).eq('user_id', req.user.id).maybeSingle();
+  if (lookupError || !location) return res.status(404).json({ error: 'Business Profile location not found.' });
+  const account = Array.isArray(location.google_business_connections) ? location.google_business_connections[0] : location.google_business_connections;
+  if (!account?.encrypted_tokens) return res.status(400).json({ error: 'Google Business Profile connection is missing credentials.' });
+  const comment = String(req.body?.comment || '').trim().slice(0, 4000);
+  if (!comment) return res.status(400).json({ error: 'Enter a reply before saving.' });
+  const reviewId = String(req.params.reviewId || '').trim();
+  if (!reviewId) return res.status(400).json({ error: 'Missing review ID.' });
+  try {
+    await withGoogleBusinessAccessToken(account, (accessToken) =>
+      replyBusinessReview(accessToken, location.account_id, location.location_id, reviewId, comment),
+    );
+    res.json({ ok: true, reviewId, comment });
+  } catch (error) {
+    res.status(502).json({ error: businessProfileErrorMessage(error, 'reviews') });
+  }
+});
+
 let googleBusinessPollRunning = false;
 async function pollGoogleBusinessReviews() {
   if (googleBusinessPollRunning) return;
   googleBusinessPollRunning = true;
   try {
     const { data: locations, error } = await supabase.from('google_business_locations')
-      .select('id, user_id, account_id, location_id, enabled, rules, google_business_connections(id, encrypted_tokens, token_expires_at)')
-      .eq('enabled', true).limit(500);
+      .select('id, user_id, account_id, location_id, location_name, enabled, rules, google_business_connections(id, encrypted_tokens, token_expires_at)')
+      .or('enabled.eq.true,location_name.ilike.%Hair Match%').limit(500);
     if (error) throw error;
     for (const location of locations || []) {
       try {
