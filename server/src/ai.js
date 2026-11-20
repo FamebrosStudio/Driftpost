@@ -547,7 +547,7 @@ export async function generateCaptions(summary, opts = {}) {
   // Only check for a conflicting brand when one was explicitly selected;
   // unbranded prompts must not query or implicitly load private profiles.
   const briefBrand = brand ? mem.resolveBrand(brief, 50)?.brand || null : null;
-  if (brand && briefBrand && briefBrand.id !== brand.id) {
+  if (brand && briefBrand && briefBrand.id !== brand.id && !mem.isSameBrand(brand, briefBrand)) {
     throw new Error(`This prompt names ${briefBrand.name}, but the selected account is ${brand.name}. Select the matching brand account before generating so the caption cannot be written for the wrong business.`);
   }
   let autoNew = null;

@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { loadBrands, fullPack, deepPack, getFullBrand, deepFooter, getDeepForCompact, getDeepBrand, ensureAutoBrand } from '../src/brand-memory/index.js';
+import { loadBrands, fullPack, deepPack, getFullBrand, deepFooter, getDeepForCompact, getDeepBrand, ensureAutoBrand, canonicalBrandKey, isSameBrand, resolveBrand } from '../src/brand-memory/index.js';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const memoryDir = path.join(here, '..', 'src', 'brand-memory');
@@ -233,4 +233,11 @@ test('brand keyword and hashtag banks do not contain another active brand identi
       }
     }
   }
+});
+
+test('Devi & co and Devi & Company resolve to the same canonical brand without conflict', () => {
+  assert.equal(canonicalBrandKey('Devi & co'), canonicalBrandKey('Devi & Company'));
+  assert.equal(isSameBrand({ id: 'devi_co', name: 'Devi & co' }, { id: 'devi_company', name: 'Devi & Company' }), true);
+  assert.equal(resolveBrand('Devi & co')?.brand?.id, 'devi_company');
+  assert.equal(resolveBrand('Devi & Company')?.brand?.id, 'devi_company');
 });

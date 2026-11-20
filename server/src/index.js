@@ -2118,10 +2118,16 @@ async function syncFedBrandsToCloud() {
   try {
     const { exportFedBrandsBundle } = await import('./brand-memory/index.js');
     const payload = Buffer.from(JSON.stringify(exportFedBrandsBundle()), 'utf8');
-    const { error } = await supabase.storage.from(BUCKET).upload(FED_BRANDS_STORAGE_KEY, payload, {
+    let { error } = await supabase.storage.from(BUCKET).upload(FED_BRANDS_STORAGE_KEY, payload, {
       contentType: 'application/json',
       upsert: true,
     });
+    if (error && /mime type/i.test(String(error.message || ''))) {
+      ({ error } = await supabase.storage.from(BUCKET).upload(FED_BRANDS_STORAGE_KEY, payload, {
+        contentType: 'image/png',
+        upsert: true,
+      }));
+    }
     if (error) {
       console.warn('[feed-it] cloud sync failed:', error.message);
       return false;

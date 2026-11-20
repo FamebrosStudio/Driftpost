@@ -33,14 +33,85 @@ function saveCustom(brands) {
   fs.mkdirSync(path.dirname(CUSTOM_PATH), { recursive: true });
   fs.writeFileSync(CUSTOM_PATH, raw);
 }
+export function canonicalBrandKey(s) {
+  return String(s || '')
+    .toLowerCase()
+    .replace(/&/g, ' and ')
+    .replace(/[^a-z0-9 ]/g, ' ')
+    .replace(/\b(?:co|comp)\b/g, 'company')
+    .replace(/\bpvt\b/g, 'private')
+    .replace(/\bltd\b/g, 'limited')
+    .replace(/\b(?:and|the)\b/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+export function isSameBrand(a, b) {
+  if (!a || !b) return false;
+  if (a.id && b.id && a.id === b.id) return true;
+  const keysFor = (entry) => new Set(
+    [entry.name, entry.id ? String(entry.id).replace(/_/g, ' ') : '', ...(entry.aliases || [])]
+      .map(canonicalBrandKey)
+      .filter((k) => k.length >= 3),
+  );
+  const aKeys = keysFor(a);
+  for (const k of keysFor(b)) {
+    if (aKeys.has(k)) return true;
+  }
+  return false;
+}
+
+function mergeBrandLists(baseBrands, customBrands) {
+  const merged = (baseBrands || []).map((b) => ({ ...b, aliases: [...(b.aliases || [])] }));
+  for (const c of customBrands || []) {
+    if (!c || (!c.id && !c.name)) continue;
+    const matchIdx = merged.findIndex((b) => b.id === c.id || isSameBrand(b, c));
+    if (matchIdx >= 0) {
+      const target = merged[matchIdx];
+      // Only allow confirmed/fed edits to overwrite a built-in profile's core fields;
+      // an unconfirmed auto-brand sighting (e.g. "Devi & co") just adds its alias.
+      const isConfirmedEdit = Boolean(c.fed || c.ready === 'fed');
+      const combinedAliases = [...new Set([
+        target.name,
+        c.name,
+        ...(target.aliases || []),
+        ...(c.aliases || []),
+      ].filter((alias) => alias && String(alias).trim()))];
+      merged[matchIdx] = isConfirmedEdit
+        ? {
+            ...target,
+            ...c,
+            id: target.id,
+            name: c.name || target.name,
+            aliases: combinedAliases,
+            cat: c.cat || target.cat,
+            loc: c.loc || target.loc,
+            kw: Array.isArray(c.kw) && c.kw.length ? c.kw : target.kw,
+            footer: Array.isArray(c.footer) && c.footer.length ? c.footer : target.footer,
+          }
+        : {
+            ...target,
+            aliases: combinedAliases,
+          };
+    } else {
+      merged.push({ ...c, aliases: [...(c.aliases || [])] });
+    }
+  }
+  return merged;
+}
+
 export function loadBrands() {
-  if (!cache) cache = JSON.parse(fs.readFileSync(COMPACT_PATH, 'utf8'));
+  if (!cache) {
+    const base = JSON.parse(fs.readFileSync(COMPACT_PATH, 'utf8')).brands;
+    cache = { brands: mergeBrandLists(base, loadCustom()), _customMtime: 0 };
+  }
   // Custom/auto-onboarded brands merge in — matcher sees them like natives.
   // Reloaded per call would cost disk IO; refresh when custom file changes.
   try {
     const st = fs.statSync(CUSTOM_PATH);
     if (!cache._customMtime || cache._customMtime < st.mtimeMs) {
-      cache = { brands: [...JSON.parse(fs.readFileSync(COMPACT_PATH, 'utf8')).brands, ...loadCustom()], _customMtime: st.mtimeMs };
+      const base = JSON.parse(fs.readFileSync(COMPACT_PATH, 'utf8')).brands;
+      cache = { brands: mergeBrandLists(base, loadCustom()), _customMtime: st.mtimeMs };
     }
   } catch {}
   return cache.brands;
@@ -181,22 +252,40 @@ function loadDeepAll() {
   if (!dirty) return deepCache;
   deepCache = {};
   deepCacheFiles = {};
-  for (const f of files) {
+  // Sort so built-in <id>.json files load first and auto-<id>.json user edits
+  // merge on top instead of being overwritten alphabetically.
+  const orderedFiles = [...files].sort((a, b) => {
+    const aAuto = a.startsWith('auto-') ? 1 : 0;
+    const bAuto = b.startsWith('auto-') ? 1 : 0;
+    return aAuto - bAuto || a.localeCompare(b);
+  });
+  for (const f of orderedFiles) {
     try {
       deepCacheFiles[f] = fs.statSync(path.join(DEEP_DIR, f)).mtimeMs;
       const d = JSON.parse(fs.readFileSync(path.join(DEEP_DIR, f), 'utf8'));
-      const id = d.brand_id || f.replace(/\.json$/, '');
-      deepCache[id] = d;
-      // Alias keys: file brand_ids don't always match the compact index
-      // (reshine_skin_clinic vs reshine_clinic), so also file by name slug.
-      if (d.brand_name) deepCache[`name:${slugify(d.brand_name)}`] = d;
-      // Explicit aliases are safe lookup keys too. Keep these separate from
-      // the fuzzy fallback so an abbreviated compact name can point at its
-      // one confirmed detailed profile (for example SK Furniture -> SK
-      // Furniture Market) without matching another business by category.
-      for (const alias of d.aliases || []) {
+      const id = d.brand_id || f.replace(/^auto-/, '').replace(/\.json$/, '');
+      const prev = deepCache[id];
+      const mergedDeep = prev && f.startsWith('auto-')
+        ? {
+            ...prev,
+            ...d,
+            brand_id: id,
+            brand_name: d.brand_name || prev.brand_name,
+            aliases: [...new Set([...(prev.aliases || []), ...(d.aliases || []), prev.brand_name, d.brand_name].filter(Boolean))],
+            business: { ...(prev.business || {}), ...(d.business || {}) },
+            contact: { ...(prev.contact || {}), ...(d.contact || {}) },
+            social_media: { ...(prev.social_media || {}), ...(d.social_media || {}) },
+            fixed_footer: d.fixed_footer?.lines?.length ? d.fixed_footer : prev.fixed_footer,
+            seo_keyword_bank: Array.isArray(d.seo_keyword_bank) && d.seo_keyword_bank.length ? d.seo_keyword_bank : prev.seo_keyword_bank,
+            suggested_hashtag_bank: d.suggested_hashtag_bank || prev.suggested_hashtag_bank,
+            sample_caption: d.sample_caption ?? prev.sample_caption,
+          }
+        : d;
+      deepCache[id] = mergedDeep;
+      if (mergedDeep.brand_name) deepCache[`name:${slugify(mergedDeep.brand_name)}`] = mergedDeep;
+      for (const alias of mergedDeep.aliases || []) {
         const key = `name:${slugify(alias)}`;
-        if (!deepCache[key]) deepCache[key] = d;
+        if (!deepCache[key]) deepCache[key] = mergedDeep;
       }
     } catch {}
   }
@@ -642,13 +731,22 @@ const norm = (s) =>
 // Score a query against one brand. Cheap local fuzzy match — costs 0 tokens.
 function scoreBrand(b, q) {
   const query = norm(q);
+  const canonQuery = canonicalBrandKey(q);
   if (!query) return 0;
-  const names = [b.name, b.id.replace(/_/g, ' '), ...(b.aliases || []), b.ig || ''].map(norm);
-  for (const n of names) {
+  const rawNames = [b.name, b.id.replace(/_/g, ' '), ...(b.aliases || []), b.ig || ''];
+  const names = rawNames.map(norm);
+  const canonNames = rawNames.map(canonicalBrandKey);
+  for (let i = 0; i < names.length; i++) {
+    const n = names[i];
+    const cn = canonNames[i];
     if (!n) continue;
-    if (query === n) return 1000;
-    if (query.includes(n) && n.length > 3) return 500 + n.length;
-    if (n.includes(query) && query.length > 3) return 400 + query.length;
+    if (query === n || (canonQuery && canonQuery === cn)) return 1000;
+    if ((query.includes(n) && n.length > 3) || (canonQuery && cn && canonQuery.includes(cn) && cn.length > 3)) {
+      return 500 + Math.max(n.length, cn.length);
+    }
+    if ((n.includes(query) && query.length > 3) || (canonQuery && cn && cn.includes(canonQuery) && canonQuery.length > 3)) {
+      return 400 + Math.max(query.length, canonQuery.length);
+    }
   }
   // token overlap fallback
   const qt = new Set(query.split(' ').filter((t) => t.length > 2));
@@ -673,7 +771,7 @@ export function resolveBrand(query, minScore = 20) {
       bestScore = s;
       best = b;
       tied = false;
-    } else if (s > 0 && s === bestScore) {
+    } else if (s > 0 && s === bestScore && !isSameBrand(best, b)) {
       tied = true;
     }
   }
@@ -1158,7 +1256,7 @@ export function hydrateFedBrandsBundle(bundle) {
   fs.mkdirSync(DEEP_DIR, { recursive: true });
   const deepFiles = bundle.deepFiles && typeof bundle.deepFiles === 'object' ? bundle.deepFiles : {};
   for (const [file, content] of Object.entries(deepFiles)) {
-    if (!/^auto-[a-z0-9-]+\.json$/.test(file) || !content || typeof content !== 'object') continue;
+    if (!/^auto-[a-z0-9_-]+\.json$/.test(file) || !content || typeof content !== 'object') continue;
     fs.writeFileSync(path.join(DEEP_DIR, file), JSON.stringify(content, null, 2), 'utf8');
   }
   deepCache = null;
@@ -1268,7 +1366,7 @@ export function updateSavedCaptionData(brandId, patch = {}) {
   const compactEntry = {
     id: cleanId,
     name: nextName,
-    aliases: [nextName],
+    aliases: [...new Set([existing.name, nextName].filter(Boolean))],
     cat: existing.category || 'Brand',
     loc: nextLocation,
     genres: [existing.category || 'Brand'],
