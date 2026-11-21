@@ -213,6 +213,12 @@ export async function getMetaPages(userToken, { includeInstagram = true, fetchIm
 
 export function metaConnectionErrorMessage(error) {
   const message = String(error?.message || error || 'Meta connection failed.');
+  if (/two.factor authentication|two.factor auth|\b2fa\b/i.test(message)) {
+    return 'Meta requires two-factor authentication for the Facebook profile managing this Page. Turn it on in that profile, confirm the profile has Page access with the Create content task, then reconnect Facebook and Instagram in Driftpost. Reschedule failed posts afterward.';
+  }
+  if (/administrator, editor, or moderator|admin(?:istrator)? or editor|create.content task/i.test(message)) {
+    return 'Meta says this Facebook profile cannot publish to the Page. Ask a Page owner to grant it Page access with the Create content task, then reconnect the affected Facebook Page and linked Instagram account in Driftpost. Reschedule failed posts afterward.';
+  }
   if (/(?:#4\b|code\s*4\b|application request limit reached|rate limit)/i.test(message)) {
     return 'Meta temporarily rate-limited Page discovery. No account was saved. Wait 10–15 minutes before trying again, and avoid repeated retries; if it continues, Meta may need to raise the app’s request limit.';
   }
