@@ -303,7 +303,12 @@ async function waitForInstagramContainer({ id, pageToken, onStage, label = 'vide
     const status = await response.json().catch(() => ({}));
     if (!response.ok) throw new Error(status.error?.message || `Could not check Instagram ${label} processing`);
     if (status.status_code === 'FINISHED') return;
-    if (status.status_code === 'ERROR') throw new Error(`Instagram could not process this ${label}`);
+    if (status.status_code === 'ERROR') {
+      const detail = status.error_message || status.error?.message || status.message || status.error_user_msg;
+      throw new Error(detail
+        ? `Instagram could not process this ${label}: ${String(detail).slice(0, 300)}`
+        : `Instagram could not process this ${label}. The video may use an unsupported codec, frame rate, or dimensions.`);
+    }
     if (status.status_code === 'EXPIRED') throw new Error(`Instagram ${label} processing expired; try posting again`);
     const seconds = Math.round((Date.now() - started) / 1000);
     if (onStage) onStage(`Instagram: processing ${label}… ${seconds}s`);
