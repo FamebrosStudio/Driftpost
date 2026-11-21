@@ -2739,22 +2739,34 @@ app.get('/api/oauth/meta/callback', callbackLimit, async (req, res) => {
     const short = await exchangeMetaCode(String(req.query.code || ''));
     const long = await longLivedToken(short.access_token);
     const userToken = long.access_token;
-    const pages = await getMetaPages(userToken, { includeInstagram: state.platform !== 'facebook' });
+    const connectingFacebook = state.platform === 'facebook';
+    const pages = await getMetaPages(userToken, { includeInstagram: !connectingFacebook });
     if (!pages.length) throw new Error('Meta login succeeded, but it returned no Facebook Pages. Connect a Facebook Page that this profile can access (a personal profile alone cannot publish). For Instagram publishing, switch Instagram to a Business or Creator account and link it to that Page.');
+    if (!connectingFacebook && !pages.some((page) => page.instagram_business_account?.id)) {
+      throw new Error('Meta returned Pages but no linked Instagram Business or Creator account. Link the Instagram account to a Page, grant that Page in the Instagram login, and reconnect Instagram.');
+    }
+    let pageCount = 0;
     let igCount = 0;
     for (const page of pages.slice(0, 200)) {
-      const { error: pageSaveError } = await supabase.from('platform_connections').upsert({
-        user_id: state.userId, platform: 'facebook', platform_account_id: page.id,
-        account_name: page.name, avatar_url: null,
-        encrypted_tokens: encryptJson({ access_token: page.access_token }),
-        token_expires_at: null, updated_at: new Date().toISOString(),
-      }, { onConflict: 'user_id,platform,platform_account_id' });
-      if (pageSaveError) {
-        console.error('[meta] Could not save Facebook Page connection:', page.name, pageSaveError.message);
-        throw new Error(`Meta found ${page.name || 'a Facebook Page'} but Driftpost could not save it. Try connecting again.`);
+      if (!page.access_token) continue;
+      // Each Meta login configuration can grant different Page permissions.
+      // Never overwrite a Facebook publishing token with an Instagram login
+      // token (or an Instagram automation token with a Facebook login token).
+      if (connectingFacebook) {
+        const { error: pageSaveError } = await supabase.from('platform_connections').upsert({
+          user_id: state.userId, platform: 'facebook', platform_account_id: page.id,
+          account_name: page.name, avatar_url: null,
+          encrypted_tokens: encryptJson({ access_token: page.access_token }),
+          token_expires_at: null, updated_at: new Date().toISOString(),
+        }, { onConflict: 'user_id,platform,platform_account_id' });
+        if (pageSaveError) {
+          console.error('[meta] Could not save Facebook Page connection:', page.name, pageSaveError.message);
+          throw new Error(`Meta found ${page.name || 'a Facebook Page'} but Driftpost could not save it. Try connecting again.`);
+        }
+        pageCount++;
       }
       const ig = page.instagram_business_account;
-      if (ig?.id) {
+      if (!connectingFacebook && ig?.id) {
         igCount++;
         const { error: igSaveError } = await supabase.from('platform_connections').upsert({
           user_id: state.userId, platform: 'instagram', platform_account_id: ig.id,
@@ -2768,6 +2780,8 @@ app.get('/api/oauth/meta/callback', callbackLimit, async (req, res) => {
         }
       }
     }
+    if (connectingFacebook && !pageCount) throw new Error('Meta returned Pages without a usable Page access token. Grant this profile Page access with the Create content task, approve the requested Page permissions, and reconnect Facebook.');
+    if (!connectingFacebook && !igCount) throw new Error('Meta returned no linked Instagram account with a usable Page access token. Check the Page connection and Instagram login grants, then reconnect Instagram.');
     const igNames = pages.slice(0, 200).map((page) => page.instagram_business_account?.username)
       .filter(Boolean).map((username) => `@${username}`);
     const shownIgNames = igNames.slice(0, 6);
@@ -2779,7 +2793,9 @@ app.get('/api/oauth/meta/callback', callbackLimit, async (req, res) => {
       ? `; Pages: ${pageNames.join(', ')}${pages.length > pageNames.length ? ', …' : ''}`
       : '';
     back.searchParams.set('connected', 'meta');
-    back.searchParams.set('connected_details', `${pages.length} Page${pages.length === 1 ? '' : 's'}, ${igCount} Instagram account${igCount === 1 ? '' : 's'} found${pageLabel}${igLabel}`);
+    back.searchParams.set('connected_details', connectingFacebook
+      ? `${pageCount} Facebook Page${pageCount === 1 ? '' : 's'} connected${pageLabel}`
+      : `${igCount} Instagram account${igCount === 1 ? '' : 's'} found${igLabel}`);
   } catch (e) { back.searchParams.set('oauth_error', metaConnectionErrorMessage(e)); }
   safeFrontendRedirect(res, back);
 });

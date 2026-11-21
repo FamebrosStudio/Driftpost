@@ -88,6 +88,19 @@ test('Meta Page permission errors explain the required app access and reconnecti
   assert.match(message, /rescheduled after reconnecting/);
 });
 
+test('Meta two-factor errors point to the profile setting and Page access', () => {
+  const message = metaConnectionErrorMessage(new Error('You must be an administrator, editor, or moderator of the page in order to impersonate it. If the page business requires Two Factor Authentication, the user also needs to enable Two Factor Authentication.'));
+  assert.match(message, /two-factor authentication/i);
+  assert.match(message, /Create content task/);
+  assert.match(message, /reconnect Facebook and Instagram/);
+});
+
+test('Meta Page role errors point to the Create content task', () => {
+  const message = metaConnectionErrorMessage(new Error('You must be an administrator, editor, or moderator of the page in order to impersonate it.'));
+  assert.match(message, /Create content task/);
+  assert.match(message, /Reschedule failed posts/);
+});
+
 async function withFetch(responses, run) {
   const original = globalThis.fetch;
   const requests = [];
