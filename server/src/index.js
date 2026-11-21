@@ -6,6 +6,7 @@ import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import multer from 'multer';
 import { transcribeVideo } from './video-analysis.js';
+import { prepareInstagramVideo } from './instagram-video.js';
 import os from 'node:os';
 import fs from 'node:fs/promises';
 import path from 'node:path';
@@ -3393,7 +3394,12 @@ async function runPublish(job, conn, payload, body, userId) {
            if (!objectPath) break;
            if (!isOwnedMediaPath(userId, objectPath)) throw new Error('Stored media reference is invalid. Re-upload the media and try again.');
            const url = await createTemporaryMediaUrl(supabase.storage.from(BUCKET), objectPath);
-           out.push({ url, name: body['mediaName' + i] || ('media_' + i), mimetype: body['mediaType' + i] || '' });
+            out.push({
+              url,
+              name: body['mediaName' + i] || ('media_' + i),
+              mimetype: body['mediaType' + i] || '',
+              size: Number(body['mediaSize' + i]) || 0,
+            });
          }
          return out.length ? out : null;
        })();
@@ -3411,9 +3417,31 @@ async function runPublish(job, conn, payload, body, userId) {
         const { error: upErr } = await uploadMediaFile(supabase.storage.from(BUCKET), key, f, { upsert: true });
          if (upErr) throw new Error('Media upload failed. Check that the private media bucket exists and accepts this file type.');
         temporaryStoragePaths.push(key);
-        const url = await createTemporaryMediaUrl(supabase.storage.from(BUCKET), key);
-        return { url, file: f };
-      };
+         const url = await createTemporaryMediaUrl(supabase.storage.from(BUCKET), key);
+         return { url, file: f };
+       };
+       const prepareInstagramVideoUrl = async (url, sourceFile) => {
+         let inputPath = sourceFile?.path || '';
+         if (!inputPath) {
+           inputPath = path.join(os.tmpdir(), `driftpost-instagram-source-${crypto.randomUUID()}.mp4`);
+           downloadedMediaPaths.push(inputPath);
+           await downloadMediaFile(url, inputPath, {
+             maxBytes: MAX_UPLOAD_BYTES,
+             expectedSize: Number(sourceFile?.size) || undefined,
+           });
+         }
+         const prepared = await prepareInstagramVideo(inputPath, MAX_UPLOAD_BYTES);
+         if (!prepared.converted) return url;
+         downloadedMediaPaths.push(prepared.path);
+         const stat = await fs.stat(prepared.path);
+         const uploaded = await uploadOneForMeta({
+           path: prepared.path,
+           originalname: 'instagram-compatible.mp4',
+           mimetype: 'video/mp4',
+           size: stat.size,
+         });
+         return uploaded.url;
+       };
       const instagramPublicUrls = [];
       if (preUploaded && job.platform === 'facebook' && instagramFiles.length) {
         // A Facebook-originated image mirror has a different aspect-ratio
@@ -3510,11 +3538,15 @@ async function runPublish(job, conn, payload, body, userId) {
                 });
                 if (mirror.id) job.publishedPosts.push({ platform: 'instagram', connectionId: igConn.id, postId: String(mirror.id) });
               } else {
+                const isInstagramVideo = !!(file?.mimetype || mediaList[0]?.mimetype || preUploaded?.[0]?.mimetype || '').startsWith('video/');
+                const mirrorMediaUrl = isInstagramVideo
+                  ? await prepareInstagramVideoUrl(igUrls[0] || publicUrl, file || mediaList[0] || preUploaded?.[0])
+                  : (igUrls[0] || publicUrl);
                 const mirror = await meta.publishInstagram({
                   igUserId: igConn.platform_account_id, pageToken: igTokens.access_token,
                   caption: nonEmptyCaption(body.fb_message, fallbackText),
                   collabs: igCollaboratorUsernames,
-                  mediaUrl: igUrls[0] || publicUrl, isVideo: !!(file?.mimetype || mediaList[0]?.mimetype || '').startsWith('video/'),
+                  mediaUrl: mirrorMediaUrl, isVideo: isInstagramVideo,
                   coverUrl: instagramCoverUrl,
                   onStage,
                 });
@@ -3542,8 +3574,12 @@ async function runPublish(job, conn, payload, body, userId) {
         const rawSelf = String(tokens.ig_username || tokens.username || conn.account_name || '').trim().replace(/^@+/, '');
         const selfUsername = /^[A-Za-z0-9._]{1,30}$/.test(rawSelf) ? rawSelf : '';
         const locationId = String(body.ig_location || '').trim() || null;
-        const storyMediaUrl = isCarousel ? (publicUrls[0] || publicUrl) : publicUrl;
-        const storyIsVideo = !isCarousel && !!(file?.mimetype || mediaList[0]?.mimetype || '').startsWith('video/');
+         const storyIsVideo = !isCarousel && !!(file?.mimetype || mediaList[0]?.mimetype || '').startsWith('video/');
+         const sourceInstagramUrl = isCarousel ? (publicUrls[0] || publicUrl) : publicUrl;
+         const instagramMediaUrl = storyIsVideo
+           ? await prepareInstagramVideoUrl(sourceInstagramUrl, file || mediaList[0] || preUploaded?.[0])
+           : sourceInstagramUrl;
+         const storyMediaUrl = instagramMediaUrl;
         const shouldPostStory = String(body.ig_post_story || '') === '1' && Boolean(storyMediaUrl);
         const storyPromise = shouldPostStory
           ? meta.publishInstagramStory({
@@ -3563,7 +3599,7 @@ async function runPublish(job, conn, payload, body, userId) {
            out = await meta.publishInstagram({
              igUserId: igId, pageToken, caption,
              alt: String(body.ig_alt || ''), collabs, locationId,
-               mediaUrl: publicUrl, isVideo: !!(file?.mimetype || mediaList[0]?.mimetype || '').startsWith('video/'),
+                mediaUrl: instagramMediaUrl, isVideo: storyIsVideo,
              coverUrl: instagramCoverUrl,
              selfUsername,
              onStage,

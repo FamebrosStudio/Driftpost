@@ -346,3 +346,19 @@ test('Instagram single photo applies both collaborators and user_tags cleanly', 
     globalThis.fetch = original;
   }
 });
+
+test('Instagram processing errors surface Meta detail when it is provided', async () => {
+  const original = globalThis.fetch;
+  globalThis.fetch = async (url) => {
+    if (String(url).endsWith('/media')) return new Response(JSON.stringify({ id: 'container-error' }), { status: 200 });
+    return new Response(JSON.stringify({ status_code: 'ERROR', error_message: 'Unsupported video codec' }), { status: 200 });
+  };
+  try {
+    await assert.rejects(
+      publishInstagram({ igUserId: 'ig-1', pageToken: 'tok', mediaUrl: 'https://cdn.example/reel.mp4', isVideo: true }),
+      /Unsupported video codec/,
+    );
+  } finally {
+    globalThis.fetch = original;
+  }
+});
