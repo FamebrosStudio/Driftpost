@@ -3458,6 +3458,45 @@ async function runPublish(job, conn, payload, body, userId) {
          });
          return uploaded.url;
        };
+       const prepareInstagramImageUrl = async (url, sourceFile) => {
+         if (!url) return url;
+         try {
+           let inputPath = sourceFile?.path || '';
+           if (!inputPath) {
+             inputPath = path.join(os.tmpdir(), `driftpost-ig-img-src-${crypto.randomUUID()}.jpg`);
+             downloadedMediaPaths.push(inputPath);
+             await downloadMediaFile(url, inputPath, { maxBytes: MAX_UPLOAD_BYTES });
+           }
+           const { stdout } = await execFileAsync('ffprobe', [
+             '-v', 'error', '-select_streams', 'v:0', '-show_entries', 'stream=width,height', '-of', 'json', inputPath,
+           ], { timeout: 20_000, maxBuffer: 512 * 1024 });
+           const stream = JSON.parse(stdout || '{}')?.streams?.[0];
+           const w = Number(stream?.width);
+           const h = Number(stream?.height);
+           if (!w || !h) return url;
+           const ratio = w / h;
+           if (ratio >= 0.8 && ratio <= 1.91) return url;
+           const dims = ratio < 0.8 ? '1080:1350' : '1080:566';
+           const outPath = path.join(os.tmpdir(), `driftpost-ig-img-fit-${crypto.randomUUID()}.jpg`);
+           downloadedMediaPaths.push(outPath);
+           await execFileAsync('ffmpeg', [
+             '-hide_banner', '-loglevel', 'error', '-y', '-i', inputPath,
+             '-vf', `split=2[bg][fg];[bg]scale=${dims}:force_original_aspect_ratio=increase,crop=${dims},boxblur=20:10,eq=brightness=-0.15[bg];[fg]scale=${dims}:force_original_aspect_ratio=decrease[fg];[bg][fg]overlay=(W-w)/2:(H-h)/2`,
+             '-frames:v', '1', '-q:v', '2', outPath,
+           ], { timeout: 45_000, maxBuffer: 2 * 1024 * 1024 });
+           const stat = await fs.stat(outPath);
+           if (!stat?.size) return url;
+           const uploaded = await uploadOneForMeta({
+             path: outPath,
+             originalname: 'instagram-fit.jpg',
+             mimetype: 'image/jpeg',
+             size: stat.size,
+           });
+           return uploaded.url || url;
+         } catch {
+           return url;
+         }
+       };
       const instagramPublicUrls = [];
       if (preUploaded && job.platform === 'facebook' && instagramFiles.length) {
         // A Facebook-originated image mirror has a different aspect-ratio
@@ -3557,7 +3596,7 @@ async function runPublish(job, conn, payload, body, userId) {
                 const isInstagramVideo = !!(file?.mimetype || mediaList[0]?.mimetype || preUploaded?.[0]?.mimetype || '').startsWith('video/');
                 const mirrorMediaUrl = isInstagramVideo
                   ? await prepareInstagramVideoUrl(igUrls[0] || publicUrl, file || mediaList[0] || preUploaded?.[0])
-                  : (igUrls[0] || publicUrl);
+                  : await prepareInstagramImageUrl(igUrls[0] || publicUrl, file || mediaList[0] || preUploaded?.[0]);
                 const mirror = await meta.publishInstagram({
                   igUserId: igConn.platform_account_id, pageToken: igTokens.access_token,
                   caption: nonEmptyCaption(body.fb_message, fallbackText),
@@ -3609,7 +3648,8 @@ async function runPublish(job, conn, payload, body, userId) {
         if (isCarousel) {
           out = await meta.publishInstagramCarousel({
             igUserId: igId, pageToken, caption, collabs, locationId,
-            mediaUrls: publicUrls, selfUsername,
+            mediaUrls: await Promise.all(publicUrls.map((u, idx) => prepareInstagramImageUrl(u, mediaList[idx] || preUploaded?.[idx]))),
+            selfUsername,
           });
         } else {
            out = await meta.publishInstagram({
