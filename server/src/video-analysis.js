@@ -16,8 +16,16 @@ const OPENAI_MAX_AUDIO_BYTES = 24 * 1024 * 1024;
 export async function transcribeVideo(filePath, originalName = 'video', mimeType = 'video/mp4') {
   const provider = resolveProvider();
   if (!provider.hasKey) throw new Error(`AI is not configured yet (${provider.apiKeyEnv} missing)`);
-  if (provider.id === 'openai') return transcribeWithOpenAI(provider, filePath, originalName);
-  return transcribeWithXai(provider, filePath, originalName, mimeType);
+  try {
+    if (provider.id === 'openai') return await transcribeWithOpenAI(provider, filePath, originalName);
+    return await transcribeWithXai(provider, filePath, originalName, mimeType);
+  } catch (primaryErr) {
+    const fallbackId = provider.id === 'openai' ? 'xai' : 'openai';
+    const fallback = resolveProvider(fallbackId);
+    if (!fallback.hasKey) throw primaryErr;
+    if (fallback.id === 'openai') return await transcribeWithOpenAI(fallback, filePath, originalName);
+    return await transcribeWithXai(fallback, filePath, originalName, mimeType);
+  }
 }
 
 async function transcribeWithXai(provider, filePath, originalName, mimeType) {

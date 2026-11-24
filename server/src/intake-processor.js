@@ -103,6 +103,23 @@ async function extractSampleFrames(videoPath, directory, duration) {
   return frames;
 }
 
+async function extractFramesSequential(videoPath, directory) {
+  await execFileAsync('ffmpeg', [
+    '-hide_banner', '-loglevel', 'error', '-y', '-i', videoPath,
+    '-vf', 'fps=1/2,scale=1024:1024:force_original_aspect_ratio=decrease',
+    '-frames:v', '5', '-q:v', '4', path.join(directory, 'seq-%d.jpg'),
+  ], { timeout: 90_000, maxBuffer: 2 * 1024 * 1024 }).catch(() => null);
+  const frames = [];
+  for (let i = 1; i <= 5; i++) {
+    const output = path.join(directory, `seq-${i}.jpg`);
+    const stat = await fs.stat(output).catch(() => null);
+    if (stat?.size) {
+      frames.push({ path: output, name: `seq-${i}.jpg`, mimetype: 'image/jpeg', base64: (await fs.readFile(output)).toString('base64'), detail: 'low' });
+    }
+  }
+  return frames;
+}
+
 async function sampleFrames(videoPath, directory) {
   let targetPath = videoPath;
   let duration = await probeVideoDuration(targetPath);
@@ -114,6 +131,14 @@ async function sampleFrames(videoPath, directory) {
       targetPath = healedPath;
       duration = await probeVideoDuration(targetPath);
       frames = Number.isFinite(duration) && duration > 0 ? await extractSampleFrames(targetPath, directory, duration) : [];
+    }
+  }
+
+  if (frames.length < 2) {
+    const seqFrames = await extractFramesSequential(targetPath, directory);
+    if (seqFrames.length >= 2) {
+      frames = seqFrames;
+      if (!Number.isFinite(duration) || duration <= 0) duration = seqFrames.length * 2;
     }
   }
 

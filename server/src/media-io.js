@@ -6,14 +6,25 @@ import { pipeline } from 'node:stream/promises';
 // Keep media on disk: a Buffer plus a multipart Blob can otherwise consume
 // several times the video size on a small API instance.
 export async function uploadMediaFile(storage, key, file, options = {}) {
-  const stream = createReadStream(file.path);
-  try {
-    return await storage.upload(key, stream, {
-      ...options, contentType: file.mimetype || 'application/octet-stream', duplex: 'half',
-    });
-  } finally {
-    stream.destroy();
+  let lastResult = null;
+  let lastError = null;
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    const stream = createReadStream(file.path);
+    try {
+      const result = await storage.upload(key, stream, {
+        ...options, contentType: file.mimetype || 'application/octet-stream', duplex: 'half',
+      });
+      if (!result?.error) return result;
+      lastResult = result;
+    } catch (err) {
+      lastError = err;
+    } finally {
+      stream.destroy();
+    }
+    if (attempt < 3) await new Promise((r) => setTimeout(r, attempt * 1000));
   }
+  if (lastError) throw lastError;
+  return lastResult;
 }
 
 export async function mediaBlob(media) {
