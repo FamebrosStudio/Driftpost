@@ -64,16 +64,13 @@ for (const [id, captionName, location, phones, email, aliases, notes] of brands)
     deep.contact.caption_source_status = `Phone and WhatsApp CTA explicitly present in user-supplied caption ${day}.`;
   }
   if (location && typeof location === 'string') {
-    if (deep.business) {
-      if (deep.business.category === 'Political public figure') { /* A topic location is not an office address. */ }
-      else {
-        if ('city' in deep.business) deep.business.city = update.location_short?.includes('Thane') ? 'Thane' : 'Mumbai';
-        if ('locality' in deep.business) deep.business.locality = update.location_short;
-        if ('location_area' in deep.business) deep.business.location_area = update.location_short;
-        if (deep.business.location && typeof deep.business.location === 'object') {
-          deep.business.location.city = update.location_short?.split(', ').at(-1) || null;
-          deep.business.location.exact_address = location;
-        }
+    if (deep.business && deep.business.category !== 'Political public figure') {
+      if ('city' in deep.business) deep.business.city = update.location_short?.includes('Thane') ? 'Thane' : 'Mumbai';
+      if ('locality' in deep.business) deep.business.locality = update.location_short;
+      if ('location_area' in deep.business) deep.business.location_area = update.location_short;
+      if (deep.business.location && typeof deep.business.location === 'object') {
+        deep.business.location.city = update.location_short?.split(', ').at(-1) || null;
+        deep.business.location.exact_address = location;
       }
     }
     if (deep.contact) {

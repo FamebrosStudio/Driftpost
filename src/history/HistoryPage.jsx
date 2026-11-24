@@ -1,9 +1,8 @@
 import BorderGlow from '../components/reactbits/BorderGlow.jsx';
 import React, { useEffect, useState } from 'react';
 import BrandIcon from '../brand.jsx';
-import { api } from '../lib.js';
+import { api, listSchedules, cancelSchedule } from '../lib.js';
 import { readDisconnectLog, removeDisconnectLog, readCaptionLog, readPostLog, removePostLog, updatePostLog } from './log.js';
-import { listSchedules, cancelSchedule } from '../lib.js';
 import './history.css';
 import { WorkspaceNav } from '../workspace/Workspace.jsx';
 import { hasAiAccess } from '../ai-access.js';

@@ -991,7 +991,7 @@ app.get('/api/music/tracks/:trackId/preview', requireUser, musicLimit, async (re
     }
     const { response, data } = preview;
     if (!response.ok || !data.url || (preview.kind === 'hls' && (!data.cookie?.name || !data.cookie?.value))) {
-      const status = response.status === 404 ? 404 : response.status === 429 ? 429 : response.status === 403 ? 403 : response.status === 401 ? 502 : 502;
+      const status = response.status === 404 ? 404 : response.status === 429 ? 429 : response.status === 403 ? 403 : 502;
       const error = response.status === 401
         ? 'Epidemic Sound rejected the server API key. Check EPIDEMIC_SOUND_API_KEY.'
         : response.status === 403
