@@ -1,4 +1,50 @@
-/* iOS-inspired UI/UX polish: clean squircles, generous breathing room, smooth spring transitions */
+/* iOS-inspired UI/UX & Motion System: crisp squircles, frosted glass, spring physics */
+
+@keyframes iosPageIn {
+  from { opacity: 0; transform: translateY(10px) scale(0.992); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes iosCardReveal {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes iosPopIn {
+  from { opacity: 0; transform: scale(0.95) translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* Smooth page-level entrance */
+#root .ws-main,
+#root .hist-main,
+#root .stage1-in,
+#root .stage2-in,
+#root .s3-in,
+#root .team-video-main {
+  animation: iosPageIn 0.38s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Staggered card entrance */
+#root .ws-panel,
+#root .s3-work,
+#root .team-video-panel,
+#root .hist-row {
+  animation: iosCardReveal 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
+  transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.24s ease, transform 0.2s cubic-bezier(0.22, 1, 0.36, 1) !important;
+}
+#root .hist-row:nth-child(2) { animation-delay: 0.03s; }
+#root .hist-row:nth-child(3) { animation-delay: 0.06s; }
+#root .hist-row:nth-child(4) { animation-delay: 0.09s; }
+#root .hist-row:nth-child(5) { animation-delay: 0.12s; }
+
+/* Tactile iOS button & pill feedback */
+#root :is(button, .ws-nav-item, .hist-tab, .s3-tab, .plat-pill, .s2-pill):not(:disabled) {
+  transition: transform 0.16s cubic-bezier(0.22, 1, 0.36, 1), background 0.18s ease, border-color 0.18s ease, box-shadow 0.2s ease, filter 0.18s ease;
+}
+#root :is(button, .ws-nav-item, .hist-tab, .s3-tab, .plat-pill, .s2-pill):not(:disabled):active {
+  transform: scale(0.97) !important;
+}
 
 /* 1. Topbar Search pill: clean padding away from outer capsule border */
 #root .ws-topbar-right {
@@ -12,11 +58,10 @@
   border: 1px solid rgba(255, 255, 255, 0.1) !important;
   background: rgba(255, 255, 255, 0.05) !important;
   gap: 8px !important;
-  transition: background 0.2s ease, border-color 0.2s ease, transform 0.15s ease !important;
 }
 #root .ws-search-trigger:hover {
   background: rgba(255, 255, 255, 0.09) !important;
-  border-color: rgba(255, 255, 255, 0.2) !important;
+  border-color: rgba(255, 255, 255, 0.22) !important;
 }
 #root .ws-search-trigger kbd {
   padding: 2px 6px !important;
@@ -26,15 +71,16 @@
   border: 1px solid rgba(255, 255, 255, 0.12) !important;
 }
 
-/* 2. Dock "More" popover: equal 2-column grid, uniform squircle tiles, iOS glass */
+/* 2. Dock & "More" popover: equal 2-column grid, uniform squircle tiles, iOS glass */
 #root .dp-dock-more-menu {
   display: grid !important;
-  grid-template-columns: repeat(2, minmax(140px, 1fr)) !important;
+  grid-template-columns: repeat(2, minmax(145px, 1fr)) !important;
   gap: 8px !important;
   padding: 12px !important;
   border-radius: 20px !important;
-  backdrop-filter: blur(22px) saturate(1.4) !important;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+  backdrop-filter: blur(24px) saturate(1.45) !important;
+  box-shadow: 0 22px 54px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.09) !important;
+  animation: iosPopIn 0.22s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 #root .dp-dock-more-menu button {
   width: 100% !important;
@@ -45,15 +91,11 @@
   gap: 10px !important;
   border: 1px solid rgba(255, 255, 255, 0.07) !important;
   background: rgba(255, 255, 255, 0.035) !important;
-  transition: background 0.18s ease, border-color 0.18s ease, transform 0.16s cubic-bezier(0.2, 0.9, 0.3, 1.2) !important;
 }
 #root .dp-dock-more-menu button:hover {
   background: rgba(255, 255, 255, 0.09) !important;
-  border-color: rgba(255, 255, 255, 0.18) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
   transform: translateY(-1px) !important;
-}
-#root .dp-dock-more-menu button:active {
-  transform: scale(0.97) !important;
 }
 
 /* 3. Stage 3 bottom "Post to all" + "Schedule instead" action bar */
@@ -61,8 +103,8 @@
   border-radius: 22px !important;
   padding: 12px 14px !important;
   gap: 10px !important;
-  backdrop-filter: blur(20px) saturate(1.35) !important;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+  backdrop-filter: blur(22px) saturate(1.4) !important;
+  box-shadow: 0 16px 42px rgba(0, 0, 0, 0.44), inset 0 1px 0 rgba(255, 255, 255, 0.09) !important;
 }
 #root .s3-bar .s3-postall {
   border-radius: 14px !important;
@@ -71,14 +113,10 @@
   font-weight: 700 !important;
   letter-spacing: -0.01em !important;
   box-shadow: 0 8px 22px -6px color-mix(in srgb, var(--go, #7c6cf5) 70%, transparent), inset 0 1px 0 rgba(255, 255, 255, 0.25) !important;
-  transition: transform 0.16s cubic-bezier(0.2, 0.9, 0.3, 1.2), filter 0.18s ease, box-shadow 0.2s ease !important;
 }
 #root .s3-bar .s3-postall:not(:disabled):hover {
   transform: translateY(-1px) !important;
   filter: brightness(1.08) !important;
-}
-#root .s3-bar .s3-postall:not(:disabled):active {
-  transform: scale(0.98) !important;
 }
 #root .s3-bar .s3-sched-btn {
   border-radius: 14px !important;
@@ -87,7 +125,6 @@
   border: 1px solid rgba(255, 255, 255, 0.14) !important;
   background: rgba(255, 255, 255, 0.06) !important;
   font-weight: 650 !important;
-  transition: background 0.18s ease, border-color 0.18s ease, transform 0.16s ease !important;
 }
 #root .s3-bar .s3-sched-btn:not(:disabled):hover {
   background: rgba(255, 255, 255, 0.11) !important;
@@ -95,13 +132,34 @@
   transform: translateY(-1px) !important;
 }
 
-/* 4. Subtle iOS-style hover polish across workspace cards & buttons */
-#root .ws-panel,
-#root .hist-row,
+/* 4. Frosted iOS modals & Feed It cards */
+#root :is(.ws-cmd-panel, .s3-sched-modal, .s2-editor) {
+  backdrop-filter: blur(24px) saturate(1.4) !important;
+  animation: iosPopIn 0.24s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
 #root .feed-it-item {
-  transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.22s ease !important;
+  border-radius: 12px !important;
+  transition: border-color 0.2s ease, background 0.2s ease, transform 0.16s ease !important;
 }
 #root .feed-it-item:hover {
   border-color: rgba(255, 255, 255, 0.2) !important;
-  background: rgba(255, 255, 255, 0.04) !important;
+  background: rgba(255, 255, 255, 0.045) !important;
+  transform: translateX(2px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #root .ws-main,
+  #root .hist-main,
+  #root .stage1-in,
+  #root .stage2-in,
+  #root .s3-in,
+  #root .team-video-main,
+  #root .ws-panel,
+  #root .s3-work,
+  #root .team-video-panel,
+  #root .hist-row,
+  #root .dp-dock-more-menu,
+  #root :is(.ws-cmd-panel, .s3-sched-modal, .s2-editor) {
+    animation: none !important;
+  }
 }
