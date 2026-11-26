@@ -10,6 +10,7 @@ import { useDevice } from '../utils/device.js';
 import { isSfxEnabled, setSfxEnabled } from '../utils/sfx.js';
 import { CURSOR_STYLES, getCursorStyle, setCursorStyle } from '../utils/interactivePhysics.js';
 import './workspace.css';
+import '../ios-polish.css';
 
 const NAV = [
   ['home', 'Overview', 'home'], ['create', 'Create post', 'plus'], ['calendar', 'Calendar', 'calendar'],
@@ -51,18 +52,12 @@ const SignOutGlyph = () => <DriftIcon name="signOut" size={18} />;
 const MoreGridGlyph = () => <DriftIcon name="moreGrid" size={18} />;
 
 const MOOD_THEMES = [
-  { id: 'dark', label: 'Midnight', note: 'Obsidian & Blue', bg: '#09090b', panel: '#111114', color: '#3b82f6' },
-  { id: 'light', label: 'Daylight', note: 'Crisp Alabaster', bg: '#f4f7fb', panel: '#ffffff', color: '#0284c7' },
   { id: 'osien', label: 'OSIEN', note: 'Obsidian & Violet', bg: '#05050a', panel: '#120d22', color: '#8b5cf6' },
+  { id: 'dark', label: 'Midnight', note: 'Obsidian & Blue', bg: '#09090b', panel: '#111114', color: '#3b82f6' },
+  { id: 'daylight', label: 'Daylight', note: 'Crisp Alabaster', bg: '#f4f7fb', panel: '#ffffff', color: '#0284c7' },
   { id: 'tokyo-drift', label: 'Tokyo Drift', note: 'Neon Shibuya', bg: '#08070d', panel: '#100e1a', color: '#ff2a85' },
   { id: 'sea', label: 'Sea', note: 'Deep Pelagic', bg: '#041018', panel: '#081924', color: '#14b8a6' },
   { id: 'perfect', label: 'Perfect', note: 'Titanium Pro', bg: '#09090b', panel: '#111114', color: '#38bdf8' },
-  { id: 'cute', label: 'Cute', note: 'Sakura Velvet', bg: '#140e18', panel: '#1c1322', color: '#f472b6' },
-  { id: 'clumsy', label: 'Clumsy', note: 'Warm Tangerine', bg: '#12100e', panel: '#1b1714', color: '#fb923c' },
-  { id: 'funny', label: 'Funny', note: 'Electric Volt', bg: '#0c110d', panel: '#131b15', color: '#a3e635' },
-  { id: 'sad', label: 'Sad', note: 'Rainy Indigo', bg: '#0a0e17', panel: '#101624', color: '#60a5fa' },
-  { id: 'bad', label: 'Bad', note: 'Crimson Edge', bg: '#0d0709', panel: '#160c0f', color: '#ef4444' },
-  { id: 'slow', label: 'Slow', note: 'Lo-Fi Matcha', bg: '#0c110f', panel: '#131b18', color: '#34d399' },
 ];
 
 function getActiveAccentColor() {

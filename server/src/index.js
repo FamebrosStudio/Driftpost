@@ -2399,7 +2399,7 @@ app.get('/api/intake/drive/jobs', requireUser, async (req, res) => {
   }
   const { data, error } = await supabase.from('google_drive_video_jobs')
     .select('id, file_name, mime_type, file_size, account_name, platforms, status, error, result, created_at, updated_at')
-    .eq('owner_user_id', req.user.id).order('created_at', { ascending: false }).limit(50);
+    .eq('owner_user_id', req.user.id).order('created_at', { ascending: false }).limit(200);
   if (error) return res.status(503).json({ error: 'Drive intake jobs are not initialized yet. Apply the Google Drive intake migration, then retry.' });
   const scanError = getDriveScanError(req.user.id);
   res.json({ jobs: data || [], ...(scanError ? { scan_error: scanError } : {}) });

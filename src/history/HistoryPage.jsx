@@ -147,7 +147,7 @@ export function PostedTab({ token }) {
         const tone = row.status === 'published' ? 'ok' : row.status === 'failed' ? 'fail' : '';
         return <BorderGlow key={row.id} className="bg-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.12} glowRadius={22}><div  className="hist-row">
           <span className="hist-ic"><BrandIcon id={row.platform} size={15} /></span>
-          <span className="hist-body"><b>{row.platform[0].toUpperCase() + row.platform.slice(1)}{row.result_url ? ' · ' : ''}{row.result_url && <a href={row.result_url} target="_blank" rel="noreferrer">View post</a>}</b>
+          <span className="hist-body"><b>{row.platform[0].toUpperCase() + row.platform.slice(1)}{(row.account_name || row.body?.brand || row.body?.account_name) ? ` · ${row.account_name || row.body?.brand || row.body?.account_name}` : ''}{row.result_url ? ' · ' : ''}{row.result_url && <a href={row.result_url} target="_blank" rel="noreferrer">View post</a>}</b>
             <small>{when.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })} · {when.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })} · <span className={tone ? `hist-status ${tone}` : ''}>{label}</span></small>
             {row.error && <small className="hist-error">{row.error}</small>}
           </span>

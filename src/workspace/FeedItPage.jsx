@@ -208,29 +208,32 @@ export default function FeedItPage({ session, onNavigate, onSignOut }) {
         ) : (
           <div className="feed-it-grid">
             <section className="ws-panel feed-it-card">
-              <details className="dp-collapse">
-                <summary><span>Step 1 · Copy AI Research Prompt</span></summary>
-                <div className="dp-collapse-body feed-it-collapse-body">
-                  <p className="feed-it-sub">Type the brand name below, copy the prompt, and paste it into ChatGPT, Gemini, or Perplexity.</p>
-                  <label className="feed-it-field">
-                    <span>Brand Name &amp; City (optional)</span>
-                    <input
-                      type="text"
-                      value={researchTarget}
-                      onChange={(e) => setResearchTarget(e.target.value)}
-                      placeholder="e.g. Zam Zam Motors, Mulund West Mumbai"
-                    />
-                  </label>
-                  <div className="feed-it-prompt-box">
-                    <pre>{promptText}</pre>
-                  </div>
-                  <div className="feed-it-actions">
-                    <button type="button" className="ws-secondary" onClick={copyPrompt}>
-                      {copied ? 'Copied Prompt ✓' : 'Copy AI Research Prompt'}
-                    </button>
-                  </div>
+              <div className="feed-it-step-head">
+                <span className="feed-it-step-badge">STEP 1</span>
+                <div>
+                  <h2>Copy AI Research Prompt</h2>
+                  <p>Type the brand name below, copy the prompt, and paste it into ChatGPT, Gemini, or Perplexity.</p>
                 </div>
-              </details>
+              </div>
+              <div className="feed-it-form">
+                <label className="feed-it-field">
+                  <span>Brand Name &amp; City (optional)</span>
+                  <input
+                    type="text"
+                    value={researchTarget}
+                    onChange={(e) => setResearchTarget(e.target.value)}
+                    placeholder="e.g. Zam Zam Motors, Mulund West Mumbai"
+                  />
+                </label>
+                <div className="feed-it-prompt-box">
+                  <pre>{promptText}</pre>
+                </div>
+                <div className="feed-it-actions">
+                  <button type="button" className="ws-secondary" onClick={copyPrompt}>
+                    {copied ? 'Copied Prompt ✓' : 'Copy AI Research Prompt'}
+                  </button>
+                </div>
+              </div>
             </section>
 
             <section className="ws-panel feed-it-card">
@@ -314,7 +317,7 @@ export default function FeedItPage({ session, onNavigate, onSignOut }) {
                   onChange={(e) => setCaptionSearch(e.target.value)}
                   placeholder="Search any saved brand (e.g. Zivara Salon, Velvet Salon, SK Furniture)..."
                 />
-                <div className="feed-it-list" style={{ maxHeight: '220px', overflowY: 'auto' }}>
+                <div className="feed-it-list" style={{ maxHeight: '460px', overflowY: 'auto' }}>
                   {filteredCaptionBrands.map((item) => (
                     <div key={item.id} className={selectedCaptionId === item.id ? 'feed-it-item active' : 'feed-it-item'}>
                       <div className="feed-it-item-info">

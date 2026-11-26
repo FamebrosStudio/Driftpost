@@ -1,0 +1,107 @@
+/* iOS-inspired UI/UX polish: clean squircles, generous breathing room, smooth spring transitions */
+
+/* 1. Topbar Search pill: clean padding away from outer capsule border */
+#root .ws-topbar-right {
+  gap: 8px !important;
+  padding: 5px 8px !important;
+}
+#root .ws-search-trigger {
+  margin: 0 2px !important;
+  padding: 6px 12px !important;
+  border-radius: 999px !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  gap: 8px !important;
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.15s ease !important;
+}
+#root .ws-search-trigger:hover {
+  background: rgba(255, 255, 255, 0.09) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+}
+#root .ws-search-trigger kbd {
+  padding: 2px 6px !important;
+  border-radius: 6px !important;
+  font-size: 10px !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+}
+
+/* 2. Dock "More" popover: equal 2-column grid, uniform squircle tiles, iOS glass */
+#root .dp-dock-more-menu {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(140px, 1fr)) !important;
+  gap: 8px !important;
+  padding: 12px !important;
+  border-radius: 20px !important;
+  backdrop-filter: blur(22px) saturate(1.4) !important;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+}
+#root .dp-dock-more-menu button {
+  width: 100% !important;
+  min-height: 44px !important;
+  padding: 10px 14px !important;
+  border-radius: 12px !important;
+  justify-content: flex-start !important;
+  gap: 10px !important;
+  border: 1px solid rgba(255, 255, 255, 0.07) !important;
+  background: rgba(255, 255, 255, 0.035) !important;
+  transition: background 0.18s ease, border-color 0.18s ease, transform 0.16s cubic-bezier(0.2, 0.9, 0.3, 1.2) !important;
+}
+#root .dp-dock-more-menu button:hover {
+  background: rgba(255, 255, 255, 0.09) !important;
+  border-color: rgba(255, 255, 255, 0.18) !important;
+  transform: translateY(-1px) !important;
+}
+#root .dp-dock-more-menu button:active {
+  transform: scale(0.97) !important;
+}
+
+/* 3. Stage 3 bottom "Post to all" + "Schedule instead" action bar */
+#root .s3-bar {
+  border-radius: 22px !important;
+  padding: 12px 14px !important;
+  gap: 10px !important;
+  backdrop-filter: blur(20px) saturate(1.35) !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+}
+#root .s3-bar .s3-postall {
+  border-radius: 14px !important;
+  min-height: 46px !important;
+  padding: 11px 20px !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.01em !important;
+  box-shadow: 0 8px 22px -6px color-mix(in srgb, var(--go, #7c6cf5) 70%, transparent), inset 0 1px 0 rgba(255, 255, 255, 0.25) !important;
+  transition: transform 0.16s cubic-bezier(0.2, 0.9, 0.3, 1.2), filter 0.18s ease, box-shadow 0.2s ease !important;
+}
+#root .s3-bar .s3-postall:not(:disabled):hover {
+  transform: translateY(-1px) !important;
+  filter: brightness(1.08) !important;
+}
+#root .s3-bar .s3-postall:not(:disabled):active {
+  transform: scale(0.98) !important;
+}
+#root .s3-bar .s3-sched-btn {
+  border-radius: 14px !important;
+  min-height: 46px !important;
+  padding: 11px 18px !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+  font-weight: 650 !important;
+  transition: background 0.18s ease, border-color 0.18s ease, transform 0.16s ease !important;
+}
+#root .s3-bar .s3-sched-btn:not(:disabled):hover {
+  background: rgba(255, 255, 255, 0.11) !important;
+  border-color: rgba(255, 255, 255, 0.24) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* 4. Subtle iOS-style hover polish across workspace cards & buttons */
+#root .ws-panel,
+#root .hist-row,
+#root .feed-it-item {
+  transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.22s ease !important;
+}
+#root .feed-it-item:hover {
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+}
