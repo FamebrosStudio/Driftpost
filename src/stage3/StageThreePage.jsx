@@ -371,14 +371,13 @@ export default function StageThreePage({ session, onBack, onSignOut, onNavigate,
       if (o && ids.includes(o)) return o;
       return ids[0] || '';
     }
-    // common_brand keeps the exact accounts pinned when the brand
-    // was chosen, so the same account is used regardless of later
-    // connection reshuffling in groupBrands().
-    const p = pinnedBrandAccounts[pid];
-    if (p && connById[p]) return p;
     const o = overrides[pid];
     if (o && connById[o]?.platform === pid) return o;
-    if (s1.type === 'common_brand' && brand?.map?.[pid] && connById[brand.map[pid]]) return brand.map[pid];
+    if (s1.type === 'common_brand') {
+      const p = pinnedBrandAccounts[pid];
+      if (p && connById[p]?.platform === pid) return p;
+      if (brand?.map?.[pid] && connById[brand.map[pid]]) return brand.map[pid];
+    }
     return connections.find((c) => c.platform === pid)?.id || '';
   };
 

@@ -175,16 +175,32 @@ export default function StageOnePage({ session, onNext, onNavigate, onSignOut })
     type === 'create_groups' ? (connsOk ? groupLivePlats.size > 0 : groups.length > 0) :
     type === 'existing_groups' ? (!!activeGroup && activeSelected.length > 0) : false;
 
-  const pick = (t) => { setType(t); save('driftpost-stage1-type', t); setSavedTick(false); };
+  const pick = (t) => {
+    setType(t);
+    save('driftpost-stage1-type', t);
+    if (t !== 'common_brand') save('driftpost-stage1-brand-accounts', {});
+    try { localStorage.removeItem(`driftpost-stage3-accounts:${session.user.id}`); } catch {}
+    setSavedTick(false);
+  };
   // Outputs belong to one brand's brief — switching brands drops the old
   // cards so yesterday's caption can never publish under a new brand.
-  const clearOutputs = () => { try { localStorage.removeItem(`driftpost-stage2-outputs:${session.user.id}`); } catch {} };
+  const clearOutputs = () => {
+    try {
+      localStorage.removeItem(`driftpost-stage2-outputs:${session.user.id}`);
+      localStorage.removeItem(`driftpost-stage3-accounts:${session.user.id}`);
+    } catch {}
+  };
   const chooseBrand = (k) => {
     const b = brands.find((x) => x.key === k);
-    if (b) save('driftpost-stage1-brand-accounts', b.map);
+    save('driftpost-stage1-brand-accounts', b?.map || {});
     setBrandKey(k); save('driftpost-stage1-brand', k); setBrandOpen(false); clearOutputs();
   };
-  const clearBrand = () => { setBrandKey(''); save('driftpost-stage1-brand', ''); clearOutputs(); };
+  const clearBrand = () => {
+    setBrandKey('');
+    save('driftpost-stage1-brand', '');
+    save('driftpost-stage1-brand-accounts', {});
+    clearOutputs();
+  };
   const togglePlatform = (id) => setPlatforms((p) => {
     const n = p.includes(id) ? p.filter((x) => x !== id) : [...p, id];
     save('driftpost-stage1-platforms', n);
