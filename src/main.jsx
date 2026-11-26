@@ -4,6 +4,7 @@ import App from './App.jsx';
 import AppErrorBoundary from './AppErrorBoundary.jsx';
 import './styles.css';
 import './console-theme.css';
+import './ios-polish.css';
 import './pointer-proximity.js';
 import { applyDeviceAttributes } from './utils/device.js';
 import { applyCursorStyle, installInteractivePhysics } from './utils/interactivePhysics.js';
