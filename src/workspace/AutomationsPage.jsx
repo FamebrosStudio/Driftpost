@@ -270,14 +270,15 @@ export default function AutomationsPage({ session, onNavigate, onSignOut }) {
   const isGoogle = platform === 'google-business';
 
   return (
-    <div className="auto-page">
+    <div className="ws-shell">
       <WorkspaceNav
         active="automations"
         session={session}
         onNavigate={onNavigate}
         onSignOut={onSignOut}
       />
-      {/* Top Header */}
+      <div className="auto-page">
+        {/* Top Header */}
       <header className="auto-header">
         <div>
           <h1 className="auto-title">Automations</h1>
@@ -804,6 +805,7 @@ export default function AutomationsPage({ session, onNavigate, onSignOut }) {
           </section>
         </div>
       )}
+      </div>
     </div>
   );
 }
