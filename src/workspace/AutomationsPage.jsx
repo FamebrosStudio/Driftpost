@@ -98,8 +98,34 @@ function defaultStarDraftFor(accountName, savedStarReplies) {
 const PLATFORMS = [
   { id: 'instagram', label: 'Instagram', icon: 'instagram' },
   { id: 'facebook', label: 'Facebook', icon: 'facebook' },
-  { id: 'google-business', label: 'Google Reviews', icon: 'google' },
+  { id: 'google-business', label: 'Google Business', icon: 'google' },
 ];
+
+function PlatformIcon({ icon }) {
+  if (icon === 'google') {
+    return (
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path
+          d="M21.805 10.023H12v3.955h5.617c-.242 1.298-.977 2.398-2.082 3.133v2.602h3.367c1.97-1.813 3.103-4.484 3.103-7.656 0-.68-.062-1.355-.2-2.034z"
+          fill="#4285F4"
+        />
+        <path
+          d="M12 22c2.81 0 5.168-.93 6.891-2.518l-3.367-2.602c-.934.625-2.129.996-3.524.996-2.711 0-5.008-1.832-5.828-4.293H2.695v2.688C4.41 19.676 7.93 22 12 22z"
+          fill="#34A853"
+        />
+        <path
+          d="M6.172 13.583A5.97 5.97 0 0 1 5.852 12c0-.551.098-1.086.32-1.583V7.729H2.695A9.996 9.996 0 0 0 2 12c0 1.613.387 3.141 1.07 4.488l3.102-2.905z"
+          fill="#FBBC05"
+        />
+        <path
+          d="M12 6.125c1.527 0 2.898.523 3.977 1.555l2.984-2.984C17.164 3.016 14.805 2 12 2 7.93 2 4.41 4.324 2.695 7.729l3.477 2.688C6.992 7.957 9.289 6.125 12 6.125z"
+          fill="#EA4335"
+        />
+      </svg>
+    );
+  }
+  return <BrandIcon id={icon} size={15} />;
+}
 
 function AutoCard({ className = '', children }) {
   return (
@@ -527,7 +553,7 @@ export default function AutomationsPage({ session, onNavigate, onSignOut }) {
                 setPlatform(p.id);
               }}
             >
-              <BrandIcon id={p.icon} size={15} />
+              <PlatformIcon icon={p.icon} />
               <span>{p.label}</span>
             </button>
           ))}
@@ -630,7 +656,7 @@ export default function AutomationsPage({ session, onNavigate, onSignOut }) {
           </div>
         ) : (
           <>
-            <AutoCard className="auto-account-bar">
+            <section className="auto-card auto-account-bar">
               <div className="auto-account-controls">
                 <div className="auto-field">
                   <label className="auto-label" htmlFor="auto-search">
@@ -683,7 +709,7 @@ export default function AutomationsPage({ session, onNavigate, onSignOut }) {
                   description={selectedAccount?.name || 'Selected account'}
                 />
               </div>
-            </AutoCard>
+            </section>
 
             {isGoogle ? (
               <div className="auto-stack">
