@@ -168,15 +168,8 @@
   margin: 0 !important;
   height: 100% !important;
 }
-#root .border-glow-card:not(:hover)::before,
-#root .border-glow-card:not(:hover)::after,
-#root .border-glow-card:not(:hover) > .edge-light {
-  opacity: 0 !important;
-}
-#root .border-glow-card:not(:hover) {
-  border-color: transparent !important;
+#root .border-glow-card {
   box-shadow: none !important;
-  background: transparent !important;
 }
 #root .cn-card:not(:hover),
 #root .ws-panel:not(:hover),
