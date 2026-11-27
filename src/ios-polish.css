@@ -168,6 +168,14 @@
   margin: 0 !important;
   height: 100% !important;
 }
+#root .border-glow-card:not(:hover)::before,
+#root .border-glow-card:not(:hover)::after,
+#root .border-glow-card:not(:hover) > .edge-light {
+  opacity: 0 !important;
+}
+#root .border-glow-card:not(:hover) {
+  box-shadow: none !important;
+}
 
 @media (prefers-reduced-motion: reduce) {
   #root .ws-main,
