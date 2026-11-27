@@ -1269,7 +1269,7 @@ async function syncUnrepliedMetaComments(platform, connection, rules) {
     const rawPosts = Array.isArray(pubJson?.data) ? pubJson.data : [];
     for (const p of rawPosts) {
       if (!p?.id) continue;
-      const cUrl = `https://graph.facebook.com/v26.0/${encodeURIComponent(p.id)}/comments?fields=id,message,from,comments.limit(5){id,from}&limit=25&access_token=${encodeURIComponent(token)}`;
+      const cUrl = `https://graph.facebook.com/v26.0/${encodeURIComponent(p.id)}/comments?fields=id,message,created_time,from,comments.limit(5){id,from}&limit=25&access_token=${encodeURIComponent(token)}`;
       const cRes = await fetch(cUrl, { signal: AbortSignal.timeout(12000) });
       const cJson = await cRes.json().catch(() => ({}));
       if (cRes.ok) {
@@ -1277,7 +1277,7 @@ async function syncUnrepliedMetaComments(platform, connection, rules) {
       }
     }
   } else {
-    const listUrl = `https://graph.facebook.com/v26.0/${encodeURIComponent(accountId)}/media?fields=id,comments.limit(25){id,text,from,username,replies.limit(5){id,from,username}}&limit=10&access_token=${encodeURIComponent(token)}`;
+    const listUrl = `https://graph.facebook.com/v26.0/${encodeURIComponent(accountId)}/media?fields=id,comments.limit(25){id,text,timestamp,from,username,replies.limit(5){id,from,username}}&limit=10&access_token=${encodeURIComponent(token)}`;
     const listRes = await fetch(listUrl, { signal: AbortSignal.timeout(15000) });
     const listJson = await listRes.json().catch(() => ({}));
     if (!listRes.ok) {
@@ -1324,11 +1324,14 @@ async function syncUnrepliedMetaComments(platform, connection, rules) {
         continue;
       }
 
+      const commentTimeMs = Date.parse(comment?.created_time || comment?.timestamp || '');
+      const tooOldForPrivateReply = Number.isFinite(commentTimeMs) && (Date.now() - commentTimeMs > 6.5 * 24 * 60 * 60 * 1000);
+
       let didReply = false;
       for (const [field, edge] of [['private_reply', 'messages'], ['public_reply', commentReplyEdge(platform)]]) {
         const message = String(rules[field] || '').trim();
         if (!message) continue;
-        if (field === 'private_reply' && !privateReplyEnabled) continue;
+        if (field === 'private_reply' && (!privateReplyEnabled || tooOldForPrivateReply)) continue;
         if (field === 'public_reply' && !publicReplyEnabled) continue;
         try {
           const ran = await runAutomationAction(supabase, {

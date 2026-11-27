@@ -265,7 +265,7 @@ export async function getGoogleIdentity(accessToken) {
     headers: { Authorization: `Bearer ${accessToken}` },
     signal: AbortSignal.timeout(15000),
   });
-  const data = await res.json();
+  const data = await res.json().catch(() => ({}));
   if (!res.ok || !data.email) throw new Error(data.error?.message || 'Could not verify the Google account.');
   return { email: String(data.email).trim().toLowerCase(), verified: data.verified_email === true };
 }
@@ -283,7 +283,7 @@ export async function exchangeGoogleCode(code) {
     }),
     signal: AbortSignal.timeout(30000),
   });
-  const data = await res.json();
+  const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(data.error_description || data.error || 'Google token exchange failed');
   return data;
 }
@@ -293,7 +293,7 @@ export async function getYouTubeChannel(accessToken) {
     headers: { Authorization: `Bearer ${accessToken}` },
     signal: AbortSignal.timeout(20000),
   });
-  const data = await res.json();
+  const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(data.error?.message || 'Unable to read YouTube channel');
   const ch = data.items?.[0];
   if (!ch) throw new Error('No YouTube channel found for this Google account');

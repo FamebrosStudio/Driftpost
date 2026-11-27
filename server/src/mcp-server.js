@@ -222,10 +222,25 @@ async function executeMcpTool(name, args, auth, port) {
     let downloadedName = String(safeArgs.media_filename || '').trim();
     if (safeArgs.media_url) {
       const mediaUrl = String(safeArgs.media_url).trim();
-      if (!/^https?:\/\//i.test(mediaUrl)) {
-        throw new Error('media_url must be a valid http(s) URL.');
+      let parsedUrl;
+      try {
+        parsedUrl = new URL(mediaUrl);
+      } catch {
+        throw new Error('media_url must be a valid HTTPS URL.');
       }
-      const mediaRes = await fetch(mediaUrl);
+      if (parsedUrl.protocol !== 'https:') {
+        throw new Error('media_url must use https://.');
+      }
+      const host = parsedUrl.hostname.toLowerCase();
+      if (
+        host === 'localhost'
+        || host.endsWith('.local')
+        || host.endsWith('.internal')
+        || /^(127\.|10\.|192\.168\.|169\.254\.|0\.|172\.(1[6-9]|2\d|3[01])\.|\[::1\])/.test(host)
+      ) {
+        throw new Error('media_url cannot point to a private or local network address.');
+      }
+      const mediaRes = await fetch(mediaUrl, { signal: AbortSignal.timeout(45000) });
       if (!mediaRes.ok) {
         throw new Error(`Could not download media_url (HTTP ${mediaRes.status}).`);
       }
@@ -337,6 +352,10 @@ export function registerMcpRoutes(app, { supabase, port }) {
       response_types: ['code'],
       token_endpoint_auth_method: 'none',
     };
+    if (registeredClients.size >= 500) {
+      const firstKey = registeredClients.keys().next().value;
+      if (firstKey) registeredClients.delete(firstKey);
+    }
     registeredClients.set(clientId, client);
     res.status(201).json(client);
   });
@@ -386,6 +405,10 @@ export function registerMcpRoutes(app, { supabase, port }) {
       return res.status(400).json({ error: 'Invalid redirect_uri.' });
     }
 
+    const now = Date.now();
+    for (const [k, v] of oauthCodes.entries()) {
+      if (v.expiresAt <= now) oauthCodes.delete(k);
+    }
     const code = `dpcode_${crypto.randomBytes(24).toString('base64url')}`;
     oauthCodes.set(code, {
       userId: auth.userId,

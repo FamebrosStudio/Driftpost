@@ -33,7 +33,7 @@ export async function exchangeXCode(code, verifier) {
     body: new URLSearchParams({ code, grant_type: 'authorization_code', redirect_uri: process.env.X_REDIRECT_URI, code_verifier: verifier }),
     signal: AbortSignal.timeout(30000),
   });
-  const data = await response.json();
+  const data = await response.json().catch(() => ({}));
   if (!response.ok) throw new Error(data.error_description || data.error || 'X token exchange failed');
   return data;
 }
@@ -43,7 +43,7 @@ export async function getXUser(accessToken) {
     headers: { Authorization: `Bearer ${accessToken}` },
     signal: AbortSignal.timeout(20000),
   });
-  const body = await response.json();
+  const body = await response.json().catch(() => ({}));
   if (!response.ok) throw new Error(body.detail || body.errors?.[0]?.message || body.title || 'Unable to read X account');
   if (!body.data?.id) throw new Error('X did not return an account');
   return { id: body.data.id, name: body.data.username ? `@${body.data.username}` : body.data.name, avatar_url: body.data.profile_image_url || null };
