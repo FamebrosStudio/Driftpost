@@ -749,6 +749,137 @@ function McpDeviceAuthorization({ userCode, session }) {
   );
 }
 
+const MCP_OAUTH_STORAGE_KEY = 'driftpost_pending_mcp_oauth';
+
+function readPendingMcpOAuth() {
+  if (typeof window === 'undefined') return null;
+  try {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('mcp_oauth') === '1' && params.get('redirect_uri')) {
+      const payload = {
+        client_id: params.get('client_id') || '',
+        redirect_uri: params.get('redirect_uri') || '',
+        state: params.get('state') || '',
+        code_challenge: params.get('code_challenge') || '',
+        code_challenge_method: params.get('code_challenge_method') || 'S256',
+        scope: params.get('scope') || '',
+        savedAt: Date.now(),
+      };
+      localStorage.setItem(MCP_OAUTH_STORAGE_KEY, JSON.stringify(payload));
+      window.history.replaceState({}, '', window.location.pathname + window.location.hash);
+      return payload;
+    }
+    const raw = localStorage.getItem(MCP_OAUTH_STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (!parsed?.redirect_uri || Date.now() - Number(parsed.savedAt || 0) > 15 * 60 * 1000) {
+      localStorage.removeItem(MCP_OAUTH_STORAGE_KEY);
+      return null;
+    }
+    return parsed;
+  } catch {
+    return null;
+  }
+}
+
+function McpOAuthAuthorization({ pending, session, onCancel }) {
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+
+  const signInWithGoogle = async () => {
+    setBusy(true);
+    setError('');
+    try {
+      const client = await getSupabase();
+      if (!client) throw new Error('Supabase is not configured.');
+      const { error: oauthErr } = await client.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: window.location.origin,
+          queryParams: { prompt: 'select_account' },
+        },
+      });
+      if (oauthErr) throw oauthErr;
+    } catch (cause) {
+      setError(cause.message || 'Could not start Google sign-in.');
+      setBusy(false);
+    }
+  };
+
+  const approveAndConnect = async () => {
+    if (!session?.access_token) return;
+    setBusy(true);
+    setError('');
+    try {
+      const response = await fetch(apiRequestUrl('/api/mcp/oauth/approve'), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify(pending),
+      });
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok || !payload.redirect_to) {
+        throw new Error(payload.error || 'Could not authorize Driftpost MCP.');
+      }
+      try {
+        localStorage.removeItem(MCP_OAUTH_STORAGE_KEY);
+      } catch {}
+      window.location.assign(payload.redirect_to);
+    } catch (cause) {
+      setError(cause.message || 'Could not authorize Driftpost MCP.');
+      setBusy(false);
+    }
+  };
+
+  return (
+    <div className="auth-wrap">
+      <div className="auth-card">
+        <div className="brand">
+          <img className="logo-img logo-d" src="/logo-dark.png" width="1984" height="512" decoding="async" alt="Driftpost" />
+          <img className="logo-img logo-l" src="/logo-light.png" width="1908" height="512" decoding="async" alt="Driftpost" />
+        </div>
+        <h1>Connect Driftpost MCP</h1>
+        <p>
+          Allow your AI assistant (ChatGPT, Claude, Cursor, etc.) to view your connected social accounts, upload media, and publish or schedule posts.
+        </p>
+        {error && <div className="alert err">{error}</div>}
+        {session ? (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <div className="banner" style={{ textAlign: 'center', fontSize: 14, fontWeight: 600 }}>
+              Signed in as {session.user?.email}
+            </div>
+            <button className="user-profile" disabled={busy} onClick={approveAndConnect}>
+              <span className="user-profile-inner">
+                {busy ? 'Connecting to AI…' : 'Authorize & Connect to AI'}
+              </span>
+            </button>
+            <button type="button" className="btn-ghost" disabled={busy} onClick={signInWithGoogle}>
+              Switch Google Account
+            </button>
+            <button type="button" className="btn-ghost" disabled={busy} onClick={onCancel}>
+              Cancel
+            </button>
+          </div>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <button className="user-profile" disabled={busy} onClick={signInWithGoogle}>
+              <span className="user-profile-inner">
+                <BrandIcon id="google" size={16} />
+                {busy ? 'Opening Google…' : 'Continue with Google'}
+              </span>
+            </button>
+            <button type="button" className="btn-ghost" disabled={busy} onClick={onCancel}>
+              Cancel
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function App() {
   const { session } = useSession();
   const readApprovalId = () => window.location.pathname.match(/^\/approve\/([0-9a-f-]{36})\/?$/i)?.[1] || '';
@@ -866,7 +997,22 @@ export default function App() {
   useEffect(() => { window.scrollTo(0, 0); }, [pubPage]);
 
   const keepConnectivity = (page) => <>{page}{!online ? <OfflinePage onRetry={retry} checking={checking} /> : !serverReady && <ServerStartingPage />}</>;
+  const [pendingMcpOAuth, setPendingMcpOAuth] = useState(() => readPendingMcpOAuth());
   const mcpUserCode = readMcpUserCode();
+  if (pendingMcpOAuth) {
+    return keepConnectivity(
+      <McpOAuthAuthorization
+        pending={pendingMcpOAuth}
+        session={session}
+        onCancel={() => {
+          try {
+            localStorage.removeItem(MCP_OAUTH_STORAGE_KEY);
+          } catch {}
+          setPendingMcpOAuth(null);
+        }}
+      />
+    );
+  }
   if (mcpUserCode) {
     const returnTo = `${window.location.origin}/#/mcp-connect?user_code=${encodeURIComponent(mcpUserCode)}`;
     if (!session) return keepConnectivity(<Auth mode="login" setMode={setMode} onBack={() => { window.location.hash = ''; setEntry('landing'); }} returnTo={returnTo} />);

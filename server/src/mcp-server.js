@@ -436,7 +436,8 @@ export function registerMcpRoutes(app, { supabase, port }) {
     res.status(201).json(client);
   });
 
-  // 4. OAuth 2.1 Authorization UI (GET + POST)
+  // 4. OAuth 2.1 Authorization — redirects to Driftpost frontend so Google OAuth
+  // runs on the official Supabase Site URL (https://driftpostpage.vercel.app) with account selection.
   app.get('/oauth/authorize', (req, res) => {
     const clientId = String(req.query.client_id || '');
     const redirectUri = String(req.query.redirect_uri || '');
@@ -447,18 +448,53 @@ export function registerMcpRoutes(app, { supabase, port }) {
     if (!redirectUri || !/^https?:\/\//i.test(redirectUri)) {
       return res.status(400).send('Missing or invalid redirect_uri.');
     }
-    res.setHeader('Content-Type', 'text/html; charset=utf-8');
-    res.setHeader('Content-Security-Policy', "default-src 'self'; style-src 'unsafe-inline'; form-action 'self'");
-    return res.send(
-      renderAuthorizePage({
-        clientId,
-        redirectUri,
-        state,
-        codeChallenge,
-        codeChallengeMethod,
-        scope,
-      })
-    );
+    const frontend = String(process.env.FRONTEND_URL || 'https://driftpostpage.vercel.app')
+      .split(',')[0]
+      .trim()
+      .replace(/\/$/, '') || 'https://driftpostpage.vercel.app';
+    const target = new URL(frontend);
+    target.searchParams.set('mcp_oauth', '1');
+    if (clientId) target.searchParams.set('client_id', clientId);
+    target.searchParams.set('redirect_uri', redirectUri);
+    if (state) target.searchParams.set('state', state);
+    if (codeChallenge) target.searchParams.set('code_challenge', codeChallenge);
+    if (codeChallengeMethod) target.searchParams.set('code_challenge_method', codeChallengeMethod);
+    if (scope) target.searchParams.set('scope', scope);
+    return res.redirect(302, target.toString());
+  });
+
+  // 4a. Frontend approval endpoint: exchanges the user's active Supabase session on
+  // driftpostpage.vercel.app for an OAuth 2.1 authorization code and redirects back to ChatGPT.
+  app.post('/api/mcp/oauth/approve', async (req, res) => {
+    const auth = await resolveMcpUser(req, supabase);
+    if (!auth) {
+      return res.status(401).json({ error: 'Please sign in with Google first.' });
+    }
+    const body = req.body && typeof req.body === 'object' ? req.body : {};
+    const clientId = String(body.client_id || '');
+    const redirectUri = String(body.redirect_uri || '');
+    const state = String(body.state || '');
+    const codeChallenge = String(body.code_challenge || '');
+    const codeChallengeMethod = String(body.code_challenge_method || 'S256');
+
+    if (!redirectUri || !/^https?:\/\//i.test(redirectUri)) {
+      return res.status(400).json({ error: 'Invalid redirect_uri.' });
+    }
+
+    const code = `dpcode_${crypto.randomBytes(24).toString('base64url')}`;
+    oauthCodes.set(code, {
+      userId: auth.userId,
+      clientId,
+      redirectUri,
+      codeChallenge,
+      codeChallengeMethod,
+      expiresAt: Date.now() + OAUTH_CODE_TTL_MS,
+    });
+
+    const target = new URL(redirectUri);
+    target.searchParams.set('code', code);
+    if (state) target.searchParams.set('state', state);
+    return res.json({ ok: true, redirect_to: target.toString() });
   });
 
   app.post('/oauth/authorize', async (req, res) => {
