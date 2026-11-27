@@ -38,7 +38,7 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut }) {
   const [schedRepeatDays, setSchedRepeatDays] = useState(0);
   const [schedRepeatCount, setSchedRepeatCount] = useState(3);
   const [stoppingJobId, setStoppingJobId] = useState('');
-  const [inboxOpen, setInboxOpen] = useState(false);
+  const [inboxOpen, setInboxOpen] = useState(true);
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
 
@@ -870,11 +870,21 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut }) {
               <div className="dp-collapse-body">
                 <div className="drive-intake-jobs" aria-live="polite">
                   {driveScanError && <small className="drive-job-error">{driveScanError}</small>}
-                  {driveJobs.length ? driveJobs.slice(0, 12).map((job) => {
+                  {driveJobs.length ? driveJobs.slice(0, 50).map((job) => {
                     const progress = job.result?.progress;
                     const percent = jobProgressPercent(job);
                     const isCarousel = job.result?.media_kind === 'carousel' || job.mime_type === 'image/carousel';
-                    const timestamp = new Date(job.updated_at || job.created_at).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+                    const dateStamp = new Date(job.updated_at || job.created_at).toLocaleString([], {
+                      month: 'short',
+                      day: 'numeric',
+                      hour: 'numeric',
+                      minute: '2-digit',
+                    });
+                    const brandLabel =
+                      job.result?.brand_name ||
+                      job.account_name ||
+                      job.result?.matched_brand ||
+                      'Unassigned brand';
                     const createdMs = Date.parse(job.created_at || job.updated_at || 0);
                     const canStop = ['queued', 'processing', 'review'].includes(job.status)
                       || (job.status === 'publishing' && (!createdMs || Date.now() - createdMs > 2 * 60 * 1000));
@@ -886,9 +896,12 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut }) {
                       <div key={job.id} className={!!job.result?.review ? 'drive-job-needs-review' : ''}>
                         <div className="dp-job-top">
                           <span>
-                            <strong>{job.file_name}</strong>
+                            <div className="dp-job-title-row">
+                              <span className="dp-job-brand-pill">{brandLabel}</span>
+                              <strong>{job.file_name}</strong>
+                            </div>
                             <small>
-                              {job.account_name} · {(job.platforms || []).join(', ') || 'Destination needs correction'} · {isCarousel ? `${job.result?.source_drive_files?.length || 'Photo'}-image carousel` : job.mime_type || 'Video'} · {(Number(job.file_size || 0) / 1024 / 1024).toFixed(1)} MB
+                              Brand: <b>{brandLabel}</b> · {(job.platforms || []).join(', ') || 'Destination needs correction'} · {isCarousel ? `${job.result?.source_drive_files?.length || 'Photo'}-image carousel` : job.mime_type || 'Video'} · {(Number(job.file_size || 0) / 1024 / 1024).toFixed(1)} MB
                               {autoInstagramTags.length ? ` · Auto-tags: ${autoInstagramTags.join(', ')}` : ''}
                             </small>
                           </span>
@@ -911,7 +924,7 @@ export default function TeamVideoPage({ session, onNavigate, onSignOut }) {
                         <div className={`dp-progress-wrap is-${job.status || 'queued'}`}>
                           <div className="dp-progress-head">
                             <span>{progress?.detail || (job.status === 'queued' ? 'Waiting for the intake worker…' : job.status === 'publishing' ? 'Publishing to selected accounts…' : job.status === 'completed' ? 'Published successfully.' : job.status === 'partial' ? 'Some accounts published; check the post history.' : job.status === 'review' || job.result?.brand_reviews?.length ? 'Held before publishing. Open Video review to inspect the video and decide.' : job.status === 'failed' ? 'Needs attention.' : job.status === 'stopped' ? 'Stopped; this post was not published.' : 'Preparing media…')}</span>
-                            <b>{percent}% · {timestamp}</b>
+                            <b>{percent}% · {dateStamp}</b>
                           </div>
                           <div className="dp-progress-track">
                             <i style={{ width: `${percent}%` }} />

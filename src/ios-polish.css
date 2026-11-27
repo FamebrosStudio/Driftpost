@@ -150,7 +150,9 @@
 /* 5. Common BorderGlow alignment fix: prevent double-border overhang & radius mismatch */
 #root .border-glow-card {
   padding: 0 !important;
-  overflow: hidden !important;
+  overflow: visible !important;
+  height: auto !important;
+  flex-shrink: 0 !important;
 }
 #root .border-glow-card.bg-glow {
   border-radius: 16px !important;
@@ -161,12 +163,12 @@
 }
 #root .border-glow-card > .border-glow-inner {
   width: 100% !important;
-  height: 100% !important;
+  height: auto !important;
   border-radius: inherit !important;
 }
 #root .border-glow-card > .border-glow-inner > :first-child {
   margin: 0 !important;
-  height: 100% !important;
+  height: auto !important;
 }
 #root .border-glow-card {
   box-shadow: none !important;
@@ -769,4 +771,27 @@
   .auto-account-toggle {
     width: 100%;
   }
+}
+
+
+/* Team Video History & Brand Badge */
+.dp-job-title-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.dp-job-brand-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  background: linear-gradient(135deg, rgba(124, 109, 242, 0.26), rgba(99, 102, 241, 0.18));
+  border: 1px solid rgba(167, 139, 250, 0.45);
+  color: #e9d5ff;
 }
