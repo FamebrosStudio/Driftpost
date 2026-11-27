@@ -5,7 +5,7 @@ import { api } from '../lib.js';
 import { WorkspaceNav } from './Workspace.jsx';
 import './workspace.css';
 
-const EMPTY = { comment_enabled: false, public_reply_enabled: false, comment_keyword: '', public_reply: '', private_reply: '', dm_keyword: '', dm_reply: '', default_reply: '', excluded_words: '' };
+const EMPTY = { comment_enabled: false, public_reply_enabled: false, comment_keyword: '', public_reply: '', private_reply: '', dm_keyword: '', dm_reply: '', default_reply: '', excluded_words: '', dm_excluded_words: '' };
 const HAIR_MATCH_REPLY = 'We\u2019re sorry our service didn\u2019t meet your expectations. We\u2019ll review your concerns with our team and work towards providing you with a better experience at Hair Match Salon.';
 const DEFAULT_STAR_REPLIES = {
   1: [
@@ -277,6 +277,7 @@ export default function AutomationsPage({ session, onNavigate, onSignOut }) {
           <BorderGlow className="bg-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.12} glowRadius={22}><section className="ws-panel"><div className="automation-title"><span className="ws-icon"><BrandIcon id={platform} size={18} /></span><div><h2>DM replies</h2><p>Set replies for incoming messages and separately choose whether to DM people who comment.</p></div></div>
             <label className="automation-toggle"><input type="checkbox" checked={rules.comment_enabled} onChange={(e) => set('comment_enabled', e.target.checked)} /><span><b>Auto DM commenters</b><small>Send a private message for matching comments. This does not control replies to incoming DMs.</small></span></label>
             {field('DM keyword', 'dm_keyword', 'e.g. HOURS', 'Leave empty to use only the default reply.')}
+            {field('Excluded words (optional)', 'dm_excluded_words', 'e.g. spam, refund, scam', 'Comma-separated words or phrases. Incoming DMs containing any of these will be ignored.')}
             {field('Reply when keyword matches', 'dm_reply', 'We are open Monday to Saturday…', '', true)}
             {field('Default reply', 'default_reply', 'Thanks for messaging us. We will get back to you soon.', 'Sent for inbound messages when no keyword matches.', true)}
           </section></BorderGlow>

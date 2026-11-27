@@ -1257,6 +1257,7 @@ app.put('/api/automations/:platform/:connectionId', requireUser, strictBurstLimi
     dm_reply: String(input.dm_reply || '').trim().slice(0, 1000),
     default_reply: String(input.default_reply || '').trim().slice(0, 1000),
     excluded_words: String(input.excluded_words || '').trim().slice(0, 500),
+    dm_excluded_words: String(input.dm_excluded_words || '').trim().slice(0, 500),
   };
   const enabled = input.enabled === true;
   const validationError = validateAutomationRules(enabled, rules);

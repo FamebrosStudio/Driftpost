@@ -75,7 +75,7 @@ export function matchesAutomationKeyword(text, configured) {
 }
 
 export function incomingMessageReplyText(rules = {}, text = '') {
-  const excluded = String(rules.excluded_words || '').trim();
+  const excluded = [rules.dm_excluded_words, rules.excluded_words].map((v) => String(v || '').trim()).filter(Boolean).join(',');
   if (excluded && matchesAutomationKeyword(text, excluded)) return '';
   const keyword = String(rules.dm_keyword || '').trim();
   return keyword && matchesAutomationKeyword(text, keyword) ? rules.dm_reply : rules.default_reply;
