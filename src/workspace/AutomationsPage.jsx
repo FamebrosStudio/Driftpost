@@ -62,7 +62,7 @@ function ToggleSwitch({ checked, onChange, label, description }) {
   );
 }
 
-export function AutomationsPage() {
+export default function AutomationsPage() {
   const [platform, setPlatform] = useState('instagram');
   const [accounts, setAccounts] = useState([]);
   const [googleConnections, setGoogleConnections] = useState([]);
@@ -308,7 +308,7 @@ export function AutomationsPage() {
               setAccountSearch('');
             }}
           >
-            <BrandIcon name={p.id === 'google-business' ? 'google' : p.id} size={15} />
+            <BrandIcon id={p.id === 'google-business' ? 'google' : p.id} size={15} />
             <span>{p.label}</span>
           </button>
         ))}
