@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { api } from '../lib.js';
 import BrandIcon from '../brand.jsx';
+import { WorkspaceNav } from './Workspace.jsx';
 
 const EMPTY = {
   comment_enabled: false,
@@ -62,7 +63,7 @@ function ToggleSwitch({ checked, onChange, label, description }) {
   );
 }
 
-export default function AutomationsPage() {
+export default function AutomationsPage({ session, onNavigate, onSignOut }) {
   const [platform, setPlatform] = useState('instagram');
   const [accounts, setAccounts] = useState([]);
   const [googleConnections, setGoogleConnections] = useState([]);
@@ -270,6 +271,12 @@ export default function AutomationsPage() {
 
   return (
     <div className="auto-page">
+      <WorkspaceNav
+        active="automations"
+        session={session}
+        onNavigate={onNavigate}
+        onSignOut={onSignOut}
+      />
       {/* Top Header */}
       <header className="auto-header">
         <div>
