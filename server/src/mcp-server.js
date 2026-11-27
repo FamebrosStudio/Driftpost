@@ -24,11 +24,108 @@ function verifyPkce(codeVerifier, codeChallenge, method) {
   return false;
 }
 
+function formatAccount(c) {
+  const rawName = String(c.account_name || c.name || c.username || c.id || '').trim();
+  const explicitUsername = String(c.username || '').trim().replace(/^@+/, '');
+  let derivedUsername = explicitUsername;
+  if (!derivedUsername && rawName.startsWith('@')) {
+    derivedUsername = rawName.replace(/^@+/, '').split(/\s+/)[0];
+  } else if (!derivedUsername && c.platform === 'instagram' && /^[a-z0-9._]{2,30}$/i.test(rawName)) {
+    derivedUsername = rawName;
+  }
+  const displayName = rawName.startsWith('@')
+    ? rawName.replace(/^@+/, '').replace(/[._]+/g, ' ').replace(/\b\w/g, (m) => m.toUpperCase())
+    : rawName;
+  return {
+    id: c.id,
+    platform: c.platform,
+    name: displayName || rawName,
+    username: derivedUsername || null,
+  };
+}
+
+function formatCompactSchedule(row, accountMap) {
+  const body = row?.body && typeof row.body === 'object' ? row.body : {};
+  const caption = String(
+    body.ig_caption || body.fb_message || body.yt_description || body.x_text || body.caption || body.text || ''
+  ).trim();
+  const mediaList = Array.isArray(row?.media) ? row.media : [];
+  const firstMime = String(mediaList[0]?.mimetype || row?.media_mimetype || '').toLowerCase();
+  const mediaType = mediaList.length > 1
+    ? 'carousel'
+    : firstMime.startsWith('video/')
+      ? 'video'
+      : firstMime.startsWith('image/')
+        ? 'image'
+        : 'text';
+  const acct = accountMap.get(row.connection_id);
+  return {
+    id: row.id,
+    account_id: row.connection_id || null,
+    account_name: acct?.name || body.brand_name || row.account_name || null,
+    platform: row.platform || acct?.platform || null,
+    caption: caption.slice(0, 500),
+    title: body.yt_title ? String(body.yt_title).slice(0, 120) : undefined,
+    scheduled_at: row.scheduled_at || null,
+    status: row.status || 'unknown',
+    media_type: mediaType,
+    error: row.error ? String(row.error).slice(0, 300) : null,
+  };
+}
+
+async function downloadSafeMedia(urlString, fallbackName = '') {
+  const mediaUrl = String(urlString || '').trim();
+  let parsedUrl;
+  try {
+    parsedUrl = new URL(mediaUrl);
+  } catch {
+    throw new Error('Media URL must be a valid HTTPS URL.');
+  }
+  if (parsedUrl.protocol !== 'https:') {
+    throw new Error('Media URL must use https://.');
+  }
+  const host = parsedUrl.hostname.toLowerCase();
+  if (
+    host === 'localhost'
+    || host.endsWith('.local')
+    || host.endsWith('.internal')
+    || /^(127\.|10\.|192\.168\.|169\.254\.|0\.|172\.(1[6-9]|2\d|3[01])\.|\[::1\])/.test(host)
+  ) {
+    throw new Error('Media URL cannot point to a private or local network address.');
+  }
+  const mediaRes = await fetch(mediaUrl, { signal: AbortSignal.timeout(45000) });
+  if (!mediaRes.ok) {
+    throw new Error(`Could not download media URL (HTTP ${mediaRes.status}).`);
+  }
+  const contentType = mediaRes.headers.get('content-type') || 'application/octet-stream';
+  const arrayBuf = await mediaRes.arrayBuffer();
+  if (arrayBuf.byteLength > 250 * 1024 * 1024) {
+    throw new Error('Media file exceeds 250MB limit.');
+  }
+  const blob = new Blob([arrayBuf], { type: contentType });
+  let filename = String(fallbackName || '').trim();
+  if (!filename) {
+    const ext = contentType.includes('mp4')
+      ? 'mp4'
+      : contentType.includes('quicktime')
+        ? 'mov'
+        : contentType.includes('png')
+          ? 'png'
+          : contentType.includes('jpeg') || contentType.includes('jpg')
+            ? 'jpg'
+            : contentType.includes('webp')
+              ? 'webp'
+              : 'mp4';
+    filename = `driftpost-media.${ext}`;
+  }
+  return { blob, filename, contentType };
+}
+
 const MCP_TOOLS = [
   {
     name: 'driftpost_list_accounts',
     description:
-      'List all connected social media accounts in the user\'s Driftpost workspace (Instagram, Facebook, YouTube, X) with their account IDs, platform, and display names. Always call this first before publishing so you can pick the right account_id.',
+      'List all connected social media accounts in the user\'s Driftpost workspace (Instagram, Facebook, YouTube, X) with their account IDs, platform, display name, and username. Always call this or driftpost_search_accounts before publishing.',
     inputSchema: {
       type: 'object',
       properties: {
@@ -42,9 +139,119 @@ const MCP_TOOLS = [
     },
   },
   {
+    name: 'driftpost_search_accounts',
+    description:
+      'Search connected Driftpost accounts by brand name, display name, or @username handle. Faster than listing all accounts when the user has dozens of brands.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        query: {
+          type: 'string',
+          description: 'Brand name or username substring to search for (e.g. "hair match", "famebros", "devi").',
+        },
+        platform: {
+          type: 'string',
+          enum: ['instagram', 'facebook', 'youtube', 'x'],
+          description: 'Optional filter by platform.',
+        },
+      },
+      required: ['query'],
+      additionalProperties: false,
+    },
+  },
+  {
+    name: 'driftpost_get_brand_profile',
+    description:
+      'Retrieve a brand\'s saved Driftpost profile (official name, category, location, contact footer, hashtag bank, and writing direction) so you can write accurate, on-brand captions using ChatGPT intelligence.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        brand_name: {
+          type: 'string',
+          description: 'Brand name or handle to look up (e.g. "Hair Match Salon", "Devi & Co").',
+        },
+      },
+      required: ['brand_name'],
+      additionalProperties: false,
+    },
+  },
+  {
+    name: 'driftpost_list_scheduled_posts',
+    description:
+      'List upcoming scheduled posts in the user\'s Driftpost calendar (compact summary). By default returns only future posts with status "scheduled".',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        status: {
+          type: 'string',
+          enum: ['scheduled', 'published', 'failed', 'cancelled', 'all'],
+          description: 'Filter by post status (defaults to "scheduled" upcoming posts only).',
+        },
+        platform: {
+          type: 'string',
+          enum: ['instagram', 'facebook', 'youtube', 'x'],
+          description: 'Optional platform filter.',
+        },
+        account_id: {
+          type: 'string',
+          description: 'Optional connection ID filter.',
+        },
+        limit: {
+          type: 'integer',
+          minimum: 1,
+          maximum: 100,
+          description: 'Max records to return (default 25).',
+        },
+        offset: {
+          type: 'integer',
+          minimum: 0,
+          description: 'Pagination offset (default 0).',
+        },
+      },
+      additionalProperties: false,
+    },
+  },
+  {
+    name: 'driftpost_get_post_history',
+    description: 'List recently published posts in Driftpost (compact summary).',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        platform: {
+          type: 'string',
+          enum: ['instagram', 'facebook', 'youtube', 'x'],
+          description: 'Optional platform filter.',
+        },
+        limit: {
+          type: 'integer',
+          minimum: 1,
+          maximum: 50,
+          description: 'Max records to return (default 20).',
+        },
+      },
+      additionalProperties: false,
+    },
+  },
+  {
+    name: 'driftpost_get_failed_posts',
+    description: 'List failed posts in Driftpost along with their exact error messages so you can diagnose and fix issues.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        limit: {
+          type: 'integer',
+          minimum: 1,
+          maximum: 50,
+          description: 'Max records to return (default 20).',
+        },
+      },
+      additionalProperties: false,
+    },
+  },
+  {
     name: 'driftpost_list_automations',
     description:
-      'List the user\'s configured comment, DM, or Google Business review automations in Driftpost.',
+      'List the user\'s configured comment, DM, or Google Business review automations in Driftpost (compact summary).',
     inputSchema: {
       type: 'object',
       properties: {
@@ -59,18 +266,9 @@ const MCP_TOOLS = [
     },
   },
   {
-    name: 'driftpost_list_scheduled_posts',
-    description: 'List upcoming scheduled posts in the user\'s Driftpost calendar.',
-    inputSchema: {
-      type: 'object',
-      properties: {},
-      additionalProperties: false,
-    },
-  },
-  {
     name: 'driftpost_publish_post',
     description:
-      'Publish a video, image, or text post to one or more connected Driftpost accounts using captions and titles you generate. Pass media_url (a direct HTTPS URL to a video or image) to attach media.',
+      'Publish a video, image, carousel, or text post immediately to one or more connected Driftpost accounts using captions and titles you generate.',
     inputSchema: {
       type: 'object',
       properties: {
@@ -78,31 +276,116 @@ const MCP_TOOLS = [
           type: 'array',
           items: { type: 'string' },
           minItems: 1,
-          description: 'One or more connection IDs returned by driftpost_list_accounts.',
+          description: 'One or more connection IDs returned by driftpost_list_accounts or driftpost_search_accounts.',
         },
         caption: {
           type: 'string',
-          description: 'Post caption / description (including hashtags if appropriate).',
+          description: 'Default post caption / description.',
+        },
+        platform_captions: {
+          type: 'object',
+          properties: {
+            instagram: { type: 'string' },
+            facebook: { type: 'string' },
+            youtube: { type: 'string' },
+            x: { type: 'string' },
+          },
+          description: 'Optional per-platform caption overrides.',
+          additionalProperties: false,
         },
         title: {
           type: 'string',
-          description: 'Optional video title (recommended for YouTube).',
+          description: 'Video title (recommended for YouTube).',
         },
         media_url: {
           type: 'string',
-          description: 'Optional direct HTTPS URL to a video or image file to upload and publish.',
+          description: 'Optional direct HTTPS URL to a single video or image file.',
+        },
+        media_urls: {
+          type: 'array',
+          items: { type: 'string' },
+          maxItems: 10,
+          description: 'Optional array of HTTPS image URLs for a carousel post.',
         },
         media_filename: {
           type: 'string',
-          description: 'Optional filename for the media (e.g. "reel.mp4" or "photo.jpg").',
+          description: 'Optional filename for single media (e.g. "reel.mp4").',
         },
-        privacy: {
+        instagram_collaborators: {
+          type: 'array',
+          items: { type: 'string' },
+          maxItems: 3,
+          description: 'Optional up to 3 Instagram collaborator handles (without @).',
+        },
+        instagram_post_story: {
+          type: 'boolean',
+          description: 'Optional: also cross-post to Instagram Story.',
+        },
+        youtube_privacy: {
           type: 'string',
           enum: ['public', 'unlisted', 'private'],
-          description: 'Optional YouTube privacy status (defaults to public).',
+          description: 'YouTube privacy status (defaults to "public").',
+        },
+        idempotency_key: {
+          type: 'string',
+          description: 'Optional unique key to prevent accidental duplicate publishing.',
         },
       },
       required: ['account_ids', 'caption'],
+      additionalProperties: false,
+    },
+  },
+  {
+    name: 'driftpost_schedule_post',
+    description:
+      'Schedule a video, image, or text post to publish automatically at a future date/time (ISO-8601 UTC timestamp).',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        account_ids: {
+          type: 'array',
+          items: { type: 'string' },
+          minItems: 1,
+          description: 'One or more connection IDs.',
+        },
+        scheduled_for: {
+          type: 'string',
+          description: 'Future ISO-8601 timestamp (e.g. "2026-11-28T14:30:00Z").',
+        },
+        caption: {
+          type: 'string',
+          description: 'Post caption / description.',
+        },
+        title: {
+          type: 'string',
+          description: 'Optional video title (for YouTube).',
+        },
+        media_url: {
+          type: 'string',
+          description: 'Optional direct HTTPS URL to a video or image.',
+        },
+        youtube_privacy: {
+          type: 'string',
+          enum: ['public', 'unlisted', 'private'],
+          description: 'YouTube privacy status (defaults to "public").',
+        },
+      },
+      required: ['account_ids', 'scheduled_for', 'caption'],
+      additionalProperties: false,
+    },
+  },
+  {
+    name: 'driftpost_cancel_scheduled_post',
+    description: 'Cancel an upcoming scheduled post by its post ID.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        post_id: {
+          type: 'string',
+          description: 'Scheduled post ID from driftpost_list_scheduled_posts.',
+        },
+      },
+      required: ['post_id'],
       additionalProperties: false,
     },
   },
@@ -121,6 +404,15 @@ const MCP_TOOLS = [
       additionalProperties: false,
     },
   },
+  {
+    name: 'driftpost_list_permissions',
+    description: 'Inspect the granted scopes and available capabilities of the current Driftpost MCP connection.',
+    inputSchema: {
+      type: 'object',
+      properties: {},
+      additionalProperties: false,
+    },
+  },
 ];
 
 async function resolveMcpUser(req, supabase) {
@@ -133,12 +425,12 @@ async function resolveMcpUser(req, supabase) {
   if (token.startsWith('dpm_')) {
     const found = await findMcpAccessToken(supabase, token);
     if (!found) return null;
-    return { userId: found.userId, token };
+    return { userId: found.userId, token, scopes: found.scopes || [...MCP_SCOPES] };
   }
 
   const { data, error } = await supabase.auth.getUser(token);
   if (error || !data?.user?.id) return null;
-  return { userId: data.user.id, token };
+  return { userId: data.user.id, token, scopes: [...MCP_SCOPES] };
 }
 
 async function internalApi(port, path, token, options = {}) {
@@ -158,27 +450,75 @@ async function internalApi(port, path, token, options = {}) {
     json = { raw: text };
   }
   if (!res.ok) {
-    throw new Error(json?.error || `Driftpost API returned ${res.status}`);
+    const err = new Error(json?.error || `Driftpost API returned ${res.status}`);
+    err.status = res.status;
+    throw err;
   }
   return json;
+}
+
+async function fetchFormattedAccounts(port, token) {
+  const data = await internalApi(port, '/api/connections', token);
+  const raw = Array.isArray(data.connections) ? data.connections : Array.isArray(data) ? data : [];
+  return raw.map(formatAccount);
 }
 
 async function executeMcpTool(name, args, auth, port) {
   const safeArgs = args && typeof args === 'object' ? args : {};
 
+  if (name === 'driftpost_list_permissions') {
+    return {
+      connected: true,
+      scopes: auth.scopes || [...MCP_SCOPES],
+      tools: MCP_TOOLS.map((t) => t.name),
+    };
+  }
+
   if (name === 'driftpost_list_accounts') {
-    const data = await internalApi(port, '/api/connections', auth.token);
-    let list = Array.isArray(data.connections) ? data.connections : Array.isArray(data) ? data : [];
+    let list = await fetchFormattedAccounts(port, auth.token);
     if (safeArgs.platform) {
       list = list.filter((c) => c.platform === safeArgs.platform);
     }
+    return { total: list.length, accounts: list };
+  }
+
+  if (name === 'driftpost_search_accounts') {
+    const q = String(safeArgs.query || '').trim().toLowerCase();
+    if (!q) throw new Error('query is required.');
+    let list = await fetchFormattedAccounts(port, auth.token);
+    if (safeArgs.platform) {
+      list = list.filter((c) => c.platform === safeArgs.platform);
+    }
+    const matches = list.filter((c) => {
+      const hay = `${c.name || ''} ${c.username || ''} ${c.platform || ''}`.toLowerCase();
+      return hay.includes(q);
+    });
+    return { query: safeArgs.query, total: matches.length, accounts: matches };
+  }
+
+  if (name === 'driftpost_get_brand_profile') {
+    const brandName = String(safeArgs.brand_name || '').trim();
+    if (!brandName) throw new Error('brand_name is required.');
+    const mem = await import('./brand-memory/index.js');
+    const hit = mem.resolveBrand(brandName, 15);
+    if (!hit?.brand) {
+      return { found: false, message: `No saved brand profile matched "${brandName}".` };
+    }
+    const b = hit.brand;
+    const deep = mem.getDeepForCompact?.(b) || mem.getDeepBrand?.(b.id) || null;
+    const footer = mem.deepFooter?.(deep) || b.footer || [];
     return {
-      accounts: list.map((c) => ({
-        id: c.id,
-        platform: c.platform,
-        name: c.account_name || c.name || c.username || c.id,
-        username: c.username || null,
-      })),
+      found: true,
+      brand: {
+        id: b.id,
+        name: b.name,
+        category: b.cat || deep?.business?.category || null,
+        location: b.loc || deep?.business?.city || null,
+        instagram: b.ig || deep?.social_media?.instagram_handle || null,
+        footer,
+        keywords: Array.isArray(b.kw) ? b.kw.slice(0, 15) : [],
+        tone: deep?.writing_direction?.tone || null,
+      },
     };
   }
 
@@ -188,11 +528,88 @@ async function executeMcpTool(name, args, auth, port) {
       platform === 'google-business'
         ? '/api/automations/google-business'
         : `/api/automations/${encodeURIComponent(platform)}`;
-    return await internalApi(port, path, auth.token);
+    const data = await internalApi(port, path, auth.token);
+    const items = platform === 'google-business'
+      ? (data.locations || []).map((loc) => ({
+          id: loc.id,
+          name: loc.location_name,
+          enabled: Boolean(loc.enabled),
+          mode: loc.rules?.mode || 'default',
+          minimum_rating: loc.rules?.minimum_rating || 1,
+        }))
+      : (data.accounts || []).map((acct) => ({
+          id: acct.id,
+          name: acct.name,
+          enabled: Boolean(acct.enabled),
+          public_reply_enabled: Boolean(acct.rules?.public_reply_enabled),
+          comment_dm_enabled: Boolean(acct.rules?.comment_enabled),
+          comment_keyword: acct.rules?.comment_keyword || '',
+          excluded_words: acct.rules?.excluded_words || '',
+        }));
+    return {
+      platform,
+      total: items.length,
+      enabled_count: items.filter((i) => i.enabled).length,
+      items,
+    };
   }
 
-  if (name === 'driftpost_list_scheduled_posts') {
-    return await internalApi(port, '/api/schedules', auth.token);
+  if (
+    name === 'driftpost_list_scheduled_posts'
+    || name === 'driftpost_get_post_history'
+    || name === 'driftpost_get_failed_posts'
+  ) {
+    const [schedData, accounts] = await Promise.all([
+      internalApi(port, '/api/schedules', auth.token),
+      fetchFormattedAccounts(port, auth.token).catch(() => []),
+    ]);
+    const accountMap = new Map(accounts.map((a) => [a.id, a]));
+    const rawList = Array.isArray(schedData.schedules)
+      ? schedData.schedules
+      : Array.isArray(schedData)
+        ? schedData
+        : [];
+
+    const requestedStatus = name === 'driftpost_get_post_history'
+      ? 'published'
+      : name === 'driftpost_get_failed_posts'
+        ? 'failed'
+        : String(safeArgs.status || 'scheduled');
+
+    const nowMs = Date.now();
+    let filtered = rawList.filter((row) => {
+      if (requestedStatus !== 'all' && row.status !== requestedStatus) return false;
+      if (name === 'driftpost_list_scheduled_posts' && requestedStatus === 'scheduled') {
+        const ts = Date.parse(row.scheduled_at || '');
+        if (Number.isFinite(ts) && ts < nowMs - 5 * 60 * 1000) return false;
+      }
+      if (safeArgs.platform && row.platform !== safeArgs.platform) return false;
+      if (safeArgs.account_id && row.connection_id !== safeArgs.account_id) return false;
+      return true;
+    });
+
+    const total = filtered.length;
+    const offset = Math.max(0, Number(safeArgs.offset) || 0);
+    const defaultLimit = name === 'driftpost_list_scheduled_posts' ? 25 : 20;
+    const limit = Math.max(1, Math.min(100, Number(safeArgs.limit) || defaultLimit));
+    filtered = filtered.slice(offset, offset + limit);
+
+    return {
+      status_filter: requestedStatus,
+      total,
+      returned: filtered.length,
+      next_offset: offset + filtered.length < total ? offset + filtered.length : null,
+      posts: filtered.map((row) => formatCompactSchedule(row, accountMap)),
+    };
+  }
+
+  if (name === 'driftpost_cancel_scheduled_post') {
+    const postId = String(safeArgs.post_id || '').trim();
+    if (!postId) throw new Error('post_id is required.');
+    await internalApi(port, `/api/schedules/${encodeURIComponent(postId)}`, auth.token, {
+      method: 'DELETE',
+    });
+    return { ok: true, cancelled_post_id: postId };
   }
 
   if (name === 'driftpost_get_publish_status') {
@@ -201,67 +618,41 @@ async function executeMcpTool(name, args, auth, port) {
     return await internalApi(port, `/api/jobs/${encodeURIComponent(jobId)}`, auth.token);
   }
 
-  if (name === 'driftpost_publish_post') {
+  if (name === 'driftpost_publish_post' || name === 'driftpost_schedule_post') {
+    const isSchedule = name === 'driftpost_schedule_post';
     const accountIds = Array.isArray(safeArgs.account_ids)
       ? safeArgs.account_ids.map((id) => String(id).trim()).filter(Boolean)
       : [];
     if (!accountIds.length) throw new Error('At least one account_id is required.');
-    const caption = String(safeArgs.caption || '').trim();
+    const defaultCaption = String(safeArgs.caption || '').trim();
+    const platformCaptions = safeArgs.platform_captions && typeof safeArgs.platform_captions === 'object'
+      ? safeArgs.platform_captions
+      : {};
     const title = String(safeArgs.title || '').trim();
-    const privacy = String(safeArgs.privacy || 'public').trim();
+    const privacy = String(safeArgs.youtube_privacy || safeArgs.privacy || 'public').trim();
+    const scheduledFor = isSchedule ? String(safeArgs.scheduled_for || '').trim() : '';
+    if (isSchedule && (!scheduledFor || !Number.isFinite(Date.parse(scheduledFor)))) {
+      throw new Error('scheduled_for must be a valid future ISO-8601 timestamp.');
+    }
 
-    const connData = await internalApi(port, '/api/connections', auth.token);
-    const allConns = Array.isArray(connData.connections)
-      ? connData.connections
-      : Array.isArray(connData)
-        ? connData
+    const accounts = await fetchFormattedAccounts(port, auth.token);
+    const byId = new Map(accounts.map((c) => [c.id, c]));
+
+    const mediaUrls = Array.isArray(safeArgs.media_urls) && safeArgs.media_urls.length
+      ? safeArgs.media_urls.slice(0, 10)
+      : safeArgs.media_url
+        ? [safeArgs.media_url]
         : [];
-    const byId = new Map(allConns.map((c) => [c.id, c]));
+    const downloadedMedia = [];
+    for (let i = 0; i < mediaUrls.length; i++) {
+      downloadedMedia.push(
+        await downloadSafeMedia(mediaUrls[i], i === 0 ? safeArgs.media_filename : '')
+      );
+    }
 
-    let downloadedBlob = null;
-    let downloadedName = String(safeArgs.media_filename || '').trim();
-    if (safeArgs.media_url) {
-      const mediaUrl = String(safeArgs.media_url).trim();
-      let parsedUrl;
-      try {
-        parsedUrl = new URL(mediaUrl);
-      } catch {
-        throw new Error('media_url must be a valid HTTPS URL.');
-      }
-      if (parsedUrl.protocol !== 'https:') {
-        throw new Error('media_url must use https://.');
-      }
-      const host = parsedUrl.hostname.toLowerCase();
-      if (
-        host === 'localhost'
-        || host.endsWith('.local')
-        || host.endsWith('.internal')
-        || /^(127\.|10\.|192\.168\.|169\.254\.|0\.|172\.(1[6-9]|2\d|3[01])\.|\[::1\])/.test(host)
-      ) {
-        throw new Error('media_url cannot point to a private or local network address.');
-      }
-      const mediaRes = await fetch(mediaUrl, { signal: AbortSignal.timeout(45000) });
-      if (!mediaRes.ok) {
-        throw new Error(`Could not download media_url (HTTP ${mediaRes.status}).`);
-      }
-      const contentType = mediaRes.headers.get('content-type') || 'application/octet-stream';
-      const arrayBuf = await mediaRes.arrayBuffer();
-      if (arrayBuf.byteLength > 250 * 1024 * 1024) {
-        throw new Error('Media file exceeds 250MB limit.');
-      }
-      downloadedBlob = new Blob([arrayBuf], { type: contentType });
-      if (!downloadedName) {
-        const ext = contentType.includes('mp4')
-          ? 'mp4'
-          : contentType.includes('quicktime')
-            ? 'mov'
-            : contentType.includes('png')
-              ? 'png'
-              : contentType.includes('jpeg') || contentType.includes('jpg')
-                ? 'jpg'
-                : 'mp4';
-        downloadedName = `driftpost-media.${ext}`;
-      }
+    const extraHeaders = {};
+    if (safeArgs.idempotency_key) {
+      extraHeaders['Idempotency-Key'] = String(safeArgs.idempotency_key).trim().slice(0, 128);
     }
 
     const results = [];
@@ -271,24 +662,54 @@ async function executeMcpTool(name, args, auth, port) {
         results.push({ account_id: accountId, ok: false, error: 'Account not found' });
         continue;
       }
+      const captionForPlatform = String(platformCaptions[conn.platform] || defaultCaption).trim();
       const form = new FormData();
       form.append('platform', conn.platform);
       form.append('connection_id', conn.id);
-      form.append('caption', caption);
+      form.append('caption', captionForPlatform);
+      form.append('text', captionForPlatform);
+      if (conn.platform === 'instagram') {
+        form.append('ig_caption', captionForPlatform);
+        if (Array.isArray(safeArgs.instagram_collaborators) && safeArgs.instagram_collaborators.length) {
+          const handles = safeArgs.instagram_collaborators
+            .map((h) => String(h || '').trim().replace(/^@+/, ''))
+            .filter(Boolean)
+            .slice(0, 3);
+          if (handles.length) {
+            form.append('ig_collabs_enabled', '1');
+            form.append('ig_collabs', handles.join(','));
+          }
+        }
+        if (safeArgs.instagram_post_story === true) {
+          form.append('ig_post_story', '1');
+        }
+      } else if (conn.platform === 'facebook') {
+        form.append('fb_message', captionForPlatform);
+      } else if (conn.platform === 'youtube') {
+        if (title) form.append('yt_title', title.slice(0, 100));
+        form.append('yt_description', captionForPlatform);
+        form.append('yt_privacy', privacy);
+      } else if (conn.platform === 'x') {
+        form.append('x_text', captionForPlatform.slice(0, 280));
+      }
       if (title) form.append('title', title);
       if (privacy) form.append('privacy', privacy);
-      if (downloadedBlob) {
-        form.append('media', downloadedBlob, downloadedName);
+      if (isSchedule) form.append('scheduled_at', new Date(scheduledFor).toISOString());
+      for (const item of downloadedMedia) {
+        form.append('media', item.blob, item.filename);
       }
+
       try {
-        const pubRes = await internalApi(port, '/api/publish', auth.token, {
+        const endpoint = isSchedule ? '/api/schedule' : '/api/publish';
+        const pubRes = await internalApi(port, endpoint, auth.token, {
           method: 'POST',
+          headers: extraHeaders,
           body: form,
         });
         results.push({
           account_id: conn.id,
           platform: conn.platform,
-          account_name: conn.account_name || conn.name || conn.id,
+          account_name: conn.name,
           ok: true,
           ...pubRes,
         });
@@ -296,7 +717,7 @@ async function executeMcpTool(name, args, auth, port) {
         results.push({
           account_id: conn.id,
           platform: conn.platform,
-          account_name: conn.account_name || conn.name || conn.id,
+          account_name: conn.name,
           ok: false,
           error: err.message,
         });
@@ -502,7 +923,7 @@ export function registerMcpRoutes(app, { supabase, port }) {
         result: {
           protocolVersion: '2025-03-26',
           capabilities: { tools: {} },
-          serverInfo: { name: 'driftpost', version: '1.0.0' },
+          serverInfo: { name: 'driftpost', version: '2.0.0' },
         },
       });
     }
@@ -528,12 +949,28 @@ export function registerMcpRoutes(app, { supabase, port }) {
           },
         });
       } catch (err) {
+        const isPerm = err?.status === 403 || /not allowed|permission|scope/i.test(String(err?.message || ''));
         return res.json({
           jsonrpc: '2.0',
           id,
           result: {
             isError: true,
-            content: [{ type: 'text', text: err.message || 'Tool execution failed.' }],
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify(
+                  {
+                    error_code: isPerm ? 'PERMISSION_DENIED' : 'TOOL_ERROR',
+                    message: err.message || 'Tool execution failed.',
+                    ...(isPerm
+                      ? { hint: 'Disconnect and reconnect the Driftpost connector to refresh granted scopes.' }
+                      : {}),
+                  },
+                  null,
+                  2
+                ),
+              },
+            ],
           },
         });
       }

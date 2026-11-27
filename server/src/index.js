@@ -565,6 +565,8 @@ function mcpScopeForRequest(req) {
   const method = String(req.method || '').toUpperCase();
   const route = String(req.path || '');
   if (method === 'GET' && route === '/api/connections') return 'accounts:read';
+  if (method === 'GET' && /^\/api\/automations\/(instagram|facebook|google-business)$/.test(route)) return 'accounts:read';
+  if (method === 'GET' && route === '/api/analytics/accounts') return 'accounts:read';
   if (method === 'DELETE' && /^\/api\/connections\/[^/]+$/.test(route)) return 'accounts:manage';
   if (method === 'POST' && /^\/api\/oauth\/(youtube|facebook|instagram|x)\/start$/.test(route)) return 'accounts:connect';
   if (method === 'PUT' && route === '/api/mcp/media') return 'media:upload';
