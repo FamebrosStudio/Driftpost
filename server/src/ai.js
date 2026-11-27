@@ -710,6 +710,7 @@ export async function generateCaptions(summary, opts = {}) {
   // BODY. Footer, hashtags and bracket are rebuilt deterministically from the
   // stored brand record — never patched. Fake footers can't survive this.
   let ytTags = tags(parsed.youtube?.tags).slice(0, 8);
+  const youtubeTitle = enforceCleanFirstLine(stripPhones(clean(parsed.youtube?.title, 100)));
   let igCap = stripPhones(dedupeRepeatedSentences(clean(parsed.instagram?.caption, 2200)));
   let igTags = tags(parsed.instagram?.hashtags);
   let fbMsg = stripPhones(dedupeRepeatedSentences(clean(parsed.facebook?.message, 2000)));
@@ -856,7 +857,7 @@ export async function generateCaptions(summary, opts = {}) {
     // YouTube: body + footer
     ytDesc = fitCaption(ytBody, footer, 2000, 'YouTube');
     if (!ytTags.length && kwBank.length) {
-      ytTags = kwBank.map((k) => k.toLowerCase().replace(/[^a-z0-9 ]/g, '').trim().replace(/\s+/g, ' ')).filter(Boolean).slice(0, 8);
+      ytTags = kwBank.map((k) => String(k || '').toLowerCase().replace(/[^a-z0-9 ]/g, '').trim().replace(/\s+/g, ' ')).filter(Boolean).slice(0, 8);
     }
   } else {
     // Generic path (no saved brand): keep metadata grounded in the user's
@@ -912,7 +913,6 @@ export async function generateCaptions(summary, opts = {}) {
     } catch {}
   }
 
-  const youtubeTitle = enforceCleanFirstLine(stripPhones(clean(parsed.youtube?.title, 100)));
   const out = {
     captions: {
       youtube: {
@@ -954,7 +954,7 @@ export async function generateCaptions(summary, opts = {}) {
 }
 
 function providerError(data, res, rawBody = '', provider = resolveProvider()) {
-  const trimmedBody = rawBody.trim();
+  const trimmedBody = String(rawBody || '').trim();
   const bodyDetail = trimmedBody && !trimmedBody.startsWith('<')
     ? trimmedBody.replace(/[\r\n\t]+/g, ' ').slice(0, 400)
     : '';
@@ -1214,7 +1214,7 @@ async function callResponsesWithSearch({ provider = resolveProvider(), model, sy
   try { data = JSON.parse(rawBody); } catch {}
   if (!res.ok) providerError(data, res, rawBody, provider);
   const text = extractResponsesText(data);
-  if (!text.trim()) throw new Error('AI returned an empty answer with live search. Retry without Live SEO.');
+  if (!String(text || '').trim()) throw new Error('AI returned an empty answer with live search. Retry without Live SEO.');
   return { text, usage: data.usage };
 }
 

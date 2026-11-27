@@ -718,7 +718,7 @@ async function runClaimedIntakeJob(supabase, job) {
       console.warn('[drive-intake] auto-retrying job:', job.id, `attempt ${nextRetry}/2`, recovery.reason);
     } else {
       await supabase.from(TABLE).update({ status: 'failed', error: message, updated_at: new Date().toISOString() }).eq('id', job.id).neq('status', 'stopped');
-      console.error('[drive-intake] job failed:', job.id, message);
+      console.error('[drive-intake] job failed:', job.id, message, error?.stack || '');
     }
   } finally {
     clearInterval(heartbeat);

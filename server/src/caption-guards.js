@@ -133,7 +133,8 @@ export function normalizeCaptionParagraphs(text, maxSentences = 2) {
   if (!source) return '';
   const isStandalone = (line) => /^(?:[#@]|[📍📞🎥📧☎️]|[-*•]|\d+[.)]\s)/u.test(line.trim());
   return source.split(/\n\s*\n/).map((paragraph) => {
-    const lines = paragraph.split('\n').map((line) => line.trim()).filter(Boolean);
+    const lines = paragraph.split('\n').map((line) => String(line || '').trim()).filter(Boolean);
+    if (!lines.length) return '';
     if (lines.length > 1 || lines.some(isStandalone)) return lines.join('\n');
     const sentences = lines[0].match(/[^.!?]+(?:[.!?]+[”’"')\]]*)?(?:\s+|$)/g) || [lines[0]];
     const clean = sentences.map((sentence) => sentence.trim()).filter(Boolean);

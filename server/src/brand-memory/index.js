@@ -840,7 +840,7 @@ export function brandPack(brand) {
 // Rich briefs get a structured breakdown the writer must honor; thin/nonsense
 // briefs are flagged WEAK so the model answers directly instead of forcing
 // structure onto garbage.
-const OFFER_RE = /(\d+\s*%|\boff\b|offer|discount|deal|free|gold|gift|first\s+\d+|only\s+\d+|launch|opening|new\s+(shop|store|branch|collection)|sale|combo|valid|expire|hurry|limited)/i;
+const OFFER_RE = /\b(\d+\s*%|off|offer|discount|deal|free|gift|first\s+\d+|only\s+\d+|launch|opening|new\s+(?:shop|store|branch|collection)|sale|combo|valid|expire|hurry|limited)\b/i;
 const WHEN_RE = /(before\s+\d+[a-z]*|after\s+\d+[a-z]*|till\s+[a-z0-9 ]+|valid[^.,;]*|first\s+\d+[^.,;]*|only\s+\d+[^.,;]*|ends[^.,;]*|today|tomorrow|this\s+week|this\s+month|\d+\s*(am|pm))/i;
 const FUNNY_RE = /(funny|comedy|comic|meme|skit|prank|bloopers|laugh|relatable|sarcasm)/i;
 const REVIEW_RE = /(review|feedback|testimonial|rating|customer\s+said|client\s+said|google\s+review)/i;
@@ -857,8 +857,9 @@ export function parseBrief(brief, brand) {
   let type = 'standard: warm hook + detail + concrete CTA';
   if (OFFER_RE.test(b)) {
     const all = b.match(OFFER_GLOBAL_RE) || [];
-    const best = all.find((x) => /\d/.test(x)) || all[0];
-    motive = `OFFER — ${best.trim()}`;
+    const fallbackHit = b.match(OFFER_RE)?.[0] || 'offer';
+    const best = String(all.find((x) => /\d/.test(x)) || all[0] || fallbackHit).trim();
+    motive = `OFFER — ${best || 'offer'}`;
     type = 'HYPE/OFFER: bold excited hook, exact terms, urgency, tag-a-friend CTA';
   } else if (FUNNY_RE.test(b)) {
     motive = 'entertainment';
