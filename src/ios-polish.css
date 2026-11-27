@@ -293,9 +293,9 @@
   align-items: center;
   gap: 4px;
   padding: 4px;
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  background: rgba(15, 16, 24, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.09);
   align-self: flex-start;
   flex-wrap: wrap;
 }
@@ -304,15 +304,15 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 14px;
-  border: 0;
-  border-radius: 10px;
+  padding: 8px 16px;
+  border: 1px solid transparent;
+  border-radius: 999px;
   background: transparent;
   color: rgba(235, 235, 245, 0.68);
   font-size: 13.5px;
   font-weight: 500;
   cursor: pointer;
-  transition: background 0.16s ease, color 0.16s ease;
+  transition: background 0.16s ease, color 0.16s ease, border-color 0.16s ease;
 }
 
 .auto-seg-btn:hover {
@@ -320,19 +320,27 @@
 }
 
 .auto-seg-btn.is-active {
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(124, 109, 242, 0.2);
+  border-color: rgba(167, 139, 250, 0.42);
   color: #fff;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 2px 10px rgba(124, 109, 242, 0.18);
 }
 
 /* Cards */
 .auto-card {
-  background: rgba(28, 28, 32, 0.72);
+  background: rgba(14, 15, 22, 0.78);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 18px;
-  padding: 18px 20px;
+  padding: 20px 22px;
+  animation: iosCardReveal 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
+  transition: border-color 0.2s ease, box-shadow 0.24s ease;
+}
+
+.auto-card:hover {
+  border-color: rgba(167, 139, 250, 0.28);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.32), 0 0 0 1px rgba(124, 109, 242, 0.1);
 }
 
 .auto-card-head {
@@ -421,8 +429,9 @@
 .auto-input:focus,
 .auto-select:focus,
 .auto-textarea:focus {
-  border-color: #0a84ff;
-  background: rgba(16, 16, 20, 0.9);
+  border-color: rgba(167, 139, 250, 0.65);
+  background: rgba(12, 13, 20, 0.92);
+  box-shadow: 0 0 0 3px rgba(124, 109, 242, 0.15);
 }
 
 .auto-textarea {
@@ -496,7 +505,7 @@
 }
 
 .auto-switch.is-on {
-  background: #30d158;
+  background: linear-gradient(135deg, #7c6df2 0%, #6366f1 100%);
 }
 
 .auto-switch.is-on .auto-switch-thumb {
@@ -511,33 +520,36 @@
   align-items: center;
   justify-content: center;
   gap: 6px;
-  border-radius: 11px;
+  border-radius: 999px;
   font-size: 13.5px;
   font-weight: 600;
-  padding: 8px 16px;
+  padding: 9px 18px;
   cursor: pointer;
   text-decoration: none;
   border: 1px solid transparent;
-  transition: opacity 0.15s ease, background 0.15s ease;
+  transition: opacity 0.15s ease, background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .auto-btn-primary {
-  background: #0a84ff;
+  background: linear-gradient(135deg, #7c6df2 0%, #6366f1 100%);
   color: #fff;
+  box-shadow: 0 4px 16px rgba(124, 109, 242, 0.28);
 }
 
 .auto-btn-primary:hover:not(:disabled) {
-  background: #0077ed;
+  filter: brightness(1.08);
+  box-shadow: 0 6px 20px rgba(124, 109, 242, 0.38);
 }
 
 .auto-btn-secondary {
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.06);
   border-color: rgba(255, 255, 255, 0.1);
   color: #f5f5f7;
 }
 
 .auto-btn-secondary:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.13);
+  background: rgba(124, 109, 242, 0.14);
+  border-color: rgba(167, 139, 250, 0.35);
 }
 
 .auto-btn-ghost {
