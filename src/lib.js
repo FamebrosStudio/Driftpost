@@ -574,7 +574,15 @@ export async function api(path, token, options = {}) {
       return data;
     } catch (e) {
       if (e?.status === 401) throw e;
-      if (e?.name === 'AbortError') throw new Error(path === '/api/ai/captions' ? 'Caption analysis timed out. Retry once; long videos can take more time to transcribe.' : 'Server is waking up — try again in a few seconds.');
+      if (e?.name === 'AbortError') {
+        if (path === '/api/ai/captions') {
+          throw new Error('Caption analysis timed out. Retry once; long videos can take more time to transcribe.');
+        }
+        if (path.startsWith('/api/automations/google-business')) {
+          throw new Error('Google took too long to respond. Wait a few seconds and click Save or Retry.');
+        }
+        throw new Error('Request timed out while waiting for the server. Wait a few seconds and try again.');
+      }
       if (isNetworkFail(e)) throw new Error(DOWN_MSG);
       throw e;
     } finally {
@@ -583,7 +591,12 @@ export async function api(path, token, options = {}) {
   };
   const invoke = async (t) => {
     try {
-      return await call(t, path === '/api/ai/captions' ? 30 * 60 * 1000 : 25000);
+      const timeout = path === '/api/ai/captions'
+        ? 30 * 60 * 1000
+        : path.startsWith('/api/automations/google-business')
+          ? 90000
+          : 25000;
+      return await call(t, timeout);
     } catch (e) {
       if (e?.status === 401) throw e;
       const isJobPoll = path.startsWith('/api/jobs/');
