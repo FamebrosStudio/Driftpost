@@ -431,6 +431,7 @@ export function registerMcpRoutes(app, { supabase, port }) {
       return res.status(400).send('Missing or invalid redirect_uri.');
     }
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.setHeader('Content-Security-Policy', "default-src 'self'; style-src 'unsafe-inline'; form-action 'self'");
     return res.send(
       renderAuthorizePage({
         clientId,

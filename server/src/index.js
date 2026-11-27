@@ -4305,6 +4305,9 @@ async function runDueSchedules() {
 setInterval(runDueSchedules, 15 * 1000).unref();
 setTimeout(runDueSchedules, 3 * 1000).unref();
 
+app.use('/oauth', express.urlencoded({ extended: false }));
+registerMcpRoutes(app, { supabase, port });
+
 app.use((_req, res) => res.status(404).json({ error: 'Not found' }));
 
 app.use((err, _req, res, _next) => {
@@ -4326,9 +4329,6 @@ app.use((err, _req, res, _next) => {
   }
   res.status(500).json({ error: 'Server error' });
 });
-app.use('/oauth', express.urlencoded({ extended: false }));
-registerMcpRoutes(app, { supabase, port });
-
 app.listen(port, '0.0.0.0', () => {
   console.log(`Driftpost API on :${port}`);
   // Recover any scheduled_posts stranded in 'publishing' from a previous server restart.
