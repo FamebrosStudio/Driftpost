@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import BorderGlow from '../components/reactbits/BorderGlow.jsx';
 import BrandIcon from '../brand.jsx';
 import { api } from '../lib.js';
 import { WorkspaceNav } from './Workspace.jsx';
@@ -99,6 +100,22 @@ const PLATFORMS = [
   { id: 'facebook', label: 'Facebook', icon: 'facebook' },
   { id: 'google-business', label: 'Google Reviews', icon: 'google' },
 ];
+
+function AutoCard({ className = '', children }) {
+  return (
+    <BorderGlow
+      className="bg-glow auto-glow-wrap"
+      backgroundColor="#0e0f16"
+      borderRadius={16}
+      glowColor="250 85 74"
+      colors={['#a78bfa', '#7c6df2', '#c4b5fd']}
+      fillOpacity={0.12}
+      glowRadius={22}
+    >
+      <section className={`auto-card ${className}`.trim()}>{children}</section>
+    </BorderGlow>
+  );
+}
 
 function ToggleSwitch({ checked, onChange, label, description }) {
   return (
@@ -522,7 +539,7 @@ export default function AutomationsPage({ session, onNavigate, onSignOut }) {
 
         {/* Google Business Connections Bar */}
         {isGoogle ? (
-          <section className="auto-card auto-connections-card">
+          <AutoCard className="auto-connections-card">
             <div className="auto-connections-top">
               <div className="auto-connections-summary">
                 <span className="auto-card-title">Connected Google Accounts</span>
@@ -583,7 +600,7 @@ export default function AutomationsPage({ session, onNavigate, onSignOut }) {
                 ))}
               </div>
             ) : null}
-          </section>
+          </AutoCard>
         ) : null}
 
         {/* Account / Location Selector + Master Toggle */}
@@ -613,7 +630,7 @@ export default function AutomationsPage({ session, onNavigate, onSignOut }) {
           </div>
         ) : (
           <>
-            <section className="auto-card auto-account-bar">
+            <AutoCard className="auto-account-bar">
               <div className="auto-account-controls">
                 <div className="auto-field">
                   <label className="auto-label" htmlFor="auto-search">
@@ -666,12 +683,12 @@ export default function AutomationsPage({ session, onNavigate, onSignOut }) {
                   description={selectedAccount?.name || 'Selected account'}
                 />
               </div>
-            </section>
+            </AutoCard>
 
             {isGoogle ? (
               <div className="auto-stack">
                 {/* Google Auto-Reply Rules */}
-                <section className="auto-card">
+                <AutoCard>
                   <div className="auto-card-head">
                     <div>
                       <h2 className="auto-card-title">Review Auto-Reply Rules</h2>
@@ -807,10 +824,10 @@ export default function AutomationsPage({ session, onNavigate, onSignOut }) {
                       ) : null}
                     </div>
                   )}
-                </section>
+                </AutoCard>
 
                 {/* Recent Google Reviews Editor */}
-                <section className="auto-card">
+                <AutoCard>
                   <div className="auto-card-head">
                     <div>
                       <h2 className="auto-card-title">
@@ -897,13 +914,13 @@ export default function AutomationsPage({ session, onNavigate, onSignOut }) {
                       ))}
                     </div>
                   ) : null}
-                </section>
+                </AutoCard>
               </div>
             ) : (
               /* Instagram & Facebook 2-Column Rules */
               <div className="auto-grid-2">
                 {/* Replies to comments */}
-                <section className="auto-card">
+                <AutoCard>
                   <div className="auto-card-head">
                     <div>
                       <h2 className="auto-card-title">Replies to Comments</h2>
@@ -979,10 +996,10 @@ export default function AutomationsPage({ session, onNavigate, onSignOut }) {
                       />
                     </div>
                   </div>
-                </section>
+                </AutoCard>
 
                 {/* DM replies */}
-                <section className="auto-card">
+                <AutoCard>
                   <div className="auto-card-head">
                     <div>
                       <h2 className="auto-card-title">DM Replies</h2>
@@ -1058,7 +1075,7 @@ export default function AutomationsPage({ session, onNavigate, onSignOut }) {
                       />
                     </div>
                   </div>
-                </section>
+                </AutoCard>
               </div>
             )}
           </>
