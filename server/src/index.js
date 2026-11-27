@@ -40,6 +40,7 @@ import { canUsePrivateBrandData } from './brand-access.js';
 import { isAllowedOrigin, normalizeHttpOrigin } from './cors-policy.js';
 import { enqueueDirectUpload, getDriveReviewFile, getDriveScanError, resolveIntakePreviewTarget, startGoogleDriveIntake, streamDriveReviewFile, triggerDriveScan } from './google-drive-intake.js';
 import { authorizeMcpDevice, createMcpDeviceAuthorization, findMcpAccessToken, pollMcpDeviceAuthorization } from './mcp-auth.js';
+import { registerMcpRoutes } from './mcp-server.js';
 
 const required = ['FRONTEND_URL', 'SUPABASE_URL', 'SUPABASE_SECRET_KEY', 'TOKEN_ENCRYPTION_KEY', 'STATE_SIGNING_SECRET'];
 const missing = required.filter((n) => !process.env[n]);
@@ -146,7 +147,13 @@ const scheduleWorkerHealth = {
 const allowedOrigins = (process.env.FRONTEND_URL || '').split(',').map(normalizeHttpOrigin).filter(Boolean);
 // Hardcoded fallback so the API stays reachable from the deployed frontend
 // even if FRONTEND_URL is missing on the server env.
-const KNOWN_ORIGINS = ['https://driftpostpage.vercel.app', 'https://driftpost.vercel.app'];
+const KNOWN_ORIGINS = [
+  'https://driftpostpage.vercel.app',
+  'https://driftpost.vercel.app',
+  'https://chatgpt.com',
+  'https://chat.openai.com',
+  'https://claude.ai',
+];
 const corsOptions = {
   origin: (origin, callback) => {
     // Allow server-to-server / curl / mobile apps with no Origin header,
@@ -161,7 +168,7 @@ const corsOptions = {
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'Idempotency-Key', 'X-Driftpost-AI-Grant', 'X-Driftpost-Team-Video'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Idempotency-Key', 'X-Driftpost-AI-Grant', 'X-Driftpost-Team-Video', 'Mcp-Session-Id'],
 };
 
 function parseInstagramCollaborators(raw) {
@@ -4319,6 +4326,9 @@ app.use((err, _req, res, _next) => {
   }
   res.status(500).json({ error: 'Server error' });
 });
+app.use('/oauth', express.urlencoded({ extended: false }));
+registerMcpRoutes(app, { supabase, port });
+
 app.listen(port, '0.0.0.0', () => {
   console.log(`Driftpost API on :${port}`);
   // Recover any scheduled_posts stranded in 'publishing' from a previous server restart.
