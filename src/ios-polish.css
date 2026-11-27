@@ -147,6 +147,28 @@
   transform: translateX(2px);
 }
 
+/* 5. Common BorderGlow alignment fix: prevent double-border overhang & radius mismatch */
+#root .border-glow-card {
+  padding: 0 !important;
+  overflow: hidden !important;
+}
+#root .border-glow-card.bg-glow {
+  border-radius: 16px !important;
+}
+#root .border-glow-card.btn-glow,
+#root .border-glow-card.ws-btn-glow {
+  border-radius: 12px !important;
+}
+#root .border-glow-card > .border-glow-inner {
+  width: 100% !important;
+  height: 100% !important;
+  border-radius: inherit !important;
+}
+#root .border-glow-card > .border-glow-inner > :first-child {
+  margin: 0 !important;
+  height: 100% !important;
+}
+
 @media (prefers-reduced-motion: reduce) {
   #root .ws-main,
   #root .hist-main,
