@@ -34,11 +34,14 @@ export function commentAutomationDecision(rules = {}, text = '') {
   const { privateReplyEnabled, publicReplyEnabled } = commentReplyModes(rules);
   const keyword = String(rules.comment_keyword || '').trim();
   const keywordMatched = !keyword || matchesAutomationKeyword(text, keyword);
+  const excluded = String(rules.excluded_words || '').trim();
+  const excludedMatched = !!excluded && matchesAutomationKeyword(text, excluded);
   return {
     privateReplyEnabled,
     publicReplyEnabled,
     keywordMatched,
-    shouldRun: (privateReplyEnabled || publicReplyEnabled) && keywordMatched,
+    ...(excludedMatched ? { excludedMatched: true } : {}),
+    shouldRun: (privateReplyEnabled || publicReplyEnabled) && keywordMatched && !excludedMatched,
   };
 }
 
@@ -72,6 +75,8 @@ export function matchesAutomationKeyword(text, configured) {
 }
 
 export function incomingMessageReplyText(rules = {}, text = '') {
+  const excluded = String(rules.excluded_words || '').trim();
+  if (excluded && matchesAutomationKeyword(text, excluded)) return '';
   const keyword = String(rules.dm_keyword || '').trim();
   return keyword && matchesAutomationKeyword(text, keyword) ? rules.dm_reply : rules.default_reply;
 }

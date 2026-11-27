@@ -5,7 +5,7 @@ import { api } from '../lib.js';
 import { WorkspaceNav } from './Workspace.jsx';
 import './workspace.css';
 
-const EMPTY = { comment_enabled: false, public_reply_enabled: false, comment_keyword: '', public_reply: '', private_reply: '', dm_keyword: '', dm_reply: '', default_reply: '' };
+const EMPTY = { comment_enabled: false, public_reply_enabled: false, comment_keyword: '', public_reply: '', private_reply: '', dm_keyword: '', dm_reply: '', default_reply: '', excluded_words: '' };
 const HAIR_MATCH_REPLY = 'We\u2019re sorry our service didn\u2019t meet your expectations. We\u2019ll review your concerns with our team and work towards providing you with a better experience at Hair Match Salon.';
 const DEFAULT_STAR_REPLIES = {
   1: [
@@ -269,6 +269,7 @@ export default function AutomationsPage({ session, onNavigate, onSignOut }) {
           <BorderGlow className="bg-glow" backgroundColor="#071019" borderRadius={0} glowColor="199 95 74" colors={['#7dd3fc', '#4dc3f7', '#a5ddfa']} fillOpacity={0.12} glowRadius={22}><section className="ws-panel"><div className="automation-title"><span className="ws-icon"><BrandIcon id={platform} size={18} /></span><div><h2>Replies to comments</h2><p>Choose whether matching comments get a public reply, a private DM, or both. Each action has its own switch.</p></div></div>
             <label className="automation-toggle"><input type="checkbox" checked={rules.public_reply_enabled} onChange={(e) => set('public_reply_enabled', e.target.checked)} /><span><b>Auto-reply publicly to comments</b><small>Post a reply under each matching comment. Turn this off to stop public replies.</small></span></label>
             {field('Comment keyword filter (optional)', 'comment_keyword', 'e.g. PRICE', 'Leave blank to match every new comment. This filter applies to both auto-DM and public replies.')}
+            {field('Excluded words (optional)', 'excluded_words', 'e.g. spam, refund, scam', 'Comma-separated words or phrases. Comments or DMs containing any of these will be ignored.')}
             {field('Public comment reply', 'public_reply', 'Thanks for asking! Check your messages.', 'Optional. Appears under the comment.', true)}
             {rules.comment_enabled && !rules.private_reply.trim() && <p className="automation-setup" role="status"><b>Comment DMs are not configured.</b> A public reply can still appear under the comment, but no private message will be sent until you add one below.</p>}
             {field('Private reply to the comment', 'private_reply', 'Here are the details you asked for…', 'Add a message here to DM the commenter. Meta allows one private reply per comment.', true)}

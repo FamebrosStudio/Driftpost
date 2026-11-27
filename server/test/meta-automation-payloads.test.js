@@ -43,6 +43,8 @@ test('public-only comment rules run without enabling comment DMs', () => {
   assert.equal(commentAutomationDecision({ comment_enabled: false, public_reply_enabled: true, public_reply: 'Thanks!', comment_keyword: '' }, 'Any comment').shouldRun, true);
   assert.equal(commentAutomationDecision({ comment_enabled: false, public_reply_enabled: true, public_reply: 'Thanks!', comment_keyword: 'price' }, 'PRICE please').shouldRun, true);
   assert.equal(commentAutomationDecision({ comment_enabled: false, public_reply_enabled: true, public_reply: 'Thanks!', comment_keyword: 'price' }, 'Hours please').shouldRun, false);
+  assert.equal(commentAutomationDecision({ comment_enabled: true, public_reply_enabled: true, public_reply: 'Thanks!', private_reply: 'Sent!', excluded_words: 'spam, refund' }, 'Can I get a refund please').shouldRun, false);
+  assert.equal(incomingMessageReplyText({ dm_keyword: 'price', dm_reply: 'DM reply', default_reply: 'Default', excluded_words: 'spam, scam' }, 'Is this a scam?'), '');
   assert.deepEqual(commentAutomationDecision({ comment_enabled: false, public_reply_enabled: false, comment_keyword: '' }, 'Any comment'), { privateReplyEnabled: false, publicReplyEnabled: false, keywordMatched: true, shouldRun: false });
 });
 
