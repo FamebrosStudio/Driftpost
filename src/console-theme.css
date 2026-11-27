@@ -3245,23 +3245,21 @@ html[data-mood] #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3, .connect,
 
 html[data-mood="osien"] #root,
 html[data-mood="osien"] #root :is(.ws, .hist-shell, .stage1, .stage2, .stage3, .connect, .welcome, .team-video-page, .approval-page) {
-  --bg: #05050a;
-  --panel: #0c0a16;
-  --panel2: #141024;
-  --input: #080711;
-  --line: #211b38;
-  --line-hard: #352b59;
-  --ink: #f3f1ff;
-  --muted: #b5add4;
-  --faint: #787099;
-  --go: #8b5cf6;
+  --bg: #070709;
+  --panel: #0f0f13;
+  --panel2: #16161c;
+  --input: #0a0a0e;
+  --line: rgba(255, 255, 255, 0.08);
+  --line-hard: rgba(255, 255, 255, 0.15);
+  --ink: #f4f4f6;
+  --muted: #9ca3af;
+  --faint: #6b7280;
+  --go: #7c6cf5;
   --go-ink: #ffffff;
   --ok: #38bdf8;
   --warm: #a78bfa;
   --danger: #f87171;
-  background-image:
-    radial-gradient(ellipse 75% 50% at 15% -10%, rgba(139, 92, 246, 0.14), transparent 60%),
-    radial-gradient(ellipse 60% 45% at 88% 8%, rgba(59, 130, 246, 0.09), transparent 58%);
+  background-image: none;
 }
 
 /* ==========================================================================
@@ -4394,9 +4392,10 @@ html[data-theme="light"] {
 }
 
 html[data-mood="osien"] {
-  --bg: #05050a; --panel: #0c0a16; --panel2: #141024; --input: #080711;
-  --line: #211b38; --line-hard: #352b59; --ink: #f3f1ff; --muted: #b5add4; --faint: #787099;
-  --go: #8b5cf6; --go-ink: #ffffff;
+  --bg: #070709; --panel: #0f0f13; --panel2: #16161c; --input: #0a0a0e;
+  --line: rgba(255, 255, 255, 0.08); --line-hard: rgba(255, 255, 255, 0.15);
+  --ink: #f4f4f6; --muted: #9ca3af; --faint: #6b7280;
+  --go: #7c6cf5; --go-ink: #ffffff;
 }
 
 html[data-mood="tokyo-drift"] {
