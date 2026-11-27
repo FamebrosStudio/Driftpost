@@ -1252,17 +1252,39 @@ async function syncUnrepliedMetaComments(platform, connection, rules) {
   const pageId = String(tokens?.page_id || accountId);
   if (!token || !accountId) return { checked: 0, replied: 0, skipped: 0 };
 
-  const listUrl = platform === 'facebook'
-    ? `https://graph.facebook.com/v26.0/${encodeURIComponent(accountId)}/posts?fields=id,comments.limit(25){id,message,from,comments.limit(5){id,from}}&limit=10&access_token=${encodeURIComponent(token)}`
-    : `https://graph.facebook.com/v26.0/${encodeURIComponent(accountId)}/media?fields=id,comments.limit(25){id,text,from,username,replies.limit(5){id,from,username}}&limit=10&access_token=${encodeURIComponent(token)}`;
-
-  const listRes = await fetch(listUrl, { signal: AbortSignal.timeout(15000) });
-  const listJson = await listRes.json().catch(() => ({}));
-  if (!listRes.ok) {
-    throw new Error(listJson?.error?.message || `Could not fetch ${platform} comments (${listRes.status})`);
+  let posts = [];
+  if (platform === 'facebook') {
+    // Use /published_posts (requires pages_read_engagement, not pages_read_user_content)
+    // and then read comments on each published post.
+    const pubUrl = `https://graph.facebook.com/v26.0/${encodeURIComponent(accountId)}/published_posts?fields=id&limit=10&access_token=${encodeURIComponent(token)}`;
+    const pubRes = await fetch(pubUrl, { signal: AbortSignal.timeout(15000) });
+    const pubJson = await pubRes.json().catch(() => ({}));
+    if (!pubRes.ok) {
+      const errMsg = pubJson?.error?.message || `Could not fetch Facebook posts (${pubRes.status})`;
+      if (/pages_read_user_content|pages_read_engagement|\(#10\)/i.test(errMsg)) {
+        throw new Error('Meta blocked reading past Facebook comments for this Page token (new incoming comments still auto-reply via webhooks). Reconnect this Facebook Page with pages_read_engagement / pages_read_user_content enabled in Meta App to scan older comments.');
+      }
+      throw new Error(errMsg);
+    }
+    const rawPosts = Array.isArray(pubJson?.data) ? pubJson.data : [];
+    for (const p of rawPosts) {
+      if (!p?.id) continue;
+      const cUrl = `https://graph.facebook.com/v26.0/${encodeURIComponent(p.id)}/comments?fields=id,message,from,comments.limit(5){id,from}&limit=25&access_token=${encodeURIComponent(token)}`;
+      const cRes = await fetch(cUrl, { signal: AbortSignal.timeout(12000) });
+      const cJson = await cRes.json().catch(() => ({}));
+      if (cRes.ok) {
+        posts.push({ id: p.id, comments: { data: Array.isArray(cJson?.data) ? cJson.data : [] } });
+      }
+    }
+  } else {
+    const listUrl = `https://graph.facebook.com/v26.0/${encodeURIComponent(accountId)}/media?fields=id,comments.limit(25){id,text,from,username,replies.limit(5){id,from,username}}&limit=10&access_token=${encodeURIComponent(token)}`;
+    const listRes = await fetch(listUrl, { signal: AbortSignal.timeout(15000) });
+    const listJson = await listRes.json().catch(() => ({}));
+    if (!listRes.ok) {
+      throw new Error(listJson?.error?.message || `Could not fetch ${platform} comments (${listRes.status})`);
+    }
+    posts = Array.isArray(listJson?.data) ? listJson.data : [];
   }
-
-  const posts = Array.isArray(listJson?.data) ? listJson.data : [];
   let checked = 0;
   let replied = 0;
   let skipped = 0;
