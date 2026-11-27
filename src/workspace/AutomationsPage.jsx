@@ -343,16 +343,12 @@ export default function AutomationsPage({ session, onNavigate, onSignOut }) {
           item.id === selected ? { ...item, enabled: data.enabled, rules: data.rules } : item
         )
       );
-      if (platform === 'google-business' && data.review_sync) {
-        if (data.review_sync.error) {
-          setMessage('Automation saved and enabled.');
-          setError(data.review_sync.error);
-        } else {
-          const { checked = 0, replied = 0 } = data.review_sync;
-          setMessage(
-            `Automation saved and enabled. Checked ${checked} review${checked === 1 ? '' : 's'}, sent ${replied} repl${replied === 1 ? 'y' : 'ies'}.`
-          );
-        }
+      if (data.background_sync) {
+        setMessage(
+          platform === 'google-business'
+            ? 'Saved & enabled! Checking and replying to unreplied Google reviews in the background.'
+            : `Saved & enabled! Subscribing webhooks and replying to unreplied ${platformName} comments in the background.`
+        );
       } else {
         setMessage(data.enabled ? 'Automation saved and enabled.' : 'Automation saved and paused.');
       }
@@ -415,6 +411,28 @@ export default function AutomationsPage({ session, onNavigate, onSignOut }) {
       setError(e.message || 'Could not update review reply.');
     } finally {
       setSavingReviewId('');
+    }
+  };
+
+  const checkMetaCommentsNow = async () => {
+    if (!selected || checkingReviews || saving) return;
+    setCheckingReviews(true);
+    setError('');
+    setMessage('');
+    try {
+      const data = await api(
+        `/api/automations/${platform}/${encodeURIComponent(selected)}/check`,
+        session?.access_token,
+        { method: 'POST' }
+      );
+      const { checked = 0, replied = 0 } = data;
+      setMessage(
+        `Checked ${checked} recent comment${checked === 1 ? '' : 's'}, sent ${replied} repl${replied === 1 ? 'y' : 'ies'}.`
+      );
+    } catch (e) {
+      setError(e.message || `Could not check ${platformName} comments.`);
+    } finally {
+      setCheckingReviews(false);
     }
   };
 
@@ -954,6 +972,14 @@ export default function AutomationsPage({ session, onNavigate, onSignOut }) {
                         Reply publicly under matching comments, send a private DM, or both.
                       </p>
                     </div>
+                    <button
+                      type="button"
+                      className="auto-btn-secondary"
+                      disabled={!selected || checkingReviews || saving || !selectedAccount?.enabled}
+                      onClick={checkMetaCommentsNow}
+                    >
+                      {checkingReviews ? 'Checking…' : 'Check & reply now'}
+                    </button>
                   </div>
 
                   <div className="auto-fields">

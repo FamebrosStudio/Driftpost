@@ -1243,12 +1243,117 @@ app.get('/api/automations/:platform', requireUser, connectionsLimit, burstLimit,
   res.json({ accounts: (connections || []).map((account) => ({ id: account.id, name: account.account_name, enabled: !!byId.get(account.id)?.enabled, rules: byId.get(account.id)?.rules || {} })), webhook_ready: !!(process.env.META_WEBHOOK_VERIFY_TOKEN && process.env.META_APP_SECRET) });
 });
 
+async function syncUnrepliedMetaComments(platform, connection, rules) {
+  const { privateReplyEnabled, publicReplyEnabled } = commentReplyModes(rules);
+  if (!privateReplyEnabled && !publicReplyEnabled) return { checked: 0, replied: 0, skipped: 0 };
+  const tokens = decryptJson(connection.encrypted_tokens);
+  const token = tokens?.access_token;
+  const accountId = String(connection.platform_account_id || '');
+  const pageId = String(tokens?.page_id || accountId);
+  if (!token || !accountId) return { checked: 0, replied: 0, skipped: 0 };
+
+  const listUrl = platform === 'facebook'
+    ? `https://graph.facebook.com/v26.0/${encodeURIComponent(accountId)}/posts?fields=id,comments.limit(25){id,message,from,comments.limit(5){id,from}}&limit=10&access_token=${encodeURIComponent(token)}`
+    : `https://graph.facebook.com/v26.0/${encodeURIComponent(accountId)}/media?fields=id,comments.limit(25){id,text,from,username,replies.limit(5){id,from,username}}&limit=10&access_token=${encodeURIComponent(token)}`;
+
+  const listRes = await fetch(listUrl, { signal: AbortSignal.timeout(15000) });
+  const listJson = await listRes.json().catch(() => ({}));
+  if (!listRes.ok) {
+    throw new Error(listJson?.error?.message || `Could not fetch ${platform} comments (${listRes.status})`);
+  }
+
+  const posts = Array.isArray(listJson?.data) ? listJson.data : [];
+  let checked = 0;
+  let replied = 0;
+  let skipped = 0;
+  const MAX_REPLIES_PER_SWEEP = 25;
+
+  for (const post of posts) {
+    const comments = Array.isArray(post?.comments?.data) ? post.comments.data : [];
+    for (const comment of comments) {
+      if (replied >= MAX_REPLIES_PER_SWEEP) break;
+      const commentId = String(comment?.id || '').trim();
+      if (!commentId) continue;
+      checked++;
+
+      const authorId = String(comment?.from?.id || '');
+      if (authorId && (authorId === accountId || authorId === pageId)) {
+        skipped++;
+        continue;
+      }
+
+      const existingReplies = platform === 'facebook'
+        ? (Array.isArray(comment?.comments?.data) ? comment.comments.data : [])
+        : (Array.isArray(comment?.replies?.data) ? comment.replies.data : []);
+      const alreadyRepliedByOwner = existingReplies.some((rep) => {
+        const repAuthor = String(rep?.from?.id || '');
+        if (repAuthor && (repAuthor === accountId || repAuthor === pageId)) return true;
+        return platform === 'instagram' && existingReplies.length > 0 && !repAuthor;
+      });
+      if (alreadyRepliedByOwner) {
+        skipped++;
+        continue;
+      }
+
+      const commentText = String(platform === 'facebook' ? comment?.message || '' : comment?.text || '');
+      const decision = commentAutomationDecision(rules, commentText);
+      if (!decision.shouldRun) {
+        skipped++;
+        continue;
+      }
+
+      let didReply = false;
+      for (const [field, edge] of [['private_reply', 'messages'], ['public_reply', commentReplyEdge(platform)]]) {
+        const message = String(rules[field] || '').trim();
+        if (!message) continue;
+        if (field === 'private_reply' && !privateReplyEnabled) continue;
+        if (field === 'public_reply' && !publicReplyEnabled) continue;
+        try {
+          const ran = await runAutomationAction(supabase, {
+            event_id: `comment:${connection.id}:${commentId}:${field}`,
+            user_id: connection.user_id,
+            connection_id: connection.id,
+            event_type: 'comment',
+          }, async () => {
+            if (field === 'private_reply') {
+              await sendInstagramPrivateReply({
+                pageId: platform === 'instagram' ? pageId : accountId,
+                commentId,
+                message,
+                accessToken: token,
+              });
+              return;
+            }
+            const response = await fetch(`https://graph.facebook.com/v26.0/${encodeURIComponent(commentId)}/${edge}`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ message: message.slice(0, 1000), access_token: token }),
+              signal: AbortSignal.timeout(12000),
+            });
+            if (!response.ok) {
+              throw new Error(`${field} failed: ${(await response.json().catch(() => ({}))).error?.message || response.status}`);
+            }
+          });
+          if (ran !== false) didReply = true;
+        } catch (err) {
+          console.warn('[meta automation] backfill reply failed:', { platform, commentId, field, error: err?.message || err });
+        }
+      }
+      if (didReply) replied++;
+      else skipped++;
+    }
+    if (replied >= MAX_REPLIES_PER_SWEEP) break;
+  }
+
+  return { checked, replied, skipped };
+}
+
 app.put('/api/automations/:platform/:connectionId', requireUser, strictBurstLimit, async (req, res, next) => {
   const platform = req.params.platform;
   if (platform === 'google-business') return next();
   if (!['instagram', 'facebook'].includes(platform)) return res.status(404).json({ error: 'Unsupported automation platform' });
   const { data: connection } = await supabase.from('platform_connections')
-    .select('id, platform_account_id, encrypted_tokens')
+    .select('id, user_id, platform_account_id, encrypted_tokens')
     .eq('id', req.params.connectionId).eq('user_id', req.user.id).eq('platform', platform).maybeSingle();
   if (!connection) return res.status(404).json({ error: 'Connected account not found' });
   const input = req.body || {};
@@ -1269,25 +1374,55 @@ app.put('/api/automations/:platform/:connectionId', requireUser, strictBurstLimi
   const enabled = input.enabled === true;
   const validationError = validateAutomationRules(enabled, rules);
   if (validationError) return res.status(400).json({ error: validationError });
-  if (enabled) {
-    if (!process.env.META_WEBHOOK_VERIFY_TOKEN || !process.env.META_APP_SECRET) {
-      return res.status(503).json({ error: 'Meta webhook setup is incomplete. Configure META_WEBHOOK_VERIFY_TOKEN and META_APP_SECRET on the API first.' });
-    }
-    try {
-      const tokens = decryptJson(connection.encrypted_tokens);
-      const subscriptions = automationWebhookSubscriptions(rules);
-      if (platform === 'facebook') {
-        await subscribeFacebookWebhooks({ pageId: connection.platform_account_id, accessToken: tokens.access_token, ...subscriptions });
-      } else {
-        await subscribeInstagramWebhooks({ igUserId: connection.platform_account_id, pageId: tokens.page_id, accessToken: tokens.access_token, ...subscriptions });
-      }
-    } catch (error) {
-      return res.status(502).json({ error: `Could not subscribe this account to Meta webhooks: ${error.message || 'check account permissions and reconnect it'}` });
-    }
+  if (enabled && (!process.env.META_WEBHOOK_VERIFY_TOKEN || !process.env.META_APP_SECRET)) {
+    return res.status(503).json({ error: 'Meta webhook setup is incomplete. Configure META_WEBHOOK_VERIFY_TOKEN and META_APP_SECRET on the API first.' });
   }
   const { error } = await supabase.from('instagram_automations').upsert({ connection_id: connection.id, user_id: req.user.id, enabled, rules, updated_at: new Date().toISOString() }, { onConflict: 'connection_id' });
   if (error) return res.status(500).json({ error: 'Could not save automation. Apply the latest Supabase migrations.' });
-  res.json({ ok: true, enabled, rules });
+
+  // Respond instantly so the user never waits, then subscribe webhooks & backfill unreplied comments in the background.
+  res.json({ ok: true, enabled, rules, background_sync: enabled });
+
+  if (enabled) {
+    setImmediate(async () => {
+      try {
+        const tokens = decryptJson(connection.encrypted_tokens);
+        const subscriptions = automationWebhookSubscriptions(rules);
+        if (platform === 'facebook') {
+          await subscribeFacebookWebhooks({ pageId: connection.platform_account_id, accessToken: tokens.access_token, ...subscriptions });
+        } else {
+          await subscribeInstagramWebhooks({ igUserId: connection.platform_account_id, pageId: tokens.page_id, accessToken: tokens.access_token, ...subscriptions });
+        }
+      } catch (subErr) {
+        console.warn('[meta automation] background webhook subscribe failed:', { platform, connection: connection.id.slice(0, 8), error: subErr?.message || subErr });
+      }
+      try {
+        const stats = await syncUnrepliedMetaComments(platform, connection, rules);
+        console.info('[meta automation] background unreplied comment sync done:', { platform, connection: connection.id.slice(0, 8), ...stats });
+      } catch (syncErr) {
+        console.warn('[meta automation] background unreplied comment sync failed:', { platform, connection: connection.id.slice(0, 8), error: syncErr?.message || syncErr });
+      }
+    });
+  }
+});
+
+app.post('/api/automations/:platform/:connectionId/check', requireUser, strictBurstLimit, async (req, res, next) => {
+  const platform = req.params.platform;
+  if (platform === 'google-business') return next();
+  if (!['instagram', 'facebook'].includes(platform)) return res.status(404).json({ error: 'Unsupported automation platform' });
+  const { data: connection } = await supabase.from('platform_connections')
+    .select('id, user_id, platform_account_id, encrypted_tokens')
+    .eq('id', req.params.connectionId).eq('user_id', req.user.id).eq('platform', platform).maybeSingle();
+  if (!connection) return res.status(404).json({ error: 'Connected account not found' });
+  const { data: saved } = await supabase.from('instagram_automations')
+    .select('enabled, rules').eq('connection_id', connection.id).eq('user_id', req.user.id).maybeSingle();
+  if (!saved?.enabled) return res.status(400).json({ error: 'Enable and save the automation before checking unreplied comments.' });
+  try {
+    const stats = await syncUnrepliedMetaComments(platform, connection, saved.rules || {});
+    return res.json({ ok: true, ...stats });
+  } catch (err) {
+    return res.status(502).json({ error: err?.message || `Could not check ${platform} comments right now.` });
+  }
 });
 
 app.post('/api/oauth/google-business/start', requireUser, oauthLimit, (req, res) => {
@@ -1499,15 +1634,19 @@ app.put('/api/automations/google-business/:locationId', requireUser, strictBurst
   const { error } = await supabase.from('google_business_locations').update({ enabled, rules, updated_at: new Date().toISOString() }).eq('id', location.id).eq('user_id', req.user.id);
   if (error) return res.status(500).json({ error: 'Could not save the review automation.' });
 
-  let review_sync = null;
+  // Respond instantly so the user never waits; sync existing unreplied reviews in the background.
+  res.json({ ok: true, enabled, rules, background_sync: enabled });
+
   if (enabled) {
-    try {
-      review_sync = await processGoogleBusinessLocationReviews({ ...location, enabled, rules });
-    } catch (syncError) {
-      review_sync = { checked: 0, replied: 0, skipped: 0, error: businessProfileErrorMessage(syncError, 'reviews') };
-    }
+    setImmediate(async () => {
+      try {
+        const stats = await processGoogleBusinessLocationReviews({ ...location, enabled, rules });
+        console.info('[google business] background review sync done:', { locationId: location.id, ...stats });
+      } catch (syncError) {
+        console.warn('[google business] background review sync failed:', { locationId: location.id, error: businessProfileErrorMessage(syncError, 'reviews') });
+      }
+    });
   }
-  res.json({ ok: true, enabled, rules, review_sync });
 });
 
 app.post('/api/automations/google-business/:locationId/check', requireUser, strictBurstLimit, async (req, res) => {

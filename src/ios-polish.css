@@ -795,3 +795,69 @@
   border: 1px solid rgba(167, 139, 250, 0.45);
   color: #e9d5ff;
 }
+
+
+/* ==========================================================================
+   Site-Wide Micro-Animations, Transitions & Dark Scrollbars
+   ========================================================================== */
+
+@keyframes dpBannerIn {
+  from { opacity: 0; transform: translateY(-6px) scale(0.99); }
+  to { opacity: 1; transform: none; }
+}
+
+#root .auto-banner,
+#root .alert,
+#root .approval-error,
+#root .automation-saved,
+#root .team-video-error,
+#root .team-video-notice {
+  animation: dpBannerIn 0.24s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+#root .auto-btn-primary:hover:not(:disabled),
+#root .ws-primary:hover:not(:disabled),
+#root .auto-seg-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+#root .auto-btn-primary:active:not(:disabled),
+#root .auto-btn-secondary:active:not(:disabled),
+#root .auto-seg-btn:active:not(:disabled),
+#root .ws-primary:active:not(:disabled),
+#root .ws-secondary:active:not(:disabled) {
+  transform: scale(0.975) !important;
+}
+
+#root .drive-intake-jobs > div {
+  transition: border-color 0.18s ease, background 0.18s ease, transform 0.18s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+#root .drive-intake-jobs > div:hover {
+  border-color: rgba(167, 139, 250, 0.32);
+  transform: translateY(-1px);
+}
+
+/* Sleek dark scrollbars across the workspace */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(167, 139, 250, 0.25) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: rgba(167, 139, 250, 0.22);
+  border-radius: 999px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: rgba(167, 139, 250, 0.4);
+}
