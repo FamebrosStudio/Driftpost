@@ -565,7 +565,7 @@ export default function AutomationsPage({ session, onNavigate, onSignOut }) {
 
         {/* Google Business Connections Bar */}
         {isGoogle ? (
-          <AutoCard className="auto-connections-card">
+          <section className="auto-card auto-connections-card">
             <div className="auto-connections-top">
               <div className="auto-connections-summary">
                 <span className="auto-card-title">Connected Google Accounts</span>
@@ -626,7 +626,7 @@ export default function AutomationsPage({ session, onNavigate, onSignOut }) {
                 ))}
               </div>
             ) : null}
-          </AutoCard>
+          </section>
         ) : null}
 
         {/* Account / Location Selector + Master Toggle */}
