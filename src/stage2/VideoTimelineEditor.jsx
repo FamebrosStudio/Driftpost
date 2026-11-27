@@ -298,7 +298,8 @@ export default function VideoTimelineEditor({ file, onApply, onClose }) {
       const mimeType = recordingMimeType();
       const recorder = new MediaRecorder(stream, {
         ...(mimeType ? { mimeType } : {}),
-        videoBitsPerSecond: 8_000_000,
+        videoBitsPerSecond: 16_000_000,
+        audioBitsPerSecond: 192_000,
       });
       const chunks = [];
       recorder.ondataavailable = (event) => {

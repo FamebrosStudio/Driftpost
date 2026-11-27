@@ -181,6 +181,21 @@
   box-shadow: none !important;
 }
 
+#root .s2-media .acts {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 6px !important;
+  padding: 0 10px 10px !important;
+}
+#root .s2-media .acts button {
+  min-width: 0 !important;
+  padding: 8px 6px !important;
+  font-size: 11px !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
 @media (prefers-reduced-motion: reduce) {
   #root .ws-main,
   #root .hist-main,

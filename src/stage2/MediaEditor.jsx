@@ -1310,7 +1310,7 @@ export default function MediaEditor({
         if (!ctx) throw new Error('Canvas context unavailable.');
         paintExportFrame(ctx, outW, outH, img);
         setSavePct(85);
-        const blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/jpeg', 0.94));
+        const blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/jpeg', 0.98));
         if (!blob) throw new Error('Could not encode edited photo.');
         const base = (file.name || 'photo').replace(/\.[^.]+$/, '');
         const editedFile = new File([blob], `${base}-edited.jpg`, { type: 'image/jpeg' });
@@ -1372,7 +1372,8 @@ export default function MediaEditor({
         const mimeType = recordingMimeType();
         const recorder = new MediaRecorder(stream, {
           ...(mimeType ? { mimeType } : {}),
-          videoBitsPerSecond: 8_000_000,
+          videoBitsPerSecond: 16_000_000,
+          audioBitsPerSecond: 192_000,
         });
         const chunks = [];
         recorder.ondataavailable = (ev) => {
